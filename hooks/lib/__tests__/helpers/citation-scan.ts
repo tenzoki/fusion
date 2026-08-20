@@ -167,6 +167,103 @@ function inAnnouncedIllustration(before: string): boolean {
   return !/[);]|\.\s/.test(sinceEg);
 }
 
+// --- fenced code blocks -----------------------------------------------------
+
+/**
+ * A code fence. Group 1 is the indentation, group 2 the run of markers, group 3
+ * the rest of the line — the info string on an opening fence, and required to
+ * be blank on a closing one.
+ */
+const FENCE_RE = /^( {0,3})(`{3,}|~{3,})(.*)$/;
+
+/**
+ * Which of `lines` sit INSIDE a closed fenced code block, as a mask parallel to
+ * the input. Indexed rather than keyed by line number so that a caller passing
+ * a filtered or repeated line list cannot silently collide two entries.
+ *
+ * Content only. The opening fence's line carries the info string and the
+ * closing fence's line carries nothing; neither is content, so a token on
+ * either is judged like any other. That is the difference between exempting a
+ * transcript and exempting the sentence that introduces it.
+ *
+ * WHAT IS IMPLEMENTED, read off CommonMark 0.31.2 §4.5 on 2026-08-20 rather
+ * than recalled:
+ *   - a fence is at least three consecutive backticks or tildes, and the two
+ *     characters may not be mixed;
+ *   - either fence may be preceded by up to three spaces of indentation;
+ *   - a closing fence uses the SAME character as the opening one, is at least
+ *     as long, and "may be followed only by spaces or tabs";
+ *   - "if the info string comes after a backtick fence, it may not contain any
+ *     backtick characters" — the rule that keeps a one-line inline span such as
+ *     ``` ```x``` ``` from opening a block that never ends.
+ *
+ * WHAT IS DELIBERATELY NOT, each because implementing it would decide something
+ * this step is not the place to decide:
+ *   - **container blocks.** A fence inside a list item may be indented to that
+ *     item's content column, well past three spaces, and CommonMark scopes the
+ *     fence to the container. This tracker is flat, so such a fence never opens
+ *     — `agents/orchestrator.md:162` carries one at five spaces. The cost is
+ *     that its content stays JUDGED, which is the status quo and the safe
+ *     direction; dropping the indent bound instead would let any indented run
+ *     of three backticks switch the gate off for an arbitrary span.
+ *   - **tabs as indentation.** A leading tab advances to column 4 and so cannot
+ *     introduce a fence; the pattern asks for spaces and stops there.
+ *   - **indented (four-space) code blocks.** Not fences, and out of scope by
+ *     instruction. Measured before the exclusion rather than assumed: over the
+ *     shipped markdown surface exactly 2 citation tokens sit on a line indented
+ *     four spaces or more, and over the whole workbench 179 — and every sample
+ *     inspected was a list continuation, not a code block. Four-space
+ *     indentation is ambiguous with list continuation, and treating it as code
+ *     would exempt those 181 tokens on the strength of a guess.
+ *
+ * AND ONE DEPARTURE FROM THE SPEC, taken deliberately and in the strict
+ * direction. CommonMark: "if the end of the containing block (or document) is
+ * reached and no closing code fence has been found, the code block contains all
+ * of the lines after the opening code fence until the end". Here an unclosed
+ * fence exempts NOTHING — the lines it opened are discarded at the end of the
+ * walk rather than added. A gate that one stray backtick line can switch off
+ * for the whole remainder of a file is not a gate, and an unbalanced fence is a
+ * record to fix rather than a region to stop reading.
+ */
+export function fencedContentLines(lines: { line: number; text: string }[]): boolean[] {
+  const inside = new Array<boolean>(lines.length).fill(false);
+  let open: { marker: string; len: number } | null = null;
+  let pending: number[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const text = lines[i].text;
+    const m = FENCE_RE.exec(text);
+
+    if (open === null) {
+      // A `>` line belongs to a blockquote container, and a fence opened there
+      // is that container's rather than the document's. Blockquoted lines carry
+      // their own exemption already, so declining to open here loses nothing —
+      // and it is what stops a fence marker quoted inside a transcript from
+      // swallowing everything printed after the transcript.
+      if (/^\s*>/.test(text)) continue;
+      if (!m) continue;
+      const marker = m[2][0];
+      if (marker === "`" && m[3].includes("`")) continue; // the info-string rule
+      open = { marker, len: m[2].length };
+      pending = [];
+      continue;
+    }
+
+    // Inside a fence every line is literal content — `>` included, since no
+    // blockquote can begin here — until a closing fence of the same kind.
+    if (m && m[2][0] === open.marker && m[2].length >= open.len && /^[ \t]*$/.test(m[3])) {
+      for (const n of pending) inside[n] = true;
+      open = null;
+      pending = [];
+      continue;
+    }
+    pending.push(i);
+  }
+  // Unclosed at end of input: `pending` is dropped, never committed. This is
+  // the departure documented above, and it is the whole of it.
+  return inside;
+}
+
 export interface WorkbenchEntry {
   relDir: string; // directory relative to the workbench root, "/"-joined
   base: string;
@@ -370,8 +467,10 @@ export function scanCitationTokens(
 ): CitationHit[] {
   const hits: CitationHit[] = [];
   const fileExempt = rel in RECORD_EXAMPLE_FILES;
+  const fenced = fencedContentLines(lines);
 
-  for (const { line, text } of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    const { line, text } = lines[li];
     const blockquoted = /^\s*>/.test(text);
     const covered: [number, number][] = [];
     const consider = (idx: number, token: string, kind: CitationKind, check: () => Verdict) => {
@@ -380,20 +479,25 @@ export function scanCitationTokens(
       const before = text.slice(0, idx);
       const reason = fileExempt
         ? "record-example-file"
-        : blockquoted
-          ? "blockquote"
-          : inAnnouncedIllustration(before)
-            ? "announced-illustration"
-            : inFooterTemplateSpan(before)
-              ? "footer-template"
-              : isPlaceholder(token)
-                ? "placeholder"
-                : token.includes("foo")
-                  ? "fabricated-name"
-                  : // a `*` anywhere but the marker position is a glob, not a citation
-                    /\*/.test(token.replace(/_\*_/g, ""))
-                    ? "glob"
-                    : null;
+        : // ahead of `blockquote`: inside a fence a leading `>` is literal text
+          // and not a quotation, so on a line that satisfies both this is the
+          // true reason and the other is a coincidence of the first character.
+          fenced[li]
+          ? "fenced-code"
+          : blockquoted
+            ? "blockquote"
+            : inAnnouncedIllustration(before)
+              ? "announced-illustration"
+              : inFooterTemplateSpan(before)
+                ? "footer-template"
+                : isPlaceholder(token)
+                  ? "placeholder"
+                  : token.includes("foo")
+                    ? "fabricated-name"
+                    : // a `*` anywhere but the marker position is a glob, not a citation
+                      /\*/.test(token.replace(/_\*_/g, ""))
+                      ? "glob"
+                      : null;
       if (reason) {
         hits.push({ file: rel, line, token, kind, status: "exempt", matches: [], reason });
         return;
