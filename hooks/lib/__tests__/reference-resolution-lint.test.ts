@@ -814,7 +814,33 @@ function scanHeadingAnchors(
 // entries already in that table do not — so six prose edits across those three files and
 // `agents/shaper.md`, `agents/orchestrator.md` and `rules/fusion-workbench-conventions.md`
 // contribute nothing, and each was confirmed individually by the revert measurement.
-const BASELINE = { paths: 1195, anchors: 157, records: 112 };
+// Re-approved 2026-08-20 — the v10.4.0 release material: `docs/upgrading-to-v10-4.md` is new, and
+// the two per-version "coming from" pointers gained a v10.4 paragraph each.
+// paths 1195 -> 1223, anchors 157 -> 160, records unchanged. Every token is an addition to shipped
+// PROSE — no scanner, exemption or class changed — and the movement was attributed by reverting
+// each edited file in turn and re-running this gate. The three contributions DO NOT sum to the
+// total in isolation, because two of them cite the third: reverting the new doc alone gives
+// 1198/157, not 1195/157, since README.md's and skills/help/SKILL.md's pointers at it then dangle
+// and stop being resolved. Solving the three measurements gives:
+//   docs/upgrading-to-v10-4.md   the note itself. 23 paths, 3 anchors. The paths are `install.sh`
+//                                x3, `hooks/dist/` x2, `rules/fusion-workbench-conventions.md` x2,
+//                                `rules/circle-records.md` x2, and one each of
+//                                `helpers/citation-scan.ts`, `hooks/node_modules`,
+//                                `hooks/package.json`, `agents/planner.md`, `agents/shaper.md`,
+//                                `README-hooks.md`, `README-agents.md`, the three new gate files,
+//                                and the four earlier upgrade notes. The anchors are
+//                                `README-hooks.md` `### Three gates that can fail the suite…`,
+//                                `README-agents.md` `## Dispatch parameters`, and
+//                                `rules/circle-records.md` `### Deletion is outside the vocabulary`.
+//   README.md                    the `**Upgrading from v10.3?**` paragraph. 2 paths (`hooks/dist/`
+//                                and the new note).
+//   skills/help/SKILL.md         the `**Coming from a v10.3 install:**` paragraph. 3 paths
+//                                (`hooks/dist/`, `install.sh`, and the new note).
+// WHAT DID NOT MOVE: `records` stays at 112. The note cites no workbench record — deliberately, as
+// the release material is read from an install that has none. The same Turn also bumped
+// `.claude-plugin/plugin.json` and the `FUSION_REF` example in `install.sh`; neither is a scanned
+// surface for class (a), and the version strings carry no path.
+const BASELINE = { paths: 1223, anchors: 160, records: 112 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
