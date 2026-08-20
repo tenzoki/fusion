@@ -205,3 +205,56 @@ which this Circle neither cites nor depends on.
 reads it and decides whether the Grounding needs a line before activation. Per
 `rules/circle-records.md`, propagation is semi-automatic by design: a note and an event, never an
 automatic transition.
+
+## Turn log
+
+- Turn 1 (session 260819-2006): commits `b6869aa`..`8e7cae7`; fourteen executor tasks over the plan's nine live steps plus five that the work opened; Coherence verdict `coherent`; session history: `circles/260819-1645-four-constraints-on-deep-change/history/260819-2006-orchestrator-session.md`
+- Turn 2 (session 260819-2006): commits `ac01c90`; four executor tasks closing twelve of the Circle's own fourteen open records; session history as above
+
+## Closure note
+
+**Closed coherent (`_c_`), 2026-08-20.** Reconciler verdict `coherent`, no Rebalance recommended
+(`circles/260819-1645-four-constraints-on-deep-change/history/260820-0830-reconciliation.md`).
+
+**What the Directive asked and what it got.** Five constraints, all delivered and each verified
+against the tree rather than against its own account. The committed `hooks/dist` is asserted to be
+the compilation of the committed source against an exactly pinned compiler, extracting HEAD into a
+temp tree so nothing shared is written during a run. All four write tools reach an integration case,
+each asserting the trace row's tool and not only its file. The orchestrator states the whole-tree git
+prohibition at every executor dispatch, with no enforcement claimed — whether a command was run is
+answerable only from its text, the undecidable question this repository deleted a classifier over.
+The workbench's own citations are repaired and held by a blocking gate over a corpus written as a
+marker predicate, with no baseline and no approvable number. And deliberate deletion has the
+annotation form its decision had been waiting for since 5 August.
+
+**Five gates were demonstrated failing rather than only passing**, and each demonstration changed
+what was known: the artifact comparison reddened while the toolchain case stayed green; removing the
+notebook branch reddened exactly one assertion at the expected line; an unclosed fence exposed two
+further doors nobody would have guarded; a broken marker named its file, line, token and remedy; and
+a frozen copy tree entered a gate it should never have entered.
+
+**What the Circle did not reach, stated rather than omitted.**
+
+The Directive says the live surfaces carry no dangling citation *and* that a blocking test holds them
+there. The first half is measured. The second is met on the surfaces the corpus names, which now
+include live plans and exclude three frozen stores, and it is **partial as a general claim**: a record
+leaves the corpus at its terminal transition carrying whatever citations it holds. That cost was named
+in the corpus decision before it was chosen and was paid inside this Circle twice — once on the
+deletion form's own worked subject, once on a decision record whose three dead citations left the
+measured set when step 4 transitioned it.
+
+**Its own Phase-4 gate had nothing to read on it.** `## Where this Circle stops` was made mandatory in
+the planner two days before this Circle's plan was written, and the plan does not carry it. The plan is
+deliberately not retrofitted: writing stopping conditions after the work is a fiction. The gate that
+prevents the next occurrence was built here (`260820-0917`), and its own live corpus is empty today, so
+it is a trap set rather than a measurement taken.
+
+**Two records stay open, neither for want of effort.** `260819-2250` names a cross-reference to a defect
+record that was never filed; both dead pointers are neutralised and no citation in this workbench names
+it any more, but what its author meant is not recoverable and no target was invented. `260820-0906` on
+the deletion form needs a convention nobody has chosen — two tokens on it name files in another
+repository, which the record says in prose and no parser can see.
+
+**Twelve of the Circle's fourteen own findings were closed inside it**, after a review observed that six
+of thirteen findings were the Circle's own stale tracking. That observation, in a Circle whose Directive
+was that a deep change should not go wrong unobserved, is the sharpest thing this Circle produced.

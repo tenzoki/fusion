@@ -57,3 +57,6 @@ whether it includes an `_o_`/`_p_` backlog entry (2 files, 0 violations today, a
 clause is one regex beside the three that are there. Both belong to whoever answers the corpus
 question next; this record does not pre-empt it, because widening a blocking gate's corpus is the
 move the corpus decision `260819-1645` deliberately left as the user's.
+
+---
+Resolved: the corpus admits `planning/` at the live markers `_o_` and `_p_` — the states in which an executor is dispatched against the document, so a citation in it is one somebody is about to follow. **The marker set is an argument, not a narrowing after a red run**: admitting the terminal markers as well would have added 24 files and 157 findings, and that figure was measured before the clause was written rather than discovered by it. Demonstrated with two synthetic plans carrying an identical broken citation: the live one reddens and is named, the closed one does not enter.

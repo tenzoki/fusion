@@ -50,3 +50,8 @@ directions above split on.
 
 Filed by the orchestrator at this Circle's Phase 4, on meeting the branch. It arose from this Circle's
 own Directive, so it stays in its store under the Origin Rule.
+
+---
+Resolved: fix direction 1, chosen by the user: `hooks/lib/__tests__/plan-stopping-section-lint.test.ts` asserts that a live plan carries the section, judging presence — absent, empty, placeholder — and never substance. That distinction is written into the test's own header, because it is what separates this gate from the two mechanisms this repository deleted for deciding an undecidable question from text.
+
+**This plan is deliberately not retrofitted.** Writing stopping conditions into a plan after its work is finished is a fiction, and the Circle's Phase-4 step therefore had nothing to read on the very Circle that built it. That is recorded in the closure note rather than papered over. The gate's live corpus is also empty today, so its corpus assertion passes vacuously and the mechanism is pinned over synthetic documents instead — a trap set for the next plan, and it says so in its own header.

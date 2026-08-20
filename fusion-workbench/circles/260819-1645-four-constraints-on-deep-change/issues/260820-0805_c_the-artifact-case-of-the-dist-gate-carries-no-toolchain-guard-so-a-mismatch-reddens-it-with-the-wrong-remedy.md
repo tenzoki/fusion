@@ -84,3 +84,6 @@ assertion at `:177`, the compile at `:209` and the artifact comparison at `:217`
 itself runs in `beforeAll` at `:100`. Neither of the last two consults the toolchain result, so a
 compiler mismatch reaches the artifact comparison and its remedy text. The file was re-run by this
 pass and is green in 3.7 s. Marker unchanged.
+
+---
+Resolved: the toolchain read runs first and both later cases assert its agreement before their own, through one message that names the toolchain and prescribes no rebuild. **Both cases were guarded, not only the one this record names**: the case before it prescribed fixing the source under a wrong compiler, which is the same wrong remedy one case over, and the record asks for a chain. Demonstrated with a faked 5.9.4 compiler whose emit differs: before, the artifact case printed that the committed dist is not the compilation of the committed source with `FIX: run npm run build`; after, it prints the toolchain sentence and `Do NOT run npm run build on this failure`. The separation decision `260816-0719` demanded now holds in both directions.

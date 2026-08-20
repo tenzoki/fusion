@@ -66,3 +66,6 @@ disagreeing is the part no re-run fixes, because nothing says which of the three
 - Task events: either the orchestrator emits them at dispatch, or the surface stops claiming to
   carry them. Re-arming a check that would have noticed is a decision nobody has filed, and this
   record does not propose one.
+
+---
+Resolved: all three are current at Turn 2's close. `agentstate.yaml` carries the closure task and no dangling source file, the event log carries the four executor tasks of this Turn, and the dashboard's counter agrees with its own list. The re-dangling this record found — a field declared current one commit before its target transitioned — is the same coupling the corpus decision accepted, met a second time on a surface the gate does not judge.

@@ -51,3 +51,6 @@ the same order. The comment at `:1199-1202` states the restatement is deliberate
 reason. So the defect is not a present divergence but the absence of anything that would report the
 next one — which is precisely the condition under which it was already stale for two steps. Marker
 unchanged.
+
+---
+Resolved: `GATE_KINDS` is exported and a new case asserts that the walk's literal and the helper's list name the same kinds. **Deriving the literal from the helper was available and refused, with the reason stated**: the two views would then agree by construction and the case would be deleted rather than protected. Demonstrated: removing `circle-record` from the helper reddens the new case while the token-for-token case stays green, which is the exact blindness this record described and the reason it had already been stale for two steps.

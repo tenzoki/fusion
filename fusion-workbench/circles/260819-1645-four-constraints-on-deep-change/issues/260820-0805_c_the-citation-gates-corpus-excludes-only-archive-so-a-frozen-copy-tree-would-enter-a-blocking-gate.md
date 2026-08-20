@@ -68,3 +68,6 @@ holds — that surface names four such directories. Marker unchanged.
 
 This pass measured the opposite direction of the same defect and filed it separately, because the
 fix is a different clause: `260820-0906_*_the-citation-gates-corpus-has-no-planning-clause-so-an-open-plan-is-a-live-surface-outside-the-gate.md`.
+
+---
+Resolved: `FROZEN_PREFIXES` names `archive/`, `stashes/` and `.migration-v2-backup/`, still tested with an anchored `startsWith` so the fix adds no second unanchored predicate. The precedent list in `skills/log-activity/SKILL.md` was **checked rather than copied**: three of its four transfer, and `stilwerk/` does not — it sits on that list under the activity log's own criterion, holds four fixed-name profiles and no Markdown at all, so no path under it can match a predicate here, and carrying it would have been an exclusion with no reason of this gate's own. Demonstrated with a frozen copy carrying a broken citation: green with the fix, red without it, naming the backup path.

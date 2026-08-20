@@ -47,3 +47,6 @@ reproduces.** `circleDirs()` at `hooks/lib/__tests__/helpers/citation-scan.ts:28
 `<workbench>/circles` and nothing else; it has no archive prefix and no call to `anchoredUnder`,
 which is at `:367`. The latency the record claims also holds: the corpus scan at HEAD reports zero
 violations over 195 files, so nothing is red on this today. Marker unchanged.
+
+---
+Resolved: `circleDirs()` resolves one archive sweep through `ARCHIVE_SWEEP_RE`, the same bound `anchoredUnder()` holds — the user's fix shape 1 from `260819-2213` applied to the sibling function and stated as that at the branch rather than presented as new. It returns a map of name to resolved paths instead of a set, so an archived Circle reports the archive path it actually resolved to rather than a `circles/<dir>` that is not on disk, and a live-plus-archived name collision reads `ambiguous` exactly as the Circle-record form already does. 188 tokens moved from dangling to resolved across the workbench, all inside `archive/`; the blocking gate's verdict is unchanged because it excludes that tree.
