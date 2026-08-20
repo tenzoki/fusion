@@ -21,9 +21,15 @@ thousands.
 across the repository. 91 of them (49 per cent) do not contain the referenced file's current
 filename. The forms found in the wild:
 
-- a **stale exact marker** — `shared/planning/260809-1229_o_plan-five-severe-guard-defects.md`
-  seven times for a file that has been `_c_` since it completed; `…260812-1232_p_…` seven times;
-  `…260807-2024_o_…` five times
+- a **stale exact marker**, three spellings and nineteen occurrences between them. Transcribed
+  below rather than written as live pointers: the spelling is the finding, so a citation
+  corrected to the wildcard form would no longer be the thing found.
+
+  ```
+  shared/planning/260809-1229_o_plan-five-severe-guard-defects.md   7×   (the file has been _c_ since it completed)
+  …260812-1232_p_…                                                 7×
+  …260807-2024_o_…                                                 5×
+  ```
 - the **wildcard marker** `_*_`, which is the mandated form and resolves correctly
 - the **pre-v4 bracket form** `260717-1918[o]`, thirteen occurrences, a marker syntax retired in
   v4
@@ -68,8 +74,10 @@ separating them: 1104 stale markers on records that exist, 322 citations of noth
 stores, 7 missing Circle directories.
 
 **And one question this record did not anticipate, which now blocks the standing-gate decision:
-517 of the 1104 stale markers are in `history/` files.** A session log that wrote
-`260810-0502_o_…` was correct when it was written; the marker moved afterwards. Holding an
+517 of the 1104 stale markers are in `history/` files.** A session log that cited a record by
+the marker it carried that day was correct when it was written; the marker moved afterwards.
+A worked instance stands at `shared/history/260810-0819-reconciliation.md:310`, which lists four
+records by the open marker each carried that day and where at least one has since closed. Holding an
 append-only record to the wildcard-citation rule would demand rewriting history to keep a gate
 green, which is the wrong direction. Either `history/` is out of the standing gate's scope, or
 the rule for it is different from the rule for live text. Deciding that moves the number by 47

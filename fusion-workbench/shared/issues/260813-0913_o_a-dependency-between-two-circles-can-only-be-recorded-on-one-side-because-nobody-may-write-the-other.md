@@ -108,9 +108,11 @@ not carried forward from the record:
   appended activation-proposal, dependency-warning and stale-Grounding sections. `b995049` widened
   this agent into the backlog store and did not touch its Circle-record write set.
 
-**One citation has gone stale and is corrected here rather than in the body.** The closing section
-says `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md`. That record was
-activated on 260813 at 09:33 and is now `_t_circle.md`; it will be `_c_circle.md` after closure.
+**One citation has gone stale and is corrected here rather than in the body.** The closing
+section `## Immediate state, for whoever picks this up` (`:91`) named that Circle's record by the
+`_a_circle.md` name it carried before activation. That record was
+activated on 260813 at 09:33 and was `_t_circle.md` when this was written; it is `_c_circle.md`
+now, and a later pass has since rewritten `:91` to the wildcard form.
 The observation is unaffected — its `## Dependencies` section still names the documentation Circle
 in prose without citing its record
 (`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`), exactly as

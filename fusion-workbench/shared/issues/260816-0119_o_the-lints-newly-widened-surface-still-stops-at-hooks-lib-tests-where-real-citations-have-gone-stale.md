@@ -25,10 +25,13 @@ records that have since moved**, against roughly two dozen that are synthetic fi
 `260716-1910_p_plan-foo`). Two of the six
 are worth naming because they are ordinary rot, not fixtures:
 
-- `hooks/lib/__tests__/surface-growth-bound.test.ts:147` cites
-  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1251_o_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`;
-  that record is `_c_` and was already `_c_` before this session.
-- Citations of `260806-0015_a_zitierform-…` remain, and that record reached `_i_`.
+- `hooks/lib/__tests__/surface-growth-bound.test.ts:147` cites an issue record of the
+  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth` Circle by an `_o_` marker; that
+  record is `_c_` and was already `_c_` before this session. Open the line for the exact citation.
+- `hooks/lib/__tests__/reference-resolution-lint.test.ts:1011` carries a sample citation of the
+  workbench-record citation-form decision
+  (`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`)
+  spelled with an `_a_` marker, and that record reached `_i_`.
 
 ## Why it was not simply included
 
@@ -51,7 +54,7 @@ fabricated ones.
 - `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` — the same gap in the other unscanned corpus
 - `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` — the upstream question about who follows a rename into the citing text
 
-Also seen: 260817-1613 by reconciler — a second live instance in the same file, created by this session's own marker rename: `hooks/lib/__tests__/surface-growth-bound.test.ts:174` cites `circles/260816-1741-guard-becomes-observation-only/issues/260817-1032_o_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`, and that record moved to `_c_` in `dbbad70`. `npm test` is green (35 files, 653 tests) because `surface()` still stops at `hooks/lib/*.ts`, which is exactly the gap this record measures.
+Also seen: 260817-1613 by reconciler — a second live instance in the same file, created by this session's own marker rename: `hooks/lib/__tests__/surface-growth-bound.test.ts:174` cites an issue record of the `circles/260816-1741-guard-becomes-observation-only` Circle by an `_o_` marker, and that record moved to `_c_` in `dbbad70`. Open the line for the exact citation. `npm test` is green (35 files, 653 tests) because `surface()` still stops at `hooks/lib/*.ts`, which is exactly the gap this record measures.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still scans only `hooks/lib/*.ts` and top-level `hooks/*.ts`, and both stale citations the record names are still stale. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.

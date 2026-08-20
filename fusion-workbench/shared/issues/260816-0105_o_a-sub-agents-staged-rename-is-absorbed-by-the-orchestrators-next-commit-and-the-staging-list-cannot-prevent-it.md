@@ -14,8 +14,13 @@ orchestrator's `git add` at all.
 `bin/monitor`, one test file, three issue renames and two history files. Its actual contents
 carry two further renames it never mentions, each showing `| 0` changed lines:
 
-- `260815-1631_o_setups-resume-summary-…` → `_c_…` (from the setup/migrate task)
-- `260815-2328_o_the-net-negative-breakers-…` → `_c_…` (from the breaker-populations task)
+- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1631_*_setups-resume-summary-still-asks-for-diverging-rows-that-no-step-produces.md`,
+  renamed `_o_` → `_c_` (from the setup/migrate task)
+- `shared/issues/260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`,
+  renamed `_o_` → `_c_` (from the breaker-populations task)
+
+Both rename entries are in `git show --stat a19c867`, which is where the old and new filenames
+stand verbatim.
 
 Both belong to this session and both are legitimate closures, so nothing is *wrong* in the tree.
 What is wrong is the attribution: two records closed under a commit message about the monitor,

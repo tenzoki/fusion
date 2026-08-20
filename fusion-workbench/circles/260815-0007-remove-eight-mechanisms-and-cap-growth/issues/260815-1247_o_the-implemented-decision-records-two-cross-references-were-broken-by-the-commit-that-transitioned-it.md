@@ -62,6 +62,6 @@ fix does not settle it.
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged.**
 
-`shared/decisions/260811-2009_i_…:7` still cites `shared/issues/260810-1135_o_…` and `shared/issues/260811-1409_o_…`. Both targets are `_c_` at HEAD. Two literal markers, two dangling citations, same class as `260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed` in this store.
+`shared/decisions/260811-2009_i_…:7` still cites `shared/issues/260810-1135_*_…` and `shared/issues/260811-1409_*_…` with a literal `_o_` in each marker position; open that line for the exact spelling. Both targets are `_c_` at HEAD. Two literal markers, two dangling citations, same class as `260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed` in this store.
 
 The citing record is in `shared/decisions/`, outside this Circle-store pass's write scope, so it is annotated here and not corrected. The fix is the wildcard marker position, `_*_`.

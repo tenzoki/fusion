@@ -9,9 +9,11 @@
 
 ---
 
-This pass renamed `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` to `_c_`,
-which the conventions require once every step carries `[DONE]`. Measured immediately before the
-rename:
+This pass renamed this Circle's plan,
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`,
+from `_o_` to `_c_`, which the conventions require once every step carries `[DONE]`. The old
+filename is spelled out once below, inside the measurement it is the argument to. Measured
+immediately before the rename:
 
 ```
 $ grep -rl '260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth' fusion-workbench/ | wc -l

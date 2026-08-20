@@ -15,15 +15,31 @@ Nine literal `_o_` citations remain in the changed files:
 
 | Record edited by the pass | Citation left literal |
 |---|---|
-| `shared/decisions/260801-1020_i_may-any-fusion-writer-touch-rules.md` | `shared/planning/260801-1122_o_spec-normative-consolidation.md` |
-| `shared/decisions/260809-1731_i_how-should-the-domain-heuristic-count-a-projects-source-files.md` | `circles/260801-1244-guard-rules-write/issues/260805-1830_o_die-domaenenheuristik-…` |
-| `shared/decisions/260810-0921_i_how-should-a-prompt-call-a-bin-helper-…` | `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-…` |
-| `shared/decisions/260810-1635_a_where-does-the-obligation-sit-…` | `shared/issues/260809-2258_o_readme-hooks-says-fourteen-ordering-sites-…` |
-| `shared/decisions/260810-1635_a_where-does-the-obligation-sit-…` | `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-…` |
-| `shared/decisions/260810-2145_a_should-a-repeated-skill-body-snippet-…` | `shared/issues/260810-2110_o_the-domain-capture-one-liner-…` |
-| `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-…` | `shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-…` |
-| `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-…` | `shared/issues/260812-1232_o_the-four-mechanisms-analysis-says-escalation-…` |
-| `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-…` | `shared/decisions/260812-1232_o_does-the-escalation-counter-survive-…` |
+| `shared/decisions/260801-1020_i_may-any-fusion-writer-touch-rules.md` | (1) |
+| `shared/decisions/260809-1731_i_how-should-the-domain-heuristic-count-a-projects-source-files.md` | (2) |
+| `shared/decisions/260810-0921_i_how-should-a-prompt-call-a-bin-helper-…` | (3) |
+| `shared/decisions/260810-1635_a_where-does-the-obligation-sit-…` | (4) |
+| `shared/decisions/260810-1635_a_where-does-the-obligation-sit-…` | (5) |
+| `shared/decisions/260810-2145_a_should-a-repeated-skill-body-snippet-…` | (6) |
+| `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-…` | (7) |
+| `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-…` | (8) |
+| `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-…` | (9) |
+
+The nine citations themselves, transcribed exactly as the edited records spell them. Each is
+quoted here rather than written as a live pointer, because what this record reports **is** the
+spelling: a citation corrected to the wildcard form here would no longer be the thing found.
+
+```
+(1)  shared/planning/260801-1122_o_spec-normative-consolidation.md
+(2)  circles/260801-1244-guard-rules-write/issues/260805-1830_o_die-domaenenheuristik-…
+(3)  shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-…
+(4)  shared/issues/260809-2258_o_readme-hooks-says-fourteen-ordering-sites-…
+(5)  shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-…
+(6)  shared/issues/260810-2110_o_the-domain-capture-one-liner-…
+(7)  shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-…
+(8)  shared/issues/260812-1232_o_the-four-mechanisms-analysis-says-escalation-…
+(9)  shared/decisions/260812-1232_o_does-the-escalation-counter-survive-…
+```
 
 **The two clearest cases are the ones inside one line.** In `260810-1635_a_…` the pass starred `260809-2252_o_` and `260810-0502_o_` and left `260809-2258_o_` and `260810-1632_o_` literal, all four in the same `**Cross-references:**` line, all four pure pointers with no statement about state. In `260810-2145_a_…` it starred `260810-2030_o_` and left `260810-2110_o_` literal, same line, same shape. Neither pair is distinguished by `rules/circle-records.md`'s test ("a pointer loses nothing, a statement loses its content") — both members of each pair are pointers.
 

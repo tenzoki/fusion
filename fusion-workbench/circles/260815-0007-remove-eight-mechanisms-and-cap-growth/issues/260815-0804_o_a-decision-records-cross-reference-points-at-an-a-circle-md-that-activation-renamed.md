@@ -2,9 +2,9 @@
 
 ---
 
-The cleanup-gate decision cites `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_a_circle.md`.
-The Circle was activated in the same range and the record is now `_t_circle.md`, so the citation
-resolves to nothing.
+The cleanup-gate decision cites this Circle's own record at the address named under **Affects:**
+below, by the `_a_circle.md` name it carried before activation. The Circle was activated in the
+same range and the record is now `_t_circle.md`, so the citation resolves to nothing.
 
 ---
 

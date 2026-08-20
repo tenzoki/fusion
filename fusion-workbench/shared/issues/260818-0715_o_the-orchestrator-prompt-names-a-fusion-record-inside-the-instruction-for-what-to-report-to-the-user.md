@@ -71,9 +71,12 @@ none was foreclosed. The three sites are the only occurrences of `260810-1205` i
 each in rationale rather than in an instruction about what to tell a user, which is the criterion
 this record is cut on.
 
-One citation in this record's own `Cross-references:` no longer resolves: it names
-`shared/issues/260817-2131_o_…`, and that record closed this session and is now
-`…260817-2131_c_…`. It is an instance of the class `shared/issues/260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+One citation in this record's own `**Cross-references:**` line (`:62`) no longer resolved when
+this note was written: it named the comment-line gate record,
+`shared/issues/260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`,
+with a literal `_o_` marker, and that record closed this session and is now `_c_`. (A later repair
+pass rewrote `:62` to the wildcard form, so the line reads differently today than it did here.)
+It is an instance of the class `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
 records — re-verified open at HEAD, the lint's `surface()` still walks the shipped tree only — and
 decision `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
 answered that class option 1: nothing new carries the obligation. The body is left unedited on that
