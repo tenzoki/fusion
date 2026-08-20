@@ -92,3 +92,10 @@ to change.
 2. Mode 3's contract has since gained a fourth parameter line (`**Scope:** directive-only | spec`, `agents/shaper.md:51`) whose own text says the run *cannot* decide it from what it holds and the dispatcher must state it. That is option 1's argument, already applied once to this same prompt, one parameter over.
 
 **What this record blocks.** Three open defects in this Circle name it as their closing condition or their carrier: `issues/260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies` (explicitly — "answering that decision is what closes this"), `issues/260814-2022_*_initiated-by-carries-quoted-user-dialogue-and-no-surface-bounds-it-to-one-line`, and `issues/260814-2017_*_the-newest-decision-record-carries-no-answered-implemented-footer-block…`, whose subject is this file. It is the highest-leverage unanswered question in this Circle's store.
+
+---
+Answered: option 1 — `**Initiated by:**` is required on every mode-3 run and the self-test is deleted. Answered by the user 2026-08-20.
+
+The self-test's second half is measured false: two headless probes on Claude Code 2.1.232 showed a top-level `--agent fusion:shaper` run holds no `AskUserQuestion` either, so "if you do not hold it you were dispatched" does not distinguish the two cases. A rule that halts a run on a missing line cannot rest on a test that cannot tell which case it is in.
+
+Requiring the line unconditionally costs one sentence in a prompt and removes the discrimination entirely. What it does not do is make the line trustworthy — an audit line is written by the party being audited, and that residual belongs in the prompt beside the requirement rather than in this record alone.

@@ -76,11 +76,17 @@ decision records, transfer it first — nothing else in the workbench carries it
 
 The `investigator` agent required a project-supplied capture-layout rule, seeded from a
 template and filled in by you. Both the agent and the template are gone, and the file you
-filled in is now loaded by nothing — `analyst`, which inherited the work, draws no
-project-local rule by filename pattern.
+filled in is loaded by nothing under the name it still carries: `analyst` inherited the
+work, and `*investigator*` is not a pattern any agent matches any more.
 
-If the layout it describes is still worth loading into `analyst`, the route is
-`./rules/context-manifest.yaml`, the topic-scoped manifest `bin/fusion-rules` reads:
+**If the layout is short, rename the file** to `./rules/analyst-capture-layout.md`.
+`analyst` matches `*analyst*`, so the renamed file loads on every `analyst` run with
+nothing else to configure. The pattern was added after v9 shipped, so a project upgrading
+straight from v9 gets it only on a plugin new enough to carry this paragraph.
+
+**If the layout is long, or you want it loaded only for some topics**, register it in
+`./rules/context-manifest.yaml` instead, the topic-scoped manifest `bin/fusion-rules`
+reads:
 
 ```yaml
 units:
@@ -89,9 +95,9 @@ units:
     topics: [always]
 ```
 
-The mechanism is authored in `rules/context-manifest.md` in the plugin source. Whether
-`analyst` should instead gain a filename pattern of its own, the way `investigator` had
-one, is an open question in fusion's own decision store and is not settled here.
+The mechanism is authored in `rules/context-manifest.md` in the plugin source. The choice
+between the two routes was settled in fusion's own decision store: both exist, and they
+split by the size of the file rather than by which agent reads it.
 
 ### 5. Check your guard configuration for a hand-set `churn` block
 

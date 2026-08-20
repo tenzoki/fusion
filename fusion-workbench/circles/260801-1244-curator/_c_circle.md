@@ -137,7 +137,7 @@ flowchart LR
   the dispatch roster in `README-agents.md` stopped forbidding a dispatch the mechanism permits,
   the shaper's mode-3 reachability claim in Phase 0b.1 was conditionalised, and the layout tree's
   consumer column was generalised. The fourth was measured unsound rather than closed, and became
-  `decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`;
+  `decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`;
   `41c224c` carried the records. The session then stopped without running Step 3c, so this Turn's
   review and the Phase-3 reconciliation were performed after the resume of 260814-2009. `coderev`
   reviewed `d5b71f1..41c224c`, which took coverage of the whole session range to complete, cleared
@@ -416,7 +416,7 @@ recorded as `decisions/260814-1332_o_*`.
 decisions, none of them blocking. The decisions are
 `decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
 which the curator's own proof run raised, and
-`decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`,
+`decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`,
 which Turn 5 filed rather than closing a finding it had measured unsound. The defect records are they are the ordinary yield of six review passes over a corpus this
 size. Two are worth naming because they concern the instruments rather than the Artifact. The hooks
 suite fails non-deterministically on repeated full runs including on clean HEAD, measured by three

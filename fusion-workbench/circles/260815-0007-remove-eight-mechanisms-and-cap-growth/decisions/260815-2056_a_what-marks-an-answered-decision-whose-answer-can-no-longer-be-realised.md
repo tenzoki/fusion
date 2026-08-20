@@ -139,3 +139,10 @@ Option 2 was not taken: no seventh annotation exists. Option 1 was not taken eit
 **So the input the record asked for now exists and points at option 4.** That is a reading, not a decision, and this pass does not take it: closing a record on the strength of a condition the record itself set is still the user's call, and option 2's argument — that one annotation should answer one question — does not weaken just because the class stayed small.
 
 **One thing that has changed and bears on the choice.** On 2026-08-18 the decision-record head lost its `**Status:**` field, so the filename marker is now the state's only source and the footer block is the only place a transition can be evidenced. That raises the cost of option 4 slightly: a prose note under the footer is now the only thing distinguishing an `_a_` record that is waiting from one that can never move, and there is no longer a head field a reader might have checked instead.
+
+---
+Answered: option 1 — a `Retired:` annotation on `_a_` as well, with the citation naming what removed the *subject* of the answer, and the marker left where it stands. Answered by the user 2026-08-20.
+
+The reason for staying inside the existing family rather than minting a second vocabulary: `_i_` already has exactly this annotation for exactly this shape of event, an implementation that was later deleted. An answer whose subject was deleted before anyone wrote the implementation is the same event one step earlier, and giving it its own word would put two names on one fact — which is the defect class this project has removed repeatedly.
+
+The measurement that made the question answerable came from the Circle-store reconciliation of 2026-08-19 (`shared/history/260819-1400-reconciliation-circles.md`): **there is no third instance.** Two records, one rule, no population to migrate.

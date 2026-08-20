@@ -106,6 +106,14 @@ covers rather than in advance.
    predict what counts as "the same sentence" cannot predict when re-approval is due.
 
 Implemented:
+Retired: `f45f76a` (Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`) — deleted
+`hooks/lib/state-drift.ts`, `hooks/state-drift.ts`, `bin/fusion-state-drift` and
+`hooks/lib/__tests__/state-drift-detection-lint.test.ts`, so the drift lint this pin was to be
+written against no longer exists and neither do the four sentences it screened. The answer stands;
+its subject does not, and the three binding clauses above have nothing left to bind. Marker stays
+`_a_` — the annotation is scoped to `_a_` as well as `_i_` by
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+(option 1, answered by the user 2026-08-20).
 
 ---
 **Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`. `_a_` is correct and is
@@ -160,7 +168,7 @@ pass. This record is not one of them. `Retired:` is defined against a removed *i
 this record's answer was never realised — the record says so itself, in the closing sentence that
 made `_a_` → `_i_` conditional on a pin that `f45f76a` deleted the target of.
 
-The residual is filed as its own question: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+The residual is filed as its own question: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — re-verified;
@@ -182,7 +190,7 @@ is the separate open question `shared/decisions/260816-0711_a_is-count-pinning-t
 which the user has since answered the other way (probe first, pin as fallback). So this record's
 *instance* is dead and its *principle* is live under another record's name.
 
-The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
 is **still `_o_`** at HEAD. This pass re-measured its population across all 21 `_a_` records in
 `shared/decisions/` and found no third instance beyond this record and
 `260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`.

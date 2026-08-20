@@ -311,7 +311,7 @@ Decision records carry a richer state marker that distinguishes "the answer is r
 | Marker | Meaning |
 |--------|---------|
 | `_o_` | Open — the question has been filed but not yet answered. Initial state on creation. |
-| `_a_` | Answered — a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location with `Answered: <path>:<line> — <one-line summary>`. Cite the path as it stands, whether that is inside a Circle or in `shared/`. The decision is not yet realised in code or data. |
+| `_a_` | Answered — a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location with `Answered: <path>:<line> — <one-line summary>`. Cite the path as it stands, whether that is inside a Circle or in `shared/`. The decision is not yet realised in code or data. `_a_` does not assert that realising it is still possible: when the subject was removed before anyone built against it, the body gains a `Retired:` line and the marker does not move. |
 | `_i_` | Implemented — the answer has been realised: code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <path>:<line> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. `_i_` does not assert that the implementation still exists: when it is later removed and no decision overrode it, the body gains a `Retired:` line and the marker does not move, so the marker alone cannot tell a live implementation from a retired one. |
 | `_d_` | Deferred — the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target. |
 | `_s_` | Superseded — a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <path> — <reason>`. |
@@ -429,12 +429,15 @@ Superseded by: <path to new decision> — <reason>
 
 ```
 ---
-Retired: <plan, commit or gate that removed the implementation> — <one-line reason>
+Retired: <plan, commit or gate that removed the subject> — <one-line reason>
 ```
-(**no rename** — the marker stays `_i_`.) For an implementation that was deleted with no later
-decision overriding it; `Superseded by:` stays reserved for that case. Nothing renames, so no
-glob, filter or count changes behaviour — and the filename still reads as implemented, so a
-history pass has to open the body to learn otherwise.
+(**no rename** — the marker stays where it stands.) For a decision whose subject was removed with
+no later decision overriding it; `Superseded by:` stays reserved for that case. It covers `_i_` and
+`_a_` alike, and the marker already says which case a reader is in: on `_i_` the citation names what
+removed the **implementation**; on `_a_`, where there is none, it names what removed the thing the
+answer would have been realised against, so the answer can no longer be realised. Nothing renames,
+so no glob, filter or count changes behaviour — and the filename still reads as implemented or
+answered, so a history pass has to open the body to learn otherwise.
 
 ### When to update
 
@@ -518,7 +521,7 @@ Answered: <set when status moves to _a_>
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
-Retired: <set when the implementation is removed; the marker stays _i_>
+Retired: <set when the subject is removed; the marker stays _i_ or _a_>
 ```
 
 **There is no `Status:` head field, and you do not write one.** It duplicated the marker and

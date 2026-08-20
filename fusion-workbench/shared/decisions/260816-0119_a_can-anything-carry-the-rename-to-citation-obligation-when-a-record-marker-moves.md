@@ -90,7 +90,7 @@ citation of a commit or a path, and a decision to build nothing has neither.
 reconciliation note of 260731-2324 left the identical judgement to the user: promote on
 pre-existing surfaces, or accept that a no-op answer never reaches implementation. Two records in
 `shared/decisions/` now stand in it. It is **not** the class that
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
 asks about — there the ground was removed after the answer; here the answer was never a thing to
 build — and conflating the two would widen that record's question while it is still open.
 

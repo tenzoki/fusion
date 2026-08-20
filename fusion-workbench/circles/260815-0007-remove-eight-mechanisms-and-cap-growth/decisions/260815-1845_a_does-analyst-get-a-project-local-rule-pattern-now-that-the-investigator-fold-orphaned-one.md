@@ -67,3 +67,10 @@ grep -n 'PATTERNS=' bin/fusion-rules
 **The one fact that would settle it is still missing, and the record says what to do about that.** Its recommendation ends: *"If the installed base is likewise zero, this question is moot and should be closed rather than answered."* Inside this repository the number is confirmed zero — `./rules/` has never carried an investigator capture layout. The reachable consuming projects are the same two this project has measured against before (`krk`, `unite-co-creator`), and a single `ls ./rules/investigator-*` on each answers the question outright. That measurement is cheaper than the decision and has not been taken.
 
 Note also that the sibling record `circles/260801-1244-guard-rules-write/issues/260805-2323_*_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md` is open on a measurement against one of those same machines. One visit discharges both.
+
+---
+Answered: option 3 — both. `analyst` gets a `PATTERNS` arm so a small project-local rule loads by filename the way the investigator's did, and the context manifest stays the documented route for anything larger. Answered by the user 2026-08-20.
+
+The reason for not taking option 1 alone: the manifest is a `./rules/context-manifest.yaml` a project must author, validate and keep in step, and requiring it for a single small rule file is disproportionate to what the fold took away. A consuming project that had filled in the investigator's capture layout should not have to build a manifest to get one file loaded again.
+
+The reason for not taking option 2 alone: the manifest is the right answer for a large or topic-scoped corpus and is already documented as such in `docs/upgrading-to-v9.md` §4 and `skills/help/SKILL.md` §5. Removing it would trade one gap for another.

@@ -795,7 +795,26 @@ function scanHeadingAnchors(
 // `hooks/lib/__tests__/workbench-citation-lint.test.ts`, `committed-dist.test.ts`,
 // `helpers/citation-scan.ts` and this file, and `surface()` enters none of them, so none of the
 // four contributes a token here.
-const BASELINE = { paths: 1194, anchors: 157, records: 111 };
+// Re-approved 2026-08-20 — `analyst` gained a `PATTERNS` arm in `bin/fusion-rules`, realising
+// `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md`
+// (option 3, answered by the user 2026-08-20).
+// paths 1194 -> 1195, records 111 -> 112, anchors unchanged. Both tokens are additions to shipped
+// PROSE — the comment block above the new `analyst)` arm — and no scanner, exemption or class
+// changed. Attributed by the same method the note above used: each of the seven files this Turn
+// edited was reverted to HEAD in turn and the gate re-run. Reverting `bin/fusion-rules` ALONE
+// returned it to 1194/157/111, so the whole movement is that one file:
+//   bin/fusion-rules   the arm's comment, which states why the pattern is the bare token
+//                      `analyst` and not also `analysis`, and where the orphaned investigator
+//                      layout is handled instead. 1 path (`docs/upgrading-to-v9.md`), 1 record
+//                      (the decision above).
+// WHAT DID NOT MOVE, and it is worth recording because it looks like it should have: the same
+// Turn added `./rules/analyst-capture-layout.md` to `README-agents.md`'s pattern table and
+// rewrote `docs/upgrading-to-v9.md` §4 and `skills/help/SKILL.md` §5 around it. A `./rules/`
+// path is project-side and enters no class here — exactly as the `./rules/coding-guidelines.md`
+// entries already in that table do not — so six prose edits across those three files and
+// `agents/shaper.md`, `agents/orchestrator.md` and `rules/fusion-workbench-conventions.md`
+// contribute nothing, and each was confirmed individually by the revert measurement.
+const BASELINE = { paths: 1195, anchors: 157, records: 112 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

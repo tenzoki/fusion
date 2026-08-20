@@ -1,7 +1,7 @@
 The newest decision record carries no Answered/Implemented footer block, so its next transition has nowhere to land
 
 ---
-`circles/260801-1244-curator/decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`
+`circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`
 ends after its `## Recommendation` section. The four-line footer block the decision-record template
 mandates — `Answered:`, `Implemented:`, `Deferred:`, `Superseded by:` — is absent. The other three
 decision records in this Circle all carry it.
@@ -34,7 +34,7 @@ was filed by this Circle's Turn 5.
 ---
 **Reconciliation, 2026-08-14 21:53, at HEAD `d90b794` — stands unchanged.**
 
-`circles/260801-1244-curator/decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`
+`circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`
 still ends with the last line of its `## Recommendation` paragraph. No `---` separator and no
 `Answered: / Implemented: / Deferred: / Superseded by:` block. Read at HEAD, not inferred.
 
@@ -47,7 +47,7 @@ the four commits since the record was filed touched either decision file.
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, and one thing about the template has moved since — in the record's favour.**
 
-`grep -c '^Answered:' decisions/260814-1915_o_should-mode-3-require-the-audit-line-…` → **0**; its three siblings at `260814-0738_i`, `260814-0845_i` and `260814-1332_i` each return 1. The file still ends mid-prose with no `---` and no four-line block.
+`grep -c '^Answered:' decisions/260814-1915_*_should-mode-3-require-the-audit-line-…` → **0**; its three siblings at `260814-0738_i`, `260814-0845_i` and `260814-1332_i` each return 1. The file still ends mid-prose with no `---` and no four-line block.
 
 **What changed around it.** On 2026-08-18 the decision-record head lost its `**Status:**` field (`rules/fusion-workbench-conventions.md` `## Decision Record Template`, binding decision `shared/decisions/260818-2212_*`), so the filename marker is now the state's only source — which makes the *footer* the only place a transition can be evidenced. The record's argument is stronger at HEAD than when it was filed: with the head field gone, a record without the footer block has nowhere at all to record how it moved.
 

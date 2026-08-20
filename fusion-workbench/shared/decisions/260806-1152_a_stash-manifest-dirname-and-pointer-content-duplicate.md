@@ -33,6 +33,13 @@ workbench, and the case the manifest exists for is not a healthy one: on a corru
 half-restored workbench their divergence is the diagnosis, and a nine-field schema would have
 discarded it to save a line. No schema change. Record the reason in the manifest schema
 documentation so the next reader does not re-file the duplication as redundancy.
+Retired: `5d29b6d` (Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, step 6) — deleted
+`skills/circle-stash/` and `skills/circle-pop/` and removed the `## Stashes` half of the rule file
+with `rules/workbench-stash-and-lock.md`, so the ten-field manifest whose two fields this answer
+keeps is written by nothing and there is no schema documentation to record the reason in. The
+answer stands; its subject does not. Marker stays `_a_` — the annotation is scoped to `_a_` as well
+as `_i_` by `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+(option 1, answered by the user 2026-08-20).
 
 ---
 
@@ -73,7 +80,7 @@ built is a citation a reader cannot resolve, and an annotation covering both cas
 questions, which is the ground option 2 was declined on there.
 
 The residual is filed as its own question rather than settled by stretching the annotation:
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — re-verified;
@@ -86,7 +93,7 @@ dangle. The answer — keep both fields, no schema change, record the reason in 
 documentation — has no surface left to land on, so `_a_` → `_i_` is unreachable by construction and
 not by anyone's omission.
 
-The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
 is **still `_o_`** at HEAD, four days after it was filed. Its recommendation is option 2 (a
 `Realisation-removed:` annotation, no rename) at low-to-moderate confidence, and its own
 `speculation:` paragraph proposes that if no third instance appears, option 4 — close it, leave the

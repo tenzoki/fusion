@@ -165,7 +165,21 @@ case "$AGENT" in
   coder|coderev|bugfixer)        PATTERNS="coding" ;;
   ontocoder|ontorev)              PATTERNS="ontology normative verb" ;;
   planner)                        PATTERNS="coding ontology" ;;
-  orchestrator|shaper|taskplanner|reconciler|analyst|consultant|playmaker|editor|curator)
+  # `analyst` carries its own pattern so a SMALL project-local rule reaches it by
+  # filename, the way ./rules/investigator-*.md reached the investigator before
+  # step 8 of Circle 260815-0007 folded that agent in here. Deliberately the one
+  # bare token `analyst` and not also `analysis`: `*analysis*.md` would sweep up a
+  # project's own gap-analysis or impact-analysis documents, which are subject
+  # matter rather than agent configuration. The context manifest stays the
+  # documented route for anything larger or topic-scoped, so the two routes split
+  # by SIZE and the manifest is not duplicated here. An orphaned
+  # ./rules/investigator-capture-layout.md does NOT match this pattern and is not
+  # meant to: docs/upgrading-to-v9.md §4 tells such a project to rename it or
+  # register it in the manifest. Decision
+  # circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md,
+  # option 3 (both), answered by the user 2026-08-20.
+  analyst)                        PATTERNS="analyst" ;;
+  orchestrator|shaper|taskplanner|reconciler|consultant|playmaker|editor|curator)
                                   PATTERNS="" ;;
   *)
     echo "fusion-rules: unknown agent '$AGENT'" >&2

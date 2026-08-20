@@ -346,8 +346,9 @@ content:
 ```
 
 The first two are the shaper's own detection contract; the third names which of the two occasions
-this is; the fourth is the audit trail this permission rests on, and a dispatched shaper **halts**
-without it.
+this is; the fourth is the audit trail this permission rests on, and the shaper **halts**
+without it on any mode-3 run, dispatched or top-level. Pass it always; there is no case in which
+your dispatch is the exempt one.
 
 **`**Scope:**` is a fork you can settle and the shaper cannot.** `directive-only` refines the
 Directive and writes the refined prose into the record — no spec, and `**Active spec/plan:**` left
