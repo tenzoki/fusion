@@ -94,3 +94,10 @@ The three candidate resolutions all remain open. None was taken this session.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md:159-165` still guards all four stylometric-profile copies with an existence test and leaves existing files untouched. None of the three candidate resolutions (detect and refresh, document in README, accept and close) was taken. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Resolved 260821-0020** (coder, plan step 3 of `circles/260820-2051-style-rules-arrive-and-get-measured`). The residual this record tracked is closed, by a fourth resolution rather than by one of the three candidates. `/fusion:setup` Step 0d still copies only when the file is absent — the guarded-copy semantics this record warned must not be silently inverted are untouched — and now stamps what it copied into `fusion-workbench/.asset-provenance`. The new Step 0e compares each profile against the shipped copy and offers a replace, so an existing consumer is told and asked rather than left with a stale file. Candidate 1's `grep` for one filename is not needed: the comparison is over the whole file and covers every future wording change, not the `default-voice-*.yaml` reference alone. Candidate 3 is refused for the same reason.
+
+What made it decidable is the third input this record did not have. "Stale copy or project edit" is one difference with two causes, so the recorded checksum decides it: unedited and shipped moved is offered, edited and shipped did not move is silent, both moved is named as a conflict and never auto-replaced, and no recorded checksum is named as unclassifiable rather than guessed. Declining stamps the shipped checksum, so the question is asked once and not on every run.
+
+Note for a later reader: the `skills/setup/SKILL.md` line numbers quoted above and in the two reconciliations no longer resolve — Step 0e was inserted above them.

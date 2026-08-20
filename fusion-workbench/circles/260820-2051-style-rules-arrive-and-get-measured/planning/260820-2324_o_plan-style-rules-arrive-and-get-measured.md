@@ -196,7 +196,7 @@ and no step performs it.
   4. Nothing in the document proposes or designs a gate.
 - **Dependencies:** step 1
 
-### 3. Setup stamps what it copies, and offers a refresh when the plugin has moved
+### 3. [DONE] Setup stamps what it copies, and offers a refresh when the plugin has moved
 
 - **Executor:** coder
 - **Files:** `skills/setup/SKILL.md` (new Step 0e, plus a stamping clause in Step 0d),

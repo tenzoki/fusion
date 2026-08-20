@@ -848,7 +848,33 @@ function scanHeadingAnchors(
 // `bin/fusion-review-coverage`, `rules/user-facing-output.md`,
 // `hooks/lib/__tests__/helpers/citation-scan.ts`, `hooks/dist/`, `__tests__/helpers/`, `bin/`), the
 // row those same four cited files plus its own `bin/…` key, and 1 record, the ceiling decision.
-const BASELINE = { paths: 1235, anchors: 160, records: 113 };
+// Re-approved 2026-08-21 — `/fusion:setup` gained Step 0e, the copied-asset comparison, and Step 0d
+// gained the stamp it reads (step 3 of `circles/260820-2051-style-rules-arrive-and-get-measured`).
+// paths 1235 -> 1244, anchors 160 -> 161, records 113 -> 115. Every token is an addition to shipped
+// PROSE or to a shipped shell block, and no scanner, exemption or class changed. Attributed by
+// restoring each of the four edited files to HEAD in turn and re-running this gate; the four
+// contributions are independent and sum exactly, and `rules/fusion-workbench-conventions.md` and
+// `rules/workbench-tracking.md` each contribute ZERO in every class, which is why they are named
+// here rather than left out:
+//   skills/setup/SKILL.md   +8 paths, +1 anchor, +1 record. Four of the paths are the bare
+//                           `stilwerk/<profile>.yaml` operands of Step 0e's classification loop;
+//                           Step 0d's own loop supplies four more of the same spelling and gives
+//                           four back, because the four `$FUSION_PLUGIN_ROOT/stilwerk/…` operands
+//                           it used to carry became `$FUSION_PLUGIN_ROOT/$rel` and stop resolving —
+//                           a net wash there, and the reason the loop's contribution is +4 and not
+//                           +8. The other four paths are Step 0e's prose: `bin/fusion-source-root`,
+//                           `install.sh`, `rules/user-facing-output.md` and
+//                           `rules/fusion-workbench-conventions.md`, the last carrying the anchor
+//                           `## Project language`. The record is the distribution defect the step
+//                           closes, `shared/issues/260807-2154_*_corrected-sibling-wording…`.
+//   CLAUDE.md               +1 path, +1 record. The `bin/fusion-source-root` row now states why the
+//                           comparison reads the work tree — `install.sh` reads a GitHub tarball —
+//                           and cites the decision that scoped the exception to that comparison.
+// WHAT DID NOT MOVE: the two rule files. `rules/fusion-workbench-conventions.md` gained the
+// `.asset-provenance` tree line and a paragraph, and `rules/workbench-tracking.md` gained the same
+// entry on the record side of its split; neither text names a plugin path, a heading or a record,
+// and `fusion-workbench/…` is not a plugin-tree spelling. Confirmed individually by the same revert.
+const BASELINE = { paths: 1244, anchors: 161, records: 115 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
