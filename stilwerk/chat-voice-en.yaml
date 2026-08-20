@@ -37,10 +37,11 @@ whitelist:
   - id: C04
     name: "Terse without sentence-length targets"
     instruction: |
-      Keep it short: gate prompts up to 6 lines, chat replies up to 8 lines.
-      Do not enforce sentence-length bands; short sentences are normal and
-      welcome in chat. Details go to the end or to a file, not the opening
-      lines.
+      Keep it short. The line caps for a gate prompt and for a chat reply are
+      stated in rules/user-facing-output.md, section "## Length", and are not
+      restated here. Do not enforce sentence-length bands; short sentences are
+      normal and welcome in chat. Details go to the end or to a file, not the
+      opening lines.
 
   - id: C05
     name: "Sketch structure instead of narrating it"

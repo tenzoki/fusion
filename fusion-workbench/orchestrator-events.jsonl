@@ -1838,3 +1838,6 @@
 {"ts":"2026-08-20T21:59:41","event":"task_start","turn":1,"task":"P-3","agent":"coder","detail":"Setup stamps copied assets and offers a refresh"}
 {"ts":"2026-08-20T22:26:12","event":"task_done","turn":1,"task":"P-3","agent":"coder","detail":"dc78da2 setup stamps assets and offers refresh; npm test exit 0; skills/ head-room 1595, hook tests 82"}
 {"ts":"2026-08-20T22:26:12","event":"commit","turn":1,"task":"P-3","detail":"dc78da2"}
+{"ts":"2026-08-20T22:42:44","event":"task_done","turn":1,"task":"P-4","agent":"coder","detail":"1c1178d fallback on stderr; stdout golden untouched; record left open, half-closed only"}
+{"ts":"2026-08-20T22:42:44","event":"commit","turn":1,"task":"P-4","detail":"1c1178d"}
+{"ts":"2026-08-20T22:42:44","event":"gate_hit","turn":1,"task":"P-5","detail":"ontocoder task; user away; gate treated as covered by the Directive the user activated, recorded rather than skipped"}

@@ -45,3 +45,30 @@ The German dropped *"or to a file"* and *"not the opening lines"*, and added *"K
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All three parts persist: `rules/user-facing-output.md` states 8 and 12 lines while both shipped chat profiles state 6 and 8, with no precedence stated anywhere; the German C04 block is still missing the mirrored clause and still carries the extra one; and the trailing whitespace is still there. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: All three parts, in the shipped profiles, under user decision 5 of
+`circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md` (the conflict resolves in
+favour of the rule, at 8 and 12) and plan step 5 of
+`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`.
+
+Part 1: the C04 entry of both chat profiles no longer states a number for either surface. Each now
+names `rules/user-facing-output.md` `## Length` as where the two caps are stated and says they are
+not restated locally. One number, one surface, and the design intent the rule's own line 19 records
+holds again.
+
+Part 2: the German C04 regained the two clauses it had dropped, "or to a file" and "not the opening
+lines", and lost "Klare Formulierungen, kein Jargon", which had no English counterpart and duplicated
+the rule's `## Vocabulary` section and point 4 of its readability gate. Removed rather than mirrored
+into the English file, per the plan step. A clause-by-clause comparison of the two files is recorded
+in `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0049-ontocoder-chat-profiles-stop-restating-the-caps.md`.
+
+Part 3: the trailing space on the German `kein Jargon. ` line is gone with the clause, and
+`grep -n '[[:space:]]$'` now finds nothing in either file.
+
+**What this note does not claim.** The change is in the plugin's source copies. The workbench copies
+every agent actually loads still carry the old text, deliberately: they are refreshed by the
+mechanism built in step 3 of the same plan rather than by hand, at step 8. That divergence is the
+separate defect
+`shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
+and this record was never about it — its own verification grep read `rules/` and `stilwerk/` only.

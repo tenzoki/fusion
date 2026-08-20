@@ -265,7 +265,7 @@ and no step performs it.
 - **Dependencies:** none
 - **Closes:** `circles/260801-1244-curator/issues/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`
 
-### 5. The chat profiles stop restating what the rule owns
+### 5. [DONE] The chat profiles stop restating what the rule owns
 
 - **Executor:** ontocoder
 - **Files:** `stilwerk/chat-voice-de.yaml`, `stilwerk/chat-voice-en.yaml`

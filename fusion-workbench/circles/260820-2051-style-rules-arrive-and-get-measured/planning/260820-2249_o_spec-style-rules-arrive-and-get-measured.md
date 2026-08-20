@@ -504,7 +504,7 @@ one is the decision that this Circle advances rather than closes.
 | `shared/issues/260816-1345_o_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md` | RC1 | C6 | Plus the inverted `workbench-tracking` claim found today. |
 | `shared/issues/260814-1419_o_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` | RC1 | C1, C2 | Its option 2 as a test is not affordable; C1 is the same mechanism as a Setup step. |
 | `shared/issues/260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` | RC1 | C1 | Its candidate 1 is a narrower version of what C1 does generally. |
-| `shared/issues/260814-1419_o_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` | RC1 | C2 | All three parts: the number, the de/en divergence, the trailing space. |
+| `shared/issues/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` | RC1 | C2 | All three parts: the number, the de/en divergence, the trailing space. |
 | `shared/issues/260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` | RC1 | C6 | Appended note on the run file, not a rewrite. |
 | `shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` | RC1 | C9 | Its item 2 lands unconditionally; item 1 is question 3 below. |
 | `circles/260801-1244-curator/issues/260814-1332_o_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` | RC1 | C8 | About 800 bytes against 2 259 of head-room. |
