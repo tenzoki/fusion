@@ -45,3 +45,21 @@ the count is what will go stale again on the sibling's next re-approval.
 reproduces.** `hooks/lib/__tests__/workbench-citation-lint.test.ts:34` still reads "re-approved four
 times"; `grep -c 're-approved' hooks/lib/__tests__/reference-resolution-lint.test.ts` returns **14**.
 Marker unchanged.
+
+---
+Resolved: the count was dropped and the property kept, which is the second of the two fix
+directions.
+
+Recounted first, in the working tree at Circle Turn 2 rather than taken from either earlier report:
+`grep -c '^// Re-approved' hooks/lib/__tests__/reference-resolution-lint.test.ts` returns **14**, and
+reading all 20 case-insensitive matches confirms the other 6 are prose inside those notes and in the
+baseline failure message rather than note headers. So the record's figure reproduces and the design
+comment's "four" was wrong by ten.
+
+The sentence at `hooks/lib/__tests__/workbench-citation-lint.test.ts` now reads that the sibling gate
+pins the count of what it resolved and that the pin is a number somebody re-approves, with no figure
+attached, and a following sentence says why no figure is stated: it measures the neighbouring file,
+it moves whenever that file's pin moves, and the argument needs the property rather than the number.
+That reasoning was load-bearing in this very Turn — the shipped-text edits made for the sibling
+record above moved the sibling's own pin, so a stated count would have gone stale inside the same
+commit that corrected it.

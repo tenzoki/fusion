@@ -10,10 +10,11 @@
 
 ## Question
 
-Ein Shaper legte in einem konsumierenden Projekt einen Wegwerf-Circle an
-(`260802-2220-throwaway-plane-bridge-smoke-test`), dessen vorgesehener Endzustand die
-eigene Löschung war: Plane-Issues löschen, Map-Einträge vergessen, Circle-Verzeichnis
-entfernen — als nummerierte Abnahmebedingung 9 im Record festgehalten. Der Record trug
+Ein Shaper legte in einem konsumierenden Projekt einen Wegwerf-Circle an.
+Deliberately deleted 260805: Circle `260802-2220`, `throwaway-plane-bridge-smoke-test`.
+Sein vorgesehener Endzustand war die eigene Löschung: Plane-Issues löschen, Map-Einträge
+vergessen, Circle-Verzeichnis entfernen — als nummerierte Abnahmebedingung 9 im Record
+festgehalten. Der Record trug
 zusätzlich zwei Anweisungen an spätere Läufe: ein Playmaker solle ihn nicht zur
 Aktivierung ranken, und ein Reconciler solle sein Fehlen nicht als verwaisten Zustand
 lesen.

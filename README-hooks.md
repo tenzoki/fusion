@@ -359,6 +359,20 @@ cd hooks && npm install && npm test
 - `hooks/lib/__tests__/helpers/guard-harness.ts` `TEST_DIST` — the cases that spawn or copy a compiled artifact read the run's private build, not the shared one.
 - `hooks/vitest.config.mjs` — one run uses half the machine's cores rather than all of them. Measured: at one worker per core, three concurrent runs failed 5 of 9 times on fork/exec starvation; at half, 9 of 9 were green, and a single run costs nothing measurable.
 
+### Three gates that can fail the suite over text nobody compiled
+
+`npm test` blocks on three cases that are not about the code under them. Each is documented in full at its own source; the table exists so a reader meets them before a red run rather than during one.
+
+| Gate | Goes red when | What the failure names |
+|---|---|---|
+| `hooks/lib/__tests__/committed-dist.test.ts` | the committed `hooks/dist/` is not the compilation of the committed source, or the installed TypeScript is not the exact version `hooks/package.json` pins | which of the two it is. A wrong compiler is reported as a toolchain mismatch and explicitly not as an artifact defect, so the remedy is the install and not a rebuild; a stale artifact names the differing files and the `npm run build` that repairs them. |
+| `hooks/lib/__tests__/workbench-citation-lint.test.ts` | a live workbench record carries a citation that resolves to nothing. The corpus is the Circle records, `portfolio.md`, the open issues and the live decisions. | the record, the line, the token, and the two remedies its message carries: correct the path, or restate the token as a statement rather than a pointer. |
+| `hooks/lib/__tests__/plan-stopping-section-lint.test.ts` | a live plan carries no `## Where this Circle stops`, an empty one, or nothing but the shipped angle-bracket placeholder | the plan, which of the three failures it is, and what to write in the section. It judges presence only, never whether a stopping condition is the right one. |
+
+**The middle one is the one that surprises**, and the surprise was accepted rather than mitigated. Its corpus is recomputed from the tree on every run and it carries no approvable baseline, so there is nothing an author can edit to make it green except the citation itself. The cost is that an archive sweep, or a newly filed record carrying a bad citation, turns the suite red for somebody who touched no citation and no code. That is the gate working. The governing record is `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
+
+The four growth bounds in the next section are blocking in the same way, and are documented there.
+
 ### Growth bounds on the shipped text
 
 Four surfaces of this plugin have a **failing** bound on how much they may grow, and the suite goes red when one of them spends its head-room. This is a bound on the *rate of addition*, not on size: a shrink never trips it, and each surface's head-room was derived from that surface's own replayed `git` history rather than picked.
@@ -390,6 +404,8 @@ cd hooks && npm install && npm run build
 ```
 
 The compiled `hooks/dist/` directory is committed to the repo and ships with the plugin, so it has to match the sources exactly — a deleted source whose compiled output stays behind is tracked in git, copied into `~/.fusion` by the installer, and readable there as a module the plugin no longer has. That happened once already, with the four files of the retired Bash classifier.
+
+**That obligation is now a blocking gate.** `hooks/lib/__tests__/committed-dist.test.ts` extracts the committed source at `HEAD`, compiles it with the pinned compiler, and fails the suite when the result differs from the committed `hooks/dist/` — printing the differing files and the `npm run build` above as the remedy. See the gate table under `### Three gates that can fail the suite over text nobody compiled`.
 
 `build` keeps that promise without deleting anything: it compiles to a staging directory, replaces each changed file in `dist/` atomically, and removes any output whose `.ts` source is no longer in the tree. The result is byte-identical to a wipe-and-rebuild, and `npm run build:clean` is still there (`rm -rf dist && tsc`) for the rare case where you want the wipe itself. `npm test` runs `build`, so a normal test run keeps `hooks/dist/` current exactly as it used to.
 

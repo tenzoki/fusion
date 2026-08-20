@@ -39,7 +39,17 @@ import { fileURLToPath } from "node:url";
 // only free variable, and the answering decision names it as the thing that
 // would redden the suite for no defect. So the first case asserts the toolchain
 // IS the pinned one and says, on failure, that this is not an artifact defect.
-// Only then do the second and third cases compile HEAD and compare.
+//
+// The three cases are a CHAIN, and the order below is the order of the
+// preconditions, not of the work: the extraction and the compile both happen in
+// `beforeAll`, before any case runs. What the later cases do is assert, in
+// order, the conditions under which their own subject is evaluable at all —
+// toolchain, then extraction, then compile. Each precondition is a `beforeAll`
+// FIELD, and a case that meets one names THAT and nothing else. The toolchain
+// field was the one missing: without it a wrong compiler reddened the artifact
+// case, whose remedy is `npm run build`, and following it committed a `dist`
+// built by the unpinned compiler — a worse tree than the one it repaired
+// (`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-artifact-case-of-the-dist-gate-carries-no-toolchain-guard-so-a-mismatch-reddens-it-with-the-wrong-remedy.md`).
 //
 // What carries the pin is `package.json` `devDependencies.typescript`, which is
 // an EXACT version and is committed. `package-lock.json` is gitignored here, so
@@ -78,7 +88,55 @@ function walk(dir: string, base = dir, out: string[] = []): string[] {
   return out.sort();
 }
 
+/** The three versions of `typescript` that have to agree, as sentences. */
+interface Toolchain {
+  declared: string;
+  locked: string;
+  installed: string;
+}
+
+/**
+ * Each leg reports a SENTENCE when its file is absent rather than throwing: an
+ * ENOENT stack out of a readFileSync says the same thing far worse, and
+ * `hooks/package-lock.json` is gitignored, so a fresh clone legitimately has
+ * none until somebody installs.
+ */
+function readToolchain(): Toolchain {
+  const lockPath = join(HOOKS_DIR, "package-lock.json");
+  const installedPath = join(HOOKS_DIR, "node_modules", "typescript", "package.json");
+  return {
+    declared:
+      JSON.parse(readFileSync(join(HOOKS_DIR, "package.json"), "utf8")).devDependencies
+        ?.typescript ?? "no devDependencies.typescript in hooks/package.json",
+    locked: existsSync(lockPath)
+      ? (JSON.parse(readFileSync(lockPath, "utf8")).packages?.["node_modules/typescript"]?.version ??
+        "package-lock.json records no node_modules/typescript")
+      : "no hooks/package-lock.json (it is gitignored — install in hooks/ to produce one)",
+    installed: existsSync(installedPath)
+      ? JSON.parse(readFileSync(installedPath, "utf8")).version
+      : "typescript is not installed in hooks/node_modules",
+  };
+}
+
+/** The disagreement as one sentence, or null when the three agree. */
+function toolchainDisagreement(t: Toolchain): string | null {
+  if (t.locked === t.declared && t.installed === t.declared) return null;
+  return (
+    `the toolchain is not the pinned one: hooks/package.json declares ${t.declared}, ` +
+    `hooks/package-lock.json says ${t.locked}, and hooks/node_modules carries ${t.installed}.`
+  );
+}
+
 interface Prepared {
+  /** The three `typescript` versions, read once and asserted by the first case. */
+  toolchain: Toolchain;
+  /**
+   * Non-null when they disagree. It is a precondition of BOTH later cases, not
+   * only of the first one's assertion: `tsc` output is a function of the
+   * compiler version, so under a different compiler neither "the source
+   * compiles" nor "the artifact matches" says anything about the repository.
+   */
+  toolchainFailure: string | null;
   /** Non-null when the tree could not be obtained at all. Loud, not skipped. */
   gitFailure: string | null;
   /** Non-null when the extracted source does not compile; carries tsc's output. */
@@ -91,6 +149,8 @@ interface Prepared {
 
 let tmpRoot: string | null = null;
 const prepared: Prepared = {
+  toolchain: { declared: "", locked: "", installed: "" },
+  toolchainFailure: null,
   gitFailure: null,
   compileFailure: null,
   outDir: "",
@@ -98,6 +158,11 @@ const prepared: Prepared = {
 };
 
 beforeAll(() => {
+  // First, and before any early return: the toolchain is the precondition of
+  // everything below it, and a `gitFailure` must not leave it unread.
+  prepared.toolchain = readToolchain();
+  prepared.toolchainFailure = toolchainDisagreement(prepared.toolchain);
+
   const head = spawnSync("git", ["rev-parse", "HEAD"], {
     cwd: REPO_ROOT,
     encoding: "utf8",
@@ -173,26 +238,29 @@ afterAll(() => {
   if (tmpRoot !== null) rmSync(tmpRoot, { recursive: true, force: true });
 });
 
+/**
+ * What a later case says when it meets a toolchain mismatch. It names the
+ * toolchain and nothing else: the two failures stay separately named, so a
+ * reader of a red suite is never told that a compiler bump is an artifact
+ * defect. It prescribes no rebuild for the same reason — acting on the artifact
+ * case's `npm run build` under an unpinned compiler commits a `dist` built by
+ * that compiler.
+ */
+function notEvaluable(subject: string): string {
+  return (
+    `${prepared.toolchainFailure ?? ""}\n` +
+    `${subject} is not evaluable until the toolchain is the pinned one, because tsc output is ` +
+    `a function of the compiler version. This is NOT an artifact defect and NOT a source defect; ` +
+    `nothing was concluded about hooks/dist.\n` +
+    "FIX: resolve the toolchain case above (`npm ci` in hooks/), then run the suite again. Do " +
+    "NOT run `npm run build` on this failure — that commits a hooks/dist built by the unpinned " +
+    "compiler, which is worse than the state it was meant to repair."
+  );
+}
+
 describe("the committed hooks/dist is the compilation of the committed source", () => {
   it("compiles with the pinned toolchain — declared, locked and installed agree", () => {
-    // Each leg reports a SENTENCE when its file is absent rather than throwing:
-    // an ENOENT stack out of a readFileSync says the same thing far worse, and
-    // `hooks/package-lock.json` is gitignored, so a fresh clone legitimately
-    // has none until somebody installs.
-    const lockPath = join(HOOKS_DIR, "package-lock.json");
-    const installedPath = join(HOOKS_DIR, "node_modules", "typescript", "package.json");
-
-    const declared: string =
-      JSON.parse(readFileSync(join(HOOKS_DIR, "package.json"), "utf8")).devDependencies
-        ?.typescript ?? "no devDependencies.typescript in hooks/package.json";
-    const locked: string = existsSync(lockPath)
-      ? (JSON.parse(readFileSync(lockPath, "utf8")).packages?.["node_modules/typescript"]?.version ??
-        "package-lock.json records no node_modules/typescript")
-      : "no hooks/package-lock.json (it is gitignored — install in hooks/ to produce one)";
-    const installed: string = existsSync(installedPath)
-      ? JSON.parse(readFileSync(installedPath, "utf8")).version
-      : "typescript is not installed in hooks/node_modules";
-
+    const { declared, locked, installed } = prepared.toolchain;
     expect(
       { declared, locked, installed },
       "the toolchain is not the pinned one.\n" +
@@ -207,6 +275,10 @@ describe("the committed hooks/dist is the compilation of the committed source", 
   });
 
   it("compiles at HEAD — the committed source builds without touching the shared tree", () => {
+    expect(
+      prepared.toolchainFailure,
+      notEvaluable("whether the committed source compiles"),
+    ).toBeNull();
     expect(prepared.gitFailure, prepared.gitFailure ?? "").toBeNull();
     expect(
       prepared.compileFailure,
@@ -215,6 +287,10 @@ describe("the committed hooks/dist is the compilation of the committed source", 
   });
 
   it("matches, file for file and byte for byte, the committed hooks/dist", () => {
+    expect(
+      prepared.toolchainFailure,
+      notEvaluable("the comparison against the committed hooks/dist"),
+    ).toBeNull();
     expect(prepared.gitFailure, prepared.gitFailure ?? "").toBeNull();
     expect(prepared.compileFailure, "the committed source did not compile; see the case above")
       .toBeNull();

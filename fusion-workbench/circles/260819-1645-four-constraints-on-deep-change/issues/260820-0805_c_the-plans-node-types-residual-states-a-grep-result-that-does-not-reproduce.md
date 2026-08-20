@@ -51,3 +51,24 @@ reproduces, and the counter-measurement in the review does not reproduce either.
 over the 36 emitted files finds no `node:` reference is false on any of the three counts, and the
 conclusion it supports — that `@types/node` does not reach the emit — is unaffected. Whoever takes
 this record should re-measure rather than copy either figure. Marker unchanged.
+
+---
+Resolved: measured independently, and the figure written into the plan is this pass's own.
+
+`git grep -o 'node:' b91c01c -- hooks/dist | wc -l` returns **18**; `git grep -c 'node:' b91c01c --
+hooks/dist` names **11 files** and its per-file line counts sum to 18, so the occurrences and the
+matching lines are the same 18. The 11 are `config.js`, `events.js`, `git.js`, `guard-state-file.js`,
+`review-coverage.js`, `self-detect.js`, `staging-drift.js`, `state-file.js`, `workbench-root.js`,
+`session-start.js` and `tracker.js`, out of 36 files in `hooks/dist`. Reading every matching line
+shows all 18 are `import … from "node:fs"`, `"node:path"` or `"node:child_process"` in an emitted
+`.js`. So the reconciliation's 18-across-11 reproduces and the review's 17-across-10 does not, and
+the plan now carries 18 across 11 as measured here rather than either quoted figure.
+
+The other half of the claim does reproduce: `git grep -c 'import(' b91c01c -- hooks/dist` returns
+nothing, so none of the 18 emitted `.d.ts` files carries an `import(` type. `git diff --stat
+b91c01c 8e7cae7 -- hooks/dist` is empty, so every figure holds at HEAD.
+
+Both places the record names were corrected: the `## Current State` paragraph, by an appended
+`Corrected 260820` block, and the `## Risks & Mitigations` row, whose `inference:` clause now claims
+only the `import(` half and carries a parenthetical saying the `node:` half was false when written
+and why the row's conclusion survives it.

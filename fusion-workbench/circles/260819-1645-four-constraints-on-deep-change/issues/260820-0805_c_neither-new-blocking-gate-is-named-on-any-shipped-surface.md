@@ -53,3 +53,28 @@ edit" and whose cause column names the gate, the corpus and the two remedies its
 reproduces.** `grep -rln 'committed-dist\|workbench-citation-lint' README.md README-hooks.md
 CLAUDE.md docs/` returns nothing. Two gates that can redden `npm test` for somebody who touched no
 code and no citation are named on no surface a reader would reach first. Marker unchanged.
+
+---
+Resolved: both surfaces gained the text, and the count in the title moved from two gates to three
+— `plan-stopping-section-lint.test.ts` was armed in this same Turn and is named alongside the other
+two rather than left to be found later.
+
+`README-hooks.md` gained a section, `### Three gates that can fail the suite over text nobody
+compiled`, placed between `### Running tests` and `### Growth bounds on the shipped text`. It is a
+three-row table naming each gate, what reddens it and what its failure prints, followed by the
+paragraph the record asked for: the citation gate recomputes its corpus every run and carries no
+approvable baseline, so an archive sweep or a newly filed record turns the suite red for somebody
+who touched nothing, and that cost was accepted rather than mitigated. The section closes by
+pointing at the growth bounds as blocking in the same way.
+
+`### Rebuilding after TS changes` gained the clause the fix direction asked for: the obligation the
+section already stated in prose is now a blocking gate, and the paragraph names the gate, what it
+compares and the `npm run build` its failure prints.
+
+`CLAUDE.md` `## Where to look when something breaks` gained one row, whose symptom column is
+"`npm test` goes red on a citation, a plan or a compiled file I did not edit" and whose cause column
+names all three gates, the citation gate's corpus and the two remedies its message carries, the
+stopping-section gate's three failures and its presence-only bound, and the dist gate's two
+separate cases with their two different remedies.
+
+Neither file is inside any bounded growth surface, so the addition cost no budget.

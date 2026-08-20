@@ -9,6 +9,7 @@ import {
   scanRecordCitations,
   workbenchIndex,
   circleDirs,
+  GATE_KINDS,
   RECORD_EXAMPLE_FILES,
   scanCitationTokens,
   partition,
@@ -768,7 +769,33 @@ function scanHeadingAnchors(
 // `hooks/` and `hooks/lib/` file by file and never enters `__tests__`, so the dozen record
 // citations in that file's header are read by no class here — which is also why the second
 // caller cannot pin its own corpus through this baseline.
-const BASELINE = { paths: 1180, anchors: 156, records: 109 };
+// Re-approved 2026-08-20 — the three blocking gates get named on the two surfaces a reader
+// reaches before a red run, closing
+// `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_neither-new-blocking-gate-is-named-on-any-shipped-surface.md`.
+// The record was filed against two gates; a third, `plan-stopping-section-lint.test.ts`, was
+// armed in the same Turn and is named alongside them.
+// paths 1180 -> 1194, anchors 156 -> 157, records 109 -> 111. Every token is an addition to
+// shipped PROSE — no scanner, no exemption and no class changed — so the movement is
+// attributable file by file, and it was measured by reverting the three files to HEAD, running
+// this gate green at the old numbers, and restoring them:
+//   README-hooks.md    `### Three gates that can fail the suite over text nobody compiled`,
+//                      a new section between `### Running tests` and the growth bounds, plus a
+//                      clause in `### Rebuilding after TS changes` naming the dist gate.
+//                      7 paths, 1 record.
+//   CLAUDE.md          one row in `## Where to look when something breaks`, whose symptom is a
+//                      red run over a citation, a plan or a compiled file the reader did not
+//                      edit. 6 paths, 1 anchor, 1 record.
+//   agents/planner.md  the stopping-section paragraph, which said "nothing reads it
+//                      mechanically" and was made false by the new gate. 1 path.
+// The 14 paths are `hooks/dist/` x3, `committed-dist.test.ts` x3,
+// `plan-stopping-section-lint.test.ts` x3, `workbench-citation-lint.test.ts` x2,
+// `hooks/package.json` x2 and `README-hooks.md` x1; the anchor is CLAUDE.md's pointer into that
+// new README section; the two records are the corpus decision, cited once on each surface.
+// WHAT DID NOT MOVE, and it is the same fact the note above records: this Turn also edited
+// `hooks/lib/__tests__/workbench-citation-lint.test.ts`, `committed-dist.test.ts`,
+// `helpers/citation-scan.ts` and this file, and `surface()` enters none of them, so none of the
+// four contributes a token here.
+const BASELINE = { paths: 1194, anchors: 157, records: 111 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
@@ -1120,13 +1147,45 @@ describe.runIf(WORKBENCH_PRESENT)("reference-resolution lint: class (c) behaviou
   });
 
   it("resolves a real Circle-directory citation and flags a fabricated one", () => {
-    const anyCircle = [...circleDirs()][0];
+    const anyCircle = [...circleDirs().keys()][0];
     const ok = scanRecordCitations("fixture.md", L(`Provenance: circles/${anyCircle}`));
     expect(ok.violations).toEqual([]);
     expect(ok.resolved).toBe(1);
     const bad = scanRecordCitations("fixture.md", L("Provenance: circles/990101-0101-no-such-circle"));
     expect(bad.violations.length).toBe(1);
     expect(bad.violations[0].problem).toContain("no such Circle directory");
+  });
+
+  // An archived Circle directory, derived from the tree rather than named: a
+  // workbench whose sweeps have all been cleaned has nothing to assert on, and
+  // this SKIPS there instead of passing silently or pinning an archive layout
+  // it does not own. Its subject is issue `260819-2300` — the record form
+  // resolved under a sweep while its own directory did not.
+  const swept: [string, string][] = (() => {
+    const archive = join(pluginRoot, "fusion-workbench", "archive");
+    if (!existsSync(archive)) return [];
+    return readdirSync(archive).flatMap((s) => {
+      const circles = join(archive, s, "circles");
+      return existsSync(circles)
+        ? readdirSync(circles).map((d) => [s, d] as [string, string])
+        : [];
+    });
+  })();
+
+  it.runIf(swept.length > 0)("resolves an archived Circle directory to its archive path", () => {
+    const [sweep, dir] = swept[0];
+    expect(
+      scanCitationTokens("fixture.md", L(`the circles/${dir} Circle answered it`)).map((h) => [
+        h.kind,
+        h.status,
+        h.matches.join(" "),
+      ]),
+    ).toEqual([["circle-dir", "resolved", `archive/${sweep}/circles/${dir}`]]);
+    // and the same name with no `circles/` prefix, which is the `stamp-name`
+    // token — one index serves both, so both moved together
+    expect(scanCitationTokens("fixture.md", L(`the ${dir} Circle`)).map((h) => h.status)).toEqual([
+      "resolved",
+    ]);
   });
 
   it("every RECORD_EXAMPLE_FILES exemption is load-bearing: each file still carries fabricated citations", () => {
@@ -1180,7 +1239,7 @@ describe.runIf(WORKBENCH_PRESENT)("citation scan: the measuring view and the gat
   });
 
   it("a stamp carrying a name resolves in the scan and now reaches the gate too", () => {
-    const anyCircle = [...circleDirs()][0];
+    const anyCircle = [...circleDirs().keys()][0];
     const line = L(`the ${anyCircle} Circle answered it`);
     expect(scanCitationTokens("fixture.md", line).map((h) => [h.kind, h.status])).toEqual([
       ["stamp-name", "resolved"],
@@ -1194,19 +1253,37 @@ describe.runIf(WORKBENCH_PRESENT)("citation scan: the measuring view and the gat
     expect(violations.map((v) => v.token)).toEqual(["990101-0101-no-such-thing"]);
   });
 
+  // Deliberately a literal restatement of the helper's own GATE_KINDS rather
+  // than an import: the point of the token-for-token case below is that the two
+  // views agree about WHICH kinds the gate reads, and walking with the imported
+  // constant would make them agree by construction. Five since the `stamp-name`
+  // widening; `stamp-bare` is the one kind outside.
+  const GATE: CitationKind[] = [
+    "record",
+    "bare-record",
+    "circle-record",
+    "circle-dir",
+    "stamp-name",
+  ];
+
+  it("the literal the case below walks with is still the gate's own GATE_KINDS", () => {
+    // The copy above is independent, not unchecked. It was stale for two steps
+    // — it had never learned `circle-record` — and passed anyway, because the
+    // shipped surface carries no token of that kind outside one exempt file, so
+    // the corpus cannot report a kind it never meets (issue
+    // `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-token-for-token-case-restates-gate-kinds-as-a-literal-and-nothing-catches-the-next-drift.md`).
+    // This is the one question the corpus cannot answer and only the two lists
+    // can: they still name the same kinds. The walk stays literal.
+    expect(
+      [...GATE].sort(),
+      "the gate's kind list moved and this file's copy did not (or the reverse). " +
+        "Bring the literal above into line with GATE_KINDS in " +
+        "hooks/lib/__tests__/helpers/citation-scan.ts, and re-approve the pinned counts " +
+        "in this file if the gate's scope widened.",
+    ).toEqual([...GATE_KINDS].sort());
+  });
+
   it("over the whole shipped surface, the gate's verdict is the scan's, token for token", () => {
-    // Deliberately a literal restatement of the helper's own GATE_KINDS rather
-    // than an import: the point of this case is that the two views agree about
-    // WHICH kinds the gate reads, and a shared constant would make them agree
-    // by construction. Five since the `stamp-name` widening; `stamp-bare` is
-    // the one kind outside.
-    const GATE: CitationKind[] = [
-      "record",
-      "bare-record",
-      "circle-record",
-      "circle-dir",
-      "stamp-name",
-    ];
     let gateResolved = 0;
     let gateViolations = 0;
     let scanResolved = 0;

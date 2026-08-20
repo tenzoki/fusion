@@ -44,3 +44,16 @@ reproduces.** `.gitignore` excludes `package-lock.json` in its Dependencies bloc
 "pinned in one of the two places that matter", naming the lockfile as one of them. The decision
 record `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
 already carries the correction in its `Implemented:` block; the plan does not. Marker unchanged.
+
+---
+Resolved: the plan's `## Current State` carries the correction, appended in the tense the fix
+direction asked for rather than substituted, because the plan is the record of a planning run and
+what it measured is part of it.
+
+Re-measured before writing: `git ls-files hooks/package-lock.json` prints nothing, `git ls-files
+hooks/package.json` prints the path, `.gitignore:7` carries the bare pattern `package-lock.json`,
+and `hooks/package.json:17` now reads `"typescript": "5.9.3"` exactly. The appended paragraph states
+that the lockfile is in no clone, no commit and no tarball, that a fresh checkout therefore cannot
+run `npm ci` at all, that the pin had to go into the committed `package.json` and did, and that
+`hooks/lib/__tests__/committed-dist.test.ts` states the same reading in its own header. The
+conclusion the original sentence supported is unaffected and is said to stand.

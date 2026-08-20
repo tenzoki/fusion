@@ -159,6 +159,25 @@ the figure the dispatch carried. This step spent 331, all of it accounted for: t
 above it), and `reference-resolution-lint.test.ts` 1 173 → 1 238 (+65, the re-approval note and
 the three boundary cases). `agents/` and `skills/` were not touched beyond the +5 bytes above.
 
+**Added 260820** (`coder`, Circle Turn 2). This section reported "green" for the always-on rule
+set and stopped there, while every step that touched the hook-test surface reported a number.
+The missing figure, on the more expensive of the two surfaces, is the defect
+`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-step-that-spent-the-always-on-rule-budget-reported-green-without-the-figure-its-siblings-report.md`.
+
+Always-on rule set: **6 206 bytes left**, and the spend above was 987 of them. Measured today,
+and the five files are untouched since this step, so the figure is this step's own outcome. The
+core stands at 92 367 bytes — `agent-setup.md` 3 499, `fusion-workbench-conventions.md` 56 200,
+`decision-record-examples.md` 4 522, `user-facing-output.md` 18 205, `critical-stance.md` 9 941
+— against a `RULE_BASELINE` floor of 86 573 and a `GROWTH_BUDGET` of 12 000, so the cap is
+98 573. Before the spend the surface stood at 7 193, which reconciles exactly against the +987.
+
+*One figure that circulated is a different quantity, not a disagreement.* The reconciliation
+pass of 260820-0830 reported 99 720 bytes by `bin/fusion-rules coder | xargs wc -c`. That
+command is the whole floor a dispatch pays in this repository, and it includes this project's
+own chat voice profile at 7 353 bytes: 92 367 + 7 353 = 99 720. The bound measures the five
+shipped core files alone, because a project-side profile is not the plugin's text to bound.
+Read the first number against `RULE_BASELINE` and the second as what a dispatch costs.
+
 ## What was not done
 
 - **No count pin of any kind**, in any form. The vacuity guard is `> 0` and `> 0` deliberately,

@@ -64,3 +64,27 @@ references the gate would have judged wrongly.
 
 The second is arguably a decision rather than a defect. It is filed here as one record because the
 two sit on the same two lines of the same file and whoever opens it will meet both.
+
+---
+Progress 260820 (`coder`, Circle Turn 2) — **item 1 done, item 2 untouched. Not closable.**
+
+Item 1 is applied. The line 14 token in
+`circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+is gone and the annotation form from `rules/circle-records.md` stands in its place, in the literal
+English opening the rule makes the recognition test, inside the record's German prose — the form is
+template text and an exempt surface under `rules/fusion-workbench-conventions.md` `## Project
+language`. The paragraph was resplit into three sentences so the annotation sits on its own line and
+its opening is not broken across a wrap.
+
+Re-scanned with `scanCitationTokens` after the edit: that file now yields **two** gate violations
+where it yielded three, both on line 7, and the stamp on line 14 has become an undecidable
+`stamp-bare` residual — which is what the form is for, since it puts the stamp and the slug in
+separate spans so neither tokenises as a pointer.
+
+**Item 2 is deliberately not answered here.** The two remaining line 7 tokens name playmaker logs in
+a consuming project's tree, which the record's own `**Cross-references:**` field says in German prose
+the parser cannot read. Making them resolve is impossible and fencing them would settle, by a silent
+edit, a convention this repository has not chosen — the record says so itself, and calls the item
+arguably a decision rather than a defect. Nothing was written to either token. The record stays open
+on item 2, and the two violations stay visible; they redden nothing today, because the decision
+record carries `_i_` and the gate's corpus is `_o_` and `_a_` decisions only.

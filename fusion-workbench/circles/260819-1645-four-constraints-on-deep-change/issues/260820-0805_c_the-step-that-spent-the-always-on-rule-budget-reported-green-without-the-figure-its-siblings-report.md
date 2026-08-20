@@ -52,3 +52,26 @@ command that gives the whole floor in this repository, because `coder` draws no 
 The record's point stands: the step reported green without the head-room figure its siblings report,
 and the plan's "writing there costs no budget" was true of step 4's file and false of step 9's.
 Marker unchanged.
+
+---
+Resolved: the figure is in the step's `## Head-room` section and the plan's sentence is qualified to
+the file it was measured against.
+
+Measured here: the always-on core stands at **92 367 bytes** — `agent-setup.md` 3 499,
+`fusion-workbench-conventions.md` 56 200, `decision-record-examples.md` 4 522,
+`user-facing-output.md` 18 205, `critical-stance.md` 9 941 — against a `RULE_BASELINE` floor of
+86 573 and a `GROWTH_BUDGET` of 12 000, so the cap is 98 573 and **6 206 bytes remain**. That
+reproduces the record's figure exactly, and it reconciles against the 7 193 the same Circle reported
+before the +987 spend. None of the five files was touched by this Turn, so the figure is still the
+step's own outcome rather than a later measurement standing in for it.
+
+The 99 720 the reconciliation pass reported is a different quantity, not a competing measurement,
+and the step's section now says so: `bin/fusion-rules coder | xargs wc -c` adds this project's own
+chat voice profile at 7 353 bytes to the five shipped files, and 92 367 + 7 353 = 99 720. The first
+number is what the bound measures; the second is what a dispatch in this repository costs.
+
+The plan's head-room paragraph gained a `Qualified 260820` parenthetical: "writing there costs no
+budget" is true of `rules/circle-records.md`, the conditional emission step 4 wrote into and the file
+the paragraph measured, and false of `rules/fusion-workbench-conventions.md`, which step 9 wrote 987
+bytes into and which is in the always-on core with its own failing bound. Step 9's line was not in
+the plan when the paragraph was written.

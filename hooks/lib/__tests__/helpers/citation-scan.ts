@@ -283,13 +283,67 @@ export function workbenchIndex(): WorkbenchEntry[] {
   return wbIndex;
 }
 
-export function circleDirs(): Set<string> {
-  const dirs = new Set<string>();
-  const root = join(workbenchRoot, "circles");
-  if (!existsSync(root)) return dirs;
-  for (const e of readdirSync(root, { withFileTypes: true })) {
-    if (e.isDirectory()) dirs.add(e.name);
+/**
+ * Every Circle directory a citation can name, keyed by directory name and
+ * carrying the workbench-relative path(s) that hold it: `circles/<dir>` while
+ * the Circle is live, and `archive/<sweep>/circles/<dir>` once a sweep has
+ * moved it. The map is the paths rather than a bare name set so that what a
+ * citation RESOLVED TO is reported truthfully — an archived Circle that
+ * reported `circles/<dir>` would be naming a path that is not on disk, in a
+ * file whose header calls itself a measuring instrument.
+ *
+ * THE ARCHIVE HALF IS NOT A NEW ANSWER. It is the shape the user chose for
+ * `findRecord()` on 2026-08-19 (fix shape 1: one sweep, prefix-tolerant, the
+ * loss of exactness stated rather than discovered), applied to the sibling
+ * function that was left out of it — see `anchoredUnder` below, which states
+ * the choice and the alternative in full, and
+ * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`,
+ * which is the record of the asymmetry this closes.
+ *
+ * THE COST IS THE SAME COST, paid here. Resolution becomes prefix-tolerant: a
+ * line citing `circles/<dir>` and a line citing `archive/<sweep>/circles/<dir>`
+ * produce the same token (`CIRCLE_RE` begins its match at `circles/`), so the
+ * scanner cannot say which of the two was meant. Where both copies exist the
+ * verdict is `ambiguous` and both paths are reported, exactly as the Circle-
+ * RECORD form already does — one shape, not two. As there, that collision needs
+ * a Circle re-created under an archived name, which the stable-directory-name
+ * convention exists to prevent.
+ *
+ * The bound is `ARCHIVE_SWEEP_RE`'s: exactly one sweep level, never a general
+ * prefix tolerance. The reason is written out at that pattern and holds here
+ * unchanged — a resolver that cannot fail turns the gate built on it into one
+ * that cannot go red.
+ *
+ * Memoised like `workbenchIndex()`, and for the same reason: both are read once
+ * per token and the tree does not move under a run.
+ */
+let circleDirIndex: Map<string, string[]> | null = null;
+export function circleDirs(): Map<string, string[]> {
+  if (circleDirIndex) return circleDirIndex;
+  const dirs = new Map<string, string[]>();
+  const add = (relRoot: string) => {
+    const abs = join(workbenchRoot, relRoot);
+    if (!existsSync(abs)) return;
+    for (const e of readdirSync(abs, { withFileTypes: true })) {
+      if (!e.isDirectory()) continue;
+      const at = dirs.get(e.name);
+      if (at) at.push(`${relRoot}/${e.name}`);
+      else dirs.set(e.name, [`${relRoot}/${e.name}`]);
+    }
+  };
+  add("circles");
+  const archive = join(workbenchRoot, "archive");
+  if (existsSync(archive)) {
+    for (const sweep of readdirSync(archive, { withFileTypes: true })) {
+      // `ARCHIVE_SWEEP_RE` is the same bound `anchoredUnder` holds, asked of a
+      // directory name instead of a `relDir`: a sweep is `<YYMMDD-HHMM>-<slug>`
+      // and anything else under `archive/` is not one.
+      if (sweep.isDirectory() && ARCHIVE_SWEEP_RE.test(`archive/${sweep.name}/`)) {
+        add(`archive/${sweep.name}/circles`);
+      }
+    }
   }
+  circleDirIndex = dirs;
   return dirs;
 }
 
@@ -358,11 +412,12 @@ const ARCHIVE_SWEEP_RE = /^archive\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+\//;
  * copies cannot coexist unless a Circle is later re-created under an archived
  * name — which the stable-directory-name convention exists to prevent.
  *
- * What the new form deliberately leaves alone is `circleDirs()`, so a citation
- * of an archived Circle DIRECTORY is still `dangling` while a citation of the
- * record inside it now resolves. That asymmetry is the subject of
- * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`,
- * which is open and is not answered here.
+ * THE ASYMMETRY THIS CARRIED IS CLOSED. Until 2026-08-20 the Circle-record form
+ * resolved under a sweep while a citation of the archived Circle DIRECTORY
+ * still read `dangling`, because `circleDirs()` had not learned the prefix —
+ * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`.
+ * `circleDirs()` now applies this same choice, with this same cost, and states
+ * both at its own definition.
  */
 function anchoredUnder(relDir: string, prefix: string): boolean {
   return relDir.startsWith(prefix) || unsweep(relDir).startsWith(prefix);
@@ -439,8 +494,15 @@ export type CitationKind =
  * gate in `hooks/lib/__tests__/workbench-citation-lint.test.ts`. Adding a kind
  * here therefore moves the first one's pinned counts, and that re-approval
  * belongs in the same commit as the widening.
+ *
+ * EXPORTED SO THE NEXT DRIFT IS REPORTED. `reference-resolution-lint.test.ts`
+ * walks the shipped surface with a literal restatement of this list, kept
+ * literal on purpose so the two views stay independent — and that copy was
+ * stale for two steps, green only because the surface carried no token of the
+ * kind it had missed. One assertion there now compares the two lists directly,
+ * which is a question the corpus cannot answer and this export makes askable.
  */
-const GATE_KINDS: CitationKind[] = [
+export const GATE_KINDS: CitationKind[] = [
   "record",
   "bare-record",
   "circle-record",
@@ -669,11 +731,14 @@ export function scanCitationTokens(
       const [full, dir] = m;
       const idx = m.index;
       consider(idx, full, "circle-dir", () => {
-        if (circleDirs().has(dir)) return { status: "resolved", matches: [`circles/${dir}`] };
+        const at = circleDirs().get(dir);
+        if (at) return { status: at.length === 1 ? "resolved" : "ambiguous", matches: at };
         return {
           status: "dangling",
           matches: [],
-          problem: "no such Circle directory under fusion-workbench/circles/",
+          problem:
+            "no such Circle directory under fusion-workbench/circles/, " +
+            "nor under an archive sweep",
           fix: "fix the Circle-directory name (the directory name is stable for a Circle's whole life)",
         };
       });
@@ -688,9 +753,8 @@ export function scanCitationTokens(
       const [full, stamp, dashed] = m;
       const idx = m.index;
       consider(idx, full, dashed ? "stamp-name" : "stamp-bare", () => {
-        if (dashed && circleDirs().has(full)) {
-          return { status: "resolved", matches: [`circles/${full}`] };
-        }
+        const at = dashed ? circleDirs().get(full) : undefined;
+        if (at) return { status: at.length === 1 ? "resolved" : "ambiguous", matches: at };
         const named = workbenchIndex().filter((e) => e.base.startsWith(full));
         if (named.length === 0) {
           return {

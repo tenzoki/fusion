@@ -67,3 +67,25 @@ met — nobody has named the intended record and nobody has re-measured the docu
 The dispatch asked whether the target is covered by any repair corpus: it is not. The analysis sits
 outside the citation gate's corpus (no `analyses/` clause), and the token is spelled with a
 `fusion-workbench/` prefix, so no scanner reads it either. Marker unchanged.
+
+---
+Progress 260820 (`coder`, Circle Turn 2) — **the second location is repaired. Neither closure
+condition is met, so this stays open.**
+
+`shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`, the `## Sources`
+bullet the record named, no longer spells the dead path. It carries the same treatment step 7 gave
+the decision record: the path dropped, the substance kept. The bullet now describes what was read,
+names the stamp `260813-0825`, states that no file with that slug has ever existed, and gives the
+measurement — commit `799fded` added exactly two records at that stamp and neither is this one. It
+says the curator reached the same wall on 2026-08-14 and the repair pass on 2026-08-19, that naming
+the closest survivor would be speculation rather than a citation, and that lines 173 and 216 of the
+analysis argue about the record on their own evidence and are unchanged. It points at this record.
+
+**No target was invented, and none is recoverable.** The stamp is left in place because it is what
+the reader has: it is a `stamp-bare` token, which the scanner classes as undecidable and never as a
+violation, so it neither dangles nor claims to point anywhere.
+
+What would close this is still what the record says: somebody names the intended record, or the
+documentation-lag claim is re-measured against the current release and filed fresh. Neither happened
+here. **No citation anywhere in this workbench now names the record that was never filed** — that
+was the scope of the repair, and it is complete.
