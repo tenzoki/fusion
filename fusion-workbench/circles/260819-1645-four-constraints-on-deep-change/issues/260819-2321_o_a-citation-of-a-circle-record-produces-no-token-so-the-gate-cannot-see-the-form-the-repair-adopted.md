@@ -38,3 +38,18 @@ about scope, taken by the user, not an extension an executor or an orchestrator 
 
 Filed by the orchestrator of session `260819-2006` from step 8's report, before step 9 is dispatched, so
 that arming the gate is a choice made with this known and not one made around it.
+
+---
+**Answered by the user 2026-08-19, at the gate this record opened before step 9: fix the grammar
+first, then arm.** `REC_RE` learns the Circle-record form, so `circles/<dir>/_x_circle.md` becomes a
+token, and the gate is armed only after whatever that makes visible has been repaired.
+
+The user chose this knowing the two costs it carries. It puts a further repair pass in front of the
+arming, because the twenty-five dead paths outside the archive become violations the moment the
+grammar can see them. And it widens what both callers tokenise, so the sibling lint's pinned counts
+move and want a re-approval with the note its own convention requires.
+
+The alternative that was available and not taken was to arm today over what the scanner already reads
+and carry the blind spot as a named defect. That would have closed this Circle on the first clause of
+its Directive while the second — that a blocking test holds the live surfaces there — did not reach
+twenty-eight of the repairs it had just made.

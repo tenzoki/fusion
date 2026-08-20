@@ -15,14 +15,23 @@
 //     boolean gate has nowhere to put that — one match and five matches are
 //     both "ok" to a gate and are not the same fact about a corpus.
 //
-// THE GRAMMAR (unchanged from the gate that carried it):
+// THE GRAMMAR:
 //   `260806-0015_*_<slug>.md` and its store-, Circle- and `shared/`-prefixed
-//   forms, plus bare Circle-directory citations `circles/<stamp>-<slug>`. The
-//   wildcard `_*_` at the marker position matches any state marker; a citation
-//   carrying an exact marker resolves exactly, and one whose record exists only
-//   under a DIFFERENT marker is the stale-marker class. An ellipsis (`…`) is a
+//   forms, plus bare Circle-directory citations `circles/<stamp>-<slug>`, plus
+//   a Circle's own record `circles/<stamp>-<slug>/_x_circle.md`. The wildcard
+//   `_*_` at the marker position matches any state marker; a citation carrying
+//   an exact marker resolves exactly, and one whose record exists only under a
+//   DIFFERENT marker is the stale-marker class. An ellipsis (`…`) is a
 //   deliberate truncation and matches any infix. A citation not ending in `.md`
 //   is a prefix.
+//
+//   The Circle-record form arrived last, on 2026-08-19, and the gap it closed
+//   is worth stating: it is the form the repairs of this Circle's steps 7 and 8
+//   ADOPTED for an archived Circle, and until it tokenised the gate was silent
+//   over every one of them — green because it could not see them, which is a
+//   different fact from green because they are right. See
+//   `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2321_*_a-citation-of-a-circle-record-produces-no-token-so-the-gate-cannot-see-the-form-the-repair-adopted.md`
+//   and the user's answer at its foot.
 //
 // WHAT THIS FILE ADDS, and why it is here rather than in the gate: a fourth
 // token class, the **bare timestamp**. `260722-1943` in running prose carries
@@ -85,6 +94,25 @@ const REC_RE = new RegExp(
     "(?:(circles\\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/|(shared)\\/)?" +
     `(${STORES})\\/` +
     "([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)?[A-Za-z0-9._…*-]*)",
+  "g",
+);
+
+// A Circle's OWN record, `circles/<dir>/_x_circle.md`. It gets its own pattern
+// rather than a widening of `REC_RE` because the two basenames have nothing in
+// common: a store record is `<stamp>_<marker>_<slug>.md` and `REC_RE`'s tail is
+// anchored on that stamp, while a Circle record carries no stamp and no slug at
+// all — the stamp is in the DIRECTORY name. So there is no store segment to add
+// to `STORES` and no tail to relax; the form is a different shape, and one
+// pattern that expressed both would have to make its own anchor optional.
+//
+// `.md` is optional for the same reason it is everywhere else in this grammar
+// (`basenameMatcher` reads a citation not ending in `.md` as a prefix), and the
+// trailing lookahead stops the pattern from claiming a longer word.
+const CIRCLE_REC_RE = new RegExp(
+  "(?:fusion-workbench\\/)?" +
+    "circles\\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/" +
+    "(_[a-zA-Z*]_circle(?:\\.md)?)" +
+    "(?![A-Za-z0-9_.\\/-])",
   "g",
 );
 
@@ -223,11 +251,41 @@ const ARCHIVE_SWEEP_RE = /^archive\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+\//;
  * archived record should be a citation target at all. Tolerating the prefix
  * settles "can the grammar express it", not "should archiving end a record's
  * life as a target" — `skills/archive/SKILL.md` still neither says nor checks.
+ *
+ * THE SAME COST, ON THE CIRCLE-RECORD FORM (`anchoredAt`, added 2026-08-19).
+ * `circles/<dir>/_c_circle.md` and `archive/<sweep>/circles/<dir>/_c_circle.md`
+ * produce the identical token, so the scanner cannot say which of the two a
+ * line meant, and a Circle present both live and archived under one directory
+ * name resolves `ambiguous` rather than to either copy. That collision is
+ * hypothetical today and not by luck: a sweep MOVES the directory, so the two
+ * copies cannot coexist unless a Circle is later re-created under an archived
+ * name — which the stable-directory-name convention exists to prevent.
+ *
+ * What the new form deliberately leaves alone is `circleDirs()`, so a citation
+ * of an archived Circle DIRECTORY is still `dangling` while a citation of the
+ * record inside it now resolves. That asymmetry is the subject of
+ * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`,
+ * which is open and is not answered here.
  */
 function anchoredUnder(relDir: string, prefix: string): boolean {
-  if (relDir.startsWith(prefix)) return true;
+  return relDir.startsWith(prefix) || unsweep(relDir).startsWith(prefix);
+}
+
+/** `relDir` with one archive sweep taken off the front, if it carries one. */
+function unsweep(relDir: string): string {
   const sweep = ARCHIVE_SWEEP_RE.exec(relDir);
-  return sweep !== null && relDir.slice(sweep[0].length).startsWith(prefix);
+  return sweep === null ? relDir : relDir.slice(sweep[0].length);
+}
+
+/**
+ * The same one-sweep bound, asked as an EQUALITY rather than a prefix. A Circle
+ * record sits directly in the Circle directory and in no store below it, so
+ * `circles/<dir>` is the whole of its `relDir` — asking `startsWith` here would
+ * also accept every record in every store inside that Circle, and would accept
+ * a sibling Circle whose directory name merely begins with this one's.
+ */
+function anchoredAt(relDir: string, dir: string): boolean {
+  return relDir === dir || unsweep(relDir) === dir;
 }
 
 function findRecord(opts: {
@@ -239,7 +297,13 @@ function findRecord(opts: {
   const re = basenameMatcher(opts.citedBase);
   return workbenchIndex().filter((e) => {
     if (!re.test(e.base)) return false;
-    if (opts.circleDir) return anchoredUnder(e.relDir, `circles/${opts.circleDir}/${opts.store}`);
+    // A Circle citation with a store is a record inside the Circle; without
+    // one it is the Circle's own record, which lives at the directory itself.
+    if (opts.circleDir) {
+      return opts.store
+        ? anchoredUnder(e.relDir, `circles/${opts.circleDir}/${opts.store}`)
+        : anchoredAt(e.relDir, `circles/${opts.circleDir}`);
+    }
     if (opts.shared) return anchoredUnder(e.relDir, `shared/${opts.store}`);
     if (opts.store) return e.relDir.split("/").includes(opts.store);
     return true;
@@ -249,9 +313,10 @@ function findRecord(opts: {
 // --- the per-token walk -----------------------------------------------------
 
 export type CitationKind =
-  /** the three the gate resolves */
+  /** the four the gate resolves */
   | "record"
   | "bare-record"
+  | "circle-record"
   | "circle-dir"
   /** a stamp plus a dashed name, no store prefix — decidable, gate does not read it */
   | "stamp-name"
@@ -259,7 +324,7 @@ export type CitationKind =
   | "stamp-bare";
 
 /** The kinds the gate judges. Everything else is measurement-only. */
-const GATE_KINDS: CitationKind[] = ["record", "bare-record", "circle-dir"];
+const GATE_KINDS: CitationKind[] = ["record", "bare-record", "circle-record", "circle-dir"];
 
 export type CitationStatus =
   /** resolves to exactly one file (or one Circle directory) */
@@ -392,6 +457,48 @@ export function scanCitationTokens(
           fix:
             "pull the citation's substance into the text and drop the dead path " +
             "(decision 260805-0709), or fix the citation",
+        };
+      });
+    }
+
+    // A Circle's own record. Three statuses, not four: there is no
+    // `wrong-store` retry, because `_x_circle.md` carries no stamp and no slug,
+    // so an unanchored lookup matches EVERY Circle's record and would report a
+    // dozen "the record lives at" candidates for a directory name that is
+    // simply wrong. "Which store is it in" is not a question this form can ask
+    // — a Circle record is in no store — so the split is the anchored hit, the
+    // stale marker, and nothing found.
+    CIRCLE_REC_RE.lastIndex = 0;
+    while ((m = CIRCLE_REC_RE.exec(text)) !== null) {
+      const [full, dir, citedBase] = m;
+      const idx = m.index;
+      consider(idx, full, "circle-record", () => {
+        const hit = findRecord({ circleDir: dir, citedBase });
+        if (hit.length > 0) return found(hit);
+        const markerM = citedBase.match(/^_([a-z])_/);
+        if (markerM) {
+          const wild = findRecord({
+            circleDir: dir,
+            citedBase: citedBase.replace(/^_[a-z]_/, "_*_"),
+          });
+          if (wild.length > 0) {
+            return {
+              status: "stale-marker",
+              matches: wild.map(pathOf),
+              problem:
+                `stale marker '_${markerM[1]}_': the record now exists as ` +
+                `${wild[0].relDir}/${wild[0].base}`,
+              fix: "cite the marker position as '_*_' (decision 260806-0015, wildcard form)",
+            };
+          }
+        }
+        return {
+          status: "dangling",
+          matches: [],
+          problem: "no Circle record in the workbench matches this citation",
+          fix:
+            "fix the Circle-directory name (it is stable for a Circle's whole life), " +
+            "or cite the record at its archive path if the Circle was swept",
         };
       });
     }
