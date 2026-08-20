@@ -1827,3 +1827,6 @@
 {"ts":"2026-08-20T20:58:46","event":"shaper_done","agent":"shaper","detail":"spec at circles/260820-2051-.../planning/260820-2249_o_spec-...md; 10 capabilities over 3 root causes; 6 preference questions returned"}
 {"ts":"2026-08-20T20:58:46","event":"task_done","task":"S-1","agent":"shaper","detail":"spec written; 4 load-bearing figures independently re-measured by orchestrator and all 4 reproduce"}
 {"ts":"2026-08-20T20:58:46","event":"task_start","task":"S-2","agent":"analyst","detail":"critical assessment of the spec, including the 6 preference questions"}
+{"ts":"2026-08-20T21:31:57","event":"planner_done","agent":"planner","detail":"plan at circles/260820-2051-.../planning/260820-2324_o_plan-...md; 18 steps + 1 review gate; 14 coder, 3 ontocoder, 1 analyst"}
+{"ts":"2026-08-20T21:31:57","event":"queue_built","detail":"19 entries, 0 blocked at start; forced order step2<7,9 and step3<8"}
+{"ts":"2026-08-20T21:31:57","event":"turn_start","turn":1,"detail":"Turn 1 of max 12; head c866d81"}
