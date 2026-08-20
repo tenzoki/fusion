@@ -1841,3 +1841,5 @@
 {"ts":"2026-08-20T22:42:44","event":"task_done","turn":1,"task":"P-4","agent":"coder","detail":"1c1178d fallback on stderr; stdout golden untouched; record left open, half-closed only"}
 {"ts":"2026-08-20T22:42:44","event":"commit","turn":1,"task":"P-4","detail":"1c1178d"}
 {"ts":"2026-08-20T22:42:44","event":"gate_hit","turn":1,"task":"P-5","detail":"ontocoder task; user away; gate treated as covered by the Directive the user activated, recorded rather than skipped"}
+{"ts":"2026-08-20T22:53:22","event":"task_done","turn":1,"task":"P-5","agent":"ontocoder","detail":"5ed284d chat profiles cite the rule instead of restating it; two languages back in agreement"}
+{"ts":"2026-08-20T22:53:22","event":"commit","turn":1,"task":"P-5","detail":"5ed284d"}

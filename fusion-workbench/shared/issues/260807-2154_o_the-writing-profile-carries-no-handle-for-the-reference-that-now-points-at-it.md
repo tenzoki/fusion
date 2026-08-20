@@ -98,3 +98,40 @@ a file every consuming project holds.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Neither `stilwerk/default-voice-en.yaml` nor `-de.yaml` declares a `scope:` key or carries the long-form-writing-profile phrase, so the reference still resolves only through `rules/agent-setup.md`. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+
+## 260821-0100 (ontocoder, plan step 6) — item 2 landed; stays `_o_` for item 1
+
+**Item 2 is done.** Both writing profiles now name their own role in their own text, so the
+target side is no longer silent:
+
+- `stilwerk/default-voice-en.yaml:3-8` and its `description:` — "This file is the long-form
+  writing profile", with the artifacts it governs enumerated and the chat profile named as
+  the surface it does not govern.
+- `stilwerk/default-voice-de.yaml:3-9` and its `description:` — the same in German, naming
+  the role `das Langform-Schreibprofil`, the exact phrase `chat-voice-de.yaml` uses. The
+  English handle appears once as a parenthetical gloss in the comment, so the English term
+  matches this file too. Neither file names the other's language.
+
+**Item 1 stays open, and it is why this record keeps its `_o_` marker.** No `scope:` key was
+added, by
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`,
+which chose option 2: the text handle alone, the key deferred. That decision was answered by
+the orchestrator during an unattended run and is itself still open, so the schema question
+reaches the user as a live question rather than as a change already made. Verified after this
+edit: `grep -n '^scope:'` over both writing profiles exits 1, and each file's top-level key
+set is unchanged at `[name, description, whitelist, blacklist, examples, anti_examples,
+settings]`.
+
+**One thing this edit does not close, and it was not in scope to.** The failure scenario in
+this record is the cross-language pairing, chat `de` against artifacts `en`, which is this
+repository's own configuration. An agent holding `chat-voice-de.yaml` reads "das
+Langform-Schreibprofil" and opens `default-voice-en.yaml`, which now carries the English
+handle but no German one. The German pointer still finds no plain-text match there. Closing
+that needs either the English phrase added to `chat-voice-de.yaml` or both handles carried in
+both writing profiles. Neither file was in step 6's scope.
+
+Verification: `ruby -ryaml -e 'YAML.safe_load'` on both files, exit 0. `cd hooks && npm
+test`, exit 0, 718 tests. Log:
+`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0100-ontocoder-writing-profiles-carry-the-handle.md`.
