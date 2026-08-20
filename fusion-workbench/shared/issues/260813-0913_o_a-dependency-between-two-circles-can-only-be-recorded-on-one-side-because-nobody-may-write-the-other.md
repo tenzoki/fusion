@@ -137,3 +137,6 @@ citation it quotes is its own subject and starring it would delete the finding. 
 only which section carries the marker: the body is a pointer and is starred, the note is a quotation
 of what the pointer used to spell and stays literal. The record has since closed, so the note's
 "it will be `_c_circle.md` after closure" has come true.
+
+---
+Also seen: 260820-2157 by orchestrator — a second instance of the same ownership gap, reached from the other direction: not a missing edge but a false one, a `## Dependencies` line asserting a sibling Circle is active when its marker says closed, with no party able to correct it. Recorded separately because this record's acceptance criteria can all be met while that defect stands: `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2157_*_the-records-dependencies-section-states-a-sibling-circle-is-active-and-that-circle-closed-before-the-record-was-written.md`.
