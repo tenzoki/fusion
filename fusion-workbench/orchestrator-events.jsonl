@@ -1843,3 +1843,6 @@
 {"ts":"2026-08-20T22:42:44","event":"gate_hit","turn":1,"task":"P-5","detail":"ontocoder task; user away; gate treated as covered by the Directive the user activated, recorded rather than skipped"}
 {"ts":"2026-08-20T22:53:22","event":"task_done","turn":1,"task":"P-5","agent":"ontocoder","detail":"5ed284d chat profiles cite the rule instead of restating it; two languages back in agreement"}
 {"ts":"2026-08-20T22:53:22","event":"commit","turn":1,"task":"P-5","detail":"5ed284d"}
+{"ts":"2026-08-20T23:45:35","event":"review_done","turn":1,"agent":"coderev","detail":"9 issues filed: 0 critical, 2 high, 4 medium, 2 low; range now covered"}
+{"ts":"2026-08-20T23:45:35","event":"turn_end","turn":1,"detail":"8 plan steps resolved, 14 commits, 9 issues created by review"}
+{"ts":"2026-08-20T23:45:35","event":"turn_start","turn":2,"detail":"Turn 2 of max 12; head d66763b; first task is the two High findings"}

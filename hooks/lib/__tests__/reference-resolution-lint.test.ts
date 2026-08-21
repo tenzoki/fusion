@@ -880,7 +880,11 @@ function scanHeadingAnchors(
 // `hooks/lib/__tests__/rules-emission-golden.test.ts`, and `rules/fusion-workbench-conventions.md`
 // carrying `## Project language`. No scanner, exemption or class changed; attributed by restoring
 // `bin/fusion-rules` alone to HEAD and re-running this gate, which was green at the old numbers.
-const BASELINE = { paths: 1247, anchors: 162, records: 115 };
+// Re-approved 2026-08-21 — Step 0e's three shell blocks now resolve the source root themselves instead of
+// reading the held `$FUSION_SRC` (issues 260821-0140 and 260821-0141). paths 1247 -> 1254, anchors and records
+// unchanged: six are `$FUSION_PLUGIN_ROOT/bin/fusion-source-root`, twice in each block, the seventh is
+// `bin/fusion-rules` in the new `case5-missing-local` entry. Attributed by reverting that one file; green at 1247.
+const BASELINE = { paths: 1254, anchors: 162, records: 115 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
