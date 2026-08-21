@@ -902,16 +902,12 @@ function scanHeadingAnchors(
 // per-file measurement was taken. Their other seven changed lines are net zero in every class — none adds or
 // drops a path, an anchor or a record, and `skills/archive/SKILL.md:96` -> `:102` is one file at a new line —
 // which is what makes the read agree with the reported total: +2 is the `docs/` row's two new tokens alone.
-// Re-approved 2026-08-21 — `rules/user-facing-output.md` `## Length` gained the session-summary total, and
-// the entry cites the record that decided the number (step 2 of Circle 260821-1042-reply-bounded-whole-
-// question-answered). records 115 -> 116, paths and anchors unchanged. That citation is the only new token
-// of any class: the step's other four changes rewrite sentences that named no path, heading or record, and
-// none names one now. Attributed by restoring `rules/user-facing-output.md` alone to HEAD and re-running
-// this gate, which was green at 115. No scanner, exemption or class changed.
-// Re-approved 2026-08-21 — `rules/user-facing-output.md` `## Information architecture` gained the sentence saying what a
-// reply is about before what order its parts come in (step 3 of the same Circle). paths 1257 -> 1258, anchors 162 -> 163,
-// records unchanged: both are its one adjacent citation of `rules/fusion-workbench-conventions.md`
-// `## Issue and Decision Filing`, prefix-resolved. Attributed by removing that sentence and re-running: green at 1257/162.
+// Re-approved 2026-08-21 — `rules/user-facing-output.md` was edited twice in one commit, by steps 2 and 3 of Circle
+// 260821-1042-reply-bounded-whole-question-answered: paths 1257 -> 1258, anchors 162 -> 163, records 115 -> 116. The
+// record is `## Length`'s citation of the decision fixing the session-summary total; the path and anchor are one
+// adjacent citation of `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`, prefix-resolved, in a
+// new `## Information architecture` sentence. No other rewrite in either step carries one; no scanner, exemption or
+// class changed. Attributed per step by undoing that edit: green at 115, then 1257/162.
 const BASELINE = { paths: 1258, anchors: 163, records: 116 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a

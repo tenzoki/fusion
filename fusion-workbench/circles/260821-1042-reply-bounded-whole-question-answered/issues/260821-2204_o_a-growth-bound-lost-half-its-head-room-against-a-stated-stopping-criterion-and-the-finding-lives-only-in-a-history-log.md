@@ -41,3 +41,23 @@ The attribution comment is a convention of that file, carried by its accumulated
 **What the fix is not.** Not a baseline move. `hooks/lib/__tests__/helpers/growth-bound.ts` authors the two events at which a baseline moves and neither happened here. The options are to consolidate the two comment blocks, or to accept the 11 lines and say so in the closure note instead of repeating the criterion at `:180`.
 
 **Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md` `## The other three growth bounds` (where the executor recorded it, correctly and in full); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-0803_*_the-plans-step-3-file-list-says-fourteen-fixture-files-and-the-tree-held-fifteen.md` (the same class, a measurement recorded only in a history log); `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`.
+
+---
+
+**Progress 2026-08-21: four of the ten lines are back, six are not.**
+
+The two attribution blocks are now one, at `hooks/lib/__tests__/reference-resolution-lint.test.ts:905-910`. Every fact the two carried survives in it: which file and which two sections were edited, which token moved which class, that no other rewrite in either step contributed one, that no scanner, exemption or class changed, and how each step was attributed. What went is what consolidation removes and nothing else: the second date stamp, the second naming of the file, the second attribution sentence, and the two separate statements of which classes stayed put.
+
+The surface now stands at 20 360 lines against a budget of 20 375, so head-room is 15 where it was 11, and where HEAD `e764637` had 21.
+
+```
+$ find hooks/lib/__tests__ -name '*.ts' | xargs cat | wc -l   # 20 360
+17 875 + 2 500 = 20 375 budget → 15 lines of head-room
+$ cd hooks && npm test                                        # exit 0, 40 files, 718 tests
+```
+
+`hooks/lib/__tests__/fixtures/surface-growth.golden` was regenerated per its own header. Its diff is the one file entry (1432 to 1428) and the surface total (20 364 to 20 360), nothing else.
+
+**Why the last six are not recoverable here.** They are the note itself. The stopping criterion asks that no bound stand closer to failing than at the anchor, and this Circle moved the pin, which the file's convention answers with a written attribution. Only a note costing zero lines satisfies the criterion as written, and a note costing zero lines is no note. This record argues against buying lines that way, so six lines of the gap stand: the closure note should state 15 lines of head-room rather than repeat the criterion at `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md:180`.
+
+The record stays open. What it now holds is a decision for the closure, not a defect with an unapplied fix.
