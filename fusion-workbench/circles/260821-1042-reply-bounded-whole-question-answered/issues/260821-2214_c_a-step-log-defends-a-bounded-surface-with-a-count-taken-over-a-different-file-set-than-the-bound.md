@@ -38,3 +38,22 @@ re-run: 18 314 over `lib/__tests__/*.test.ts`, 20 360 over `find lib/__tests__ -
 is the set the bound reads. The wrong figure now understates the head-room gap by more than it did
 when the record was filed, because Turn 3 moved the surface from 20 364 to 20 360 and the 18 314
 did not move at all.
+
+---
+Resolved: Replaced the wrong clause in
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md`
+(lines 109-110). It read "the suite still measures 18 314 lines across
+`lib/__tests__/*.test.ts`" and now reads "the suite still measures 20 360 lines across
+`hooks/lib/__tests__/**.ts`", which is the label the bound itself carries at
+`hooks/lib/__tests__/surface-growth-bound.test.ts:388`. Both counts were re-measured
+before the edit rather than copied from this record, and both had moved since it was
+filed: 18 310 over `lib/__tests__/*.test.ts`, 20 360 over the recursive `.ts` set, which
+is also what the last line of `hooks/lib/__tests__/fixtures/surface-growth.golden` records.
+Nothing else in that log was touched, per the step 6 precedent it cites. No file under
+`hooks/` was edited, so none of the surface's remaining head-room was spent.
+
+Residual, deliberately left standing: the preceding sentence in that log still says "11
+lines of head-room", the figure at the moment step 5 ran (surface 20 364, budget 20 375).
+Against the 20 360 now stated it computes to 15. It was not part of the clause this record
+names, and a past figure that was true when written is a record of its moment rather than
+a defect, so it was left for a reader to decide rather than corrected silently.
