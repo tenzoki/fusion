@@ -54,16 +54,16 @@ whitelist:
         (A ──< B: one A, many B)
 
   - id: C06
-    name: "One name per thing"
+    name: "One name, one formulation"
     instruction: |
       Use the same term for the same entity throughout, do not rotate through
       synonyms in chat ("registry" here, "catalog" there, "uif-framework.yaml"
       elsewhere for one thing). Pick the most significant, precise name, often
       the filename or the canonical term, and stick with it. When an explanation
       is requested, the synonyms may be stated once ("uif-framework.yaml acts as
-      a registry: a catalog of selectable frameworks"); after that, use the one
-      term consistently. Likewise one formulation per claim: saying a claim
-      twice does not make it truer.
+      a registry: a catalog of selectable frameworks"); after that, the one term.
+      Likewise one formulation per claim: saying a claim twice does not make it
+      truer.
     examples:
       - |
         Avoid: "The registry lists all frameworks. The catalog loads at startup.

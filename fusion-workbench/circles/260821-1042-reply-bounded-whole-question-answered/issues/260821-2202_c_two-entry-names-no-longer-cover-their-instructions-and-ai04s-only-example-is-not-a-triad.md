@@ -83,3 +83,38 @@ resolved where the clause lives, which it now has: `rules/user-facing-output.md:
 formulation per claim" as its own bullet and the profile entry stayed. So the reason this record
 gave for waiting has expired, and the rename is now a clean, unblocked edit inside the profiles'
 own budget.
+
+---
+**Resolved: 260822-0027 by ontocoder.** C06 is renamed in both copies of both chat profiles,
+which closes the half this record kept open: `"One name per thing"` → `"One name, one
+formulation"`, `"Eine Benennung pro Sache"` → `"Eine Benennung, eine Formulierung"`. Both
+halves of the instruction are now reachable by an agent scanning `name:` fields, which is
+what this record asked for.
+
+**The rename, not the split.** The split into two entries is the shape this record calls
+cleaner and `rules/user-facing-output.md:80-81` already uses, and it was priced and rejected
+on the budget in
+`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md`
+(option 1, net zero or less, held per profile file). A second entry costs its own `- id:`,
+`name:`, `instruction:` and `examples:` keys, about +57 bytes English net of the text moved
+out of C06 and more in German, and the only cut of that size inside these files is C06's own
+worked `Avoid:`/`Better:` exhibit. Deleting a working example to buy a heading is the worse
+trade, so the rename stands and the split is not carried forward as owed work.
+
+**The cut that pays for it, and it is C06 correcting itself.** The instruction opened with
+"Use the same term for the same entity throughout" and closed with "after that, use the one
+term consistently", which is one claim in two formulations inside the entry that forbids
+exactly that. The close is now "after that, the one term." German drops `konsequent` from
+"danach konsequent der eine Begriff" for the same reason: `durchgehend` in the first sentence
+already carries it.
+
+**Bytes, measured with `wc -c` against HEAD `084c626`.** English 6 854 → 6 844 (−10): +7
+rename, −17 cut. German 7 407 → 7 405 (−2): +9 rename, −11 cut. The German rename is +9
+rather than +9-characters-and-fewer-bytes because neither name carries an umlaut; the trap
+this record hit on AI04 does not bite here. Each of the four files ends net negative, so each
+satisfies the per-file budget on its own without borrowing from the other language or from
+the always-on corpus.
+
+Both plugin/workbench pairs verified byte-identical with `diff -q` after the edit, all four
+parse, and line numbering is unchanged (English 184 lines, German 186), so every existing
+citation into these files still resolves. `rules/user-facing-output.md` was not touched.
