@@ -48,3 +48,17 @@ Cut a release: bump `.claude-plugin/plugin.json`, bump the fusion entry in the m
 ## What this is not
 
 Not a defect in `bin/fusion-prose-metric`, which works. Not a call for a guarded call site: `CLAUDE.md` records that convention (decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`) and no prompt calls this helper at all today, so there is no call site to guard. The gap is between the tag and the tree.
+
+---
+Resolved: closed as the thinner of two independent filings of one fact, not as fixed. An analyst
+running the commissioned measurement reached the same root at 00:35 and filed
+`shared/issues/260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`,
+which carries everything this record has and three things it does not: each of the four facts
+checked individually rather than asserted together, the installer cleared by name
+(`install.sh:82` copies `bin` wholesale, so a default-ref install is unaffected and only a
+pinned user is exposed), and the consequence stated as the sharper claim, that the version
+string cannot distinguish an installation carrying the program from one that does not.
+
+**The defect is live and is tracked there.** One record, one location, per the Origin Rule's
+second corollary. This one is closed to keep a single home, and the commit that filed it,
+`c53a903`, cites this path.
