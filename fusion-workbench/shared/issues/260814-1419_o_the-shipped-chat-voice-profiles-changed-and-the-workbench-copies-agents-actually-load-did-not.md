@@ -53,3 +53,39 @@ The emitted path is the workbench copy. Its C04 entry still reads *"Gate-Prompts
 Fix 1 was not taken and part (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` stays unanswered; the scope of the helper's use here was decided for this comparison alone (`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`, option 1, recommended and not yet answered by the user).
 
 **Marker stays `_o_`.** The mechanism exists; the divergence this record measures does not close until the workbench copies are actually refreshed through it, which is plan step 8. The bookkeeping gap recorded at the end of this file is untouched.
+
+---
+**Annotation appended 260821-0322** (coder, plan step 16 of
+`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+One claim in the timeline above has **expired**. Appended rather than edited, because the sentence
+was accurate when written and the date it stopped being accurate is part of the finding.
+
+**The expired claim.** *"Even a forced copy would bring `~/.fusion/stilwerk/`, which is the 8.2.0
+tarball and not this work tree."* True on 2026-08-14 at HEAD `0301909`. `$FUSION_PLUGIN_ROOT`
+resolves to `/Users/k1/.fusion`, and its `.claude-plugin/plugin.json` reads version **10.4.0**
+today, so the obstacle the sentence names has gone: a forced copy no longer reaches an 8.2.0
+tarball.
+
+**Today's measurement, and what it does and does not show.** Measured 2026-08-21 with
+`diff -q "$FUSION_PLUGIN_ROOT/stilwerk/<f>" stilwerk/<f>` over all four profiles, against two
+trees:
+
+```
+vs. the work tree at 7135a19 (this Circle's Grounding HEAD)   all four IDENTICAL
+vs. the work tree at 86edaac (this Circle's repunctuation)    all four DIVERGED
+```
+
+So the installed copy caught up with the work tree at some point before this Circle opened, which
+is what retires the sentence, and it has since fallen behind again by exactly this Circle's four
+`stilwerk/` commits, `5ed284d`, `403b91a`, `ca83e79` and `02ea2bd`. The obstacle is not permanent
+and it is not gone for good either: it recurs the moment the work tree moves ahead of the last
+release. What removed it for this repository is not the install being fresh but plan step 3, whose
+Step 0e comparison resolves the shipped root through `bin/fusion-source-root` and therefore reads
+this work tree here rather than any tarball.
+
+**The record is not closed on this.** The marker stays `_o_` for the reason the 260821-0020 progress
+note already gives: the mechanism exists and the divergence this record measures is a separate
+condition. That condition is now met on its own terms and by a different act, plan step 8, which
+refreshed the four workbench copies; all four are byte-identical with the work tree as of
+`diff -q stilwerk/<f> fusion-workbench/stilwerk/<f>` at HEAD `86edaac`. What is still open in this
+file is the bookkeeping gap at the end of it, which nothing here touches.

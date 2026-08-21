@@ -562,7 +562,7 @@ deferred before the Circle's marker moves.
 - **Closes:** `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
   and `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`
 
-### 16. Three record annotations that must not become rewrites
+### 16. [DONE] Three record annotations that must not become rewrites
 
 - **Executor:** coder
 - **Files:** `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`,

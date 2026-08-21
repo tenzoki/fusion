@@ -74,3 +74,37 @@ tracks: the `see` sites are at `:9` and `:12`, not `:9` and `:14`. The finding i
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The progress note in `260816-0740_*_…em-dash-ceiling…md:82` still carries the unreproducible figure. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Correction appended 260821-0322** (coder, plan step 16 of
+`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+This is the corrected statement of record for the two sentences point 1 and point 2 name. Nothing
+above is rewritten, here or in the record that carries the same two sentences: the wrong sentence is
+the evidence that it was wrong, and deleting it would remove the finding while looking like a fix.
+
+**The identity, stated without a total.** Normalised for punctuation and case, the token streams of
+`rules/user-facing-output.md` before and after `6049d3e` are identical: no word was added, removed
+or substituted. That is the whole of the load-bearing claim and it needs no number.
+
+**A total, only with the tokenisation that produces it.** No count stands on its own here, because
+seven tokenisations of the same two files return seven different totals, 2 513 to 2 710, each equal
+on both sides. `2733` is above all of them and belongs to none. Anyone quoting a total names the
+tokenisation in the same sentence, for example: 2 693 tokens under a `\w+` split, or 2 710 under
+`[a-z0-9]+`, or 2 695 before and 2 663 after under `wc -w`, where the difference is the 32
+free-standing em-dashes that the split counts as words and the other tokenisations do not.
+
+**The capitalisation, in the direction the evidence shows.** Ten tokens gained a capital and none
+lost one. The commit message's clause is inverted at both ends: the `see` it says lost a capital is
+the one at `:12`, which **gained** one, and the `see` inside the merged parenthetical at `:9` reads
+lowercase before and after.
+
+**How this note was produced.** The three statements above are the two independent passes already
+recorded in this file, the coderev evidence block and the 260816-1345 reconciliation, restated in
+the corrected form the record asks for. No count was re-run for this note, so it adds no fourth
+measurement and claims none.
+
+**Where an uncorrected copy still stands.** Points 1 and 2 are repeated verbatim in the progress
+note on `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
+which this note does not touch. A reader who reaches that copy first has no pointer here; closing
+that gap is a separate correction on a separate record and is not part of plan step 16, whose file
+set names this record and not that one.
