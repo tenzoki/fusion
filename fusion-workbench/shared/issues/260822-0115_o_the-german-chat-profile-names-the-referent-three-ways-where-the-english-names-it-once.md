@@ -1,0 +1,58 @@
+The German chat profile names the referent three ways where the English names it once
+
+---
+
+**Severity:** Medium
+**Domain:** data
+**Filed by:** ontorev, reviewing `084c626..dbf259a`, review file `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
+**Affects:** `stilwerk/chat-voice-de.yaml:24`, `:26`, `:106`, and `fusion-workbench/stilwerk/chat-voice-de.yaml` at the same lines
+**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2205_c_the-german-ai04-clause-reads-as-a-calque-of-the-english-one.md` (the same class, one entry over); `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_c_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md` (C06, the entry that forbids what this record describes)
+
+---
+
+## What is wrong
+
+Two German entries govern the same object, naming a token's referent, and between them they
+spell that object three different ways. The English profile spells it once.
+
+| | English | German |
+|---|---|---|
+| C02 `name:` | "Name the referent" (`chat-voice-en.yaml:25`) | "Klartext-Referenten" (`chat-voice-de.yaml:24`) |
+| C02 `instruction:` | "without its referent" (`:27`) | "mit ihrem Bezug nennen" (`:26`) |
+| AI05 `instruction:` | "Name the referent." (`:103`) | "Das Bezugswort benennen." (`:106`) |
+
+`Referent`, `Bezug`, `Bezugswort`. In English, C02's name and AI05's closing sentence are the
+identical four words, so a reader meeting the second recognises the first. In German nothing
+links them.
+
+`Referent` is also the weakest of the three on its own. In ordinary German it names a person
+who gives a talk; the linguistic sense exists but is not what a reader reaches for first, and
+`Bezugswort` two entries down is the term the file itself already uses correctly.
+
+## Why it matters
+
+This is exactly the fault C06 states, in the file that states it: "Für dieselbe Entität
+durchgehend denselben Begriff verwenden" (`chat-voice-de.yaml:60`). A profile that carries
+three names for one object while forbidding that is not evidence a reader can act on.
+
+It is also a lookup surface. An agent scanning `name:` fields for the entry that governs bare
+counts and codes reads "Klartext-Referenten" and gets no help from AI05's "Bezugswort", and the
+reverse.
+
+## What to do
+
+Pick one German term and use it in all three places. `Bezugswort` is the candidate this record
+would name: it is unambiguous, it is already in the file, and it is the one an agent writing
+German prose would produce. `Klartext-Referenten` then becomes something like
+`"Bezugswort statt nacktem Kürzel"`, which is longer, so the fix costs bytes and belongs
+inside the profiles' own budget per
+`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md`.
+
+Not verified by this record: whether a shorter German name exists that keeps `Bezug` as the
+stem and stays inside the current byte count. That is the fixer's search, not this record's
+prescription.
+
+## Provenance
+
+Pre-existing. Neither `dce8894` nor `dbf259a` touched C02 or AI05. Found while reading every
+remaining entry in both languages for the name-covers-instruction fault `dce8894` closed for C06.
