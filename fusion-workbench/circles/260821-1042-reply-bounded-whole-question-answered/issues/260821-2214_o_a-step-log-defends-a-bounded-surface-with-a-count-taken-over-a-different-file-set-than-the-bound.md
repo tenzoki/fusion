@@ -28,3 +28,13 @@ The 2 050-line difference is `helpers/citation-scan.ts` (574), `helpers/guard-ha
 **Fix.** Replace the clause with the figure the bound reads, which the same Turn already measured correctly twice: `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2120-coder-the-reply-answers-the-question-that-was-put.md:89-93` and `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md:191` both give 20 364 and 11 lines of head-room. Correcting another agent's log in place has a precedent in this Circle and a stated bound on it: step 6 corrected two figures in step 2's log and touched nothing else (`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md:225-240`).
 
 **Cross-references:** `hooks/lib/__tests__/surface-growth-bound.test.ts:199` ("The hook-test surface counts `.ts` under `hooks/lib/__tests__/`"); `README-hooks.md` `### Growth bounds on the shipped text`.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). **Confirmed open and unfixed.** The
+sentence is still in place at
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md`,
+reading "the suite still measures 18 314 lines across `lib/__tests__/*.test.ts`". Both counts
+re-run: 18 314 over `lib/__tests__/*.test.ts`, 20 360 over `find lib/__tests__ -name '*.ts'`, which
+is the set the bound reads. The wrong figure now understates the head-room gap by more than it did
+when the record was filed, because Turn 3 moved the surface from 20 364 to 20 360 and the 18 314
+did not move at all.

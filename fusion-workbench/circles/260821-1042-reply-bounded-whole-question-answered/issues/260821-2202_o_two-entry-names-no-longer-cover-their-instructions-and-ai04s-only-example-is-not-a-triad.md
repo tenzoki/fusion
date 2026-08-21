@@ -70,3 +70,16 @@ move or copy the clause out of the profile. Renaming the entry for a half that m
 spends +7 bytes English and +9 German on text that would then be renamed back. The rename
 costs the same after that question is answered, and the accurate name is the one this record
 already proposes.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). **Confirmed open, and open for the
+half the record already says stands.** Verified in the tree: AI04 reads `name: "Mechanical
+enumeration"` in `stilwerk/chat-voice-en.yaml:120` and `"Mechanische Aufzählungen"` in
+`stilwerk/chat-voice-de.yaml`, both mirrored in `fusion-workbench/stilwerk/`; C06 still reads
+`name: "One name per thing"` at `stilwerk/chat-voice-en.yaml:57` while its instruction carries
+"Likewise one formulation per claim". The C06 rename remains owed and remains cheapest after
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
+resolved where the clause lives, which it now has: `rules/user-facing-output.md:81` carries "One
+formulation per claim" as its own bullet and the profile entry stayed. So the reason this record
+gave for waiting has expired, and the rename is now a clean, unblocked edit inside the profiles'
+own budget.

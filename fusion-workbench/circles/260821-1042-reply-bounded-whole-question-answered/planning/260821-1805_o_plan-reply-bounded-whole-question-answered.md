@@ -1,7 +1,7 @@
 # Implementation Plan: the whole reply is bounded, and it answers the question that was asked
 
 **Date:** 2026-08-21
-**Status:** Draft
+**Status:** Complete
 **Spec:** none. Planned from the Directive in `circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md`, whose `**Active spec/plan:**` field reads `(none yet)`.
 **Decidability:** The load-bearing question is whether an agent can tell, while it drafts a reply, that a block of that reply falls outside the question it was asked. It is decidable at that moment and only there. The agent holds the user's message and the draft together, and the correspondence between them is a judgement over two texts it has in front of it. The same question is not decidable from anything the project persists: the workbench stores no chat reply at all, and a session transcript holds what the agent said without holding what the user would have accepted as an answer. So the mechanism this plan changes is the text the writer reads, and no check is added anywhere. That matches what `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` requires until its registered measurement runs. The second question, whether a reply is over its cap, is decidable by counting and the file already tells the writer to count. The residual is stated rather than closed: an instruction placed at the writer is overridable under task pressure, this project has a worked case of exactly that in `CLAUDE.md`, and nothing in this plan would notice a violation.
 
@@ -220,3 +220,51 @@ The substantive verification is a reading rather than a run, and step 6 records 
 
 - [ ] What total caps a session summary, now that no reply has an uncapped tail? Filed as `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`, recommendation option 1. Step 2 needs the number; it is not blocking, because the recommendation is written unless the user answers otherwise at this gate.
 - [ ] Three decisions this Circle's Grounding cites still carry an open marker while their substance is settled elsewhere, all three in `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/`. The playmaker recorded the same observation at activation. Moving a decision marker is not the planner's act and no step here does it.
+
+## Reconciliation Log
+
+**Reconciliation 260821-2349** (reconciler, domain `code`, HEAD `9a68760`, session anchor
+`e764637`, working tree clean). Log:
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2349-reconciliation.md`.
+
+**`**Status:**` moved from `Draft` to `Complete`. The filename marker is deliberately left at
+`_o_`, and the reason is measured rather than judged.** All six steps carry `[DONE]`, all six
+executor logs carry `**Status:** Complete`, and `cd hooks && npm test` exits 0 at HEAD (40 files,
+718 tests). By `rules/fusion-workbench-conventions.md` `## Inline State Tracking` the rename to
+`_c_` is owed. It cannot be taken alone: fifteen citations across twelve workbench files spell this
+plan's `_o_` marker literally, and five of them sit inside the corpus
+`hooks/lib/__tests__/workbench-citation-lint.test.ts` recomputes on every run. Renaming was
+performed as a trial and reverted; the gate went red with `stale marker '_o_'` on those five, so
+the rename would turn `npm test` red for whoever runs it next. The blocking citations and the order
+that clears them are filed as
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
+
+**Verified against the tree, step by step.**
+
+| Step | Claim | Verified |
+|---|---|---|
+| 1 | The baseline exists as a re-runnable command with figures | `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md` exists, 325 lines, committed in `58aae9b` |
+| 2 | The three routes out of the length cap are closed | `rules/user-facing-output.md:49` (a sketch counts like every other line), `:103` (session summary a total of 25 as well as a 10-line header), `:108` (an over-count comes down by cutting, never by moving material down the same reply) |
+| 3 | The reply answers the question that was put | `rules/user-facing-output.md:53`, opening `## Information architecture` before its ordering, citing `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing` |
+| 4 | Both register habits in four profile files, pairs byte-identical, each file net negative | AI04 and C06 carry them; `diff -q` silent on both pairs; `chat-voice-en.yaml` 6 876 → 6 854, `chat-voice-de.yaml` 7 480 → 7 407 |
+| 5 | `rules/user-facing-output.md` net zero or less against `e764637` | 20 144 → 20 142, −2 |
+| 6 | The measurement note exists and states the clauses landed unenforced | `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md` |
+
+**One drift between this plan and what landed, stated rather than repaired.** The budget table at
+`## Current State` records the hook test suite as "Not touched, and no test is added". It was
+touched: two attribution comment blocks entered
+`hooks/lib/__tests__/reference-resolution-lint.test.ts` above `BASELINE`, and Turn 3 consolidated
+them into one. The surface stands at 20 360 lines against a budget of 20 375, so head-room is 15
+where the anchor had 21. The plan's stopping criterion that "none of the four growth bounds stands
+closer to failing than it did at HEAD `e764637`" is therefore unmet at closure. Filed and reasoned
+in `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`.
+
+**The other three growth bounds, measured at HEAD.** Always-on rule set 95 064 bytes against a
+budget of 98 573, so 3 509 free where the anchor had 3 507. `agents/*.md` 416 205, unchanged at
+1 638 free. `skills/*/SKILL.md` 240 409, unchanged at 30 free.
+
+**The plan's closure claim on the verbosity record is not confirmed here.** `## Where this Circle
+stops` says `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+is closed "both halves". Its rule-text half is closed, including the fourth route the plan's own
+survey missed. Whether the record may be called closed is the user's call and is reasoned in the
+reconciliation appended to that record. The marker was not moved.

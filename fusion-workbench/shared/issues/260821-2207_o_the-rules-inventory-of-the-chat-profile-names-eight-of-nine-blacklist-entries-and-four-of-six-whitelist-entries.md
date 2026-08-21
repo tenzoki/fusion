@@ -57,3 +57,14 @@ sentence at `:32` implies is true today.
 held to two independent budgets, each net zero or less, by `## Current State` of
 `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`.
 Adding to this file needs a cut in it.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). **Confirmed open, and one of the two
+bullets moved without closing the gap.** `rules/user-facing-output.md:18` now names "mechanical
+enumeration" where it named "mechanical three-part lists", which repaired a different defect
+(`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2251_*_the-rules-blacklist-gloss-names-three-part-lists-while-ai04-now-governs-enumeration.md`)
+and left the count at eight of nine: AI08, "Announcing structure", is still absent. `:19` still
+names four of the six whitelist entries. What did change is the cost this record described: C06's
+new clause reached a profile-less project after all, as its own bullet at
+`rules/user-facing-output.md:81`. So the concrete consequence is gone and the inventory defect is
+not.

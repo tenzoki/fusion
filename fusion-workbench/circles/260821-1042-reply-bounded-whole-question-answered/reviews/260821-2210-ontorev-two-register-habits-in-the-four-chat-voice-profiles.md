@@ -161,3 +161,24 @@ no gate or test enforces any of this, and none was proposed here. Every finding 
 established by reading, by a one-off measurement, or by running an existing gate that is green.
 The one gate change any record proposes — B1 route 2 — extends an existing citation lint's corpus
 and asserts nothing about register.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). Confirming against the tree what this
+review's seven records did after Turn 3, without rewriting any finding.
+
+- A1, AI04's colliding remedies: **closed.** The entry now carries one test, "Use an enumeration
+  only when the items are parallel and the reader needs to count them", in all four copies.
+- A2, C06's clause on the uncovered half: **closed by route 1.** `rules/user-facing-output.md:81`
+  carries "One formulation per claim" as its own bullet and the profile entry stayed.
+- A3, the two entry names: **still open for C06.** AI04 was renamed to "Mechanical enumeration";
+  C06 still reads "One name per thing". The reason its record gave for deferring the C06 rename was
+  that A2 might move the clause out of the profile. A2 kept it there, so that reason has expired.
+- B1, the C05 pointers: **still open, unchanged**, and all three routes still available.
+- C1, the German calque: **closed.** The German AI04 is now infinitive imperative throughout and
+  carries no `Default-` compound.
+- D1, the wrong dash in the German profiles: **still open, untouched.**
+- D2, the rule's short inventory: **still open**, though the "three-part lists" wording it did not
+  raise was corrected for a different reason.
+
+The review's `**Reviewed-range:**` is `e764637..de0c6f6`, and its `**Not-opened:**` list was picked
+up by no later pass.

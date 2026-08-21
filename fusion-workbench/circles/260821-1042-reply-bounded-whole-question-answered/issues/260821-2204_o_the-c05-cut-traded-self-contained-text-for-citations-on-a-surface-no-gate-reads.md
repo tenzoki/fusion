@@ -76,3 +76,12 @@ One of three, and they are mutually exclusive on the spelling:
 
 ---
 Also seen: 260821-2210 by coderev — reached the same finding independently from the shipped-rule side; `surface()` in `hooks/lib/__tests__/reference-resolution-lint.test.ts` walks no `.yaml`, so the four C05 pointers and C04's older `## Length` pointer are the only citations this Circle added that no gate resolves. No second record filed.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). **Confirmed open, unchanged, and all
+three routes still available.** In the tree: C05's instruction at
+`stilwerk/chat-voice-en.yaml:49-50` still cites `rules/user-facing-output.md` and the heading
+`## Sketch structure instead of narrating it` in the plugin-relative spelling, in all four copies.
+Both anchors still resolve. `surface()` in `hooks/lib/__tests__/reference-resolution-lint.test.ts`
+still walks no `.yaml`, so neither pointer is gated. Nothing this Circle did after the review
+touched either half.

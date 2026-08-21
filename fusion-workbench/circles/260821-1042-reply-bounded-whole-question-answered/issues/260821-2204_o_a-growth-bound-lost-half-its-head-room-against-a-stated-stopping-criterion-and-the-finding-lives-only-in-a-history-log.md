@@ -61,3 +61,23 @@ $ cd hooks && npm test                                        # exit 0, 40 files
 **Why the last six are not recoverable here.** They are the note itself. The stopping criterion asks that no bound stand closer to failing than at the anchor, and this Circle moved the pin, which the file's convention answers with a written attribution. Only a note costing zero lines satisfies the criterion as written, and a note costing zero lines is no note. This record argues against buying lines that way, so six lines of the gap stand: the closure note should state 15 lines of head-room rather than repeat the criterion at `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md:180`.
 
 The record stays open. What it now holds is a decision for the closure, not a defect with an unapplied fix.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). **Confirmed open, and its figures are
+current rather than stale.** Re-measured independently: `find hooks/lib/__tests__ -name '*.ts' |
+xargs cat | wc -l` gives 20 360 against a budget of 20 375, so 15 lines of head-room, which is what
+this record's progress note states. `hooks/lib/__tests__/fixtures/surface-growth.golden` agrees at
+`total 20360`. The two attribution blocks are one at
+`hooks/lib/__tests__/reference-resolution-lint.test.ts:905-910`. `cd hooks && npm test` exits 0,
+40 files and 718 tests.
+
+One correction to how this is being framed at closure. It is being read as "no zero-line outcome
+exists". The tree supports a weaker statement: a zero-line outcome existed and was declined on good
+grounds. The gate's own re-approval text at `hooks/lib/__tests__/reference-resolution-lint.test.ts`
+asks only that the received numbers be checked and written into `BASELINE` with the edit; the
+attribution comment is that file's accumulated convention, which this record itself says it does
+not argue for dropping. Honouring the convention was a defensible choice and it cost the six
+remaining lines. The criterion at
+`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+`## Where this Circle stops` is unmet at closure either way, which is what this record asks the
+closure note to say.

@@ -100,3 +100,32 @@ Filing my first two records, I ran `sed -i '' … *.md` over this Circle's `issu
 **Before the Circle closes.** Finding 1, because the closure note otherwise claims a record closed that is not. Finding 4, because it is a two-minute edit that a resumed session depends on. Finding 3's disclosure, because the closure note has to state the growth rather than deny it.
 
 **Not a release blocker.** Finding 2 and finding 5 are corrections to shipped prose and to a workbench record. Neither affects behaviour, and both are cheaper to take together with whatever else opens those files next.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). Confirming against the tree what this
+review's five findings did after Turn 3, without rewriting any of them.
+
+- Finding 1, the fourth route: **closed.** `rules/user-facing-output.md:102` caps a gate at eight
+  lines in total whatever surface renders it, and `:95` sends a fourth option back to the decision.
+  Its record carries `_c_`.
+- Finding 2, the fragment: **closed.** `rules/user-facing-output.md:53` now carries a finite verb in
+  its third sentence and an explicit subject in the second.
+- Finding 3, the growth bound: **still open, and partly repaired.** The two attribution blocks are
+  one at `hooks/lib/__tests__/reference-resolution-lint.test.ts:905-910`; head-room is 15 lines where
+  this review measured 11 and the anchor had 21. The stopping criterion is still unmet, which is the
+  disclosure the review asked the closure note to carry.
+- Finding 4, the plan's progress: **closed for the step markers, and this pass took the rest.** All
+  six steps carry `[DONE]`. `**Status:**` moved from `Draft` to `Complete` today. The `_o_` to `_c_`
+  rename is blocked by fifteen marker-literal citations, measured and filed as
+  `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
+- Finding 5, the 18 314 count: **still open and unfixed** in the step log it names.
+
+The three open obligations this review listed before closure: the fourth route is closed, the growth
+disclosure is filed and re-measured, and the plan is `Complete` in its header but not yet renamed.
+`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+stays open, with a reconciliation appended to it stating exactly what landed and what closing would
+assert.
+
+The review's `**Reviewed-range:**` is `e764637..de0c6f6`. Four commits after it are covered by no
+review: `a5e2cc5`, `1daf063`, `c8f0c74`, `9a68760`. The fifteen paths in its `**Not-opened:**` list
+were carried by no later pass.

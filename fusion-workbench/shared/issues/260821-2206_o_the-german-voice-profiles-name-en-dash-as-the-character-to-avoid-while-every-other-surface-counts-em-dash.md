@@ -55,3 +55,11 @@ count in each case; U+2013 and U+2014 are both three bytes in UTF-8.
 
 If the intent was that German should avoid **both** dashes, say so in words rather than by
 printing one of them, and note that the metric will then be measuring half the rule.
+
+---
+**Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). **Confirmed open and untouched.**
+`stilwerk/chat-voice-de.yaml:82` still reads "Gedankenstriche (–)" with U+2013, and
+`stilwerk/default-voice-de.yaml:143` carries the same character. AI02's second example at
+`chat-voice-de.yaml:89` still uses U+2013 where its first uses U+2014. Turn 3 rewrote AI04 in the
+same file and did not reach AI02, which is what this record predicted. Both German profiles still
+measure zero em-dashes, so nothing is red.

@@ -72,3 +72,12 @@ Retired:
 
 ---
 Answered: circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md — 25 lines total, the ten-line header kept, chosen by the user at the plan gate on 2026-08-21. The planner's recommendation, taken as filed: it closes the open tail without invalidating the bulk of existing reports, which the 15-line alternative would have done.
+
+---
+Implemented: `9aa8ecf` — `rules/user-facing-output.md:103` now reads "Session summary: ≤ 25 lines in
+total, ≤ 10 of them before the first 'Details' anchor", with this record cited on the line. Option 1
+as recommended and as the user answered at the plan gate: the total is stated, the ten-line header
+is kept, and the number is a judgement rather than a measurement, which the entry does not pretend
+otherwise. Verified at HEAD `9a68760`; `cd hooks && npm test` exits 0, so the heading `## Length`
+and the record citation both still resolve under
+`hooks/lib/__tests__/reference-resolution-lint.test.ts`.
