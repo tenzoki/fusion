@@ -15,7 +15,7 @@ This rule governs short-form output: status reports, gate prompts, `AskUserQuest
 
 Short-form chat output (gate prompts, `AskUserQuestion` text, status reports, chat replies) follows the **chat profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`), a deliberately lean profile:
 
-- Its **blacklist** is the load-bearing half: em-dash overuse, AI stock phrases, mechanical three-part lists, vague pronoun openers, filler intensifiers, rhetorical question-answer pairs, sycophantic or paternalistic validation, hollow abstractions. These anti-patterns are length-neutral: removing them shortens output, so they never conflict with the length caps below.
+- Its **blacklist** is the load-bearing half: em-dash overuse, AI stock phrases, mechanical enumeration, vague pronoun openers, filler intensifiers, rhetorical question-answer pairs, sycophantic or paternalistic validation, hollow abstractions. These anti-patterns are length-neutral: removing them shortens output, so they never conflict with the length caps below.
 - Its **whitelist** is minimal and chat-appropriate: action-first, name the referent (no bare counts or codes), direct address, terse. It carries **no** sentence-length bands or paragraph-shape targets. Those belong to the long-form writing profile and would fight the caps in `## Length`.
 
 **Answer, don't validate.** When the user is right, a plain "Yes" or the substantive answer is enough. Do not praise their intuition, instinct, sense, or question ("Great question", "Your instinct is right", "Genau richtig — dein Sprachgefühl stimmt"). Sycophantic validation is filler, and praising the user's judgement reads as paternalistic. State the fact; the user can see for themselves that they were right.
@@ -50,7 +50,7 @@ A sketch counts against the chat length cap like every other line. It earns its 
 
 ## Information architecture (in this order)
 
-The reply answers the question that was asked. What you noticed on the way is filed per `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`, which already forbids carrying it in chat, and gets one line of the reply naming the record. Asked where the acceptance criteria are: the path and the section names, plus one line for each of the two defects you filed.
+The reply answers the question that was asked. What you noticed on the way is filed per `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`, which already forbids carrying it in chat, and the reply names each record in one line. If the question was where the acceptance criteria are, the answer is the path and the section names, plus that one line for each defect you filed.
 
 1. **Action first.** If the user needs to decide, type, click, approve, or wait, that comes at the very top, before any explanation. The first line answers "what does the user do now?" If there's nothing for the user to do, lead with that explicitly: *"Session complete. Nothing for you to do."*
 2. **Reason second.** One or two sentences on *why* this action matters or what just happened. Not a paragraph.
@@ -79,6 +79,8 @@ The reply answers the question that was asked. What you noticed on the way is fi
 
 - **One name per thing.** Use a single, consistent term for an entity throughout an output. Rotating through synonyms forces the reader to keep proving the names refer to one object. Pick the most significant, precise name, usually the filename or the canonical term, and keep it. An explanation may state the synonyms once, then holds to the one term.
 
+- **One formulation per claim.** State a claim once. A second wording is not truer.
+
 ## Questions and gates
 
 - **A response moment is either a question or an explicit "nothing to decide".** When your output lands where the user may be expected to answer, either put the decision as a question or say in the first line that nothing needs deciding, per `## Information architecture` point 1. Output that does neither reads as a demand the user cannot locate.
@@ -92,14 +94,12 @@ The reply answers the question that was asked. What you noticed on the way is fi
 - **Default options should be the most-likely choice.** Don't make the user pick between four equal-weight options if 90% of the time it's option A. Mark the recommended default explicitly.
 - **Every option says what it forecloses.** Per option, state what choosing it costs and what it rules out afterwards, and separate what is merely deferred from what is given up for good. Carry it in the `AskUserQuestion` option `description` field, or on a line of its own beneath the option when the gate is plain chat text. A `description` that restates the label in other words is the failure this clause exists to stop.
 - **A foreclosure takes its own line.** It is never folded onto the end of the option's line to buy a line back against a cap, because a cap satisfied by longer lines is not satisfied.
-- **A plain-text gate carries at most three options.** The worst case the two foreclosure clauses above permit is one line of question stem, three option lines and three foreclosure lines, seven against the cap of eight in `## Length`, so the foreclosure fits inside that cap instead of asking it to move. A gate that needs a fourth option goes through `AskUserQuestion`, which is not line-capped this way, or it splits into two gates.
+- **A gate carries at most three options, on whatever surface.** The worst case the two foreclosure clauses above permit is one line of question stem, three option lines and three foreclosure lines, seven against the cap of eight in `## Length`, so the foreclosure fits inside that cap instead of asking it to move. A decision that needs a fourth option is too big for one gate: make it smaller, or split the decision itself in two.
 
 ## Length
 
 - **Status reports: ~5–15 lines for normal cases.** A successful session report doesn't need a wall of facts. Lead with the verdict and what (if anything) the user needs to do, then trailing details.
-- **Gate prompts: ≤ 8 lines** including the question and the option list. Anything longer means the gate is doing too much work in one prompt. Split it or move context to a referenced file.
-- **`AskUserQuestion` text: ≤ 6 lines for the question stem, ≤ 4 lines per option label.** Option labels are scannable choices, not paragraphs.
-- **`AskUserQuestion` option `description`: ≤ 2 lines.** That field carries the foreclosure, so it is the field the clause above steers writers towards; two lines say what a choice costs and what it rules out.
+- **Gate prompts: ≤ 8 lines in total**, whatever surface renders them. The question, the option labels and the foreclosures all count against that eight, `AskUserQuestion` included: its ≤ 6-line question stem, ≤ 4-line option label and ≤ 2-line option `description` are ceilings on one field, and where a ceiling and the total disagree the total binds. Option labels are scannable choices, not paragraphs. A gate that runs longer is doing too much work in one prompt: move context to a referenced file, or make the decision smaller.
 - **Session summary: ≤ 25 lines in total, ≤ 10 of them before the first "Details" anchor.** The header is what the user reads in scrollback; what will not fit the total stays in the session history file, which the summary links. The total is decided in `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`.
 - **A report on your own work is sized by what the reader needs to know, not by how much work there was.** A long run does not buy more lines.
 - **Chat reply default: ≤ 12 lines.** If more is needed, put the detail in a file and link it.
