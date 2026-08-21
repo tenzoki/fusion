@@ -49,3 +49,29 @@ Two further items are portfolio-wide and unrelated to this Circle: three decisio
 twice because an unexpanded wildcard entered a filename (filed `260821-0430`, open), and
 `portfolio.md` cannot meet the em-dash ceiling because four of its em-dashes are forms other
 shipped surfaces mandate.
+
+## Commit rhythm: a deviation from the plan's Testing Strategy, decided by the user
+
+The plan regenerates the rules golden once, at step 6. Step 2 landed and left `npm test` at
+exit 1 on two size-recording fixtures, which collided with the orchestrator's rule never to
+commit over a red tree.
+
+Put to the user as a conflict between those two rules, which was the wrong cut, and answered
+"green at each step". The user then asked whether that had been hasty. It had, and the framing
+was the reason: the substantive question is not which rule wins but whether it helps to pin
+numbers that are transient by construction. Step 5 takes a cut sized to what steps 2 and 3 spend,
+so `rules/user-facing-output.md` is expected to return to about its starting size; pinning 20 787
+now, something else after step 3 and something else again after step 5 is three approvals for a
+net effect near zero, each needing to be read. The hook-test line golden is the exception and
+moves genuinely: the attribution comments are permanent.
+
+Re-put, and answered: **collect, and commit once when green.** That gives a green HEAD at every
+commit and a single fixture diff, which the first framing had presented as mutually exclusive.
+Its real cost is that steps 2 to 6 sit uncommitted until the end, and that a run abandoned midway
+leaves work whose grouping has to be reconstructed. The loss risk stated in the first gate was
+overstated: files are files, and every executor dispatch in this Circle forbids whole-tree git
+commands.
+
+Consequence for the remaining steps: P2 is not committed on its own. P3 to P6 run, step 6
+regenerates both goldens over whatever the superseded regeneration left, and the whole of steps
+2 to 6 is committed at the end in splits by concern, with the suite green.

@@ -117,7 +117,7 @@ flowchart TD
    - Acceptance: `## Length` contains no clause that routes material out of a count, and no entry in it caps a prefix. Each of the four rewrites is checkable by reading the four lines named.
    - Dependencies: none. Records the byte delta it added, which step 5 must cover.
 
-3. **Write the clause that makes the reply answer the question that was put**
+3. [DONE] **Write the clause that makes the reply answer the question that was put**
    - Executor: `coder`
    - Files: `rules/user-facing-output.md`
    - Changes: `## Information architecture (in this order)` gains its subject before its ordering. The reply answers the question that was asked. What the agent noticed on the way is filed under `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`, which already requires the record and already forbids putting it in chat output, and the reply spends one line naming the filed record rather than carrying what is in it. Cite the conventions rule by file and heading, in the adjacent form the reference lint resolves. Keep the clause to the shortest form that states the rule and its one worked contrast, taken from `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`: the question was where the acceptance criteria are, the answer is the path and the section names, and the two defects found on the way are two filed records named in one line each.
@@ -135,7 +135,7 @@ flowchart TD
    - Acceptance: the four files stay byte-identical in their two pairs, verified with `diff -q`; each file's net byte delta is zero or less; both habits appear in both languages with a shorter form beside them.
    - Dependencies: none. Independent of steps 2, 3 and 5 by construction, because it holds its own budget.
 
-5. **Take the cut in the rule file, sized to what steps 2 and 3 spent**
+5. [DONE] **Take the cut in the rule file, sized to what steps 2 and 3 spent**
    - Executor: `coder`
    - Files: `rules/user-facing-output.md`
    - Changes: remove duplicated worked material until the file's net delta against HEAD `e764637` is zero or less. The candidates, measured at HEAD, in the order this plan recommends spending them:

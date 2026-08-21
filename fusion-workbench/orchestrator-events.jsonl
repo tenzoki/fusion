@@ -1866,3 +1866,11 @@
 {"ts":"2026-08-21T18:12:55","event":"commit","turn":1,"task":"T0","detail":"da88e68 four citations to wildcard marker form"}
 {"ts":"2026-08-21T18:12:55","event":"task_done","turn":1,"task":"T0","agent":"coder","detail":"da88e68"}
 {"ts":"2026-08-21T18:12:55","event":"task_start","turn":1,"task":"P1","agent":"analyst","detail":"freeze pre-change reply baseline"}
+{"ts":"2026-08-21T18:24:19","event":"commit","turn":1,"task":"P1","detail":"58aae9b reply-length baseline frozen"}
+{"ts":"2026-08-21T18:24:19","event":"task_done","turn":1,"task":"P1","agent":"analyst","detail":"58aae9b"}
+{"ts":"2026-08-21T18:24:19","event":"task_start","turn":1,"task":"P2","agent":"coder","detail":"close three routes out of the length cap"}
+{"ts":"2026-08-21T19:24:16","event":"task_done","turn":1,"task":"P2","agent":"coder","detail":"+643 bytes; uncommitted per batch-commit policy"}
+{"ts":"2026-08-21T19:24:16","event":"task_done","turn":1,"task":"P3","agent":"coder","detail":"+380 bytes; uncommitted per batch-commit policy"}
+{"ts":"2026-08-21T19:24:16","event":"gate_hit","turn":1,"task":"P4","detail":"ontocoder task: structured data change to four voice profiles"}
+{"ts":"2026-08-21T19:24:16","event":"gate_response","turn":1,"task":"P4","detail":"proceed"}
+{"ts":"2026-08-21T19:24:16","event":"task_start","turn":1,"task":"P4","agent":"ontocoder","detail":"two register habits into four voice profiles, net zero"}
