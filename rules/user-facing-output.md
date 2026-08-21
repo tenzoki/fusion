@@ -20,6 +20,11 @@ Short-form chat output (gate prompts, `AskUserQuestion` text, status reports, ch
 
 **Answer, don't validate.** When the user is right, a plain "Yes" or the substantive answer is enough. Do not praise their intuition, instinct, sense, or question ("Great question", "Your instinct is right", "Genau richtig — dein Sprachgefühl stimmt"). Sycophantic validation is filler, and praising the user's judgement reads as paternalistic. State the fact; the user can see for themselves that they were right.
 
+**Correctio earns its place when the reader would otherwise have assumed the rejected term.** The figure names a term and withdraws it in favour of a sharper one (`X rather than Y`, `X statt Y`, `nicht X, sondern Y`); where the reader would not have assumed the rejected term, the words spent on it carry nothing.
+
+- Not "Und nachgemessen statt geschlossen" → "Nachgemessen."
+- Earned, and kept: "auf `_p_` gesetzt, nicht auf `_c_`" (set to in-progress, not to closed), because closed is what a reader assumes of a finished task.
+
 **Do not apply the long-form writing profile (`default-voice-<lang>.yaml`) to chat.** Its consulting-register voice and sentence-length targets are wrong for a one-line gate prompt. Chat gets the chat profile; long-form prose gets the writing profile.
 
 **Structured artifacts are exempt from both profiles.** Dashboard lines (`orchestrator-live.md`), commit messages, monitor strings, event-log JSON, and machine-read tables or ID lists keep their terse, parseable shape. The chat profile is about prose habits, not data formats.
@@ -128,7 +133,8 @@ The style rules above are necessary but not self-enforcing. The known failure mo
 
 **Before you send any substantive explanation (a chat reply, a report body, a recommendation, a finding), run this five-point check on your draft and rewrite anything that fails:**
 
-1. **Thesis first.** Does the first line carry the finding or the recommendation? If the reader reaches paragraph three before learning the point, move it up.
+1. **Thesis first.** Does the first line carry the finding or the recommendation? If the reader reaches paragraph three before learning the point, move it up. **An opening sentence fails when the fact it stands in for was available to you and the sentence names the significance of that fact instead of the fact.** You hold what decides the case, because you know which facts you had, and nothing outside you can check it. The factual form is usually no longer than the form it replaces, so this costs nothing against `## Length` and is not licence for a longer opening.
+   - Not "Schritt 8 hat etwas gefunden, das mehr wert ist als seine eigene Arbeit" → "Schritt 8 fand neun Prosastellen, der Plan führte vier."
 2. **No em-dash asides.** Scan for `—` used as a parenthetical break. Replace each with a comma, a colon, parentheses, or two sentences. The telegraphic-with-parentheses pattern (clause, jargon aside, clause, compressed reason, all in one breath) is the single most common offender. One `—` per ~1000 words is the ceiling, matching the stylometric profiles.
 3. **Whole sentences, not fragments.** Each point is a grammatical sentence with a subject and a verb. "Recall top, Precision leck" is a fragment; "S1 hat hohen Recall, aber leckende Precision" is a sentence.
 4. **Every code and abbreviation glossed on first use.** This covers project-domain jargon, not only fusion-internal terms. `S1`, `gate.go`, `must_not`, `Orderer`, `AC`, `N=10` each get a referent or a short gloss the first time they appear. The reader does not hold the project's internal codes in working memory; do not assume it.
