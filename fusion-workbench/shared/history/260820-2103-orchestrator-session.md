@@ -2,7 +2,7 @@
 
 **Directive:** See the active Circle's record — `circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md`
 **Mode:** (unresolved — Phase 0 not entered)
-**Status:** In progress
+**Status:** Complete — Circle closed as Bounded Closure
 
 ## Setup snapshot
 
@@ -178,3 +178,48 @@ finish, but the next word added anywhere under `skills/` reddens the suite.
 **What the closure note must carry**, beyond the three items the plan's stopping clause 8 already names (the deferred measurement, the unrepaired `CLAUDE.md`, the unrepaired conditional rule files): the 13 open review findings, and the two of them that cannot be fixed until somebody takes a cut, because `260821-0302` and part 1 of `260821-0148` both write into `skills/setup/SKILL.md` and `skills/` has 30 bytes of head-room against a rule that permits no baseline edit as the way out.
 
 **One judgement the reconciler was asked for and reached against the run's own framing.** The Circle grew the corpus it repaired by 2 138 bytes net on the five plugin rule files (+2 265 on the six a `coder` dispatch actually receives): the repunctuation returned 470 and the Circle's new clauses spent 2 608, a ratio of 5.5 to 1. Both figures were re-measured twice, independently, and reproduce. The growth is *licensed* — Directive outcome 3 asks for a test the rule did not state, and a stated test costs bytes — but it is *unbounded*: the Directive names four outcomes and no cost, none of the eight stopping clauses names a byte figure, and the only pre-commitment is a Risks row that budgets the spend at nothing. It should have been named in the Directive. Filed as `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260821-0414_o_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md` rather than as a defect, because the answer changes how a Circle is bounded and is the user's.
+
+
+## Review coverage
+
+**Range:** `7135a19..HEAD` — 26 commits
+**Covered by:** two `coderev` passes. `260821-0145` over `7135a19..7832553` (13 commits, `Not-opened: none`);
+`260821-0257` over `7832553..c226949` (4 commits, `Not-opened: none`).
+**Not covered:** nine commits, named rather than counted, because the session preceding this Circle
+filed a defect for reporting one where there were seven:
+
+```
+bf4fe9c  the portfolio records an empty board, and a split decision record surfaces on the way out
+ff8d15e  the style-rules Circle closes bounded, and the reconciler caught five numbers nobody had checked
+247abfe  the final state is measured, and two of the four budgets are all but spent
+acef2ad  the curator states which of its outputs take the long-form voice
+abdf1ad  three records gain a note, and not one existing sentence moves
+b8b8f42  the records that describe the always-on corpus stop listing it and start deriving it
+86edaac  a foreclosure takes its own line, and the arithmetic that makes it fit is written out
+80d1599  the fact-first requirement gains the condition under which a sentence fails it
+921a75a  gate R1 answers its question
+```
+
+Six of the nine are workbench records and reviews rather than shipped code. Three touch shipped text:
+the two clauses added to `rules/user-facing-output.md` and the block added to `agents/curator.md`. Those
+three are what a later pass should read first.
+
+**Carried out-of-scope files:** none. Both reviews recorded `Not-opened: none`.
+
+## What this session got wrong
+
+Recorded because the Circle it ran was about claims coming apart from what they describe.
+
+- The orchestrator reported "all 18 steps done" while 17 were marked; the reconciler marked the
+  eighteenth. It reported 13 open decisions where there were 10. It repeated a headline byte delta,
+  +2 138, that means five rule files, where what an agent actually loads gained 2 265.
+- It staged one commit with a directory argument instead of written-out paths, which is the shape this
+  project has measured failing twice. No harm resulted; the check was run afterwards rather than the
+  rule followed beforehand.
+- It passed a stale `CLAUDE.md` figure into a dispatch, measured four commits earlier, and the executor
+  caught it.
+- Three executor reports stated a number their own diff contradicted, each caught by a later pass.
+
+Every one of these was found by a later agent in the chain rather than by the party that made it. That
+is the chain working, and it is also the reason none of these numbers should be read from a report
+without the command that produced it.
