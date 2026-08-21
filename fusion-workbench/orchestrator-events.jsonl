@@ -1863,3 +1863,6 @@
 {"ts":"2026-08-21T18:06:00","event":"queue_built","detail":"7 tasks, 0 blocked"}
 {"ts":"2026-08-21T18:06:00","event":"turn_start","turn":1,"detail":"7 ready tasks"}
 {"ts":"2026-08-21T18:06:00","event":"task_start","turn":1,"task":"T0","agent":"coder","detail":"repair four dangling citations"}
+{"ts":"2026-08-21T18:12:55","event":"commit","turn":1,"task":"T0","detail":"da88e68 four citations to wildcard marker form"}
+{"ts":"2026-08-21T18:12:55","event":"task_done","turn":1,"task":"T0","agent":"coder","detail":"da88e68"}
+{"ts":"2026-08-21T18:12:55","event":"task_start","turn":1,"task":"P1","agent":"analyst","detail":"freeze pre-change reply baseline"}
