@@ -8,8 +8,7 @@
 > what it hands to the manifest. Together they take a project from
 > "everything-always-loaded" to "a lean index plus on-demand units".
 
-This is the input to the reference conversion (a later Circle-B step) and to the
-docs pass (Circle E). It is a convention, not machinery: nothing in the plugin
+It is a convention, not machinery: nothing in the plugin
 enforces a line count. The goal is a `CLAUDE.md` a reader can hold in their head.
 
 ---
