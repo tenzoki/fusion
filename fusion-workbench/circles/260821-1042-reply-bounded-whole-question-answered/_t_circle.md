@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active session history:** circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md
 
 ---
 
@@ -193,3 +193,38 @@ Origin Rule:
   different faults with different fixes.
 
 ## Turn log
+
+## Activation proposal
+
+**Proposed by playmaker run `260821-1536-playmaker-direct-dispatch`, 260821-1536, domain bias
+`code`.** Proposed activation timestamp: 260821-1536. This is a proposal and nothing more. The
+record's marker is untouched, and `.active-circle` is untouched. The rename is the user's, through
+`/fusion:next`, or the orchestrator's.
+
+**Why this Circle, and it is the only candidate.** It is the sole anticipated Circle on disk. Every
+other Circle record carries a terminal marker, so the ranking has one entry and the recommendation
+carries no comparison behind it. What follows is a readiness reading rather than a ranking.
+
+**It is ready on all three readiness signals this run measures.** Its `## Dependencies` section names
+no Circle, so nothing is waiting on a predecessor and no dependency flag applies. Its own decisions
+directory holds four records at answered (`_a_`) and none at open (`_o_`): the four scoping questions
+were put and settled before the Circle starts, which is the condition the ranking heuristic looks
+for. Its Grounding snapshot is measured rather than asserted, and it names the command behind each
+figure.
+
+**One qualification, and it is about the surfaces rather than the Circle.** The Grounding's own
+growth table was measured at `472134c`. This run re-measured it at `e764637` and three of the four
+budgets moved down: the always-on rule set now has 3 507 bytes of head-room rather than 3 566, the
+hook test suite 21 lines rather than 32, and `skills/*/SKILL.md` is unchanged at 30 bytes.
+`agents/*.md` is unchanged at 1 638. Two of the four are effectively spent, and this Circle's stated
+method writes into all four. Whoever activates it should read those four figures as current rather
+than reading the table in the Grounding, which is nine hours old and was correct when written.
+
+**Three decisions its Grounding cites still read as open.** All three sit in the closed style-rules
+Circle: `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`,
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md` and
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`.
+This Circle's own answered records settle the substance of the second and the third, and its
+Grounding states that the user overturned the first. The records themselves were never transitioned,
+so a later reader meets three open questions that are answered elsewhere. Recorded here as an
+observation; moving a decision marker is not this agent's act.
