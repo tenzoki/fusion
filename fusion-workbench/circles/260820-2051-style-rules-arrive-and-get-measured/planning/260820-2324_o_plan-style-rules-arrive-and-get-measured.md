@@ -490,7 +490,7 @@ replacement sentence opening with a bare demonstrative, and a mark removed from 
 exhibit rather than prose. Findings are filed as defects in this Circle's issue store and closed or
 deferred before the Circle's marker moves.
 
-### 13. The rule states when an opening sentence fails
+### 13. [DONE] The rule states when an opening sentence fails
 
 - **Executor:** coder
 - **Files:** `rules/user-facing-output.md`
@@ -515,7 +515,7 @@ deferred before the Circle's marker moves.
   which is deferred whole per
   `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`.
 
-### 14. The gate clauses state their cost and cap the field they steer writers towards
+### 14. [DONE] The gate clauses state their cost and cap the field they steer writers towards
 
 - **Executor:** coder
 - **Files:** `rules/user-facing-output.md`
