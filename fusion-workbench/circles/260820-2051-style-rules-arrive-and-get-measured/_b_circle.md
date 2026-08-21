@@ -3,21 +3,14 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** (none yet)
+**Active spec/plan:** circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_c_plan-style-rules-arrive-and-get-measured.md
 **Active session history:** shared/history/260820-2103-orchestrator-session.md
 
 ---
 
 ## Directive
 
-After this Circle, an improvement to a stylometric profile in the plugin's source reaches an
-existing project instead of stopping at a copy taken once at Setup; the always-on rule corpus
-sits at or under the em-dash ceiling it states; `rules/user-facing-output.md` carries a test
-that says when an opening sentence fails, so that its fact-first requirement can be applied
-rather than interpreted; and
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
-holds a measured number in the place where it has carried an untested inference since
-2026-08-16.
+See `**Active spec/plan:**` above. The cited spec or plan states the Directive in force.
 
 ## Grounding snapshot
 
@@ -248,3 +241,54 @@ Grounding measures `agents/*.md` at roughly 3 300 bytes of head-room. Where the 
 together, the second one to write pays the tighter bill.
 
 ## Turn log
+
+- Turn 1 (session 260820-2103): commits `fac97f4`..`d66763b`; eight plan steps, the counting program,
+  the registered protocol with its pre-repair window, Setup's provenance stamp and comparison, the
+  fallback made detectable, and the four profiles revised, repunctuated and refreshed through the
+  mechanism. Coherence verdict: review-needed. The review of all thirteen commits found the mechanism
+  carrying the first Directive outcome did not run as written. Session history:
+  `shared/history/260820-2103-orchestrator-session.md`
+- Turn 2 (session 260820-2103): commits `3464575`..`HEAD`; the two High findings repaired and verified
+  under the condition that produced them, four rule files brought to their per-file ceiling, the
+  fact-first test and the gate-clause arithmetic written into the rule, seven records corrected by
+  appended note, the curator prompt's enumeration, and the final measurement. Review gate R1 confirmed
+  the repunctuation did not reproduce the earlier pass's two content defects and did reproduce its
+  evidence defect. Coherence verdict: bounded-closure-proposed. Session history:
+  `shared/history/260820-2103-orchestrator-session.md`
+
+## Closure note
+
+**Bounded Closure**, 260821. Session history:
+`shared/history/260820-2103-orchestrator-session.md`. Reconciliation:
+`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.
+Verdict reached independently by the reconciler, not adopted from the orchestrator's proposal.
+
+**What the Circle reached.** Three of the Directive's four outcomes. A change to a stylometric profile
+in the plugin's source now reaches a project set up before the change, demonstrated by running the
+mechanism rather than by copying files. The always-on rule corpus fell from 171 prose em-dashes over
+13 018 words to 8 over 13 292, with every file at or under one per 1000 individually, and only 0.12 per
+cent of that fall is dilution. `rules/user-facing-output.md` states the condition under which an opening
+sentence fails its fact-first requirement, so the requirement can be applied rather than interpreted.
+
+**What it could not reach, and why that is structural.** The fourth outcome is a measured number on
+`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.
+Its post-repair window opens only once a Circle conditioned by the repaired corpus has written session
+prose, and no such Circle can exist while this is the only active one of thirteen. The Circle did the
+half that had to happen first and could never be reconstructed afterwards: it registered the protocol,
+fixed the threshold at 5.0 per 1000, and captured the pre-repair window **before** the first repair
+commit. That ordering is verifiable, not asserted.
+
+**The Bounded-Closure Artifact** is therefore the pre-registration itself. A later Circle inherits an
+exact threshold chosen without knowledge of the outcome, which is worth more than a number this Circle
+could have produced by measuring against an empty window.
+
+**What the Circle cost, stated because it was not in the Directive.** It grew the corpus it repaired.
+The repunctuation returned 470 bytes; the new clauses spent 2 608, a ratio of 5.5 to 1. Two of four
+growth budgets are now all but spent, `skills/` at 30 bytes and the hook tests at 32 lines, and two
+filed defects write into the surface that has 30 bytes left. The Circle closes having filed defects
+nobody can fix until someone takes a cut. That gap is filed as a decision rather than a defect: what is
+missing is any bound on a Circle's own growth, and adding one changes how a Circle is bounded.
+
+**Known contradiction left standing.** This record's `## Dependencies` says the four-constraints Circle
+is active. It closed in `5faed26`, before this Circle was shaped. No party may write that section, which
+is the subject of an open record filed on the first day of this Circle.

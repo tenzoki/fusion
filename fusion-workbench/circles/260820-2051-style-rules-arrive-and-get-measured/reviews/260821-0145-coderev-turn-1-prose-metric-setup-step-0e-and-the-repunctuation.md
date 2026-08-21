@@ -110,3 +110,29 @@ Two other surfaces for context, both measured: `skills/` stands at 18 405 of 20 
 - Issues filed: `260821-0140`, `0141`, `0142`, `0143`, `0144`, `0146`, `0147`, `0148`, `0149`, all under this Circle's issue store.
 - Pre-existing open records this pass judged against: `shared/issues/260816-1330_o_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`, `shared/issues/260816-1330_o_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`, `shared/issues/260816-1330_o_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`.
 - Workbench records read as context and not reviewed: the Circle record, the spec, the plan, the eight decisions, the assessment, the measurement protocol, and the eight history files of this Turn.
+
+---
+**Reconciliation annotation 260821-0414** (reconciler, domain `code`, HEAD `247abfe`). Findings are not
+rewritten; only their disposition is recorded. Log: `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.
+
+**Both High findings are closed and the fixes were read rather than taken on report.** Commit
+`3464575`. `$FUSION_SRC` appears nowhere in Step 0e's shell blocks: each of the three now carries
+its own `SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x … ] && SRC="$(…)"`, and the step's prose at
+`skills/setup/SKILL.md:181` states the rule. The sixth outcome became two named ones,
+`case5-missing-local` and `case6-missing-shipped`, emitted at `:191-192`, enumerated at
+`:210-211` and named in the Done report at `:240`. The two records are
+`fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0140_c_…` and `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0141_c_…`.
+
+**Seven of the nine findings are still reproducible at HEAD** and remain `_o_` in this Circle's
+issue store, each re-checked by running the command it cites rather than by reading it: `260821-0142`,
+`260821-0143`, `260821-0144`, `260821-0146`, `260821-0147`, `260821-0148`, `260821-0149`.
+
+**One correction to a number this review supplied.** `260821-0144` recorded 43 lines of hook-test
+head-room. It is **32** at HEAD: `acef2ad` spent seven more on a second baseline re-approval
+comment. The finding is unaffected and its sequencing argument is stronger, not weaker.
+
+**The declared range is honoured and does not reach the Circle's end.**
+`**Reviewed-range:** 7135a19..7832553` is accurate and `**Not-opened:** none` holds.
+`bin/fusion-review-coverage --since 7135a19` reports `commits=24 reviews=2 uncovered=7`; the seven
+are everything after `c226949`, which is outside both reviews' declared ranges and not this file's
+omission.

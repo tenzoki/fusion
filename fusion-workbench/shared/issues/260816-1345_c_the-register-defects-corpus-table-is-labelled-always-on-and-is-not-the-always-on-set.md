@@ -118,3 +118,31 @@ always-on prose an agent holds            22184      134       6.0
 The `125 em-dash / 9155 words` in the decision record cited above is a raw `wc -w` and `grep -o`
 count taken at `a5b73da`; two commits have since grown the file, and the two programs count
 different regions, so the figures differ for two independent reasons and neither is wrong.
+
+---
+Resolved: the fix direction this record states, "state the set as the derivation rather than as a
+list that goes stale on the next emission change", landed on all four live carriers in commit
+`b8b8f42` (plan step 15 of `circles/260820-2051-style-rules-arrive-and-get-measured`). Each
+carries a dated correction appended beneath the claim it corrects, so the mislabelled table survives
+as the evidence that the set was never derived and no reader can now take it as current:
+`shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:140`,
+`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:140`,
+`circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md:117`, and this record itself
+at its `Correction appended 260821-0322` block.
+
+Re-verified at HEAD `247abfe`: the derivation is stated as the unindented `emit_if_exists` calls
+in `bin/fusion-rules` plus the unconditional `emit_voice_profile "chat-voice"` call; both halves
+of the membership error this record found are named, `rules/design-diagrams.md` as conditional and
+the chat voice profile as the omitted unconditional one; and `CLAUDE.md` is named separately as
+always-on prose an agent holds that no helper emits, which is the distinction the fix direction
+itself blurred. `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` is green inside the
+full suite, so no correction introduced a dangling citation.
+
+**One thing the correction did not settle, recorded here rather than left to be rediscovered.** The
+final-measurement note of this Circle uses "always-on" for two different sets in two sections, five
+rule files in one and the six files `bin/fusion-rules coder` emits in the other, without saying so.
+That is this record's own fault class recurring inside the Circle that repaired it, and it is filed
+separately.
+
+Closed by reconciler 260821-0410; log
+`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.

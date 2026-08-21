@@ -89,3 +89,25 @@ condition. That condition is now met on its own terms and by a different act, pl
 refreshed the four workbench copies; all four are byte-identical with the work tree as of
 `diff -q stilwerk/<f> fusion-workbench/stilwerk/<f>` at HEAD `86edaac`. What is still open in this
 file is the bookkeeping gap at the end of it, which nothing here touches.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_`, and the headline defect no longer reproduces. What holds this record open is the
+bookkeeping gap at the end of it, which is a different defect sharing the file.**
+
+The condition this record measures is met, verified rather than read: `diff -r stilwerk
+fusion-workbench/stilwerk` exits 0 with no output, and `shasum -a 256 -c .asset-provenance` run
+inside the workbench reports `OK` on all four lines. `bin/fusion-prose-metric` on the emitted set
+now reads the profile row at 0 em-dashes in 628 prose words. Both fixes this record asked for exist:
+the mechanism from plan step 3 (`skills/setup/SKILL.md` Step 0e, which resolves the shipped root
+through `bin/fusion-source-root` and therefore reads the work tree here) and the refresh from plan
+step 8, performed by running that mechanism rather than by copying files.
+
+The residual is the paragraph *Bookkeeping gap noticed alongside it, recorded here rather than filed
+separately*: `ae21c87` is attributed to no task, has no `commit` event and no dashboard row. Nothing
+in this Circle touched it, and nothing can repair it now without writing a record of a session that
+did not record itself. It is a distinct defect from the one the title names, and it is what a reader
+of this marker is now being told about.
+
+The reconciler does not split a record. If the user wants the distribution half closed, this record
+splits: the bookkeeping gap becomes its own file and this one closes on the evidence above.

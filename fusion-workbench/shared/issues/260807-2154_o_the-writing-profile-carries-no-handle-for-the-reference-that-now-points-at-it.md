@@ -135,3 +135,30 @@ both writing profiles. Neither file was in step 6's scope.
 Verification: `ruby -ryaml -e 'YAML.safe_load'` on both files, exit 0. `cd hooks && npm
 test`, exit 0, 718 tests. Log:
 `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0100-ontocoder-writing-profiles-carry-the-handle.md`.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_` for item 1. Item 2 is done and the cross-language residual the 260821-0100 note names
+is also closed, by a commit that note could not have seen.**
+
+Item 2, re-measured: `grep -ril "long-form writing profile" stilwerk/` names all four profiles, at
+`chat-voice-en.yaml:8` and `:12`, `default-voice-en.yaml:4` and `:11`, `default-voice-de.yaml:4`, and
+`chat-voice-de.yaml:12`.
+
+**The residual is closed.** The 260821-0100 note ends by saying the failure scenario in this record,
+this repository's own chat-`de`-artifacts-`en` pairing, is not closed, and names the two ways to
+close it: the English phrase added to `chat-voice-de.yaml`, or both handles carried in both writing
+profiles. The first landed twenty-eight minutes later in `ca83e79`, which put the English term into
+`chat-voice-de.yaml:12` as a parenthetical gloss beside the German one. An agent here now holds a
+German chat profile and an English writing profile that share a plain-text match in both directions.
+That commit was made against
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`,
+not against this record, which is why no note here recorded it.
+
+**Item 1 is what holds the marker.** `grep -n '^scope:'` over both writing profiles exits 1; the
+`scope:` asymmetry against the two chat profiles stands. The record itself says item 1 is a schema
+change to a file every consuming project holds a copy of and must not be made without the user's
+approval. It was answered in the user's absence, as
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`
+option 2, text handle now and key deferred, and that decision is still `_o_`. So the schema question
+reaches the user as a live question, which is the correct state.

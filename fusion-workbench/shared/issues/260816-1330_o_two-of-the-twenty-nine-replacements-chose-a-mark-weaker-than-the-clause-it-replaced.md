@@ -22,3 +22,19 @@ Commit `6049d3e` made 29 replacements in `rules/user-facing-output.md` and prese
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/user-facing-output.md:112` and `:121` both still carry the weaker mark; neither one-character correction landed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_`. Both one-character corrections are still unmade, and both line numbers have moved.**
+
+- `rules/user-facing-output.md:122` (filed as `:112`) — "and an explicit unit (`min`, `h`, or
+  `day`)." The parentheses still read as illustration on the clause that says its own phrasing is
+  locked. The record's proposed mark is a colon.
+- `:131` (filed as `:121`) — "After: `Bundle A: 6 steps`, followed, only if the user asked, by a
+  separate trailing line …". The comma still sits in a run of four on one line. The record's
+  proposed mark is a parenthesis pair.
+
+`circles/260820-2051-style-rules-arrive-and-get-measured` did not touch this file's marks. Its own
+review gate R1 asked exactly this question of the four files it did repair and answered it: mark
+strength held at 152 of 155 sites. The two sites here are from the earlier pass and were not in
+scope. Both proposed marks are on the four-mark list at `:140` and neither changes a word.

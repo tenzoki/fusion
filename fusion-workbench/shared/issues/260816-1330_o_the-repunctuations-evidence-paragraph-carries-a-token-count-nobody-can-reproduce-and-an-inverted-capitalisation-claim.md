@@ -108,3 +108,24 @@ note on `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-t
 which this note does not touch. A reader who reaches that copy first has no pointer here; closing
 that gap is a separate correction on a separate record and is not part of plan step 16, whose file
 set names this record and not that one.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_`, against plan step 16's `Closes:` line, which claims it.**
+
+Step 16 of `circles/260820-2051-style-rules-arrive-and-get-measured` names this record in its
+`Closes:` and its correction landed here, at the `Correction appended 260821-0322` block. The record
+does not ask for a correction here. Its *What the fix is* paragraph asks for the progress note **on
+the open record** to be corrected, and point 1 names which record that is:
+`shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
+"an open record a later pass will read as its starting state".
+
+Re-measured: `sed -n '82p'` on that file still reads "identical at 2733 tokens: ten clauses that
+became their own sentence take a capital, and one `see` loses one". Both faults stand, verbatim, on
+the record a later pass starts from. The appended note here says so itself, in its closing paragraph
+*Where an uncorrected copy still stands*, and explains that step 16's file list named this record
+and not that one.
+
+So the plan named the wrong file and the executor followed the file list, checked, and said what was
+left. The record closes when the note at `260816-0740_*_…:82` carries the corrected statement, which
+is one appended block on a record already open for other reasons.

@@ -1,7 +1,7 @@
 # Implementation Plan: the style rules every agent loads are the ones fusion ships, and their effect is registered for measurement
 
 **Date:** 2026-08-20
-**Status:** Draft
+**Status:** Complete
 **Spec:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, read with its appended binding section governing wherever it and the body disagree
 **Decidability:** Three load-bearing questions, two of them already judged under `rules/critical-stance.md` §4 and one raised by this plan. (1) "Is a project's copy of a shipped asset stale, or has the project adapted it" is not decidable from the two files Setup holds, and becomes decidable from a third input, the checksum recorded at the moment of copying; the mechanism changes accordingly and step 3 builds it. (2) "Did the output register improve because the corpus register improved" is not decidable from the inputs available at all, so the mechanism changes to a pre-registered rate over two fixed windows, and this Circle delivers only the registration half, because the post-repair window has no members while the Circle runs. (3) "How many prose em-dashes does a file carry" is decidable only once prose is separated from exhibits, which no committed program in this repository does today; step 1 makes it decidable by writing the counting rule down as an executable.
 
@@ -286,7 +286,7 @@ and no step performs it.
 - **Dependencies:** none
 - **Closes:** `shared/issues/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`
 
-### 6. The writing profiles carry the handle their siblings point at
+### 6. [DONE] The writing profiles carry the handle their siblings point at
 
 - **Executor:** ontocoder
 - **Files:** `stilwerk/default-voice-de.yaml`, `stilwerk/default-voice-en.yaml`
@@ -302,6 +302,18 @@ and no step performs it.
   3. Both files parse as YAML.
 - **Dependencies:** none
 - **Closes:** item 2 of `shared/issues/260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`; item 1 stays open under the decision above.
+- **Acceptance observed (reconciler 260821-0408, marked here rather than by the executor):** the
+  ontocoder left this step unmarked at `403b91a` and was right to: criterion 1 asks all four profiles
+  to carry the phrase and the fourth file, `stilwerk/chat-voice-de.yaml`, was in no step's file list.
+  The criterion was met twenty-eight minutes later by `ca83e79`, which added the English handle to
+  that file as a parenthetical gloss. Re-measured at HEAD `247abfe`: (1)
+  `grep -ril "long-form writing profile" stilwerk/` returns all four files, matching at
+  `chat-voice-en.yaml:8,12`, `default-voice-en.yaml:4,11`, `default-voice-de.yaml:4` and
+  `chat-voice-de.yaml:12`. (2) `grep -n '^scope:'` over both writing profiles exits 1, so no
+  `scope:` key was added. (3) Both files load. The step's work is complete; the plan defect the
+  ontocoder surfaced is not repaired here, because repairing it means editing the step's `**Files:**`
+  list, which is a plan description and outside a reconciliation pass. It stays filed as
+  `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`.
 
 ### 7. [DONE] The four profiles are repunctuated
 
@@ -740,3 +752,84 @@ The hook-test surface has 116 lines and one claim on it, so the strategy is deli
       25.2 prose em-dashes per 1000 and conditions four of the agents whose output the measurement will
       read. This Circle names it as an untreated confound in step 2 and does not repair it, because the
       spec puts the conditional rule files out of scope.
+
+## Reconciliation Log
+
+**Reconciliation 260821-0409** (reconciler, domain `code`, range `7135a19..247abfe`, 24 commits, working
+tree clean, `npm test` green at 40 files and 718 tests). Every acceptance criterion below was
+re-run against the tree rather than read out of an executor's report. The three number faults this
+session already caught are the reason: a fourth is recorded here.
+
+**Status moved Draft to Complete and the marker moved `_o_` to `_c_`.** All eighteen steps are
+`[DONE]`. Seventeen were marked by their executors; step 6 was marked in this pass, because its
+first criterion was met by `ca83e79` twenty-eight minutes after the step's own commit and no later
+step went back to it. The header had never left `Draft` in either direction, so it was stale against
+seventeen `[DONE]` markings as well as against the eighteenth.
+
+### What holds
+
+Fifteen steps hold in full, re-measured at HEAD:
+
+- **Step 1.** `bin/fusion-prose-metric $(bin/fusion-rules coder)` prints six rows and a total; a file
+  with no em-dash prints a zero row; exits are 0 on a report, 1 on usage, 2 on an unreadable input,
+  matching `## API Changes`. The hand-count comparison is recorded at
+  `history/260820-2345-coder-prose-metric-becomes-a-program.md:47`.
+- **Steps 3 and 8.** Step 0e exists in `skills/setup/SKILL.md:177` and resolves its own root in each
+  of its three blocks. `diff -r stilwerk fusion-workbench/stilwerk` exits 0 with no output, and
+  `shasum -a 256 -c .asset-provenance` run inside the workbench reports `OK` on all four lines.
+- **Step 4.** Measured in a scratch project rather than read: a project declaring `de` with no
+  `chat-voice-de.yaml` gets `chat-voice-en.yaml` on stdout and
+  `fusion-rules: voice profile chat-voice: requested variant de is absent, resolved to en` on
+  stderr; a project declaring `en` gets the same stdout and an empty stderr.
+- **Steps 5, 6, 7, 9, 10, 11, 12.** Every file in the repaired corpus is at or under its permit:
+  `agent-setup.md` 0/488 permit 0, `fusion-workbench-conventions.md` 6/7738 permit 7,
+  `decision-record-examples.md` 0/332 permit 0, `user-facing-output.md` 1/2577 permit 2,
+  `critical-stance.md` 1/1529 permit 1, `chat-voice-de.yaml` 0/628 permit 0. The four source
+  profiles: 0, 0, 0 and 1/1014 permit 1. Both halves of `## Where this Circle stops` clause 2 hold.
+- **Steps 13 and 14.** `rules/user-facing-output.md:139` carries the opening-sentence test with its
+  before and after, `:23` the correctio test with two, `:104` the own-line clause, `:105` the
+  three-option cap with the arithmetic, `:112` the `description` cap. The arithmetic reconciles
+  against `## Length`: 1 + 3 + 3 = 7 against the 8-line gate cap at `:109`, and `:118` still
+  forbids relaxing a cap.
+- **Step 15.** All four files state the set as its derivation; no live record asserts a hand-written
+  list as current.
+- **Step 17.** `grep -c 'Long-form prose vs short-form'` returns 1 on `agents/curator.md` and 1 on
+  each of the other seven prose prompts.
+- **Step 2 and step 18.** Re-measured independently: the pre-repair corpus is 171 em-dashes over
+  13 018 prose words at 13.1 per 1000; the four head-room figures are 3 566 bytes always-on, 1 638
+  `agents/`, 30 `skills/`, 32 lines hook tests; the +2 138 net always-on delta reproduces exactly
+  over the five rule files (92 869 to 95 007). `b22525d` is an ancestor of the first repair commit.
+
+### What holds only under a stated reading
+
+- **Step 12, criterion "the file's tables and its two marker-glob forms are unchanged" against a
+  permit of 7.** Cannot both hold: 21 of the 115 marks sit in table cells, so the frozen-table floor
+  is 21. The executor implemented under the structural reading and filed the conflict rather than
+  reinterpreting it quietly. Confirmed at HEAD.
+- **Step 18, criterion 2, "no baseline was edited anywhere in the Circle".** False as written and
+  true as intended. `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` moved
+  1 223 to 1 255 across three commits in this range, each with a written attribution naming the token
+  that moved it. No **growth-bound** baseline moved: the diff of the three baseline-declaring files
+  over `7135a19..HEAD` is empty, and the two `.golden` files that did change are per-file
+  inventories, which is what
+  `shared/decisions/260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`
+  settles. The criterion should have said "no growth-bound baseline".
+
+### What the plan claimed and the tree does not carry
+
+- **Step 16's `Closes:` over-reaches on one of its two records.** The record asks for the progress
+  note on `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+  to be corrected. The correction was written onto the reporting record instead, and its own closing
+  paragraph says so. The unreproducible `2733` and the inverted capitalisation claim still stand at
+  `shared/issues/260816-0740_*_…:82`. That record stays `_o_`.
+- **`## Where this Circle stops` clause 5 is not met.** The clause requires
+  `shared/decisions/260816-0740_*_…` to gain "the protocol's path". It does not carry it: nothing
+  outside this Circle cites
+  `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`.
+  The link runs one way only, protocol to decision, and the direction that fails is the one a later
+  session needs. Filed.
+- **`## Where this Circle stops` clause 6 is not met.** Eighteen of the Circle's twenty issues are
+  `_o_`; fourteen were re-verified reproducible at HEAD in this pass. Two of the fifteen review
+  findings are closed, both the High ones, and thirteen are neither closed nor deferred.
+- **The release precondition is not met.** All ten decisions this plan assumed are still `_o_`,
+  which is correct: they were answered in the user's absence and are the user's to confirm.

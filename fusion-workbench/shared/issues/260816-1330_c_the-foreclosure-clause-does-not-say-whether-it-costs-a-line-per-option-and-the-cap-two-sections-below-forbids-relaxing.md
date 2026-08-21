@@ -31,3 +31,32 @@ exactly as described. Same citation drift as
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/user-facing-output.md:96` still leaves the cost unstated, `:101` and `:102` still cap the gate and the option label, `:107` still forbids relaxing, and the `description` field is still ungoverned. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: both halves this record asks for landed in `rules/user-facing-output.md`, and `:118`
+("Do not relax the cap") was not touched. The one sentence stating whether the foreclosure occupies
+its own line is at `:104`, "A foreclosure takes its own line. It is never folded onto the end of
+the option's line to buy a line back against a cap, because a cap satisfied by longer lines is not
+satisfied." The `## Length` entry giving `description` a cap is at `:112`, "`AskUserQuestion`
+option `description`: ≤ 2 lines", which closes the hole this record names in its second finding,
+on the branch the clause steers writers towards. The arithmetic the ambiguity made undecidable is
+now written out at `:105`: one question stem line, three option lines and three foreclosure lines,
+seven against the eight-line gate cap at `:109`, with a plain-text gate capped at three options and
+a fourth sent through `AskUserQuestion` or split. Commits `80d1599` and `86edaac`, plan steps 13
+and 14 of `circles/260820-2051-style-rules-arrive-and-get-measured`.
+
+Read against the record's own "What would settle both": one sentence on the own-line question, one
+`## Length` entry for `description`. Both present. Read against its "What must not be done
+instead": the gate cap is still 8 and the no-relaxing sentence is still there, verified at
+`:109` and `:118`.
+
+**The numbers rest on a decision the user has not confirmed.** This record says the numbers "need
+the same gate" as the original override. They were chosen by the orchestrator during an unattended
+run and are filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-a-foreclosure-clause-cost-its-own-line-and-what-caps-the-description-field.md`,
+still `_o_`. The defect this record names is the ambiguity and the ungoverned field, and both are
+gone whichever numbers stand, so it closes now. If the user overturns the decision, the correction
+comes back as a `Revised by:` line here rather than as a reopening.
+
+Closed by reconciler 260821-0410; log
+`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.

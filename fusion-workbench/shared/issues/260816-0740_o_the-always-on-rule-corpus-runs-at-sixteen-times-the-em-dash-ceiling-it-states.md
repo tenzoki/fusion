@@ -125,7 +125,7 @@ the five diagram producers and no other agent, and it is the second-worst offend
 emits unconditionally to **every** agent (882 words, 6 em-dash, 6.8 /1000). Swapping the two gives
 the corpus every dispatch actually carries: **22 959 words, 326 em-dash, 14.1 per 1000**. The
 conclusion is unchanged and the number a later pass will compare against is not. Filed as
-`shared/issues/260816-1345_o_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
+`shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
 
 **One stale figure in the record's own title.** "Sixteen times" was true of the 16.3 measured at
 `787010f`. At HEAD the same seven files run 14.8 and the always-on set runs 14.1. The title is left
@@ -188,3 +188,41 @@ since; the emitted set now sits at 0.6 per 1000, under its stated ceiling of 1, 
 agent actually holds sits at 6.0 because `CLAUDE.md` carries 126 of the 134 marks left. This record
 is not closed by this note: it asks for a corpus at its ceiling, and 40 per cent of that corpus by
 word count is unrepaired.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_`. The emitted set is under the ceiling for the first time since this record was filed;
+the corpus this record measures is not, and the difference is one file.**
+
+Measured with `bin/fusion-prose-metric`, the authoritative counter since plan step 1 of
+`circles/260820-2051-style-rules-arrive-and-get-measured`, over the set that helper derives:
+
+```
+rules/agent-setup.md                        0 em-dash    488 words   0.0 /1000  permit 0  ok
+rules/fusion-workbench-conventions.md       6 em-dash   7738 words   0.8 /1000  permit 7  ok
+rules/decision-record-examples.md           0 em-dash    332 words   0.0 /1000  permit 0  ok
+rules/user-facing-output.md                 1 em-dash   2577 words   0.4 /1000  permit 2  ok
+rules/critical-stance.md                    1 em-dash   1529 words   0.7 /1000  permit 1  ok
+fusion-workbench/stilwerk/chat-voice-de.yaml 0 em-dash    628 words   0.0 /1000  permit 0  ok
+total (6 files)                             8 em-dash  13292 words   0.6 /1000  permit 13 ok
+```
+
+Every one of the six is at or under its own permit, read per file, which is the reading
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`
+chose. Against the 260817-1836 reconciliation on this record, which measured 338 em-dashes over
+23 542 words at about 14 per 1000, this is the whole distance.
+
+**Why the marker does not move.** `CLAUDE.md` carries 126 prose em-dashes over 8 892 prose words,
+14.2 per 1000, and is 40 per cent of the always-on prose an agent holds and 94 per cent of the
+em-dashes left in it. It was excluded by
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+option 3, answered in the user's absence and still `_o_`. `rules/design-diagrams.md` at 25.2 per
+1000 is conditional, not always-on, and was never in this record's scope once the set was corrected.
+Closing this record now would claim a corpus fix on a corpus whose largest untouched member is
+untouched by a decision the user has not confirmed.
+
+**And the progress note above is still uncorrected.** The `2733` token count at `:82` and the
+inverted capitalisation clause beside it are the two sentences
+`shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
+asks to have corrected **on this record**. Plan step 16 wrote its correction onto that record instead
+and said so. Both faults still read verbatim at `:82`.

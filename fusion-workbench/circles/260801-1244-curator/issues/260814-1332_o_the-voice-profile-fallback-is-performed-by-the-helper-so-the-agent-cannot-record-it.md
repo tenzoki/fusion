@@ -45,3 +45,31 @@ Both branches print a bare path and nothing else. The emission format is one pat
 **What the record still asks for is a rule edit this step's file list excludes, and it is two edits, not one.** First, the sentence in `rules/fusion-workbench-conventions.md` `## Project language` that cites this record — "It emits only the resolved path, so an agent cannot today tell a fallback from a project that declared `en`" — became false with that commit and still stands. Second, and this is the half the record's title is about: the obligation itself is gone from the rule. Commit `1a36fe4` replaced "the agent falls back to the `-en.yaml` variant of that same family **and records a single line in its session history file noting the fallback**" with the description of the defect, so the rule now refers to "the history line this rule asks for" while asking for no such line. An agent can detect the fallback and is instructed by nothing to record it.
 
 Closing this now would assert a reachable obligation where there is no obligation. It closes when that paragraph is rewritten to state the mechanism as it stands and to put the history-line ask back, or to drop the ask deliberately — and dropping it is a constraint removal that needs a decision, exactly as this record's option 2 already says. The history log for the mechanism half is `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0035-coder-voice-profile-fallback-says-so-on-stderr.md`.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_`, against plan step 4's `Closes:` line. The coder's own half-closed note was right and
+is upheld on independent evidence.**
+
+The mechanism half was measured in a scratch project rather than read out of the commit. A project
+declaring `de` with only the `-en` variants present receives `./fusion-workbench/stilwerk/chat-voice-en.yaml`
+on standard output and `fusion-rules: voice profile chat-voice: requested variant de is absent,
+resolved to en` on standard error. The same project switched to `en` receives the same standard
+output and an empty standard error. The event is detectable, exactly as option 1 of this record
+proposed.
+
+Both rule-text faults the half-closed note names still stand, re-read at HEAD:
+
+1. `rules/fusion-workbench-conventions.md` `## Project language` still states "It emits only the
+   resolved path, so an agent cannot today tell a fallback from a project that declared `en`, and
+   the history line this rule asks for is unreachable until the helper says so", citing this record.
+   That sentence became false at `1c1178d` and is an always-on rule every agent loads.
+2. The obligation itself is gone. `1a36fe4` replaced "records a single line in its session history
+   file noting the fallback" with a description of the defect, so the rule refers to "the history
+   line this rule asks for" while asking for no such line.
+
+Closing now would assert a reachable obligation where no obligation stands, which is the inverse of
+the fault this record was opened on. It closes when that paragraph is rewritten to state the
+mechanism as it is and either restores the history-line ask or drops it deliberately, and dropping
+it is the constraint removal option 2 already says needs a decision. Fault 1 is filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0042_*_the-always-on-rule-states-two-things-about-the-voice-profile-fallback-that-stopped-being-true.md`.

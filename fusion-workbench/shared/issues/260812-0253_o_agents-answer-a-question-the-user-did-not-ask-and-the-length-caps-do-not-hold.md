@@ -41,3 +41,23 @@ Under analysis at `260812-0xxx` (speed, verbosity and rule decay); this record c
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/user-facing-output.md` still prescribes relocation rather than deletion and states no total budget, so the structural cause the analysis named is undisturbed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_`, and is deliberately not moved to `_d_`.**
+
+`circles/260820-2051-style-rules-arrive-and-get-measured` decided to take none of this record, in
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`,
+and plan step 13's `Closes:` line names this record explicitly as one it does **not** close.
+
+A deferral marker is the user's act, or an agent's proposal the user confirmed
+(`rules/fusion-workbench-conventions.md` `## State Markers — issues and planning`). The decision
+that deferred this record was answered by the orchestrator during an unattended run and is itself
+still `_o_`, so no confirmation exists to carry the marker. It stays open until the user either
+confirms that decision, at which point `_d_` is correct and the decision record is the citation, or
+overturns it.
+
+Two clauses the Circle did add to `rules/user-facing-output.md` bear on the second half of this
+record's title, without closing it: `:105` caps a plain-text gate at three options with the
+arithmetic written out, and `:112` caps the `AskUserQuestion` `description` field at two lines. The
+structural half, that agents answer a question the user did not ask, is untouched.

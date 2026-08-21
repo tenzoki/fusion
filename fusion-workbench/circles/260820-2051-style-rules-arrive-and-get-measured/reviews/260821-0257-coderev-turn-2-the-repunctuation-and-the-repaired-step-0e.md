@@ -297,3 +297,33 @@ steps 13 and 14 open anyway.
   measures 1 in 2 248 words against a permit of 2, and that mark is inside its own anti-example.
 - Workbench records read as context and not reviewed: the Circle record, the spec, the plan, the ten
   decisions, the two analyses, and the three history files of this Turn.
+
+---
+**Reconciliation annotation 260821-0414** (reconciler, domain `code`, HEAD `247abfe`). Findings are not
+rewritten; only their disposition is recorded. Log: `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.
+
+**The gate's own question is answered and the answer holds on re-measurement.** Review gate R1 exists
+because this project's first repunctuation pass introduced two defects while repairing old ones. The
+two content classes did not recur: no replacement sentence in the four repaired files opens with a
+bare demonstrative or pronoun, and mark strength held at 152 of 155 sites. The word-invariance
+evidence was re-derived independently for every repaired file by the executors and again here through
+`bin/fusion-prose-metric`, which reports all six emitted files and all four source profiles at or
+under their per-file permits.
+
+**All six findings this review filed are still reproducible at HEAD** and remain `_o_`:
+`260821-0257`, `260821-0258`, `260821-0259`, `260821-0300`, `260821-0301`, `260821-0302`.
+None was closed or deferred, so the Circle's own stopping clause 6 is not met and the Circle does not
+qualify for a coherent close on that clause alone.
+
+**Two of the six carry a choice point the reconciler will not let an executor settle by default.**
+`260821-0257`'s `rules/critical-stance.md:47` half needs a mark the four-mark list does not offer,
+and `260821-0258` asks whether to restore two heading spellings or annotate the two records that
+cite them. Both are judgements, as this review says.
+
+**The sequencing constraint this review named is confirmed and is now binding.** `skills/` head-room
+re-measured at **30 bytes** (240 409 against a budget of 240 439). `260821-0302` and part 1 of
+`260821-0148` both write into `skills/setup/SKILL.md`, so either turns `npm test` red on arrival,
+and `hooks/lib/__tests__/helpers/growth-bound.ts` allows no baseline edit as the way out.
+
+**The declared range is honoured.** `**Reviewed-range:** 7832553..c226949` tiles exactly against
+Turn 1's range, starting one commit back to close the `d66763b` gap. `**Not-opened:** none` holds.

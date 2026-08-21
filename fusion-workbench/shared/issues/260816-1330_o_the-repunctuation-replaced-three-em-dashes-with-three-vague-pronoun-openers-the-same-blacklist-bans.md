@@ -39,3 +39,27 @@ tracks. Whoever takes the fix should re-grep rather than seek by line.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All three vague pronoun openers are still present in `rules/user-facing-output.md`, four lines below the blacklist entry that bans them. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**STAYS `_o_`. All three sites reproduce, and the line numbers have drifted again.**
+
+Re-read at HEAD by grepping the sentences rather than by seeking to a line, which is what the
+260816-1345 reconciliation on this record advised:
+
+- `rules/user-facing-output.md:19` — "Those belong to the long-form writing profile and would fight
+  the caps in `## Length`."
+- `:61` — "It *is* the shorter form."
+- `:90` — "That forces the reader to keep proving the names refer to the same object."
+
+The blacklist entry that bans the figure is at `:18`, one line above the first of them. The
+citations in this record read `:22`, `:57`, `:83`; the 260816-1345 pass corrected them to `:19`,
+`:56`, `:85`; two of those three have moved again, because `80d1599` and `86edaac` inserted text
+into this file. Same drift class as
+`shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
+
+`circles/260820-2051-style-rules-arrive-and-get-measured` repaired five files and this is not one of
+them: `rules/user-facing-output.md` was repunctuated in the earlier pass and that Circle only added
+clauses to it. So the file that owns the vague-pronoun-opener blacklist still exhibits the figure
+three times, four lines below where it bans it. The fix is three replacements of the class the
+Circle just performed on four other files.
