@@ -31,18 +31,6 @@ Short-form chat output (gate prompts, `AskUserQuestion` text, status reports, ch
 
 If no chat profile is loaded (no `stilwerk/` in the workbench, or the file is missing), the anti-patterns still hold in spirit: they are language-independent and this rule applies regardless.
 
-**The recurring offender** is the telegraphic-with-parentheses style: a clause, an em-dash, a parenthetical jargon aside, another em-dash, a compressed reason crammed into one breath. This pattern shows up most in gate prompts and `AskUserQuestion` option text. Avoid it.
-
-Before (real example: em-dash pile-up, undecodable parenthetical jargon, bare counts with no referent):
-
-> Opt 1 — ja, aber mit explizit gemachter (a)-Wahl für die 13 und einer ehrlichen Notiz-Formulierung, die 8 (redundant) von 13 (echt gedroppt) trennt.
-
-After (plain sentences, referents named, no em-dash, no bare counts):
-
-> Option 1 funktioniert, aber nur, wenn du die "beantwortet"-Wahl für alle 13 Einträge ausdrücklich festhältst. Die Abschlussnotiz sollte die 8 redundanten von den 5 echt verworfenen trennen, sonst liest sich der Audit-Trail später falsch.
-
-The principle is language-independent: name the referent, drop the em-dash, spell out the count.
-
 ## Sketch structure instead of narrating it
 
 When the point is a structure (relations in a data model, a dependency graph, a state machine, a layout, a before/after of a tree), a small ASCII sketch is usually clearer than a paragraph, and shorter. Prefer the sketch.
@@ -58,9 +46,11 @@ legend:  A ──< B   one A, many B        A >── B   many A, one B
 
 Use ASCII in chat. The terminal renders it directly. Reserve Mermaid for files that get rendered elsewhere (history logs, specs, plans); Mermaid does not render in the chat stream.
 
-A sketch that replaces a wall of prose does not count against the chat length cap in the same way. It *is* the shorter form. But keep sketches tight: if the diagram needs a legend longer than the prose would have been, the prose was fine.
+A sketch counts against the chat length cap like every other line. It earns its place by being shorter than the prose it replaces, so keep it tight: if the diagram needs a legend longer than the prose would have been, the prose was fine.
 
 ## Information architecture (in this order)
+
+The reply answers the question that was asked. What you noticed on the way is filed per `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`, which already forbids carrying it in chat, and gets one line of the reply naming the record. Asked where the acceptance criteria are: the path and the section names, plus one line for each of the two defects you filed.
 
 1. **Action first.** If the user needs to decide, type, click, approve, or wait, that comes at the very top, before any explanation. The first line answers "what does the user do now?" If there's nothing for the user to do, lead with that explicitly: *"Session complete. Nothing for you to do."*
 2. **Reason second.** One or two sentences on *why* this action matters or what just happened. Not a paragraph.
@@ -87,7 +77,7 @@ A sketch that replaces a wall of prose does not count against the chat length ca
 
 - **No marker syntax in body prose unless explained.** `_o_`, `_a_`, `_t_`, `_c_`, `_b_`, `_s_`, `_d_`, `_p_`, `_i_` are filename markers. In body text prefer the word: *open / anticipated / active / closed / bounded / superseded / deferred / in-progress / implemented*. Use the marker form in parentheses if helpful: *"the active Circle (`_t_` in the filename)."*
 
-- **One name per thing.** Use a single, consistent term for an entity throughout an output. Do not rotate through synonyms ("registry" here, "catalog" there, "uif-framework.yaml" elsewhere) for one thing. That forces the reader to keep proving the names refer to the same object. Pick the most significant, precise name (often the filename or the canonical term) and keep it. When an explanation is requested, you may state the synonyms once ("uif-framework.yaml acts as a registry: a catalog of selectable frameworks"), then use the one term consistently for the rest of the output.
+- **One name per thing.** Use a single, consistent term for an entity throughout an output. Rotating through synonyms forces the reader to keep proving the names refer to one object. Pick the most significant, precise name, usually the filename or the canonical term, and keep it. An explanation may state the synonyms once, then holds to the one term.
 
 ## Questions and gates
 
@@ -110,11 +100,12 @@ A sketch that replaces a wall of prose does not count against the chat length ca
 - **Gate prompts: ≤ 8 lines** including the question and the option list. Anything longer means the gate is doing too much work in one prompt. Split it or move context to a referenced file.
 - **`AskUserQuestion` text: ≤ 6 lines for the question stem, ≤ 4 lines per option label.** Option labels are scannable choices, not paragraphs.
 - **`AskUserQuestion` option `description`: ≤ 2 lines.** That field carries the foreclosure, so it is the field the clause above steers writers towards; two lines say what a choice costs and what it rules out.
-- **Session summary header: ≤ 10 lines before the first "Details" anchor.** The header is what the user reads in scrollback; details live below the fold.
-- **Chat reply default: ≤ 12 lines.** If more is needed, move detail to a "Details" trailing block or to a file and link it.
+- **Session summary: ≤ 25 lines in total, ≤ 10 of them before the first "Details" anchor.** The header is what the user reads in scrollback; what will not fit the total stays in the session history file, which the summary links. The total is decided in `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`.
+- **A report on your own work is sized by what the reader needs to know, not by how much work there was.** A long run does not buy more lines.
+- **Chat reply default: ≤ 12 lines.** If more is needed, put the detail in a file and link it.
 - **Wide tables and long lists belong in "Details," not the opening summary.**
 
-Before sending, count the lines. If a cap is exceeded, move material to Details. Do not relax the cap.
+Every cap above is the budget for the whole output it names, trailing Details included. Count the lines before sending. An over-count comes down by cutting, never by moving material further down the same reply; what you cut goes where that kind of thing already lives, a defect or an open question in its store and session detail in the history log. Do not relax the cap.
 
 ## Effort estimates
 
@@ -138,7 +129,7 @@ The style rules above are necessary but not self-enforcing. The known failure mo
 
 1. **Thesis first.** Does the first line carry the finding or the recommendation? If the reader reaches paragraph three before learning the point, move it up. **An opening sentence fails when the fact it stands in for was available to you and the sentence names the significance of that fact instead of the fact.** You hold what decides the case, because you know which facts you had, and nothing outside you can check it. The factual form is usually no longer than the form it replaces, so this costs nothing against `## Length` and is not licence for a longer opening.
    - Not "Schritt 8 hat etwas gefunden, das mehr wert ist als seine eigene Arbeit" → "Schritt 8 fand neun Prosastellen, der Plan führte vier."
-2. **No em-dash asides.** Scan for `—` used as a parenthetical break. Replace each with a comma, a colon, parentheses, or two sentences. The telegraphic-with-parentheses pattern (clause, jargon aside, clause, compressed reason, all in one breath) is the single most common offender. One `—` per ~1000 words is the ceiling, matching the stylometric profiles.
+2. **No em-dash asides.** Scan for `—` used as a parenthetical break. Replace each with a comma, a colon, parentheses, or two sentences. The telegraphic-with-parentheses pattern (clause, jargon aside, clause, compressed reason, all in one breath) is the single most common offender, and it shows up most in gate prompts and `AskUserQuestion` option text. One `—` per ~1000 words is the ceiling, matching the stylometric profiles.
 3. **Whole sentences, not fragments.** Each point is a grammatical sentence with a subject and a verb. "Recall top, Precision leck" is a fragment; "S1 hat hohen Recall, aber leckende Precision" is a sentence.
 4. **Every code and abbreviation glossed on first use.** This covers project-domain jargon, not only fusion-internal terms. `S1`, `gate.go`, `must_not`, `Orderer`, `AC`, `N=10` each get a referent or a short gloss the first time they appear. The reader does not hold the project's internal codes in working memory; do not assume it.
 5. **Counts are named.** "3 phantom failures", not "3 Fails". "8 of the 13 open items", not "8 of 13".
