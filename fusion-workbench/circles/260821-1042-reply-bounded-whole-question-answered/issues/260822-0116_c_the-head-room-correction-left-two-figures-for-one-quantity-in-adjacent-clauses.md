@@ -68,3 +68,24 @@ readable, which is what the passage currently withholds.
 `TEST_LINE_HEAD_ROOM` in `hooks/lib/__tests__/surface-growth-bound.test.ts`, and by re-running
 `find lib/__tests__ -name '*.ts' | xargs cat | wc -l`, which returns 20 360 and agrees with the
 last line of `hooks/lib/__tests__/fixtures/surface-growth.golden`.
+
+---
+Resolved: coder, 2026-08-22, one clause in
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md:108`.
+The passage now reads "so none of the hook test suite's 11 lines of head-room, the figure that
+stood when this step ran, was spent." Both figures stand as written, nothing else in the file moved,
+and the same in-place discipline `e202016` used was kept: the clause names the moment the 11 belongs
+to instead of updating it.
+
+**One departure from this record's proposed wording, and it was directed.** The clause suggested
+above also supplies the surface the 11 was computed against. That figure is not in the log and this
+edit does not add it, so the repair is the weaker of the two available: it removes the contradiction
+by telling the reader the two figures speak about different moments, which is what made them look
+like one quantity with two values, but it does not let the reader re-derive the 11. The reconciling
+surface still lives only in
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`,
+which is named here so the trail exists in a record rather than nowhere.
+
+The reviewer's argument is accepted in full: the principle the executing coder applied protects a
+past figure from silent updating, and it does not license leaving a past figure beside a present one
+when both name the same quantity. That is what the added clause answers.

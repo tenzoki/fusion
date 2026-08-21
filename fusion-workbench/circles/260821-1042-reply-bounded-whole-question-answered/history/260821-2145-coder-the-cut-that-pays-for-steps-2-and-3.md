@@ -105,9 +105,9 @@ edited tree. Neither cut block contained a token of any of the three classes: no
 so the scanner never sees it), no adjacent `` `file.md` `## Section` `` anchor, and no
 workbench record citation. The 71 preserved bytes added `` `AskUserQuestion` ``, which is
 not path-shaped. **No attribution comment was owed and none was written**, so none of the
-hook test suite's 11 lines of head-room was spent. That was the tight bound named in the
-dispatch and it is untouched: the suite still measures 20 360 lines across
-`hooks/lib/__tests__/**.ts`.
+hook test suite's 11 lines of head-room, the figure that stood when this step ran, was
+spent. That was the tight bound named in the dispatch and it is untouched: the suite
+still measures 20 360 lines across `hooks/lib/__tests__/**.ts`.
 
 ## Golden regenerated
 

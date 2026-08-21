@@ -62,3 +62,16 @@ string cannot distinguish an installation carrying the program from one that doe
 **The defect is live and is tracked there.** One record, one location, per the Origin Rule's
 second corollary. This one is closed to keep a single home, and the commit that filed it,
 `c53a903`, cites this path.
+
+**Correction, 260822: one thing was lost in the fold, and the sentence above claiming otherwise
+was false when it was written.** The record this one was folded into is about `bin/fusion-prose-metric`
+and does not carry the second half of what this record measured: the 22 unreleased lines of
+`bin/fusion-rules` in the same range, which is the more consequential half, because `fusion-rules`
+runs at every agent's Setup in every project while nothing calls the prose metric at all. The
+installed copy is missing that file's stderr fallback notice, verified by `diff` against the work
+tree. Found by the review at
+`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`
+and filed as
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0116_*_the-fold-of-the-version-gap-records-dropped-the-fusion-rules-half-and-the-closure-note-says-nothing-was-lost.md`.
+The `fusion-rules` half is carried forward here rather than in the record this one points at, so the
+fold no longer drops it.

@@ -17,7 +17,7 @@ Taken at Setup, 2026-08-22T00:19:27+0200, HEAD `084c626`, working tree clean.
 | Turn budget | `max_turns=12`, resolved by `bin/fusion-turn-budget`, no loader diagnostics on stderr |
 | Domain | `code` — `code_files=102`, `data_files=10`, `counted_by=git-ls-files`; source present and data does not outweigh it two to one |
 | Open defects | 5 in the Circle, 97 in `shared/issues` |
-| Open plans | 1: `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md` (body reads `**Status:** Complete`; the marker is held at `_o_` deliberately) |
+| Open plans | 1: `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` (body reads `**Status:** Complete`; the marker is held at `_o_` deliberately) |
 | Open decisions | 1: `circles/260821-1042-.../decisions/260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md` |
 | Circles on disk | 1 active, 10 closed-coherent, 2 bounded, 1 superseded, 0 anticipated |
 | Portfolio hint | printed (1 active Circle, 0 anticipated) |
@@ -68,3 +68,47 @@ its options writes a fresh citation of the plan into the Circle record. T6 renam
 plan is about to leave, dangling on the very act that closes the Circle, which is precisely the
 class of defect T6 exists to repair. T5 now depends on T6, and T6 on the four tasks that may each
 file a record citing the plan.
+
+### Turn 1 outcome
+
+Five commits, `084c626..dbf259a`, five of the seven queued tasks done.
+
+| Task | Commit | What landed |
+|---|---|---|
+| T2 | `e202016` | the growth bound's own figure replaces one measured over a different file set |
+| T3 | `dce8894` | C06 renamed, paid for by a restatement inside its own instruction |
+| T7 | `c53a903` | the unreleased-manifest defect, filed shared |
+| T1 | `4c7aae6` | the three before-figures, the after-measurement defined, the duplicate folded |
+| T4 | `dbf259a` | three pointers per profile respelled bare, two heading anchors dropped |
+
+**The measurement, which was the reason the user pointed this session at anything.** 854 records
+filed across 52 sessions, mean 16.4 and median 11. 233 list blocks over 2 236 reply blocks. 2 029
+prose em-dashes over 202 832 prose words, a rate of 10.0 per 1000 against the ceiling of 1.0 the
+corpus states for itself. The after-measurement is defined and deliberately not run, and it needs
+twenty unprimed sessions before a difference means anything; ten points of movement would need
+about 110.
+
+**What the analyst found that nobody asked for.** The briefing's own contamination test, applied
+literally, marks 49 of 72 transcripts as primed, because the `/fusion:setup` skill body names the
+files the test greps for, so every session that ran Setup flags itself. Restricted to human prompts
+and agent replies the same test marks 19. The commissioning document was wrong about the one thing
+that decides which sessions the after-measurement may read, and the report caught it rather than
+inheriting it.
+
+**One duplicate, folded rather than left standing.** The analyst reached the unreleased-manifest
+defect independently nine minutes after the orchestrator filed it. Theirs checks each of the four
+facts separately and clears the installer by name, so the orchestrator's was closed into it. One
+record, one location.
+
+**Two decisions taken without the user, both recorded as such.** T3's executor declined splitting
+C06 into two entries, because the only cut of that size inside the profiles is C06's own worked
+exhibit, and deleting evidence to buy a heading makes the file worse at the thing the record wanted
+improved. T4 excluded route 2 of its record, extending the citation gate to walk the profiles,
+because this Circle's binding decision on changeable surfaces excludes `hooks/` and the hook-test
+bound has 15 lines left. Route 2 remains right for the surface and wrong for this Circle.
+
+**Review.** `bin/fusion-review-coverage` reported all five commits uncovered and `carried=(not
+recorded)`. An ontorev has the four profile files and the three closed records; a coderev has the
+measurement report, the two records it filed, the in-place correction to another agent's log, and
+the five commit messages. Their scopes are disjoint by construction and each was told what the
+other holds.

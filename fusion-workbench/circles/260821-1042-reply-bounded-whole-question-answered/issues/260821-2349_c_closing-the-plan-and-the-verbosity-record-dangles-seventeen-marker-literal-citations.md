@@ -70,3 +70,44 @@ exclusion is not a way to make it green, and the asymmetry is intentional.
 **One thing this record does not decide.** Whether the verbosity record may be called closed at all
 is a separate question, argued in the reconciliation appended to it on 2026-08-21. This record is
 about what the move costs mechanically, not about whether it is earned.
+
+---
+Resolved: coder, 2026-08-22. The plan's half only. Measured fresh rather than worked from the list
+above, which had gone stale in both directions: sixteen occurrences of the plan's `_o_` marker stood
+across sixteen markdown files, one of them added after this record was filed.
+
+**Fourteen were pointers and were rewritten to `_*_`** per `rules/fusion-workbench-conventions.md`
+`## Marker globs`, marker position only — one live decision, one open issue, two shared open issues
+(three tokens), six history logs, one analysis (two tokens) and one review (two tokens). Example:
+the `**Task:** Step 4 of …` line at `.../history/260821-2132-ontocoder-two-register-habits-in-four-profile-files.md:6`.
+
+**Two were statements and keep their content.** Both are the coderev self-report about a `sed -i ''`
+run whose whole subject is which literal substitution the command could have made, so a star would
+have made the sentence read as a substitution of a token for itself. They were treated differently
+because the corpus predicate reaches one and not the other. The review copy
+(`.../reviews/260821-2215-coderev-the-bounded-reply-circle.md:96`) is out of the gate's corpus and
+stands verbatim. The copy at `shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md:81`
+is an open shared issue and therefore judged, so it was rewritten in prose — it now names the marker
+position and the two markers without spelling an address, which is the first of the two remedies the
+gate's own failure message prescribes.
+
+**Then the rename**, `git mv` `_o_` → `_c_` on the plan, and
+`cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts` exits 0 after it.
+`cd hooks && npm test` exits 0 as well.
+
+**Three machine-written state files were left alone** and still spell `_o_`:
+`agentstate.yaml:65` (`plan_file:`), `orchestrator-events.jsonl:1861` and `.guard-state/events.jsonl`
+(five rows). The two logs are append-only records of what was true when the line was written and
+must not be rewritten; `agentstate.yaml` is the orchestrator's own live state and its `plan_file`
+now points at a path that no longer exists, which is the orchestrator's to correct and is named here
+so it is not lost.
+
+**The verbosity record's half was deliberately withheld.**
+`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+keeps `_o_`, and its two citations in
+`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
+were not touched, because they dangle only if that marker moves and it did not. The reason is not
+mechanical: the record's rule-text half is closed and verified, but nobody has observed whether a
+reply actually changed, and the after-measurement that would answer it is defined and deliberately
+not run. Closing it would assert something no one has checked. So this record is discharged for the
+plan and open in substance for the verbosity record — do not read the closed marker as covering both.

@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
-**Plan step:** none. A deliberate departure from step 6 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`, decided by the user at a gate.
+**Plan step:** none. A deliberate departure from step 6 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`, decided by the user at a gate.
 **Base commit:** `58aae9b`
 
 ## Why this ran outside the plan

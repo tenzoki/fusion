@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** analyst (domain `code`)
 **Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
-**Dispatched by:** orchestrator, for step 1 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`
+**Dispatched by:** orchestrator, for step 1 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **HEAD at time of work:** `da88e68`
 
 ## What this run produced

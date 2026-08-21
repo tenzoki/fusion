@@ -5,9 +5,9 @@
 
 **Sender:** ontorev
 **Date:** 2026-08-21
-**Scope as dispatched:** step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md` — the four chat voice profiles. The `Not-opened:` list is everything else the range touched; the dispatch narrowed the scope and no earlier review carried anything in.
+**Scope as dispatched:** step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` — the four chat voice profiles. The `Not-opened:` list is everything else the range touched; the dispatch narrowed the scope and no earlier review carried anything in.
 
-**Partly opened, and named here rather than in the list above:** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md` (its step-4 acceptance, `## Current State` budget and risk table, not the whole plan) and `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`surface()`, `PLUGIN_PATH_BODY`, the `BASELINE` and its re-approval notes, not the whole file). Opened in full: the four profiles, `rules/user-facing-output.md`, `hooks/lib/__tests__/fixtures/surface-growth.golden`, the step's own log at `.../history/260821-2132-ontocoder-two-register-habits-in-four-profile-files.md`, and the corpus notes in `hooks/lib/__tests__/workbench-citation-lint.test.ts`, which the range did not touch.
+**Partly opened, and named here rather than in the list above:** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` (its step-4 acceptance, `## Current State` budget and risk table, not the whole plan) and `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`surface()`, `PLUGIN_PATH_BODY`, the `BASELINE` and its re-approval notes, not the whole file). Opened in full: the four profiles, `rules/user-facing-output.md`, `hooks/lib/__tests__/fixtures/surface-growth.golden`, the step's own log at `.../history/260821-2132-ontocoder-two-register-habits-in-four-profile-files.md`, and the corpus notes in `hooks/lib/__tests__/workbench-citation-lint.test.ts`, which the range did not touch.
 
 ## Summary
 

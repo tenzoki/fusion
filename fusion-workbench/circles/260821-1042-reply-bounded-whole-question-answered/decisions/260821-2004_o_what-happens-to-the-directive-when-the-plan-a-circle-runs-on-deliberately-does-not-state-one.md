@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `rules/circle-records.md` `### The Directive is a pointer once a spec exists`; `agents/orchestrator.md` `## Circle head fields`; `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md` `## Directive`
+**Cross-references:** `rules/circle-records.md` `### The Directive is a pointer once a spec exists`; `agents/orchestrator.md` `## Circle head fields`; `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` `## Directive`
 
 ---
 

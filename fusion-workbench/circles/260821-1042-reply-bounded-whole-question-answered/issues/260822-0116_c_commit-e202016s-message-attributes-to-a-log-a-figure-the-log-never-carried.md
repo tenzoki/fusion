@@ -53,3 +53,29 @@ which needs no change.
 
 **Verified at HEAD `dbf259a`** by `git show e202016`, reading the message and the diff of the same
 commit together.
+
+---
+Resolved: coder, 2026-08-22. **Nothing was fixed, because nothing here is fixable, and this record
+is the correction.**
+
+**The finding is confirmed against the artifact.** `git show e202016` prints a message whose first
+sentence reads "A step log defended the hook-test growth bound with 18 310 lines counted over
+`lib/__tests__/*.test.ts`", and the diff of the same commit removes a line reading "the suite still
+measures 18 314 lines across `lib/__tests__/*.test.ts`". The message therefore states as a fact
+about the log a figure the log never carried. 18 310 is the coder's own re-run of that glob during
+the fix.
+
+**It cannot be corrected in place.** This project does not amend or rewrite a pushed commit, so the
+message stands as written and will keep stating the wrong figure to anyone who reads it.
+
+**The two figures are four apart and neither changes a conclusion.** 18 314 and 18 310 are both
+counts over `lib/__tests__/*.test.ts`, which is the wrong file set for the bound either way; the
+commit's substantive claim is that the bound reads `hooks/lib/__tests__/**.ts` at 20 360, and that
+claim is unaffected by which of the two the message names. The record's own reading of the rest of
+the message — the 20 360, the label and the 15 lines of head-room — was re-checked and holds.
+
+**So the disposition is the record.** A reader who chases the discrepancy from the commit message
+now lands on a workbench record that names both figures, says which is which and says why they
+differ. The pairing itself was already kept correctly in
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`,
+which needed no change and got none.

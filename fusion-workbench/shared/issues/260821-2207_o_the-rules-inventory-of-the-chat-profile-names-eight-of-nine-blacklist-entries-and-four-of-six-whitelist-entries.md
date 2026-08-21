@@ -4,7 +4,7 @@ The rule's inventory of the chat profile names eight of nine blacklist entries a
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** ontorev, noticed beside step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`; the two bullets are not part of that change
+**Filed by:** ontorev, noticed beside step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`; the two bullets are not part of that change
 **Affects:** `rules/user-facing-output.md:18-19`
 **Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md` — the consequence this drift produced for one new clause
 
@@ -55,7 +55,7 @@ sentence at `:32` implies is true today.
 
 **Note the byte budget** before editing: `rules/user-facing-output.md` and the profiles are
 held to two independent budgets, each net zero or less, by `## Current State` of
-`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`.
+`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`.
 Adding to this file needs a cut in it.
 
 ---

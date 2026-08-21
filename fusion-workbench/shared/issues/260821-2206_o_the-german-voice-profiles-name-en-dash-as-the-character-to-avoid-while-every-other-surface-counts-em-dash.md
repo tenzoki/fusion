@@ -4,7 +4,7 @@ The German voice profiles name EN DASH as the character to avoid, while every ot
 
 **Severity:** Low
 **Domain:** data
-**Filed by:** ontorev, noticed beside step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`; the AI02 entries are not part of that change
+**Filed by:** ontorev, noticed beside step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`; the AI02 entries are not part of that change
 **Affects:** `stilwerk/chat-voice-de.yaml:80-89`, `stilwerk/default-voice-de.yaml:140-146`, and both `fusion-workbench/stilwerk/` copies
 
 ---

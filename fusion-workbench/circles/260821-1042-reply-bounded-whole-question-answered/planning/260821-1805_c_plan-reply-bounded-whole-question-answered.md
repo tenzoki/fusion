@@ -268,3 +268,14 @@ stops` says `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-n
 is closed "both halves". Its rule-text half is closed, including the fourth route the plan's own
 survey missed. Whether the record may be called closed is the user's call and is reasoned in the
 reconciliation appended to that record. The marker was not moved.
+
+**Closure 260822-0137** (coder). The filename marker moved `_o_` → `_c_`, so the deliberate hold
+recorded in the reconciliation entry above is discharged and no longer describes this file. What
+made the hold necessary was cleared first: sixteen citations of this plan's `_o_` marker were
+measured across the workbench, fourteen pointers were rewritten to `_*_`, and the two that are
+statements about the spelling were handled per `rules/fusion-workbench-conventions.md`
+`## Marker globs` — the out-of-corpus one left verbatim, the in-corpus one restated in prose. The
+citation gate is green after the rename and `cd hooks && npm test` exits 0. Recorded in
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
+whose `Resolved:` note also states that the verbosity record's half was withheld, so this plan's
+`_c_` marker does not assert that the record it names above is closed.

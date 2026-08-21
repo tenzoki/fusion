@@ -58,7 +58,7 @@ $ cd hooks && npm test                                        # exit 0, 40 files
 
 `hooks/lib/__tests__/fixtures/surface-growth.golden` was regenerated per its own header. Its diff is the one file entry (1432 to 1428) and the surface total (20 364 to 20 360), nothing else.
 
-**Why the last six are not recoverable here.** They are the note itself. The stopping criterion asks that no bound stand closer to failing than at the anchor, and this Circle moved the pin, which the file's convention answers with a written attribution. Only a note costing zero lines satisfies the criterion as written, and a note costing zero lines is no note. This record argues against buying lines that way, so six lines of the gap stand: the closure note should state 15 lines of head-room rather than repeat the criterion at `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md:180`.
+**Why the last six are not recoverable here.** They are the note itself. The stopping criterion asks that no bound stand closer to failing than at the anchor, and this Circle moved the pin, which the file's convention answers with a written attribution. Only a note costing zero lines satisfies the criterion as written, and a note costing zero lines is no note. This record argues against buying lines that way, so six lines of the gap stand: the closure note should state 15 lines of head-room rather than repeat the criterion at `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md:180`.
 
 The record stays open. What it now holds is a decision for the closure, not a defect with an unapplied fix.
 

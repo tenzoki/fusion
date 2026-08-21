@@ -3,7 +3,7 @@
 **Date:** 2026-08-21 20:20
 **Type:** Document Study
 **Status:** Complete
-**Requested by:** orchestrator, for step 1 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`
+**Requested by:** orchestrator, for step 1 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 
 ## Question
 
@@ -304,7 +304,7 @@ them, is closed by this report rather than tracked, and no defect was found in a
 
 - `~/.claude/projects/-Users-k1-Projects-productive-fusion/*.jsonl`, 70 files, read through `jq` only
 - `circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md`, `## Grounding snapshot`
-- `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`, step 1
+- `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`, step 1
 - `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1047-shaper-reply-bounded-whole-question-answered.md`, `## What was measured rather than carried over`
 - `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`
 - `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`, read and not amended

@@ -79,7 +79,7 @@ em-dashes over 4 932 prose words.
 
 ## Files written
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`
+- `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 - `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_o_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`
 - `shared/issues/260821-1810_o_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`
 - this history file

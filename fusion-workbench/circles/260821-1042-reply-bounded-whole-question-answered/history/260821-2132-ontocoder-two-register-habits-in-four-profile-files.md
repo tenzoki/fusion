@@ -3,7 +3,7 @@
 **Agent:** ontocoder
 **Date:** 2026-08-21
 **Status:** Complete
-**Task:** Step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md`
+**Task:** Step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 
 ## What changed
 
