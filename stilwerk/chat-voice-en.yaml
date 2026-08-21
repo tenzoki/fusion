@@ -117,11 +117,11 @@ blacklist:
       - "of course"
 
   - id: AI04
-    name: "Mechanical triads"
+    name: "Mechanical enumeration"
     instruction: |
-      Do not use three-part lists as the default rhythm. Use two or four items
-      when the count is substantively justified. An enumeration is not the
-      default shape of a reply either: one thing to say is one sentence.
+      Use an enumeration only when the items are parallel and the reader needs
+      to count them; otherwise write sentences, and never pick a list length
+      for its rhythm. One thing to say is one sentence.
     examples:
       - "Not 'Result: 1. It passes.' Just: 'It passes.'"
 

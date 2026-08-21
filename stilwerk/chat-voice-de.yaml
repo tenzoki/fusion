@@ -119,11 +119,11 @@ blacklist:
       - "natürlich"
 
   - id: AI04
-    name: "Mechanische Dreiergruppen"
+    name: "Mechanische Aufzählungen"
     instruction: |
-      Dreigliedrige Aufzählungen nicht als Default-Rhythmus nutzen. Zwei oder
-      vier Glieder verwenden, wenn die Zahl inhaltlich begründet ist. Auch eine
-      Antwort hat nicht die Aufzählung als Default-Form: eine Sache, ein Satz.
+      Eine Aufzählung nur dann verwenden, wenn die Glieder parallel sind und
+      der Leser sie zählen muss; sonst Sätze schreiben und die Zahl nie nach
+      dem Rhythmus wählen. Eine Aussage, ein Satz.
     examples:
       - "Nicht 'Ergebnis: 1. Läuft durch.', sondern 'Läuft durch.'"
 
