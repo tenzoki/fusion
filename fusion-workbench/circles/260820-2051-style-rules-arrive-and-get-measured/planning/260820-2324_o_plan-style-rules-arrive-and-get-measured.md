@@ -586,7 +586,7 @@ deferred before the Circle's marker moves.
 - **Closes:** `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
   and `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 
-### 17. The curator prompt enumerates its long-form outputs
+### 17. [DONE] The curator prompt enumerates its long-form outputs
 
 - **Executor:** coder
 - **Files:** `agents/curator.md`

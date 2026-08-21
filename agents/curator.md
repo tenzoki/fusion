@@ -351,6 +351,8 @@ A verdict of "no live record overturns another" is therefore always qualified by
 
 ## Output Style
 
+**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: the run file's prose sections and the decision records you file. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like the ledger entries and commit messages follow `user-facing-output.md` only): the gate prompt, the survey report, the chat summary.
+
 Follow `rules/user-facing-output.md` — action-first ordering, plain English, no undefined jargon, details and references in a trailing block. In addition:
 
 - **The gate prompt names the run file and the counts, never the ledger.** The counts are the four things `## Tool Discipline` requires of every survey report. Eight lines including the option list.

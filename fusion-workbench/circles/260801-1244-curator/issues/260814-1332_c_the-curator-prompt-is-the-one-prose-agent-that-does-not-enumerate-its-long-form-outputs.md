@@ -24,3 +24,13 @@ The curator prompt is the one prose agent that does not enumerate its long-form 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Still the only member of the set without the enumeration.**
 
 `grep -c 'Long-form prose vs short-form' agents/<each>.md`: orchestrator 1, consultant 1, shaper 1, planner 1, analyst 1, playmaker 1, editor 1, **curator 0**. The set shrank from ten to eight when `investigator` and `conceptrev` were retired on 2026-08-15, and curator is still the one gap. `bin/fusion-rules curator` does emit `default-voice-en.yaml`, so the profile arrives and the prompt never says which of its outputs it governs — which is precisely what `rules/user-facing-output.md:11` obliges each long-form agent's prompt to state.
+
+---
+
+**Resolved 2026-08-21 (coder, plan step 17 of `circles/260820-2051-style-rules-arrive-and-get-measured`). Working tree at HEAD `abdf1ad`; the orchestrator commits.**
+
+`agents/curator.md` `## Output Style` now opens with the `Long-form prose vs short-form` block, in the shape the other seven prose prompts carry. It names the run file's prose sections and the decision records the curator files as long-form, and the gate prompt, the survey report and the chat summary as short-form. The parenthetical that every sibling carries is kept, with its structured-artifact examples narrowed to the ledger entries and commit messages, which are the structured artifacts this agent actually writes.
+
+Re-measured after the edit: `grep -c 'Long-form prose vs short-form' agents/<each>.md` returns 1 for all eight of `orchestrator consultant shaper planner analyst playmaker editor curator`. The set is the `IS_PROSE_AGENT=1` case at `bin/fusion-rules:194`.
+
+`rules/user-facing-output.md` was not weakened, per `## What must not be done instead` above. The block costs 621 bytes against the 2 259 of `agents/` head-room, leaving 1 638; `hooks/lib/__tests__/fixtures/surface-growth.golden` was regenerated, which records the growth and does not absolve it. `bin/fusion-prose-metric` measures the block at 0 em-dashes over 72 prose words.

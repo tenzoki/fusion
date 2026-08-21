@@ -884,7 +884,14 @@ function scanHeadingAnchors(
 // reading the held `$FUSION_SRC` (issues 260821-0140 and 260821-0141). paths 1247 -> 1254, anchors and records
 // unchanged: six are `$FUSION_PLUGIN_ROOT/bin/fusion-source-root`, twice in each block, the seventh is
 // `bin/fusion-rules` in the new `case5-missing-local` entry. Attributed by reverting that one file; green at 1247.
-const BASELINE = { paths: 1254, anchors: 162, records: 115 };
+// Re-approved 2026-08-21 — `agents/curator.md` gained the `Long-form prose vs short-form` block its seven
+// sibling prose prompts already carry (step 17 of the same Circle). paths 1254 -> 1255, anchors and records
+// unchanged. The one token is `rules/user-facing-output.md`, and it is the block's only plugin-tree-shaped
+// candidate: the second mention spells the file bare as `user-facing-output.md` and carries no directory, and
+// `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml` is skipped as a placeholder on `<lang>` and is not a
+// plugin-tree spelling either way. Attributed by deleting that one block from `agents/curator.md` and
+// re-running this gate, which was green at 1254. No scanner, exemption or class changed.
+const BASELINE = { paths: 1255, anchors: 162, records: 115 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
