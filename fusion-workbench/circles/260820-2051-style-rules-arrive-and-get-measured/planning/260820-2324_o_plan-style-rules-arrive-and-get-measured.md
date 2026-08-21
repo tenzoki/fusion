@@ -605,7 +605,7 @@ deferred before the Circle's marker moves.
 - **Dependencies:** none
 - **Closes:** `circles/260801-1244-curator/issues/260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md`
 
-### 18. The final state is measured and reported
+### 18. [DONE] The final state is measured and reported
 
 - **Executor:** coder
 - **Files:** this Circle's history store (one note); no shipped file changes
