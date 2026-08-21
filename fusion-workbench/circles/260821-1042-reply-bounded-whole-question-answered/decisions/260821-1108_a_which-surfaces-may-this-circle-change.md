@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/_a_circle.md`
+**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/_*_circle.md`
 
 ---
 

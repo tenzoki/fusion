@@ -1855,3 +1855,11 @@
 {"ts":"2026-08-21T02:32:10","event":"turn_end","turn":2,"detail":"10 plan steps, 2 review gates, reconciliation and closure"}
 {"ts":"2026-08-21T02:32:53","event":"session_end","detail":"26 commits; 18 plan steps; Circle bounded-closed; 9 commits uncovered by review, named in the history file"}
 {"ts":"2026-08-21T10:20:03","event":"session_start","history_file":"shared/history/260821-1219-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved; domain code; Turn budget 12"}
+{"ts":"2026-08-21T14:42:59","event":"session_start","history_file":"circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md","detail":"Circle 260821-1042-reply-bounded-whole-question-answered activated; domain code; Turn budget 12; mode unresolved"}
+{"ts":"2026-08-21T15:54:11","event":"scope_resolved","detail":"custom scope from Circle Directive; no spec, no plan; planning first"}
+{"ts":"2026-08-21T15:54:11","event":"planner_start","detail":"Circle 260821-1042-reply-bounded-whole-question-answered Directive"}
+{"ts":"2026-08-21T18:06:00","event":"planner_done","detail":"circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_o_plan-reply-bounded-whole-question-answered.md"}
+{"ts":"2026-08-21T18:06:00","event":"gate_response","detail":"plan approved, defect first; session-summary total answered at 25 lines"}
+{"ts":"2026-08-21T18:06:00","event":"queue_built","detail":"7 tasks, 0 blocked"}
+{"ts":"2026-08-21T18:06:00","event":"turn_start","turn":1,"detail":"7 ready tasks"}
+{"ts":"2026-08-21T18:06:00","event":"task_start","turn":1,"task":"T0","agent":"coder","detail":"repair four dangling citations"}
