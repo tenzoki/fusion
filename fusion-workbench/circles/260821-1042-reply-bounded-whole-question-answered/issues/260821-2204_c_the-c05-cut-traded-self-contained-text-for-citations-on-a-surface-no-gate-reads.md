@@ -85,3 +85,55 @@ three routes still available.** In the tree: C05's instruction at
 Both anchors still resolve. `surface()` in `hooks/lib/__tests__/reference-resolution-lint.test.ts`
 still walks no `.yaml`, so neither pointer is gated. Nothing this Circle did after the review
 touched either half.
+
+---
+**Resolved 260822-0100** (ontocoder). **Route 3, plus the heading anchors dropped rather than
+respelled.** Both halves of the record are closed in all four copies, and the change is net
+negative on every file.
+
+**What changed.** Three tokens per profile, not two. C05 and C04 lost the `rules/` prefix as
+route 3 prescribes, and so did the header comment on line 3, which carried the identical
+plugin-relative spelling in the identical file and would otherwise have stood three lines above
+a fix for the same defect. Every surviving pointer now reads `user-facing-output.md`, which is
+the name `bin/fusion-rules` hands every agent by absolute path, so it resolves in a consuming
+project exactly as it does here.
+
+**The heading anchors are gone, both of them.** C05's `## Sketch structure instead of narrating
+it` and C04's older `## Length` were removed, not respelled. Three reasons, in order of weight.
+First, the anchor buys no navigation: `rules/user-facing-output.md` is one of the five always-on
+rules, emitted by `bin/fusion-rules` to every agent ahead of the profile, so the only reader of
+this file already holds that file whole. An anchor into a document already in context points at
+nothing the reader has to find. Second, an anchor is the one token form no gate here can check
+and a title-only rename silently breaks, which is exactly the near-miss this record names in step
+2. Third, C05's anchor was a verbatim copy of C05's own `name:` field, so it carried no
+information at all. What remains says where the rule lives and stops there.
+
+**Arithmetic**, `wc -c` against HEAD `084c626`, per file and per hunk:
+
+```
+stilwerk/chat-voice-en.yaml            6844 -> 6751   -93
+fusion-workbench/stilwerk/…-en.yaml    6844 -> 6751   -93
+stilwerk/chat-voice-de.yaml            7405 -> 7316   -89
+fusion-workbench/stilwerk/…-de.yaml    7405 -> 7316   -89
+                                                     ----
+                                                     -364
+
+en:  header -6,  C04 -34 (28 chars + one line of reflow),  C05 -53
+de:  header -6,  C04 -30 (30 chars, still five lines),     C05 -53
+```
+
+Both budgets are paid from their own side: nothing was moved between the always-on rule corpus
+and the voice profiles, and no file outside the four was touched.
+
+**Verified.** All four parse (`ruby -ryaml`), both pairs are byte-identical (`diff -q`), no
+`rules/` or `"##` token survives in either profile, and `npm test` is green at 40 files / 718
+tests, exit 0. The `reference-resolution-lint` baseline `{ paths: 1258, anchors: 163, records:
+116 }` is unmoved, which is the expected result of removing tokens from a surface it never walked.
+
+**Route 2 is not taken and is now partly moot.** This Circle's decision
+`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md`
+puts `hooks/` out of scope, and the hook test suite has 15 lines of head-room against its growth
+bound. Extending `surface()` to walk `stilwerk/*.yaml` remains the right long-term answer for the
+**profiles as a surface**, but no longer for these tokens: a bare filename is not a path and the
+gate would have nothing to resolve. What route 2 would still buy is the guarantee that a *future*
+pointer added to a profile cannot go ungated. That belongs in a later Circle as its own record.

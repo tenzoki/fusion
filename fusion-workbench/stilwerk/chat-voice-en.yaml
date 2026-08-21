@@ -1,6 +1,6 @@
 # Chat Voice (English)
 # Short-form chat style: gate prompts, AskUserQuestion text, status reports,
-# brief replies. Complements rules/user-facing-output.md with language-specific
+# brief replies. Complements user-facing-output.md with language-specific
 # anti-patterns. NOT for long-form prose: that uses the long-form writing
 # profile.
 
@@ -38,16 +38,15 @@ whitelist:
     name: "Terse without sentence-length targets"
     instruction: |
       Keep it short. The line caps for a gate prompt and for a chat reply are
-      stated in rules/user-facing-output.md, section "## Length", and are not
-      restated here. Do not enforce sentence-length bands; short sentences are
-      normal and welcome in chat. Details go to the end or to a file, not the
-      opening lines.
+      stated in user-facing-output.md and are not restated here. Do not enforce
+      sentence-length bands; short sentences are normal and welcome in chat.
+      Details go to the end or to a file, not the opening lines.
 
   - id: C05
     name: "Sketch structure instead of narrating it"
     instruction: |
       For a structure, prefer a small ASCII sketch to prose. The rule is in
-      rules/user-facing-output.md, "## Sketch structure instead of narrating it".
+      user-facing-output.md.
     examples:
       - |
         Customer ──<  Order  ──<  LineItem  >──  Product
