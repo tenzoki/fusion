@@ -1846,3 +1846,6 @@
 {"ts":"2026-08-20T23:45:35","event":"review_done","turn":1,"agent":"coderev","detail":"9 issues filed: 0 critical, 2 high, 4 medium, 2 low; range now covered"}
 {"ts":"2026-08-20T23:45:35","event":"turn_end","turn":1,"detail":"8 plan steps resolved, 14 commits, 9 issues created by review"}
 {"ts":"2026-08-20T23:45:35","event":"turn_start","turn":2,"detail":"Turn 2 of max 12; head d66763b; first task is the two High findings"}
+{"ts":"2026-08-21T00:24:43","event":"task_done","turn":2,"task":"P-9","agent":"coder","detail":"b393a45 three always-on rule files at their ceiling; 154 bytes returned"}
+{"ts":"2026-08-21T00:24:43","event":"task_done","turn":2,"task":"P-10","agent":"coder","detail":"b393a45 three always-on rule files at their ceiling; 154 bytes returned"}
+{"ts":"2026-08-21T00:24:43","event":"task_done","turn":2,"task":"P-11","agent":"coder","detail":"b393a45 three always-on rule files at their ceiling; 154 bytes returned"}

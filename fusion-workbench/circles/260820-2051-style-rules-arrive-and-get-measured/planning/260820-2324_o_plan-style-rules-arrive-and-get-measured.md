@@ -436,7 +436,7 @@ and no step performs it.
   output the section warns about. The paired `After:` specimen on line 19 was repunctuated instead,
   because a model of good output must not carry the banned figure.
 
-### 12. `rules/fusion-workbench-conventions.md` reaches its ceiling
+### 12. [DONE] `rules/fusion-workbench-conventions.md` reaches its ceiling
 
 - **Executor:** coder
 - **Files:** `rules/fusion-workbench-conventions.md`
@@ -446,6 +446,38 @@ and no step performs it.
 - **Acceptance:** as step 9, with seven as the permitted count. In addition, the file's tables and its
   two marker-glob forms are unchanged, verified by diffing the table rows alone.
 - **Dependencies:** step 11
+- **Acceptance observed:** (1) `bin/fusion-prose-metric rules/fusion-workbench-conventions.md` reports
+  6 em-dashes in 7 738 prose words, permit 7, `ok`. (2) The token stream (a token is a maximal run of
+  Unicode letters or digits, every other character separates, case preserved) is 9 047 tokens before
+  and after, with eleven differing positions: `and` to `And` five times, and `never`, `the` twice,
+  `no`, `if` once each. All eleven are upward and all eleven are the capital a sentence split takes.
+  No word was added, removed or substituted. The hyphen blind spot was closed by measurement rather
+  than argument: the multiset of hyphen-joined words is identical on both sides, 251 occurrences over
+  136 distinct forms. (3) The eleven splits open on `And` (five), `Never`, `The answer`, `The
+  underscore`, `No second file`, `If interrupted` and `And then`; none is a demonstrative or a
+  pronoun. The other 98 sites were checked for the same figure, since a pronoun opener is not created
+  only by splitting: eight colons are followed by `they`, `this`, `it` or `that`, none opens a
+  sentence, and in all eight the em-dash was already followed by that same word before the edit.
+  (4) 109 replacements: 61 colons, 20 opening and 13 closing parentheses, 11 sentence splits and 4
+  commas. Every comma sits where no independent clause follows; every parenthetical was checked to be
+  genuinely removable. (5) `npx vitest run lib/__tests__/rules-emission-golden.test.ts` green after
+  regenerating the golden; the file moved 57 371 to 57 055 bytes, minus 316, and the always-on
+  head-room went from 5 189 to 5 505.
+- **Tables and glob forms:** 58 rows before and after, same line numbers, same per-row cell counts,
+  932 table-row tokens on both sides with one differing position (`the` to `The` in the `_i_` row).
+  19 rows changed, every one mark-only. The two glob forms at `:349-350` are byte-identical.
+- **The six marks kept:** four section headings whose spelling 61 citations across 49 files depend on
+  (`## Issues vs Decisions — when to use which`, gate-enforced through `agents/curator.md:159`;
+  `## State Markers — issues and planning`; `## State Markers — decisions`;
+  `## Issue and Decision Filing — MANDATORY`), the not-applicable glyph in the Portfolio row's
+  State-marker column at `:284`, and `:450`, where all four prescribed marks fail. The seventh was
+  not spent.
+- **A criterion that could not be met as written**, filed rather than quietly reinterpreted: this
+  step asks for the metric at or under seven and for the tables to be unchanged, and 21 of the 115
+  marks are inside table cells, so the frozen-table floor is 21 against a fixed permit of 7. The step
+  was implemented under the structural reading of "unchanged", which is what its own "114
+  replacements" implies. See
+  `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0242_*_step-12s-two-acceptance-criteria-cannot-both-hold-because-21-of-the-115-em-dashes-are-in-table-cells.md`.
 
 ### Review gate R1
 
