@@ -533,7 +533,7 @@ deferred before the Circle's marker moves.
 - **Dependencies:** step 13
 - **Closes:** `shared/issues/260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md`
 
-### 15. Every live record states the always-on set as its derivation
+### 15. [DONE] Every live record states the always-on set as its derivation
 
 - **Executor:** coder
 - **Files:** `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`,

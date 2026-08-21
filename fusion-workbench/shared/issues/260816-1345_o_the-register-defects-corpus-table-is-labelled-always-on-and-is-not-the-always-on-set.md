@@ -80,3 +80,41 @@ fi
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The mislabelled table still stands inside `260816-0740_*_…em-dash-ceiling…md`, still listing `design-diagrams.md` (conditional, guarded at `bin/fusion-rules:412-414`) and still omitting the chat voice profile (unconditional, `:397`). Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Correction appended 260821-0322** (coder, plan step 15 of
+`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+Appended beneath the fix direction rather than replacing it, because the sentence that was
+imprecise is the evidence that it was imprecise.
+
+**The set is stated as its derivation, and the derivation has exactly two parts.** The always-on
+set is the unindented `emit_if_exists` calls in `bin/fusion-rules` plus the unconditional
+`emit_voice_profile "chat-voice" "$CHAT_LANG"` call, resolved against the project's chat
+language. Read at HEAD `86edaac` that is `bin/fusion-rules:418-422` and `:431`, six files for
+every agent. No record in this project keeps a hand-written copy of that list any more, this one
+included: every hand-written copy went stale, which is the root cause this Circle was opened on,
+and a freshly counted list would go stale the same way.
+
+**`CLAUDE.md` is a third part of the always-on *prose* and is not part of the derivation.** The
+fix direction above folds it into the derivation ("plus `CLAUDE.md`"), and the derivation does
+not produce it: no helper emits `CLAUDE.md`, Claude Code loads it as project instructions. It is
+therefore named separately, as always-on prose an agent holds that no helper emits. Its prose was
+not repaired in this Circle, by
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+option 3, which is the record that reconciled this issue's demand with the repair's scope.
+
+**What the corrected set measures now.** Measured at HEAD `86edaac` with `bin/fusion-prose-metric`,
+the authoritative counter since plan step 1 of the Circle above, which excludes fenced code, inline
+code spans, block quotes and YAML example values from both counts:
+
+```
+                                          words    em-dash    /1000
+the six emitted files                     13292        8       0.6
+CLAUDE.md                                  8892      126      14.2
+always-on prose an agent holds            22184      134       6.0
+```
+
+`CLAUDE.md` is 40 per cent of that prose by word count and carries 94 per cent of its em-dashes.
+The `125 em-dash / 9155 words` in the decision record cited above is a raw `wc -w` and `grep -o`
+count taken at `a5b73da`; two commits have since grown the file, and the two programs count
+different regions, so the figures differ for two independent reasons and neither is wrong.

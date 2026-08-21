@@ -131,3 +131,40 @@ written. Whoever re-opens this record must not read a null result as falsifying 
 until the measurement runs. A change that adds a prose gate now would be answering this record's
 question ahead of the evidence the user's own choice made a precondition. A change that adds prose
 to the always-on set makes the pending measurement weaker and should say so.
+
+---
+**Correction appended 260821-0322** (coder, plan step 15 of
+`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+Three corrections, appended beneath the statements they correct and overwriting none of them.
+
+**1. The always-on set is a derivation, not a list.** It is the unindented `emit_if_exists` calls
+in `bin/fusion-rules` plus the unconditional `emit_voice_profile "chat-voice" "$CHAT_LANG"` call,
+resolved against the project's chat language. At HEAD `86edaac` that is `bin/fusion-rules:418-422`
+and `:431`. Option 1 above names a file set for a gate to measure. Whoever builds that gate derives
+the set from the program at run time; this record deliberately does not hand them a list, because
+every hand-written copy of this set in this project has gone stale.
+
+**2. The 260819-1400 reconciliation's growth clause is inverted.** It reads "the always-on corpus
+has **grown**, `rules/workbench-tracking.md` was added in `b200902` and `bin/fusion-rules` emits
+it". It does not. `grep -c workbench-tracking bin/fusion-rules` returns 0 at HEAD `86edaac`, and
+`b200902` moved text **out** of the emitted set rather than into it: its own commit message records
+the always-on set falling from 98 874 to 95 458 bytes per dispatch. The audience was settled by
+`shared/decisions/260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`,
+whose answer is no agent, and the condition is filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
+
+**3. The dose caution survives the correction and rests on a different fact.** The corpus did not
+grow. What makes the dose weak is that `CLAUDE.md` is always-on prose an agent holds while no
+helper emits it, so no repair scoped to the emitted set reaches it, and its prose was not repaired
+in this Circle by
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+option 3. Measured at HEAD `86edaac` with `bin/fusion-prose-metric`, the authoritative counter
+since plan step 1 of the Circle above: the six emitted files now carry 8 prose em-dashes over
+13 292 prose words, 0.6 per 1000 and under the stated ceiling; `CLAUDE.md` carries 126 over 8 892,
+14.2 per 1000. It is 40 per cent of the 22 184 prose words an agent holds and 94 per cent of the
+em-dashes left in them. Whoever re-opens this record must not read a null result as falsifying
+finding 10 on that ground alone, and must say which of the two halves the measured session was
+conditioned by.
+
+**What this note does not change.** The marker stays `_a_`. Option 4's content is a measurement
+that has not run, and no correction to a denominator runs it.

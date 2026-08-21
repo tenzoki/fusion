@@ -113,6 +113,25 @@ first, because the measurement's surface is defined by that name.
 The single repaired file is `rules/user-facing-output.md`, taken from 38 em-dashes to 6 in
 `6049d3e`. At 2.1 per 1000 it still sits above its own ceiling.
 
+**Correction appended 260821-0322** (coder, plan step 15). *The set above is right and is stated as
+a list; state it as its derivation, and name `CLAUDE.md` inside the always-on prose.* The always-on
+set is the unindented `emit_if_exists` calls in `bin/fusion-rules` plus the unconditional
+`emit_voice_profile "chat-voice" "$CHAT_LANG"` call, resolved against the project's chat language.
+At HEAD `86edaac` that is `bin/fusion-rules:418-422` and `:431`. Derive it from the program rather
+than copy the six filenames forward: every hand-written copy of this set in this project has gone
+stale, which is the root cause this Circle was opened on.
+
+`CLAUDE.md` is always-on prose an agent holds and is outside the derivation. No helper emits it;
+Claude Code loads it as project instructions, so no change to `bin/fusion-rules` adds or removes
+it. Its prose is not repaired in this Circle, by
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+option 3. Measured at HEAD `86edaac` with `bin/fusion-prose-metric`, the authoritative counter
+since plan step 1, which excludes fenced code, inline code spans, block quotes and YAML example
+values from both counts: the six emitted files carry 8 prose em-dashes over 13 292 prose words,
+0.6 per 1000; `CLAUDE.md` carries 126 over 8 892, 14.2 per 1000. It is 40 per cent of the 22 184
+prose words an agent holds and 94 per cent of the em-dashes left in them. The table above is a raw
+`wc -w` and `grep -o` count taken at `7135a19` and is not comparable term for term with these.
+
 ### The first pass left four open defects in the text the second pass will rewrite
 
 Three concern the repunctuation itself and one concerns the record of it:
@@ -135,6 +154,19 @@ warns that a weak dose does not test the inference, and that warning has grown s
 corpus of 22 763 was already weak, and `rules/workbench-tracking.md` has been added to the
 emitted set since. The whole-corpus scope the user chose is what makes the measurement able to
 carry a result.
+
+**Correction appended 260821-0322** (coder, plan step 15). *The clause "`rules/workbench-tracking.md`
+has been added to the emitted set since" is inverted, and the caution it supports still stands on
+its other half.* That file is emitted to no agent. `grep -c workbench-tracking bin/fusion-rules`
+returns 0 at HEAD `86edaac`, and `b200902` moved text **out** of the emitted set rather than into
+it: its own commit message records the always-on set falling from 98 874 to 95 458 bytes per
+dispatch. The audience was settled by
+`shared/decisions/260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`,
+whose answer is no agent, and the condition is filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
+The corpus did not grow. What keeps the dose caution alive is `CLAUDE.md`, which no helper emits
+and which this Circle does not repair, so the whole-corpus scope named in the next sentence covers
+the emitted six and not the largest single conditioning file.
 
 ### The user's decisions, taken during shaping on 2026-08-20
 

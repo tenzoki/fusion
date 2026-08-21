@@ -135,3 +135,56 @@ Verification: `cd hooks && npm test` at HEAD `dd560ab`, exit 0, 40 files, 764 te
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). One file of seven was repunctuated, and the corpus figure barely moved. `rules/user-facing-output.md` now runs 6 em-dashes over 2 663 words. The other six are untouched: `agent-setup.md` 15/533, `decision-record-examples.md` 17/554, `design-diagrams.md` 20/794, `critical-stance.md` 29/1587, `fusion-workbench-conventions.md` 131/8570, `CLAUDE.md` 120/8841. The corpus stands at roughly 338 em-dashes over 23 542 words, about 14 per 1 000 against a stated ceiling of 1 per 1 000. Note also `260816-1345`, which is about this record-s own corpus table naming the wrong seven files.
+
+---
+**Correction appended 260821-0322** (coder, plan step 15 of
+`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+The two tables above keep their rows and their label; the label is retracted here rather than
+edited out, because a table that says "total always-on context" over the wrong seven files is the
+evidence that the set was never derived.
+
+**Neither table is the always-on set, and no replacement table is written.** `rules/design-diagrams.md`
+in both tables is **not always-on**: it is a conditional emission, guarded by
+`if [ "$IS_DIAGRAM_AGENT" -eq 1 ]`, reaching the five diagram producers and no other agent. Missing
+from both is this project's chat voice profile, which every agent receives. `CLAUDE.md` is in both
+tables and is not emitted by any helper at all.
+
+**State the set as its derivation instead.** It is the unindented `emit_if_exists` calls in
+`bin/fusion-rules` plus the unconditional `emit_voice_profile "chat-voice" "$CHAT_LANG"` call,
+resolved against the project's chat language. At HEAD `86edaac` that is `bin/fusion-rules:418-422`
+and `:431`. Anyone re-measuring this record runs the derivation again rather than copying the six
+filenames forward, because every hand-written copy of this set in this project has gone stale and
+that is the root cause the Circle above was opened on.
+
+**`CLAUDE.md` is always-on prose an agent holds, outside the derivation and inside the corpus.**
+Claude Code loads it as project instructions, so no change to `bin/fusion-rules` can add or remove
+it. Its prose was not repaired in this Circle, by
+`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+option 3.
+
+**What the corrected set measures at HEAD `86edaac`**, with `bin/fusion-prose-metric`, the
+authoritative counter since plan step 1 of the Circle above. It excludes fenced code, inline code
+spans, block quotes and YAML example values from both the em-dash count and the word count, so its
+numbers are not comparable term for term with the `wc -w` and `grep -o` figures in the tables
+above. The rows below are that run's **output at that HEAD**, not a restatement of the set: the
+set is the derivation two paragraphs up, and a later reader re-runs it rather than reading these
+six filenames as a definition.
+
+```
+rules/agent-setup.md                            0 em-dash     488 words    0.0 /1000
+rules/fusion-workbench-conventions.md           6 em-dash    7738 words    0.8 /1000
+rules/decision-record-examples.md               0 em-dash     332 words    0.0 /1000
+rules/user-facing-output.md                     1 em-dash    2577 words    0.4 /1000
+rules/critical-stance.md                        1 em-dash    1529 words    0.7 /1000
+fusion-workbench/stilwerk/chat-voice-de.yaml    0 em-dash     628 words    0.0 /1000
+--------------------------------------------------------------------------------------
+the six emitted files                           8 em-dash   13292 words    0.6 /1000
+CLAUDE.md                                     126 em-dash    8892 words   14.2 /1000
+always-on prose an agent holds                134 em-dash   22184 words    6.0 /1000
+```
+
+The title's "sixteen times" was measured over the mislabelled seven at `787010f` and has been stale
+since; the emitted set now sits at 0.6 per 1000, under its stated ceiling of 1, and the prose an
+agent actually holds sits at 6.0 because `CLAUDE.md` carries 126 of the 134 marks left. This record
+is not closed by this note: it asks for a corpus at its ceiling, and 40 per cent of that corpus by
+word count is unrepaired.
