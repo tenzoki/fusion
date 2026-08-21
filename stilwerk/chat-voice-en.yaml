@@ -46,13 +46,8 @@ whitelist:
   - id: C05
     name: "Sketch structure instead of narrating it"
     instruction: |
-      When the point is a structure (relations in a data model, a dependency
-      graph, a state machine, a layout), prefer a small ASCII sketch over a
-      verbal description: often clearer and shorter. Instead of listing
-      relations in words, sketch them with boxes and arrows. Use ASCII in chat,
-      because the terminal renders it directly; reserve Mermaid for files
-      rendered elsewhere. A sketch that replaces a paragraph does not count
-      against the line cap.
+      For a structure, prefer a small ASCII sketch to prose. The rule is in
+      rules/user-facing-output.md, "## Sketch structure instead of narrating it".
     examples:
       - |
         Customer ──<  Order  ──<  LineItem  >──  Product
@@ -67,7 +62,8 @@ whitelist:
       the filename or the canonical term, and stick with it. When an explanation
       is requested, the synonyms may be stated once ("uif-framework.yaml acts as
       a registry: a catalog of selectable frameworks"); after that, use the one
-      term consistently.
+      term consistently. Likewise one formulation per claim: saying a claim
+      twice does not make it truer.
     examples:
       - |
         Avoid: "The registry lists all frameworks. The catalog loads at startup.
@@ -76,6 +72,7 @@ whitelist:
       - |
         Better: "uif-framework.yaml lists all frameworks, loads at startup, and
         validates each entry."
+      - "Not 'It passes. All green.' Just 'It passes.'"
 
 blacklist:
   - id: AI02
@@ -123,7 +120,10 @@ blacklist:
     name: "Mechanical triads"
     instruction: |
       Do not use three-part lists as the default rhythm. Use two or four items
-      when the count is substantively justified.
+      when the count is substantively justified. An enumeration is not the
+      default shape of a reply either: one thing to say is one sentence.
+    examples:
+      - "Not 'Result: 1. It passes.' Just: 'It passes.'"
 
   - id: AI07
     name: "Rhetorical question-answer pairs"

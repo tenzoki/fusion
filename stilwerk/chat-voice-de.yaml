@@ -47,13 +47,8 @@ whitelist:
   - id: C05
     name: "Skizze statt Prosa bei Struktur"
     instruction: |
-      Wenn es um Struktur geht (Relationen in einem Datenmodell, ein
-      Abhängigkeitsgraph, ein Zustandsautomat, ein Layout), eine kurze
-      ASCII-Skizze der verbalen Beschreibung vorziehen: oft klarer und kürzer.
-      Statt Relationen in Worten aufzuzählen, die Zusammenhänge mit Kästchen
-      und Pfeilen skizzieren. ASCII im Chat, weil das Terminal es direkt
-      anzeigt; Mermaid nur in Dateien, die anderswo gerendert werden. Eine
-      Skizze, die einen Absatz ersetzt, zählt nicht gegen das Zeilenlimit.
+      Bei Struktur eine kurze ASCII-Skizze statt Prosa. Die Regel steht in
+      rules/user-facing-output.md, "## Sketch structure instead of narrating it".
     examples:
       - |
         Customer ──<  Order  ──<  LineItem  >──  Product
@@ -68,7 +63,8 @@ whitelist:
       Namen wählen, oft der Dateiname oder der kanonische Term, und dabei
       bleiben. Bei einer angefragten Erklärung dürfen die Synonyme einmal
       genannt werden ("uif-framework.yaml dient als Registry: ein Katalog der
-      wählbaren Frameworks"); danach konsequent der eine Begriff.
+      wählbaren Frameworks"); danach konsequent der eine Begriff. Ebenso eine
+      Formulierung pro Aussage: zweimal gesagt wird sie nicht wahrer.
     examples:
       - |
         Vermeiden: "Die Registry listet alle Frameworks. Der Katalog wird beim
@@ -77,6 +73,7 @@ whitelist:
       - |
         Besser: "uif-framework.yaml listet alle Frameworks, wird beim Start
         geladen und validiert jeden Eintrag."
+      - "Nicht 'Läuft durch. Alles grün.', sondern 'Läuft durch.'"
 
 blacklist:
   - id: AI02
@@ -125,7 +122,10 @@ blacklist:
     name: "Mechanische Dreiergruppen"
     instruction: |
       Dreigliedrige Aufzählungen nicht als Default-Rhythmus nutzen. Zwei oder
-      vier Glieder verwenden, wenn die Zahl inhaltlich begründet ist.
+      vier Glieder verwenden, wenn die Zahl inhaltlich begründet ist. Auch eine
+      Antwort hat nicht die Aufzählung als Default-Form: eine Sache, ein Satz.
+    examples:
+      - "Nicht 'Ergebnis: 1. Läuft durch.', sondern 'Läuft durch.'"
 
   - id: AI07
     name: "Rhetorische Frage-Antwort-Paare"
