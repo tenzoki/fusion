@@ -891,7 +891,18 @@ function scanHeadingAnchors(
 // `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml` is skipped as a placeholder on `<lang>` and is not a
 // plugin-tree spelling either way. Attributed by deleting that one block from `agents/curator.md` and
 // re-running this gate, which was green at 1254. No scanner, exemption or class changed.
-const BASELINE = { paths: 1255, anchors: 162, records: 115 };
+// Re-approved 2026-08-21 — the curator's applied entry L01 rewrote CLAUDE.md's `docs/` row, and the sentence
+// it put there cites `docs/upgrading-to-v10-3.md` and `docs/upgrading-to-v10-4.md` where the sentence it
+// replaced cited no path at all: that row's only earlier spelling, `upgrading-to-vN.md`, is bare and carries
+// no directory. paths 1255 -> 1257, anchors and records unchanged, the new sentence naming no heading and no
+// record; both files exist on disk, so both tokens resolve. No scanner, exemption or class changed.
+// ATTRIBUTED BY READING THE DIFF, not by the revert-and-remeasure the notes above describe: all three files
+// entry L01 touched (`CLAUDE.md`, `rules/fusion-workbench-conventions.md`, `rules/context-lean-claude-md.md`)
+// carried uncommitted changes belonging to another party, so restoring one to HEAD was never available and no
+// per-file measurement was taken. Their other seven changed lines are net zero in every class — none adds or
+// drops a path, an anchor or a record, and `skills/archive/SKILL.md:96` -> `:102` is one file at a new line —
+// which is what makes the read agree with the reported total: +2 is the `docs/` row's two new tokens alone.
+const BASELINE = { paths: 1257, anchors: 162, records: 115 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
