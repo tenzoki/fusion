@@ -1,0 +1,43 @@
+A growth bound lost half its head-room against a stated stopping criterion, and the finding lives only in a history log
+
+---
+
+The plan's `## Where this Circle stops` requires that "none of the four growth bounds stands closer to failing than it did at HEAD `e764637`". The hook-test bound went from 21 lines of head-room to 11. Step 6 measured it, named it, and recorded it in its own history file, which is the one place `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing` says a defect may not live. No record in any store carried it.
+
+---
+
+**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md:57` and `:180`; `hooks/lib/__tests__/reference-resolution-lint.test.ts:905-914`; `hooks/lib/__tests__/fixtures/surface-growth.golden:81,92`.
+
+**Severity:** Medium. The growth itself is small and was honestly reported; the unfiled state is the defect, and the stopping criterion cannot be met as written.
+
+**The numbers, reproduced.**
+
+```
+$ node -e '<sum TEST_LINE_BASELINE>'   # 17 875
+$ find hooks/lib/__tests__ -name '*.ts' | xargs cat | wc -l   # 20 364
+17 875 + 2 500 = 20 375 budget → 11 lines of head-room
+```
+
+At the anchor the surface stood at 20 354, so head-room was 21. The plan's budget table at `:57` records the surface as "Not touched, and no test is added", and its stopping criterion at `:180` reads:
+
+> `cd hooks && npm test` exits 0, and none of the four growth bounds stands closer to failing than it did at HEAD `e764637`.
+
+That criterion is unmet and cannot be met by anything the Circle still has to do. A closure note that repeats it would be false.
+
+**What spent the ten lines.** Two attribution comment blocks above `BASELINE` in `hooks/lib/__tests__/reference-resolution-lint.test.ts`, six lines for step 2 and four for step 3. No test logic was added.
+
+**One claim in the step-6 log does not hold, and it is the claim that justifies the spend.** `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md:197`:
+
+> The gate demands a written attribution for every baseline move, so the lines are the cost of an existing gate being obeyed rather than new test logic.
+
+The gate demands no comment. `hooks/lib/__tests__/reference-resolution-lint.test.ts:919-929` is the whole of what it says on re-approval:
+
+> If the change is legitimate, RE-APPROVING THE BASELINE IS THE EXPECTED RESPONSE: check the received numbers against the edit you made, then write them into BASELINE in this file and commit that with the edit.
+
+The attribution comment is a convention of that file, carried by its accumulated comment stack, not a demand of the assertion. The convention is a good one and this record does not argue for dropping it. It argues that the cost was a choice and could have been sized as one.
+
+**And the two blocks could have been one.** Both baseline moves land in a single commit; only the final triple `{ paths: 1258, anchors: 163, records: 116 }` is committed, and the intermediate `{ 1257, 162, 116 }` appears in no commit. One block naming both contributions would have carried the same reconstruction at roughly half the lines. The mitigating context is real and should be recorded with the fix: the user chose green-at-each-step over the plan's regenerate-once (`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2108-coder-regenerate-two-golden-fixtures-after-step-2.md:10-15`), which forced a per-step number update. It did not force a per-step comment block.
+
+**What the fix is not.** Not a baseline move. `hooks/lib/__tests__/helpers/growth-bound.ts` authors the two events at which a baseline moves and neither happened here. The options are to consolidate the two comment blocks, or to accept the 11 lines and say so in the closure note instead of repeating the criterion at `:180`.
+
+**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md` `## The other three growth bounds` (where the executor recorded it, correctly and in full); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-0803_*_the-plans-step-3-file-list-says-fourteen-fixture-files-and-the-tree-held-fifteen.md` (the same class, a measurement recorded only in a history log); `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`.

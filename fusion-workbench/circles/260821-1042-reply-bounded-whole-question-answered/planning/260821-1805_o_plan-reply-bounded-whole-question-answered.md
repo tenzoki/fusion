@@ -97,7 +97,7 @@ flowchart TD
 
 ## Implementation Steps
 
-1. **Freeze the pre-change reply baseline**
+1. [DONE] **Freeze the pre-change reply baseline**
    - Executor: `analyst`
    - Files: `circles/260821-1042-reply-bounded-whole-question-answered/analyses/<stamp>-reply-length-baseline.md`
    - Changes: write down the command that produces the Circle's Grounding figures over `~/.claude/projects/<project-slug>/*.jsonl`, together with the figures it produced at HEAD `e764637`: the transcript count, the count of top-level assistant text replies, and the count of those exceeding twelve rendered lines. Record the denominator's known bias, that it counts one-line narration between tool calls and so understates the share of substantive replies over the cap. State in the document, in its own sentence, that it is a frozen baseline and not a gate, that it does not amend and does not run the protocol in `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`, and that reading the transcripts is authorised by `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`.
@@ -105,7 +105,7 @@ flowchart TD
    - Dependencies: none
    - Bounded surfaces touched: none
 
-2. **Close the three routes out of the length cap, and cap an agent's report on its own work**
+2. [DONE] **Close the three routes out of the length cap, and cap an agent's report on its own work**
    - Executor: `coder`
    - Files: `rules/user-facing-output.md`
    - Changes, all four of them rewrites of existing sentences:
@@ -124,7 +124,7 @@ flowchart TD
    - Acceptance: an agent reading `## Information architecture` learns what the reply is about before it learns what order the parts come in, and the destination for everything else is a store that already exists.
    - Dependencies: step 2, same file. Records its byte delta.
 
-4. **Name the two remaining register habits where the agent reads them, at no net cost to the profiles**
+4. [DONE] **Name the two remaining register habits where the agent reads them, at no net cost to the profiles**
    - Executor: `ontocoder`
    - Files: `stilwerk/chat-voice-en.yaml`, `stilwerk/chat-voice-de.yaml`, `fusion-workbench/stilwerk/chat-voice-en.yaml`, `fusion-workbench/stilwerk/chat-voice-de.yaml`
    - Changes:
@@ -148,7 +148,7 @@ flowchart TD
    - Acceptance: `wc -c rules/user-facing-output.md` is at most 20 144. The measured pool is 4 352 bytes against an expected spend well under it, so the step has room to keep whichever examples the coder judges load-bearing.
    - Dependencies: steps 2 and 3, whose deltas set the size of the cut.
 
-6. **Measure the result and write it into the Circle**
+6. [DONE] **Measure the result and write it into the Circle**
    - Executor: `coder`
    - Files: `circles/260821-1042-reply-bounded-whole-question-answered/history/<stamp>-coder-the-corpus-is-measured.md`
    - Changes: record, each with the command that produced it: the net byte delta of `rules/user-facing-output.md` and of each of the four profile files against HEAD `e764637`; the always-on total against the 86 573 floor and the 98 573 budget; the other three growth bounds, unchanged; `bin/fusion-prose-metric` over `rules/user-facing-output.md`; and `cd hooks && npm test`. State plainly in the note that the clauses land unenforced, that no gate was built and why, and that whether they change a reply is not observed by this Circle.

@@ -1874,3 +1874,9 @@
 {"ts":"2026-08-21T19:24:16","event":"gate_hit","turn":1,"task":"P4","detail":"ontocoder task: structured data change to four voice profiles"}
 {"ts":"2026-08-21T19:24:16","event":"gate_response","turn":1,"task":"P4","detail":"proceed"}
 {"ts":"2026-08-21T19:24:16","event":"task_start","turn":1,"task":"P4","agent":"ontocoder","detail":"two register habits into four voice profiles, net zero"}
+{"ts":"2026-08-21T20:20:37","event":"review_done","turn":1,"agent":"ontorev","detail":"7 issues filed"}
+{"ts":"2026-08-21T20:20:37","event":"review_done","turn":1,"agent":"coderev","detail":"5 issues filed, 1 High"}
+{"ts":"2026-08-21T20:20:37","event":"coherence_review","turn":1,"detail":"verdict=review-needed; Artifact<->Grounding: 13 issues filed; Artifact<->Directive: partially toward, two stop conditions violated; Grounding<->Directive: 5 answered decisions consistent"}
+{"ts":"2026-08-21T20:20:37","event":"rebalance_artifact","turn":1,"detail":"user chose to continue into Turn 2"}
+{"ts":"2026-08-21T20:20:37","event":"turn_end","turn":1,"detail":"7 tasks resolved, 13 issues created"}
+{"ts":"2026-08-21T20:20:37","event":"turn_start","turn":2,"detail":"close the fourth route and the clauses that contradict themselves"}
