@@ -1854,3 +1854,4 @@
 {"ts":"2026-08-21T02:32:10","event":"portfolio_refresh","detail":"circles/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md; playmaker log shared/history/260821-0426-playmaker-orchestrator-phase4.md"}
 {"ts":"2026-08-21T02:32:10","event":"turn_end","turn":2,"detail":"10 plan steps, 2 review gates, reconciliation and closure"}
 {"ts":"2026-08-21T02:32:53","event":"session_end","detail":"26 commits; 18 plan steps; Circle bounded-closed; 9 commits uncovered by review, named in the history file"}
+{"ts":"2026-08-21T10:20:03","event":"session_start","history_file":"shared/history/260821-1219-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved; domain code; Turn budget 12"}
