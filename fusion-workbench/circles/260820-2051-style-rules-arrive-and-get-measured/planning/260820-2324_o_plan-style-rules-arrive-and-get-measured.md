@@ -367,7 +367,7 @@ and no step performs it.
   (3.2 per 1000, over) to 0 in 628 (0.0 per 1000, ok). The corpus total moved from 172 to 170 and stays
   over, which the four remaining repair steps address.
 
-### 9. `rules/agent-setup.md` reaches its ceiling
+### 9. [DONE] `rules/agent-setup.md` reaches its ceiling
 
 - **Executor:** coder
 - **Files:** `rules/agent-setup.md`
@@ -384,16 +384,33 @@ and no step performs it.
      review gate R1 is where it is judged.
   5. `npx vitest run lib/__tests__/rules-emission-golden.test.ts` is green and the byte delta is reported.
 - **Dependencies:** steps 1 and 2
+- **Acceptance observed:** (1) `bin/fusion-prose-metric rules/agent-setup.md` reports 0 em-dashes in
+  488 prose words, permit 0, `ok`. (2) The token stream (a token is a maximal run of Unicode letters
+  or digits, every other character separates, case preserved) is 562 tokens before and after, with
+  one differing position: `read` to `Read`, the capital taken by the one sentence split. No word was
+  added, removed or substituted. (3) The single split opens on an imperative, so no replacement
+  sentence opens with a demonstrative or a pronoun. (4) Twelve replacements: five colons on
+  definitional glosses and explanatory clauses, four more colons on label-and-gloss pairs, two
+  parenthesis pairs on removable appositives, one sentence split. No comma was used, so no strong
+  break was weakened. (5) `npx vitest run lib/__tests__/rules-emission-golden.test.ts` green after
+  regenerating the golden; the file moved 3 499 to 3 455 bytes, minus 44.
 
-### 10. `rules/decision-record-examples.md` reaches its ceiling
+### 10. [DONE] `rules/decision-record-examples.md` reaches its ceiling
 
 - **Executor:** coder
 - **Files:** `rules/decision-record-examples.md`
 - **Changes:** Replace all ten prose em-dashes. At 341 prose words the allowance is zero.
 - **Acceptance:** as step 9, with zero as the target count.
 - **Dependencies:** step 9
+- **Acceptance observed:** (1) `bin/fusion-prose-metric rules/decision-record-examples.md` reports 0
+  em-dashes in 332 prose words, permit 0, `ok`. (2) The token stream is 670 tokens and byte-identical
+  before and after, same tokenisation as step 9. No sentence was split, so not even a capital moved.
+  (3) No replacement sentence exists, so no pronoun opener can have been created. (4) Ten
+  replacements: seven colons and three parenthesis pairs. No comma was used. The seven em-dashes
+  inside the fenced template blocks are exhibits and were not touched. (5) Golden test green; the
+  file moved 4 522 to 4 495 bytes, minus 27.
 
-### 11. `rules/critical-stance.md` reaches its ceiling
+### 11. [DONE] `rules/critical-stance.md` reaches its ceiling
 
 - **Executor:** coder
 - **Files:** `rules/critical-stance.md`
@@ -403,6 +420,21 @@ and no step performs it.
 - **Acceptance:** as step 9, with one as the permitted count, plus an explicit statement of which marks
   were left standing and why.
 - **Dependencies:** step 10
+- **Acceptance observed:** (1) `bin/fusion-prose-metric rules/critical-stance.md` reports 1 em-dash in
+  1 529 prose words, permit 1, `ok`. (2) The token stream is 1 619 tokens before and after, with three
+  differing positions, all upward and all from a sentence split: `and` to `And` twice, `the` to `The`
+  once. No word was added, removed or substituted. (3) The three split sentences open on `And`, `And`
+  and `The rule`, none of which is a bare demonstrative or pronoun. (4) Twenty-four replacements:
+  thirteen colons on strong breaks, five parenthesis pairs on removable asides, three sentence splits,
+  and three commas, every comma on a `X, not Y` correlative appositive where no independent clause
+  follows and the contrast is carried by `not`. (5) Golden test green; the file moved 9 941 to 9 858
+  bytes, minus 83.
+- **The one mark left standing:** line 17, the `Before:` anti-example
+  `*"Grossartiger Hinweis - dein Gespuer war goldrichtig! ..."*`, quoted with an em-dash. It is the
+  section's designated exhibit of the fault, and the metric counts it only because it is marked with
+  italics rather than a fence. Repunctuating it would have made the specimen less faithful to the
+  output the section warns about. The paired `After:` specimen on line 19 was repunctuated instead,
+  because a model of good output must not carry the banned figure.
 
 ### 12. `rules/fusion-workbench-conventions.md` reaches its ceiling
 

@@ -108,4 +108,55 @@ guarantee.
 
 ## Turns
 
-(none yet)
+### Turn 1 — the pipeline, and eight of the plan's eighteen steps
+
+The user's instruction ran shaper, analyst, orchestrator corrections, planner and then execution.
+Each stage changed what the next one did, which is the part worth recording.
+
+**The shaper** read the seventeen records and returned three root causes rather than seventeen
+fixes: a statement copied instead of pointed at, a clause stating a requirement without the test
+that decides a case, and a corpus written in the register its own rule forbids. Four of its
+load-bearing figures were re-measured independently before anything was accepted and all four
+reproduced, including the hook-test head-room, where the orchestrator's own first count was the
+wrong one.
+
+**The analyst** found that the Circle cannot deliver its fourth Directive outcome. The measurement's
+post-repair window has no members: excluding this Circle's own history files is correct, and no
+other Circle is live. Verified against the thirteen Circle records on disk.
+
+**The orchestrator** answered eight questions the user was not there to answer, each as an open
+decision record. One was decided against the shaper's own recommendation, because the curator run
+file records that the user approved the foreclosure clause against a cost the shaper's option
+reversed. One was decided against both the shaper and the analyst: `CLAUDE.md` is named in the
+corrected set statement and its prose is not repaired here, because the record in question asks for
+the set statement and the measurement dose argument is spent once the measurement leaves the Circle.
+
+**The planner** returned eighteen steps and refused one of the orchestrator's own corrections,
+filing it as an open decision instead: making the work tree the refresh source contradicts what
+`CLAUDE.md` states about copied assets and touches a decision unanswered since 2026-08-10.
+
+**Eight steps landed.** The counting rule became a program and corrected the table that had defined
+it. The measurement protocol was registered before any repair, with its exclusion made symmetric
+after the analyst found that the one-sided form would have forced the branch that licenses building
+a gate. Setup learned to stamp what it copies. The voice-profile fallback became detectable. The
+four profiles were revised and repunctuated, and the workbench copies were refreshed by running the
+mechanism rather than by copying files.
+
+**Three records were deliberately not closed** although the plan expected it, each with a verified
+reason. One asks for an obligation the rule text no longer states. One has two items and only one
+landed. One belongs to a later step.
+
+**The review of all thirteen commits** found the mechanism carrying the first Directive outcome does
+not run as written: it reads a variable the same file says does not survive a Bash call, and falls
+into a sixth outcome no case covers. It worked in step 8 only because that agent substituted the
+path by hand, so the demonstration ran past the part that did not hold. Nine issues filed, two High.
+
+### Turn 2 — the two High findings
+
+Both fixed and closed, verified under the condition that produced them. All three of Step 0e's
+blocks carried the defect, not the one the review filed; the stamp loop would have written an empty
+checksum, which is worse than failing, because the recorded checksum is what the mechanism decides
+on.
+
+`skills/` now has 30 bytes of head-room. No remaining step touches that surface, so this Circle can
+finish, but the next word added anywhere under `skills/` reddens the suite.

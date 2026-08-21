@@ -1,4 +1,4 @@
-# Decision Record — Worked Examples
+# Decision Record: Worked Examples
 
 **Provenance:** No motivating record recoverable; introduced in `git:b05b423`.
 
@@ -6,9 +6,9 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 ---
 
-## Example 1 — Happy path: `_o_ → _a_ → _i_`
+## Example 1: Happy path: `_o_ → _a_ → _i_`
 
-**Initial state — filed by shaper after the user said "we'll need to pick a vector store, but not now":**
+**Initial state (filed by shaper after the user said "we'll need to pick a vector store, but not now"):**
 
 `fusion-workbench/shared/decisions/260501-1430_o_vector-store-pick.md` (no Circle active → shared store):
 
@@ -44,7 +44,7 @@ sqlite-vss for v1; revisit if a customer crosses 1M vectors.
 
 **The head carries no `Status:` field.** It left the template; the marker on the filename is the state and the only source. `fusion-workbench-conventions.md` `## Decision Record Template` says why, and what to do with records that still carry it.
 
-**Reconciler's next pass — analyst has authored a comparative-analysis report selecting sqlite-vss:**
+**Reconciler's next pass (analyst has authored a comparative-analysis report selecting sqlite-vss):**
 
 Append to file body:
 
@@ -55,7 +55,7 @@ Answered: analyses/260501-1730-vector-store-comparative.md §5 — sqlite-vss se
 
 Rename file: `260501-1430_o_vector-store-pick.md` → `260501-1430_a_vector-store-pick.md`.
 
-**Coder commits the integration — `pkg/vector/sqlite_vss.go` lands:**
+**Coder commits the integration (`pkg/vector/sqlite_vss.go` lands):**
 
 Append to file body:
 
@@ -68,7 +68,7 @@ Rename file: `260501-1430_a_vector-store-pick.md` → `260501-1430_i_vector-stor
 
 ---
 
-## Example 2 — Supersession: `_i_ → _s_`
+## Example 2: Supersession: `_i_ → _s_`
 
 Six months later, a customer crosses 5M vectors and sqlite-vss thrashes. A new decision is filed:
 
@@ -89,7 +89,7 @@ Rename: `260501-1430_i_vector-store-pick.md` → `260501-1430_s_vector-store-pic
 
 ---
 
-## Example 3 — User defers: `_o_ → _d_`
+## Example 3: User defers: `_o_ → _d_`
 
 The user reads the open decision, decides "not now":
 
@@ -102,7 +102,7 @@ Deferred: v1.x — pilot customers expected at <1M vectors; revisit when first c
 
 Rename: `260501-1430_o_vector-store-pick.md` → `260501-1430_d_vector-store-pick.md`.
 
-Skipping `_a_` is fine — the deferral itself is the answer.
+Skipping `_a_` is fine: the deferral itself is the answer.
 
 ---
 
@@ -110,5 +110,5 @@ Skipping `_a_` is fine — the deferral itself is the answer.
 
 - **Don't rename `_i_` back to `_o_` or `_a_`** to "reopen" an implemented decision. File a new decision (which can `Supersede` the old one).
 - **Don't omit the cited path** in `Answered:` / `Implemented:` / `Superseded by:` lines. The whole point of the vocabulary is traceability.
-- **Don't use `Resolved:`** in decision files — that footer is for `issues/` only. Use the marker-specific footer.
-- **Don't use the issue-state vocabulary `_c_`** in decisions. Decisions never close — they answer, implement, defer, or get superseded.
+- **Don't use `Resolved:`** in decision files: that footer is for `issues/` only. Use the marker-specific footer.
+- **Don't use the issue-state vocabulary `_c_`** in decisions. Decisions never close: they answer, implement, defer, or get superseded.
