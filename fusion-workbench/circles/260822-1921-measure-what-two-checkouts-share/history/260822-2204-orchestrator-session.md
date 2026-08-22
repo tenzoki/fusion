@@ -140,3 +140,72 @@ It is a defect in how a session records itself, not drift between the Artifact, 
 Directive, so it is reported rather than made into a Rebalance the four options cannot answer.
 
 Full pass: `circles/260822-1921-measure-what-two-checkouts-share/history/260822-2239-reconciliation.md`
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 1 |
+| Tasks resolved | 2 of 2 |
+| Commits | 3 (`06d1bd1`, `b938f68`, `4aaabc3`), plus the closing housekeeping commit |
+| Issues filed | 2 — one in the Circle, one in `shared/` (the reconciler's, against this session) |
+| Decisions filed | 1, in the Circle |
+| Decisions resolved by addendum | 1 (`260822-1610`, its closing sentence) |
+| Agent errors | 0 |
+| Human gates hit | 1 (the scope gate) |
+
+**The record counts were taken across both stores by hand.** `bin/fusion-paths` resolves
+`SCAN_ISSUES` and `SCAN_DECISIONS` to `shared/` alone once `.active-circle` is cleared, so the
+derived count at Phase 4 cannot see the two records this Circle filed into itself. Counting the
+shared store alone would have reported one filing where there were three.
+
+## Review coverage
+
+**Range:** `f90de0c..HEAD` — 3 commits, **0 reviews, 3 uncovered.**
+
+No review ran this session. Nothing in the range touches a shipped file: the three commits carry an
+analysis report, a decision addendum, and the Circle's closure with its tracking corrections. A
+reviewer's subject here would be prose in the workbench, which is the reconciler's ground and was
+covered by its pass.
+
+That is a reason and not an exemption. The range is uncovered and is recorded as uncovered.
+
+## Remaining work
+
+- **C2, C3 and C4 of the specification are unstarted and uncaptured.** The workbench now holds
+  fifteen Circle records, every one terminal. `/fusion:direct` is the route to the next one, and the
+  portfolio marks C2 as the natural successor because this Circle produced both of its open records
+  as declared inputs to it.
+- **Two records this Circle left open are inputs to C2**, not loose ends: what a second checkout
+  should do with a Circle record marked active that it never activated, and the setup marker that
+  every Setup rewrites.
+- **120 open defect records against 149 closed**, with no Circle scoped to work any of them. The
+  portfolio carries that as a standing warning.
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant A as Analyst
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    O->>U: GATE resolve scope — plan first, or run direct?
+    U-->>O: run direct, no planner pass
+
+    Note over O: Turn 1
+    O->>A: T-1 measure what two checkouts share
+    A-->>O: premise holds; nested fails; 3 findings (06d1bd1)
+    O->>O: T-2 addendum resolves "chosen but not proven" (b938f68)
+
+    Note over O: Converged
+    O->>R: final reconciliation
+    R-->>O: coherent; 11 discrepancies; 1 defect against this session
+    O->>O: write the four frozen surfaces; close _t_ to _c_ (4aaabc3)
+    O->>PM: portfolio refresh after closure
+    PM-->>O: no Circle left to rank; 7 warnings
+```
+
+**Status:** Complete. Circle closed coherent.
