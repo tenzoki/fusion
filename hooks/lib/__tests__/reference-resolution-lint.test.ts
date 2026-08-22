@@ -908,7 +908,10 @@ function scanHeadingAnchors(
 // adjacent citation of `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`, prefix-resolved, in a
 // new `## Information architecture` sentence. No other rewrite in either step carries one; no scanner, exemption or
 // class changed. Attributed per step by undoing that edit: green at 115, then 1257/162.
-const BASELINE = { paths: 1258, anchors: 163, records: 116 };
+// Re-approved 2026-08-22 for the v10.5 release: paths 1258 -> 1262, anchors and records unmoved. One token is
+// README.md's pointer to the new `docs/upgrading-to-v10-5.md`; three are that note's own citations of shipped
+// files. A release note is the one recurring edit that adds paths and nothing else, so this class moves alone.
+const BASELINE = { paths: 1262, anchors: 163, records: 116 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
