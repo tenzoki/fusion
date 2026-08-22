@@ -117,7 +117,7 @@ on 2026-08-21**. One reversal of exactly this class inside the Grounding of the 
 repeat it is the argument.
 
 **What leaving it open costs, and where the cost is discharged.** `**Active spec/plan:**` in
-`circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md` stays `(none yet)`, so a
+`circles/260821-1042-reply-bounded-whole-question-answered/_*_circle.md` stays `(none yet)`, so a
 reader of the terminal record cannot see the plan the Circle ran on. Under the rule as written that
 is consistent, because the record's `## Directive` holds prose if and only if that field reads the
 literal `(none yet)`. The mitigation is that the closure note names the plan, and the closure note

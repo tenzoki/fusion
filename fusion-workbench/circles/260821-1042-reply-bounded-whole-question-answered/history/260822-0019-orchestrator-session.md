@@ -39,6 +39,60 @@ sit inside the corpus `hooks/lib/__tests__/workbench-citation-lint.test.ts` reco
 
 (Setup complete. No scope resolved yet.)
 
+## Budget
+
+Every record count below is read off the stores at write time, not accumulated across Turns. Two
+sessions in this project have been caught reporting hand-kept tallies that were wrong by two in each
+direction, which the one available endpoint check cannot see.
+
+| Metric | Count |
+|--------|-------|
+| Turns | 4, plus a fifth that was never opened (see below) |
+| Tasks resolved | 11 |
+| Tasks skipped/deferred | 0 |
+| Issues created | 18 |
+| Issues resolved | 17 |
+| Decisions answered (`_o_`→`_a_`) | 0 |
+| Decisions implemented (`_a_`→`_i_`) | 0 |
+| Commits | 14 |
+| Agent errors | 0 |
+| Human gates hit | 3, all answered by the user's standing instruction |
+
+**One inconsistency in this table, named rather than smoothed.** Four `turn_start` events were
+emitted, and the last four commits carry a `Turn: 5` trailer for a Turn that was never opened. The
+work after the final reconciliation is Phase 3 and Phase 4, not a fifth Turn, and the trailer should
+have read `Turn: 4` or carried no Turn at all. The commits are not amendable, so this line is the
+correction.
+
+**Zero decisions moved, and that is a result rather than an omission.** The one open decision in the
+Circle, `260821-2004`, was deliberately left unanswered; the reasoning and the reconciler's
+correction to it are under `## What this session got wrong`.
+
+## Review coverage
+
+**Range:** `084c626..HEAD` — 14 commits.
+
+**Covered by:** four review files, each declaring its range.
+
+- `reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md` — `084c626..dbf259a`
+- `reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md` — `084c626..dbf259a`
+- `reviews/260822-0251-ontorev-the-moved-clause-and-the-restored-anchor.md` — `dbf259a..d6b867e`
+- `reviews/260821-2210-ontorev-two-register-habits-in-the-four-chat-voice-profiles.md` — `e764637..de0c6f6`, from the previous session and covering none of this range
+
+**Not covered:** two commits, and both are structurally unreviewable rather than skipped.
+
+- `655d976` — the commit that adds the fourth review file. A review cannot cover the commit that
+  introduces it.
+- `1d82ae1` — the Circle's own closure commit, written after the last review and carrying the
+  closure note, the portfolio and this log.
+
+Every commit that changed shipped text is reviewed. `746ae4d`, the last one that did and that no
+review had opened, was reviewed specifically to close that gap, and its shipped text came back clean.
+
+**Carried out-of-scope files:** the last review's `**Not-opened:**` field names 42 workbench records
+from the six other commits in its range. None is shipped text; all are records this session wrote,
+and the two reviews before it opened the substantive ones.
+
 ## Turn 1
 
 **Scope, resolved without a confirmation gate.** The user pointed at the measurement briefing and
