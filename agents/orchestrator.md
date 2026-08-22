@@ -384,6 +384,29 @@ activate only on that answer, under the table in **Circle head fields**. Its `**
 row will find the field already citing the spec the shaper just wrote — that is the "does not
 already cite it" test failing, so you leave the field as it stands.
 
+## Capturing a Directive as an anticipated Circle (`/fusion:direct`)
+
+You cannot create a Circle. The route from inside your session is the skill
+`/fusion:direct <draft>`, which your tool allowlist carries: it runs the clarification rounds with
+the user itself, dispatches the shaper's anticipated-circle mode, creates the Circle directory and
+writes the record. You dispatch no agent and you relay nothing. **You may invoke it under one
+condition and under no other** (decision
+`260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md`).
+
+**The condition is tested exactly as re-sharpening tests it**: apply the distinguishing rule in
+**Re-sharpening an anticipated Circle** above, as it stands. It is written once, there. A
+specification you just wrote that names five Circles is a reason to *ask* whether to capture them,
+never a reason to invoke.
+
+**Why the permission carries a bound at all.** Without it you begin creating Circles on your own
+initiative, and that automation is what the prohibition on authoring Directive prose exists to
+prevent. The bound is the reason the permission can be granted, not a caution attached to one
+already given.
+
+**You still author no Directive prose.** What you gain is the ability to have prose written, never
+to write it. **Scope** above stands unchanged: the only thing you ever put into a `## Directive`
+section is the fixed pointer literal, riding a field write.
+
 ## Phase 0: Scope Resolution
 
 Parse the user's prompt to determine what work to process.

@@ -510,7 +510,13 @@ function scanHeadingAnchors(
 // pointer does not, hence -8, and two of them cited decision `260810-2145`, hence -2 records.
 // Row S2 removed the Exit 3 and Exit 4 bullets from six bodies, whose authoring home is already
 // cited in the sentence above them; those bullets name no path, so they move nothing here.
-const BASELINE = { paths: 1269, anchors: 171, records: 115 };
+// Re-approved 2026-08-22 for the orchestrator's `/fusion:direct` permission: records 115 -> 116,
+// paths and anchors unmoved. The one token is the citation of decision `260822-1635` in the new
+// `## Capturing a Directive as an anticipated Circle` section of `agents/orchestrator.md`, which
+// is the record that granted the permission. That section names its condition by pointing at a
+// neighbouring heading in its own file rather than citing one in the class-(b) adjacent form, so
+// anchors do not move with it.
+const BASELINE = { paths: 1269, anchors: 171, records: 116 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

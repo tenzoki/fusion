@@ -107,8 +107,34 @@ None on the route; that is the user's and it turns on the trial. What the filing
 that option 3 leaves a gap that has already been measured once, in the session that filed this record.
 
 ---
-Answered:
-Implemented:
+Answered: shared/history/260822-1009-orchestrator-session.md — **Form A**, chosen by the user at a
+gate on 260822 after the trial run the Decidability section required. The orchestrator invokes
+`/fusion:direct` as a skill; the skill runs the clarification rounds, dispatches the shaper and
+creates the Circle. Option 2 (Form A plus widening the skill body's opening sentence) was offered
+and declined, so `skills/direct/SKILL.md` keeps "The user invoked", which is imprecise for an
+orchestrator-initiated run and is the one residual this answer leaves standing. Option 3, leaving the
+permission absent, was rejected.
+
+**The trial run, which the Decidability section made a precondition of writing any prompt text.**
+Run on 260822 against the real subject the user had asked for, capability C1 of the multi-user
+specification, so the measurement and the deliverable were the same act. Every step held: the
+orchestrator invoked `Skill(fusion:direct)` and its body loaded; the skill's own Steps 1 to 3 ran;
+the shaper recognised anticipated-circle mode **from its three parameter lines rather than from the
+sender**; the clarification round of four questions reached the user through the skill's relay and
+the answers travelled back; and the Circle was created with its record and six subdirectories,
+every citation resolving. Commit `4f9c4ee`. Nothing in `agents/shaper.md` had to change, and its
+mode-4 contract stayed literally true because the skill remained the dispatcher.
+Implemented: agents/orchestrator.md `## Capturing a Directive as an anticipated Circle (/fusion:direct)`,
+1 438 bytes placed beside the re-sharpening section whose test it cites. It states the three things the
+proposal specified and no more: that the route exists, that the condition is tested exactly as
+re-sharpening tests it and is written once there, and that the orchestrator still authors no Directive
+prose. It adds why the bound exists, which is not a restatement of the test: without it the
+orchestrator begins creating Circles on its own initiative, and that automation is what the
+prose prohibition exists to prevent.
+
+Untouched as the answer required, verified by an empty diff: `agents/shaper.md` and
+`skills/direct/SKILL.md`. No baseline map moved. The invocation table and the never-invokes list
+needed nothing, both being about agents while this is a skill.
 Deferred:
 Superseded by:
 Retired:
