@@ -586,6 +586,13 @@ HTML_PAGE = r"""<!DOCTYPE html>
       return;
     }
     var html = '';
+    // Dismissal keys travel as JS properties, never through the markup. A key
+    // is built from the event's own text, and warning text carries quotes
+    // routinely: a JSON fragment, a SyntaxError, a quoted path. Interpolated
+    // into an attribute one truncated there, so localStorage stored a prefix,
+    // the next render recomputed the whole key, matched nothing, and the row
+    // came back. Dismissal silently never stuck (issue 260817-1217).
+    var keys = [];
     for (var j = 0; j < visible.length; j++) {
       var w = visible[j];
       var levelClass = 'warning';
@@ -613,21 +620,22 @@ HTML_PAGE = r"""<!DOCTYPE html>
       // stood in the header above had stopped being written. The label names that.
       else if (w.event === 'state_drift') { levelClass = 'warning'; levelLabel = 'Stale state'; }
       var ts = formatLocalTime(w.ts || '', 'date');
-      var key = warningKey(w);
+      keys.push(warningKey(w));
       html += '<div class="warning-row ' + levelClass + '">' +
         '<span class="warning-level">' + escapeHtml(levelLabel) + '</span>' +
         '<span class="warning-detail">' + escapeHtml(w.detail || w.event) + '</span>' +
         '<span class="warning-ts">' + escapeHtml(ts) + '</span>' +
-        '<button class="warning-dismiss" data-key="' + escapeHtml(key) + '">dismiss</button>' +
+        '<button class="warning-dismiss">dismiss</button>' +
         '</div>';
     }
     panel.innerHTML = html;
     section.style.display = 'block';
     var btns = panel.querySelectorAll('.warning-dismiss');
     for (var k = 0; k < btns.length; k++) {
+      btns[k].fusionDismissKey = keys[k];
       btns[k].addEventListener('click', function(ev) {
         var btn = ev.currentTarget;
-        try { localStorage.setItem(btn.getAttribute('data-key'), '1'); } catch (e) {}
+        try { localStorage.setItem(btn.fusionDismissKey, '1'); } catch (e) {}
         btn.parentElement.parentNode.removeChild(btn.parentElement);
         if (panel.children.length === 0) section.style.display = 'none';
       });
@@ -641,7 +649,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     var panel = document.getElementById('warnings-panel');
     var btns = panel.querySelectorAll('.warning-dismiss');
     for (var k = 0; k < btns.length; k++) {
-      try { localStorage.setItem(btns[k].getAttribute('data-key'), '1'); } catch (e) {}
+      try { localStorage.setItem(btns[k].fusionDismissKey, '1'); } catch (e) {}
     }
     panel.innerHTML = '';
     section.style.display = 'none';

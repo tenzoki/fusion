@@ -89,3 +89,37 @@ found by the Circle's verification step, which is discovery rather than origin.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:527-531` still escapes through a text-node round trip, which does not escape the double quote, and `:621` still interpolates the result into a `data-key` attribute. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: the key no longer travels through the markup at all.
+
+**What changed.** `renderWarnings()` collects the dismissal keys into an array as it builds the rows,
+and assigns each one to its button as a JS property after `innerHTML` is set. The button element is
+emitted with no `data-key` attribute, and both handlers, the per-row one and Dismiss All, read
+`btn.fusionDismissKey`. No escaping is involved anywhere on the path, so no character in a warning
+can affect the key.
+
+**Why this rather than fixing the escaper.** Adding `"` to `escapeHtml` would have repaired the
+observed failure and left the design that caused it: a key is data, and routing data through an HTML
+attribute means every future character class is a fresh chance to truncate it. The class is now
+closed by construction rather than by an escape list that has to stay complete. That is the same
+move `rules/critical-stance.md` §4 describes for a question a mechanism cannot decide: change the
+mechanism instead of widening the approximation.
+
+**How the failure was confirmed as real rather than inferred.** A user's guard log carried three
+advisories whose detail embedded a `SyntaxError` and a JSON fragment, both full of double quotes.
+Their report was that Dismiss All did nothing and the rows returned on every poll, over days, which
+is precisely the symptom this record predicts.
+
+**No regression test was added, and the reason is a budget rather than a judgement that none is
+owed.** `hooks/lib/__tests__/monitor-warnings-panel.test.ts` covers this panel and touches dismissal
+nowhere. The hook-test growth bound stands at 15 lines of head-room, which is the residual the Circle
+`260821-1042-reply-bounded-whole-question-answered` closed over and named in its closure note. A pin
+asserting that the warnings markup emits no `data-key` would cost most of what is left of that bound,
+and spending it is a call for the user rather than for the agent that happened to be here. **Filed as
+the open half:** whether that pin is worth its lines, and what gets cut to pay for it.
+
+**One thing this fix does not reach.** A consuming project runs `fusion-workbench/monitor`, copied
+from `$FUSION_PLUGIN_ROOT` at Setup, and that install copy is the released plugin. Until a release is
+cut, no consuming project gets this. The release gap is
+`shared/issues/260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`.
