@@ -86,10 +86,17 @@ realised". `rules/fusion-workbench-conventions.md` `### Decision files` defines 
 citation of a commit or a path, and a decision to build nothing has neither.
 
 *The class.* This is the same shape as
-`shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md`, whose
+`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`, whose
 reconciliation note of 260731-2324 left the identical judgement to the user: promote on
 pre-existing surfaces, or accept that a no-op answer never reaches implementation. Two records in
-`shared/decisions/` now stand in it. It is **not** the class that
+`shared/decisions/` stood in it when this was written.
+
+*And one of the two has since left the class rather than being decided out of it.* On 260822 the
+user reversed `260719-2141`, which is now superseded, so its unanswerable question about
+implementation no longer needs an answer: a superseded record is not waiting to be realised. That
+does not settle the class, because the reason it left is unrelated to what made it hard. It does
+mean this record is now the only member, and that a class of one is a thinner basis for deciding
+the general question than a class of two. It is **not** the class that
 `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
 asks about — there the ground was removed after the answer; here the answer was never a thing to
 build — and conflating the two would widen that record's question while it is still open.

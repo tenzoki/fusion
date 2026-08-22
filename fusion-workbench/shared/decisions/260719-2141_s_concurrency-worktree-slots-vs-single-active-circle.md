@@ -91,3 +91,23 @@ this record and the stated Directive, not between this record and the tree.
 *What would discharge it.* C1 verifying that N checkouts produce N isolated workbenches, then a new
 decision recording the reframed answer, then `Superseded by:` here and `_a_` → `_s_`. Until then a
 reader of this record is reading the rule that is still in force.
+
+---
+Superseded by: shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md
+— the user reversed this answer on 260822 and specified the opposite in
+`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, approved at a gate. Option 3,
+"fusion does not support concurrency", no longer states the project's position; option 2, which this
+record judged "almost certainly a separate Circle of its own", is what was chosen, and the estimate
+held — the specification defines five.
+
+**Two things this record said survive it, and are the reason it is superseded rather than deleted.**
+Its binding sentence stands unchanged: nothing in fusion may assume two orchestrators can run safely
+against one workbench. The new arrangement satisfies that sentence rather than overturning it, because
+two orchestrators never run against one workbench, they run against two. And its option 1 rested on a
+fact nobody has ever verified, that N checkouts produce N isolated workbench states; the new answer
+rests on the same unverified fact and makes measuring it the first step of its second Circle, which is
+this record's own condition being honoured rather than waived.
+
+The supersession is written now rather than at that Circle, on the user's choice at the Rebalance gate
+of session 260822-1009, because leaving it standing meant the project's Grounding forbade what its
+approved specification requires.
