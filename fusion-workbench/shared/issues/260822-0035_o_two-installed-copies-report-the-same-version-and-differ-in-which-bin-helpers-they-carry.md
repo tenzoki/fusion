@@ -6,7 +6,7 @@ Two installed copies report the same version and differ in which bin/ helpers th
 **Domain:** code
 **Filed by:** analyst, running the measurement commissioned by `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
 **Affects:** `.claude-plugin/plugin.json`, `bin/fusion-prose-metric`, the release process in `CLAUDE.md` `## Release process`
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 3, which hit this and worked around it; `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_o_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`, a different gap in the same program
+**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 3, which hit this and worked around it; `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`, a different gap in the same program
 
 ---
 

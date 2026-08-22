@@ -58,6 +58,7 @@
   fusion-commit-lock.test.ts 371
   fusion-count-sources.test.ts 442
   fusion-paths.test.ts 878
+  fusion-prose-metric.test.ts 162
   glob-nomatch-lint.test.ts 148
   guard-bash-integration.test.ts 417
   guard-project-config-integration.test.ts 423
@@ -89,4 +90,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 523
   workbench-citation-lint.test.ts 347
-  total 19911
+  total 20073
