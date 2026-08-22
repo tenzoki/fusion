@@ -47,6 +47,22 @@ This is genuinely the user's, because it trades a split store for one Directive 
 
 ---
 Answered:
+---
+Answered: circles/260823-0023-settle-what-travels-between-checkouts/_a_circle.md `## Grounding snapshot`
+— user decision at the shaping gate of `/fusion:direct`, 260823: **`/fusion:setup` reports the state and
+offers activation as the user's own act.** It informs; it does not act.
+
+The two rejected options are what give the answer its shape. Doing nothing would have left a Directive
+with two filing locations depending on who works on it, and nobody able to see a double activation.
+Taking the Circle over automatically would have let a tracked file drive an ignored one, which inverts
+the very state partition C2 is about to write down.
+
+**The cost was stated at the gate and accepted:** one more gate in `skills/setup/SKILL.md`, on a surface
+with 4 661 bytes of head-room that three of this Circle's changes now draw from, and it prevents
+nothing. A second checkout can still activate a Circle the first one holds; what changes is that the
+person sees it first.
+
+Realisation belongs to `circles/260823-0023-settle-what-travels-between-checkouts/`.
 Implemented:
 Deferred:
 Superseded by:

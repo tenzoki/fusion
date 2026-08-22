@@ -42,6 +42,23 @@ Option 1, with the reading order made explicit at every consumer. The union driv
 
 ---
 Answered:
+---
+Answered: circles/260823-0023-settle-what-travels-between-checkouts/_a_circle.md `## Grounding snapshot`
+— user decision at the shaping gate of `/fusion:direct`, 260823: **the union merge driver**, one line in
+`.gitattributes`, which `/fusion:setup` creates or extends so a consuming project gets it too.
+
+The choice rests on measurement rather than on reasoning. The driver was exercised end to end in
+`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`
+section 7: the merge resolves cleanly and no line is lost from either side.
+
+**The cost was stated at the gate and accepted:** the merged log is no longer chronological, so every
+reader sorts by the `ts` field. `bin/monitor` already does (`bin/monitor:1165`, stable sort, a missing
+stamp treated as oldest). Two readers do not, and C2 takes one of them — the Phase-4 sequence-diagram
+generator — while the Turn count stays with C4, where its own defect already lives.
+
+The two rejected options are recorded so a later reader sees what was weighed: one log per checkout
+read by glob, which contradicts the answer that only the existing log travels and changes four
+consumers; and leaving the conflict to be resolved by hand, which is where lines actually get lost.
 Implemented:
 Deferred:
 Superseded by:

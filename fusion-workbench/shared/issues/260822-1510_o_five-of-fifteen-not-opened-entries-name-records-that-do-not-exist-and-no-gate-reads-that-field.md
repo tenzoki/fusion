@@ -26,12 +26,19 @@ The store holds seven `260822-*` decision records and none carries any of those 
 failing entry is a plausible **paraphrase** of a real record rather than a copy of its path: the
 stamp is wrong (`1155`, `1137`, `1138`, `1156` name no record at all), the marker is wrong
 (`_a_` where the record is `_o_`), and the slug is reworded. The real records they gesture at are
-`260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`,
-`260822-1154_o_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`,
-`260822-1136_o_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
-`260822-1136_o_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
-and `260822-1102_a_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`.
+`260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`,
+`260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`,
+`260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
+`260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+and `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`.
 The ten remaining entries resolve.
+
+Those five are wildcarded, and the reason is this record's own subject. They are pointers: the marker
+letter carries nothing here, because the statement about wrong markers is the sentence above, which
+describes the failing entries rather than these. Written out, each would die at its target's next
+transition — and one did, on 260823, when the event-log record moved from open to answered. All five
+were wildcarded then rather than the one that broke, because the other four are the same pointer
+waiting for the same transition.
 
 ## Why nothing caught it
 
