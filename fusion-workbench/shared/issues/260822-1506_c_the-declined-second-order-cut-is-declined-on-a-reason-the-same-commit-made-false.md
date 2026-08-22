@@ -86,3 +86,37 @@ worth:
 
 Whichever is taken, `next:33`'s opening clause should stop describing `agents/orchestrator.md` as
 this body's own call site.
+
+---
+Resolved: The finding holds in both halves, verified against the tree before anything was
+changed, and the repair is direction 1 with the reason stated rather than the byte saving.
+
+What was verified. `bin/fusion-source-root:48-57` does carry the two branch sentences, in the
+same order and in near-identical wording, so "a helper header cannot author that" was false at
+the moment it was written. The first `bash` block is byte-identical in `setup`, `next`,
+`cleanup` and `help` (md5 over the four ranges), so it is not any body's own block.
+`skills/next/SKILL.md` carries exactly **one** `[ -x ]` call site, which is the count `cleanup`
+and `help` carry, and both of those pair that block with the pointer alone.
+`skills/setup/SKILL.md` carries **four** (the announcing block, and three inline re-resolutions
+in Step 0e).
+
+What changed. `skills/setup/SKILL.md:30` and `skills/next/SKILL.md:31` now read "Why the
+branch, why it is a call, and why the call is guarded", so all four bodies name the same three
+claims their target holds. `next`'s second paragraph is gone: it named no call site inside its
+own body, and everything else in it is the header verbatim, which is exactly the arrangement
+`cleanup` and `help` already demonstrate is sufficient. `setup`'s second paragraph is replaced
+by the one thing a helper header cannot author, that this body meets the same guard at three
+further inline sites in Step 0e and again in the Turn-budget block Step 2 runs; the branch
+semantics are left to the header rather than restated beside it.
+
+Why this is not a cut taken because it was available. `skills/` head-room stood at 4 016 bytes
+against a target of 3 000 before this repair, so no byte pressure motivated it. What forced the
+edit is that the duplication had no true reason left once the header authored it, and no single
+true reason covers both bodies: `setup` has body-local recurrences to point at and `next` has
+none. The byte movement is incidental and is reported rather than claimed as the result:
+`next/SKILL.md` -543, `setup/SKILL.md` -258.
+
+The closure note of
+`shared/issues/260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+carries the same false reasoning and has been annotated with `Revised by:` rather than edited,
+per `rules/fusion-workbench-conventions.md` `### Issue files`.

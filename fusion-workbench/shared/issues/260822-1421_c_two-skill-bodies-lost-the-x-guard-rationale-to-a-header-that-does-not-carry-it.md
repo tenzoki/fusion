@@ -89,3 +89,10 @@ therefore not taken.
 
 The two line ranges this record cites in `bin/fusion-source-root` are the pre-fix file: lines
 39-45 are unmoved, the guard mention formerly at 76-79 is now at 87-89.
+
+---
+Revised by: `shared/issues/260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`
+— the `Resolved:` note's reason for not taking the second-order cut is false in both halves: the
+header does author the three-branch description (`bin/fusion-source-root:48-57`, added by the
+same commit), and `next` names no call site inside its own body. The defect this record closed
+stays closed; the cut it declined has since been taken in `next` and taken in part in `setup`.

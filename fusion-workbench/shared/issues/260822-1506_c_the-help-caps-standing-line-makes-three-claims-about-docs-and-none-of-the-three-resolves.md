@@ -52,3 +52,22 @@ the same "one per release since v9" claim and is the curator's surface.
 That is shorter than the sentence it replaces, cannot go stale when a release ships without a note, and
 does not ask the reader to reconstruct a filename. It also removes the "starting at its own" hole,
 because "above their own" is defined for every version.
+
+---
+Resolved: All three claims fail, re-checked here before the repair. `git tag -l` gives nine tags
+from `v9.0.0` onward and `ls docs/` gives six notes, so `v10.0.1`, `v10.0.2` and `v10.1.0` have
+none; the shipped filenames spell the version with a dash (`upgrading-to-v10-2.md`); and a
+project at `v10.0.x` or `v10.1.0` has no note "at its own" version to start from.
+
+`skills/help/SKILL.md:107` no longer asks the reader to derive anything. It tells them to run
+`ls $FUSION_SRC/docs/` and read every `upgrading-to` note above their own version in version
+order, and says outright that not every release has one and that no filename is derivable from a
+version string. Nothing in the replacement goes stale when a release ships without a note.
+
+Repaired in the same edit as
+`shared/issues/260822-1506_*_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`,
+which is a second defect in the same sentence. The reference-resolution pin did not move: the
+`$FUSION_SRC/docs/` token the old line carried is still there, and the first draft of this
+repair, which wrote `ls $FUSION_SRC/docs/upgrading-to-*`, was rejected by the citation gate as a
+dangling `docs/upgrading-to` because the trailing glob is stripped before the placeholder
+exemption is applied.

@@ -69,3 +69,16 @@ later:
 > `fusion-guard.json`, and a Turn budget left inside it is not read, so it has to be copied into
 > `fusion.json` before the old file is deleted; and v9 retired the `strategic` and `knowledge` domain
 > values, and a record still carrying one runs as `code` without saying so.
+
+---
+Resolved: The finding holds. Verified against the tree: `docs/upgrading-to-v9.md:54-59` states
+the silent fallback in bold, and `docs/upgrading-to-v10-2.md:62-71` opens its "What you have to
+do" with "Nothing, for the upgrade itself." and makes its one case an explicit halt. Two silent
+actions, not one.
+
+`skills/help/SKILL.md:107` now names both, in the same terse form: the v10 Turn budget stranded
+in the retired `fusion-guard.json`, and the v9 retirement of the `strategic` and `knowledge`
+domain values, where a record still carrying one runs as `code` without saying so. The line was
+rewritten once for this finding and for
+`shared/issues/260822-1506_*_the-help-caps-standing-line-makes-three-claims-about-docs-and-none-of-the-three-resolves.md`
+together, since both are defects in the same sentence.

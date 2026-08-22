@@ -43,3 +43,10 @@ subject is *what to do when a resolver fails* is the wrong moment to invite that
 
 **The fix.** Change the trailing `:` to a `.`. One byte off a bounded surface, no other edit needed —
 the citation the cut relied on stays exactly where it is.
+
+---
+Resolved: Verified and fixed. `skills/setup/SKILL.md:362` ended in a colon whose next non-blank
+line is the bold Turn-budget paragraph at `:364`; `skills/next/SKILL.md:51` kept its Exit 1
+bullet, so it was the only site. The trailing `:` is now a `.`. One byte, no other edit, and the
+citation of `rules/fusion-workbench-conventions.md` `## Path Resolution` the cut relied on is
+untouched.

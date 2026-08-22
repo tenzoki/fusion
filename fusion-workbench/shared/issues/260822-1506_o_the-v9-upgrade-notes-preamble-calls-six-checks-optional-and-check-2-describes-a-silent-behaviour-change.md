@@ -28,7 +28,7 @@ disposition from, and it is what a later summary reasons from. It already has: `
 `/fusion:help` upgrade section and stated that of the three removed paragraphs *"exactly one held an
 action that fails silently when skipped"*, which is what the preamble says and not what check 2 says.
 That is filed as
-`shared/issues/260822-1506_o_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`.
+`shared/issues/260822-1506_*_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`.
 
 **Out of the reviewed range, and named honestly.** `docs/upgrading-to-v9.md` was not touched by
 `c2ad89c..6781814`; it was read as the destination of a paragraph that range removed. No gate covers
