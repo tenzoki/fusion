@@ -83,6 +83,43 @@ been measured, and the arrangement rests on it. The specification makes that mea
 step of its second Circle and states that a negative result stops the sequence. Until it is run, this
 answer is chosen but not proven.
 
+**Addendum 260822-2230 — it is proven, and the paragraph above is superseded by measurement rather
+than deleted.** The measurement ran the same day, as the single task of Circle
+`circles/260822-1921-measure-what-two-checkouts-share/`, and its report is
+`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`.
+
+**The premise holds for both arrangements this answer relies on**, a second full clone and a
+`git worktree` of the same repository, on one precondition: each tree carries its own
+`.fusion-setup`. The question was posed three ways — the second tree gets its own copy, the first
+tree's copy, or nothing — and the third possibility never occurred. **No second tree ever received
+the first tree's copy of any workbench file.** A tracked entry arrives as an independent file,
+verified by device and inode and then by an append-and-compare write test; an ignored entry does not
+arrive at all. Sharing is only ever the upward walk of `bin/fusion-workbench-root`, never a shared
+file. That is a stronger statement than this answer needed, and it is what makes the arrangement's
+one-file-wide multi-writer surface real rather than assumed.
+
+**The one failure is the nested placement, and only where the second tree has no marker of its
+own.** The root walk then hands it the parent's workbench entire, active Circle, guard state and
+commit lock included. That is precisely the failure mode the superseded record named and nobody
+measured. The user's decision at shaping was to document it and not treat it as a blocker, because
+nested is not an arrangement they intend to use, so it is recorded here as a bound on the answer
+rather than as a defect against it.
+
+**Two findings the measurement produced that bear on this answer without changing it.** A second
+checkout has no active Circle while holding a record whose marker says one is active, and nothing
+states what an orchestrator should do in that tree — open as
+`circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`.
+And the specification's class R3 does not survive measurement for `.fusion-setup`: every Setup
+rewrites it, so every checkout dirties a tracked file and two would conflict on a one-line diff —
+open as
+`circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
+Its sibling `.asset-provenance` behaves as the class claims.
+
+**What this addendum does not do.** It does not promote this record to implemented. The answer's
+realisation is the rebuild that C2 through C4 carry out, and none of it is on disk. What has changed
+is that the premise the answer rests on is measured instead of assumed, so the sequence may proceed
+on evidence.
+
 Implemented:
 Deferred:
 Superseded by:
