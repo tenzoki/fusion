@@ -101,3 +101,44 @@ verdict**, recorded in
 `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`
 `## Coherence`. The record stays open past the Circle's closure by design: what it holds is a
 statement the closure note has to make, and it survives the Circle to say so.
+
+---
+Resolved: the disposition this record asked for was made, verified against the tree rather than
+taken on report, so the record closes with no further change to any shipped file.
+
+**Both claims checked independently.** The closure note of
+`circles/260821-1042-reply-bounded-whole-question-answered/_c_circle.md` `## Closure note` names
+this as residual 1 and states 15 lines of head-room against 21 at HEAD `e764637`, rather than
+repeating the criterion at
+`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+`## Where this Circle stops`. And the two attribution blocks are one: a single six-line block dated
+2026-08-21 at `hooks/lib/__tests__/reference-resolution-lint.test.ts:905-910` carries both steps 2
+and 3 of that Circle in one re-approval, where two blocks stood before.
+
+**The 15 is the figure at that closure and not the figure at HEAD.** A reader who takes it as
+current will be wrong, which is why it is stated here as a timestamped quantity rather than a
+property of the surface. Re-measured at HEAD `370bfc5` the way
+`hooks/lib/__tests__/surface-growth-bound.test.ts` measures it:
+
+```
+$ git ls-tree -r --name-only HEAD -- hooks/lib/__tests__ | grep '\.ts$' \
+    | while read f; do git show HEAD:"$f"; done | wc -l      # 20 363
+17 875 + 2 500 = 20 375 budget -> 12 lines of head-room
+```
+
+The three lines between 20 360 and 20 363 are one commit, `370bfc5`, and they are the same class of
+spend this record is about: a three-line re-approval block above `BASELINE` in
+`hooks/lib/__tests__/reference-resolution-lint.test.ts` for the v10.5 release, whose only other
+change under `hooks/lib/__tests__/` is the regenerated golden. The figure moves again while this
+note is written, because the Circle that closes this record is cutting that surface.
+
+**Closing this defect does not close the question it raises.** The record argues that the six lines
+were a choice and could have been sized as one, and it does not answer whether a comment line
+belongs on a budget the bounding file justifies by what test code costs to maintain and to run.
+That question is filed as an open decision at
+`shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`, which cites
+this record as its measured instance and reaches no recommendation, on the stated ground that every
+option changing what the surface counts needs a baseline recomputation the current Circle is
+forbidden to make. The decision stays open past this closure. What closes here is the defect, which
+was that a finding lived only in a history log, and that is discharged: it lives in this record and
+in the Circle's closure note.
