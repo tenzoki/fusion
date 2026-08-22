@@ -245,3 +245,79 @@ the empty Turn log is recorded as `Also seen:` on
 `shared/issues/260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`.
 
 Full pass: `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`.
+
+## Portfolio update
+
+Playmaker regenerated `portfolio.md` after the `_t_` → `_c_` transition. Log:
+`shared/history/260822-0319-playmaker-orchestrator-phase4.md`.
+
+No Circle is active and none is anticipated: all fourteen Circle records on disk are terminal. No
+dependency cycle exists, because the graph is built from non-terminal records and has no nodes, and
+no parent-grounding-stale condition applies, because both bounded Circles are cited only from
+terminal records. The top backlog entry is
+`shared/backlog/260814-1733_*_bounded-executor-dispatches.md`, already at recommended.
+
+**One finding bears directly on the topic the user named as next.** The backlog holds nothing on
+multi-user work, and neither does any live plan or open issue, but that is a standing position
+rather than a gap:
+`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` is answered
+at option 3, that fusion stays single-active-Circle with no lock and parallelism is out of scope.
+A multi-user Circle overturns that record, which is the user's act and belongs in its Grounding
+before shaping begins.
+
+**A second finding constrains what should be shaped next.** The after-measurement needs twenty
+transcripts unprimed on prose register, roughly fifteen orchestrator sessions. Work on any other
+subject accumulates that corpus; further work on register spoils it. Both the multi-user topic and
+the top backlog entry are off-subject and would count toward the twenty.
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant A as Analyst
+    participant C as Coder
+    participant OC as Ontocoder
+    participant CR as Coderev
+    participant OR as Ontorev
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    U->>O: run the briefing, then finish the Circle; autonomous for ~6h
+    Note over O: Turn 1
+    O->>A: T1 the commissioned measurement
+    O->>C: T2 the bound's own figure
+    O->>OC: T3 rename C06
+    C-->>O: done (e202016)
+    OC-->>O: done (dce8894)
+    O->>O: T7 unreleased-manifest defect (c53a903)
+    A-->>O: 3 before-figures, after-run defined (4c7aae6)
+    O->>OC: T4 the C05 pointer route
+    OC-->>O: done (dbf259a)
+    O->>CR: review the measurement report
+    O->>OR: review the four profiles
+    CR-->>O: 6 findings, every figure reproduced
+    OR-->>O: 6 findings, pairs identical
+    Note over O: Turn 2
+    O->>C: T6 repair 19 citations, close the plan
+    C-->>O: done (53ff99f)
+    Note over O: Turn 3
+    O->>A: T9 the after-run join that does not exist
+    O->>OC: T10 C04's fourth sentence
+    A-->>O: restriction dropped and explained (c964062)
+    OC-->>O: moved to C01, anchor restored (746ae4d)
+    Note over O: Turn 4
+    O->>C: T11 two broken commands
+    C-->>O: done (05b46f2)
+    Note over O: Phase 3
+    O->>R: final reconciliation
+    R-->>O: review-needed on the account, not the work
+    O->>OR: close the last uncovered commit
+    OR-->>O: shipped text clean, 2 record findings
+    O->>C: repoint six citations, annotate two overstated notes
+    C-->>O: done
+    Note over O: Phase 4 — closed coherent
+    O->>PM: portfolio refresh
+    PM-->>O: no Circle active, none anticipated
+```

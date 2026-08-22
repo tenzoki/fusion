@@ -250,3 +250,62 @@ This Circle's own answered records settle the substance of the second and the th
 Grounding states that the user overturned the first. The records themselves were never transitioned,
 so a later reader meets three open questions that are answered elsewhere. Recorded here as an
 observation; moving a decision marker is not this agent's act.
+
+## Closure note
+
+**Closed coherent on 2026-08-22**, after seven Turns across two sessions. Session history:
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`.
+Final reconciliation:
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`,
+verdict `review-needed` on the Circle's account of itself rather than on its work, with the four
+writes it prescribed made before this note was written.
+
+**The plan this Circle ran on** is
+`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_c_plan-reply-bounded-whole-question-answered.md`.
+It is named here because the record's `**Active spec/plan:**` field could not carry it: the decision
+governing that field, `260821-2004`, is deliberately left open, so the field stays at `(none yet)`
+and this note is where a reader finds the plan.
+
+**Why closed-coherent and not Bounded Closure.** The first session's reconciliation recommended
+Bounded Closure because one stopping criterion was unmet. That recommendation is superseded. Bounded
+Closure means the Directive was judged unreachable, and it was reached: the rule corpus now bounds a
+whole reply, requires the answer to address the question put, and names all three register habits
+with their shorter forms, each verified line by line at HEAD. Spending `_b_` on a self-imposed budget
+condition is the reading
+`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+rejected as devaluing the marker, and option 1 of that record says what to do with a residual of this
+kind: name it here.
+
+**Three residuals, named rather than resolved.**
+
+1. **One of six stopping criteria does not hold and cannot.** The plan required that no growth bound
+   stand closer to failing than at HEAD `e764637`. The hook-test surface has 15 lines of head-room
+   against 21 at that anchor. No commit in either session touched a file under `hooks/`; the six
+   lines went to an attribution comment the pinning file's own convention asks for, and a note
+   costing zero lines is no note. Recorded in
+   `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
+   which stays open because what it now holds is a judgement for a later Circle, not an unapplied fix.
+2. **One commit in the range carries no review, and structurally cannot.** It is the commit that adds
+   the last review file; a review cannot cover the commit that introduces it. Every other commit in
+   `084c626..HEAD` is tiled by four review files that declare their ranges.
+3. **The Directive was reached and its effect is unobserved.** The rule text landed and nobody has
+   seen whether a reply changed. That is why
+   `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+   stays open, and why the after-measurement defined in
+   `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`
+   is defined and deliberately not run. It needs twenty unprimed sessions before a difference means
+   anything. **A later reader should not mistake a landed clause for a changed reply.**
+
+**What this Circle produced that its Directive did not ask for.** The measurement its own Grounding
+said it could not deliver is delivered: three before-figures with their commands, an after-measurement
+specified to the point of being mechanical, and a stated count for when its result would mean
+something. The before-state is uncomfortable and is the point of having taken it. Agent replies in
+this project run at 10.0 prose em-dashes per 1000 words against a ceiling of 1.0 that the corpus
+states for itself, and 17.9 per cent of replies exceed a cap that is loaded into the agent writing
+them.
+
+**Two questions left for the user, both recorded rather than answered in an unattended run.**
+Decision `260821-2004` binds every future Circle and was not answered here, because a decision of
+exactly this class was answered by an orchestrator in an unattended run and overturned by the user on
+2026-08-21; that reversal is in this record's own Grounding snapshot. And whether the verbosity record
+above may be called closed at all is the user's, on the same reasoning the first session gave.
