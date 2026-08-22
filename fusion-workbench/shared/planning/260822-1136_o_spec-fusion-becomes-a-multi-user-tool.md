@@ -1,0 +1,243 @@
+# Spec: fusion becomes a multi-user tool
+
+**Date:** 2026-08-22
+**Status:** Draft
+**Source:** "wir bauen fusion jetzt zu einem multiuser tool um. [...] Die blockierende Decision (nur ein aktiver Orchestrator) wird aufgehoben und reframed, so dass wir mehere User auf einer workbench arbeiten lassen können, bzw. ev. auch mehrere Instanzen auf einer Maschine. Workbench- und Zustandsdaten, die jetzt gitignored sind, müssen daher ins repo." Three shaping rounds, eight answers from the user, recorded in `shared/history/260822-1009-orchestrator-session.md`.
+**Decidability:** The load-bearing question is whether a workbench record can be attributed to the person and to the session that produced it, from inputs fusion already holds. The person is decidable and needs no new input: `/fusion:memo` reads `$USER` from the environment today (`skills/memo/SKILL.md:38`), and every agent can do the same. The session is decidable for the hooks and not for the agent. Claude Code passes `session_id` to PreToolUse and PostToolUse, fusion declares it at `hooks/guard.ts:84` and `hooks/tracker.ts:132`, and nothing reads it; no agent ever receives it. Whether an agent could obtain it rests on one measurement nobody has taken, namely whether the SessionStart input package carries the field and whether a hook can relay it to the model as `additionalContext`. **No capability in this spec depends on that measurement**, because attribution in records is by person, the session identifier appears only in the event log the hooks write, and nothing here walks from a record back to a session. C4 states the measurement as its own first step and names what happens if it fails.
+
+## Directive
+
+After this work, several people run fusion against one project at the same time, each from their own checkout, and their records reach each other through git. Every record says who wrote it. A person can see, after a pull, that somebody else has been working and on which Circle. No live state is shared between checkouts, and no session ever reads another session's queue, dashboard or running task.
+
+## What the user settled, and what it rules out
+
+Eight answers, three rounds. They are load-bearing for every capability below and are not re-opened here.
+
+| # | Question | Answer | Given up |
+|---|---|---|---|
+| 1 | Arrangement | Several checkouts, git as transport | Live presence. Two people see each other only after a push and a pull. |
+| 2 | Guarantee under two sessions | True parallelism | A small change. The user accepted a rebuild. |
+| 3 | Identity | Full attribution on records | Cheapness. Record templates change. |
+| 4 | Visibility of another's work | Presence only | Insight into progress. Queue, running task and dashboard stay private. |
+| 5 | What travels over git | The existing event log alone | Every currently ignored file stays ignored. Accepted as final, not deferred. |
+| 6 | `portfolio.md` | Stop tracking it, regenerate on demand | A person who has not pulled sees an older ranking, with nothing to warn them. |
+| 7 | Head-room on the bounded surfaces | A cut-only Circle runs first | A whole Circle in front of the work that was asked for. |
+| 8 | Attribution unit | Person in the record, session only in the event log | Two conditions attached, carried in C3 below. |
+
+**Answer 5 is the answer that shapes everything else.** The opening request asked for the ignored workbench state to move into the repository. Answers 1, 4 and 5 together retire that requirement rather than fulfilling it: presence has to travel, and `agentstate.yaml`, `orchestrator-live.md` and the work queue do not. What travels is the record layer, which already travels, plus one line per session in a log that is already tracked and already append-only.
+
+## The transport
+
+```mermaid
+flowchart LR
+  subgraph A["Checkout A (person A)"]
+    direction TB
+    ARec["record stores<br/>circles/ shared/ archive/"]
+    ALive["live state<br/>agentstate.yaml, .active-circle,<br/>orchestrator-live.md, .session-marker,<br/>.guard-state/, .commit-lock/, portfolio.md"]
+    ALog["orchestrator-events.jsonl"]
+  end
+  subgraph G["git remote"]
+    GRec["record stores"]
+    GLog["orchestrator-events.jsonl"]
+  end
+  subgraph B["Checkout B (person B)"]
+    direction TB
+    BRec["record stores"]
+    BLive["live state"]
+    BLog["orchestrator-events.jsonl"]
+  end
+  ARec -->|push / pull| GRec
+  GRec -->|push / pull| BRec
+  ALog -->|"push / pull (append-only)"| GLog
+  GLog -->|"push / pull (append-only)"| BLog
+  ALive -.->|never leaves the checkout| ALive
+  BLive -.->|never leaves the checkout| BLive
+```
+
+## The state partition
+
+The split below ranges over **every entry of the workbench layout tree** in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, which that document states is exhaustive as written. Every entry falls in exactly one class, and no entry falls in none. That property is the thing to check when the layout gains an entry: a new root-anchored surface lands in one of these four classes in the same commit that creates it.
+
+| Class | Entries | Behaviour under several checkouts |
+|---|---|---|
+| **R1. Travels. Many files, one writer each.** | `circles/`, `shared/`, `archive/`, `stilwerk/`, and where a workbench still holds them the two frozen stores `stashes/` and `.migration-v2-backup/` | Two people collide only on one file. A record filename carries a minute stamp and a slug, so two new records collide by accident almost never. Two people editing the *same* existing record is the real case, and C3 addresses the one instance of it that matters, the Circle record. |
+| **R2. Travels. One file, appended by many.** | `orchestrator-events.jsonl` | The only file in the whole workbench that two checkouts both write and git must merge. Every merge question in this rebuild is a question about this one file. |
+| **R3. Travels. Written once or rewritten per item.** | `.fusion-setup`, `.asset-provenance` | Written by `/fusion:setup` in each checkout. Both are already tracked and already tolerate a second writer, because a second setup writes the same kind of line about the same assets. |
+| **L. Stays in the checkout. Never travels.** | `agentstate.yaml`, `orchestrator-live.md`, `.session-marker`, `.active-circle`, `.guard-state/` apart from its event log, `.commit-lock/`, `monitor`, and after C2 also `portfolio.md` | Per checkout by construction, because git never carries it. This is what makes two sessions in two checkouts independent without any lock. |
+
+Two entries need their own line, because the directory is the wrong unit for them.
+
+- **`.guard-state/` is split per file.** Its throttle records are rewritten in place and are live state (class L). Its `events.jsonl` is append-only evidence and is a record, which `rules/workbench-tracking.md` classifies as such. In this repository it is not tracked; what preserves it is the archive roll of `/fusion:cleanup`, which commits a dated copy into `archive/`, class R1. So the guard's evidence travels as an archived file and never as a live one. No change is needed for multi-user, and the spec states the classification so the next reader does not have to re-derive it.
+- **`portfolio.md` moves from R1 to L**, and that move is the whole of answer 6. It is the only entry whose class this spec changes.
+
+**What the partition buys.** After C2 there is exactly one file in class R2, and it is append-only. Everything else either has one writer per file or never leaves the machine it was written on. The multi-writer risk of the whole design is therefore one file wide, which is what makes the rebuild small enough to specify.
+
+## The Circle sequence
+
+```mermaid
+flowchart TD
+  C0["C0 — Cut-only Circle<br/>buys head-room on four bounded surfaces"]
+  C1["C1 — Verify the isolation<br/>and supersede the blocking decision"]
+  C2["C2 — Settle what travels<br/>partition, portfolio.md, event-log merge"]
+  C3["C3 — Attribution<br/>every record says who wrote it"]
+  C4["C4 — Presence<br/>after-the-fact visibility across checkouts"]
+  C0 -->|"room to write into agents/, skills/, hook tests"| C1
+  C1 -->|"premise holds, or the sequence stops"| C2
+  C2 -->|"transport settled"| C3
+  C3 -->|"identity exists to attribute a presence line to"| C4
+```
+
+**Why C0 is its own Circle and is not absorbed.** The user's answer to the head-room question chose "a cut-only Circle runs first, and the rebuild starts against the room it produces" (`shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`). Absorbing the cut into the first rebuild Circle would give that Circle two Directives, one of which is a reduction and one of which is a feature, and it would let the reduction be traded against the feature at the same gate. The instrument the cut protects exists precisely to make that trade visible, so a Circle that contains both sides of it cannot report on it honestly. The cut also has a test of its own that has nothing to do with multi-user work, which is the second reason it is a Circle rather than a step.
+
+**Why C1 comes before anything is built.** The arrangement the user chose is the option the superseded decision could not take, because it rested on a fact nobody has ever verified: that N checkouts really produce N isolated workbenches rather than sharing one at a common parent. If that fact does not hold, C2 through C4 are all wrong, and they are wrong in a way no amount of care inside them would reveal. C1 is the cheapest possible refutation of the whole sequence, so it runs when refuting is still cheap.
+
+## Capabilities
+
+### C0: The four bounded surfaces have room again
+
+**Description:** Somebody can add a paragraph to a skill body or a test case to the hook suite without the test suite going red on a growth bound. Today they cannot, on three of the four surfaces.
+
+**Head-room measured at HEAD on 2026-08-22**, by summing each surface's baseline map in `hooks/lib/__tests__/surface-growth-bound.test.ts` and `hooks/lib/__tests__/rules-emission-golden.test.ts` against the tree:
+
+| Surface | Baseline floor | Now | Remaining |
+|---|---|---|---|
+| Always-on rule core | 86 573 bytes | 95 064 | 3 509 bytes |
+| `agents/*.md` | 399 843 bytes | 416 205 | 1 638 bytes |
+| `skills/*/SKILL.md` | 220 439 bytes | 240 409 | 30 bytes |
+| Hook test suite | 17 875 lines | 20 363 | 12 lines |
+
+**The test the user set, enumerated.** The answered decision names "the four defects already open against `skills/setup/SKILL.md` and the hook tests" and does not list them. These four are the ones whose own text names the bound as the reason they are unfixed, so they are the enumeration this spec adopts:
+
+1. `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` (both parts of its fix add text to `skills/setup/SKILL.md`, roughly 160 bytes against 30)
+2. `shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md` (one upgrade paragraph in `skills/help/SKILL.md`, 600 to 1 100 bytes)
+3. `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` (a test file for `bin/fusion-prose-metric`)
+4. `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` (a stopping criterion that cannot be met as written)
+
+**Acceptance criteria:**
+- [ ] Each of the four defects above is fixed, and `cd hooks && npm test` exits 0 after each fix.
+- [ ] After the four fixes, `skills/*/SKILL.md` has at least 3 000 bytes of head-room and the hook test suite at least 300 lines, measured by the same summation the bound performs.
+- [ ] `agents/*.md` has at least 12 000 bytes of head-room, which is what C3 and C4 need to write into the agent prompts.
+- [ ] No baseline map is edited. The three maps in `hooks/lib/__tests__/surface-growth-bound.test.ts` and the map in `hooks/lib/__tests__/rules-emission-golden.test.ts` are byte-identical before and after this Circle, except where a re-baseline follows an actual cut and the cut is named in the same commit, which is event 1 of `## Re-baselining` in `hooks/lib/__tests__/helpers/growth-bound.ts`.
+- [ ] The Circle's closure note states, per surface, what was cut and what the head-room measured before and after.
+
+**Decisions made:**
+- Cut-only Circle rather than paying per step or declaring a third re-baselining moment (user, at the gate on 2026-08-22).
+- The four defects are enumerated here rather than in the decision record, because the record is answered and is not edited to add them.
+
+**Open for planner:** which text is cut, and from which of the four surfaces. The largest single item on `agents/*.md` is `orchestrator.md` at 150 807 bytes, which is 36 per cent of that surface; the surface-bound file's own arming note says nothing asks for it to be cut, so a planner proposing that cut is proposing something new and should say so.
+
+### C1: The isolation the whole arrangement rests on is verified, and the blocking decision is superseded
+
+**Description:** Somebody can read a report that says, from measurement rather than from reasoning, what two checkouts of one project share and what they do not. The standing decision that fusion does not support concurrency is then replaced by a decision that says what it does support.
+
+**Acceptance criteria:**
+- [ ] A report exists that measures, for at least two arrangements, which workbench entries are shared and which are per tree. The two arrangements are a second full clone, and a `git worktree` of the same repository. For each, the report states for every entry of the state-partition table above whether the second tree got its own copy, the first tree's copy, or nothing at all.
+- [ ] The report states what a fresh clone of a project that tracks its workbench holds and what it lacks, and what an agent does in that tree before `/fusion:setup` has run there.
+- [ ] The report states what happens when the second tree is created **inside** a directory that already holds a workbench, because `bin/fusion-workbench-root` walks upward from the working directory and will find the parent's marker. This is the failure mode the superseded decision named and nobody measured.
+- [ ] The report states whether two trees of one repository can hold the same Circle active at once, and what git does when both push a changed Circle record.
+- [ ] `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` gains a `Superseded by:` line citing a new record, and is renamed from answered (`_a_`) to superseded (`_s_`). The new record states the arrangement this spec settles and is filed in the same Circle.
+- [ ] The new record states in its own words what survives of the superseded one. The sentence that binds it is the superseded record's own: nothing in fusion may assume two orchestrators can run safely against one workbench. That sentence is **not** overturned. It is satisfied by the arrangement, because two orchestrators never run against one workbench: they run against two.
+- [ ] If the measurement shows that two checkouts do **not** get isolated workbench state in a case the user intends to use, the Circle stops and reports, and C2 through C4 do not start. That outcome is a valid closure of this Circle and is worth more than the sequence it stops.
+
+**Decisions made:**
+- The supersession is written after the spec is agreed and not before, because the reframed decision's answer is what the spec settles (user, round 1 sequencing).
+- The verification is a step of the work rather than an assumption carried into it (user, answer 1, and the superseded record's own stated condition).
+
+**Open for planner:** whether the measurement is an analyst pass over a scratch project or an executable check that ships. An analyst pass is enough to unblock C2. A shipped check is a new surface with a new budget and is not required by anything in this spec.
+
+### C2: What travels is settled, and `portfolio.md` stops travelling
+
+**Description:** A person reading `.gitignore` and `rules/workbench-tracking.md` can see which workbench entries git carries between checkouts and which it does not, and the two agree with each other and with the tree. `portfolio.md` is no longer one of them: it is regenerated on demand by `/fusion:next`.
+
+**Acceptance criteria:**
+- [ ] `rules/workbench-tracking.md` carries the four-class partition above, ranging over every entry of the layout tree, and states that a multi-checkout arrangement requires the project to track its workbench. That rule is emitted to no agent, so its bytes fall on no bounded surface.
+- [ ] `rules/workbench-tracking.md` no longer calls `portfolio.md` "authored text, not machine-refreshed". The playmaker regenerates it in full on every run, which is the defect already filed as `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`. That defect is closed by this Circle.
+- [ ] `fusion-workbench/portfolio.md` is removed from git tracking with `git rm --cached`, and an ignore rule is added. The file itself is not deleted from anybody's working tree.
+- [ ] The `KEPT:` comment in `.gitignore` lists exactly the tracked root entries and matches the rule it cites. That closes `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`.
+- [ ] `/fusion:next` states, in the briefing it renders, when the portfolio was generated and that it reflects only what this checkout has pulled. The user accepted that a person who has not pulled sees an older ranking; the timestamp is what lets them notice.
+- [ ] The behaviour of `orchestrator-events.jsonl` under a git merge is decided and implemented, per the open decision `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`. The Circle does not close with that question open, because it is the only file in class R2 and every later capability writes to it.
+- [ ] A person can produce two checkouts, run a session in each, push both, and pull each into the other, and the event log in both trees then holds every line from both sessions with no line lost and no hand editing.
+
+**Decisions made:**
+- `portfolio.md` stops travelling and is regenerated on demand (user, answer 6).
+- No currently ignored file becomes tracked (user, answer 5, stated as final rather than deferred).
+
+**Open for planner:** how the event log's merge behaviour is realised once the decision above is answered, and whether anything has to change in `bin/monitor`, which reads the log for the dashboard.
+
+### C3: Every record says who wrote it, and a Circle says who is running it
+
+**Description:** A person reading any record in the workbench can see which person produced it, not only which agent. A person about to activate a Circle can see whether somebody else has already claimed it.
+
+**The two conditions the user attached to answer 8**, both binding on this capability:
+
+1. **The identifier goes in the record body and never in the filename.** A dead field in a body is a historical note; a dead component of a filename is a reference that designates nothing, and filenames are citation targets that a lint resolves. This spec applies the condition to the person as well as to the session, and therefore **changes no filename pattern anywhere**. The memo store is the one place a person already appears in a filename (`memos-<username>.md`), and it stays exactly as it is. Round 1's "filing paths change" is narrowed by this to "record templates change", and the narrowing is stated here so the user can refuse it.
+2. **The record-to-session join is weak and is not made load-bearing.** Filenames carry minute resolution, and two sessions of one person can write inside one minute. This spec therefore states plainly that no capability walks from a record to a session. The record carries the person, which is what attribution was asked for. The session appears only in the event log, which the hooks write. If the join is ever needed, it arrives as a body field under condition 1, and it is not needed by anything specified here.
+
+**Acceptance criteria:**
+- [ ] The decision-record template in `rules/fusion-workbench-conventions.md` `## Decision Record Template` carries the person alongside the agent in its `**Filed by:**` field, and the template states the form.
+- [ ] The defect-record format and the Circle-record template in `rules/circle-records.md` carry the same field in the same form. One form, three record kinds.
+- [ ] Every agent that files a record writes the field. The value is read from the environment the way `/fusion:memo` reads it today, which is `$USER`. No second identity mechanism is introduced, because a mechanism that duplicates one already in the system is a defect rather than a solution.
+- [ ] The Circle record gains a claim field that says which person holds the Circle active and from which checkout. It is written when the record is renamed from anticipated to active, and cleared when the record reaches a terminal marker. Both writes ride the rename that already happens, so no new obligation is created.
+- [ ] `/fusion:next` refuses to activate a Circle whose claim field names somebody else, and says who holds it and when the claim was written. The user can override, in which case the claim field records both people and the override is visible in the record.
+- [ ] The honest limit is stated in `rules/circle-records.md`: two people who both pull, both see an empty claim and both activate will both write the field, and git will refuse the second push. The collision is **detected** rather than prevented, which is what answer 1 forecloses by choosing git as the transport. A person who loses that race pulls, sees the claim, and picks another Circle.
+- [ ] Records written before this Circle are not rewritten. The field appears going forward, the same way the filename patterns did.
+
+**Decisions made:**
+- Person in the record, session only in the event log (user, answer 8).
+- The person goes in the body, not in a filename, and no filename pattern changes (user, condition 1, applied to the person by this spec).
+- The record-to-session join is not load-bearing and is not built (user, condition 2).
+- `$USER` rather than a new identity source, by reuse. The residual is named in Constraints below and is the subject of an open decision.
+
+**Open for planner:** where the field is written in each of the three templates, and how the claim field is spelled so that a reader can tell a claimed Circle from an unclaimed one by a literal opening, the way the Directive pointer and the deletion annotation already work in `rules/circle-records.md`.
+
+### C4: Presence travels, after the fact
+
+**Description:** A person who has pulled can see that somebody else ran a session, when, and on which Circle. They cannot see that person's queue, running task or dashboard, and they cannot see anything that has not been pushed.
+
+**Acceptance criteria:**
+- [ ] The first step of this Circle measures whether the SessionStart hook input carries `session_id`, and whether a hook can relay a value to the model as `additionalContext`. The measurement is run and reported before anything is built on it.
+- [ ] `session_start` and `session_end` events in `orchestrator-events.jsonl` carry the person. They already carry `history_file`, which the orchestrator prompt names as the session's identity in a log where a resume appends a second `session_start`. The person is added beside it.
+- [ ] The session identifier is added to the events the hooks write, if and only if the measurement above shows the hooks can obtain it. If they cannot, the identifier is not added, the event log carries the person alone, and the Circle says so in its closure note rather than substituting something weaker.
+- [ ] `/fusion:setup` reports, at the concurrent-session check in Step 0c, any session by another person in the pulled event log within a stated recent window, naming the person, the Circle and the time. The existing marker check is unchanged and still covers the same-checkout case, which is the only case it can see.
+- [ ] The report says plainly that it reflects what this checkout has pulled, and that a session started since the last pull is invisible. That is answer 1's foreclosure, made visible at the moment somebody would otherwise assume otherwise.
+- [ ] The Turn count derivation is scoped to the reading session. Today `agents/orchestrator.md:91` counts every `turn_start` in the whole log while `agents/orchestrator.md:1060` defines the same figure as the events since this session's `session_start`. Those two disagree at HEAD on any project with more than one session, and several writers make the gap wider. The defect is filed as `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` and is fixed here.
+- [ ] No capability reads another session's `agentstate.yaml`, `orchestrator-live.md` or work queue, and none of those files becomes tracked.
+
+**Decisions made:**
+- Presence only, and after the fact (user, answers 1 and 4).
+- The event log is the sole carrier (user, answer 5).
+
+**Open for planner:** the recent window the presence report uses, and whether the report is rendered by `/fusion:setup` alone or also by `/fusion:next`.
+
+## Constraints
+
+- No baseline of any growth bound moves except after a cut, in a commit that names the cut. This is the user's answer to the head-room question and the reason C0 exists.
+- Nothing in fusion may assume two orchestrators can run safely against one workbench. The superseded decision's binding sentence survives its supersession, and the arrangement satisfies it rather than overturning it.
+- No currently ignored workbench file becomes tracked, and no session reads another session's live state. Answer 5, stated by the user as final.
+- The multi-checkout arrangement requires the project to track its workbench. fusion ships no rule about that and does not acquire one here; the requirement is stated in `rules/workbench-tracking.md` so that a project that ignores its workbench learns why multi-user does not work there.
+- Attribution reuses `$USER`. The residual is that `$USER` is an operating-system account name while the transport is git, whose commits carry a different identity. Nothing here reconciles the two, and the choice is the subject of an open decision, `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`.
+- The event log has no line or byte ceiling and may not acquire one. Every ceiling expressible in lines discards the oldest lines first, and the archive roll of `/fusion:cleanup` is what bounds the file instead.
+- Every record filename pattern stays as it is. No component of any filename changes in this rebuild.
+
+## Out of scope
+
+- Two sessions in one checkout. The advisory marker still warns and still cannot prevent, and answer 5 forecloses the shared live state that would make it safe. Parallelism comes from several checkouts and from nowhere else.
+- Several active Circles in one session. `.active-circle` stays a single file holding one directory name.
+- Live presence of any kind. No polling, no shared dashboard, no lock server, no daemon.
+- Sharing the queue, the running task, `orchestrator-live.md` or `agentstate.yaml`.
+- A merge or conflict resolution tool for record stores. Git's own conflict handling is what a person uses, and R1's per-file writer property is what keeps that rare.
+- Rewriting existing records to add the new fields.
+
+## Open for planner
+
+- Which text is cut in C0, and from which surface. The four defects define when enough has been cut; they do not say where the bytes come from.
+- Whether C1's measurement is an analyst report or a shipped check.
+- How the event log's merge behaviour is realised, once the open decision is answered.
+- The spelling of the claim field and of the person field in each template.
+- Whether `bin/monitor` needs any change once the event log carries a person and possibly a session.
+- Ordering inside each Circle, and which steps route to `coder`, to `ontocoder` and to `analyst`.
+
+## User decisions pending
+
+- [ ] `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` — what happens when two checkouts have both appended to the one tracked log. Blocks the close of C2.
+- [ ] `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` — the operating-system account, the git identity, or both. Blocks nothing before C3 and should be answered at C3's planning gate.
