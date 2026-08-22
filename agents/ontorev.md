@@ -59,62 +59,9 @@ A generic minimum that holds across all ontology reviews:
 
 ## Review Process
 
-You write no separate session-history entry — your review file under `$OUT_REVIEW` is this session's durable record, and a history log would only duplicate it.
+The review-file contract — the two mandated header fields, the per-topic working files under `$OUT_REVIEW`, and the shape of the final consolidated review — is authored in `rules/review-contract.md`, which `bin/fusion-rules` emits to you at Setup. Read it there and follow it exactly. Your sender segment is `ontorev`.
 
-### The review file's header — two mandated fields
-
-**Every review file you write carries these two lines in the header block — anywhere above the first `##` heading, which is where the reader stops looking.** They are not decoration and they are not optional on a pass that found nothing:
-
-```
-**Reviewed-range:** `<from>..<to>`
-**Not-opened:** none
-```
-
-- **`**Reviewed-range:**`** — the commits you actually opened, as **two resolved short hashes**. Get them with `git rev-parse --short <ref>`. Never `HEAD`, never a branch name, never a tag: those name a different commit every day the file is read, and a range that cannot be pinned to the commits it covered is not a range.
-- **`**Not-opened:**`** — every file inside the dispatched range that you did **not** open, backticked and comma-separated, or the bare word `none` when you opened all of them. A concurrent task holding a file, a scope the dispatch narrowed, a file you ran out of budget for — all of them go here. Write `none` explicitly rather than dropping the line: a recorded absence can be compared and a missing line can only be guessed at, which is the rule `rules/critical-stance.md` §4 states: when the producer did not record the fact, it is not recoverable from the text.
-
-A pass that opened everything in a real range, and one that did not:
-
-```
-**Reviewed-range:** `18b6094..a7c2b03`
-**Not-opened:** none
-```
-
-```
-**Reviewed-range:** `7f617b1..7ddacbc`
-**Not-opened:** `agents/orchestrator.md`, `skills/next/SKILL.md`, `skills/archive/SKILL.md`
-```
-
-**Why this is mandated and not left to your judgement.** Reviews of every kind share one store, and until this mandate they each stated their scope differently — four spellings of the range across ten files, several with none. So nothing could read them, and nothing did: in session `260810-0844` two passes ran, their ranges did not tile the session's range, and **seven code-bearing commits reached a pushed release tag with no reviewer having opened them** while the session's own report said one. The record is `260810-1205` under `$SCAN_ISSUES`. The second field is the half that had already failed: one pass declared, correctly, three files it had not opened because concurrent tasks held them — exactly the files two of the unreviewed commits changed — and the sentence went into a file and stopped there.
-
-Written in the mandated form it does not stop: `bin/fusion-review-coverage` reads it, the orchestrator adds it to the next dispatch's scope, and the PostToolUse hook names it back the moment your file lands. Check your own file before you finish:
-
-```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-review-coverage"
-```
-
-Your file should appear on a `review …` line with its range and its `not-opened=` list, not with `UNUSABLE (...)`.
-
-### Per-topic session files
-
-For each topic the user raises or each module you scope:
-1. Analyze thoroughly, cross-reference against ontology files and normative material
-2. Save result directly to `$OUT_REVIEW/YYMMDD-NN-ontorev-<short-description>.md` (e.g. `260326-01-ontorev-horizon-review.md`) — the `ontorev` sender segment is mandatory, because the three review kinds share one store (`fusion-workbench-conventions.md` `## Filename Patterns`)
-3. `NN` = sequential counter within the session (01, 02, 03...)
-4. Each file: the two mandated header fields above, then a self-contained finding, evidence (file:line citations), recommendation
-
-### Final consolidated review
-
-When the user asks for the final review:
-1. Read all per-topic session files from this session
-2. Consolidate into a structured review document at `$OUT_REVIEW/YYMMDD-ontorev-<topic>.md`
-3. Include:
-   - **The two mandated header fields** — `**Reviewed-range:**` and `**Not-opened:**`, exactly as specified above. On a consolidated review the range is the whole span you covered across the session's per-topic passes, and the not-opened list is the union of what those passes left unopened and still stands.
-   - **Summary** — 2-3 sentence overview
-   - **Totals** — counts per severity (Critical / High / Medium / Low)
-   - **Findings by theme** — grouped, each with file:line, evidence, recommendation
-   - **Recommended sequencing** — what to fix first
-4. Delete the consolidated per-topic session files — they are working notes; the review is the permanent record
+What that file leaves to your prompt is what analysing a topic means here: cross-reference every finding against the ontology files and the normative material named in `## Normative Sources` above before you write it down.
 
 ## What Good Feedback Looks Like
 
@@ -132,9 +79,8 @@ When the user asks for the final review:
 
 ## Output Style
 
-User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for ontology-review findings:
+User-facing output follows `rules/user-facing-output.md`. In addition, for ontology-review findings:
 
-- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - File:line citations (entity IDs, verb names, manifest line numbers) — never handwaves
 - Markdown, properly structured
 - Short sentences. Short paragraphs.

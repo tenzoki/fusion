@@ -12,22 +12,22 @@
 # does not move any baseline and therefore never clears a bound.
 
 [agents bytes]
-  analyst.md 21317
-  bugfixer.md 11808
-  coder.md 9688
-  coderev.md 13318
-  consultant.md 14825
-  curator.md 34242
-  editor.md 14272
-  ontocoder.md 13305
-  ontorev.md 11295
-  orchestrator.md 150807
-  planner.md 19734
-  playmaker.md 38712
-  reconciler.md 20006
-  shaper.md 28501
-  taskplanner.md 14375
-  total 416205
+  analyst.md 20821
+  bugfixer.md 11503
+  coder.md 9383
+  coderev.md 8078
+  consultant.md 14329
+  curator.md 33921
+  editor.md 13635
+  ontocoder.md 13000
+  ontorev.md 7031
+  orchestrator.md 150311
+  planner.md 19238
+  playmaker.md 38216
+  reconciler.md 19701
+  shaper.md 28005
+  taskplanner.md 14070
+  total 401242
 
 [skills bytes]
   archive/SKILL.md 24854
@@ -78,10 +78,10 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 520
-  reference-resolution-lint.test.ts 1014
-  review-coverage-mandate.test.ts 335
+  reference-resolution-lint.test.ts 1022
+  review-coverage-mandate.test.ts 354
   review-coverage.test.ts 819
-  rules-emission-golden.test.ts 1151
+  rules-emission-golden.test.ts 1165
   rules-voice-profile.test.ts 351
   sentence-identifier-containment.test.ts 425
   session-start-subdirectory.test.ts 159
@@ -89,4 +89,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 523
   workbench-citation-lint.test.ts 347
-  total 19862
+  total 19903

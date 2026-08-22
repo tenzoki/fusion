@@ -494,7 +494,15 @@ function scanHeadingAnchors(
 // Re-approved 2026-08-22 for the v10.5 release: paths 1258 -> 1262, anchors and records unmoved. One token is
 // README.md's pointer to the new `docs/upgrading-to-v10-5.md`; three are that note's own citations of shipped
 // files. A release note is the one recurring edit that adds paths and nothing else, so this class moves alone.
-const BASELINE = { paths: 1262, anchors: 163, records: 116 };
+// Re-approved 2026-08-22 for step 3 of the C0 cut, ONE block for the whole step: paths 1262 ->
+// 1277, anchors 163 -> 171, records 116 -> 117. Five restatement rows left the fifteen agent
+// prompts and the reviewer contract moved into the new `rules/review-contract.md`. The counts
+// RISE on a step that removed 15 000 bytes, because every removed restatement left a citation of
+// its authoring home behind. anchors is exactly +16 -8: eight voice blocks gained
+// `## Voice profiles` and `## Style anti-patterns apply to everything`, eight prompts lost the
+// `## Effort estimates` bullet. records is +1, the new rule file's provenance line. paths is a
+// net across the prompts, the rule file, the emission helper and README-agents.md, not split.
+const BASELINE = { paths: 1277, anchors: 171, records: 117 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

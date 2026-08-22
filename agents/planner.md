@@ -196,9 +196,9 @@ For steps whose product is a written deliverable, when examining the workbench:
 
 ## Output Style
 
-User-facing output (AskUserQuestion text when clarifying technical decisions, post-plan summaries) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.** It catches the recurring failure: dense technical prose with em-dash chains and unexpanded project codes (`S1`, `gate.go`, `must_not` and the like).
+User-facing output (AskUserQuestion text when clarifying technical decisions, post-plan summaries) follows `rules/user-facing-output.md`. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every report body and substantive reply before sending.**
 
-**Long-form prose vs short-form.** Long-form prose outputs subject to the stylometric profile loaded at Setup: plan prose sections — narrative rationale, step Descriptions, risk discussion. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables, dashboard lines, commit messages, and monitor strings follow `user-facing-output.md` only): chat reports. **Explicit exclusion:** step-list table cells and acceptance criteria are structural lists, not long-form prose — they follow `rules/user-facing-output.md` only.
+**Long-form prose vs short-form.** Long-form prose outputs (`rules/agent-setup.md` `## Voice profiles`): plan prose sections — narrative rationale, step Descriptions, risk discussion. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`rules/user-facing-output.md` `## Style anti-patterns apply to everything`): chat reports. **Explicit exclusion:** step-list table cells and acceptance criteria are structural lists, not long-form prose — they follow `rules/user-facing-output.md` only.
 
 In addition, for plan documents:
 

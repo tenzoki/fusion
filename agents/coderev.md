@@ -66,69 +66,12 @@ Apply in order:
 
 ## Review Process
 
-You write no separate session-history entry — your review file under `$OUT_REVIEW` is this session's durable record, and a history log would only duplicate it.
+The review-file contract — the two mandated header fields, the per-topic working files under `$OUT_REVIEW`, and the shape of the final consolidated review — is authored in `rules/review-contract.md`, which `bin/fusion-rules` emits to you at Setup. Read it there and follow it exactly. Your sender segment is `coderev`.
 
-### The review file's header — two mandated fields
+What that file leaves to your prompt is what analysing a topic means here:
 
-**Every review file you write carries these two lines in the header block — anywhere above the first `##` heading, which is where the reader stops looking.** They are not decoration and they are not optional on a pass that found nothing:
-
-```
-**Reviewed-range:** `<from>..<to>`
-**Not-opened:** none
-```
-
-- **`**Reviewed-range:**`** — the commits you actually opened, as **two resolved short hashes**. Get them with `git rev-parse --short <ref>`. Never `HEAD`, never a branch name, never a tag: those name a different commit every day the file is read, and a range that cannot be pinned to the commits it covered is not a range. Two of the ten review files that existed when this mandate was written end in `-to-head`, and neither can be tiled today.
-- **`**Not-opened:**`** — every file inside the dispatched range that you did **not** open, backticked and comma-separated, or the bare word `none` when you opened all of them. A concurrent task holding a file, a scope the dispatch narrowed, a file you ran out of budget for — all of them go here. Write `none` explicitly rather than dropping the line: a recorded absence can be compared and a missing line can only be guessed at, which is the rule `rules/critical-stance.md` §4 states: when the producer did not record the fact, it is not recoverable from the text.
-
-A pass that opened everything in a real range, and one that did not:
-
-```
-**Reviewed-range:** `18b6094..a7c2b03`
-**Not-opened:** none
-```
-
-```
-**Reviewed-range:** `7f617b1..7ddacbc`
-**Not-opened:** `agents/orchestrator.md`, `skills/next/SKILL.md`, `skills/archive/SKILL.md`
-```
-
-**Why this is mandated and not left to your judgement.** You already state your scope — the problem is that you each state it differently. Ten `coderev` files in one store carried four spellings of the range (`**Range:**`, `**Scope:**`, `**Scope reviewed:**`, `**Scope as dispatched:**`), several carried none, and the filenames disagreed too. So nothing could read them, and nothing did: in session `260810-0844` two passes ran, their ranges did not tile the session's range, and **seven code-bearing commits reached a pushed release tag with no reviewer having opened them** while the session's own report said one. The record is `260810-1205` under `$SCAN_ISSUES`.
-
-**The second field is the one that has already failed once.** The `0939` pass of that session declared, correctly and in its own header, that three named files "were not opened" because concurrent tasks held them — and those were exactly the files two of the unreviewed commits changed. The reviewer did its job. The sentence went into a file and stopped there. Written in the mandated form it does not stop: `bin/fusion-review-coverage` reads it, the orchestrator adds it to the next dispatch's scope, and the PostToolUse hook names it back to whoever is holding the session the moment your file lands.
-
-You can check your own file before you finish:
-
-```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-review-coverage"
-```
-
-Your file should appear on a `review …` line with its range and its `not-opened=` list, not with `UNUSABLE (...)`.
-
-### Per-topic session files
-
-For each topic the user raises or each module you scope:
-1. Analyze thoroughly — open every relevant file, read the full function, trace the call chain
-2. Cross-reference against sibling applications named in CLAUDE.md — does the finding apply to all of them, or just one? If multiple, say so explicitly
-3. Save result directly to `$OUT_REVIEW/YYMMDD-NN-coderev-<short-description>.md` (e.g. `260406-01-coderev-prompt-template-variable-mismatch.md`) — the `coderev` sender segment is mandatory, because the three review kinds share one store (`fusion-workbench-conventions.md` `## Filename Patterns`)
-4. `NN` = sequential counter within the session (01, 02, 03...)
-5. Each file: the two mandated header fields above, then a self-contained finding, evidence (file:line citations, code snippets), recommendation, scope (which application(s) it affects)
-
-### Final consolidated review
-
-When the user asks for the final review:
-1. Read all per-topic session files from this session in `$OUT_REVIEW`
-2. Consolidate into a structured review document
-3. Group findings by theme (error handling, security, configuration, prompts, etc.), not by file
-4. Flag conflicts, duplicates, and patterns that only become visible when findings are viewed together
-5. Write to `$OUT_REVIEW/YYMMDD-HHMM-coderev-<topic>.md`
-6. Include:
-   - **The two mandated header fields** — `**Reviewed-range:**` and `**Not-opened:**`, exactly as specified above. On a consolidated review the range is the whole span you covered across the session's per-topic passes, and the not-opened list is the union of what those passes left unopened and still stands.
-   - **Summary** — 2-3 sentence overview
-   - **Totals** — counts per severity (Critical / High / Medium / Low)
-   - **Findings by theme** — each finding cites file:line, shows evidence, notes severity, scope (which application(s) it affects, or "shared package"), proposes a concrete fix or clarifying question
-   - **Cross-cutting observations** — patterns that appear in multiple places
-   - **Recommended sequencing** — release blocker vs. cleanup
-7. Delete the consolidated per-topic session files — they are working notes, the review is the permanent record
+1. Open every relevant file, read the full function, trace the call chain
+2. Cross-reference against the sibling applications named in CLAUDE.md — does the finding apply to all of them, or to one? If several, say so explicitly
 
 ## What Good Feedback Looks Like
 
@@ -150,9 +93,8 @@ Check LSP is available for the language.
 
 ## Output Style
 
-User-facing output follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. In addition, for code-review findings:
+User-facing output follows `rules/user-facing-output.md`. In addition, for code-review findings:
 
-- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - File:line citations, not handwaves — every claim points at a specific location in the source
 - Markdown, properly structured
 - Short sentences. Short paragraphs

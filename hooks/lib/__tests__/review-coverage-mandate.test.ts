@@ -23,14 +23,16 @@
  *
  * ## What this gate does, and it is three things
  *
- *   1. It asserts the MANDATE is in BOTH reviewer prompts — the field names
+ *   1. It asserts the MANDATE is in `rules/review-contract.md` — the field names
  *      spelled as `lib/review-coverage.ts` reads them, the resolved-hash
  *      requirement, the refusal of `HEAD`, and the `none` spelling stated for
- *      the pass that opened everything. Two prompts carry the same mandate, so
- *      this gate is also what keeps them from drifting apart: there is no
- *      pointer between them, there is this.
- *   2. It RUNS the real parser over the header lines taken OUT OF those prompts,
- *      never transcribed. A spelling a reviewer prompt shows that
+ *      the pass that opened everything. Until 2026-08-22 the mandate stood in
+ *      both reviewer prompts and this gate held the two copies equal; the
+ *      contract now has one authoring home, so what it checks instead is that
+ *      each prompt still cites it and that `bin/fusion-rules` still emits it to
+ *      exactly those two agents.
+ *   2. It RUNS the real parser over the header lines taken OUT OF that contract,
+ *      never transcribed. A spelling the contract shows that
  *      `lib/review-coverage.ts` cannot read fails here, at `npm test`, rather
  *      than at a session whose coverage silently computes to nothing.
  *   3. It asserts the CONSUMER still consumes it — `agents/orchestrator.md`
@@ -65,8 +67,19 @@ import {
 
 const read = (...p: string[]) => readFileSync(join(pluginRoot, ...p), "utf-8");
 
-/** The two prompts that write review files, and therefore carry the mandate. */
+/** The two prompts that write review files, and therefore reach the mandate. */
 const REVIEWER_PROMPTS = ["coderev.md", "ontorev.md"] as const;
+
+/**
+ * The mandate's single authoring home since 2026-08-22. It stood in both
+ * prompts, byte for byte, with no pointer between the copies; `bin/fusion-rules`
+ * now emits this file to those two agents and to nobody else, so what the two
+ * reviewers read at Setup is one text rather than two that have to be kept
+ * equal. Everything `mandateGaps` and the parser cases below assert is asserted
+ * here — the prompts are checked only for the pointer that reaches it.
+ */
+const CONTRACT = "rules/review-contract.md";
+const contract = () => read("rules", "review-contract.md");
 
 const orchestrator = () => read("agents", "orchestrator.md");
 
@@ -130,24 +143,34 @@ function consumerGaps(text: string): string[] {
  * ------------------------------------------------------------------ */
 
 describe("review-coverage mandate: the producers", () => {
-  for (const prompt of REVIEWER_PROMPTS) {
-    it(`agents/${prompt} mandates both fields, in the spellings the parser reads`, () => {
-      expect(
-        mandateGaps(read("agents", prompt)),
-        `agents/${prompt} stopped mandating part of the review header. Issue 260810-1205: ` +
-          "without these fields nothing can tile the reviewed ranges against the range, and " +
-          "seven commits reached a pushed tag unread while the session reported one.",
-      ).toEqual([]);
-    });
-  }
+  it(`${CONTRACT} mandates both fields, in the spellings the parser reads`, () => {
+    expect(
+      mandateGaps(contract()),
+      `${CONTRACT} stopped mandating part of the review header. Issue 260810-1205: ` +
+        "without these fields nothing can tile the reviewed ranges against the range, and " +
+        "seven commits reached a pushed tag unread while the session reported one.",
+    ).toEqual([]);
+  });
 
-  it("both prompts state the SAME mandate, so the two review kinds stay readable by one parser", () => {
-    const [a, b] = REVIEWER_PROMPTS.map((p) => read("agents", p));
-    // The fields themselves, not the prose around them: coderev and ontorev
-    // review different things and their rationale paragraphs differ. What may
-    // not differ is the spelling `lib/review-coverage.ts` reads.
-    expect(fieldLines(a, RANGE_FIELD).sort()).toEqual(fieldLines(b, RANGE_FIELD).sort());
-    expect(fieldLines(a, NOT_OPENED_FIELD).sort()).toEqual(fieldLines(b, NOT_OPENED_FIELD).sort());
+  it("both prompts reach the mandate, and bin/fusion-rules delivers it to both", () => {
+    // One authoring home replaces the drift check two copies needed. What has
+    // to hold instead is that each reviewer still gets there: the prompt names
+    // the file, and the emission arm names the agent.
+    for (const prompt of REVIEWER_PROMPTS) {
+      expect(
+        read("agents", prompt),
+        `agents/${prompt} no longer cites ${CONTRACT}, so the reviewer is told nothing ` +
+          "about the header its coverage is tiled from.",
+      ).toContain(CONTRACT);
+    }
+    const helper = read("bin", "fusion-rules");
+    expect(helper).toContain('emit_if_exists "$PLUGIN_RULES_DIR/review-contract.md"');
+    expect(
+      /coderev\|ontorev\)\s*IS_REVIEWER_AGENT=1/.test(helper),
+      "bin/fusion-rules stopped emitting review-contract.md to exactly coderev and " +
+        "ontorev. An agent that writes review files without the contract writes a " +
+        "header the coverage check reports UNUSABLE.",
+    ).toBe(true);
   });
 
   // Issue 260811-1145: `REVIEWER_PROMPTS` above already fixed the mandate at two
@@ -171,10 +194,8 @@ describe("review-coverage mandate: the producers", () => {
     ).toBe(false);
   });
 
-  it("catches a prompt that dropped the mandate — the control for the two cases above", () => {
-    const gutted = read("agents", "coderev.md")
-      .split(RANGE_FIELD)
-      .join("**Range:**");
+  it("catches a contract that dropped the mandate — the control for the two cases above", () => {
+    const gutted = contract().split(RANGE_FIELD).join("**Range:**");
     expect(
       mandateGaps(gutted),
       "renaming the mandated field to the old `**Range:**` spelling passed the gate. " +
@@ -187,53 +208,51 @@ describe("review-coverage mandate: the producers", () => {
  * 2. The parser reads what the prompts show — the two sides, bound
  * ------------------------------------------------------------------ */
 
-describe("review-coverage mandate: the prompts' own lines, through the real parser", () => {
-  for (const prompt of REVIEWER_PROMPTS) {
-    it(`every filled **Reviewed-range:** line in agents/${prompt} parses`, () => {
-      const lines = fieldLines(read("agents", prompt), RANGE_FIELD)
-        // The template line carries placeholders rather than hashes; the worked
-        // examples beside it are what a reviewer copies, and those must parse.
-        .filter((v) => !v.includes("<"));
+describe("review-coverage mandate: the contract's own lines, through the real parser", () => {
+  it(`every filled **Reviewed-range:** line in ${CONTRACT} parses`, () => {
+    const lines = fieldLines(contract(), RANGE_FIELD)
+      // The template line carries placeholders rather than hashes; the worked
+      // examples beside it are what a reviewer copies, and those must parse.
+      .filter((v) => !v.includes("<"));
 
+    expect(
+      lines.length,
+      `${CONTRACT} shows no worked **Reviewed-range:** example. The template ` +
+        "line alone leaves the hash form to be inferred, which is how four spellings " +
+        "arose the first time.",
+    ).toBeGreaterThan(0);
+
+    for (const value of lines) {
+      const parsed = parseRange(value);
       expect(
-        lines.length,
-        `agents/${prompt} shows no worked **Reviewed-range:** example. The template ` +
-          "line alone leaves the hash form to be inferred, which is how four spellings " +
-          "arose the first time.",
-      ).toBeGreaterThan(0);
+        parsed.why,
+        `${CONTRACT} shows \`${RANGE_FIELD} ${value}\`, which lib/review-coverage.ts ` +
+          `refuses: ${parsed.why}. A reviewer copying the contract would produce a file ` +
+          "the coverage check reports UNUSABLE.",
+      ).toBe("");
+    }
+  });
 
-      for (const value of lines) {
-        const parsed = parseRange(value);
-        expect(
-          parsed.why,
-          `agents/${prompt} shows \`${RANGE_FIELD} ${value}\`, which lib/review-coverage.ts ` +
-            `refuses: ${parsed.why}. A reviewer copying the prompt would produce a file ` +
-            "the coverage check reports UNUSABLE.",
-        ).toBe("");
+  it(`every **Not-opened:** line in ${CONTRACT} parses to what it says`, () => {
+    const lines = fieldLines(contract(), NOT_OPENED_FIELD);
+    expect(lines.length).toBeGreaterThan(0);
+
+    for (const value of lines) {
+      const parsed = parseNotOpened(value);
+      expect(
+        parsed.recorded,
+        `${CONTRACT} shows \`${NOT_OPENED_FIELD} ${value}\` and the parser read it ` +
+          "as no record at all. A declared exclusion that reads as an absent field is " +
+          "the defect: the reviewer stated it and nothing downstream carried it.",
+      ).toBe(true);
+
+      if (/^none\b/i.test(value)) {
+        expect(parsed.files).toEqual([]);
+      } else {
+        expect(parsed.files.length).toBeGreaterThan(0);
       }
-    });
-
-    it(`every **Not-opened:** line in agents/${prompt} parses to what it says`, () => {
-      const lines = fieldLines(read("agents", prompt), NOT_OPENED_FIELD);
-      expect(lines.length).toBeGreaterThan(0);
-
-      for (const value of lines) {
-        const parsed = parseNotOpened(value);
-        expect(
-          parsed.recorded,
-          `agents/${prompt} shows \`${NOT_OPENED_FIELD} ${value}\` and the parser read it ` +
-            "as no record at all. A declared exclusion that reads as an absent field is " +
-            "the defect: the reviewer stated it and nothing downstream carried it.",
-        ).toBe(true);
-
-        if (/^none\b/i.test(value)) {
-          expect(parsed.files).toEqual([]);
-        } else {
-          expect(parsed.files.length).toBeGreaterThan(0);
-        }
-      }
-    });
-  }
+    }
+  });
 
   it("refuses the two forms the real review files actually carried", () => {
     // `-to-head`: two of the ten filenames. `HEAD` is whatever it means today.

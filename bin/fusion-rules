@@ -53,6 +53,12 @@
 #     rule-file-provenance.md — are emitted to no agent at all; they are the
 #     authoring homes for prompt/resolver authoring and for rule-file writing,
 #     reached by pointer from fusion-workbench-conventions.md.
+#   - The review-writing agents (coderev, ontorev) additionally read
+#     review-contract.md (shipped by plugin) — the single authoring home of the
+#     review file's two mandated header fields, the per-topic working files and
+#     the final consolidated review. The audience is the two agents that write
+#     review files; every other agent would be carrying a contract it can never
+#     apply.
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
@@ -222,6 +228,18 @@ esac
 case "$AGENT" in
   orchestrator|playmaker|shaper)  IS_CIRCLE_AGENT=1 ;;
   *)                              IS_CIRCLE_AGENT=0 ;;
+esac
+
+# Review-writing-agent flag — independent of PATTERNS. The two agents that write
+# review files read rules/review-contract.md: the two mandated header fields,
+# the per-topic working files and the final consolidated review. The audience is
+# bounded by a mechanism rather than a guess — a review file is what
+# bin/fusion-review-coverage tiles, and the REVIEW_SENDERS constant in
+# hooks/lib/review-coverage.ts is that same pair. Every other agent would carry
+# a contract it can never apply.
+case "$AGENT" in
+  coderev|ontorev)                IS_REVIEWER_AGENT=1 ;;
+  *)                              IS_REVIEWER_AGENT=0 ;;
 esac
 
 emit_if_exists() {
@@ -480,6 +498,15 @@ fi
 #     block would state the same thing in five lines instead of one.
 if [ "$AGENT" = "orchestrator" ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/commit-lock.md"
+fi
+
+# 1f. The two review-writing agents additionally receive the review contract.
+#     It left agents/coderev.md and agents/ontorev.md, where the same text stood
+#     twice with no pointer between the copies; one authoring home is what keeps
+#     the two review kinds readable by one parser. See the IS_REVIEWER_AGENT
+#     block above for the audience.
+if [ "$IS_REVIEWER_AGENT" -eq 1 ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/review-contract.md"
 fi
 
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,

@@ -498,14 +498,16 @@ interface Role {
  * left pointing at a figure the emission moved away from. The comments below say
  * what each role buys and why; the arithmetic is the map's.
  *
- * Five roles as of the 2026-08-14 arming, every one of them still below
- * RELEASE_CAP, the orchestrator's role by 229 bytes. The figures are FLOORS —
+ * Six roles: five at the 2026-08-14 arming and `review-contract.md` since
+ * 2026-08-22. Every one of them is still below RELEASE_CAP, the orchestrator's
+ * role by 229 bytes. The figures are FLOORS —
  * RULE_BASELINE summed over the role's files — not what the role emits today:
  * for the five core files the two are now equal, and for a role's extras the gap
  * between them is what the budget report prints. How many agents each role holds
  * is not written here; it is measured, and the messages print it.
  *
  *    86 573  core only
+ *    86 573  review-contract.md — no baseline entry, so the floor is the core
  *    92 246  design-diagrams.md
  *    95 875  circle-records.md
  *   101 548  circle-records.md + design-diagrams.md
@@ -514,7 +516,7 @@ interface Role {
 const ROLES: Record<string, Role> = {
   /**
    * The plain agents: everything the framework asks of everyone, and nothing
-   * else. This is the floor the other four roles are measured against, and the
+   * else. This is the floor the other roles are measured against, and the
    * only number that says what the always-on set actually costs.
    *
    * Since 2026-08-06 this includes coder, coderev and bugfixer. They carried a
@@ -594,6 +596,18 @@ const ROLES: Record<string, Role> = {
    * most distinct jobs. The overage is not shaveable from the core, where every
    * remaining byte is text every agent applies.
    */
+  /**
+   * The two agents that write review files. They pay for `review-contract.md`,
+   * the single authoring home of the review header's two mandated fields, the
+   * per-topic working files and the final consolidated review. It arrived on
+   * 2026-08-22 out of `agents/coderev.md` and `agents/ontorev.md`, where the
+   * same contract stood twice with no pointer between the copies; the role
+   * exists so that one file governs both review kinds. It has no
+   * `RULE_BASELINE` entry, so this role's floor is the core alone and the file
+   * counts as growth in full against the role budget's report.
+   */
+  "review-contract.md": {},
+
   "circle-records.md + commit-lock.md": {
     overRelease:
       "circle-records.md (9 302) carries the Circle state vocabulary and the record " +

@@ -119,7 +119,7 @@ Two user gates sit inside this Circle and neither is a step, because neither is 
    - Dependencies: step 1, and Gate A.
    - Acceptance: `cd hooks && npm test` exits 0. The hook test surface stands at least 500 lines below where it stood at the Circle's start, measured by summing `TEST_LINE_BASELINE` over the files present and comparing against a recursive newline count. `TEST_LINE_BASELINE` is unchanged. Every removed assertion, if any, is named in the step report with the reason its subject no longer exists.
 
-3. **Cut `agents/*.md` by at least 10 362 bytes**
+3. [DONE] **Cut `agents/*.md` by at least 10 362 bytes**
    - Executor: `coder`
    - Files: `agents/*.md`, `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the `BASELINE` pin and its attribution comment only), `hooks/lib/__tests__/fixtures/surface-growth.golden`
    - Changes: apply the ledger's `agents/` rows. Each removed restatement is replaced by a citation of the file that authors the claim, in the citation form `rules/fusion-workbench-conventions.md` `## Marker globs` requires of a record that states something about a citation. Leave the Setup bootstrap sentences in every prompt. Re-approve `BASELINE` in the same commit with one attribution block covering the whole step, not one per file: the two-blocks-for-one-commit spend is what defect 4 records.

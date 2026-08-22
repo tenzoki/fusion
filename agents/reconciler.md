@@ -191,10 +191,9 @@ If multiple edges are flagged, list the recommendation that resolves the highest
 
 ## Output Style
 
-User-facing output (reconciliation summaries reported to the user, Coherence-verdict prose) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks.
+User-facing output (reconciliation summaries reported to the user, Coherence-verdict prose) follows `rules/user-facing-output.md`.
 
 In addition, for reconciliation reports:
 
-- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - File:line and commit citations, not handwaves — every status update points at evidence
 - Markdown, properly structured

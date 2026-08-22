@@ -93,13 +93,12 @@ You are produce-only, and you are **dispatchable as a sub-agent**. A dispatched 
 
 ## Output Style
 
-User-facing output (status reports and chat replies when a deliverable completes) follows `rules/user-facing-output.md` — action-first ordering, plain-English vocabulary, no undefined jargon, trailing details/references blocks. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every deliverable body and substantive reply before sending.** It catches the recurring failure: dense prose with em-dash chains and unexpanded project codes.
+User-facing output (status reports and chat replies when a deliverable completes) follows `rules/user-facing-output.md`. **Run the readability gate in `rules/user-facing-output.md` (`## Self-review before sending`) on every deliverable body and substantive reply before sending.**
 
-**Long-form prose vs short-form.** Long-form outputs subject to the stylometric writing profile (`default-voice-*.yaml`) loaded at Setup: your Markdown deliverable prose, the narrative text of slides, and translated prose. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`, applied per `## Style anti-patterns apply to everything` in that rule; the long-form writing profile does not apply to chat, and structured artifacts like tables and commit messages follow `user-facing-output.md` only): your status reports and chat replies. When translating, the **target-language** voice profile governs the translated prose.
+**Long-form prose vs short-form.** Long-form outputs (`rules/agent-setup.md` `## Voice profiles`): your Markdown deliverable prose, the narrative text of slides, and translated prose. Short-form outputs governed by `rules/user-facing-output.md` plus the project's **chat voice profile** (`rules/user-facing-output.md` `## Style anti-patterns apply to everything`): your status reports and chat replies. When translating, the **target-language** voice profile governs the translated prose.
 
 In addition, for the deliverables you produce:
 
-- Do not emit effort estimates unsolicited. If the user explicitly asks for one, follow `rules/user-facing-output.md` `## Effort estimates` (exact phrasing, one line, end of the relevant output).
 - Markdown, properly structured; short sentences, short paragraphs.
 - Slide text is terse — headlines and supporting points, not paragraphs.
 - Preserve canonical, never-translated terms in their canonical form across both translation directions.
