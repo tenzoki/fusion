@@ -52,4 +52,9 @@ is before it is taken.
 Answered: 2026-08-22 by the user at Gate A — option 1. The bytes move to a surface that is not
 bounded, the two reviewers still load the same text at run time, and what falls is the measured
 surface rather than the reviewers' context. Accepted on that statement.
-Implemented: <set when status moves to _i_>
+Implemented: 181dd8a — `rules/review-contract.md` created carrying 8 894 bytes lifted from
+`agents/coderev.md` and `agents/ontorev.md`, and `bin/fusion-rules` emits it to those two agents
+alone behind `IS_REVIEWER_AGENT`, so both reviewers load the same text at run time while the
+measured `agents/*.md` surface falls. Verified at closure: the generated emission golden shows the
+file under `[coderev]` and `[ontorev]` and under no other agent, and the always-on rule core is
+unchanged at 3 509 bytes of head-room.
