@@ -1,195 +1,176 @@
 # Portfolio
 
-**Generated:** 260822-0319 (by playmaker session 260822-0319-playmaker-orchestrator-phase4)
+**Generated:** 260822-2104 (by playmaker session 260822-2104-playmaker-direct-dispatch)
 **Domain bias:** code
-**git HEAD at run:** `655d976`
+**git HEAD at run:** `d2b374e`
 
-**This run holds no user confirmation.** It is a Phase 4 dispatch from the orchestrator, with no
-channel to the user and no `**Confirmed operations:**` block in its prompt. It ranked, regenerated
-this file, and checked whether either backlog marker needed moving. It split, merged, closed and
-deferred nothing.
+**This run holds no user confirmation.** It was dispatched directly with a `**Domain:**` line and no
+`**Confirmed operations:**` block, so it ranked, regenerated this file, and checked whether either
+live backlog marker needed moving. It split, merged, closed and deferred nothing. One deferral is
+proposed below and waits on the user, unchanged from the previous run.
+
+**Every path in this file carries `_*_` where a state marker would stand.** The rule is
+`rules/circle-records.md` `### Citation form in the portfolio`, and the previous generation broke it
+in one place: an activation-proposal sentence spelled `_a_`, the Circle was activated twelve minutes
+later, and the citation resolved to nothing. That is filed as
+`shared/issues/260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md`
+and appears under Warnings below. It stays open: it is about the generator, not about this file.
 
 ## Active (_t_)
 
-**(none).** `.active-circle` is absent and no Circle record carries `_t_`.
-`260821-1042-reply-bounded-whole-question-answered` closed coherent on 2026-08-22 and is listed
-under Recently closed.
+**`260822-1921-measure-what-two-checkouts-share`**, record
+`circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`.
+
+*What two checkouts of one project actually share, measured rather than assumed.*
+
+The user activated it through the explicit form of `/fusion:next` after the previous run recommended
+it, and `.active-circle` names the directory. The record's `## Turn log` is empty, so no Turn has run
+yet. Its head fields both read `(none yet)`, which is a known inconsistency rather than a gap in the
+Circle: see the head-fields warning below. The only history the Circle holds so far is the shaping
+pass that created it,
+`circles/260822-1921-measure-what-two-checkouts-share/history/260822-1921-shaper-measure-what-two-checkouts-share.md`.
+
+What it runs on is cited in its own `## Grounding snapshot` rather than in the head field: capability
+`### C1` of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. Closure is an
+analyst report plus an addendum to
+`shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`,
+whose closing paragraph today records the multi-user arrangement as chosen but not proven.
 
 ## Anticipated (_a_) — ranked
 
-**Recommended next: (none). No anticipated Circle exists.**
+**(none).** The workbench holds no anticipated Circle. The one that stood here last run is the active
+Circle above, and activating it emptied the section. No activation proposal was written this run,
+because there is nothing to propose and no Circle record needed a write of any kind.
 
-All fourteen Circle records on disk carry a terminal marker: ten `_c_`, two `_b_`, one `_s_`, and
-the one that just closed. There is no candidate to rank and none is manufactured here. The next
-Circle has to be shaped first, from the backlog below or from a fresh Directive via
-`/fusion:direct`.
-
-*A count correction.* The dispatch said twelve terminal Circles before this closure. The tree holds
-thirteen. The substantive claim is unaffected.
+Three anticipated Circles could exist and do not. C2, C3 and C4 of the same specification are still
+prose only, which is the `spec-circles-unfiled` warning below. Filing one is `/fusion:direct`, and it
+is the user's act.
 
 ## Backlog — ranked
 
-**Recommended to shape: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — the only
-live idea that can be shaped without a user act coming first.**
+**Recommended to shape: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — the only live
+idea that needs no user act before it can be shaped.**
 
     /fusion:direct shared/backlog/260814-1733_*_bounded-executor-dispatches.md
 
-**Live and ranked (2).** Both markers already match this run's ranking, so no rename was made.
+**Live and ranked (2).** Both markers already match this run's ranking, so no rename was made. The
+ranking is unchanged from 260822-2040, and so is the single proposal under it.
 
-1. **`shared/backlog/260814-1733_*_bounded-executor-dispatches.md`** (recommended, `_p_`). Bound how
-   long an executor runs before returning to the orchestrator. Its evidence is on disk and sized:
+1. **`shared/backlog/260814-1733_*_bounded-executor-dispatches.md`** (recommended, marker `_p_`).
+   Bound how long an executor runs before returning to the orchestrator. One idea, promotable whole.
+   Its evidence is on disk and already sized:
    `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` adopts the
-   bounded-dispatch half of the user's filed proposal at roughly a fourfold saving in re-sent
-   tokens, and refutes the re-injection half by finding the rules were never in force rather than
-   decayed. Shaping it means putting a narrower Directive than the filed wording to the user, which
-   is the conversation `/fusion:direct` holds.
+   bounded-dispatch half of the user's filed proposal at roughly a fourfold saving in re-sent tokens,
+   and refutes the re-injection half by finding that the rules were never in force rather than that
+   they decayed over a long dispatch. Shaping it means putting a Directive narrower than the filed
+   wording to the user and getting agreement on the narrowing, which is the conversation
+   `/fusion:direct` holds. Nothing is proposed for this entry.
 
-   The Circle that just closed sharpens this rather than absorbing it: it bounded what an agent
-   *says*, and its own `## Dependencies` names
-   `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` as adjacent and
-   deliberately not taken. This entry is the half left on the table by name.
-
-   Nothing is proposed for it. One idea, promotable whole, marker already correct.
-
-2. **`shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`** (open, `_o_`). A rule lands with
-   an executable check or it does not land. Second on shapeability, not on merit, and the gap is
-   unchanged across eight refreshes.
-
-   The obstruction, re-verified on disk: the decision it depends on,
+2. **`shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`** (open, marker `_o_`). A rule lands
+   with an executable check or it does not land. One idea, second on shapeability rather than on
+   merit. The obstruction is unchanged and was re-verified on disk this run: the decision the entry
+   depends on,
    `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`,
-   is deferred, waiting on
+   carries the deferred marker and waits on
    `shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
-   still open. Reviving a deferred decision is the user's act.
+   which is still open. Reviving a deferred decision is the user's act and has to precede shaping.
 
-   The closure that triggered this run is the entry's eighth instance: the rule corpus now bounds a
-   whole reply and requires the answer to match the question, and no check reads either clause. The
-   closed Circle says so itself in residual 3.
+   Proposed, not performed:
 
-   Nothing is proposed for it. No split (one idea), no merge (it would lose a Directive), no close
-   (the idea is live), no deferral (that would cost the user two later acts where open costs one).
+       defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived
 
-**Proposed and not performed (0).** This run found no split, merge, close or deferral to propose.
-
-**Nothing in the store covers the multi-user topic.** Grepped across `shared/` and `circles/` for
-multi-user, multi-tenant, concurrency, parallel-session and worktree-slot wording: no backlog entry,
-no live plan, no open issue. One record is the standing position and it is an answer, not a gap.
-`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` was answered
-by the user at option 3: fusion stays single-active-Circle with no concurrency lock, and parallelism
-is explicitly out of scope. A multi-user Circle would overturn that record rather than fill a hole,
-which is a user act and belongs in its Grounding.
-
-**One closed entry**, `shared/backlog/260811-0826_*_observations.md`, the user's hand-written dump,
-split on 260814-1733 into three and retired. Two are the entries above; the third became Circle
-`260815-0007-remove-eight-mechanisms-and-cap-growth` and was archived on 260817.
+   The case for it is that the entry has stood second across ten consecutive refreshes on an
+   obstruction no ranking pass can clear, and a deferral would say that plainly instead of implying
+   the entry is merely runner-up. The case against it is that the idea is live and the blockage is
+   one user act wide. The user has still not been asked: the explicit form of `/fusion:next` skips
+   the backlog relay by design, so the activation that ran between the two portfolio generations
+   carried no question about this entry. This run holds no confirmation for the operation, so the
+   entry stays open and the proposal carries forward verbatim.
 
 ## Recently closed (_c_ / _b_)
 
-Last five, newest first.
-
-1. **`260821-1042-reply-bounded-whole-question-answered`**, `_c_`, closed coherent, 260822, after
-   seven Turns across two sessions. The rule corpus now bounds a whole reply, requires the answer to
-   address the question put, and names three register habits with their shorter forms. Three
-   residuals are named in its closure note and repeated under Warnings below.
-2. **`260820-2051-style-rules-arrive-and-get-measured`**, `_b_`, Bounded Closure, 260821. The
-   always-on corpus reached 0.6 prose em-dashes per 1000 words against its stated ceiling of 1.0.
-   Bounded because the register work its Directive reached for is not a repunctuation problem.
-3. **`260819-1645-four-constraints-on-deep-change`**, `_c_`, closed coherent, 260820. Five
-   constraints delivered, each verified against the tree rather than against its own account.
-4. **`260816-1741-guard-becomes-observation-only`**, `_b_`, Bounded Closure, 260817. The guard
-   reaches no verdict on any path; the decision-governed check, the halt and the consecutive-block
-   counter are gone.
-5. **`260815-0007-remove-eight-mechanisms-and-cap-growth`**, `_c_`, closed coherent, 260815, after a
-   Rebalance gate at which the user revised the Grounding. Eight mechanisms left the shipped plugin,
-   plus `conceptrev` as a ninth. 36 commits.
+1. **`260821-1042-reply-bounded-whole-question-answered`** (`_c_`). Closed coherent on 2026-08-22
+   after seven Turns across two sessions; the final reconciliation returned `review-needed` on the
+   Circle's account of itself rather than on its work, and prescribed four writes that were made
+   before the closure note.
+2. **`260820-2051-style-rules-arrive-and-get-measured`** (`_b_`). Bounded Closure on 260821. Three of
+   four Directive outcomes reached, including a fall in the always-on rule corpus from 171 prose
+   em-dashes over 13 018 words to 8 over 13 292. The fourth needs a post-repair measurement window
+   that could not open while that Circle was the only active one, so the Artifact is the
+   pre-registration: a threshold of 5.0 per 1000 fixed before the first repair commit.
+3. **`260819-1645-four-constraints-on-deep-change`** (`_c_`). Closed coherent on 2026-08-20, verdict
+   `coherent` with no Rebalance. Five constraints delivered, each verified against the tree rather
+   than against its own account.
+4. **`260816-1741-guard-becomes-observation-only`** (`_b_`). Bounded Closure on 2026-08-17, chosen at
+   the second Rebalance gate on the reconciler's recommendation. The guard decides nothing and the
+   configuration loader is down to one leaf, but one Directive clause on shipped agent text was
+   deliberately left unmet and scoped out of v10.0.1.
+5. **`260815-0007-remove-eight-mechanisms-and-cap-growth`** (`_c_`). Closed coherent at 260815-2115
+   after a Rebalance gate at which the user revised the Grounding. Eight mechanisms left the shipped
+   plugin, plus `conceptrev` as a ninth, across 36 commits.
 
 ## Archived (_s_ / _d_)
 
-One record, the store's only non-closed terminal Circle.
+- **`260804-1205-shell-reachability-model`** (`_s_`). Superseded on 260807-0923 by
+  `circles/260807-0923-guard-misst-statt-orakelt/`. Not closed and not bounded: the user changed the
+  mechanism from predicting which file a shell command would write to measuring afterwards which one
+  had changed, which removed this Directive's subject.
 
-- **`260804-1205-shell-reachability-model`**, `_s_`, superseded 260807 by
-  `circles/260807-0923-guard-misst-statt-orakelt/`. Not closed because its Directive was reached and
-  not bounded because it was unreachable: the user changed the mechanism, from predicting which file
-  a shell command writes to measuring what it wrote.
-
-This section lists live Circle records carrying `_s_` or `_d_`. It has nothing to do with the
-`archive/` store, whose contents never appear in this file.
+No Circle carries `_d_`.
 
 ## Warnings
 
-**Pointer state: clean.** `.active-circle` is absent and no record carries `_t_`, which is the
-normal post-closure state. None of `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER` or
-`MULTIPLE-ACTIVE` applies.
+**`portfolio-citation-regression`.** The 260822-2040 generation of this file spelled a state marker in
+one path, in the sentence reporting where the activation proposal had been appended. The Circle was
+activated twelve minutes later, the record moved from `_a_circle.md` to `_t_circle.md`, and the
+citation died. `workbench-citation-lint` recomputes from the tree on every run and carries no
+baseline, so it blocked every commit until this regeneration. Filed as
+`shared/issues/260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md`,
+which names the closed predecessor and says that hand-correcting this file is not the fix, because
+the next generation overwrites the correction. The record stays open: it is addressed to the
+generator, and one clean regeneration is not evidence that the branch which produced the fault has
+changed.
 
-**Dependency cycles: none, on an empty graph.** The graph is built from `_a_` and `_t_` records and
-there are none, so it has no nodes and no edges. No `## Dependency warning` was appended anywhere.
+**`activation-head-fields-inconsistent`.** The active Circle's `**Active spec/plan:**` and
+`**Active session history:**` both read `(none yet)` while its `## Grounding snapshot` cites the
+specification it runs on by path. The cause is that the two sanctioned activation performers disagree
+about the head fields: the orchestrator fills the spec field when it knows the file, and
+`/fusion:next` leaves it exactly as it stands because a skill has no way to identify the right one.
+This Circle went through the skill. Filed as
+`shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`.
+It costs this portfolio a field it would otherwise render, and it costs a reader the ability to tell
+"no spec exists" from "activated by the skill".
 
-**Bounded-Closure propagation: nothing to flag, for the same reason.** Step 5 scans non-terminal
-records citing a `_b_` Circle, and no non-terminal record exists. The two `_b_` Circles,
-`260820-2051-style-rules-arrive-and-get-measured` and `260816-1741-guard-becomes-observation-only`,
-are cited only by terminal records, which are history and are not revised. No `## Parent grounding
-stale` section was written and no `parent-grounding-stale` event was emitted. **No Circle record was
-written at all on this run.**
+**`spec-circles-unfiled`.** Three of the five Circles in
+`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` still exist only as prose.
+C1 is now the active Circle, which answers one quarter of the first fix direction in
+`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
+C2 (what travels between checkouts), C3 (attribution) and C4 (presence) have no Circle record, so
+this portfolio cannot rank them and the issue stays open. That is why the anticipated section is
+empty rather than merely short. The issue's second fix direction, amending the specification to drop
+the Circle vocabulary, remains available and is a different answer rather than a lesser one. C0 stays
+unrecorded either way: it ran to completion with no Circle directory.
 
-**Three residuals from the closed Circle, carried forward because they bear on what is shaped
-next.** They are stated in
-`circles/260821-1042-reply-bounded-whole-question-answered/_c_circle.md` `## Closure note`.
+**`dead-citation-in-live-store`.** The file `shared/backlog/260811-0826_*_observations.md`, the closed
+entry the two live backlog entries were split out of, names a third sibling in its own split note
+that no longer resolves under `shared/backlog/`. The archive sweep in commit `e59dea2` moved it out
+of the live store. The entry is closed and is history, so nothing depends on the citation; repairing
+it means correcting the path to the archived copy, per the archival case in
+`rules/circle-records.md`.
 
-1. **A stopping criterion that does not hold.** The plan required that no growth bound stand closer
-   to failing than at `e764637`. The hook-test surface had 21 lines of head-room there and has 15
-   now, re-measured on this run. Filed as
-   `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
-   open, and what it now holds is a judgement for a later Circle rather than an unapplied fix.
-2. **One commit carries no review and structurally cannot.** It is the commit that adds the last
-   review file. Every other commit in `084c626..HEAD` is tiled.
-3. **The Directive was reached and its effect is unobserved.** The after-measurement is defined in
-   `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`
-   and deliberately not run: it needs twenty unprimed transcripts, roughly fifteen orchestrator
-   sessions. **This bears on ranking.** The protocol excludes any session primed on prose register,
-   so work on any *other* subject accumulates the after-corpus while work on register would spoil
-   it. A multi-user Circle, or the bounded-dispatch entry above, would both count toward the twenty.
+**`open-issue-volume`.** The shared issue store holds 119 open defect records against 149 closed, 23
+of them filed on 2026-08-22 alone, two of those in the hour before this run. No Circle is scoped to
+work them, and the active Circle produces a report rather than a repair. This is stated as portfolio
+context, not as a recommendation: whether that volume warrants a Circle of its own is the user's
+call, and filing one is not this agent's act.
 
-**Two growth budgets are effectively spent.** Measured on this run at `655d976`, summing the files
-the way each test does, against the baselines in
-`hooks/lib/__tests__/rules-emission-golden.test.ts` and
-`hooks/lib/__tests__/surface-growth-bound.test.ts`.
+**`deferred-decision-blocks-a-backlog-entry`.** The second-ranked backlog entry cannot be shaped
+until
+`shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+is revived from the deferred state, which only the user can do. See the proposed deferral above.
 
-| Surface | Unit | Now | Ceiling | Head-room | Since `e764637` |
-|---|---|---|---|---|---|
-| `skills/*/SKILL.md` | bytes | 240 409 | 240 439 | **30** | unchanged |
-| Hook test suite | lines | 20 360 | 20 375 | **15** | down 6 |
-| `agents/*.md` | bytes | 416 205 | 417 843 | **1 638** | unchanged |
-| Always-on rule set | bytes | 95 064 | 98 573 | **3 509** | up 2 |
-
-The four are independent, so a cut in one buys nothing in another. Nothing is red. A red bound is
-cleared by a cut and never by editing a baseline, which is authored once in
-`hooks/lib/__tests__/helpers/growth-bound.ts`. Whatever is shaped next should budget its own cut in
-the same plan if it writes into `skills/` or the hook tests.
-
-**Four open defects write into surfaces with no room.** `260821-0148`, `260821-0302` and
-`260821-0143` all repair `skills/setup/SKILL.md`, which has 30 bytes; `260821-0144` names the
-hook-test surface, whose head-room has fallen from the 43 lines its title records to 15. Nobody has
-taken the cut, so the four are filed and unfixable. The gap underneath them is
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`,
-still open: nothing bounds a Circle's own growth.
-
-**Three decision records still exist twice, with a glob metacharacter in the second filename.**
-Verified on this run in `circles/260801-1244-curator/decisions/` and
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/`: each `_a_` original sits
-beside a companion whose name is the stamp, `_i_`, and a literal asterisk, holding only the
-`Implemented:` footer. Filed as
-`shared/issues/260821-0430_*_three-decision-records-were-split-in-two-by-an-unexpanded-wildcard-and-their-implemented-notes-are-detached.md`,
-open. The repair moves three decision markers, which is Grounding, and is the user's to approve.
-
-**The closed Circle's rename is not committed.** The working tree holds the deleted `_t_circle.md`
-and the untracked `_c_circle.md`. That is the closing session's to commit, not this agent's.
-
-**Nothing in the backlog was read as defect-shaped or decision-shaped.** Both live entries state
-ideas.
-
-**This file cannot meet the em-dash ceiling, and all three of its em-dashes are mandated forms.**
-Measured on this run with `bin/fusion-prose-metric`: 3 prose em-dashes over 1 506 prose words, a
-rate of 2.0 per 1000 against a ceiling of 1.0. Two are the headings `## Anticipated (_a_) — ranked`
-and `## Backlog — ranked`, from the template in `rules/circle-records.md`. The third is the action
-line `Recommended to shape:`, spelled that way in `agents/playmaker.md` because `/fusion:next`
-parses it. None can be rewritten without changing a form another surface reads. The metric reports
-and gates nothing, so nothing is blocked.
+No dependency cycle was detected: one non-terminal Circle exists and its `## Dependencies` section
+names no Circle. No parent-Grounding-stale condition was detected: neither bounded Circle is cited by
+the Grounding snapshot of the active Circle. The pointer is consistent: `.active-circle` names
+`260822-1921-measure-what-two-checkouts-share`, that directory exists, its record carries `_t_`, and
+no second record carries `_t_`.

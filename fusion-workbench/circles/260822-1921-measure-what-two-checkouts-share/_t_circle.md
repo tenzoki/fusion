@@ -46,3 +46,27 @@ Artifacts in `shared/` that bind this Circle, cited rather than copied per the O
 - `shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`
 
 ## Turn log
+
+## Activation proposal
+
+**Proposed for activation at 260822-2040**, by playmaker session
+`260822-2040-playmaker-direct-dispatch` (domain bias `code`, git HEAD `d2b374e`).
+
+This is the only anticipated Circle in the workbench, and it ranks first on merit rather than by
+default. Its `## Grounding snapshot` cites no open decision record: the two decisions it names are
+`shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`,
+which is answered, and
+`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`, which is
+superseded. Its `## Dependencies` section names no Circle, so there is nothing for it to wait on,
+and the specification it comes from argues the reverse dependency: capabilities C2 through C4 rest
+on the premise this Circle measures. The four scope answers recorded in the Grounding already fix
+the method, the environment, the treatment of a negative result in the nested case, and what
+closure consists of, which is more than an anticipated Circle usually carries before activation.
+
+**What activation does not settle.** The Circle produces an analyst report and a decision addendum.
+No executable check ships and no growth budget is spent, so the four bounded surfaces in
+`hooks/lib/__tests__/surface-growth-bound.test.ts` and
+`hooks/lib/__tests__/rules-emission-golden.test.ts` are untouched by it.
+
+The marker is unchanged by this proposal. Activation is the user's act via `/fusion:next`, or the
+orchestrator's after a user confirmation.
