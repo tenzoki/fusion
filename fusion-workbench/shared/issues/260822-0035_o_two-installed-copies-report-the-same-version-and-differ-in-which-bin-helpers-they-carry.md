@@ -81,3 +81,20 @@ the installer. Nothing from it is lost; its remedy was the same, to cut a releas
 `CLAUDE.md` `## Release process` and check that step's four version surfaces together with the
 fifth thing it names as the one that slips, the two `description` fields that describe one
 product out of two repositories.
+
+---
+**Carried in from the folded record, 260822: the version gap has a second half, and it is the
+heavier one.** `bin/fusion-rules` changed by 22 lines in the same unreleased range, and unlike the
+prose metric it is called at every agent's Setup in every project that uses fusion. The installed
+copy is therefore missing that file's stderr fallback notice, which announces when a voice profile
+resolves to the `-en` variant because the requested language's file is absent. Verified by `diff`
+between the installed copy and the work tree.
+
+This paragraph exists because folding two records into one dropped it. The closed record
+`shared/issues/260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`
+carried it, this record did not, and the closure note asserted that nothing was lost. Found by
+`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`.
+
+**Consequence for the remedy: it does not change.** One release closes both halves. What changes is
+the case for cutting one, because a helper nothing calls is a weaker argument than a helper every
+Setup runs.

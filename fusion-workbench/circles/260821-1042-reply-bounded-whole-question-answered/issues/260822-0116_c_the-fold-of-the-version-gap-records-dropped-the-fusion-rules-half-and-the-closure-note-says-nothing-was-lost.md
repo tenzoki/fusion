@@ -80,3 +80,15 @@ it dropped.
 
 **Verified at HEAD `dbf259a`** by the `diff`, the `git log`, and the `grep` above, and by reading
 both records end to end.
+
+---
+Resolved: both halves repaired by the orchestrator, which wrote the false sentence. The live record
+`shared/issues/260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
+now carries the `bin/fusion-rules` half as a section of its own, naming the 22 lines, the missing
+stderr fallback notice, and that `fusion-rules` runs at every agent's Setup while nothing calls the
+prose metric. The closed record's note no longer claims nothing was lost: it states what was lost,
+where it now lives, and that the claim was false when written.
+
+The finding was right about the thing that matters most here. The dropped half was the more
+consequential of the two, so the fold made the surviving record understate the defect while
+asserting completeness, which is worse than either error alone.
