@@ -14,13 +14,10 @@
  * memoisation (the config loader's cache is keyed, but a process is still the
  * unit of resolution) from deciding the next case's answer.
  *
- * The harness carried a second reason until 2026-08-16, and it was the louder
- * one: the write guard STOOD DOWN when `process.cwd()` was the fusion plugin's
- * own repository, so every denial assertion written naively inside this tree
- * passed vacuously. The stand-down went with the last verdict the guard had left
- * (`hooks/guard.ts` — it allows every call now), so the vacuity it created is
- * gone with it. The requirement above outlived it unchanged, which is why the
- * harness did not shrink when the reason did.
+ * A second, louder reason — the write guard's stand-down inside this repository,
+ * which made every denial assertion here pass vacuously — went with the guard's
+ * last verdict on 2026-08-16; `CLAUDE.md`'s opening section carries the removal
+ * and the rule it established. The requirement above outlived it unchanged.
  *
  * ## The macOS symlink trap
  *

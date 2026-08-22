@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync, readdirSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync, copyFileSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Context-manifest tests (Circle B).
@@ -20,7 +20,6 @@ import { dirname, resolve, join } from "node:path";
 // it compares the helper against itself run in a directory with no manifest.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const fusionRules = join(pluginRoot, "bin", "fusion-rules");
 
 const AGENTS = [
@@ -162,10 +161,7 @@ describe("agent-setup.md is emitted always-on, first, for every agent (Circle D 
     // beside it is a second statement of the same fact that goes stale on the
     // next agent added or removed (it did, when `conceptrev` left on
     // 2026-08-15). What this asserts is that the fixture still covers the tree.
-    const onDisk = readdirSync(join(pluginRoot, "agents"))
-      .filter((f) => f.endsWith(".md"))
-      .map((f) => f.replace(/\.md$/, ""))
-      .sort();
+    const onDisk = agentNames();
     expect([...AGENTS].sort()).toEqual(onDisk);
     for (const agent of AGENTS) {
       const out = lines(run(emptyProject, agent).stdout);

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Executor verification-report lint (issue 260805-0629).
@@ -33,7 +33,6 @@ import { dirname, resolve, join } from "node:path";
 // A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const agent = (name: string) => readFileSync(join(pluginRoot, "agents", `${name}.md`), "utf-8");
 
 /** The two executors that report to the orchestrator's Step 3a step 5. */

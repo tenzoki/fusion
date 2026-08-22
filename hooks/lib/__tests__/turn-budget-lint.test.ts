@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Turn-budget lint (issue 260811-1712).
@@ -41,7 +41,6 @@ import { dirname, resolve, join } from "node:path";
 // A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 
 const ORCHESTRATOR = "agents/orchestrator.md";

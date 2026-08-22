@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { agentNames, pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Derivable-enumerations lint gate (Circle 260805-2005-textschicht-gegen-code-
@@ -40,7 +40,6 @@ import { dirname, resolve, join } from "node:path";
 // asserts, it never rewrites a document.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 
@@ -50,14 +49,6 @@ const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 function skillDirs(): string[] {
   return readdirSync(join(pluginRoot, "skills"))
     .filter((d) => existsSync(join(pluginRoot, "skills", d, "SKILL.md")))
-    .sort();
-}
-
-/** Every agent: agents/<name>.md. */
-function agentNames(): string[] {
-  return readdirSync(join(pluginRoot, "agents"))
-    .filter((f) => f.endsWith(".md"))
-    .map((f) => f.replace(/\.md$/, ""))
     .sort();
 }
 

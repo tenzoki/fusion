@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   parseCascade,
   evaluateCascade,
@@ -64,7 +64,6 @@ import {
 //      one. Properties 1-3 measure the definition, this one measures its reach.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const orchestrator = join(pluginRoot, "agents", "orchestrator.md");
 const promptText = () => readFileSync(orchestrator, "utf-8");
 const promptCascade = () => parseCascade(promptText());

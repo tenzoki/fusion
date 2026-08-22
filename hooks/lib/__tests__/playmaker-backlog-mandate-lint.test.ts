@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Playmaker backlog-mandate lint (Circle 260813-0858-playmaker-maintains-
@@ -71,7 +71,6 @@ import { dirname, resolve, join } from "node:path";
 // asserts, it never rewrites a prompt or a rule file.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 
 const PLAYMAKER = "agents/playmaker.md";

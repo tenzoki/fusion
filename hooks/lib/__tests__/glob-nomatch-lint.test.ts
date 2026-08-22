@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Glob no-match lint gate (plan step 6, issue 260717-1903).
@@ -33,7 +33,6 @@ import { dirname, resolve, join } from "node:path";
 // asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 // The no-match-fatal dotglob idiom, in both its negation spellings:
 //   .[!.]*   (POSIX)          .[^.]*   (bash/ksh equivalent)
@@ -96,23 +95,10 @@ function report(violations: Violation[]): string {
     .join("\n");
 }
 
-/** Every agent prompt plus every skill body — the gate's file set. */
-function gatedFiles(): { rel: string; abs: string }[] {
-  const files: { rel: string; abs: string }[] = [];
-  for (const f of readdirSync(join(pluginRoot, "agents"))) {
-    if (f.endsWith(".md")) files.push({ rel: `agents/${f}`, abs: join(pluginRoot, "agents", f) });
-  }
-  for (const d of readdirSync(join(pluginRoot, "skills"))) {
-    const abs = join(pluginRoot, "skills", d, "SKILL.md");
-    if (existsSync(abs)) files.push({ rel: `skills/${d}/SKILL.md`, abs });
-  }
-  return files;
-}
-
 describe("glob no-match lint: no raw .[!.]* dotglob in prompt/skill shell blocks", () => {
   it("passes on the whole tree — every fenced shell block is clean", () => {
     const all: Violation[] = [];
-    for (const { rel, abs } of gatedFiles()) {
+    for (const { rel, abs } of shippedPrompts()) {
       all.push(...scan(rel, readFileSync(abs, "utf-8")));
     }
     expect(

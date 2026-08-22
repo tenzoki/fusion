@@ -2,14 +2,13 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, chmodSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // bin/fusion-paths is a bash script. There is no unit-testable module to
 // import, so the tests drive the real script through child_process against a
 // throwaway workbench fixture — the same thing an agent's Setup step does.
 // This test is at hooks/lib/__tests__/; the script is at bin/.
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const fusionPaths = join(pluginRoot, "bin", "fusion-paths");
 
 const AGENTS = [

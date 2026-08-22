@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { chmodSync, closeSync, copyFileSync, existsSync, mkdtempSync, mkdirSync, openSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // bin/fusion-commit-lock is a bash script; there is no importable module. The
 // tests drive the real script through child_process against a throwaway
@@ -18,7 +18,6 @@ import { dirname, resolve, join } from "node:path";
 // the same 60-second threshold. These tests pin the fix and the two behaviours
 // around it (a young holder-less directory still blocks; a normal
 // acquire/release cycle is untouched).
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const script = join(pluginRoot, "bin", "fusion-commit-lock");
 
 // The script's own constant. Tests never wait it out — the stale cases

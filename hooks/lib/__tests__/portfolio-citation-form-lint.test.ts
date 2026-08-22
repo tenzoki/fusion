@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Portfolio citation-form lint gate.
@@ -44,7 +44,6 @@ import { dirname, resolve, join } from "node:path";
 // asserts, it never rewrites a prompt.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 /** The prompt that generates `portfolio.md`. */
 const GATED = "agents/playmaker.md";

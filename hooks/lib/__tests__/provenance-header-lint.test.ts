@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { readFileSync, readdirSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join, relative, sep } from "node:path";
+import { join, relative, sep } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Provenance-header lint gate (Circle 260801-1244-rule-provenance-header, step 3).
@@ -55,7 +55,6 @@ import { dirname, resolve, join, relative, sep } from "node:path";
 // asserts, it never rewrites a rule file.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 // The position rule as a single named constant: a header counts only if it sits
 // within this many lines of the file's start. Ten was sized against the

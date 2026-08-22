@@ -811,6 +811,35 @@ export function scanRecordCitations(
   return { violations, resolved };
 }
 
+// --- the shipped prompt corpus, shared by the prompt-lint gates -------------
+
+/**
+ * Every agent prompt plus each skill body, as `{ rel, abs }`. `exempt` names
+ * skill DIRECTORIES to skip, which is how the marker-format and path-literal
+ * gates let `setup` and `migrate` name what those gates otherwise forbid.
+ * Four gates each carried a private copy of this walk until 2026-08-22.
+ */
+/** Every agent's name, read off the prompt directory rather than hard-coded. */
+export function agentNames(): string[] {
+  return readdirSync(join(pluginRoot, "agents"))
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => f.slice(0, -3))
+    .sort();
+}
+
+export function shippedPrompts(exempt: Set<string> = new Set()): { rel: string; abs: string }[] {
+  const files: { rel: string; abs: string }[] = [];
+  for (const f of readdirSync(join(pluginRoot, "agents")).sort()) {
+    if (f.endsWith(".md")) files.push({ rel: `agents/${f}`, abs: join(pluginRoot, "agents", f) });
+  }
+  for (const d of readdirSync(join(pluginRoot, "skills")).sort()) {
+    if (exempt.has(d)) continue;
+    const abs = join(pluginRoot, "skills", d, "SKILL.md");
+    if (existsSync(abs)) files.push({ rel: `skills/${d}/SKILL.md`, abs });
+  }
+  return files;
+}
+
 // --- running the parser over an arbitrary corpus ----------------------------
 
 export function markdownFilesUnder(root: string): { rel: string; abs: string }[] {

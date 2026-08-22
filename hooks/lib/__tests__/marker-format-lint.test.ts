@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // Marker-format lint gate (plan step 6 / Phase 5).
@@ -32,7 +32,6 @@ import { dirname, resolve, join } from "node:path";
 // construction.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
 // The nine state-marker letters. A bracket token wrapping exactly one of these
 // is the forbidden form.
@@ -83,24 +82,10 @@ function report(violations: Violation[]): string {
     .join("\n");
 }
 
-/** Every agent prompt plus each non-exempt skill body — the gate's file set. */
-function gatedFiles(): { rel: string; abs: string }[] {
-  const files: { rel: string; abs: string }[] = [];
-  for (const f of readdirSync(join(pluginRoot, "agents"))) {
-    if (f.endsWith(".md")) files.push({ rel: `agents/${f}`, abs: join(pluginRoot, "agents", f) });
-  }
-  for (const d of readdirSync(join(pluginRoot, "skills"))) {
-    if (EXEMPT_SKILLS.has(d)) continue;
-    const abs = join(pluginRoot, "skills", d, "SKILL.md");
-    if (existsSync(abs)) files.push({ rel: `skills/${d}/SKILL.md`, abs });
-  }
-  return files;
-}
-
 describe("marker-format lint: no bracket-form state markers in prompts or skills", () => {
   it("passes on the whole tree — every agent and non-exempt skill uses the underscore form", () => {
     const all: Violation[] = [];
-    for (const { rel, abs } of gatedFiles()) {
+    for (const { rel, abs } of shippedPrompts(EXEMPT_SKILLS)) {
       all.push(...scan(rel, readFileSync(abs, "utf-8")));
     }
     expect(

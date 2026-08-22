@@ -2,8 +2,8 @@ import { describe, it, expect, beforeAll } from "vitest";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, renameSync, readFileSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 import { extractBashBlock } from "./helpers/prompt-blocks.js";
 
 // ---------------------------------------------------------------------------
@@ -60,7 +60,6 @@ import { extractBashBlock } from "./helpers/prompt-blocks.js";
 // written, counts what is on the disk.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const orchestrator = () => readFileSync(join(pluginRoot, "agents", "orchestrator.md"), "utf-8");
 
 const HEADING = "### The record counts are computed, not tallied";

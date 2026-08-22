@@ -36,13 +36,8 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // file with two subjects is the defect that file's own header warns about, so
 // the two share the INSTRUMENT (`helpers/growth-bound.ts`) and nothing else.
 //
-// FOUR SURFACES, FOUR INDEPENDENT BUDGETS, ONE INSTRUMENT. Each surface carries
-// its own baseline map, its own floor summed over the files present, and its own
-// head-room derived from its own history. Nothing is pooled: growth in `agents/`
-// can NOT be paid for by shrinkage in `skills/`, each bound asserts on its own
-// result, and a single surface crossing its own bound fails the suite alone.
-// `growth()` takes the baseline and the head-room as ARGUMENTS precisely so that
-// no surface can see, or spend, another's numbers.
+// FOUR SURFACES, FOUR INDEPENDENT BUDGETS, ONE INSTRUMENT — authored in this
+// file's instrument (`helpers/growth-bound.ts`) and in `README-hooks.md`.
 //
 // TWO UNITS, AND WHY. `agents/*.md` and `skills/*/SKILL.md` are measured in
 // BYTES, because their cost is context loaded into a dispatch — an agent prompt
@@ -194,18 +189,11 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // itself its own savings back as head-room would be the arming mistake this file
 // already refused once.
 //
-// ## What no bound covers, stated rather than left to be discovered
+// ## What no bound covers
 //
-// The hook-test surface counts `.ts` under `hooks/lib/__tests__/`. The three
-// `.mjs` files the Circle's step 3b added — `hooks/scripts/build.mjs` (205
-// lines), `hooks/scripts/run-tests.mjs` (48) and `hooks/vitest.config.mjs` (67),
-// 320 lines together — are hook SCRIPTS, not tests, and fall outside it. They
-// are also invisible to the Circle's own before/after measurement, whose command
-// reads `hooks/*.ts hooks/lib/*.ts` (issue
-// `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1251_o_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`).
-// After this step they are bounded by NO surface, and this step claims no
-// coverage of them. Extending a surface to reach them is a decision nobody has
-// made; inventing one here would be arming a bound on a corpus nobody measured.
+// Authored under that heading in `README-hooks.md`, and claimed by no step here.
+// The three `.mjs` files it names are also invisible to the Circle's own
+// before/after command (issue `260815-1251`).
 //
 // RELEASE_CAP AND DRIFT_CEILING ARE NOT TOUCHED, NOT COPIED AND NOT IMITATED.
 // They are historical facts about what `origin/main` once shipped in RULE TEXT.
@@ -214,16 +202,8 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 //
 // ## Updating the golden
 //
-// Deliberate, one command, and it can never be left switched on:
-//
-//     cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts
-//
-// That run rewrites the fixture from live measurement and then FAILS on purpose,
-// which forces a second run without the flag. Regenerating the golden does NOT
-// move a baseline and therefore never clears a bound: the golden records what the
-// files measure, the baseline records what they are allowed to measure FROM. The
-// baselines move at the two events in `## Re-baselining: the two events at which
-// a baseline moves` in `helpers/growth-bound.ts`, and at no other moment.
+// `GOLDEN_HEADER` below carries the one command verbatim; `README-hooks.md` says
+// why regenerating never clears a bound and where a baseline may move instead.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));

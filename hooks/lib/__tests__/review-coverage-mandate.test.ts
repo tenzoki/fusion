@@ -53,8 +53,8 @@
 
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, join, resolve } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   NOT_OPENED_FIELD,
   RANGE_FIELD,
@@ -63,7 +63,6 @@ import {
   parseRange,
 } from "../review-coverage.js";
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (...p: string[]) => readFileSync(join(pluginRoot, ...p), "utf-8");
 
 /** The two prompts that write review files, and therefore carry the mandate. */

@@ -4,7 +4,6 @@ import {
   existsSync,
   mkdtempSync,
   readFileSync,
-  readdirSync,
   rmSync,
   statSync,
   writeFileSync,
@@ -13,6 +12,7 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, relative } from "node:path";
 import { fmt, Growth, growth, grownLines } from "./helpers/growth-bound.js";
+import { agentNames } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
 // The emission golden — how many bytes of plugin rule text every agent loads
@@ -681,14 +681,6 @@ interface Emission {
   /** Path relative to `<plugin>/rules`, in emission order. */
   files: { rel: string; size: number }[];
   total: number;
-}
-
-/** Every agent name, taken from the prompt directory rather than hard-coded. */
-function agentNames(): string[] {
-  return readdirSync(join(pluginRoot, "agents"))
-    .filter((f) => f.endsWith(".md"))
-    .map((f) => f.slice(0, -3))
-    .sort();
 }
 
 let neutralCwd: string;

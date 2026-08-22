@@ -2,8 +2,8 @@ import { describe, it, expect, afterAll } from "vitest";
 import { execFileSync, spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { dirname, join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 
 // bin/fusion-count-sources is a bash script, so these tests drive the real
 // script through child_process against throwaway project fixtures — the same
@@ -22,7 +22,6 @@ import { dirname, resolve, join } from "node:path";
 // git and a broken filter and assert the helper does not claim to have counted.
 // Issue: shared/issues/260810-0459_*_fusion-count-sources-reports-a-measured-
 // zero-when-git-fails-which-its-own-header-forbids.md.
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const script = join(pluginRoot, "bin", "fusion-count-sources");
 
 const tmpRoots: string[] = [];

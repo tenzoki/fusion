@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 import {
   parseCascade,
   variablesRead,
@@ -62,7 +62,6 @@ import {
 // reject, so neither is merely shown passing on the current text.
 // ---------------------------------------------------------------------------
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const orchestrator = join(pluginRoot, "agents", "orchestrator.md");
 
 const branchesFromPrompt = (): Branch[] => parseCascade(readFileSync(orchestrator, "utf-8"));

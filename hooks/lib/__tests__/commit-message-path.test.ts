@@ -56,16 +56,15 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve, join } from "node:path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 import {
   PRESCRIBED_MESSAGE_PATH,
   classify,
   hasCommitMessageName,
 } from "../staging-drift.js";
 
-const pluginRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (...p: string[]) => readFileSync(join(pluginRoot, ...p), "utf-8");
 const orchestrator = () => read("agents", "orchestrator.md");
 const commitSkill = () => read("skills", "commit", "SKILL.md");
@@ -209,17 +208,6 @@ describe("commit-message path: the prescription is pinned", () => {
 });
 
 describe("commit-message path: no shipped prompt names one inside the workbench", () => {
-  const promptFiles = (): string[] => {
-    const files = readdirSync(join(pluginRoot, "agents"))
-      .filter((f) => f.endsWith(".md"))
-      .map((f) => join("agents", f));
-    for (const d of readdirSync(join(pluginRoot, "skills"))) {
-      const rel = join("skills", d, "SKILL.md");
-      if (existsSync(join(pluginRoot, rel))) files.push(rel);
-    }
-    return files;
-  };
-
   /**
    * Every shipped prompt line the name test flags, with the paths it flagged.
    *
@@ -231,7 +219,7 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
    */
   const flaggedLines = (): { where: string; hits: string[] }[] => {
     const out: { where: string; hits: string[] }[] = [];
-    for (const rel of promptFiles()) {
+    for (const rel of shippedPrompts().map((f) => f.rel)) {
       read(rel)
         .split("\n")
         .forEach((line, i) => {

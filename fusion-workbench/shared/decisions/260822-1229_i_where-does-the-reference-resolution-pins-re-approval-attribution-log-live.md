@@ -105,7 +105,12 @@ put to the user together with this record's argument against it and was not take
 The cost the user accepted, stated at the gate: the attribution no longer stands in front of the
 person editing `BASELINE`, which is the property that made the log trustworthy, and the bytes are
 relocated rather than removed.
-Implemented:
+Implemented: `hooks/lib/__tests__/reference-resolution-lint.test.ts:488-493` — option 2 applied at
+step 2 of the C0 plan: the pin's rationale and the newest re-approval stay above `const BASELINE`,
+entries 1 to 25 moved verbatim to
+`shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`, and a
+six-line citation block names that record and instructs the next roll. The file fell 1431 -> 1014
+lines; `TEST_LINE_BASELINE` did not move.
 Deferred:
 Superseded by:
 Retired:
