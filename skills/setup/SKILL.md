@@ -200,7 +200,7 @@ for rel in stilwerk/default-voice-en.yaml stilwerk/default-voice-de.yaml stilwer
 done
 ```
 
-**The seven cases, and the precedence is the branch order above rather than a preference.** Without it the cases overlap: case 1 and case 4 both match whenever both copies moved to the same content. Cases 5 and 6 are the two ways a comparison has nothing to compare; they are split because they route to different fixes, and both are reported in branch order, the local one first when both hold, because neither is silent by design.
+**The eight tokens, and the precedence is the branch order above rather than a preference.** The first is `source-root-unresolved`, the skip above: it ends the block before any file is classified, and it is reported rather than enumerated. Without the precedence the cases overlap: case 1 and case 4 both match whenever both copies moved to the same content. Cases 5 and 6 are the two ways a comparison has nothing to compare; they are split because they route to different fixes, and both are reported in branch order, the local one first when both hold, because neither is silent by design.
 
 1. **`case1-equal`** — the project's copy *is* the shipped copy. Report nothing. Stamp it: the observation is unambiguous, and recording it is what keeps a workbench that matches today out of case 0 on the day the profile improves.
 2. **`case0-unclassifiable`** — the copies differ and no checksum was ever recorded. This is every workbench that existed before this step. Name the file, say plainly that fusion **cannot tell an adaptation from a stale copy** for it, and carry that warning into the offer. Do not guess which it is.
@@ -220,14 +220,16 @@ Two options: **"Replace them"** and **"Keep mine"**.
 
 ```bash
 SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
+[ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }
 for rel in <the files to replace>; do cp "$SRC/$rel" "./fusion-workbench/$rel"; done
 ```
 
 Then stamp, with `<rel...>` the case-1 files plus every file the question covered, whichever way it was answered:
 
 ```bash
-PROV=./fusion-workbench/.asset-provenance; [ -f "$PROV" ] || : > "$PROV"
 SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
+[ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }
+PROV=./fusion-workbench/.asset-provenance; [ -f "$PROV" ] || : > "$PROV"
 for rel in <rel...>; do
   h="$(shasum -a 256 "$SRC/$rel" | cut -c1-64)"
   grep -q "^$h  $rel$" "$PROV" && continue
@@ -237,7 +239,7 @@ done
 
 The `grep -q` skip is what makes a second Setup with nothing changed in between rewrite no file at all.
 
-Report in the Done report: which files were replaced, which were kept, which were named as conflicts, and which were missing on either side (cases 5 and 6). When every file came back `case1-equal`, say nothing about this step — a run with nothing to report is the normal run.
+Report in the Done report: which files were replaced, which were kept, which were named as conflicts, which were missing on either side (cases 5 and 6), and, when the block printed `source-root-unresolved`, that the assets were not compared at all. When every file came back `case1-equal`, say nothing about this step — a run with nothing to report is the normal run.
 
 ## Step 0f — Ensure the project configuration file is present locally
 

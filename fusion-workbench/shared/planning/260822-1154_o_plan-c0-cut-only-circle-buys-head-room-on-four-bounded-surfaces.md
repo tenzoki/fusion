@@ -134,14 +134,14 @@ Two user gates sit inside this Circle and neither is a step, because neither is 
    - Dependencies: step 2.
    - Acceptance: `cd hooks && npm test` exits 0. `skills/*/SKILL.md` stands at least 4 300 bytes below its size at the Circle's start. `SKILL_BASELINE` is unchanged. Any of the three cited duplication records that this step discharges is renamed to closed with a `Resolved:` note.
 
-5. **Fix defect 1: Step 0e's unguarded blocks and its unreported outcome**
+5. [DONE] **Fix defect 1: Step 0e's unguarded blocks and its unreported outcome**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`
    - Changes: both parts of the fix the record prescribes. Part 1, add the `source-root-unresolved` skip to the Done-report contract as a reported outcome, and make the enumeration's count agree with the number of tokens the block emits. Part 2, give the replace and the stamp blocks the same `[ -n "$SRC" ] || { echo …; exit 0; }` guard the classification block carries. Both are additive and neither changes behaviour on a resolving root.
    - Dependencies: step 4. The record itself states the sequencing constraint: applying either part before the `skills/` cut reddens the growth bound.
    - Acceptance: `cd hooks && npm test` exits 0. The record `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` is renamed to closed with a `Resolved:` note naming both parts. `skills/*/SKILL.md` head-room is stated in the step report.
 
-6. **Fix defect 2: the v10.5 upgrade note reaches `/fusion:help`, and the section stops growing without bound**
+6. [DONE] **Fix defect 2: the v10.5 upgrade note reaches `/fusion:help`, and the section stops growing without bound**
    - Executor: `coder`
    - Files: `skills/help/SKILL.md`
    - Changes: the shape the user picked at Gate B, plus the v10.5 paragraph the release omitted. Option 2 of the record — cap the section at the last N releases with one standing line pointing at `docs/` for the rest — is the option that makes the section's growth bounded by construction rather than by repeated pruning, and it is the one this plan recommends; option 1 buys several releases and leaves the shape unchanged. Take whichever the user chose. Do not take option 3.

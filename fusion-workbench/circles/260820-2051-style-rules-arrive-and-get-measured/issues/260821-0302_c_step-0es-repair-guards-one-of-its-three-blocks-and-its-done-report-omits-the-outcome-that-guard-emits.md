@@ -101,3 +101,32 @@ than an edit to the baseline. So this fix is blocked behind a `skills/` reductio
 should be decided rather than discovered when the executor's first write turns the suite red. The
 session record for this Circle already names the 30 bytes
 (`shared/history/260820-2103-orchestrator-session.md`, Turn 2).
+
+---
+Resolved: both parts applied to `skills/setup/SKILL.md` Step 0e at step 5 of the C0 plan
+(`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`).
+
+Part 1, the reporting end. The Done-report contract now names the skip as a fifth reported outcome:
+"…and, when the block printed `source-root-unresolved`, that the assets were not compared at all."
+The obligation no longer sits only in the paragraph 59 lines above it. The enumeration's head reads
+"**The eight tokens**" rather than "The seven cases", and names `source-root-unresolved` as the first
+of them — the skip is reported rather than enumerated, so it is not given a case number beside the
+seven the loop assigns. That is the second of the two remedies the record offered; the first, adding
+it to the numbered list as a case of its own, was not taken, because it is not a classification of a
+file and the list's items each classify one.
+
+Part 2, the guard asymmetry. The replace block and the stamp block now carry the same
+`[ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }` line the classification block carries,
+immediately after their own `SRC` assignment. All three blocks now check the root they resolve.
+
+One thing beyond what the record prescribed, and it costs no bytes: in the stamp block the `SRC`
+assignment and its new guard were moved **ahead** of the `PROV=…; [ -f "$PROV" ] || : > "$PROV"` line.
+On a resolving root the two orderings are identical. On a non-resolving one the original order would
+have created an empty `.asset-provenance` and then exited, leaving a file behind on a run that did
+nothing else — a smaller version of the durable consequence this record's part 2 is about.
+
+Sequencing: the 30-byte constraint the record measured was cleared first. Step 4 of the same plan cut
+`skills/*/SKILL.md`; this fix added 372 bytes to `setup/SKILL.md` and the surface held 4 016 bytes of
+head-room after step 6 landed alongside it. `SKILL_BASELINE` did not move.
+
+Verified: `cd hooks && npm test` — exit 0, 41 files, 724 tests.
