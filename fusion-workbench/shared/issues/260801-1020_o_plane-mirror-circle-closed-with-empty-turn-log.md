@@ -44,3 +44,10 @@ The closure then moved the record from `_t_` to `_c_` and left this line citing 
 longer existed, which the citation gate caught on the next run. It reads `_*_` now. The instance is
 one more datum for the same argument: a marker move at closure is exactly when citations of the
 moving record go stale, and nothing warns before the move.
+
+Also seen: 260822-2236 by reconciler — `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
+`## Turn log` is empty one phase before closure, after a Turn that ran, converged and produced both of the
+Circle's artifacts. Part 2 of this record, making the omission detectable, is further from existing than
+when it was written: the state-drift measurement that had covered it was removed on 2026-08-15. Re-filed
+with the three other frozen surfaces as
+`shared/issues/260822-2236_o_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`.

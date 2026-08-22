@@ -55,3 +55,29 @@ record in `shared/decisions/` for a merge-driver, union-append or two-writer ans
 one. `.gitattributes` does not exist at the repository root, so no merge driver is configured, and
 `orchestrator-events.jsonl` is still an ordinary tracked text file that git will conflict on.
 Correctly open; it blocks the close of C2 and C2 has not started.
+
+---
+**Reconciliation 260822-2236 (reconciler, domain `code`, range `f90de0c..b938f68`), marker unchanged
+at `_o_`. Still no answer on disk, and option 1 now has the measurement it lacked.**
+
+`.gitattributes` still does not exist at the repository root, re-checked at HEAD `b938f68`, so nothing
+here is decided or configured. The marker is right.
+
+What changed is the evidence base. The C1 isolation pass measured option 1 end to end, in
+`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`
+`## Findings` section 7. Two checkouts each appended one line and pushed: without a driver, `KONFLIKT
+(Inhalt)` and `UU` with conflict markers inside a machine-written log, which is what this record
+predicts. With one line in a root `.gitattributes` reading
+`fusion-workbench/orchestrator-events.jsonl merge=union`, the merge went clean, both lines survived, and
+the output was **not** in timestamp order: a line stamped `11:01` preceded one stamped `11:00`. So both
+halves of option 1 are confirmed, the benefit and the ordering cost, rather than one of them.
+
+It also satisfies this record's third constraint, which the report does not say and a reader should not
+have to derive: `union` is one of git's built-in drivers, so it needs no `.git/config` entry, and
+`.gitattributes` is a tracked file that arrives with the clone. Nothing per machine.
+
+**This note answers nothing.** The choice between the three options is the user's and belongs at C2's
+planning gate, exactly as `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
+`## User decisions pending` states. The report's own recommendation 2 says the measurement was
+deliberately not appended to this record by the analyst pass; it is appended here as reconciliation
+evidence so that whoever answers finds it from the record rather than by knowing the report exists.

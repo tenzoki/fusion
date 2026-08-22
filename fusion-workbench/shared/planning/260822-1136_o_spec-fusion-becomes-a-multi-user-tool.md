@@ -131,12 +131,12 @@ flowchart TD
 **Description:** Somebody can read a report that says, from measurement rather than from reasoning, what two checkouts of one project share and what they do not. The standing decision that fusion does not support concurrency is then replaced by a decision that says what it does support.
 
 **Acceptance criteria:**
-- [ ] A report exists that measures, for at least two arrangements, which workbench entries are shared and which are per tree. The two arrangements are a second full clone, and a `git worktree` of the same repository. For each, the report states for every entry of the state-partition table above whether the second tree got its own copy, the first tree's copy, or nothing at all.
-- [ ] The report states what a fresh clone of a project that tracks its workbench holds and what it lacks, and what an agent does in that tree before `/fusion:setup` has run there.
-- [ ] The report states what happens when the second tree is created **inside** a directory that already holds a workbench, because `bin/fusion-workbench-root` walks upward from the working directory and will find the parent's marker. This is the failure mode the superseded decision named and nobody measured.
-- [ ] The report states whether two trees of one repository can hold the same Circle active at once, and what git does when both push a changed Circle record.
-- [ ] `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` gains a `Superseded by:` line citing a new record, and is renamed from answered (`_a_`) to superseded (`_s_`). The new record states the arrangement this spec settles and is filed in the same Circle.
-- [ ] The new record states in its own words what survives of the superseded one. The sentence that binds it is the superseded record's own: nothing in fusion may assume two orchestrators can run safely against one workbench. That sentence is **not** overturned. It is satisfied by the arrangement, because two orchestrators never run against one workbench: they run against two.
+- [x] A report exists that measures, for at least two arrangements, which workbench entries are shared and which are per tree. The two arrangements are a second full clone, and a `git worktree` of the same repository. For each, the report states for every entry of the state-partition table above whether the second tree got its own copy, the first tree's copy, or nothing at all.
+- [x] The report states what a fresh clone of a project that tracks its workbench holds and what it lacks, and what an agent does in that tree before `/fusion:setup` has run there.
+- [x] The report states what happens when the second tree is created **inside** a directory that already holds a workbench, because `bin/fusion-workbench-root` walks upward from the working directory and will find the parent's marker. This is the failure mode the superseded decision named and nobody measured.
+- [x] The report states whether two trees of one repository can hold the same Circle active at once, and what git does when both push a changed Circle record.
+- [x] `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` gains a `Superseded by:` line citing a new record, and is renamed from answered (`_a_`) to superseded (`_s_`). The new record states the arrangement this spec settles and is filed in the same Circle.
+- [x] The new record states in its own words what survives of the superseded one. The sentence that binds it is the superseded record's own: nothing in fusion may assume two orchestrators can run safely against one workbench. That sentence is **not** overturned. It is satisfied by the arrangement, because two orchestrators never run against one workbench: they run against two.
 - [ ] If the measurement shows that two checkouts do **not** get isolated workbench state in a case the user intends to use, the Circle stops and reports, and C2 through C4 do not start. That outcome is a valid closure of this Circle and is worth more than the sequence it stops.
 
 **Decisions made:**
@@ -277,3 +277,47 @@ no Circle record for C0 to hold the note, filed as
 *The two pending user decisions are still pending.* Both `260822-1136` records carry `_o_`, neither
 has an `Answered:` line, and neither blocks anything before C2 and C3 respectively, exactly as
 `## User decisions pending` states.
+
+**260822-2236 (reconciler, domain `code`, range `f90de0c..b938f68`), marker unchanged at `_o_`,
+`**Status:** Partially Complete` unchanged, and six of C1's seven acceptance criteria ticked.**
+
+*Why the marker and the status do not move.* Two of five capabilities are delivered. C2, C3 and C4 are
+untouched: nothing in `f90de0c..b938f68` edits `.gitignore`, `rules/workbench-tracking.md` or any
+record template, and the two pending user decisions in `## User decisions pending` both still carry
+`_o_` with no `Answered:` line. `Partially Complete` remains the honest field value.
+
+*Which criteria this session met, and which were already met.* Criteria 1 through 4 are the report's,
+and this session produced it:
+`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`,
+committed in `06d1bd1`. Criterion 1 is `## Findings` section 1, a row per partition entry and a column
+per arrangement, identity taken by device and inode; criterion 2 is sections 3 and 4; criterion 3 is
+section 5 with four nested placements probed; criterion 4 is section 6, both push cases measured with
+transcripts. Criteria 5 and 6 were discharged in the **previous** session, in commit `02dff51`, and
+were re-verified here rather than assumed:
+`shared/decisions/260719-2141_s_concurrency-worktree-slots-vs-single-active-circle.md` carries the `_s_`
+marker and a `Superseded by:` line citing `260822-1610`, and that record states what survives of the
+superseded one in its `## Constraints`, first bullet.
+
+*One deviation on criterion 5, ticked with it stated.* The criterion says the new record "is filed in
+the same Circle". It is filed in `shared/decisions/`, because it was written at the Rebalance gate of
+session `shared/history/260822-1009-orchestrator-session.md`, when no Circle was active. The Origin
+Rule's "unknown origin means `shared/`" gives that placement, so the substance is met and the literal
+placement clause is not. Nothing is moved: reach is cited, never re-placed.
+
+*Criterion 7 is deliberately not ticked.* It is a conditional whose antecedent is false: the
+measurement came back positive for both arrangements the user intends to use, so there was no
+stopping outcome to record. Ticking it would read as if the Circle had stopped. It stays `[ ]` with
+this note as its explanation.
+
+*Class R3 did not survive the measurement, and `## The state partition` still states it.* The report's
+`## Findings` section 8 measured `.fusion-setup` rewritten by every Setup with a truncating redirect
+carrying `setup_pwd`, contradicting R3's "already tolerates a second writer". Re-verified here at the
+source: `skills/setup/SKILL.md:94-98` writes `printf ... > ./fusion-workbench/.fusion-setup` with
+`$(pwd -P)`, and this repository's own committed marker reads
+`"setup_pwd":"/Users/k1/Projects/productive/fusion"`. The defect is filed as
+`circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_o_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
+The R3 paragraph is not edited here: which of the three surfaces changes is a design choice for C2,
+and the spec text is not the reconciler's to rewrite.
+
+*C0's fifth criterion is still the only one of its five open*, unchanged from the 260822-1556 entry
+above, and still the orchestrator's at Phase 4.

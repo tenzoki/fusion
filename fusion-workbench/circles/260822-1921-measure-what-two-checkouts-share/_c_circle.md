@@ -47,6 +47,12 @@ Artifacts in `shared/` that bind this Circle, cited rather than copied per the O
 
 ## Turn log
 
+- Turn 1 (session 260822-2204): commits `f90de0c`..`b938f68`; Coherence verdict `coherent`;
+  session history:
+  `circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md`.
+  Two tasks, both resolved: the isolation measurement, and the addendum that resolved the closing
+  sentence of the Grounding record the measurement was run for.
+
 ## Activation proposal
 
 **Proposed for activation at 260822-2040**, by playmaker session
@@ -70,3 +76,49 @@ No executable check ships and no growth budget is spent, so the four bounded sur
 
 The marker is unchanged by this proposal. Activation is the user's act via `/fusion:next`, or the
 orchestrator's after a user confirmation.
+
+## Closure note
+
+**Closed coherent on 260822**, on the Phase-3 verdict `coherent` from
+`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2239-reconciliation.md`, whose
+`## Coherence` section is appended to
+`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md`.
+One Turn, two tasks, both resolved, commits `f90de0c`..`b938f68`.
+
+**The Directive was reached in the direction it left open.** It asked for a measurement and said in
+its own last sentence that a result showing two checkouts do *not* get isolated state would close
+this Circle just as well, and be worth more than the three Circles it would stop. The result came
+back positive: the premise holds for both arrangements the user intends to use, a second full clone
+and a `git worktree`, on the precondition that each tree carries its own `.fusion-setup`. The
+reconciliation checked the four claims that were checkable against the tree rather than against the
+report, and all four held.
+
+**One sharper result than the Directive asked for.** The question was posed three ways — the second
+tree gets its own copy, the first tree's copy, or nothing — and the middle possibility never
+occurred in any arrangement. Sharing is only ever the upward walk of `bin/fusion-workbench-root`,
+never a shared file.
+
+**One failure, bounded rather than waived.** The nested placement fails where the second tree has no
+marker of its own: the root walk hands it the parent's workbench entire, active Circle, guard state
+and commit lock included. That is the failure mode the superseded decision named and nobody had
+measured. The user's decision at shaping was to document it and not treat it as a blocker, because
+nested is not an arrangement they intend to use, so it closes this Circle as a recorded bound on the
+answer rather than as an open defect against it.
+
+**Six of the seven C1 acceptance criteria are met**, four by this session and two by the earlier
+session that wrote the supersession, verified at their files rather than assumed. The seventh is a
+conditional whose precondition did not arise: it prescribes what happens if the measurement fails,
+and it did not.
+
+**What this Circle leaves open**, each cited where it lives rather than counted:
+`circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
+asks a question the arrangement did not previously have, and
+`circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`
+records that the specification's class R3 does not survive measurement for one of its two members.
+Both are inputs to C2, which is where the state partition gets built.
+
+**Consequence for the sequence.** C2 through C4 may proceed on evidence rather than on an
+assumption. The Grounding record they rest on,
+`shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`,
+no longer closes by calling itself chosen but not proven; its addendum resolves that sentence and
+leaves it standing above, so a later reader sees the claim was open before it was closed.

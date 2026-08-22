@@ -222,3 +222,38 @@ reported as `UNCHECKED` rather than dropped, the throttle in all three direction
 repair), non-repair of the surfaces, the CLI's exit codes, and — the one that would otherwise have
 been assumed — that the check does **not** stand down in fusion's own repository, where all six
 measured instances happened.
+
+---
+Revised by: `agents/orchestrator.md:238` and the 2026-08-15 removal of the state-drift measurement — every
+mechanism the `Resolved 260811-1005` note rests on has been deleted, and the failure recurred on 260822.
+
+The closure note names one computation and three callers. None of the four exists at HEAD, verified by
+file rather than by report: `hooks/lib/state-drift.ts`, `hooks/lib/__tests__/state-drift.test.ts` and
+`hooks/dist/state-drift.js` are absent; `bin/` holds no `fusion-state-drift`; `grep -rn 'state_drift'`
+over `hooks/lib`, `hooks/*.ts`, `bin`, `agents` and `skills` returns only `bin/monitor`, which renders
+events already in the log and computes nothing. `hooks/tracker.ts:246` states the removal in its own
+header. `agents/orchestrator.md:109` and `:238` state its two consequences in the prompt: a re-pointed
+`session.history_file` and a frozen Circle Turn log are now "a thing you avoid rather than a thing you
+are told about", and `:238` names this record by number while doing so.
+
+So candidate 3 is still rejected, candidate 1 is still prompt text, and **candidate 2, the detection
+this record was closed on, no longer runs on either path**. The note's own residual said the mechanism
+"makes a skipped write impossible not to notice"; nothing notices any more.
+
+**A fifth instance stands live at the moment of this reconciliation**, session
+`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md`, one
+Turn, two tasks, two commits `f90de0c..b938f68`. The same four-surface split, in the same direction:
+
+| Surface | Says | Reality |
+|---|---|---|
+| `fusion-workbench/agentstate.yaml` | `# Updated: 260822-2210`, `current_task: T-1 status running`, `work_queue` T-1 `running` and T-2 `queued` | both tasks carry `task_done` at 20:28:48, two commits landed |
+| `fusion-workbench/orchestrator-live.md` | `Tasks: 0/2`, `Commits: 0`, T-1 `[RUNNING]`, T-2 `[QUEUED]` | 2 of 2 done, 2 commits |
+| `circles/260822-1921-measure-what-two-checkouts-share/_t_circle.md` | `## Turn log` empty | one Turn ran and ended |
+| the session history file above | `**Mode:** (not yet resolved — Phase 0 pending)`, `**Status:** In progress`, `## Session log` → "(Turn entries appended as the session runs.)" | `scope_resolved` names `mode=custom` at 20:10:01; the Turn loop converged at 20:28:48 |
+| `fusion-workbench/orchestrator-events.jsonl` | current through `turn_end` | the one surface that kept up, for the fifth time |
+
+The marker stays `_c_` and the `Resolved:` note above is left unedited: it records what was true when it
+was written, and the mechanism it describes really did exist. What moved is the tree underneath it. The
+live defect is re-filed as
+`shared/issues/260822-2236_o_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
+because a `_c_` record tracks no open work.
