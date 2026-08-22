@@ -216,3 +216,17 @@ of them was wrong, which is a rate worth knowing before the next cut Circle.
 - Ledger: `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`
 - Moved log: `shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`
 - Filed: `shared/issues/260822-1421_o_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`, `shared/issues/260822-1422_o_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`
+
+---
+
+**Reconciliation 260822-1556 (reconciler, HEAD `9f65463`).** Findings only; no finding text changed.
+The two defects this review filed are both closed and both were verified at their own site rather
+than from their notes: `shared/issues/260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+(the rationale now stands at `bin/fusion-source-root:46-56` and the two pointers name three claims),
+and `shared/issues/260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`
+(the block sits immediately above `export function shippedPrompts` at
+`hooks/lib/__tests__/helpers/citation-scan.ts:830`). The first was later revised by
+`shared/issues/260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`,
+which the next review found and which is also closed. This review's `**Not-opened:**` field names
+five records that do not exist; that is filed as `shared/issues/260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
+and is still open.

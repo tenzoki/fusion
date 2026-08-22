@@ -1,7 +1,7 @@
 # Spec: fusion becomes a multi-user tool
 
 **Date:** 2026-08-22
-**Status:** Draft
+**Status:** Partially Complete
 **Source:** "wir bauen fusion jetzt zu einem multiuser tool um. [...] Die blockierende Decision (nur ein aktiver Orchestrator) wird aufgehoben und reframed, so dass wir mehere User auf einer workbench arbeiten lassen können, bzw. ev. auch mehrere Instanzen auf einer Maschine. Workbench- und Zustandsdaten, die jetzt gitignored sind, müssen daher ins repo." Three shaping rounds, eight answers from the user, recorded in `shared/history/260822-1009-orchestrator-session.md`.
 **Decidability:** The load-bearing question is whether a workbench record can be attributed to the person and to the session that produced it, from inputs fusion already holds. The person is decidable and needs no new input: `/fusion:memo` reads `$USER` from the environment today (`skills/memo/SKILL.md:38`), and every agent can do the same. The session is decidable for the hooks and not for the agent. Claude Code passes `session_id` to PreToolUse and PostToolUse, fusion declares it at `hooks/guard.ts:84` and `hooks/tracker.ts:132`, and nothing reads it; no agent ever receives it. Whether an agent could obtain it rests on one measurement nobody has taken, namely whether the SessionStart input package carries the field and whether a hook can relay it to the model as `additionalContext`. **No capability in this spec depends on that measurement**, because attribution in records is by person, the session identifier appears only in the event log the hooks write, and nothing here walks from a record back to a session. C4 states the measurement as its own first step and names what happens if it fails.
 
@@ -114,10 +114,10 @@ flowchart TD
 4. `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` (a stopping criterion that cannot be met as written)
 
 **Acceptance criteria:**
-- [ ] Each of the four defects above is fixed, and `cd hooks && npm test` exits 0 after each fix.
-- [ ] After the four fixes, `skills/*/SKILL.md` has at least 3 000 bytes of head-room and the hook test suite at least 300 lines, measured by the same summation the bound performs.
-- [ ] `agents/*.md` has at least 12 000 bytes of head-room, which is what C3 and C4 need to write into the agent prompts.
-- [ ] No baseline map is edited. The three maps in `hooks/lib/__tests__/surface-growth-bound.test.ts` and the map in `hooks/lib/__tests__/rules-emission-golden.test.ts` are byte-identical before and after this Circle, except where a re-baseline follows an actual cut and the cut is named in the same commit, which is event 1 of `## Re-baselining` in `hooks/lib/__tests__/helpers/growth-bound.ts`.
+- [x] Each of the four defects above is fixed, and `cd hooks && npm test` exits 0 after each fix.
+- [x] After the four fixes, `skills/*/SKILL.md` has at least 3 000 bytes of head-room and the hook test suite at least 300 lines, measured by the same summation the bound performs.
+- [x] `agents/*.md` has at least 12 000 bytes of head-room, which is what C3 and C4 need to write into the agent prompts.
+- [x] No baseline map is edited. The three maps in `hooks/lib/__tests__/surface-growth-bound.test.ts` and the map in `hooks/lib/__tests__/rules-emission-golden.test.ts` are byte-identical before and after this Circle, except where a re-baseline follows an actual cut and the cut is named in the same commit, which is event 1 of `## Re-baselining` in `hooks/lib/__tests__/helpers/growth-bound.ts`.
 - [ ] The Circle's closure note states, per surface, what was cut and what the head-room measured before and after.
 
 **Decisions made:**
@@ -241,3 +241,39 @@ flowchart TD
 
 - [ ] `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` — what happens when two checkouts have both appended to the one tracked log. Blocks the close of C2.
 - [ ] `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` — the operating-system account, the git identity, or both. Blocks nothing before C3 and should be answered at C3's planning gate.
+
+## Reconciliation Log
+
+**260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at `_o_`,
+`**Status:** Draft` → `Partially Complete`, and four of C0's five acceptance criteria ticked.**
+
+*Why the marker does not move.* One of five capabilities is delivered. C1 through C4 are untouched:
+nothing in `370bfc5..9f65463` adds a person field to any record template, changes `.gitignore`, or
+gives `orchestrator-events.jsonl` a presence line, and the decision C1 exists to supersede
+(`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`) still
+carries `_a_` and still says parallelism is out of scope. A spec closes when its capabilities are
+delivered, and four of them are not started. `Partially Complete` is the honest field value.
+
+*C0's acceptance, verified against the tree rather than against the closure report.* All four
+defects carry `_c_` and each fix was re-checked at its own site: the three Step 0e guards at
+`skills/setup/SKILL.md:188,223,231` with the skip named in the Done-report contract at `:242`; the
+v10.5 paragraph and the three-release cap at `skills/help/SKILL.md:101,107`;
+`hooks/lib/__tests__/fusion-prose-metric.test.ts` at 162 lines and 9 cases; and the growth-bound
+record closed in `4a58be1`. Head-room re-summed with each bound's own collector: `agents/*.md`
+**16 601** bytes, `skills/*/SKILL.md` **4 661**, hook tests **302** lines, always-on rule core
+**3 509** bytes unchanged. The four baseline maps re-extracted from `370bfc5` and from the tree and
+diffed: `AGENT_BASELINE` 413 bytes, `SKILL_BASELINE` 389, `TEST_LINE_BASELINE` 1 554,
+`RULE_BASELINE` 1 042, all four identical. `cd hooks && npm test` — exit 0, 41 files, 724 tests.
+
+*The fifth criterion is the only one left, and it is not the reconciler's.* "The Circle's closure
+note states, per surface, what was cut and what the head-room measured before and after" is the
+orchestrator's at Phase 4. The figures it needs are in
+`shared/history/260822-1540-coder-c0-step-9-closure-measurement.md`. Two things the note has to
+carry that the acceptance criterion does not name: stopping clause 5 is answered **no** by 206 bytes
+and 49 lines, re-derived here per commit and matching the closure measurement exactly; and there is
+no Circle record for C0 to hold the note, filed as
+`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
+
+*The two pending user decisions are still pending.* Both `260822-1136` records carry `_o_`, neither
+has an `Answered:` line, and neither blocks anything before C2 and C3 respectively, exactly as
+`## User decisions pending` states.

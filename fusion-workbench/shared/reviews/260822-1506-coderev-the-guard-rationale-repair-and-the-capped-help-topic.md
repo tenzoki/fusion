@@ -299,3 +299,23 @@ range measured, it measured correctly. Where it summarised a document, twice, it
 - Carried-scope defect: `shared/issues/260822-1510_o_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
 - Plan: `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 - Filed by this review: eight records under `shared/issues/`, all stamped `260822-1506`
+
+---
+
+**Reconciliation 260822-1556 (reconciler, HEAD `9f65463`).** Findings only; no finding text changed.
+Of the eight findings, four were repaired in `77b9a02` and their records are closed — the declined
+second-order cut, the standing line's three unresolving claims about `docs/`, the second silent
+action, and Setup's sentence ending in a colon; each was re-checked at its site
+(`skills/setup/SKILL.md:30,362`, `skills/next/SKILL.md:31`, `skills/help/SKILL.md:107`). Four
+records this review filed are still open and correctly so: the bare em-dash counted as a prose word,
+the two header limits the prose-metric test does not pin, the v9 note's preamble, and the two C0
+stopping clauses that cannot both be answered yes. That last one was measured again at the closure:
+the clause fails by 206 bytes and 49 lines, not by the 50 bytes the record names, and the figure was
+re-derived per commit at this pass and matches.
+
+**One thing this review's range could not cover.** `bin/fusion-review-coverage --since 370bfc5`
+returns `verdict=uncovered` with three commits open: `c600eb7` and `9f65463` touch workbench records
+only, and `77b9a02` touches three shipped skill bodies. So the last shipped-text commit of the
+Circle carries no review. Closing over an uncovered range is permitted
+(`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+option 1), and this note records which commit it is so the closure gate is not reading a bare count.

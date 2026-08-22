@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner
-**Cross-references:** `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` `## Current State` (the arithmetic below); `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md` `### C0` (the acceptance criterion that permits the re-baseline); `shared/decisions/260822-1102_a_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` (the user rejected declaring a third re-baselining moment); `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` (the authoring home of the two events)
+**Cross-references:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` `## Current State` (the arithmetic below); `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md` `### C0` (the acceptance criterion that permits the re-baseline); `shared/decisions/260822-1102_a_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` (the user rejected declaring a third re-baselining moment); `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` (the authoring home of the two events)
 
 ---
 
@@ -47,3 +47,16 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at
+`_o_`. C0 acted on the recommendation without the question being answered, which is what the record
+predicted.**
+
+The plan proceeded on option 1 and no baseline moved: `AGENT_BASELINE`, `SKILL_BASELINE` and
+`TEST_LINE_BASELINE` in `hooks/lib/__tests__/surface-growth-bound.test.ts` and `RULE_BASELINE` in
+`hooks/lib/__tests__/rules-emission-golden.test.ts` are byte-identical to `370bfc5`, re-extracted by
+the same slice and diffed at this pass (413, 389, 1 554 and 1 042 bytes). `## Re-baselining` in
+`hooks/lib/__tests__/helpers/growth-bound.ts` is also unchanged in the range, so event 1's wording
+still reads the way this record says invites the raise. One Circle's practice is not an answer:
+the record binds the next cut-only Circle and nothing on disk settles it.

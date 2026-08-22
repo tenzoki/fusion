@@ -1,7 +1,7 @@
 # Implementation Plan: C0 — the cut-only Circle that buys head-room on four bounded surfaces
 
 **Date:** 2026-08-22
-**Status:** Draft
+**Status:** Complete
 **Spec:** `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md`, capability `### C0`. C1 through C4 are out of scope here and are not planned.
 **Decidability:** The load-bearing question is whether the required cut exists — 10 362 bytes out of `agents/*.md`, about 4 300 out of `skills/*/SKILL.md` and about 500 lines out of the hook test suite — taken from text that is not load-bearing. The targets are decidable and are pure arithmetic, derived in `## Current State` from the baseline maps and the tree. Whether a cut of that size exists is **not** decidable from what this plan holds: whether a given paragraph carries a mechanism is a judgement about text nobody has yet read with that question in mind, and reading it is the work. The mechanism change is that this plan does not commit to the target on a survey it has not run. Step 1 measures the achievable cut per surface and returns a ledger with a per-candidate verdict; a user gate on that ledger decides whether the Circle proceeds or stops and reports. Two measurements taken while planning bound the risk without removing it: 24 685 bytes of `agents/*.md` and 12 022 bytes of `skills/*/SKILL.md` sit in sentences that appear verbatim in another shipped file, against requirements of 10 362 and 4 300. The hook test suite has no comparable margin — ten duplicated comment lines across 44 files — so it is the surface on which the ledger may fall short, and step 1 reports that surface first.
 
@@ -101,7 +101,7 @@ Two user gates sit inside this Circle and neither is a step, because neither is 
 
 ---
 
-1. **Survey the cut, per surface, and produce the ledger**
+1. [DONE] **Survey the cut, per surface, and produce the ledger**
    - Executor: `analyst`
    - Files: writes one analysis report to `$OUT_ANALYSIS`. Reads `agents/*.md`, `skills/*/SKILL.md`, `hooks/lib/__tests__/**/*.ts`, `rules/*.md`, and the four records named in `## Current State` under "Duplication that is already filed as a defect".
    - Changes: for each of the three surfaces with a target, a ledger of candidate cuts. One row per candidate: the file and line range, the measured bytes or lines it removes, the claim it states, where that claim is authored if it is a restatement, and a verdict of `restatement` (another file already authors it), `superseded` (its subject was removed), or `load-bearing` (it carries a mechanism and stays). A candidate with no authoring home and no reason it is not load-bearing does not enter the ledger. The report also carries a running total per surface against that surface's target, and states first, before anything else, whether the hook test surface clears 500 lines, because that is the surface most likely to fall short.
@@ -111,7 +111,7 @@ Two user gates sit inside this Circle and neither is a step, because neither is 
    - Dependencies: none.
    - Acceptance: the ledger's totals per surface are stated against the targets in `## Current State`; every row carries a verdict and a citation; the report names, per surface, the shortfall if there is one. `npm test` is not run, because this step changes no file the suite reads.
 
-2. **Cut the hook test suite by at least 500 lines**
+2. [DONE] **Cut the hook test suite by at least 500 lines**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/**/*.ts`, `hooks/lib/__tests__/fixtures/surface-growth.golden`
    - Changes: apply the ledger's hook-test rows. The two concentrations step 1 will have measured are the nine per-file walks of `agents/` and `skills/` that duplicate what `helpers/citation-scan.ts` already exports, and the comment mass in the guard-related tests, whose subject has decided nothing since 2026-08-16. Remove no assertion whose subject still exists. Where a comment block is a historical narrative that a workbench record also carries, the cut is permitted only if the record is cited from the file; where the comment is the arming or absolution text `helpers/growth-bound.ts` requires to survive the number moving, it stays. Regenerate the golden with `cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts`, read the diff, then run again without the flag.
@@ -148,14 +148,14 @@ Two user gates sit inside this Circle and neither is a step, because neither is 
    - Dependencies: step 4, and Gate B.
    - Acceptance: `cd hooks && npm test` exits 0. `/fusion:help`'s update topic names v10.5 and points at `docs/upgrading-to-v10-5.md`. The record `shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md` is renamed to closed. The step report states the net byte change for `skills/help/SKILL.md`, which under option 2 is expected to be negative.
 
-7. **Fix defect 3: a test for `bin/fusion-prose-metric`**
+7. [DONE] **Fix defect 3: a test for `bin/fusion-prose-metric`**
    - Executor: `coder`
    - Files: a new file under `hooks/lib/__tests__/`
    - Changes: a test that runs the script and pins the behaviour its own header documents as authoritative — the em-dash count, the word count, and the four regions that are not prose (a fenced code block, an inline code span, a block-quote line, and the subtree of an `examples:` or `anti_examples:` key in a YAML profile). Cover the case the metric was built for: a file whose exhibits of the em-dash fault must not be counted as instances of it. Pin that only `—` U+2014 is counted and `–` is not. Keep the file at or under 200 lines; a longer file spends room the Circle bought for later Circles, and the step report states the line count.
    - Dependencies: step 2. The surface has 12 lines at the Circle's start, so this file cannot land before the cut.
    - Acceptance: `cd hooks && npm test` exits 0. The record `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` is renamed to closed. The hook test surface still holds at least 300 lines of head-room after the file lands.
 
-8. **Fix defect 4: close the record whose stopping criterion could not be met**
+8. [DONE] **Fix defect 4: close the record whose stopping criterion could not be met**
    - Executor: `coder`
    - Files: `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`
    - Changes: verify that the disposition the record asked for was made, then close it. It was: the closure note of `circles/260821-1042-reply-bounded-whole-question-answered/_c_circle.md` states 15 lines of head-room as residual 1 rather than repeating the unmet criterion, and the two attribution blocks were consolidated into one. Append a `Resolved:` note citing that closure note and stating that the figure it quotes is the figure at that closure and not at HEAD. Do not rewrite the closed plan's `## Where this Circle stops`: a closed record is not edited to make a past criterion true.
@@ -163,7 +163,7 @@ Two user gates sit inside this Circle and neither is a step, because neither is 
    - Dependencies: none. No shipped surface is touched, so this step may run at any point.
    - Acceptance: `cd hooks && npm test` exits 0, which here proves only that the record edit broke no citation gate. The record carries a `Resolved:` note and the closed marker, and cites both the closure note and the open decision.
 
-9. **Measure the four surfaces and write the closure figures**
+9. [DONE] **Measure the four surfaces and write the closure figures**
    - Executor: `coder`
    - Files: writes the measurement into the step report and into `$OUT_HISTORY`; the closure note itself is the orchestrator's at Phase 4.
    - Changes: sum each of the four surfaces the way its own test sums it, and state, per surface, what was cut, the head-room before, and the head-room after. Confirm by diff that `AGENT_BASELINE`, `SKILL_BASELINE`, `TEST_LINE_BASELINE` and `RULE_BASELINE` are byte-identical to their state at HEAD `370bfc5`. State the always-on rule core's head-room even though no target was set for it.
@@ -225,6 +225,68 @@ cd hooks && UPDATE_RULES_GOLDEN=1   npx vitest run lib/__tests__/rules-emission-
 
 - [ ] Does a cut-only Circle re-baseline the surfaces it cuts? Filed as `shared/decisions/260822-1154_o_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`. This plan proceeds on "no" and states the arithmetic; the record exists because the answer binds every future cut-only Circle and because the spec's acceptance criteria permit the re-baseline this plan declines.
 - [ ] Does the hook-test line budget cover comment prose? Filed as `shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`. Raised and deliberately unanswered by `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_…` and again by defect 4. It is not answerable inside this Circle: any answer that changes what the surface counts requires the baseline to be recomputed under the new rule, which is neither re-baselining event, and the user rejected declaring a third one.
-- [ ] Which shape does the `/fusion:help` upgrade section take? Gate B, and the three options are stated in `shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`. No second record is filed; that issue holds the options and the reasoning, and duplicating them into a decision record would be the defect this Circle exists to reduce.
-- [ ] Is any cut taken on the always-on rule core, which has 3 509 bytes and no target? This plan proposes none. Cutting there is optional, the surface is the one charged to every dispatch of every agent, and the room is worth more held than spent. Step 1 reports whether a cut is available so the question is answerable at Gate A rather than assumed away.
-- [ ] Is `orchestrator.md` cut beyond restatement? This plan proposes not, and says where the 12 000 bytes come from instead: from the 24 685 bytes of `agents/*.md` that stand in sentences another shipped file also carries, of which `orchestrator.md` is the largest single holder. A deeper cut is available and large, and the arming note in `hooks/lib/__tests__/surface-growth-bound.test.ts` says nothing asks for it. Gate A is where that changes, if it changes.
+- [x] Which shape does the `/fusion:help` upgrade section take? Gate B, and the three options are stated in `shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`. No second record is filed; that issue holds the options and the reasoning, and duplicating them into a decision record would be the defect this Circle exists to reduce.
+- [x] Is any cut taken on the always-on rule core, which has 3 509 bytes and no target? This plan proposes none. Cutting there is optional, the surface is the one charged to every dispatch of every agent, and the room is worth more held than spent. Step 1 reports whether a cut is available so the question is answerable at Gate A rather than assumed away.
+- [x] Is `orchestrator.md` cut beyond restatement? This plan proposes not, and says where the 12 000 bytes come from instead: from the 24 685 bytes of `agents/*.md` that stand in sentences another shipped file also carries, of which `orchestrator.md` is the largest single holder. A deeper cut is available and large, and the arming note in `hooks/lib/__tests__/surface-growth-bound.test.ts` says nothing asks for it. Gate A is where that changes, if it changes.
+
+## Reconciliation Log
+
+**260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — `_o_` → `_c_`, `**Status:** Draft` →
+`Complete`, and steps 1, 2, 7, 8 and 9 marked `[DONE]` to match the tree.**
+
+Four of the nine steps carried an inline `[DONE]` marker and all nine had executed. The five
+unmarked ones are marked here against the commit that landed each, and the plan is closed because
+no step holds remaining work. What is *not* closed by this is the Circle's closure gate: stopping
+clause 5 is answered "no", the record that names it
+(`shared/issues/260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`)
+stays open, and clause 6 asks for a closure note that does not yet exist. Both are the
+orchestrator's and the user's at Phase 4, not a plan step.
+
+| Step | Commit | Verified against the tree |
+|---|---|---|
+| 1 | `aa44a8b` | `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md` exists, carries per-surface totals against the targets, and reports the hook-test surface first. |
+| 2 | `5afb910` | Suite 20 363 → 19 862 lines, a cut of 501. `reference-resolution-lint.test.ts` 1431 → 1014 lines. |
+| 3 | `181dd8a` | `agents/*.md` 416 205 → 401 242 bytes. Fifteen files, per-prompt reductions summing to 14 963. |
+| 4 | `c2ad89c` | `skills/*/SKILL.md` 240 409 → 236 069 bytes, a cut of 4 340 across eight bodies. |
+| 5 | `6781814` | All three Step 0e blocks carry `[ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }` (`skills/setup/SKILL.md:188,223,231`); the Done-report contract names the skip (`:242`); the enumeration head reads "The eight tokens" (`:203`). |
+| 6 | `6781814` | `skills/help/SKILL.md:101` carries the v10.5 paragraph and points at `docs/upgrading-to-v10-5.md`; `:107` caps the section at the last three releases. Net −68 bytes on that body. |
+| 7 | `7c9e3f1` | `hooks/lib/__tests__/fusion-prose-metric.test.ts`, 162 lines, 9 cases, under the plan's 200-line cap. |
+| 8 | `4a58be1` | The record moved `_o_` → `_c_` in that commit and carries the prescribed `Resolved:` note. See the correction below. |
+| 9 | `9f65463` | `shared/history/260822-1540-coder-c0-step-9-closure-measurement.md`, 285 lines, four surfaces measured with the command that produced each. |
+
+**The step-9 figures were re-measured here rather than read.** Summing each baseline map over the
+files present and comparing against the tree with the collectors each bound uses gives head-room of
+**16 601 bytes** on `agents/*.md`, **4 661 bytes** on `skills/*/SKILL.md` and **302 lines** on the
+hook test suite — the three figures the closure measurement reports, to the byte and to the line.
+The four baseline maps were re-extracted from `370bfc5` and from the working tree by the same slice
+and diffed: `AGENT_BASELINE` 17 lines / 413 bytes, `SKILL_BASELINE` 14 / 389, `TEST_LINE_BASELINE`
+41 / 1 554, `RULE_BASELINE` 17 / 1 042, all four identical. `cd hooks && npm test` — exit 0, 41
+files, 724 tests.
+
+**Clause 5's "no" was re-derived and stands at exactly the figure reported.** Per-commit surface
+totals give `skills/*/SKILL.md` +50 bytes at `620e737` and +156 at `77b9a02` (both review-finding
+repairs), and the hook test suite +41 lines at `181dd8a` and +8 at `c2ad89c` (both pin re-approval
+attributions the cuts required in the same commit). **206 bytes and 49 lines**, none of it a
+feature, every surface net negative across the range.
+
+**One step-3 figure is stated two ways across three records, and this plan is not the place it is
+fixed.** The relocation into `rules/review-contract.md` is 8 894 bytes in the step-3 history and in
+the decision record, and the closure measurement assigns the whole 9 504 that `coderev.md` and
+`ontorev.md` gave back to that one destination. The difference is 610 bytes — 305 in each of the two
+reviewer prompts — which belongs to the five-claim cut, not to the relocation. Filed as
+`shared/issues/260822-1556_*_the-closure-measurement-assigns-610-bytes-of-the-five-claim-cut-to-the-reviewer-contract-relocation.md`.
+
+**Step 8's premise, corrected.** `shared/issues/260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
+states that the target record was already `_c_` at HEAD `370bfc5`. It was `_o_` at `370bfc5`
+(`git ls-tree 370bfc5`) and became `_c_` in `4a58be1`, which is step 8 itself running. The analyst
+observed the effect of the step and dated it to the session anchor. That record is closed with the
+correction, and the anchor error it came from is filed as
+`shared/issues/260822-1556_*_the-cut-ledger-states-a-head-anchor-two-commits-behind-where-it-ran.md`.
+
+**The five open questions, three of them ticked above.** The `/fusion:help` shape was answered at
+Gate B (option 2, cap at the last three releases; `skills/help/SKILL.md:107`). No cut was taken on
+the always-on rule core: it stands at 3 509 bytes of head-room at both ends of the range, and the
+five files in the intersection are unchanged. `orchestrator.md` was not cut beyond restatement — it
+gave back 496 bytes at `181dd8a`, the same figure as five other prompts, against the 10 948 of
+growth it carries. The two that stay unticked are filed decisions and are still `_o_`; neither was
+answerable inside this Circle and neither blocked it.

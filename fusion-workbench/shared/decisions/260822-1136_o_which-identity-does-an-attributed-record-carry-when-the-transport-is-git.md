@@ -44,3 +44,12 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+**Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at
+`_o_`. No answer exists on disk.**
+
+No record template gained a person field in `370bfc5..9f65463`: the decision-record template in
+`rules/fusion-workbench-conventions.md` `## Decision Record Template` is unchanged in the range, and
+`$USER` still appears only in the memo store's filenames. Correctly open; the spec states it is due
+at C3's planning gate and C3 has not started.

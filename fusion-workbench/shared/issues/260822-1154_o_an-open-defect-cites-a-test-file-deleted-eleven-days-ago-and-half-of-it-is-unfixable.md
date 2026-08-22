@@ -20,7 +20,7 @@ Part 2 still stands. `hooks/lib/__tests__/executor-verification-report-lint.test
 
 The record is open, so it is read as live work. A queue built from the open issues offers it as a task; an executor that picks it up spends a dispatch establishing that its main subject is gone. That is the cost of a stale record rather than of the defect it describes.
 
-It also sits in the corpus a cut-only Circle has to survey. Plan `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 1 reads the open defects that name duplication in the hook test suite in order to build its cut ledger, and this is one of them. A ledger row derived from a deleted file is a cut that cannot be made.
+It also sits in the corpus a cut-only Circle has to survey. Plan `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 1 reads the open defects that name duplication in the hook test suite in order to build its cut ledger, and this is one of them. A ledger row derived from a deleted file is a cut that cannot be made.
 
 **The class, not the instance.** Nothing walks the `**Affects:**` lines of open records against the tree. `hooks/lib/__tests__/workbench-citation-lint.test.ts` recomputes its corpus from the tree on every run and does resolve workbench citations, so a token pointing at a deleted path should in principle redden the suite; it did not here, which is worth establishing before this record is closed. Either the citation form in that `**Affects:**` line is outside the gate's predicates, or the gate's corpus does not reach `shared/issues/`. Whichever it is, it is a second finding and belongs in its own record once measured.
 
@@ -34,4 +34,4 @@ It also sits in the corpus a cut-only Circle has to survey. Plan `shared/plannin
 **Filed by:** planner, while surveying the hook test suite for C0's cut ledger
 **Affects:** `shared/issues/260810-0510_o_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 **Verified at HEAD `370bfc5`** by listing `hooks/lib/__tests__/`, by `git log --diff-filter=D` on the named path, and by confirming that `executor-verification-report-lint.test.ts` is present at 218 lines.
-**Cross-references:** `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 1, which reads that record as ledger input.
+**Cross-references:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 1, which reads that record as ledger input.

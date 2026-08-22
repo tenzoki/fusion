@@ -47,3 +47,16 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at
+`_o_`. Unanswered, and the pressure it named is measurably lower rather than gone.**
+
+Nothing in `370bfc5..9f65463` changes what the surface counts: the collector in
+`hooks/lib/__tests__/surface-growth-bound.test.ts` is still a recursive walk of
+`hooks/lib/__tests__/**/*.ts` counting newlines, with `fixtures/` the only exclusion, and
+`TEST_LINE_BASELINE` did not move. What did move is the room: 12 lines of head-room at the session
+anchor, 302 at HEAD. The Circle also produced the case the record is about in miniature — 49 of the
+lines that came back onto the surface are pin re-approval attributions, comment prose the cuts
+themselves required. Correctly open; the record says why it is not answerable inside a Circle that
+may not move a baseline.

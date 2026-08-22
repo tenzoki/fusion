@@ -45,3 +45,13 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+**Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at
+`_o_`. No answer exists on disk.**
+
+Searched `shared/analyses/` (nineteen reports), `shared/planning/` (six specs and plans) and every
+record in `shared/decisions/` for a merge-driver, union-append or two-writer answer: nothing states
+one. `.gitattributes` does not exist at the repository root, so no merge driver is configured, and
+`orchestrator-events.jsonl` is still an ordinary tracked text file that git will conflict on.
+Correctly open; it blocks the close of C2 and C2 has not started.

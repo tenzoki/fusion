@@ -2,7 +2,7 @@ Two of the C0 plan's stopping clauses cannot both be answered yes for a repair t
 
 ---
 
-`shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 `## Where this Circle stops` carries these two clauses back to back (`:180` and `:181`):
 
 > - Every cut that landed carries, in the ledger or in its step report, either a named authoring home
@@ -47,12 +47,12 @@ not that the Circle overspent.
 `shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Low.
-**Affects:** `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md:180-181`.
+**Affects:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md:180-181`.
 **Filed in the shared store:** no Circle is active.
 **Cross-references:**
 `shared/issues/260822-1421_c_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
 (the repair the tension is about);
-`shared/issues/260822-1228_o_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
+`shared/issues/260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
 (a different defect in the same plan, already open).
 
 **The fix.** Widen clause `:181`'s enumeration by one category rather than raising a number: *"beyond

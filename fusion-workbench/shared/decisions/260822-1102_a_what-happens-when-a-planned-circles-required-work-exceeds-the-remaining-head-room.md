@@ -88,3 +88,20 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker held at `_a_`.
+The answer's own stated test is met; the transition to `_i_` was considered and not taken.**
+
+*What the tree shows.* Option 1's test was "it has produced enough room when those four defects can
+be fixed". All four carry `_c_` and each fix was verified at its own site rather than from its note.
+Head-room summed with each bound's own collector: `agents/*.md` 16 601 bytes, `skills/*/SKILL.md`
+4 661, hook tests 302 lines, always-on rule core 3 509 unchanged. The four baseline maps are
+byte-identical to `370bfc5` by diff, so the room was cut rather than absolved, which is the property
+the user bought by rejecting options 2 and 3. Range `370bfc5..9f65463`, twelve commits.
+
+*Why the marker does not move.* `_i_` is terminal, and the answer has a second half the tree cannot
+yet show: "the multi-user rebuild starts against the room that Circle produces". C1 has not started,
+and nothing in the range touches a record template, `.gitignore` or the event log. Renaming now
+would assert a realisation that is half on disk. The transition belongs to whoever opens C1 against
+this room; the citation is ready and is the range above.

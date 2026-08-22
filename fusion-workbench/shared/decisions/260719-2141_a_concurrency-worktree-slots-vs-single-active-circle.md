@@ -67,3 +67,27 @@ class once would settle both; deciding them one at a time will not stop a third 
 **What binds a deep change.** Nothing in fusion may assume two orchestrators can run safely against
 one workbench. `agentstate.yaml`, `.active-circle` and `orchestrator-events.jsonl` are all
 root-anchored single-writer state, and the only guard is a warning the user may ignore.
+
+---
+**Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at
+`_a_`, and this record now stands against a Directive it forbids.**
+
+*What changed around it.* `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
+was written and approved by the user on 2026-08-22 and specifies exactly the arrangement this
+record's Option 2 sketched and its Option 3 refused: several checkouts, git as transport, true
+parallelism. The spec's C1 names the supersession of this record as its own work
+(`### C1: The isolation the whole arrangement rests on is verified, and the blocking decision is
+superseded`), and the orchestrator recorded at `## Phase 0 — scope resolution` that the supersession
+is written after the spec is agreed rather than before it, so an answer nobody had stated would not
+be recorded first.
+
+*What did not change.* The spec is agreed and the supersession has not been written. No
+`Superseded by:` line stands here, the marker is still `_a_`, and this record is therefore still
+active Grounding: a scan filtering `_o_` + `_a_` picks it up, and what it says is that nothing in
+fusion may assume two orchestrators can run safely against one workbench. Nothing in
+`370bfc5..9f65463` contradicts it in code — the whole range is a cut — so the tension is between
+this record and the stated Directive, not between this record and the tree.
+
+*What would discharge it.* C1 verifying that N checkouts produce N isolated workbenches, then a new
+decision recording the reframed answer, then `Superseded by:` here and `_a_` → `_s_`. Until then a
+reader of this record is reading the rule that is still in force.
