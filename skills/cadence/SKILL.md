@@ -31,8 +31,6 @@ Read `WORKBENCH` (absolute), `OUT_MEMO` (where the report goes) and `SCAN_HISTOR
 On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
 - **Exit 1** — no workbench above `pwd`. Tell the user to run `/fusion:setup` at the project root first.
-- **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Tell the user to fix or delete the pointer before continuing.
-- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug.
 
 ### 1. Get the date and the user
 

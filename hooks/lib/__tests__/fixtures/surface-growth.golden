@@ -31,18 +31,18 @@
 
 [skills bytes]
   archive/SKILL.md 24854
-  cadence/SKILL.md 17560
-  cleanup/SKILL.md 23999
+  cadence/SKILL.md 17244
+  cleanup/SKILL.md 23544
   commit/SKILL.md 6233
-  curate/SKILL.md 12797
-  direct/SKILL.md 11012
-  help/SKILL.md 17400
+  curate/SKILL.md 12467
+  direct/SKILL.md 10682
+  help/SKILL.md 16932
   log-activity/SKILL.md 13564
-  memo/SKILL.md 12560
+  memo/SKILL.md 12244
   migrate/SKILL.md 26630
-  next/SKILL.md 27030
-  setup/SKILL.md 46770
-  total 240409
+  next/SKILL.md 25947
+  setup/SKILL.md 45728
+  total 236069
 
 [hook-tests lines]
   commit-message-path.test.ts 354
@@ -78,7 +78,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 520
-  reference-resolution-lint.test.ts 1022
+  reference-resolution-lint.test.ts 1030
   review-coverage-mandate.test.ts 354
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1165
@@ -89,4 +89,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 523
   workbench-citation-lint.test.ts 347
-  total 19903
+  total 19911

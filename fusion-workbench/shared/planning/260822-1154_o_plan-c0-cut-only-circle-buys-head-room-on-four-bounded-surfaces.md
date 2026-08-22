@@ -126,7 +126,7 @@ Two user gates sit inside this Circle and neither is a step, because neither is 
    - Dependencies: step 2. Cutting before the hook tests are cut risks the attribution block reddening the hook-test bound, which has 12 lines at the Circle's start.
    - Acceptance: `cd hooks && npm test` exits 0. `agents/*.md` has at least 12 000 bytes of head-room, measured by summing `AGENT_BASELINE` over the files present, adding 18 000 and subtracting the tree's total. `AGENT_BASELINE` is unchanged. The step report states, per prompt file, the bytes removed and the authoring home each removed claim now cites.
 
-4. **Cut `skills/*/SKILL.md` by at least 4 300 bytes**
+4. [DONE] **Cut `skills/*/SKILL.md` by at least 4 300 bytes**
    - Executor: `coder`
    - Files: `skills/*/SKILL.md`, `hooks/lib/__tests__/reference-resolution-lint.test.ts` (pin and attribution only), `hooks/lib/__tests__/fixtures/surface-growth.golden`
    - Changes: apply the ledger's `skills/` rows. The three already-filed instances are the first candidates: the `agentstate.yaml` domain-capture one-liner in four bodies, the byte-identical bracket-marker probe in three places, and the `bin/fusion-source-root` resolution block in four bodies. Each of those three records names a fix direction; take the one that gives the claim a single authoring home, and close the record in the same step where the fix discharges it. Where a body must keep an executable block because it is pasted into a shell, keep the block and cut the prose around it that another body also carries.

@@ -28,7 +28,7 @@ Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`.
 
 **`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` citation resolves from `/`, finding nothing and saying nothing about why. The check is this print, once, rather than a test at each site. When it prints `UNRESOLVED`, say so in the briefing, name the step that could not open the file it cites, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a section you could not open. That is `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs* applied to a held root: nothing is read through a value that came back empty, and the run names the value instead.
 
-**Why the branch, and why it is a call.** `bin/fusion-source-root` owns the criterion; its own header states it in full and this file does not restate it. In one line: `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session, and inside the fusion plugin's own source repository that is the wrong copy, because `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose. Four executable copies of that criterion used to live across this file and `$FUSION_SRC/skills/setup/SKILL.md`, and a correction to one of them reached two and left two standing — repeated prose drifts in meaning, repeated shell drifts in behaviour (decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper…` under `$SCAN_DECISIONS`, option 1).
+**Why the branch, and why it is a call:** `bin/fusion-source-root`'s own header.
 
 **The `[ -x ]` guard is the one the orchestrator's Setup carries around every `bin/` helper**, for the same reason: a helper added to the plugin's work tree between releases is simply absent from an older install, and a bare call is exit 127 at this skill's own first step. The absent branch falls to `$FUSION_PLUGIN_ROOT`, which is the behaviour that preceded the helper, and says so on stderr rather than resolving in silence. An unset `FUSION_PLUGIN_ROOT` does not fall anywhere, because there is nothing to fall to, and it is the branch that prints `UNRESOLVED`.
 
@@ -55,10 +55,6 @@ Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is a
   > *No fusion workbench found above `$(pwd)`. Run `/fusion:setup` once at the project root first.*
 
   Exit cleanly. Do NOT bootstrap a workbench from here — `/fusion:setup` is the single point of workbench creation.
-
-- **Exit 3** — `.active-circle` is orphaned or corrupt. The workbench state is inconsistent. Report the resolver's stderr message verbatim and tell the user to fix or delete the pointer. Do not proceed.
-
-- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and stop.
 
 `CIRCLE` is emitted only when a Circle is active. Its presence or absence is how this skill tells the two states apart — do not read `.active-circle` yourself to decide.
 

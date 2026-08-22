@@ -25,8 +25,6 @@ Read `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` from the output. `$WORKBENCH/$OUT
 On a non-zero exit, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
 - **Exit 1** — no workbench above `pwd`. Tell the user to run `/fusion:setup` at the project root first.
-- **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Tell the user to fix or delete the pointer before continuing.
-- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug.
 
 **Why `memo`, and why exactly these two keys:** `fusion-paths` takes the name of the consumer asking, and a skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill's key set is read from this file, so both write keys are emitted because this file names them. Both are unconditionally shared — neither a memo nor an idea arises from executing a Directive, so neither can belong to a Circle (Origin Rule) — so both stores are right whichever agent, or none, is actually running. **No read key is emitted, deliberately:** this skill files, and it never lists, re-reads or consolidates the backlog. Consolidating is the playmaker's job, and a run here that set out to do it has no resolved path to read from.
 

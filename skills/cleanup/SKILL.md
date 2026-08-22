@@ -26,7 +26,7 @@ fi
 echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
-`bin/fusion-source-root` owns the criterion and its header states it in full; this file does not restate it. In one line: `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session, and inside the fusion plugin's own source repository that is the wrong copy, because `bin/fusion-rules` and `bin/fusion-paths` read the work tree there on purpose. The `[ -x ]` guard is the one every prompt-called `bin/` helper carries: a helper added between releases is absent from an older install and a bare call is exit 127.
+**Why the branch, and why it is a call:** `bin/fusion-source-root`'s own header.
 
 **`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` citation resolves from `/`, finding nothing and saying nothing about why. Three steps here are behaviour rather than reading and would fail silently: Step 3 reads the domain cascade's one authoring home, and Steps 4–6 read three other skill bodies to execute their procedures inline. When it prints `UNRESOLVED`, stop before those steps, name them in the final report, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a procedure you could not open.
 

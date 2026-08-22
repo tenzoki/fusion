@@ -28,7 +28,7 @@ fi
 echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
-`bin/fusion-source-root` owns the criterion and its header states it in full; this file does not restate it. In one line: `$FUSION_PLUGIN_ROOT` names the installed copy and is pinned for the whole session, and inside the fusion plugin's own source repository that is the wrong copy, so an answer given from the install would describe a version of the docs the reader is not editing. The `[ -x ]` guard is the one every prompt-called `bin/` helper carries: a helper added between releases is absent from an older install and a bare call is exit 127.
+**Why the branch, and why it is a call:** `bin/fusion-source-root`'s own header.
 
 **`UNRESOLVED` is not a path, and no topic below is answered through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` read resolves from `/`, finding nothing. Say so plainly, tell the user to restart the session so the SessionStart hook exports the variable, and answer only from what you can actually open. **Never** paraphrase a shipped doc you could not read — this skill's whole value is that it quotes the source rather than the model's memory of it.
 

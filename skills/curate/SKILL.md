@@ -23,10 +23,6 @@ Hold the emitted values (`WORKBENCH`, `OUT_HISTORY`). `$WORKBENCH` is absolute; 
 
 - **Exit 1** — no workbench above `pwd`. Halt, telling the user that no fusion workbench was found above the current directory and that `/fusion:setup` has to run once at the project root. Exit cleanly. Do NOT bootstrap a workbench from here — `/fusion:setup` is the single point of workbench creation.
 
-- **Exit 3** — `.active-circle` is orphaned or corrupt. Report the resolver's stderr verbatim and tell the user to fix or delete the pointer. Do not proceed.
-
-- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and stop.
-
 `CIRCLE` is emitted only when a Circle is active. Nothing in this skill branches on it: the curator resolves its own write targets at its own Setup, and the run file lands in the Circle's store or in the shared one exactly as that resolution decides. Both cases are ordinary.
 
 ## Step 2 — Dispatch the curator to survey

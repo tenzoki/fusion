@@ -26,10 +26,6 @@ Hold the emitted values. On a non-zero exit, read the code — it says whose fau
 
   Exit cleanly. Do NOT bootstrap a workbench from here — `/fusion:setup` is the single point of workbench creation. (Creating the Circle store in Step 2 is a different scope: it adds one missing subdirectory inside an existing workbench, not a new workbench.)
 
-- **Exit 3** — `.active-circle` is orphaned or corrupt. Report the resolver's stderr verbatim and tell the user to fix or delete the pointer. Do not proceed.
-
-- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug and stop.
-
 Then:
 
 - **No draft argument provided**: halt with:

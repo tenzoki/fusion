@@ -502,7 +502,15 @@ function scanHeadingAnchors(
 // `## Voice profiles` and `## Style anti-patterns apply to everything`, eight prompts lost the
 // `## Effort estimates` bullet. records is +1, the new rule file's provenance line. paths is a
 // net across the prompts, the rule file, the emission helper and README-agents.md, not split.
-const BASELINE = { paths: 1277, anchors: 171, records: 117 };
+// Re-approved 2026-08-22 for step 4 of the C0 cut, ONE block for the whole step: paths 1277 ->
+// 1269, anchors unmoved, records 117 -> 115. Two restatement rows left the skill bodies. Row S1
+// replaced the source-root "Why the branch" paragraph in setup, next, cleanup and help with a
+// citation of `bin/fusion-source-root`'s own header, which authors that criterion; the four
+// paragraphs together carried three `bin/…` spellings and a `$FUSION_SRC/skills/…` one that the
+// pointer does not, hence -8, and two of them cited decision `260810-2145`, hence -2 records.
+// Row S2 removed the Exit 3 and Exit 4 bullets from six bodies, whose authoring home is already
+// cited in the sentence above them; those bullets name no path, so they move nothing here.
+const BASELINE = { paths: 1269, anchors: 171, records: 115 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
