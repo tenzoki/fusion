@@ -69,3 +69,71 @@ A third option this record does not price: state the caps' identity instead of t
 so nothing has to be found. That reverses the cut `5ed284d` made and needs the reasoning in
 `shared/issues/260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 read first, because a copied number is what that record is about.
+
+---
+**Resolved 260822-0200** (ontocoder). **The anchor is restored in C04 and stays out of C05.** All
+four copies, net negative on each file.
+
+**What changed.** C04's deferral now names the section:
+
+```
+en:  stated in user-facing-output.md under "## Length" and are not restated here.
+de:  stehen in user-facing-output.md unter "## Length" und werden hier nicht wiederholt.
+```
+
+Not the form this record priced (`, section "## Length",` / `, Abschnitt "## Length",`, 22 and 24
+bytes). `under` / `unter` says the same thing in 18 bytes in both languages and reads as one clause
+rather than as a parenthesis. C05 is untouched, and the bare-filename spelling `dbf259a` introduced
+stands in both entries: only the section name came back.
+
+**Why restored.** This record's separation of the two removals holds. The argument that survived
+`dbf259a`'s three reasons is that the rule is one of the five always-on files, emitted to every
+agent ahead of the profile, so its reader holds it whole. That answers **reachability**: nobody has
+to fetch the file. C04's clause is not a reachability pointer, it is a **location** pointer, and
+holding 20 142 bytes under nine `##` headings in context is not knowing which of them carries a
+line cap. `## Length` (`rules/user-facing-output.md:99`) names it in nine bytes. C05's anchor was
+character-for-character C05's own `name:` field and carried nothing either way, which is why the
+same commit was right about it.
+
+**The second reason does not distinguish, and this closure does not lean on it.** An anchor is a
+token no gate here reads and a heading rename breaks in silence. Both halves are equally true of
+the filename `dbf259a` kept: `surface()` in
+`hooks/lib/__tests__/reference-resolution-lint.test.ts` walks no `.yaml`, and
+`hooks/lib/__tests__/workbench-citation-lint.test.ts:111-115` puts `stilwerk/` outside its corpus.
+A property shared by what was removed and what was kept cannot be the reason for removing one. What
+it does establish is that this restoration adds one more unchecked heading citation to a class
+already open as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0250_o_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md`,
+and the trade is taken deliberately: `## Length` is a one-word heading on a file this project edits
+often and renames rarely, against a pointer that is the whole content of the clause.
+
+**The third route in this record was not taken.** Stating the caps' identity instead of their
+location reverses `5ed284d` and copies a number into a second place, which is exactly the defect
+`shared/issues/260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
+is about. Naming the section keeps one copy of the number and points at it.
+
+**Bytes, `wc -c` against HEAD `53ff99f`.** This record's share is +18 in each of the four files.
+It is paid inside C04's own text by the sentence
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0122_c_c04s-name-covers-three-of-its-four-sentences-and-the-fourth-belongs-to-c01.md`
+moved out, so nothing was cut to afford it and no worked example was touched.
+
+```
+stilwerk/chat-voice-en.yaml                    6751 -> 6743    −8
+fusion-workbench/stilwerk/chat-voice-en.yaml   6751 -> 6743    −8
+stilwerk/chat-voice-de.yaml                    7316 -> 7306   −10
+fusion-workbench/stilwerk/chat-voice-de.yaml   7316 -> 7306   −10
+
+C04:  en −41 = −59 (moved sentence) + 18 (this anchor)
+      de −53 = −65 (moved sentence) − 6 (reflow) + 18 (this anchor)
+```
+
+**One earlier record's reasoning is reversed, and it is annotated rather than rewritten.**
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_c_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`
+carries a `Resolved:` note that argued both anchors away together and verified that no `"##` token
+survived in either profile. One does now. That record gains a `Revised by:` line and keeps its
+`_c_` marker and its original note, per `rules/fusion-workbench-conventions.md`
+`## Inline State Tracking`.
+
+**Verified.** All four parse (`ruby -ryaml`), both plugin/workbench pairs are byte-identical
+(`diff -q`), `rules/user-facing-output.md` was not touched, and `## Length` still stands at
+`rules/user-facing-output.md:99`.

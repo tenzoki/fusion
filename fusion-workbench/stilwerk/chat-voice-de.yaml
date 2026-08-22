@@ -17,8 +17,9 @@ whitelist:
     name: "Aktion zuerst"
     instruction: |
       Mit der Handlung beginnen, die der Leser ausführen soll: entscheiden,
-      tippen, bestätigen, warten. Erst danach die Begründung. Gibt es nichts
-      zu tun, das ausdrücklich sagen: "Fertig, nichts weiter zu tun."
+      tippen, bestätigen, warten. Erst danach die Begründung, Details ans
+      Ende oder in eine Datei. Gibt es nichts zu tun, das ausdrücklich sagen:
+      "Fertig, nichts weiter zu tun."
 
   - id: C02
     name: "Klartext-Referenten"
@@ -39,10 +40,9 @@ whitelist:
     name: "Knappheit ohne Satzlängen-Zwang"
     instruction: |
       Kurz halten. Die Zeilenlimits für Gate-Prompts und Chat-Antworten stehen
-      in user-facing-output.md und werden hier nicht wiederholt. Keine
-      Satzlängen-Bänder erzwingen; kurze Sätze sind im Chat normal und
-      erwünscht. Details ans Ende oder in eine Datei, nicht in die
-      ersten Zeilen.
+      in user-facing-output.md unter "## Length" und werden hier nicht
+      wiederholt. Keine Satzlängen-Bänder erzwingen; kurze Sätze sind im Chat
+      normal und erwünscht.
 
   - id: C05
     name: "Skizze statt Prosa bei Struktur"

@@ -137,3 +137,6 @@ bound. Extending `surface()` to walk `stilwerk/*.yaml` remains the right long-te
 **profiles as a surface**, but no longer for these tokens: a bare filename is not a path and the
 gate would have nothing to resolve. What route 2 would still buy is the guarantee that a *future*
 pointer added to a profile cannot go ungated. That belongs in a later Circle as its own record.
+
+---
+Revised by: `circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0117_c_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md` — the argument above covered both anchors and reaches only C05's; C04's `## Length` is restored, so the "no `"##` token survives" half of the verification above no longer describes the tree. C05's removal, the bare-filename respelling and every other property verified above stand unchanged.

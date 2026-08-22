@@ -69,3 +69,69 @@ Three routes, and this record does not choose between them.
 
 Route 1 is the cheapest and the only one that costs nothing. This record does not decide it,
 because C01's own budget and the residency premise of `260821-2201` both bear on it.
+
+---
+**Resolved 260822-0200** (ontocoder). **Route 1: the placement sentence moved to C01.** All four
+copies, net negative on each file.
+
+**What changed.** C04's fourth sentence left both profiles and arrived in C01 as the second half
+of its ordering statement:
+
+```
+en  C01: "Reason comes after, details at the end or in a file."
+de  C01: "Erst danach die Begründung, Details ans Ende oder in eine Datei."
+```
+
+C04 is now three sentences and every one of them is terseness: keep it short, the caps are stated
+elsewhere, no sentence-length bands. The name covers the entry.
+
+**Why route 1 and not route 2.** This record's own account of the failure decides it. A reader
+looking for detail placement finds C01 by its name, reads it, and stops. That reader now finds the
+clause. Widening C04's name leaves the same reader in the same place, one entry away from the
+answer, and it costs bytes: `"Action first"` to `"Action first, details last"` is +14 English and
++17 German against a per-file budget that ends at −8 and −10. Paying it would have meant cutting a
+worked example, the trade
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_c_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
+already refused for C06's split.
+
+**C01's own name was not widened, and the move does not reproduce the defect there.** "Action
+first" states the first slot of an ordering and the whole entry is that ordering; the moved
+sentence states its last slot. One subject, one entry. C04's name named a different dimension,
+sentence length, which is why the sentence could not stay in it.
+
+**Route 3 (cut) was available and declined.** `rules/user-facing-output.md:59` states the clause in
+full and is always-on, so an English reader loses nothing by the cut. What is lost is the German
+rendering, which is the reason
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_c_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
+gave for keeping a profile echo after moving an authoring home into the rule.
+
+**One clause did not travel: "not the opening lines" / "nicht in die ersten Zeilen".** In an entry
+named "Action first" the opening is already claimed by the action, so the negation restates the
+entry's own subject. One claim in two formulations is what C06 forbids, and dropping it is the
+same self-correction `260821-2202` made inside C06.
+
+**Bytes, `wc -c` against HEAD `53ff99f`**, whose copies of these four files are the ones `dbf259a`
+left. Both findings of the review were taken in one pass, so
+the four numbers below are the two records' combined effect and each record states its own share.
+
+```
+stilwerk/chat-voice-en.yaml                    6751 -> 6743    −8
+fusion-workbench/stilwerk/chat-voice-en.yaml   6751 -> 6743    −8
+stilwerk/chat-voice-de.yaml                    7316 -> 7306   −10
+fusion-workbench/stilwerk/chat-voice-de.yaml   7316 -> 7306   −10
+
+en:  C01 +33,  C04 −41 (−59 this record's sentence, +18 the anchor of 260822-0117)
+de:  C01 +43,  C04 −53 (−65 text and −6 of reflow, +18 the anchor)
+```
+
+This record's share alone is −26 English (+33 into C01, −59 out of C04) and −28 German. Each of the
+four files is net negative on its own, so the per-file budget in
+`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
+is satisfied without borrowing from the other language or from the always-on corpus, which was not
+touched.
+
+**Verified.** All four parse (`ruby -ryaml`), both plugin/workbench pairs are byte-identical
+(`diff -q`), and line counts are unchanged at 183 English and 186 German. English line *numbering*
+is unchanged throughout, because C01 and C04 each kept their line count. German lines 22 to 45
+shift by one and return to their old numbers at C05, which reaches only this record, `260822-0117`,
+and two review files, all of them outside the citation gate's corpus.

@@ -18,8 +18,8 @@ whitelist:
     name: "Action first"
     instruction: |
       Open with what the reader does: decide, type, confirm, wait. Reason
-      comes after. If there is nothing to do, say so plainly: "Done: nothing
-      for you to do."
+      comes after, details at the end or in a file. If there is nothing to
+      do, say so plainly: "Done: nothing for you to do."
 
   - id: C02
     name: "Name the referent"
@@ -38,9 +38,9 @@ whitelist:
     name: "Terse without sentence-length targets"
     instruction: |
       Keep it short. The line caps for a gate prompt and for a chat reply are
-      stated in user-facing-output.md and are not restated here. Do not enforce
-      sentence-length bands; short sentences are normal and welcome in chat.
-      Details go to the end or to a file, not the opening lines.
+      stated in user-facing-output.md under "## Length" and are not restated
+      here. Do not enforce sentence-length bands; short sentences are normal
+      and welcome in chat.
 
   - id: C05
     name: "Sketch structure instead of narrating it"
