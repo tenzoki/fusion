@@ -112,3 +112,50 @@ recorded)`. An ontorev has the four profile files and the three closed records; 
 measurement report, the two records it filed, the in-place correction to another agent's log, and
 the five commit messages. Their scopes are disjoint by construction and each was told what the
 other holds.
+
+## Turn 2
+
+One task. The plan's marker was owed a move to closed and could not take it: citations across the
+workbench spelled its open marker literally, and some sat inside the corpus the citation gate
+recomputes from the tree on every run, so the rename would have gone red for whoever ran the suite
+next. Repair first, rename second.
+
+Nineteen occurrences, measured fresh rather than taken from the record, which had counted fifteen
+before this session added more. Fourteen were pointers and took the wildcard; two were statements
+about the marker, where starring the letter deletes what the sentence says. The two statements were
+the same sentence in two places and could not be handled alike: one sits in a review, which is
+outside the gate's corpus and stands verbatim, and one sits in an open shared issue, where an inline
+code span buys no exemption. That one became prose naming the marker position without spelling an
+address.
+
+**The verbosity record's marker was deliberately not moved.** Its rule-text half is closed and
+verified; whether a reply actually changed is unobserved, because the after-measurement that would
+answer it is defined and deliberately not run. Closing it would assert something nobody has checked.
+
+Commit `53ff99f`.
+
+## Turn 3
+
+Three of the twelve review findings were worth closing before the Circle does, and they were closed
+by the agents that had written the text in question.
+
+The one the review rated High made an arm of the after-measurement unrunnable: it told a later
+session to restrict the records-per-session count by the unprimed-session list, and those two things
+live in different identifier spaces with no map between them. The analyst dropped the restriction
+rather than inventing the join, on the ground that the restriction is impossible on the before side
+whatever gets built, so a restricted after arm against an unrestrictable before arm is the worse
+comparison. It also corrected two assumptions this orchestrator had written into the dispatch: the
+`history_file` field is not new tonight, appearing from 2026-08-12 on 25 of the 70 before-window
+session starts, and it is not the missing key either, because it names a workbench log rather than a
+transcript. The key that would work is `session_id`, which the PreToolUse hook already receives and
+nothing writes down.
+
+The same class of defect that had been fixed for AI04 and then for C06, an entry name narrower than
+its instruction, turned out to sit on C04 as well. Its fourth sentence moved to C01, whose subject
+it already was, rather than C04's name being widened to cover two subjects.
+
+**One correction the orchestrator owed and made itself.** The fold of the two version-gap records
+carried a note claiming nothing was lost. That was false: the `bin/fusion-rules` half went, and the
+closed record had called it the more consequential of the two. The live record now carries it.
+
+Commits `c964062`, `746ae4d`, `055585f`.

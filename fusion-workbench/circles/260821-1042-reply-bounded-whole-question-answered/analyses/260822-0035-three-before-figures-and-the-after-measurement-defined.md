@@ -289,7 +289,9 @@ T="${TMPDIR:-/tmp}"
 
 PRIMED='260821-1042-reply-bounded|260820-2051-style-rules|user-facing-output|chat-voice|default-voice|stilwerk|fusion-prose-metric|[Ee]m-[Dd]ash|[Gg]edankenstrich|[Aa]ntwortlänge|[Zz]eilen(zahl|limit|obergrenze|kappe)|[Rr]eply.length|line cap|length cap|12 lines|12 Zeilen|[Ss]tilomet|stylometric|[Pp]rosaregister|prose register|[Rr]egister|AI0[0-9]|C0[0-9]'
 
-mkdir -p "$T/conv"
+# cleared, not reused: the grep below globs this directory, so a .txt left by an earlier
+# run keeps voting after its transcript is pruned
+rm -rf "$T/conv"; mkdir -p "$T/conv"
 for f in "$DIR"/*.jsonl; do
   jq -r 'select(.isSidechain != true)
     | if (.type=="user" and .origin.kind=="human") then
@@ -619,7 +621,7 @@ what it needs and twenty is what the Circle should wait for.
 - `fusion-workbench/shared/issues/260822-0035_o_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
   — `bin/fusion-prose-metric` is absent from the installed plugin copy while both trees report
   version 10.4.0, so no orchestrator session can tell from the version string which helpers it has.
-- `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0035_o_the-briefings-contamination-grep-marks-49-of-72-transcripts-primed-because-the-setup-skill-body-names-the-files-it-greps-for.md`
+- `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0035_*_the-briefings-contamination-grep-marks-49-of-72-transcripts-primed-because-the-setup-skill-body-names-the-files-it-greps-for.md`
   — the measurement briefing states a contamination test that excludes the population being
   measured; the corrected test is in section 4 of this report.
 

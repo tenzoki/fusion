@@ -61,3 +61,6 @@ section 6 step 2 names.
 
 **Verified at HEAD `dbf259a`** by reading the pipeline and by running it into a clean `$T/conv`,
 which returned `unprimed=53 primed=19` over 72 conversation files, matching the report.
+
+---
+Resolved: The record's first option, taken as written. Section 4's `mkdir -p "$T/conv"` is now `rm -rf "$T/conv"; mkdir -p "$T/conv"`, carrying a two-line comment saying why the directory is cleared rather than reused. Nothing else in the pipeline moved: `$T` is still `${TMPDIR:-/tmp}`, and section 6 step 2's `"$T/unprimed.list"` path is untouched. No figure changes, and none was re-measured: the defect was in front of the after-run, not behind the published numbers, which the record itself established.

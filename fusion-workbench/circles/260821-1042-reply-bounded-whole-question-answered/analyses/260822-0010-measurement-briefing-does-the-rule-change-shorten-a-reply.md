@@ -49,6 +49,15 @@ directory name, nor `user-facing-output`, nor `chat-voice`, nor the words for re
 either project language. A `grep -l` over the transcript files is the test; write the exact
 pattern into the report so the next run uses the same one.
 
+**Correction, 2026-08-22: that test does not work and must not be run as written.** A `grep -l`
+over a whole transcript file reads the injected `/fusion:setup` skill body too, which names those
+same files, so 49 of 72 transcripts flag themselves for having run Setup. The rule above stands;
+only its mechanical test was wrong. The working test, which narrows the surface to human prompts
+and agent replies first and marks 19 of 72, is written out runnable in section 4 of
+`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`.
+Use that one. It is deliberately not copied here, so that one command does not become two that
+drift.
+
 ## The cut-off
 
 The rules reached their final state in three commits on 2026-08-21:

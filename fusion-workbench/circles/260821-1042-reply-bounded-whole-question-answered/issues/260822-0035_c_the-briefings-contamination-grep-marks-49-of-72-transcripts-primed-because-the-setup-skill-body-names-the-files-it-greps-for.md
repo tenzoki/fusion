@@ -71,3 +71,6 @@ Route 1 is recommended. The briefing was written to be executed, not to be read 
 over the 72 transcript files, by opening three matching transcripts and finding each match
 inside the Step 0d prose of the setup skill body, and by re-running the same pattern over
 the narrowed surface.
+
+---
+Resolved: Route 1, as the smaller half of it. A dated correction note was added to the briefing's `## The contamination rule, stated once` section: it says the test as written does not work, gives the one-clause reason (a whole-file grep reads the injected setup skill body, which names the same files), and points at section 4 of the measurement report for the working test. The corrected command is deliberately **not** copied into the briefing, so that one command does not become two that drift; the note says so. The rule itself, that a primed session may measure history but may not contribute replies, is left as it stood, since that half was never wrong.
