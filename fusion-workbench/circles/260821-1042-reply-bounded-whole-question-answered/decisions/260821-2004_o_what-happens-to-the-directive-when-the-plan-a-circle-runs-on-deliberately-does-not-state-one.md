@@ -92,3 +92,34 @@ Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 Retired: <set when the subject is removed; the marker stays _i_ or _a_>
+
+---
+**Reconciliation 260822-0234** (reconciler, domain `code`, HEAD `05b46f2`). **Marker stays `_o_`,
+and this pass agrees with the orchestrator's decision not to answer it in an unattended run.** The
+searched surfaces are `$SCAN_ANALYSES`, `$SCAN_PLANS` and both decision stores; no answer to the
+question this record puts exists anywhere on disk, so `_o_` is correct rather than stale.
+
+**The recorded reason is sound and its stated ground is imprecise.**
+`fusion-workbench/agentstate.yaml` task T5 gives the reason as: answering would freeze a normative
+answer into a record that goes terminal tonight and is then never editable. The premise applies to
+the *Circle* record, which the `## Constraints` section above names correctly; a decision record
+inside a closed Circle carries no such bar, and nothing in
+`rules/fusion-workbench-conventions.md` `## State Markers — decisions` forbids moving this file's
+marker after its Circle closes.
+
+**The conclusion holds anyway, on a stronger ground the Circle's own Grounding already carries.**
+This record's answer binds every future Circle whose planner writes a plan of this shape, and
+option 1 additionally spends bytes in `rules/circle-records.md`, which sits inside the always-on
+rule set with 3 509 bytes of head-room. The Circle record's `## Grounding snapshot` records the
+precedent directly: `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`
+was filed open, answered by an orchestrator during an unattended run, and **overturned by the user
+on 2026-08-21**. One reversal of exactly this class inside the Grounding of the Circle now asked to
+repeat it is the argument.
+
+**What leaving it open costs, and where the cost is discharged.** `**Active spec/plan:**` in
+`circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md` stays `(none yet)`, so a
+reader of the terminal record cannot see the plan the Circle ran on. Under the rule as written that
+is consistent, because the record's `## Directive` holds prose if and only if that field reads the
+literal `(none yet)`. The mitigation is that the closure note names the plan, and the closure note
+is unwritten at this pass. **If Phase 4 does not name it, the cost is not discharged and this
+record's third option has been taken by default rather than by choice.**

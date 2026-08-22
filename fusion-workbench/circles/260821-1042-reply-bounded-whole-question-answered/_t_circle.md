@@ -194,6 +194,28 @@ Origin Rule:
 
 ## Turn log
 
+Seven Turns across two sessions. The first session's entries are aggregate: it recorded no per-Turn
+commit boundaries at the time, and inventing them now from the log would be a reconstruction dressed
+as a record.
+
+- Turns 1-3 (session 260821-1642): commits `2907907`..`084c626`, 15 in all, beginning with this
+  Circle's own activation. Coherence verdict `review-needed` with a Bounded-Closure recommendation,
+  on the ground that one stopping criterion was unmet and unmeetable. That recommendation was not
+  acted on and is superseded by the second session's verdict. Session history:
+  `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md`
+- Turn 1 (session 260822-0019): commits `e202016`..`63e5ad5`, six. The commissioned measurement, two
+  defect closures, the unreleased-manifest filing, and two reviews returning twelve findings.
+  Coherence gate not run separately; the Turn ended into the review pass.
+- Turn 2 (session 260822-0019): commit `53ff99f`. Nineteen marker-literal citations repaired and the
+  plan closed.
+- Turn 3 (session 260822-0019): commits `c964062`, `746ae4d`, `055585f`. Five of the twelve review
+  findings closed, including the one rated High.
+- Turn 4 (session 260822-0019): commit `05b46f2`. The briefing's broken contamination test warned
+  off, a scratch directory cleared.
+- Final reconciliation (session 260822-0019): verdict `coherent` with residuals named, superseding
+  the first session's Bounded-Closure recommendation. Session history:
+  `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`
+
 ## Activation proposal
 
 **Proposed by playmaker run `260821-1536-playmaker-direct-dispatch`, 260821-1536, domain bias

@@ -77,3 +77,25 @@ This record does not prescribe, because the cheap fix and the correct fix differ
 Not established by this record: whether the id correspondence between the two families was ever
 intended, or is an artefact of the chat profile having been derived from the writing profile. No
 record in the workbench states either, and the profiles carry no note about it.
+
+---
+**Reconciliation 260822-0234** (reconciler, domain `code`, HEAD `05b46f2`). **Confirmed open and
+correctly unfixed; one placement question is raised rather than acted on.**
+
+The record is filed in `shared/`. Its load-bearing half was caused by this Circle's Directive, not
+found beside it. `git log -S'Mechanical enumeration' -- stilwerk/chat-voice-en.yaml` returns exactly
+one commit, `1daf063` (2026-08-21, "AI04 states one test where it had carried two remedies"), which
+is inside `circles/260821-1042-reply-bounded-whole-question-answered` and is the commit that widened
+chat `AI04` from the three-part figure to enumeration generally. The Circle record's own
+`## Grounding snapshot` table lists chat `AI04` before that change as "the mechanical tricolon",
+which is what the writing profile still says. Under the Origin Rule the AI04 divergence belongs in
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/`.
+
+The counter-argument is real and is why nothing was moved: the same record also inventories five
+English name-only divergences (`AI01`, `AI05`, `AI07`, `AI08` and the naming half of `AI04`) that
+predate this Circle and are shared by origin. One record covers a Circle-origin fault and a set of
+pre-existing ones, and splitting it to satisfy a placement rule would cost more than the misplacement
+does. Moving it into a Circle that goes terminal tonight would also bury it.
+
+**Left where it is, with the origin recorded here** so a later reader is not misled into treating
+the divergence as inherited. Nothing in this record's diagnosis or its three routes is affected.

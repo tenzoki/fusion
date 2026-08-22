@@ -1,8 +1,10 @@
 # Orchestrator Session — 260822-0019
 
-**Directive:** (not yet resolved — Setup complete, awaiting the user's scope)
-**Mode:** (not yet resolved)
-**Status:** In progress
+**Directive:** Run the measurement the Circle commissioned but could not execute, then take the
+Circle's remaining open work to closure, so the style overhaul is finished and the next topic can
+start. Given by the user with an instruction to work autonomously for about six hours while away.
+**Mode:** custom
+**Status:** Complete
 
 ## Setup snapshot
 
@@ -139,6 +141,9 @@ Commit `53ff99f`.
 Three of the twelve review findings were worth closing before the Circle does, and they were closed
 by the agents that had written the text in question.
 
+Five of the twelve findings closed in this Turn, not three: the three dispatched below, plus the
+two the analyst closed together in one pass.
+
 The one the review rated High made an arm of the after-measurement unrunnable: it told a later
 session to restrict the records-per-session count by the unprimed-session list, and those two things
 live in different identifier spaces with no map between them. The analyst dropped the restriction
@@ -159,3 +164,84 @@ carried a note claiming nothing was lost. That was false: the `bin/fusion-rules`
 closed record had called it the more consequential of the two. The live record now carries it.
 
 Commits `c964062`, `746ae4d`, `055585f`.
+
+## Turn 4
+
+Two commands in workbench documents, both wrong in the same way: each told a later reader to run
+something that would not do what it said.
+
+The briefing this session was pointed at carries a contamination test for separating primed
+transcripts from unprimed ones. Run as written it marks 49 of 72 as primed, because the setup skill
+body injected into every session names the very files the test searches for, so every session that
+ran Setup flags itself. The briefing now warns against its own test and points at the working one
+rather than carrying a second copy that would drift from it. The second command created a scratch
+directory without clearing it, so a re-run could read an intermediate left behind by an earlier one.
+
+Closing the first record broke three citations that spelled its open marker as a letter. All three
+were repaired in the same pass, before anyone met them.
+
+Commit `05b46f2`.
+
+## What this session got wrong
+
+**A commit message attributes to a log a figure the log never carried.** `e202016` says the log
+defended the growth bound with 18 310 lines; the log said 18 314, and 18 310 is what the coder
+measured on re-running the count. This project never amends a commit, so the record
+`issues/260822-0116_*_commit-e202016s-message-attributes-*` is the correction.
+
+**A closure note claimed nothing was lost in a fold, and something was.** The orchestrator folded
+two independent filings of one defect and asserted completeness. The heavier half went with it, the
+22 unreleased lines of `bin/fusion-rules`, which the closed record had itself called the more
+consequential. Found by review, repaired in Turn 3.
+
+**Two commit hashes were written into this log before they were read.** Turn 3's entry named
+`d3fa0ac` and `9e2d51a`, neither of which exists. Caught and corrected in the same session, but the
+habit is the fault: `rules/critical-stance.md` §3 forbids exactly this, and a hash is the cheapest
+possible thing to check.
+
+**The reconciler corrected the reasoning behind one of this session's own judgements.** The decision
+`260821-2004` was left unanswered on the ground that a terminal record is never edited. That premise
+is about the *Circle* record; a decision record inside a closed Circle carries no such bar, so the
+stated reason was wrong. The conclusion survives on a better ground the Circle's own Grounding
+already carried: a decision of exactly this class, answered by an orchestrator in an unattended run,
+was overturned by the user on 2026-08-21. One reversal of the same class is the argument, and it is
+the argument that should have been given.
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: 6 of 6 plan steps verified against the tree and 5 of 6 stopping criteria hold; 1 drift item — the hook-test growth bound stands at 15 lines of head-room against 21 at anchor `e764637`, which the criterion at `planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` `## Where this Circle stops` forbids; 4 open coderev+ontorev findings of the 12 filed tonight (`shared/issues/260822-0115`, `-0118`, `-0119`, `-0120`), none blocking; 1 uncovered commit touching shipped files (`746ae4d`, `stilwerk/chat-voice-*.yaml`); and the Circle's own record of itself is incomplete at a terminal transition — `## Turn log` empty after seven Turns, and the session log missing commit `05b46f2` (its trailer reads `Turn: 4`), undercounting Turn 3's closures as three where five landed, and still heading itself `**Directive:** (not yet resolved)`.
+- Artifact↔Directive: all 11 commits `084c626..05b46f2` move toward the Directive — `4c7aae6` delivers the commissioned measurement with three before-figures and the after-measurement defined, `53ff99f` closes the plan, and `e202016`/`dce8894`/`dbf259a`/`c964062`/`746ae4d`/`055585f`/`05b46f2` take the Circle's open defects to closure; `c53a903` and `63e5ad5` are the shared defect the briefing asked for and the two reviews, both inside the Directive's own instruction; none is orthogonal and none runs against it.
+- Grounding↔Directive: 24 active decisions consistent (6 in the Circle, 18 in `shared/`), 0 conflicting; the one open Circle decision `260821-2004_o_what-happens-to-the-directive-...` is consistent and deliberately unanswered, and its cost — `**Active spec/plan:**` left at `(none yet)`, so a reader of the terminal record cannot see the plan the Circle ran on — is discharged only if the closure note names the plan.
+
+**Rebalance recommendation:** revise Artifact
+
+**What that means here, and what it does not.** The Directive was reached: the rule corpus now
+bounds a whole reply, requires the answer to address the question put, and names all three register
+habits with their shorter forms, each verified line by line at HEAD. The flag is not on the work. It
+is on the Circle's account of the work, which is fixable tonight and permanent tomorrow, and on one
+stopping criterion the plan wrote in a form nothing could satisfy.
+
+**Which closure marker the unmet criterion earns: `_c_`, not `_b_`.** Bounded Closure means the
+Directive was judged not reachable, and it was reached. Spending `_b_` on a self-imposed budget
+condition is the reading
+`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+rejected as devaluing the marker, and option 1 of that same record — in force since 2026-08-16 —
+already says what to do with a residual of this kind: name it in the closure note. Three things
+belong there: 15 lines of hook-test head-room rather than the criterion as written, the one
+uncovered shipped-file commit `746ae4d`, and the plan's path, since the record's own field cannot
+carry it.
+
+**The smallest set of writes that clears this edge**, none of them a change to Grounding or
+Directive: fill the Circle record's `## Turn log`, add Turn 4 and the two missing Turn-3 closures to
+this file, replace the head's Directive line with the resolved one, and write the closure note with
+the three residuals above. Filed as
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0234_*_the-session-log-stops-one-commit-and-one-turn-short-and-its-head-still-says-the-directive-is-unresolved.md`;
+the empty Turn log is recorded as `Also seen:` on
+`shared/issues/260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`.
+
+Full pass: `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`.

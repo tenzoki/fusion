@@ -81,3 +81,23 @@ remaining lines. The criterion at
 `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 `## Where this Circle stops` is unmet at closure either way, which is what this record asks the
 closure note to say.
+
+---
+**Reconciliation 260822-0234** (reconciler, domain `code`, HEAD `05b46f2`). **Confirmed open, and
+the figure has not moved since the last pass.** Re-measured by summing `TEST_LINE_BASELINE` out of
+`hooks/lib/__tests__/surface-growth-bound.test.ts` over the files present and comparing against the
+tree the way that test does: 20 360 lines against a budget of 20 375, so 15 lines of head-room,
+where HEAD `e764637` had 21. `cd hooks && npm test` exits 0, 40 files and 718 tests.
+
+**Tonight's eleven commits touched no file under `hooks/`**, verified with `git diff --stat
+084c626..HEAD`, so nothing in the 260822-0019 session spent or recovered a line here. The six-line
+gap this record ends on is the same six lines, and the disposition it asks for is unchanged: the
+closure note states 15 lines of head-room rather than repeating the criterion at
+`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+`## Where this Circle stops`.
+
+**This is the single flagged item on the Artifact-to-Grounding edge of tonight's Coherence
+verdict**, recorded in
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`
+`## Coherence`. The record stays open past the Circle's closure by design: what it holds is a
+statement the closure note has to make, and it survives the Circle to say so.

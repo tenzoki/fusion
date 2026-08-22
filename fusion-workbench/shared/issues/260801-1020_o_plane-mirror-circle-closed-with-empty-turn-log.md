@@ -28,3 +28,6 @@ Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `circles/260719-1536-plane-mirror-integration/_c_circle.md:56-58` still carries the anticipation-time placeholder under `## Turn log`, and no backfill or detection step exists. The mirror itself is gone, but the class of defect (a Circle closing over an unwritten Turn log) is not tied to it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Also seen: 260822-0234 by reconciler — `circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md` carries an empty `## Turn log` after two sessions and seven Turns, and is about to go terminal; part 2 of this record's fix (a detectable condition at closure) would have caught it.

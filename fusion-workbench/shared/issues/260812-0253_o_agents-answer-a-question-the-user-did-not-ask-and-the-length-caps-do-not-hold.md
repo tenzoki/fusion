@@ -124,3 +124,25 @@ has been waiting on since it was answered at option 4.
 
 The adjacent record `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`
 was neither read nor touched by this pass, as the Circle's own scope requires.
+
+---
+**Reconciliation 260822-0234** (reconciler, domain `code`, HEAD `05b46f2`; log
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`).
+**STAYS `_o_`, and this pass agrees with the decision taken in Turn 2 of the 260822-0019 session
+not to move it.** The reasoning of the 260821-2349 entry above stands unchanged on the merits, and
+the mechanical bound it named is gone: the two citations that spelled this record's marker
+literally inside the citation gate's corpus were repaired in `53ff99f`, so nothing now blocks the
+rename except the substance. Leaving it open is therefore a judgement rather than a wait.
+
+**One claim in the entry above is now known to be too weak, and the correction matters to whoever
+closes this record.** That entry says re-running the frozen baseline "is what would turn 'the
+clause is written' into 'the reply changed', and it is one command." Running it is one command; the
+result is not yet readable. `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`
+section 7 sets the count the after-measurement needs at **twenty unprimed sessions** before a
+difference means anything, from a measured design effect of 1.56 across sessions, and puts ten
+points of movement at about 110 sessions. The after-measurement is defined there and deliberately
+not run.
+
+So the honest statement of what closing this record would assert has not changed, and the price of
+waiting is now known rather than assumed: twenty unprimed sessions, not one command. The closing
+act remains the user's.

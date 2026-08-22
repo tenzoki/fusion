@@ -279,3 +279,66 @@ citation gate is green after the rename and `cd hooks && npm test` exits 0. Reco
 `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
 whose `Resolved:` note also states that the verbosity record's half was withheld, so this plan's
 `_c_` marker does not assert that the record it names above is closed.
+
+**Reconciliation 260822-0234** (reconciler, domain `code`, HEAD `05b46f2`, session anchor
+`084c626`; two machine-written files modified in the working tree, no record). Log:
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`.
+
+**The closure is earned. `**Status:** Complete`, all six steps `[DONE]`, filename marker `_c_`, and
+the tree agrees with all three.** Re-verified independently rather than inherited from the
+260821-2349 entry above, because eleven commits landed between the two passes.
+
+| Step | Re-verified at HEAD |
+|---|---|
+| 1 | `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md` carries the counting command, the corpus and the frequency distribution |
+| 2 | `rules/user-facing-output.md` `## Length`: the sketch counts like every other line, the session summary carries a 25-line total as well as its 10-line header, a gate is capped at eight lines on whatever surface renders it, and an over-count comes down by cutting rather than by moving material down the same reply |
+| 3 | `rules/user-facing-output.md` `## Information architecture (in this order)` opens with its subject: the reply answers the question that was asked, and what the agent noticed alongside it is filed and named in one line |
+| 4 | AI04 carries the enumeration-for-rhythm habit and C06 the restated-claim habit, each with its shorter form, in all four files; `diff -q` silent on both plugin/workbench pairs |
+| 5 | `rules/user-facing-output.md` 20 144 → 20 142 against `e764637`; `chat-voice-en.yaml` 6 876 → 6 743, `chat-voice-de.yaml` 7 480 → 7 306, each file net negative on its own side |
+| 6 | The measurement note exists, and `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` now adds the three before-figures the baseline did not carry |
+
+**`## Where this Circle stops`: five of six hold, one is unmet and unmeetable.** Measured, not
+carried over.
+
+| # | Criterion | Verdict |
+|---|---|---|
+| 1 | No clause in `## Length` moves material out of a count without moving it out of the reply | **Holds** |
+| 2 | The rule states that a reply answers the question that was put | **Holds** |
+| 3 | Both habits in four profile files, both pairs byte-identical | **Holds** |
+| 4 | `rules/user-facing-output.md` and each profile file net zero or less against `e764637`, recorded with commands | **Holds** |
+| 5 | `npm test` exits 0, and no growth bound stands closer to failing than at `e764637` | **Half unmet** |
+| 6 | The pre-change baseline exists as a re-runnable command with figures | **Holds** |
+
+Criterion 5's first half holds: `cd hooks && npm test` exits 0 at HEAD, 40 files and 718 tests. Its
+second half does not, on one of the four surfaces, and the figure was re-measured rather than
+repeated. Summing each test file's own baseline map and comparing against the current tree the way
+`hooks/lib/__tests__/surface-growth-bound.test.ts` and
+`hooks/lib/__tests__/rules-emission-golden.test.ts` each do:
+
+```
+always-on rule set    95 064 bytes  budget 98 573   3 509 free  (anchor 3 507 — improved by 2)
+agents/*.md          416 205 bytes  budget 417 843  1 638 free  (anchor 1 638 — unchanged)
+skills/*/SKILL.md    240 409 bytes  budget 240 439     30 free  (anchor 30 — unchanged)
+hook test suite       20 360 lines  budget 20 375      15 free  (anchor 21 — six lines closer)
+```
+
+Tonight's eleven commits touched no file under `hooks/`, so the hook-test surface has not moved
+since the 260821-2349 pass; the six lines were spent in Turn 3 of the previous session and four of
+the original ten were recovered there. The criterion asks for a note costing zero lines, which is
+no note, and that is why it cannot be met by anything the Circle still has to do. It is filed and
+reasoned in
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
+which asks the closure note to state 15 lines rather than repeat the criterion. That remains the
+right disposition.
+
+**Both preconditions before a closure note: one met, one outstanding at this pass.** The step-6
+measurement note exists, so the Circle does not close over an unrecorded number. The second, that
+the closure note states in its own words that the clauses landed unenforced and that no observation
+of their effect was taken, is unwritten because the closure note is unwritten; it is the
+orchestrator's Phase 4 act and is not a defect of this plan.
+
+**The plan's closure claim on the verbosity record is still not confirmed.**
+`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+remains `_o_` by a deliberate decision taken in Turn 2 of the 260822-0019 session, and this
+reconciliation agrees with it. The plan's `_c_` marker does not assert that record is closed, which
+the closure entry above already states.
