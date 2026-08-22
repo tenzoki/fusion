@@ -41,3 +41,9 @@ pass no exempt set, matching their old `promptFiles()`/`gatedFiles()`; `marker-f
 and `path-literal-lint.test.ts` pass `EXEMPT_SKILLS`, matching theirs. The only behavioural
 difference is that `readdirSync` results are now sorted, which changes report ordering and not
 membership.
+
+---
+Resolved: The six-line block was moved down to sit immediately above `export function
+shippedPrompts`, leaving `agentNames` with its own one-liner. The finding named the right pair —
+verified by reading the file before the move. Line-neutral (950 lines before and after), so no
+baseline map and no surface golden moved. `cd hooks && npm test` — exit 0, 41 files, 724 tests.

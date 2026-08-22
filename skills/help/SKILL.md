@@ -28,7 +28,7 @@ fi
 echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
-**Why the branch, and why it is a call:** `bin/fusion-source-root`'s own header.
+**Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header.
 
 **`UNRESOLVED` is not a path, and no topic below is answered through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` read resolves from `/`, finding nothing. Say so plainly, tell the user to restart the session so the SessionStart hook exports the variable, and answer only from what you can actually open. **Never** paraphrase a shipped doc you could not read — this skill's whole value is that it quotes the source rather than the model's memory of it.
 

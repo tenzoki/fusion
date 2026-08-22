@@ -32,17 +32,17 @@
 [skills bytes]
   archive/SKILL.md 24854
   cadence/SKILL.md 17244
-  cleanup/SKILL.md 23544
+  cleanup/SKILL.md 23569
   commit/SKILL.md 6233
   curate/SKILL.md 12467
   direct/SKILL.md 10682
-  help/SKILL.md 16932
+  help/SKILL.md 16957
   log-activity/SKILL.md 13564
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
   next/SKILL.md 25947
   setup/SKILL.md 45728
-  total 236069
+  total 236119
 
 [hook-tests lines]
   commit-message-path.test.ts 354

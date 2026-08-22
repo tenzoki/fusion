@@ -26,7 +26,7 @@ fi
 echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
-**Why the branch, and why it is a call:** `bin/fusion-source-root`'s own header.
+**Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header.
 
 **`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` citation resolves from `/`, finding nothing and saying nothing about why. Three steps here are behaviour rather than reading and would fail silently: Step 3 reads the domain cascade's one authoring home, and Steps 4–6 read three other skill bodies to execute their procedures inline. When it prints `UNRESOLVED`, stop before those steps, name them in the final report, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a procedure you could not open.
 
