@@ -110,7 +110,7 @@ four agentless passives: "wurde das Zitat wiederhergestellt", "wurde auf `_p_` g
 "wurde er getötet", "wurde gemessen". Across 231 words the text names a doer exactly once,
 in "Der Coder hat die stärkere Richtung genommen".
 
-This contradicts the loaded chat profile directly. `chat-voice-de.yaml:31` (C03,
+This contradicts the loaded chat profile directly. `chat-voice-de.yaml:32` (C03,
 *Du-Form, direkt*) requires direct address and rejects impersonal passive constructions
 where direct address is clearer.
 
@@ -202,7 +202,7 @@ Alongside them the sample uses the filename markers `_p_` and `_c_` in body pros
 prohibited outright at `rules/user-facing-output.md:83`, which requires the word ("in
 progress", "closed") with the marker in parentheses at most. The gloss obligation for codes
 is point 4 of the readability gate at `:130`, and "Klartext-Referenten" is C02 of the chat
-profile at `chat-voice-de.yaml:23`.
+profile at `chat-voice-de.yaml:24`.
 
 ### 8. Sententia: the aphoristic clincher
 
@@ -632,7 +632,7 @@ for f in chat-voice-de.yaml chat-voice-en.yaml default-voice-de.yaml default-voi
 - `rules/user-facing-output.md:127-131` — the five-point readability gate
 - `rules/user-facing-output.md:128` — the ceiling of one em-dash per 1000 words
 - `rules/user-facing-output.md` `## Information architecture` — action first, reason second
-- `fusion-workbench/stilwerk/chat-voice-de.yaml:23` (C02), `:31` (C03), `:38` (C04),
+- `fusion-workbench/stilwerk/chat-voice-de.yaml:24` (C02), `:32` (C03), `:39` (C04),
   `:81` (AI02), `:104` (AI05), `:138` (AI08), `:156` (AI11)
 - `fusion-workbench/stilwerk/default-voice-en.yaml:140` (AI02, "Maximum one per 1000 words"),
   K01 (verbless fragments are not sentences)

@@ -137,3 +137,32 @@ survived in either profile. One does now. That record gains a `Revised by:` line
 **Verified.** All four parse (`ruby -ryaml`), both plugin/workbench pairs are byte-identical
 (`diff -q`), `rules/user-facing-output.md` was not touched, and `## Length` still stands at
 `rules/user-facing-output.md:99`.
+
+---
+Revised by: `circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0252_c_the-c04-c05-anchor-split-is-verified-in-english-and-asserted-for-german-where-its-premise-is-false.md` — the anchor-split reasoning above was verified against the English file and asserted for all four; the German premise is false.
+
+The claim at `## Why restored.` that "C05's anchor was character-for-character C05's own `name:`
+field" is exact in English and false in German. In English the removed anchor and
+`stilwerk/chat-voice-en.yaml:46` are the same string, `Sketch structure instead of narrating it`,
+matching the heading at `rules/user-facing-output.md:34`. In German the anchor `dbf259a` removed was
+that same **English** heading, while the German `name:` one line above reads
+`"Skizze statt Prosa bei Struktur"` (`stilwerk/chat-voice-de.yaml:48`). The two are a translation of
+one another, not a copy, so the reason given does not reach the German file.
+
+German `C05` stays anchorless on a different reason, which nobody had written down: its own name
+translates the heading closely enough that a reader scanning the rule's headings finds the right
+one, and restoring the anchor would spend a 43-byte English string on a section the entry already
+names.
+
+German `C04` reintroduces an English heading string into German prose: `in user-facing-output.md
+unter "## Length" und werden hier nicht wiederholt` (`stilwerk/chat-voice-de.yaml:43`). `dbf259a`'s
+own message and the review at
+`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md:133-136`
+both counted removing such a string as a gain. The cost is taken deliberately: `## Length` is an
+English heading in an English-only rule file, so no German rendering of it would resolve. The
+"+18 in both languages" pricing above is bytes only and does not price this.
+
+**No text change follows from any of it.** The four profiles stand as `746ae4d` left them, the
+defect this record closed is still closed, and the marker stays `_c_` per
+`rules/fusion-workbench-conventions.md` `## Inline State Tracking`. What moved is the reasoning,
+not the outcome.

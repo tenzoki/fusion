@@ -5,7 +5,7 @@ The German chat profile names the referent three ways where the English names it
 **Severity:** Medium
 **Domain:** data
 **Filed by:** ontorev, reviewing `084c626..dbf259a`, review file `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
-**Affects:** `stilwerk/chat-voice-de.yaml:24`, `:26`, `:106`, and `fusion-workbench/stilwerk/chat-voice-de.yaml` at the same lines
+**Affects:** `stilwerk/chat-voice-de.yaml:25`, `:27`, `:106`, and `fusion-workbench/stilwerk/chat-voice-de.yaml` at the same lines
 **Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2205_c_the-german-ai04-clause-reads-as-a-calque-of-the-english-one.md` (the same class, one entry over); `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_c_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md` (C06, the entry that forbids what this record describes)
 
 ---
@@ -17,8 +17,8 @@ spell that object three different ways. The English profile spells it once.
 
 | | English | German |
 |---|---|---|
-| C02 `name:` | "Name the referent" (`chat-voice-en.yaml:25`) | "Klartext-Referenten" (`chat-voice-de.yaml:24`) |
-| C02 `instruction:` | "without its referent" (`:27`) | "mit ihrem Bezug nennen" (`:26`) |
+| C02 `name:` | "Name the referent" (`chat-voice-en.yaml:25`) | "Klartext-Referenten" (`chat-voice-de.yaml:25`) |
+| C02 `instruction:` | "without its referent" (`:27`) | "mit ihrem Bezug nennen" (`:27`) |
 | AI05 `instruction:` | "Name the referent." (`:103`) | "Das Bezugswort benennen." (`:106`) |
 
 `Referent`, `Bezug`, `Bezugswort`. In English, C02's name and AI05's closing sentence are the

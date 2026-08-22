@@ -88,3 +88,21 @@ Both renamed `_o_` to `_c_` with `Resolved:` notes carrying the arithmetic and t
 `260821-2204_c_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`
 gained a `Revised by:` line and kept its marker and its original note: its resolution argued both
 anchors away together and verified that no `"##` token survived in either profile, and one does now.
+
+---
+**Corrected in place, 260822-0320, by the orchestrator. Two claims above did not hold, and both are
+the same class this Circle's own reviews kept finding: a checked-sounding statement whose final
+clause was not checked.**
+
+The scope claim near line 71 says the shifted German line numbers reach only this Circle's own
+records and two review files. No survey produced that set. Six citations in three further records
+were reached, two of those records open at the time, and the repair is recorded in
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0251_*_the-german-line-shift-moved-four-citations-in-three-further-records-and-neither-note-names-them.md`.
+
+The anchor claim near line 38 says the anchor removed from C05 was character-for-character that
+entry's own name field. That is exact in English and false in German, where the removed anchor was
+the English heading. Recorded in
+`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0252_*_the-c04-c05-anchor-split-is-verified-in-english-and-asserted-for-german-where-its-premise-is-false.md`.
+
+Nothing else in this log was touched, and no figure in it moved. Both statements were correct about
+everything they measured; what failed in each is the sentence that generalised past the measurement.

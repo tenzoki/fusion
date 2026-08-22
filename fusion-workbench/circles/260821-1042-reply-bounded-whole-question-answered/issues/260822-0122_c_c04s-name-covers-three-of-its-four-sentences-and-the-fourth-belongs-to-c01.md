@@ -135,3 +135,39 @@ touched.
 is unchanged throughout, because C01 and C04 each kept their line count. German lines 22 to 45
 shift by one and return to their old numbers at C05, which reaches only this record, `260822-0117`,
 and two review files, all of them outside the citation gate's corpus.
+
+---
+Revised by: `circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0251_c_the-german-line-shift-moved-four-citations-in-three-further-records-and-neither-note-names-them.md` — the **Verified.** paragraph above states a citation scope that was never surveyed.
+
+**What the paragraph verified and what it asserted.** Everything in it up to the final clause was
+checked and is correct: all four files parse, both plugin/workbench pairs are byte-identical, the
+line counts stand at 183 English and 186 German, English numbering is unchanged throughout, and
+German lines 22 to 45 shift by one and return to their old numbers at `C05`. The measurement is
+exact.
+
+The final clause is not a measurement. "which reaches only this record, `260822-0117`, and two
+review files" names a set no survey produced, and it is wrong. Six citations in **three further
+records** point into the shifted range, two of those records open (`_o_`) at the time this note was
+written:
+
+- `shared/issues/260822-0115_o_the-german-chat-profile-names-the-referent-three-ways-where-the-english-names-it-once.md`
+  at `:24` twice (`:8`, `:20`) and `:26` once (`:21`)
+- `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0146_o_the-four-voice-profiles-are-shipped-text-every-agent-loads-and-no-lint-gate-reads-them.md:13`
+  at `:41-43`
+- `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` at `:31` (`:113`), `:23`
+  (`:205`), and `:23`, `:31`, `:38` again in the citation list at `:635`
+
+All six were repaired against the file, each target line read rather than offset (`:25`, `:27`,
+`:42-44`, `:32`, `:24`, and `:24`/`:32`/`:39`). The `C04` id line at `:38`, in that last list, is a
+sixth instance the filing record's own table does not carry.
+
+**The note itself is left as written**, per `rules/fusion-workbench-conventions.md`
+`## Inline State Tracking`: it records what was claimed then, and rewriting the sentence would
+erase the overstatement instead of pointing at it. The defect it closes is still closed and the
+marker stays `_c_`. What moved is the reliability of one clause under a **Verified.** heading, which
+is `rules/critical-stance.md` §3 exactly: an unchecked claim dressed as a checked one.
+
+The same claim is restated at
+`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0200-ontocoder-c04s-fourth-sentence-moves-and-its-section-pointer-returns.md:71-73`
+and is **left as written**: the dispatch that produced this note scoped the correction to this
+record. A reader of that history file still meets the uncorrected scope.
