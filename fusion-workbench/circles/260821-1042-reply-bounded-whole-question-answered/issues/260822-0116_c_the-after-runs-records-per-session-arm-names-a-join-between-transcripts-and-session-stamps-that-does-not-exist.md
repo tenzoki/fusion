@@ -69,3 +69,29 @@ Either fix is a paragraph. What must not stand is a step that reads as mechanica
 **Verified at HEAD `dbf259a`** by re-running section 4's pipeline (53 unprimed paths, all UUIDs),
 by reading the field set of `fusion-workbench/orchestrator-events.jsonl`, and by reading section 6
 and its flowchart.
+
+---
+
+Resolved: route 2 of the three the record names, extended with what route 3 asked for. Section 6 of
+`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`
+now states that the records-per-orchestrator-session arm carries **no priming restriction at all**,
+that both its sides are whole-corpus and therefore compare to each other, and that the after value
+will include primed sessions with an upward bias whose size is not measurable. The `C3 -.-> F4`
+edge is deleted from the flowchart and `F4`'s label now reads "no priming restriction"; the
+subgraph label was corrected from "each against its section-5 before value" to "each against its
+stated before value", because `F4`'s before value is section 1 and never was section 5.
+
+The join was not defined, and the report now says why rather than leaving it implicit. Nothing in
+the workbench carries a transcript identifier: across the event log's 1 896 records the key set is
+`ts`, `event`, `detail`, `agent`, `task`, `turn`, `verdict` and `history_file`, and
+`fusion-workbench/.guard-state/events.jsonl` adds only `file` and `tool`. `history_file` is not the
+missing key. It names a workbench history log rather than a transcript, and it sits on 25 of the 70
+before-window session starts, first appearing on 2026-08-12 rather than tonight.
+
+What would make the restriction possible is named in the report and it does not rescue this
+comparison. The value already arrives inside fusion as the `PreToolUse` hook's `session_id`
+(`hooks/guard.ts:84`), and the transcript file is that identifier plus `.jsonl`, verified by
+locating this run's own transcript from its session id. Writing it onto `session_start` would key a
+future window and could never key the frozen before-window, so a restricted after arm would face an
+unrestrictable before arm. That is a worse comparison than the unrestricted pair, which is the
+decisive reason route 2 was chosen over route 1 and not merely the cheaper one.

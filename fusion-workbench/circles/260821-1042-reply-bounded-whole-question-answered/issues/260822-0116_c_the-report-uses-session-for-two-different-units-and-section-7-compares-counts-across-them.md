@@ -66,3 +66,28 @@ prerequisite for stating that clearly.
 **Verified at HEAD `dbf259a`** by re-running the section 1 command (`sessions=52 records=854`), by
 counting contributing transcripts with a per-file loop (68 of 72 overall, 52 of 53 unprimed), and
 by reading sections 1, 5 and 7 and recommendation 1.
+
+---
+
+Resolved: both steps the record asks for are in
+`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`.
+`## Scope` now defines the two units by name, an **orchestrator session** being one `session_start`
+event and a **transcript** being one Claude Code corpus file, with a table of both before-window
+counts and the statement that the collision at 52 is two populations of equal size and not one
+population. Section 7 restates the conversion where the twenty is derived: twenty transcripts is
+roughly fifteen orchestrator sessions, at the ratio of 68 contributing transcripts to 52 session
+starts.
+
+Every use of the word was checked, not only the two the record cites. **43 of the report's 81 uses
+were rewritten**, counted by word-diff against the pre-edit file: those naming a corpus file became
+"transcript" in sections 4, 5, 7 and 8, the Implications, the Recommendations and the Open
+Questions, and those naming the event-log unit outside section 1 became "orchestrator session" in
+full. Section 1 keeps the bare word and its heading now says "per orchestrator session". The report
+holds 63 uses of "session" and 77 of "transcript" where it held 81 and 19.
+
+The bullet the record quotes now names both units and gives the ratio in place. The em-dash rate's
+per-unit reading, which the record did not cite, was misnamed four times in one bullet: it is
+measured per transcript and said "per session" throughout.
+
+The `bin/fusion-prose-metric` reading over the revised file is `3 5248 0.6 ok`, against `3 4413 0.7
+ok` before the edit. The rewrite added 835 prose words and no em-dash.

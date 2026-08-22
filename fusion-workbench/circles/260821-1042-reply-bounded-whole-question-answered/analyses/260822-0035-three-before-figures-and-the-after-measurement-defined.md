@@ -4,6 +4,14 @@
 **Type:** Document Study
 **Status:** Complete
 **Requested by:** orchestrator, against `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
+**Revised:** 2026-08-22 01:57, against findings 1 and 2 of
+`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`.
+Section 6 now states that the records-per-session arm is **not** restricted to unprimed transcripts,
+why the project records no key that could restrict it, and what counting every one of them costs;
+the
+flowchart edge that claimed the restriction is gone. The word "session" named two units and now
+names one: `## Scope` defines the pair and sections 4 to 7, the Implications, the Recommendations
+and the Open Questions say "transcript" where the unit is a file. **No figure changed.**
 
 ## Question
 
@@ -11,8 +19,8 @@ The briefing commissions three before-measurements the reply-length baseline doe
 fully specified after-measurement that is not to be run, and a judgement about how much
 after-corpus the comparison needs. This report answers all four, plus one thing the briefing
 assumed and this run found to be false: the contamination test as the briefing states it marks
-almost every fusion session as primed, because the `/fusion:setup` skill body names the very files
-the test greps for.
+almost every fusion transcript as primed, because the `/fusion:setup` skill body names the very
+files the test greps for.
 
 ## Scope
 
@@ -34,9 +42,25 @@ this file and nowhere else. Nothing here was written to a growth-bounded surface
 installed plugin copy at `$FUSION_PLUGIN_ROOT/bin/`. Section 4 establishes why, and a defect
 record is filed.
 
+**Two different things are called a session in the sources, and this report keeps them apart by
+name.** An **orchestrator session** is one `session_start` event in
+`fusion-workbench/orchestrator-events.jsonl`. A **transcript** is one file in the Claude Code
+corpus, named by the Claude Code session's UUID. Section 1 is the only figure keyed to orchestrator
+sessions; sections 4, 5 and 7 are keyed to transcripts.
+
+| Unit | Source | Count in the before-window |
+|---|---|---|
+| Orchestrator session | a `session_start` event in the event log | 52 |
+| Transcript | a `*.jsonl` file in the Claude Code corpus | 72 present, 68 contributing at least one in-window reply, 52 of those unprimed |
+
+**The two counts collide at 52 in this window and are not the same population**, at a ratio near 1.3
+transcripts to one orchestrator session over the same period. Below, each word names one of these
+two things and nothing else. Section 6 states why the report cannot map a given transcript onto a
+given orchestrator session.
+
 ## Findings
 
-### 1. Filed records per session: 16.4 on average, and the spread makes it the least sensitive figure
+### 1. Filed records per orchestrator session: 16.4 on average, and the spread makes it the least sensitive figure
 
 **52 orchestrator sessions in the baseline window filed 854 defect and decision records, a mean of
 16.4 per session and a median of 11.** Five sessions filed nothing. The largest filed 78.
@@ -101,11 +125,12 @@ carried in the reply. Three outcomes are possible and they are not equally good.
 
 **Two cautions on this figure, and they are large.** First, the standard deviation is 17.6 against
 a mean of 16.4, so the coefficient of variation exceeds one. Session-to-session variation swamps
-any plausible effect: section 7 shows that with the before arm fixed at 52 sessions, a rise of five
-records per session is undetectable at any after-size, and a rise of ten needs roughly 45 further
-sessions. **The briefing calls this the strongest evidence available. It is the most independent,
-because it lives outside the transcripts, and it is at the same time the least sensitive of the
-three.** Both halves are true and the second is the operative one.
+any plausible effect: section 7 shows that with the before arm fixed at 52 orchestrator sessions, a
+rise of five records per orchestrator session is undetectable at any after-size, and a rise of ten
+needs roughly 45 further orchestrator sessions. **The briefing calls this the strongest evidence
+available. It is the most independent, because it lives outside the transcripts, and it is at the
+same time the least sensitive of the three.** Both halves are true and the second is the operative
+one.
 
 Second, the count is of records filed, not of records that needed filing. A session that fixes
 nothing and files thirty observations scores higher than one that fixes ten defects and files ten.
@@ -243,15 +268,16 @@ at ten times it. Neither number is evidence about the other, and the pair is wor
 ### 4. The contamination test the briefing states does not work, and this is why
 
 **Applied literally, `grep -l user-facing-output` over the transcript files matches 49 of 72, and
-`chat-voice` matches 48.** Those are not primed sessions. They are sessions that ran
-`/fusion:setup`, whose skill body is injected into the transcript as a user message and which names
-`default-voice-{en,de}.yaml`, `chat-voice-{en,de}.yaml` and the stylometric profiles in its Step 0d
-prose. The 23 non-matching transcripts are largely sessions that never ran an agent Setup. **The
-briefing's test, taken at its word, excludes precisely the population the measurement is about.**
+`chat-voice` matches 48.** Those are not primed transcripts. They are transcripts in which
+`/fusion:setup` ran, whose skill body is injected into the transcript as a user message and which
+names `default-voice-{en,de}.yaml`, `chat-voice-{en,de}.yaml` and the stylometric profiles in its
+Step 0d prose. The 23 non-matching transcripts are largely ones in which no agent Setup ever ran.
+**The briefing's test, taken at its word, excludes precisely the population the measurement is
+about.**
 
 The intent behind it is sound and is recoverable. Priming means the agent writing the replies was
 working on, or was told about, reply length and register. Evidence for that lives in what a human
-typed and in what the agent itself wrote, not in a skill body that every session receives
+typed and in what the agent itself wrote, not in a skill body that every transcript carries
 identically before and after the rule change.
 
 **So the surface is narrowed to human prompts and agent replies, and the pattern is then applied to
@@ -289,11 +315,11 @@ unprimed.** Restricted to the 68 that contribute at least one in-window reply, 1
 are unprimed, and the unprimed 52 carry 1 166 of the 2 236 blocks.
 
 **The pattern errs towards over-flagging on purpose.** `[Rr]egister` and `C0[0-9]` are broad and
-catch some sessions that were discussing something else. A false "primed" costs one session of
-after-corpus; a false "unprimed" puts contaminated prose into the measurement and cannot be
+catch some transcripts that were discussing something else. A false "primed" costs one transcript
+of after-corpus; a false "unprimed" puts contaminated prose into the measurement and cannot be
 detected afterwards. The asymmetry is not close, so the broad pattern is the right error.
 
-### 5. The like-for-like before arm: the baseline restricted to unprimed sessions
+### 5. The like-for-like before arm: the baseline restricted to unprimed transcripts
 
 The after-measurement will be unprimed-only. Comparing it against the full baseline would compare
 two different populations, so the before arm is restricted the same way here. This extends the
@@ -328,7 +354,7 @@ The structure the baseline found holds on the subset. No block is exactly two li
 are exactly one, and the odd lengths dominate the multi-line half.
 
 The unprimed subset runs slightly cleaner than the corpus as a whole on every figure, which is what
-one would expect if the sessions that discussed register were also the sessions that wrote the most
+one would expect if the transcripts that discussed register were also the ones that wrote the most
 about it. **The comparison arm is 42.8 per cent, not 46.7.**
 
 ### 6. The after-measurement, defined and not run
@@ -355,11 +381,11 @@ flowchart TD
     C3["transcript in unprimed.list<br/>(section 4 grep)"]
   end
 
-  subgraph out["Figures, each against its section-5 before value"]
+  subgraph out["Figures, each against its stated before value"]
     F1["reading A and B<br/>over-cap share"]
     F2["list blocks per<br/>multi-line block"]
     F3["prose em-dash<br/>rate per 1000"]
-    F4["records filed<br/>per session"]
+    F4["records filed per<br/>orchestrator session,<br/>no priming restriction"]
   end
 
   TR --> C1 --> C2 --> C3
@@ -368,7 +394,6 @@ flowchart TD
   C3 -->|"extract to markdown,<br/>then fusion-prose-metric"| F3
   EV -->|"session_start, +2h"| F4
   ST -->|"filename stamp"| F4
-  C3 -.->|"names the unprimed sessions<br/>F4 may count"| F4
 ```
 
 The pipeline is the baseline's, with three changes and no others.
@@ -383,44 +408,85 @@ The pipeline is the baseline's, with three changes and no others.
 
 Report, line by line against section 5: reading A, reading B, the frequency table, the percentiles,
 the list-block figures including the exactly-three share, the pooled em-dash rate, and records per
-session. Report reading A and reading B together and never reading A alone, per the baseline's own
-recommendation 1.
+orchestrator session. Report reading A and reading B together and never reading A alone, per the
+baseline's own recommendation 1.
 
-**Records per session in the after-window** uses section 1's command with the window bounds changed
-to `$1>="260821-2311"`, which is the local-clock form of the same instant, and with the
-`unprimed.list` sessions used to say which of those sessions may be counted. Two sessions exist at
-this writing on the after side of the boundary and both are primed, so this arm currently has no
-data at all.
+**Records per orchestrator session in the after-window** uses section 1's command with the window
+bounds changed to `$1>="260821-2311"`, which is the local-clock form of the same instant, and with
+**no priming restriction at all**. Both sides of this figure are whole-corpus: section 1's before
+value counts every orchestrator session in its window, and the after value counts every one in its
+own, so the two compare to each other. Two orchestrator sessions exist at this writing on the after
+side of the boundary, so this arm has almost no data yet.
+
+**The restriction is dropped because the project records no key that could apply it.**
+`unprimed.list` names transcript files by their UUID. Section 1 keys on `yymmdd-HHMM` stamps derived
+from `session_start` events, and nothing in the event log carries a transcript identifier: across
+all 1 896 records the key set is `ts`, `event`, `detail`, `agent`, `task`, `turn`, `verdict` and
+`history_file`, and `fusion-workbench/.guard-state/events.jsonl` adds only `file` and `tool`.
+`history_file` looks like the missing key and is not one. It names a workbench history log rather
+than a transcript, and it sits on 25 of the 70 before-window session starts, first appearing on
+2026-08-12. Restricting this arm would therefore mean inventing a time-proximity join with four
+judgements this report does not make: which timestamp stands for a transcript, the matching rule,
+the tolerance, and what happens when one transcript spans two session starts or two transcripts sit
+inside one. Two runs would invent it differently and their figures would stop comparing, which is
+worse than not restricting at all.
+
+**What would have to be recorded for the restriction to become possible, and why it would still not
+reach this comparison.** One field on `session_start` naming the Claude Code session the
+orchestrator is running in. The value already arrives inside fusion: the `PreToolUse` hook receives
+it as `session_id` (`hooks/guard.ts:84`), and the transcript file is that identifier plus `.jsonl`,
+which was verified by locating this run's own transcript from its Claude Code session id. It is
+never written to the event log, and `session_start` is written by the orchestrator rather than by
+the hook, so carrying it across that boundary is the work. **Even then it would not reach the
+before-window**, whose events are written and closed. A restricted after arm against an
+unrestricted before arm is a worse comparison than the unrestricted pair specified here, so this
+arm stays unrestricted whatever a later version records.
+
+**What counting every orchestrator session costs, stated so it is not read as free.** The after
+value will include orchestrator sessions primed on reply length and on filing, and this Circle's own
+sessions are among them: both orchestrator sessions on the after side of the boundary at this
+writing are primed. The bias runs upward, because the clause under measurement is a filing
+instruction and a session told about it is likelier to obey it. Its size is not measurable, and the
+reason is the same missing key: the primed share is known only per transcript, 16 of the 68
+contributing transcripts in the before-window, and it cannot be restated per orchestrator session.
+**Read this arm as a direction carrying a named upward bias, never as a verdict.** Section 7 already
+finds it carries no verdict at any realistic size, so the restriction was buying less than it
+appeared to.
 
 **Three things the after-run must also do.** State that the transcript corpus is outside version
 control and embed its own frequency table, per the baseline's recommendation 3. Re-run reading A on
 the before-window as a check that the closed window still returns 2 236 and 400, which costs one
 command and catches a pruned corpus. And record the corpus file count and the
 `ls *.jsonl | sort | shasum -a 256` of the after-window, knowing that this checksum changes with
-every new session and is a record of what was read, not a reproducibility guarantee.
+every new transcript and is a record of what was read, not a reproducibility guarantee.
 
-### 7. How many unprimed sessions: twenty
+### 7. How many unprimed transcripts: twenty
 
-**Twenty unprimed sessions.** Below that, only a change large enough to be visible without
+**Twenty unprimed transcripts.** Below that, only a change large enough to be visible without
 statistics is worth reporting; above it, the reply-length figure the Circle is actually about
 becomes readable.
+
+**The unit here is the transcript, and the conversion is stated once so that nobody makes it
+silently.** Twenty transcripts is roughly fifteen orchestrator sessions, at the before-window ratio
+of 68 contributing transcripts to 52 session starts. Every count in this section is transcripts
+unless it says orchestrator session, and section 1's filing figure is the one that says it.
 
 The reasoning, and it is arithmetic rather than judgement up to the last step.
 
 **The figure the count is set by is reading B**, the share of multi-line blocks over the 12-line
 cap, at 42.8 per cent over 428 blocks. Reading A is a worse statistic for this purpose: 1 380 of
-2 236 blocks are one-line narrations whose share can move because a session made more tool calls,
-which has nothing to do with the rule.
+2 236 blocks are one-line narrations whose share can move because a transcript carries more tool
+calls, which has nothing to do with the rule.
 
-**Blocks are clustered within sessions and the clustering was measured, not assumed.** Across the
-31 unprimed sessions carrying at least one multi-line block, the ANOVA estimator gives an
+**Blocks are clustered within transcripts and the clustering was measured, not assumed.** Across
+the 31 unprimed transcripts carrying at least one multi-line block, the ANOVA estimator gives an
 intra-cluster correlation of 0.046 with a mean cluster size of 13.3, so the design effect is 1.56
-and the before arm's 428 blocks are worth about 274 independent ones. Unprimed sessions in the
-window average 8.2 multi-line blocks each, counting the 21 sessions that produced none.
+and the before arm's 428 blocks are worth about 274 independent ones. Unprimed transcripts in the
+window average 8.2 multi-line blocks each, counting the 21 that produced none.
 
 **With the before arm fixed at 428 blocks**, at 5 per cent two-sided and 80 per cent power:
 
-| Fall in reading B | After blocks needed | Unprimed sessions |
+| Fall in reading B | After blocks needed | Unprimed transcripts |
 |---|---|---|
 | 5 points, 42.8 % to 37.8 % | not reachable at any size | — |
 | 10 points, to 32.8 % | 900 | about 110 |
@@ -432,24 +498,27 @@ Twenty is the 15-point row, rounded up. **The last step is the judgement and it 
 15-point fall is the smallest change worth waiting for.** The rule change restates a hard cap and
 closes four routes out of it. If it works, close to half of over-cap prose replies come under the
 cap, which is a change of that order. A 10-point fall would be real and would matter, and buying
-the power to see it costs 110 unprimed sessions, which at the observed rate of roughly two and a
-half sessions a day is six weeks of work whose tasks, models and mix would have changed underneath
-the measurement long before the count arrived. That is not a better measurement, it is a worse one
-with a bigger number attached.
+the power to see it costs 110 unprimed transcripts, which at the observed rate of roughly two and a
+half unprimed transcripts a day is six weeks of work whose tasks, models and mix would have changed
+underneath the measurement long before the count arrived. That is not a better measurement, it is
+a worse one with a bigger number attached.
 
-**What twenty sessions does not buy, stated plainly so nobody claims it later.**
+**What twenty transcripts does not buy, stated plainly so nobody claims it later.**
 
-- **Not the filing figure.** With the before arm at 52 sessions and a standard deviation of 17.6, a
-  rise of five records per session is unreachable at any after-size and a rise of ten needs about
-  45 further sessions. At twenty, report the direction and the interval, and make no claim.
+- **Not the filing figure, whose counts are in the other unit.** With the before arm at 52
+  orchestrator sessions and a standard deviation of 17.6, a rise of five records per orchestrator
+  session is unreachable at any after-size and a rise of ten needs about 45 further orchestrator
+  sessions. Twenty transcripts is roughly fifteen orchestrator sessions, so the wait this section
+  sets is about a third of what that rise would need. At twenty, report the direction and the
+  interval, and make no claim.
 - **Not a clustered em-dash result.** Pooled over words the em-dash rate is by far the most
-  sensitive of the three, and a halving would show on a few thousand prose words. Read per session
-  it is the noisiest: across the 28 unprimed sessions with at least 200 prose words the rate runs
-  from 0.0 to 33.3 per 1000, mean 9.1, standard deviation 8.0. With a before arm of 28 sessions,
-  even a 4-point fall is unreachable. **Report the pooled rate as the headline and the per-session
-  distribution beside it, and attach no p-value to either.**
+  sensitive of the three, and a halving would show on a few thousand prose words. Read per
+  transcript it is the noisiest: across the 28 unprimed transcripts with at least 200 prose words
+  the rate runs from 0.0 to 33.3 per 1000, mean 9.1, standard deviation 8.0. With a before arm of 28
+  transcripts, even a 4-point fall is unreachable. **Report the pooled rate as the headline and the
+  per-transcript distribution beside it, and attach no p-value to either.**
 - **Not the enumeration figure at fine resolution.** 145 list blocks before, of which 50 have
-  exactly three items. Twenty sessions yields roughly 170 multi-line blocks and, at the before
+  exactly three items. Twenty transcripts yields roughly 170 multi-line blocks and, at the before
   rate, about 58 list blocks. That is enough to see a halving and not enough to see a quarter.
 
 **One number cannot serve all four figures, and pretending otherwise is how a measurement gets
@@ -471,7 +540,7 @@ is visible rather than implied:
 - **Unit.** One human prompt with everything the agent wrote in reply to it, up to the next human
   prompt. The baseline's reading C already extracts exactly this unit and counted 281 of them.
 - **Sample.** Forty units, twenty either side of the boundary, drawn at random from unprimed
-  sessions, with the boundary hidden from the judge.
+  transcripts, with the boundary hidden from the judge.
 - **Rubric.** Three ordinal marks per unit: did the reply answer the question asked, did it answer
   something else, did it leave the question unanswered. Plus one binary: did the reply carry
   material that belonged in a filed record.
@@ -480,14 +549,14 @@ is visible rather than implied:
 - **Cost.** Forty units at a median of 26 lines each is roughly a thousand lines of reading, plus
   the blinding and the sampling. Call it an evening, and it is the user's evening, not an agent's.
 
-**It is worth running, and it is worth running after the twenty sessions rather than instead of
+**It is worth running, and it is worth running after the twenty transcripts rather than instead of
 them**, because a length change with no answer-quality change is the outcome the numbers cannot
 distinguish from success, and it is the outcome most likely to be mistaken for one.
 
 **One further limit applies to the whole comparison and the baseline already stated it.** Nothing
 here controls for what else changes between the two windows: the models, the tasks, the mix of
-interactive and unattended sessions, and the fact that this project has spent two Circles thinking
-about prose. The honest use is description against description, not experiment.
+interactive and unattended transcripts, and the fact that this project has spent two Circles
+thinking about prose. The honest use is description against description, not experiment.
 
 ### 9. Calibration
 
@@ -504,10 +573,10 @@ mechanism. No exhaustive attribution of all 49 was performed.
 
 **Inference**, second: that the design effect of 1.56 transfers to the after-window. It is
 estimated from before-window clustering, and an after-window with a different mix of interactive
-and unattended sessions would cluster differently. The direction of the error is unknown.
+and unattended transcripts would cluster differently. The direction of the error is unknown.
 
 **Speculation**, marked so it is not later read as a finding: that the unprimed subset running
-cleaner than the full corpus on every figure is because sessions discussing register also wrote
+cleaner than the full corpus on every figure is because transcripts discussing register also wrote
 more prose about it. The pattern fits all five figures and no competing mechanism was tested.
 
 **Not established at all:** any causal link between the rule text and any figure here. All of it
@@ -520,19 +589,20 @@ rather than one, the after-run is a mechanical exercise against a written bounda
 grep, and the size at which its answer means something was fixed before anybody saw a result.
 
 Two of the four figures turned out weaker than the briefing expected, and that is the more useful
-half of this report. Filed records per session is independent evidence and is too noisy to carry a
-verdict at any realistic corpus size. The em-dash rate is sharp pooled and hopeless per session.
+half of this report. Filed records per orchestrator session is independent evidence and is too
+noisy to carry a verdict at any realistic corpus size. The em-dash rate is sharp pooled and hopeless
+per transcript.
 Neither was knowable without measuring the spread, and both would have been quoted with confidence
 by an after-run that had not.
 
-The one figure that is both sensitive and on-topic is reading B. Twenty unprimed sessions is what
-it needs and twenty is what the Circle should wait for.
+The one figure that is both sensitive and on-topic is reading B. Twenty unprimed transcripts is
+what it needs and twenty is what the Circle should wait for.
 
 ## Recommendations
 
-1. **The after-run waits for twenty unprimed sessions**, counted with section 4's grep, and reports
-   reading A and reading B together against section 5's column. A run at ten sessions reports a
-   direction and says it is a direction.
+1. **The after-run waits for twenty unprimed transcripts**, counted with section 4's grep, and
+   reports reading A and reading B together against section 5's column. A run at ten transcripts
+   reports a direction and says it is a direction.
 2. **Re-verify the boundary before the after-run**, with `git log -- rules/user-facing-output.md
    stilwerk/`. Executors are editing `stilwerk/` in this tree now, and the boundary moves with the
    last commit to either surface.
@@ -540,14 +610,15 @@ it needs and twenty is what the Circle should wait for.
    forbids it until its own registered measurement runs, and this is not that measurement.
 4. **Put the rubric judgement of section 8 to the user as a decision**, not as an agent task. It
    costs the user an evening and it is the only instrument that reaches the Directive's second half.
-5. **Close the version-string defect before the next release**, so that a later session can tell
-   from `plugin.json` whether the copy it is running carries the helper its own records name.
+5. **Close the version-string defect before the next release**, so that a later orchestrator
+   session can tell from `plugin.json` whether the copy it is running carries the helper its own
+   records name.
 
 ## Filed Issues
 
 - `fusion-workbench/shared/issues/260822-0035_o_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
   — `bin/fusion-prose-metric` is absent from the installed plugin copy while both trees report
-  version 10.4.0, so no session can tell from the version string which helpers it has.
+  version 10.4.0, so no orchestrator session can tell from the version string which helpers it has.
 - `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0035_o_the-briefings-contamination-grep-marks-49-of-72-transcripts-primed-because-the-setup-skill-body-names-the-files-it-greps-for.md`
   — the measurement briefing states a contamination test that excludes the population being
   measured; the corrected test is in section 4 of this report.
@@ -569,16 +640,16 @@ it needs and twenty is what the Circle should wait for.
 
 ## Open Questions
 
-- [ ] The section 4 pattern over-flags on purpose, and nobody has read the sessions it flags to see
-      how many are false. A one-hour read of the 19 flagged transcripts would say whether the
+- [ ] The section 4 pattern over-flags on purpose, and nobody has read the transcripts it flags to
+      see how many are false. A one-hour read of the 19 flagged transcripts would say whether the
       unprimed rate of roughly 72 per cent is real or pessimistic, which changes the calendar time
-      twenty sessions takes but not the number itself.
-- [ ] Records per session counts what was filed, not what should have been. No instrument here
-      distinguishes a session that filed thirty real observations from one that filed thirty
-      duplicates, and `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`
-      explicitly prefers a duplicate to a miss, which biases the figure upward over time
-      independently of any rule change.
+      twenty transcripts takes but not the number itself.
+- [ ] Records per orchestrator session counts what was filed, not what should have been. No
+      instrument here distinguishes an orchestrator session that filed thirty real observations
+      from one that filed thirty duplicates, and `rules/fusion-workbench-conventions.md`
+      `## Issue and Decision Filing` explicitly prefers a duplicate to a miss, which biases the
+      figure upward over time independently of any rule change.
 - [ ] Whether the em-dash ceiling is read per file or across a corpus is still open
       (`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`).
-      This report reads it pooled across the reply corpus and per session beside it, which is one
+      This report reads it pooled across the reply corpus and per transcript beside it, which is one
       answer applied to a different corpus than that record is about, and settles nothing there.
