@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active session history:** circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md
 
 ---
 
