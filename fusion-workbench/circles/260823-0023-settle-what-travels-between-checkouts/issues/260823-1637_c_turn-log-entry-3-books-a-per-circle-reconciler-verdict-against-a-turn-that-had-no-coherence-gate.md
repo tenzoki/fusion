@@ -59,3 +59,23 @@ Two things are entangled and only one of them is entry 3.
 For the entry: say what the verdict is a verdict *about*. Either record Turn 3 as having no per-Turn Coherence gate and put the reconciler's Circle-level verdict where a Circle-level fact belongs, or keep it in the entry and mark its scope explicitly, so the three entries are not silently reporting two different measurements.
 
 For the class: `rules/circle-records.md:154-155` gives the field as `Coherence verdict <coherent|review-needed|skipped-...>` with no slot for "which Coherence" and no case for a Turn that had none. `agents/orchestrator.md:1267` already ships a `skipped-…` family for the per-Turn event. Whether the Turn log should carry one of those, or should carry nothing when no gate fired, is a question this record does not answer.
+
+---
+Resolved: `71f47c1` replaced entry 3's verdict clause with "no per-Turn Coherence gate ran, the loop
+went to Phase 3 from here", and moved the `review-needed` verdict onto the new Turn 4 entry, where it
+is attributed to the Phase 3 Rebalance rather than to a Turn gate.
+
+Verified in this session's own event-log slice (`orchestrator-events.jsonl:2023-2101`). Between
+`turn_start turn=3` at 11:30:03Z and `turn_end turn=3` at 12:36:03Z there is no `coherence_review`
+event and no Coherence `gate_hit` — the only such pairs in the slice carry `turn=1` (09:18:19Z /
+09:42:20Z) and `turn=2` (11:24:37Z / 11:30:03Z), both `verdict=ok`. The next gate event is the
+`gate_response` at 13:00:19Z recording the Rebalance answer, which is Phase 3 and is what opened
+Turn 4. Entries 1 and 2 therefore carry per-Turn gate verdicts and entry 3 now carries neither, which
+is correct.
+
+One residual of vocabulary, not of fact: entries 1 and 2 render the per-Turn gate result as
+"coherent" where the event log records `verdict=ok`. The two gates use different vocabularies and the
+entries are not wrong, but a reader tiling the log against the record meets two words for one thing.
+Not filed — it is a naming question for whoever unifies the two gates.
+
+Closed by reconciler, second Coherence pass, 260823-2130.

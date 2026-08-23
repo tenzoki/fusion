@@ -35,3 +35,24 @@ Dispatch shaper in portfolio-activation mode before the rename, to correct the s
 Or carry it into the `## Closure note`, which Phase 4 step 3 writes onto the record *after* the rename and is therefore the one text that can still speak. Step 2b already has a mechanism for exactly this shape: a clause the user says does not hold is carried into the closure note "so the gap outlives the chat".
 
 What should not happen is closing silently, which leaves a correction that was possible on the day and impossible the day after.
+
+---
+Resolved: the correction landed inside the window. `2ec2bc2` made a first attempt by hand and
+`a40b330` completed it, both while the record still carries `_t_`, so the first of the two shapes this
+record named was taken — not the closure-note fallback. `## Grounding snapshot` now states the fact
+truly, verified at `skills/setup/SKILL.md` Steps 0f and 0g rather than taken from either commit
+message (see `260823-1635_*` for that verification).
+
+The deferral this record was filed against is therefore discharged by outcome rather than by anyone
+writing the deadline down. That distinction is deliberate and is why this note says so: nothing in
+Phase 4 or in `rules/circle-records.md` yet tells a closing session that `## Grounding snapshot`
+becomes unwritable at the rename. It took a human edit and an explicit user override to get the
+correction made, which is the evidence that the deadline is still undocumented rather than the
+evidence that it does not need to be.
+
+**The window is still open and still has an occupant.** `260823-1642_*` names two residuals in the
+same three lines — the paragraph's "two costs" scaffolding and a convention list that states
+unscoped what `skills/setup/SKILL.md` scopes — and both freeze at the same rename. Closing this
+record does not close that one.
+
+Closed by reconciler, second Coherence pass, 260823-2130.

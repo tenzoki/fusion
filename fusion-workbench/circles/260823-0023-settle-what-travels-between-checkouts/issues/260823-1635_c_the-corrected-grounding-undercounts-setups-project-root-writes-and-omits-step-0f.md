@@ -64,3 +64,23 @@ Correct the count to four and name Step 0f beside Step 0g in `_t_circle.md:30`, 
 The plan and the two issue records are history the moment the Circle closes, so leave them; a reader who follows the Grounding to `skills/setup/SKILL.md:319` finds the right answer there. If any of them is corrected anyway, correct all three together rather than one, which is how this Circle's own citation defects were made.
 
 Whether the Grounding's paragraph should still be introducing this as the second of "two costs accepted" is a separate question and is filed separately.
+
+---
+Resolved: `a40b330` rewrote the sentence in `_t_circle.md` `## Grounding snapshot`. It now reads
+"**`/fusion:setup` already writes outside `fusion-workbench/`.** Step 0f writes `./fusion.json`, and
+Step 0g writes `.claude/settings.local.json` and appends a line to `.gitignore`, all at the project
+root and all older than this Circle." The ordinal is gone rather than corrected, which is the right
+repair: counted by files the merge driver is the fourth, counted by steps the third, and the number
+carried no information while having been wrong in both directions.
+
+Verified independently at HEAD rather than read off the commit message, because this claim has now
+been stated wrongly by three parties. `skills/setup/SKILL.md:245-268` (Step 0f) copies
+`templates/fusion.json` to `./fusion.json` at the project root; `:270-313` (Step 0g) writes
+`.claude/settings.local.json` in `pwd` and, at its numbered item 4, appends
+`.claude/settings.local.json` to `.gitignore`. Grepped every write in the skill body: the only
+project-root writes are those two plus Step 0h's `./.gitattributes`, which is this Circle's own, so
+the corrected sentence is complete as well as true. Both steps predate the Circle record — Step 0f
+arrived in `92db96a` (2026-08-16) and Step 0g in `1e29572` (2026-08-15), against a record created
+2026-08-23.
+
+Closed by reconciler, second Coherence pass, 260823-2130.

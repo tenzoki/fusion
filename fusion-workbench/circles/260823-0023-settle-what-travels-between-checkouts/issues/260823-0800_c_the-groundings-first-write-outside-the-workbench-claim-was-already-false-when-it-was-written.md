@@ -33,3 +33,25 @@ Read at HEAD `3ee8eaf`: `skills/setup/SKILL.md` Step 0g sections 1, 2 and 3, and
 Resolved: the user corrected the sentence by hand in `_t_circle.md` `## Grounding snapshot` on 260823, before the closure rename. The Grounding now records that Step 0g already writes `.claude/settings.local.json` and appends to `.gitignore` at the project root, so the merge driver is the third such write rather than the first, and Step 0g is a worked convention rather than a precedent being set.
 
 No agent could perform this correction. The shaper is the only writer of a Circle record's `## Grounding snapshot`, and its mode 3 halted: neither of its two scope values covers a Grounding-only correction on a Circle whose `**Active spec/plan:**` cites a file. That gap is filed as `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`, and it is why this record closes against a human edit rather than an agent's.
+
+---
+Amended by reconciler, second Coherence pass, 260823-2130. **The resolution note above describes a
+state that no longer stands, and its central figure was wrong when written.**
+
+It records the correction made by hand in `2ec2bc2` and repeats that edit's claim that the merge
+driver is "the third such write", naming only Step 0g's two files. That was wrong by one:
+`skills/setup/SKILL.md` Step 0f writes `./fusion.json` at the project root and has done so since
+`92db96a` (2026-08-16), nineteen days before this Circle record existed. So this record closed against
+a correction that was itself inaccurate — which is why the note is amended rather than left to stand
+as the account of how the defect was fixed.
+
+`a40b330` supersedes it. The Grounding now reads "**`/fusion:setup` already writes outside
+`fusion-workbench/`.** Step 0f writes `./fusion.json`, and Step 0g writes `.claude/settings.local.json`
+and appends a line to `.gitignore`, all at the project root and all older than this Circle." The
+ordinal is dropped rather than corrected, because counted by files the driver is the fourth and counted
+by steps the third, and the number carried no information while having been wrong in both directions.
+
+Verified at HEAD against `skills/setup/SKILL.md:245-268` and `:270-313`, and by grepping every write in
+the skill body for a project-root target: the corrected sentence is complete as well as true. The
+closure stands; only the account of it needed repair. The undercount was filed and closed separately as
+`260823-1635_*`.

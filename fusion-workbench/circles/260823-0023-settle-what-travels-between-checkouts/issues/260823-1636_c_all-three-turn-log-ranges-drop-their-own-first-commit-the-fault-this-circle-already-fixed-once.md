@@ -55,3 +55,25 @@ Ran `git rev-list --count` on all six spellings in the table. Read all three rev
 Rewrite the three ranges as `3ee8eaf..e41393e`, `e41393e..5fc3201`, `5fc3201..7cd79f1` before the closure rename, so the log tiles the session it describes.
 
 The general repair is not in this record. `rules/circle-records.md:154-155` gives the Turn-log format as `commits <hash>..<hash>` and says nothing about which end is inclusive, which is the same silence the `**Reviewed-range:**` mandate had to close for review files. Whoever fixes this class should decide once whether the Turn-log line states the convention, or takes the Turn-start `head` value directly, which is the only spelling that cannot be got wrong because it is already written.
+
+---
+Resolved: `71f47c1` rewrote all three ranges to `3ee8eaf..e41393e`, `e41393e..5fc3201` and
+`5fc3201..7cd79f1`, and added a Turn 4 entry.
+
+Verified against git and against this session's own slice of the event log rather than against the
+commit message. The slice is `orchestrator-events.jsonl:2023-2101` — the file is append-only across
+every session this project has run, so a whole-file grep returns six Turns and 68 gate events and is
+the wrong denominator. Within the slice, `turn_start` carries `head 3ee8eaf`, `head e41393e`,
+`head 5fc3201` and `head 7cd79f1`, which are exactly the four bases now written.
+
+`git rev-list --count` on the three corrected ranges returns 10, 6 and 3, matching the counts the
+entries now carry. They tile the session's 19 commits exactly, with no gap and no overlap.
+
+One discrepancy found and it is not in the Turn log: the event log's own `turn_end turn=3` detail
+says "4 commits" where the range holds 3. `5fc3201` landed at 11:24:37Z, inside Turn 2 and at Turn
+2's own Coherence `gate_hit`, and Turn 2's `turn_end` already counts it among its 6. So the event
+detail over-counts by one, in the same direction the Turn log used to. It is a machine-written detail
+string in an append-only log, not a tracking claim, and nothing reads it for a total. Recorded here
+rather than filed.
+
+Closed by reconciler, second Coherence pass, 260823-2130.

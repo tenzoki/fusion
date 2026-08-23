@@ -80,3 +80,39 @@ The reconciler's correction is right and it landed in a session history file. Th
 Correct the three numbers in place. `## Coherence` is reconciler-owned (`&lt;!-- RECONCILER-OWNED --&gt;`), so this is a reconciler edit rather than a hand correction, and it is not a closure blocker: none of the three changes an edge verdict or the closure recommendation.
 
 The pattern under them is worth one sentence in whatever picks this up. All three faults are in the **summary**, and in each case the correct value is in the pass's own detail file or one `find` away. A summary that restates a measurement rather than citing where it was made is a second place for it to be wrong, and this pass has three.
+
+---
+Resolved by the reconciler that wrote the figures, second Coherence pass, 260823-2130. All three
+confirmed at HEAD by independent re-measurement, and all three corrected in the session history file's
+`## Coherence` section under `### Errata to the first pass`.
+
+**Corrected as errata rather than in place, deliberately.** The first pass's verdict is the record of
+why the Rebalance happened, so overwriting its figures would erase the evidence a reader needs to
+judge whether the Rebalance was warranted. The section now carries both the original text and the
+corrections, each cited.
+
+- **10 non-active Circles → 9.** Re-counted across `circles/*/issues/`: 75 open defect records held by
+  9 Circles. The tenth row in `260823-1403_*`'s table is
+  `260821-1042-reply-bounded-whole-question-answered`, which holds 5 open decisions and no open issues.
+- **22 defect closures → 23.** Measured by comparing the issue stores at `3ee8eaf` and `7cd79f1` as
+  sets on the slug rather than by rename detection, which fails here because the resolution notes
+  change the files too much: 2 records `_o_` at the session start are `_c_` at the end, and 21 more
+  were filed and closed inside the range. At HEAD the figure is 24.
+- **Four shipped files in `7cd79f1` → five.** `rules/circle-records.md`,
+  `reference-resolution-lint.test.ts`, `workbench-citation-lint.test.ts`, `rules-emission.golden`,
+  `surface-growth.golden`. The finding's sharpest half is confirmed: `history/260823-1446-reconciliation.md`
+  listed all five correctly in the same pass, so the wrong number was in the summary offered as
+  evidence for the judgement, while the right one sat in the detail.
+
+**The judgement the wrong figure supported survives it.** Five shipped files rather than four is a
+stronger reason to look at the uncovered range, not a weaker one, and the decision that makes coverage
+advisory (`shared/decisions/260815-2109_*`) does not turn on the count. The uncovered range at HEAD is
+`a40b330` and `71f47c1`, both workbench-only; the two commits the first pass named are now covered by
+the Turn 4 review.
+
+**The 19 has been reached.** This record also noted that the first pass's correction of "19 open
+decisions" to 12 had not reached `260823-1403_*`. It has now: that record carries an appended
+reconciliation note giving 12 open and 7 answered across 4 Circles, per Circle, with the table left
+unedited beside it so its own measurement stays legible.
+
+Closed by reconciler, second Coherence pass, 260823-2130.

@@ -61,3 +61,24 @@ Two separable things, and they are not the same size.
 **The sentence beside `:125`** is a statement about state on a dated pass, not a pointer, so `rules/fusion-workbench-conventions.md:358` says leave the letter on it and name the citing line instead of spelling the address. Whoever repairs the citation should not silently rewrite the claim: the annotation is dated `260823-1446` and was true then.
 
 **The class** is `260823-1414_*`'s to answer, and this record deliberately does not pre-empt it. But it moves the evidence: the option that looked free is not, and the writer that produced the dangling citation is an agent following no rule that told it otherwise, which is what that decision's option 4 is about.
+
+---
+Resolved by the reconciler that wrote the defect, second Coherence pass, 260823-2130. Both tokens in
+`reviews/260823-1410-coderev-c2-turn-3.md` now carry the wildcard: `:107` cites
+`shared/decisions/260823-1414_*_…` and `:125` cites `260823-0800_*_…`. Both resolve at HEAD — the
+second had been dangling since `2ec2bc2` renamed its target `_o_` → `_c_`, one commit after the
+annotation was written.
+
+The finding's load-bearing consequence is discharged with them. A fresh scan of every review file in
+this Circle, the only non-terminal Circle in the tree, returns **zero** hard-marker record tokens, so
+the measured repair debt behind option 3 of
+`shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md` is
+back to the zero that option was costed on. The decision can be answered against its own stated
+figure again.
+
+Worth stating plainly rather than fixing quietly: this was the reconciler committing, inside the
+Circle, the exact defect class the Circle had spent three Turns repairing, and no gate caught it —
+review files sit outside `inCorpus`, which is the subject of the decision the defect was moving the
+cost of.
+
+Closed by reconciler, second Coherence pass, 260823-2130.
