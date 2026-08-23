@@ -31,3 +31,29 @@ Read the record and its closure note at `a2a18f9`. `ls` over `circles/260823-002
 File the question as an `_o_` decision record with the two options the closure note already states and the cost it already names, so it reaches `$SCAN_DECISIONS` and a reconciler's Grounding pass. Placement is `shared/` under the Origin Rule: the corpus is a framework-wide surface and the question outlives this Circle, which is the same reasoning that put `260819-1645` where it is.
 
 Do this before the Circle closes. Afterwards the question is reachable only by somebody who opens a closed Circle's issue store on purpose.
+
+---
+
+Resolved: 2026-08-23 by coder. The question is filed as an open decision record at
+`shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`,
+in `shared/` per the Origin Rule and for the reason this record gives: the corpus is a
+framework-wide surface and the question outlives the Circle that met it twice.
+
+**It is filed unanswered, and that is the whole point of filing it.** The record carries no
+`Recommendation` beyond a statement of why the filing pass may not make the call: the corpus is the
+user's own recorded answer under
+`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
+which no repair pass may amend.
+
+**What the filing added to the closure note it rescued.** The note stated the two options and the
+cost. The record states four, and it measures the two that were only asserted: admitting every review
+file costs 270 citation repairs across 64 of the 90 review files before the clause could be armed,
+while admitting only the reviews of a non-terminal Circle costs none today, the three such files
+carrying zero dangling citations because this Circle repaired them by hand. That is the trade the
+answer turns on, and it was a guess until it was counted.
+
+**The scan is a floor, not the gate's own figure**, and the record says so: it reads one citation
+form, excludes fenced blocks only, and makes no `undecidable` partition, so whoever implements an
+answer re-measures with `hooks/lib/__tests__/helpers/citation-scan.ts`.
+
+**Measured.** No shipped surface moved for this item.

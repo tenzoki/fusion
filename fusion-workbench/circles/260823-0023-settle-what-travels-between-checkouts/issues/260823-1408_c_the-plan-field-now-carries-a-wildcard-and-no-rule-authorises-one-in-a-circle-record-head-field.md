@@ -34,3 +34,49 @@ Read `rules/circle-records.md:125-210` and `:250-268` in full, and `rules/fusion
 Say it once in `rules/circle-records.md`, where both halves already live: the head fields take the `_*_` wildcard at the marker position, for the same reason the portfolio does, because the target transitions and the field is not rewritten when it does. Change the template at `:135` and the worked example at `:164` in the same edit, since a reader who follows the example is the failure mode.
 
 Leave the closed Circles alone. Their records are history and their plans no longer transition.
+
+---
+
+Resolved: 2026-08-23 by coder. `rules/circle-records.md` now authorises the form the field already
+carries. Three edits, and one deliberate refusal.
+
+**The template at `:135` and the worked example at `:164`** were changed together, as this record
+asked: the template says `_*_` at the marker position, and the example spells
+`…/260716-1910_*_plan-foo.md` instead of `_p_`. A reader who follows the example is the failure mode,
+so the example moved first.
+
+**A new sibling section, `### Citation form in a Circle record's head field`,** carries the rule and
+its ground: the field is a pointer, its target transitions, nothing rewrites the field when it does,
+and regeneration is only the portfolio's *additional* reason. `Active session history:` is named as
+needing no rule, a history filename carrying no marker position to spell.
+
+**What was refused, and why it is the substance of the repair rather than a shortcut.** This record's
+Direction and the dispatch both read naturally as widening `### Citation form in the portfolio` by
+renaming its heading. That heading is cited by name in **twenty-six** places, twenty spelling it
+`###` and six carrying the already-drifted `##` form. Four are in shipped text
+(`agents/playmaker.md:168`, `hooks/lib/__tests__/portfolio-citation-form-lint.test.ts:15` and `:90`,
+`rules/fusion-workbench-conventions.md:358`); the rest are workbench records. Renaming it
+would have killed every one of them, which is this Circle's own defect class committed inside its
+last repair of that class. A sibling section leaves the cited string untouched and states the rule
+under a heading that scopes it correctly, and the new section says in as many words that the heading
+above scopes a store rather than the pointer-versus-statement test.
+
+**The field itself was not touched**, per the dispatch. It was already right; what was missing was the
+sentence saying so.
+
+**Measured.**
+
+- `rules/circle-records.md` 18 747 -> 20 172 bytes, +1 425. It is **role-specific**, emitted to
+  `orchestrator`, `playmaker` and `shaper`, so it is not in the universal core the always-on bound
+  measures. The hard bound's head-room is **3 321 bytes, unmoved**: floor 86 573, budget 98 573,
+  core emitting 95 252 before this change and after it.
+- The three role totals move with the file, to 121 087 / 120 258 / 115 424 bytes. The far blocking
+  number is `DRIFT_CEILING = 145 144`, so the largest role keeps 24 057 bytes of head-room.
+- `RULE_BASELINE` was **not** touched. `fixtures/rules-emission.golden` was regenerated, which the
+  file's own header names as the expected response and which absolves nothing.
+- `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE.records` was re-approved
+  117 -> 118, with an accounting entry naming the one token: this section's citation of this record.
+  `paths` and `anchors` are unmoved.
+- Em-dashes: 39 before, 39 after. The addition carries none, and the file's rate falls 17.8 -> 16.4
+  per 1000 prose words on the added words alone. It stands over the ceiling either way, as it did
+  before this change.

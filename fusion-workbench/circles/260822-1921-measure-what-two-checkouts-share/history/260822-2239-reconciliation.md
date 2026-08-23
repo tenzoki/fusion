@@ -2,7 +2,7 @@
 
 **Agent:** reconciler
 **Domain:** code
-**Circle:** `circles/260822-1921-measure-what-two-checkouts-share/_t_circle.md`
+**Circle:** `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
 **Session:** `circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md`
 **Range:** `f90de0c..b938f68`, 2 commits
 **Aggregate verdict:** coherent

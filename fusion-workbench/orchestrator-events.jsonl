@@ -2089,3 +2089,6 @@
 {"ts":"2026-08-23T11:47:20","event":"task_done","turn":3,"task":"T14","agent":"coder","detail":"a2a18f9 all six findings closed; 14 citations repaired; plan renamed to _c_"}
 {"ts":"2026-08-23T11:47:20","event":"commit","turn":3,"task":"T14","detail":"a2a18f9"}
 {"ts":"2026-08-23T11:47:39","event":"review_start","turn":3,"agent":"coderev","detail":"range b8a4c1a..a2a18f9"}
+{"ts":"2026-08-23T12:10:42","event":"review_done","turn":3,"agent":"coderev","detail":"7 issues filed, no blockers; both distrusted repairs hold; all 8 stopping clauses hold; 3 findings time-bound to the closure rename"}
+{"ts":"2026-08-23T12:10:42","event":"commit","turn":3,"detail":"1544224 review artifacts"}
+{"ts":"2026-08-23T12:10:42","event":"task_start","turn":3,"task":"T15","agent":"coder","detail":"pre-closure work: file the corpus decision, repair 4 dangling C1 citations, fix the live-plan comment"}

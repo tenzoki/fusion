@@ -36,3 +36,28 @@ Resolved each of the four as written against the tree at `a2a18f9`: zero matches
 ## Direction, not a prescription
 
 Rewrite the four to `_*_`. The class is worth one search rather than four: every Circle record cited by a `_t_` or `_a_` marker anywhere outside a fence will dangle the moment that Circle transitions, and no gate reaches history or analyses.
+
+---
+
+Resolved: 2026-08-23 by coder. All four citations were rewritten to the `_*_` wildcard form, at
+`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md:6`
+and `:294`,
+`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2219-analyst-two-checkout-isolation-measurement.md:6`,
+and
+`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2239-reconciliation.md:5`.
+
+**Three tokens in the same analysis were left standing, deliberately, and each for its own reason.**
+`:117` is the scratch Circle this record already excludes. `:49` is a table row whose subject is the
+class `circles/<c>/_t_circle.md` rather than any file — the path is already a placeholder, so there
+is nothing for a star to point at. `:193` and `:194` are verbatim `git` output inside a fenced block,
+where the spelling *is* the datum.
+
+**The tree-wide search this record's Direction asked for was run, and its result is a number rather
+than a repair.** Over `circles/*/reviews/`, `shared/reviews/`, the history and analysis stores, the
+class is far larger than these four: 270 dangling record citations stand in 64 of the project's 90
+review files alone. Repairing them was outside this pass's scope and is not what closes this record;
+the measurement was filed instead, with the question of whether any gate should reach that text, as
+`shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`.
+
+**Measured.** No shipped surface moved for this item; all four files are workbench records, which sit
+on no bounded surface.

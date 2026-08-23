@@ -40,3 +40,26 @@ Both match `LIVE_PLAN_RE` and both are in the gate's corpus today. The comment's
 ## Direction, not a prescription
 
 Restate `:331-333` as what it actually justifies. The case is put to the predicate because the predicate is the thing under test and the tree is not a reliable source of every shape. Then drop the tree claim, which will go stale again on the next plan anybody opens or closes. Leave `:151-156` as a dated measurement or stamp it more visibly; do not restate a live count in either place.
+
+---
+
+Resolved: 2026-08-23 by coder. `hooks/lib/__tests__/workbench-citation-lint.test.ts:331-333` now
+reads:
+
+```
+    // Against the predicate, not the tree, because the predicate is what is under
+    // test and which plans stand open on any given day is not a property of it.
+    // The dated measurement at the clause itself is where a live count belongs.
+```
+
+The tree claim is gone rather than corrected. A corrected count would be the same defect with a
+later expiry date: it goes stale on the next plan anybody opens or closes, which is ordinary work.
+What the comment now gives is the reason that does not expire — the case is put to `inCorpus`
+because `inCorpus` is the thing under test.
+
+**`:151-156` was left exactly as it stands, which is what this record asked for.** It carries its own
+stamp (`2026-08-20 at HEAD 8e7cae7`), so a reader meets it as a measurement rather than as a claim
+about now, and the new comment points at it as the one place a live count belongs.
+
+**Measured.** Three comment lines replaced by three, so the hook-test line budget is unmoved: 194
+lines of head-room before this change and 194 after. No other surface was touched.

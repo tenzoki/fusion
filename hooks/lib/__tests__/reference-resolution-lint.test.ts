@@ -577,7 +577,13 @@ function scanHeadingAnchors(
 // opening paragraph names `MISSING-POINTER`. The same pass repaired two `:N` suffixes in
 // `rules/fusion-workbench-conventions.md` and six in `README-agents.md`, and this gate resolves the
 // path and never the line after it, so not one of those registers here.
-const BASELINE = { paths: 1294, anchors: 180, records: 117 };
+// Re-approved 2026-08-23 for the C2 closing pass: records 117 -> 118, paths and anchors unmoved.
+// The one token is `rules/circle-records.md`'s new `### Citation form in a Circle record's head
+// field` citing the defect that exposed the gap,
+// `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`.
+// The same section names `$PORTFOLIO` and `Active spec/plan:`, which are not paths, and the
+// template and worked-example edits beside it changed a marker letter inside a path already counted.
+const BASELINE = { paths: 1294, anchors: 180, records: 118 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

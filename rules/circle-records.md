@@ -132,7 +132,7 @@ The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creati
 ---
 **Domain:** <code|data>
 **Filed by:** <agent name or "user">
-**Active spec/plan:** <workbench-relative path to the spec or plan, or "(none yet)">
+**Active spec/plan:** <workbench-relative path to the spec or plan, `_*_` at the marker position, or "(none yet)">
 **Active session history:** <workbench-relative path to the session history file, or "(none yet)">
 
 ---
@@ -161,7 +161,7 @@ The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creati
 
 The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `_S_circle.md`, per the State Markers section above.
 
-**`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910_p_plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
+**`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910_*_plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
 
 - A spec written with **no Circle in scope** lands in `shared/planning/`, and a Circle created later adopts it — one shared spec can serve several Circles at once. (Anticipated-circle mode no longer produces one: it creates the Circle first and writes inside it.)
 - A migrated pre-v4 Circle names a plan that the migration moved to `shared/planning/`, correctly: unknown origin means `shared/` (Origin Rule, corollary 1). The file genuinely is not in the Circle, and rewriting the field to claim otherwise would point it at nothing.
@@ -270,3 +270,22 @@ Measured elsewhere and transferred here as
 `shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`:
 five citations in one generated portfolio, two pointing at nothing on the day of filing and a
 third two hours later.
+
+### Citation form in a Circle record's head field
+
+**`Active spec/plan:` carries `_*_` at the marker position too**, and for the second half of
+the reason above without the first. The field is a pointer; its target transitions
+`_o_ → _p_ → _c_`; and nothing rewrites the field when it does, so a spelled marker dies at
+the target's first transition and, no regeneration ever reaching this file, stays dead. The
+portfolio's rule needs regeneration only to explain why correcting one by hand is futile.
+A transitioning target is on its own sufficient reason not to spell a marker, and it is the
+half that reaches a record nobody regenerates. Every consumer of the field resolves it by
+reading and none opens the literal, so the glob costs them nothing.
+
+The heading above scopes the store the section was written for, not the pointer-versus-statement
+test it states: that test is this document's, it governs every citation, and what is particular
+to `$PORTFOLIO` is only the regeneration argument beside it. `Active session history:` needs no
+rule of its own: a history filename carries no marker position to spell.
+
+Filed as `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`,
+against a record head field that had been rewritten correctly and authorised nowhere.

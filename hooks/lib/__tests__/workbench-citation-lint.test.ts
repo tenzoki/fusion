@@ -329,9 +329,9 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
   });
 
   it("takes a plan under work, and no plan that has stopped", () => {
-    // Against the predicate for the same reason: there is no live plan in this
-    // tree today. Every plan outside `archive/` is `_c_`, and the one `_p_` plan
-    // that exists is inside it.
+    // Against the predicate, not the tree, because the predicate is what is under
+    // test and which plans stand open on any given day is not a property of it.
+    // The dated measurement at the clause itself is where a live count belongs.
     expect(inCorpus("shared/planning/260101-0000_o_x.md")).toBe(true);
     expect(inCorpus("circles/260101-0000-c/planning/260101-0000_p_x.md")).toBe(true);
     for (const m of ["c", "d"]) {

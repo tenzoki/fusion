@@ -3,7 +3,7 @@
 **Date:** 2026-08-22 22:19
 **Type:** Feasibility
 **Status:** Complete
-**Requested by:** orchestrator, as the single measuring task of Circle `circles/260822-1921-measure-what-two-checkouts-share/_t_circle.md`
+**Requested by:** orchestrator, as the single measuring task of Circle `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
 
 ## Verdict
 
@@ -291,7 +291,7 @@ Read:
 - `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`
 - `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
 - `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
-- `circles/260822-1921-measure-what-two-checkouts-share/_t_circle.md`
+- `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
 
 ## Open Questions
 

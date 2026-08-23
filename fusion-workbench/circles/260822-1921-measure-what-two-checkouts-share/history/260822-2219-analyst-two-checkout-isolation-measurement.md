@@ -3,7 +3,7 @@
 **Date:** 2026-08-22 22:19
 **Agent:** analyst
 **Status:** Complete
-**Circle:** `circles/260822-1921-measure-what-two-checkouts-share/_t_circle.md`
+**Circle:** `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
 **Dispatched by:** orchestrator, as the Circle's single measuring task
 **Git HEAD at start:** `f90de0c`
 
