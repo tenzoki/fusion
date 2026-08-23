@@ -245,13 +245,13 @@ This is a minimal placeholder — the orchestrator overwrites it in full at the 
 
 ### 6.5 — Chain into a fresh orchestrator session
 
-The skill's final output must phrase itself as an implicit directive that the orchestrator (the parent session reading this output) will pick up. Print the following, rendered in the project's chat language (`## Tone`), changing nothing but the substitution:
+Print the following, rendered in the project's chat language (`## Tone`), changing nothing but the substitution:
 
 > *Activated. The Circle now stands at `_t_` and the `.active-circle` pointer names it.*
 >
 > *A fresh orchestrator session begins against this Circle. The orchestrator now runs Setup (which overwrites the dashboard), takes the Directive of Circle `<candidate-dirname>` as the session Directive — out of the record's `## Directive` while that section holds prose, and out of the spec or plan the record's `**Active spec/plan:**` cites once it holds the pointer instead — and proceeds with Phase 0 → Phase 1 → Phase 2.*
 
-That message is itself the directive. The orchestrator's own prompt instructs it to run Setup at the start of work, so emitting this text is sufficient to trigger Setup on the parent thread.
+**Then act on it in the same turn, and who you are decides how.** If you are the orchestrator, this activation is one of the self-initiated runs your own MANDATORY section anticipates: run your Setup now, then continue into Phase 0. Its steps are not restated here and must not be. If you are any other agent, stop here. The printed message stands as the user's next step, and this skill starts no session on its own.
 
 ## Boundaries
 

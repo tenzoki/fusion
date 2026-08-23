@@ -40,6 +40,38 @@ would change nothing.
 **The sharpest part is the ordering.** The step's instruction is to emit user-facing text, and
 emitting user-facing text is what ends a turn. The continuation is scheduled after the stop.
 
+## Verified history, added 260823 after the user asked whether this was new
+
+It is not new, and the four measurements say so:
+
+- `### 6.5` is byte-identical between the installed copy and the work tree, so the skill-body cuts of
+  260822 did not touch it.
+- The `## MANDATORY` section of `agents/orchestrator.md` is byte-identical between the two as well.
+- The step and its closing claim entered at v3.2.0 (`eb61f60`) and have not changed since.
+- **That same commit gave `agents/orchestrator.md` only dashboard formatting rules.** No line in that
+  prompt names an activation as a Setup trigger, then or now.
+
+**So the chain has never had a receiving end.** Every time it appeared to work, what worked was the
+model continuing of its own accord after printing a sentence describing the continuation. `inference:`
+a short turn ends less readily than a long one, which is why a tendency reliable enough to look like a
+mechanism stopped looking like one in a session twenty dispatches deep. That part is reasoning about
+past sessions this record cannot inspect, and is marked accordingly.
+
+**One string, two jobs — the diagnosis the original filing missed.** Step 6.5 specifies its message as
+user-facing output ("Print the following, rendered in the project's chat language") and expects the
+same string to work as an instruction to the agent emitting it. It is written in the third person,
+descriptive. That mood suits the first job and not the second: an instruction to yourself in the third
+person is a description. The two jobs need two pieces of text, in two moods.
+
+**`/fusion:setup` is unaffected and always was.** Its body *is* the procedure, so there is no handoff
+and nothing to receive. The two cases look alike and are not: one skill does the work, the other
+describes somebody doing it.
+
+**The explicit form promises less than a reader expects.** `/fusion:next <dirname>` says it "skips the
+proposal step and goes straight to the confirm" — it skips the ranking, not the confirm and not the
+session start. A user expecting the argument form to start immediately is reading Step 6.5's prose
+rather than the invocation table, and Step 6.5's prose is what goes unmet.
+
 ## What does not excuse it
 
 `agents/orchestrator.md:11` says the Setup steps "are inlined below for **self-initiated runs**", so
@@ -54,7 +86,29 @@ true and neither is the whole cause.
 shows this Circle in the portfolio…"* — which is honest about who acts next. `/fusion:next` is the
 one that describes a handoff it cannot perform.
 
-## What to consider
+## What was done, 260823
+
+**None of the three options below.** They were filed before the diagnosis above existed, and each is
+larger than the repair the evidence points at. Kept as written so the reasoning that produced them
+stays legible; superseded as a set by what follows.
+
+**The repair: separate the two jobs, in `skills/next/SKILL.md` alone.** The printed message stays
+exactly as it is, because it is good text for the user and is not the defect. Beside it stands an
+instruction to the executing agent, in the imperative and outside the printed block: having printed
+that message, run Setup and proceed with Phase 0. The false closing sentence goes, since it is what
+told a reader that printing sufficed.
+
+It lands on something that already exists rather than restating it. `agents/orchestrator.md:11` says
+the Setup steps "are inlined below for **self-initiated runs**" — a case the prompt already
+anticipates and for which nothing until now defined a trigger. The instruction points at Setup and
+copies none of it, which is why option 3 was not taken. It is conditional on the reader, because a
+skill body is executed by whichever agent is active: the orchestrator runs Setup and continues, any
+other reader leaves the printed message standing as the user's next step.
+
+`agents/orchestrator.md` is not touched. Widening its MANDATORY section was option 2, and that
+section's strength is that it fires without exception.
+
+## What was considered, and filed before the diagnosis existed
 
 Not costed here.
 

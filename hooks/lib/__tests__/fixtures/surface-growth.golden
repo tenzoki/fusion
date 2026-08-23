@@ -40,9 +40,9 @@
   log-activity/SKILL.md 13564
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
-  next/SKILL.md 25404
+  next/SKILL.md 25485
   setup/SKILL.md 45842
-  total 235778
+  total 235859
 
 [hook-tests lines]
   commit-message-path.test.ts 354
