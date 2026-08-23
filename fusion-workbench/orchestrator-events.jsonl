@@ -2040,3 +2040,6 @@
 {"ts":"2026-08-23T07:21:55","event":"task_done","turn":1,"task":"T3","agent":"coder","detail":"c9eba48 union merge driver as setup Step 0h; skills head-room 4338 -> 1658"}
 {"ts":"2026-08-23T07:21:55","event":"commit","turn":1,"task":"T3","detail":"c9eba48"}
 {"ts":"2026-08-23T07:21:55","event":"task_start","turn":1,"task":"T4","agent":"coder","detail":"setup: conditional marker write, drop setup_pwd; 1658 bytes head-room"}
+{"ts":"2026-08-23T07:36:54","event":"task_done","turn":1,"task":"T4","agent":"coder","detail":"905a8a4 conditional marker write, setup_pwd dropped; skills head-room 1455"}
+{"ts":"2026-08-23T07:36:54","event":"commit","turn":1,"task":"T4","detail":"905a8a4"}
+{"ts":"2026-08-23T07:36:54","event":"task_start","turn":1,"task":"T5","agent":"coder","detail":"setup: MISSING-POINTER report + activation gate; 1455 bytes head-room, tightest step"}

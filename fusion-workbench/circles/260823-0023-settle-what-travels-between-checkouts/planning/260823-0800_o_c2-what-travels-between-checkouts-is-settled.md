@@ -150,7 +150,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: two Setup runs at one plugin version leave `.fusion-setup` byte-identical and with an unchanged modification time after the second; a run whose shipped version differs rewrites it; a fresh workbench gets one; no freshly written marker contains `setup_pwd`; `git status --porcelain fusion-workbench/.fusion-setup` is empty after a second run in a tracked-workbench project; the `skills/` bound is measured after the edit and reported.
    - Dependencies: step 1
 
-5. **`/fusion:setup` reports a Circle this checkout never activated, and offers activation**
+5. [DONE] **`/fusion:setup` reports a Circle this checkout never activated, and offers activation**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`, `rules/fusion-workbench-conventions.md`
    - Changes: add the detection and the gate to `skills/setup/SKILL.md`, after the workspace exists and before the Done report. Detection reads `fusion-workbench/.active-circle` and the records matching `circles/*/_t_circle.md`, using one of the two sanctioned marker-glob forms. When the pointer is absent and at least one such record exists, that is `MISSING-POINTER` in the vocabulary `agents/playmaker.md:95` already defines, and the step names it with the Circle's directory name and the first line of its `## Directive`. It then asks, once, whether to activate that Circle here. On yes it writes the directory name into `.active-circle`; on no it writes nothing and says the Circle stays inactive in this checkout. When the pointer is present, or no `_t_` record exists, the step reports nothing.

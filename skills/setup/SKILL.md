@@ -340,6 +340,23 @@ Four outcomes, disjoint because `git check-attr` returns exactly one value for `
 - **any other value** — leave the file alone and name the driver. `unset`, which a project writes as `-merge`, reports here and is correct to leave: switching the driver off is as deliberate as setting a different one.
 - **not a git work tree** — nothing to ask, nothing to write.
 
+## Step 0i — Report a Circle this checkout never activated
+
+A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`, the condition `agents/playmaker.md` names and `/fusion:next` renders. A pointer deleted by hand is that same state, same report, same offer.
+
+It runs before Step 2 so `bin/fusion-paths` resolves against a Circle activated here. It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
+
+```bash
+[ -f ./fusion-workbench/.active-circle ] || find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/dev/null | head -1
+```
+
+- **Nothing printed** — pointer present, or no active record. Report nothing, ask nothing.
+- **A path printed** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*.
+  - **Activate** — `printf '%s\n' "<dir>" > ./fusion-workbench/.active-circle`. Step 2 resolves against it.
+  - **Leave** — write nothing; the Circle stays inactive here, and `/fusion:next` can activate it later.
+
+Name the branch that ran in the Done report.
+
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
 Read `./fusion-workbench/agentstate.yaml`.

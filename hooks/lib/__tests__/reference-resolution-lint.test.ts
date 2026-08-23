@@ -537,7 +537,12 @@ function scanHeadingAnchors(
 // conditional setup-marker write in `skills/setup/SKILL.md` cites `rules/workbench-tracking.md`
 // and the section that holds its reasoning. records does not move: the step cites no record.
 // Step 3 moved both counts by one the same way and approved it in `git:c9eba48` with no note here.
-const BASELINE = { paths: 1288, anchors: 178, records: 118 };
+// Re-approved 2026-08-23 for step 5 of the C2 plan: paths 1288 -> 1291, anchors and records
+// unmoved. Step 0i in `skills/setup/SKILL.md` cites three files — `rules/workbench-tracking.md`
+// for why the pointer does not travel, `agents/playmaker.md` for the `MISSING-POINTER` name it
+// reuses, and `bin/fusion-paths` for the resolution its placement protects. The conventions
+// clause naming `/fusion:setup` as the pointer's fifth writer cites no path of its own.
+const BASELINE = { paths: 1291, anchors: 178, records: 118 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
