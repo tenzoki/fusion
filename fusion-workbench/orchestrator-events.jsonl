@@ -2099,3 +2099,14 @@
 {"ts":"2026-08-23T13:00:19","event":"rebalance_grounding","detail":"correct the false first-write claim in the Circle record's Grounding snapshot"}
 {"ts":"2026-08-23T13:00:19","event":"turn_start","turn":4,"detail":"Turn 4: Grounding correction, two due records, review of the two uncovered commits; head 7cd79f1"}
 {"ts":"2026-08-23T13:03:33","event":"shaper_done","agent":"shaper","detail":"halted: mode 3 has no scope value for a Grounding-only correction; gap filed as 260823-1455"}
+{"ts":"2026-08-23T19:38:15","event":"gate_hit","detail":"Circle stop conditions"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 1: holds"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 2: holds"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 3: holds"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 4: holds"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 5: holds"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 6: holds"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 7: holds"}
+{"ts":"2026-08-23T19:50:40","event":"gate_response","detail":"Circle stop conditions clause 8: holds"}
+{"ts":"2026-08-23T19:58:16","event":"portfolio_refresh","detail":"circles/260823-0023-settle-what-travels-between-checkouts/_c_circle.md; playmaker history shared/history/260823-2153-playmaker-orchestrator-phase4.md"}
+{"ts":"2026-08-23T19:58:16","event":"reconciliation","detail":"two passes; second verdict review-needed, cleared by the Grounding clause fix at dd1356d"}
