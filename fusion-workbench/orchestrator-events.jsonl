@@ -2057,3 +2057,10 @@
 {"ts":"2026-08-23T08:54:55","event":"task_done","turn":1,"task":"T7","agent":"coder","detail":"2f1e3a6 sequence diagram sorts by ts; agents head-room 14787"}
 {"ts":"2026-08-23T08:54:55","event":"commit","turn":1,"task":"T7","detail":"2f1e3a6"}
 {"ts":"2026-08-23T08:55:16","event":"review_start","turn":1,"agent":"coderev","detail":"9 commits 3ee8eaf..2f1e3a6; 13 source/prompt/rule files; carried list not recorded"}
+{"ts":"2026-08-23T09:18:04","event":"review_done","turn":1,"agent":"coderev","detail":"11 issues filed; 2 blockers; range 3ee8eaf..2f1e3a6 now covered"}
+{"ts":"2026-08-23T09:18:04","event":"commit","turn":1,"detail":"e41393e review artifacts"}
+{"ts":"2026-08-23T09:18:19","event":"gate_hit","turn":1,"detail":"per-Turn Coherence gate"}
+{"ts":"2026-08-23T09:42:20","event":"coherence_review","turn":1,"detail":"verdict=ok; Artifact<->Grounding: 11 issues filed (2 blockers); Artifact<->Directive: commits move toward the Directive, 6 of 7 criteria stand; Grounding<->Directive: 0 answered decisions touched"}
+{"ts":"2026-08-23T09:42:20","event":"gate_response","turn":1,"detail":"continue"}
+{"ts":"2026-08-23T09:42:20","event":"turn_end","turn":1,"detail":"9 tasks resolved, 10 commits, 13 issues created, 3 issues resolved, 0 agent errors, 2 human gates"}
+{"ts":"2026-08-23T09:42:38","event":"turn_start","turn":2,"detail":"Turn 2: the two blockers, the smaller findings, then T8 and T9; head e41393e"}

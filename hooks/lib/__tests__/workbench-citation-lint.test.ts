@@ -90,7 +90,11 @@ const OPEN_ISSUE_RE = /(?:^|\/)issues\/[0-9]{6}-[0-9]{4}_o_[^/]+\.md$/;
 /** A decision carrying `_o_` or `_a_` — Grounding-Stand, per the wide reading. */
 const LIVE_DECISION_RE = /(?:^|\/)decisions\/[0-9]{6}-[0-9]{4}_[oa]_[^/]+\.md$/;
 
-/** The portfolio briefing, at the workbench root. */
+/**
+ * The portfolio briefing, at the workbench root. Class L since 2026-08-23, so it
+ * is present in the checkout that generated one and in no other; the corpus
+ * admits it either way and `corpusFiles()` judges it only where it exists.
+ */
 const PORTFOLIO = "portfolio.md";
 
 /**
@@ -260,7 +264,26 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
   const all = markdownFilesUnder(workbenchRoot).map((f) => f.rel);
 
   it("holds the four kinds the user's answer named", () => {
-    expect(rels.has("portfolio.md"), "portfolio.md is in the corpus by name").toBe(true);
+    // THE PORTFOLIO IS PUT TO THE PREDICATE AND THE OTHER THREE TO THE TREE. The
+    // difference is `rules/workbench-tracking.md`'s class partition, not a
+    // shortcut. Those three kinds are class R1 — git carries them — so every
+    // checkout has instances and "the tree carries one" is a claim git can keep.
+    // `portfolio.md` moved to class L on 2026-08-23: regenerated in full by every
+    // playmaker run, untracked and ignored. No clone of this repository has one,
+    // and a tree assertion here was red in all of them while passing here only
+    // because `git rm --cached` left a working copy on disk
+    // (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`).
+    //
+    // ASSERTED INSTEAD IS WHAT THE CLAUSE WAS FOR: the corpus admits the
+    // portfolio, so wherever one exists its citations are judged. That holds in
+    // every checkout and can only break by the clause leaving `inCorpus`, which
+    // is the failure this line exists to catch. Coverage is unchanged —
+    // `corpusFiles()` filters what is on disk, so an absent portfolio costs
+    // nothing. DROPPING IT FROM THE CORPUS IS NOT THE REPAIR: the corpus is a
+    // user's recorded answer
+    // (`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`),
+    // and class L governs what git carries, never what a gate may read.
+    expect(inCorpus(PORTFOLIO), "the corpus predicate admits portfolio.md").toBe(true);
     const has = (re: RegExp) => all.some((r) => re.test(r) && rels.has(r));
     expect(has(CIRCLE_RECORD_RE), "at least one Circle record is selected").toBe(true);
     expect(has(OPEN_ISSUE_RE), "at least one open issue is selected").toBe(true);

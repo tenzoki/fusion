@@ -549,7 +549,14 @@ function scanHeadingAnchors(
 // which is the +1 anchor (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`) and
 // a +1 path that cancels the `install.sh` spelling leaving Step 0e with the same restatement. records
 // is -1: the pre-v4 ordering rationale cited defect `260717-0115`, and the rationale went with it.
-const BASELINE = { paths: 1292, anchors: 180, records: 117 };
+// Re-approved 2026-08-23 for the Turn 1 Critical repair: paths 1292 -> 1293, anchors and records
+// unmoved. The one token is `rules/workbench-tracking.md` entering `README-hooks.md`'s row for the
+// workbench citation gate, where the corpus description now qualifies `portfolio.md` as class L and
+// cites the file that defines the class. Stated against the constant rather than the entry above
+// it: that entry closes at 1291 and the constant reads 1292, which is the unaccounted move filed as
+// `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_two-of-six-baseline-re-approvals-carry-no-accounting-and-the-log-now-contradicts-the-constant.md`
+// and is not repaired here.
+const BASELINE = { paths: 1293, anchors: 180, records: 117 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
