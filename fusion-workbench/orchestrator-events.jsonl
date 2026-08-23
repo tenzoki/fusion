@@ -2020,3 +2020,11 @@
 {"ts":"2026-08-22T20:59:05","event":"reconciliation","detail":"11 discrepancies, 4 corrected, verdict coherent"}
 {"ts":"2026-08-22T20:59:05","event":"portfolio_refresh","detail":"circles/260822-1921-measure-what-two-checkouts-share/_c_circle.md; shared/history/260822-2253-playmaker-orchestrator-phase4.md"}
 {"ts":"2026-08-22T20:59:05","event":"session_end","detail":"Circle closed coherent; 2 tasks, 3 commits; premise measured and holds"}
+{"ts":"2026-08-23T05:21:44","event":"session_start","history_file":"circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved; active Circle 260823-0023-settle-what-travels-between-checkouts; domain code; max_turns=12"}
+{"ts":"2026-08-23T05:45:53","event":"scope_resolved","detail":"mode=custom (active Circle C2); target=circles/260823-0023-settle-what-travels-between-checkouts; spec=shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md #C2; 7 acceptance criteria; agents: planner then coder/ontocoder/analyst"}
+{"ts":"2026-08-23T05:45:53","event":"planner_start","agent":"planner","detail":"C2 of the multi-user spec, into Circle 260823-0023-settle-what-travels-between-checkouts"}
+{"ts":"2026-08-23T06:08:04","event":"planner_done","agent":"planner","detail":"plan=circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md; 9 steps; 8 coder, 1 analyst"}
+{"ts":"2026-08-23T06:08:04","event":"gate_hit","detail":"plan review (Phase 0b.2)"}
+{"ts":"2026-08-23T06:23:08","event":"gate_response","detail":"plan approved; scope widened to include ROOT_RECORDS and orchestrator.md:1138 (task T2b)"}
+{"ts":"2026-08-23T06:23:08","event":"queue_built","detail":"10 tasks, 0 blocked at start; 9 coder, 1 analyst"}
+{"ts":"2026-08-23T06:23:08","event":"turn_start","turn":1,"detail":"Turn 1: T1..T7 source edits; head 3ee8eaf"}

@@ -90,3 +90,34 @@ regeneration if the size moves at all.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/fusion-workbench-conventions.md:76` still calls `portfolio.md` authored text rather than machine-refreshed, while `agents/playmaker.md:8` regenerates it every run. The live file changed stamp from 260815-2116 to 260817-1643 between two reads, which is the regeneration. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Resolved 260823-0830** (coder, Circle `circles/260823-0023-settle-what-travels-between-checkouts`, plan step 1).
+The false clause is gone: `rules/workbench-tracking.md` no longer contains the string "not
+machine-refreshed", and the two-group split that carried it no longer exists. It was replaced by the
+four-class partition of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
+`## The state partition`, which ranges over every entry of the layout tree in
+`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and states its own tiling.
+
+**This record's fix direction was overruled, and the closure is not agreement with it.** Its
+`## Fix direction` recommends keeping `portfolio.md` in the records group under the corrected ground
+"regenerated whole, but each version is a complete briefing". The user's answer 6 in the
+specification named above moves `portfolio.md` to **class L** instead: live state that stays in the
+checkout and never travels, because a committed copy is a briefing about what one checkout had
+pulled at the moment it ran, and merging two settles nothing the next playmaker run does not
+overwrite. So the record was right that the criterion text was false and wrong about where the entry
+lands; the recommendation is superseded rather than applied.
+
+The two neighbouring checks it asked for are both discharged. The live bullet's "each describe *now*"
+over a list that did not fit it is gone with the bullet, and the new class L paragraph gives
+`monitor` and `portfolio.md` their own grounds rather than sweeping them under a shared one. The
+`.gitignore` pass this record asked to be made in one deliberate sweep is plan step 2 of the same
+Circle, which closes
+`shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`;
+the sibling it named at the time,
+`shared/issues/260816-1051_*_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`,
+was already closed before this Circle opened.
+
+Two further surfaces still carry the retired classification and are outside this Circle's criteria:
+they are filed as
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`.

@@ -3,14 +3,14 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active spec/plan:** circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md
+**Active session history:** circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
 
 ---
 
 ## Directive
 
-After this Circle, a person reading `.gitignore` and `rules/workbench-tracking.md` sees which workbench entries git carries between checkouts and which it does not, and the two agree with each other and with the layout tree. `portfolio.md` is no longer among them: it is regenerated on demand, and `/fusion:next` says when the ranking was generated and that it reflects only what this checkout has pulled. `fusion-workbench/orchestrator-events.jsonl`, the only file two checkouts both append to, carries a union merge driver declared in a root `.gitattributes` that `/fusion:setup` creates or amends, so two people can each run a session, push, and pull the other's work with every line surviving and no conflict reaching a person. The generator that renders the session sequence diagram sorts by the `ts` field rather than trusting file order, because after a union merge the log is no longer chronological. The setup marker `fusion-workbench/.fusion-setup` stops producing a diff on every Setup: it is written only when the file is missing or the plugin version changes, and it no longer publishes the absolute path of the checkout it was written in. Setup reports, without acting on it, when the workbench holds a Circle record marked active that this checkout never activated, and offers activation as the user's own act.
+See `**Active spec/plan:**` above. The cited spec or plan states the Directive in force.
 
 ## Grounding snapshot
 

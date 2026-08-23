@@ -525,7 +525,15 @@ function scanHeadingAnchors(
 // `## Where to read more` entries that name a heading, in `skills/next/SKILL.md`,
 // `agents/orchestrator.md`, `skills/setup/SKILL.md` and `README-hooks.md`. records does not move
 // because the note cites no workbench record, on the precedent `docs/upgrading-to-v10-5.md` set.
-const BASELINE = { paths: 1284, anchors: 175, records: 116 };
+// Re-approved 2026-08-23 for step 1 of the C2 plan: paths 1284 -> 1286, anchors 175 -> 176,
+// records 116 -> 118. `rules/workbench-tracking.md` was rewritten from the two-group
+// record-versus-live-state split into the four-class partition, and every token moved is in that
+// one file. paths +2 and anchors +1: the layout tree is now cited twice, once in the sentence
+// naming what this rule was partitioned out of and again where the partition states its range,
+// and `agents/playmaker.md` enters as the ground for `portfolio.md` moving to class L. records +2:
+// the multi-user specification joins the provenance header, and the merge-driver section cites the
+// decision that chose `merge=union`.
+const BASELINE = { paths: 1286, anchors: 176, records: 118 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
