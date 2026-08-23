@@ -1135,7 +1135,7 @@ It prints `anchor=`, `head=`, `rows=`, `unstaged=` and `verdict=`, then **one li
 
 | Class | What it is | What you do |
 |---|---|---|
-| `record` | an authored artifact no commit carries — `portfolio.md`, a Circle record, or anything under an artifact store | add it to the next Step 3b staging list, written out in full and absolute |
+| `record` | an authored artifact no commit carries — a Circle record, or anything under an artifact store | add it to the next Step 3b staging list, written out in full and absolute |
 | `commit-message` | a commit-message-shaped **name** that no artifact store owns — the class the improvised `.commit-msg-tmp` lands in | read the file first. A leftover commit message: delete it, and write the next one to the `/tmp` path Step 3b step 3 names. Anything a session authored: name the file to the user and stage it. **Do not delete on the class alone** — this is the one class decided by a name rather than a location, so a false positive can enter it, and a deletion is not recoverable (issue `260811-1141`) |
 | `in-flight` | live state and the machine-written surfaces — the dashboard, the event log, `.guard-state/`, the setup marker, this session's own history file | **nothing.** These are in flight by construction; a report about them would fire on every commit and mean nothing |
 | `unclassified` | anything else under the workbench — a user's own note file, a frozen snapshot | **nothing, and do not file an issue about it.** The helper names it and says in the same line that it is not a record store and nothing is claimed about it |

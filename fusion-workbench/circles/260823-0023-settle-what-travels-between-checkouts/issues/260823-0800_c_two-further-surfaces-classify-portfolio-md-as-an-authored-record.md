@@ -42,3 +42,18 @@ The dispatch that produced C2's plan bounded the plan's scope explicitly and thi
 Read at HEAD `3ee8eaf`: `hooks/lib/staging-drift.ts` `ROOT_RECORDS` and its use in `classify`, the `LIVE_STATE` comment block naming `rules/workbench-tracking.md`, `agents/orchestrator.md:1138`, and the three `portfolio.md` assertions in `hooks/lib/__tests__/staging-drift.test.ts`.
 
 **Found by:** planner, while planning C2.
+
+---
+Resolved: Both named sites now agree with `rules/workbench-tracking.md` class L, in this Circle (`260823-0023-settle-what-travels-between-checkouts`), as a scope widening the user granted at the plan gate rather than a numbered plan step.
+
+`hooks/lib/staging-drift.ts`: the `portfolio.md` entry moved from `ROOT_RECORDS` to `LIVE_STATE`, with the reason `regenerated in full by every playmaker run`, so `classify` returns `in-flight` for it and it can never enter `faults`, the signature or the sentence handed to the model. `ROOT_RECORDS` is kept, empty, together with its branch in `classify`: the dispatch chose that over the removal this record proposed, because the workbench root is where a new surface arrives and the next authored one there should cost a line rather than a design decision taken twice. The doc comment carrying `not machine-refreshed` is gone; that phrase now appears nowhere under `hooks/`, `agents/`, `rules/` or `skills/`. The header's `record` bullet and the `LIVE_STATE` comment (`the first five` -> `the first six`, now naming class L) were corrected with it.
+
+`agents/orchestrator.md`: the staging-check class table's `record` row drops `portfolio.md` from its examples and keeps `a Circle record, or anything under an artifact store`. No reasoning was restated there; the rule holds it.
+
+**The behavioural consequence, measured before the change and not as this record predicted it.** `measureStagingDrift` runs `git status --porcelain --untracked-files=all -- <workbench>` with no `--ignored`, and `00ce4f0` both untracked `fusion-workbench/portfolio.md` and gave it an ignore rule, so git omits the path from that output entirely: verified at HEAD `3ee8eaf` that the command returns only `orchestrator-events.jsonl`, and that adding `--ignored` is what makes `!! fusion-workbench/portfolio.md` appear. No `record` row was reaching a Turn boundary or a Cleanup in this checkout, and none was going to. `classify` is a pure function on a path and did still answer `record`, which is what made the change worth taking: the reachable case is a consuming project that tracks its own workbench, where fusion ships no ignore rule, and there the classification was advice against fusion's own rule.
+
+Estimate corrected: this record put the test cost at three assertions. `portfolio.md` was the suite's stand-in for an authored record in nine cases across two files, so the fixture moved to a Circle record (`CIRCLE_RECORD`), which also gives the `*_circle.md` branch of `classify` its first coverage. `portfolio.md` stays in the fixture and is now pinned as `in-flight` in the do-not-cry-wolf case.
+
+Files: `hooks/lib/staging-drift.ts`, `agents/orchestrator.md`, `hooks/lib/__tests__/staging-drift.test.ts`, `hooks/lib/__tests__/commit-message-path.test.ts`, `hooks/lib/__tests__/fixtures/surface-growth.golden`, `hooks/dist/lib/staging-drift.{js,d.ts}`.
+
+Left standing, and outside this dispatch's file list: `hooks/staging-drift.ts:23`, the CLI header's worked output example, still renders `record M portfolio.md UNSTAGED (the Circle portfolio briefing - ...)`, which is output the classifier can no longer produce. It is documentary, it is a third site this record did not name, and it wants the same one-line correction.

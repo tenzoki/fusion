@@ -259,7 +259,7 @@ describe("commit-message path: no shipped prompt names one inside the workbench"
       ),
     ).toEqual(["fusion-workbench/.commit-msg-tmp"]);
     expect(classify(".commit-msg-tmp", "").klass).toBe("commit-message");
-    expect(classify("portfolio.md", "").klass).toBe("record");
+    expect(classify("shared/issues/260811-0100_o_x.md", "").klass).toBe("record");
   });
 
   it("negative control: a fixture prescribing the path fails the same check", () => {

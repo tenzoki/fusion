@@ -79,9 +79,9 @@
  *     leaves behind. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141`).
- *   - `record` — an authored artifact: the root-anchored `portfolio.md`, a
- *     Circle's `*_circle.md`, or anything under an artifact store. These are
- *     what a staging list is supposed to name.
+ *   - `record` — an authored artifact: a Circle's `*_circle.md`, or anything
+ *     under an artifact store. These are what a staging list is supposed to
+ *     name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the two tracked-but-machine-written
  *     ones and the session's own history file. Never a fault.

@@ -2031,3 +2031,6 @@
 {"ts":"2026-08-23T06:40:11","event":"task_done","turn":1,"task":"T1","agent":"coder","detail":"21ae170 four-class partition into rules/workbench-tracking.md; defect 260816-1049 closed"}
 {"ts":"2026-08-23T06:40:11","event":"commit","turn":1,"task":"T1","detail":"21ae170"}
 {"ts":"2026-08-23T06:40:11","event":"task_start","turn":1,"task":"T2","agent":"coder","detail":".gitignore: portfolio.md untracked + KEPT list"}
+{"ts":"2026-08-23T06:48:31","event":"task_done","turn":1,"task":"T2","agent":"coder","detail":"00ce4f0 portfolio.md untracked; KEPT list corrected; defect 260822-1028 closed"}
+{"ts":"2026-08-23T06:48:31","event":"commit","turn":1,"task":"T2","detail":"00ce4f0"}
+{"ts":"2026-08-23T06:48:31","event":"task_start","turn":1,"task":"T2b","agent":"coder","detail":"ROOT_RECORDS + orchestrator class table reclassify portfolio.md"}

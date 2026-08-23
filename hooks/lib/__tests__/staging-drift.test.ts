@@ -23,8 +23,9 @@
  * 1. **It reproduces the measured defect.** A modified root record, an
  *    untracked history entry and a `.commit-msg-tmp` are three faults, named.
  *    The root record the defect was measured on was the work queue's
- *    `tasklist.md`; that file left the plugin on 2026-08-15 and `portfolio.md`
- *    stands in its place here. The class is what was under test, not the name.
+ *    `tasklist.md`, which left the plugin on 2026-08-15; a Circle record stands
+ *    in its place, the record class still decided by location rather than by a
+ *    store segment. The class is what was under test, not the name.
  * 1b. **It classifies by location before it classifies by name.** An authored
  *    record whose topic slug says "commit message" is a `record` — the control
  *    this suite lacked, and the defect it let through (issue `260811-1141`).
@@ -73,6 +74,7 @@ import type { Project } from "./helpers/guard-harness.js";
  * than creating the file and the fault in the same step.
  */
 const WORKBENCH_FILES: Record<string, string> = {
+  "fusion-workbench/circles/260811-0100-close-the-findings/_t_circle.md": "# Close\n",
   "fusion-workbench/portfolio.md": "# Portfolio\n\n## Anticipated (_a_) — ranked\n",
   "fusion-workbench/shared/issues/260811-0100_o_something.md": "an issue\n",
   "fusion-workbench/shared/history/260811-0100-orchestrator.md":
@@ -90,6 +92,13 @@ const WORKBENCH_FILES: Record<string, string> = {
     "",
   ].join("\n"),
 };
+
+/**
+ * The record a case dirties when it wants a fault that no artifact store owns.
+ * It was `portfolio.md` until 2026-08-23, when that file became live state
+ * (`rules/workbench-tracking.md` class L) and `ROOT_RECORDS` emptied.
+ */
+const CIRCLE_RECORD = "circles/260811-0100-close-the-findings/_t_circle.md";
 
 const withWorkbench = <T,>(fn: (p: Project) => T): T =>
   withProject(fn, { git: true, files: WORKBENCH_FILES });
@@ -186,10 +195,10 @@ describe("staging drift: the defect it was built for", () => {
     () => {
       withWorkbench((project) => {
         // The three lines the issue's own `git status` reproduction printed,
-        // with the root record standing in for the queue file that carried it:
-        // ` M portfolio.md`, `?? .../260810-1723-tasklist-update.md`,
+        // with a Circle record standing in for the queue file that carried it:
+        // ` M .../_t_circle.md`, `?? .../260810-1723-tasklist-update.md`,
         // `?? .commit-msg-tmp`.
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
         write(
           project.root,
           "fusion-workbench/shared/history/260811-0200-tasklist-update.md",
@@ -204,9 +213,7 @@ describe("staging drift: the defect it was built for", () => {
         expect(k.verdict).toBe("unstaged");
         expect(k.unstaged).toBe("3");
 
-        expect(row(res.stdout, "portfolio.md")).toMatch(
-          /^ {2}record\s+M portfolio\.md {2}UNSTAGED/,
-        );
+        expect(row(res.stdout, CIRCLE_RECORD)).toMatch(/^ {2}record\s+M .*UNSTAGED/);
         expect(row(res.stdout, "shared/history/260811-0200-tasklist-update.md")).toMatch(
           /^ {2}record\s+\?\? .*UNSTAGED/,
         );
@@ -288,7 +295,7 @@ describe("staging drift: the defect it was built for", () => {
     "finding an unstaged record is not a non-zero exit",
     () => {
       withWorkbench((project) => {
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
         const res = runStagingDrift(project.root);
         // Issue 260810-0710: a check that hands its verdict to an exit code
         // teaches its reader to ignore that code.
@@ -337,14 +344,19 @@ describe("staging drift: what it reports without raising an alarm", () => {
     "treats the machine-written surfaces and this session's own history file as in flight",
     () => {
       withWorkbench((project) => {
-        // All three are modified on essentially every tool call of a live
-        // session. Reported as faults, they would fire on every commit forever.
+        // Each is machine-written and none is a task's record. Reported as
+        // faults, they would fire on every commit forever.
         write(
           project.root,
           "fusion-workbench/orchestrator-events.jsonl",
           '{"ts":"2026-08-11T01:00:00","event":"session_start"}\n{"ts":"2026-08-11T02:00:00","event":"turn_start"}\n',
         );
         write(project.root, "fusion-workbench/.fusion-setup", '{"harness":true,"v":2}\n');
+        // `portfolio.md` joined them on 2026-08-23: class L of
+        // `rules/workbench-tracking.md`, regenerated in full by every playmaker
+        // run, so a staging list carrying it carries a briefing the next run
+        // overwrites. It was a `record` here until that day.
+        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
         write(
           project.root,
           "fusion-workbench/shared/history/260811-0100-orchestrator.md",
@@ -358,12 +370,14 @@ describe("staging drift: what it reports without raising an alarm", () => {
         for (const path of [
           "orchestrator-events.jsonl",
           ".fusion-setup",
+          "portfolio.md",
           "shared/history/260811-0100-orchestrator.md",
         ]) {
           const line = row(res.stdout, path);
           expect(line, `${path} must be reported, never dropped`).toBeDefined();
           expect(line).toMatch(/^ {2}in-flight/);
         }
+        expect(row(res.stdout, "portfolio.md")).toContain("every playmaker run");
       });
     },
     CASE_TIMEOUT,
@@ -429,12 +443,12 @@ describe("staging drift: what it reports without raising an alarm", () => {
     "does not call a staged record a fault — it is on its way into a commit",
     () => {
       withWorkbench((project) => {
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
-        git(project.root, "add", "fusion-workbench/portfolio.md");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
+        git(project.root, "add", `fusion-workbench/${CIRCLE_RECORD}`);
 
         const res = runStagingDrift(project.root);
         expect(keys(res.stdout).verdict).toBe("clean");
-        const line = row(res.stdout, "portfolio.md");
+        const line = row(res.stdout, CIRCLE_RECORD);
         expect(line).toMatch(/^ {2}record/);
         expect(line).toContain("staged");
         expect(line).not.toContain("UNSTAGED");
@@ -490,7 +504,7 @@ describe("staging drift: the trigger is HEAD moving", () => {
     "says nothing while a record sits unstaged mid-Turn — the normal and correct state",
     () => {
       withWorkbench((project) => {
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
 
         // Arm the trigger (first sighting of a HEAD is never a move), then run
         // again with the record still sitting there and HEAD unmoved.
@@ -498,7 +512,7 @@ describe("staging drift: the trigger is HEAD moving", () => {
         const second = runTracker(project.root, "Bash", { command: "ls" });
 
         const said = second.hookSpecificOutput?.additionalContext ?? "";
-        expect(said).not.toContain("portfolio.md");
+        expect(said).not.toContain(CIRCLE_RECORD);
       });
     },
     CASE_TIMEOUT,
@@ -508,7 +522,7 @@ describe("staging drift: the trigger is HEAD moving", () => {
     "names the missed record on the tool call where HEAD moved",
     () => {
       withWorkbench((project) => {
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
         runTracker(project.root, "Bash", { command: "ls" });
 
         // A commit that did not carry the queue — the eighteen-commit case, once.
@@ -516,7 +530,7 @@ describe("staging drift: the trigger is HEAD moving", () => {
         const after = runTracker(project.root, "Bash", { command: "git commit" });
 
         const said = after.hookSpecificOutput?.additionalContext ?? "";
-        expect(said).toContain("portfolio.md");
+        expect(said).toContain(CIRCLE_RECORD);
         // It must not teach the reader to reach for the flag that caused the
         // opposite defect. The acceptance makes the staging shape a constraint,
         // and the prohibition doubles as the proxy for the sentence having spoken.
@@ -524,7 +538,7 @@ describe("staging drift: the trigger is HEAD moving", () => {
 
         const events = readEvents(project.root).filter((e) => e.event === "staging_drift");
         expect(events.length).toBe(1);
-        expect(events[0].detail).toContain("portfolio.md");
+        expect(events[0].detail).toContain(CIRCLE_RECORD);
       });
     },
     CASE_TIMEOUT,
@@ -564,12 +578,12 @@ describe("staging drift: the trigger is HEAD moving", () => {
     "reports once per miss, and again when the miss grows",
     () => {
       withWorkbench((project) => {
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
         runTracker(project.root, "Bash", { command: "ls" });
 
         commit(project.root, 1);
         const first = runTracker(project.root, "Bash", { command: "git commit" });
-        expect(first.hookSpecificOutput?.additionalContext ?? "").toContain("portfolio.md");
+        expect(first.hookSpecificOutput?.additionalContext ?? "").toContain(CIRCLE_RECORD);
 
         // Same miss, next commit: quiet. A message on every commit is one an
         // agent learns to read past.
@@ -598,7 +612,7 @@ describe("staging drift: anchoring and side effects", () => {
     "does not stand down in fusion's own repository, where the defect was measured",
     () => {
       withPluginWorkbench((project) => {
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
         runTracker(project.root, "Bash", { command: "ls" });
         commit(project.root, 1);
         const after = runTracker(project.root, "Bash", { command: "git commit" });
@@ -606,7 +620,7 @@ describe("staging drift: anchoring and side effects", () => {
         // different question about a different directory, and both are gone.
         // This one is anchored at the workbench root, and issue 260811-0114
         // happened in this repository.
-        expect(after.hookSpecificOutput?.additionalContext ?? "").toContain("portfolio.md");
+        expect(after.hookSpecificOutput?.additionalContext ?? "").toContain(CIRCLE_RECORD);
       });
     },
     CASE_TIMEOUT,
@@ -616,7 +630,7 @@ describe("staging drift: anchoring and side effects", () => {
     "stages nothing, commits nothing, and writes no workbench record",
     () => {
       withWorkbench((project) => {
-        write(project.root, "fusion-workbench/portfolio.md", "# Portfolio\n\nregenerated\n");
+        write(project.root, `fusion-workbench/${CIRCLE_RECORD}`, "# Close\n\nrevised\n");
         runTracker(project.root, "Bash", { command: "ls" });
         commit(project.root, 1);
 

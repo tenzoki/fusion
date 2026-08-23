@@ -79,9 +79,9 @@
  *     leaves behind. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141`).
- *   - `record` — an authored artifact: the root-anchored `portfolio.md`, a
- *     Circle's `*_circle.md`, or anything under an artifact store. These are
- *     what a staging list is supposed to name.
+ *   - `record` — an authored artifact: a Circle's `*_circle.md`, or anything
+ *     under an artifact store. These are what a staging list is supposed to
+ *     name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
  *     groups as "do not track it", plus the two tracked-but-machine-written
  *     ones and the session's own history file. Never a fault.
@@ -154,9 +154,9 @@ export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>.txt";
 /**
  * The live-state surfaces, by exact workbench-relative name.
  *
- * The first five are the "do not track it" group of
- * `rules/workbench-tracking.md`; this repository's own `.gitignore` applies
- * exactly that split, so in a project that follows it they never reach
+ * The first six are class L of `rules/workbench-tracking.md`, the entries that
+ * stay in the checkout they were written in; this repository's own `.gitignore`
+ * applies exactly that split, so in a project that follows it they never reach
  * `git status` at all. They are listed anyway because whether the workbench is
  * tracked, and how, is the project's decision — a consumer that tracks
  * `agentstate.yaml` must not be told on every commit that it forgot to stage it.
@@ -174,6 +174,7 @@ const LIVE_STATE = [
     { path: ".session-marker", why: "the orchestrator heartbeat — mtime is the signal" },
     { path: ".active-circle", why: "the active-Circle pointer — one line, rewritten on activation" },
     { path: "monitor", why: "a verbatim copy of bin/monitor, re-created by /fusion:setup" },
+    { path: "portfolio.md", why: "the portfolio briefing — regenerated in full by every playmaker run" },
     { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
     { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
 ];
@@ -203,10 +204,24 @@ const STORES = [
     "memos",
     "backlog",
 ];
-/** The root-anchored records: authored text, not machine-refreshed. */
-const ROOT_RECORDS = [
-    { path: "portfolio.md", why: "the Circle portfolio briefing" },
-];
+/**
+ * The root-anchored records: a file at the workbench root that a person authored
+ * and a staging list therefore has to name.
+ *
+ * **Empty, deliberately.** Its one entry was `portfolio.md`, and it moved to
+ * `LIVE_STATE` on 2026-08-23: `rules/workbench-tracking.md` places that file in
+ * class L, regenerated in full by every playmaker run, so calling it an authored
+ * record told the model to stage a briefing the next run overwrites.
+ *
+ * The list is kept, along with its branch in `classify`, because the workbench
+ * root is where a new surface arrives. The next one that is authored text rather
+ * than live state belongs here, and adding a line is then the whole change —
+ * where restoring a removed mechanism would be the same design decision taken a
+ * second time. Nothing else in this module needs to change for an entry to work:
+ * `classify` reads the list ahead of the store test and behind every live-state
+ * test, which is the order a root-anchored record needs.
+ */
+const ROOT_RECORDS = [];
 /**
  * A commit-message file, by name.
  *
