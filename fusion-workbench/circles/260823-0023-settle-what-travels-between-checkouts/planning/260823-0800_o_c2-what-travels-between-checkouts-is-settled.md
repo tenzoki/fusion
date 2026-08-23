@@ -165,7 +165,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: the briefing carries the generation stamp and the checkout qualification; nothing else in the render moves; the `skills/` bound is measured after the edit and reported.
    - Dependencies: step 1
 
-7. **The Phase-4 sequence diagram sorts by `ts` instead of trusting file order**
+7. [DONE] **The Phase-4 sequence diagram sorts by `ts` instead of trusting file order**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`
    - Changes: two sites, and both are needed because one is the instruction and the other is the format contract. At `agents/orchestrator.md:876`, the Phase-4 step gains the instruction to sort the events by their `ts` field before building the diagram. In the Observability section's `### 3. Post-Session Sequence Diagram`, the rules list gains the same requirement with its one-clause reason: after a union merge the log is no longer in chronological order, so a positional read produces a diagram that is wrong rather than untidy.

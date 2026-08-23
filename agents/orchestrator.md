@@ -873,7 +873,7 @@ If the helper reports `verdict=unchecked`, write its `why=` line into the sectio
 
 ### Sequence Diagram
 
-Read `fusion-workbench/orchestrator-events.jsonl` and generate a Mermaid sequence diagram (see Observability section 3 for format). Append it to the history file as a `## Session Flow` section.
+Read `fusion-workbench/orchestrator-events.jsonl`, sort the lines by their `ts` field, and generate a Mermaid sequence diagram from the sorted events (see Observability section 3 for format). Append it to the history file as a `## Session Flow` section.
 
 ### Phase 4 — Portfolio sync (when active Circle transitions)
 
@@ -1329,6 +1329,7 @@ sequenceDiagram
 ````
 
 **Rules for the diagram:**
+- Sort the events by their `ts` field before reading them in order: after a union merge the log is no longer chronological, so a positional read produces a diagram that is wrong rather than untidy. `ts` is fixed-width `%Y-%m-%dT%H:%M:%S`, so a lexicographic sort of that field is a chronological sort and no date parsing is needed.
 - Include only agents that were actually invoked (omit unused participants)
 - Show every task dispatch, gate interaction, review, and the final reconciliation
 - Use `Note over O: Turn N` to delineate Turns

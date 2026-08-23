@@ -2051,3 +2051,6 @@
 {"ts":"2026-08-23T08:35:53","event":"task_done","turn":1,"task":"T5b","agent":"coder","detail":"57eaf85 cut 3344 bytes in 11 passages; skills head-room 33 -> 3377"}
 {"ts":"2026-08-23T08:35:53","event":"commit","turn":1,"task":"T5b","detail":"57eaf85"}
 {"ts":"2026-08-23T08:35:53","event":"task_start","turn":1,"task":"T6","agent":"coder","detail":"next: briefing states portfolio provenance; 3377 bytes head-room"}
+{"ts":"2026-08-23T08:45:47","event":"task_done","turn":1,"task":"T6","agent":"coder","detail":"1400402 briefing states portfolio provenance; skills head-room 2644"}
+{"ts":"2026-08-23T08:45:47","event":"commit","turn":1,"task":"T6","detail":"1400402"}
+{"ts":"2026-08-23T08:45:47","event":"task_start","turn":1,"task":"T7","agent":"coder","detail":"orchestrator: sequence diagram sorts by ts"}
