@@ -173,7 +173,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: both sites require a `ts` sort and the Observability site carries the reason; no line concerning the Turn count is modified; the `agents/` bound is measured after the edit and reported.
    - Dependencies: step 3, so that the repair lands with the mechanism that causes the disorder
 
-8. **The two answered decision records close as implemented**
+8. [DONE] **The two answered decision records close as implemented**
    - Executor: `coder`
    - Files: `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`, `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
    - Changes: append an `Implemented:` line to each, naming the commit and the file the answer landed in, then rename `_a_` to `_i_`. The event-log record cites the commit from step 3 and `rules/workbench-tracking.md`; the activation record cites the commit from step 5. Both cite this Circle's record for the answer, which is where the user gave it.

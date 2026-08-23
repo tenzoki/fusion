@@ -2070,3 +2070,6 @@
 {"ts":"2026-08-23T10:16:56","event":"task_done","turn":2,"task":"T11","agent":"coder","detail":"d23c706 marker version guarded; skills head-room 1303"}
 {"ts":"2026-08-23T10:16:56","event":"commit","turn":2,"task":"T11","detail":"d23c706"}
 {"ts":"2026-08-23T10:16:56","event":"task_start","turn":2,"task":"T12+T13","agent":"coder","detail":"remaining Turn 1 review findings, batched"}
+{"ts":"2026-08-23T10:39:52","event":"task_done","turn":2,"task":"T12+T13","agent":"coder","detail":"18974bc 8 findings closed, 1 annotated for C4"}
+{"ts":"2026-08-23T10:39:52","event":"commit","turn":2,"task":"T12+T13","detail":"18974bc"}
+{"ts":"2026-08-23T10:39:52","event":"task_start","turn":2,"task":"T8","agent":"coder","detail":"close the two answered decision records as implemented"}

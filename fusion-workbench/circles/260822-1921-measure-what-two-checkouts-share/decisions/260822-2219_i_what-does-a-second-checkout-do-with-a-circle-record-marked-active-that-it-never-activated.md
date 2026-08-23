@@ -67,3 +67,24 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+Implemented: `25f60eb` — Step 0i of `/fusion:setup` reports the condition and offers activation as the
+user's own act. It reuses the name the workbench already had for it, `MISSING-POINTER` from
+`agents/playmaker.md`, rather than giving one condition a second one, and it writes `.active-circle`
+only in the confirmed branch. The same commit added `/fusion:setup` to the closed writer enumeration of
+that pointer in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, which this
+record's fourth constraint required of any answer that adds a writer.
+
+`18974bc` narrowed the case this record left without a rule. More than one active record is
+`MULTIPLE-ACTIVE`: Step 0i names every Circle it found, offers nothing, writes nothing, and points at
+`/fusion:next`. Which of several to run here is a portfolio judgement, and option 3 informs rather than
+chooses.
+
+The answer itself is the user's, given at the shaping gate of `/fusion:direct` and recorded in
+`circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md` `## Grounding snapshot`. It is
+cited where it lives rather than copied here.
+
+The cost stands as the gate stated it. The gate informs and prevents nothing: a second checkout can
+still activate a Circle the first one holds, and what changed is that the person sees the condition
+before it happens rather than after.

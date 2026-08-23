@@ -98,3 +98,25 @@ planning gate, exactly as `shared/planning/260822-1136_*_spec-fusion-becomes-a-m
 `## User decisions pending` states. The report's own recommendation 2 says the measurement was
 deliberately not appended to this record by the analyst pass; it is appended here as reconciliation
 evidence so that whoever answers finds it from the record rather than by knowing the report exists.
+
+---
+Implemented: `c9eba48` — Step 0h of `/fusion:setup` asks `git check-attr merge` for the path and, where
+no driver is declared, writes `fusion-workbench/orchestrator-events.jsonl merge=union` into a root
+`.gitattributes`. The reasoning is authored in `rules/workbench-tracking.md` `## The event log carries a
+union merge driver`, not in the skill body, so the step says what to do and the rule says why.
+
+Two later commits belong to the same answer, and it is not whole without them. `2f1e3a6` repaired the
+reader the driver unsorts: the Phase-4 sequence diagram in `agents/orchestrator.md` sorts the log by
+`ts` instead of trusting file order, which is the one of the two named readers this Circle took.
+`18974bc` gave the `set` branch of `git check-attr` its own words in both the step and the rule,
+because a bare `set` is git's default text merge and is precisely the state Step 0h exists to replace,
+while the step had been reporting it as a driver already in place.
+
+The answer itself is the user's, given at the shaping gate of `/fusion:direct` and recorded in
+`circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md` `## Grounding snapshot`. It is
+cited where it lives rather than copied here.
+
+The accepted cost stands as the gate stated it. The merged log is no longer chronological, and the
+second unsorted reader, the Turn count, stays with C4 where its own defect already lies. A third
+consequence surfaced during the work and is filed rather than absorbed:
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`.
