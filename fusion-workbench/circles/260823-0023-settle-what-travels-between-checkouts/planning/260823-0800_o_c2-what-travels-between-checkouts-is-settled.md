@@ -158,7 +158,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: with a `_t_` record present and no pointer, Setup names the Circle and asks; answering yes leaves `.active-circle` holding that directory name and answering no leaves it absent; with a pointer present nothing is reported and nothing is written; the conventions enumeration names `/fusion:setup` with its condition; the always-on rule bound is measured after the edit and reported; the `skills/` bound likewise.
    - Dependencies: step 1
 
-6. **The `/fusion:next` briefing says when the ranking was generated and what it covers**
+6. [DONE] **The `/fusion:next` briefing says when the ranking was generated and what it covers**
    - Executor: `coder`
    - Files: `skills/next/SKILL.md`
    - Changes: extend the render in Step 5 with the portfolio's provenance. The `**Generated:**` value is already in the portfolio header, so the skill reads it rather than computing anything. The rendered line states the stamp and that the ranking reflects only what this checkout has pulled. Place it with the counts rather than at the top: the recommendation is what the user came for, and the provenance qualifies it.

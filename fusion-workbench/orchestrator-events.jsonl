@@ -2048,3 +2048,6 @@
 {"ts":"2026-08-23T07:51:53","event":"gate_hit","turn":1,"task":"T6","detail":"skills/ growth bound: 33 bytes free, T6 cannot be written against it"}
 {"ts":"2026-08-23T08:19:27","event":"gate_response","turn":1,"task":"T6","detail":"user chose: cut to make room, then run T6; no baseline moves"}
 {"ts":"2026-08-23T08:19:27","event":"task_start","turn":1,"task":"T5b","agent":"coder","detail":"cut prose from skills/setup/SKILL.md into rules/workbench-tracking.md to free room for T6"}
+{"ts":"2026-08-23T08:35:53","event":"task_done","turn":1,"task":"T5b","agent":"coder","detail":"57eaf85 cut 3344 bytes in 11 passages; skills head-room 33 -> 3377"}
+{"ts":"2026-08-23T08:35:53","event":"commit","turn":1,"task":"T5b","detail":"57eaf85"}
+{"ts":"2026-08-23T08:35:53","event":"task_start","turn":1,"task":"T6","agent":"coder","detail":"next: briefing states portfolio provenance; 3377 bytes head-room"}

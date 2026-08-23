@@ -549,7 +549,7 @@ function scanHeadingAnchors(
 // which is the +1 anchor (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`) and
 // a +1 path that cancels the `install.sh` spelling leaving Step 0e with the same restatement. records
 // is -1: the pre-v4 ordering rationale cited defect `260717-0115`, and the rationale went with it.
-const BASELINE = { paths: 1291, anchors: 179, records: 117 };
+const BASELINE = { paths: 1292, anchors: 180, records: 117 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
