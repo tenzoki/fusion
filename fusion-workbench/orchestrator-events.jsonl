@@ -2086,3 +2086,6 @@
 {"ts":"2026-08-23T11:30:03","event":"gate_response","turn":2,"detail":"continue to closure; user chose to take all six findings in Turn 3"}
 {"ts":"2026-08-23T11:30:03","event":"turn_end","turn":2,"detail":"6 tasks resolved, 6 commits, 7 issues created, 10 issues resolved, 0 agent errors"}
 {"ts":"2026-08-23T11:30:03","event":"turn_start","turn":3,"detail":"Turn 3: all six Turn-2 findings, then closure; head 5fc3201"}
+{"ts":"2026-08-23T11:47:20","event":"task_done","turn":3,"task":"T14","agent":"coder","detail":"a2a18f9 all six findings closed; 14 citations repaired; plan renamed to _c_"}
+{"ts":"2026-08-23T11:47:20","event":"commit","turn":3,"task":"T14","detail":"a2a18f9"}
+{"ts":"2026-08-23T11:47:39","event":"review_start","turn":3,"agent":"coderev","detail":"range b8a4c1a..a2a18f9"}

@@ -1,0 +1,38 @@
+Four hard-marker citations of the C1 Circle record dangle, in three of the four files this Turn opened to repair that exact class
+
+---
+
+**Severity:** Medium
+**Domain:** code
+**Filed by:** coderev, reviewing C2 Turn 3
+**Affects:** `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md:6`, `:294`; `circles/260822-1921-measure-what-two-checkouts-share/history/260822-2219-analyst-two-checkout-isolation-measurement.md:6`; `circles/260822-1921-measure-what-two-checkouts-share/history/260822-2239-reconciliation.md:5`
+**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_the-closure-claim-that-nothing-else-cites-the-two-decisions-by-a-hard-marker-is-false-in-four-files.md`, whose repair touched three of these four files; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_ten-record-citations-in-the-turn-1-review-dangle-after-this-turns-renames-and-no-gate-covers-reviews.md`, which names the gap that hides them
+
+---
+
+## What is wrong
+
+`a2a18f9` rewrote fourteen citations to the `_*_` wildcard, four of them in the C1 Circle's files, on the ground that a hard marker is a pointer that dies at its target's next transition. Four citations of the **C1 Circle record itself** stand in those same files under the marker `_t_`, and the record has carried `_c_` since `4aaabc3`:
+
+```
+circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md:6
+  **Requested by:** orchestrator, as the single measuring task of Circle `circles/…/_t_circle.md`
+circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md:294
+  - `circles/…/_t_circle.md`
+circles/260822-1921-measure-what-two-checkouts-share/history/260822-2219-analyst-two-checkout-isolation-measurement.md:6
+  **Circle:** `circles/…/_t_circle.md`
+circles/260822-1921-measure-what-two-checkouts-share/history/260822-2239-reconciliation.md:5
+  **Circle:** `circles/…/_t_circle.md`
+```
+
+**All four are pointers, not statements about a marker.** `rules/circle-records.md` `### Citation form in the portfolio` gives the test: a statement whose subject *is* a transition keeps its letter, a pointer loses nothing by starring. None of the four says anything about a transition. The strongest case is `:294`, which sits third in a list whose first two entries already carry `_*_`.
+
+**The repair pass reached three of these four files and did not see them.** `260823-1318_*_the-closure-claim-…` was verified by "a tree-wide search for both records under every hard marker", scoped to the two decision records it was about. A Circle record is the one target whose marker moves at closure by construction, so it is the citation most certain to die, and no pass in this Circle searched for it.
+
+## Verified
+
+Resolved each of the four as written against the tree at `a2a18f9`: zero matches. Fences and inline exhibits excluded. `git show b8a4c1a:` on the analysis file shows lines 6 and 294 unchanged, so all four predate this range; `4aaabc3` is the `R068 _t_circle.md → _c_circle.md` rename. The fifth `_t_circle.md` token in that analysis, at `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md:117`, is **not** in this finding: it names a scratch Circle built for the measurement harness, which never existed in this tree, and it reads as a statement about what the harness held.
+
+## Direction, not a prescription
+
+Rewrite the four to `_*_`. The class is worth one search rather than four: every Circle record cited by a `_t_` or `_a_` marker anywhere outside a fence will dangle the moment that Circle transitions, and no gate reaches history or analyses.
