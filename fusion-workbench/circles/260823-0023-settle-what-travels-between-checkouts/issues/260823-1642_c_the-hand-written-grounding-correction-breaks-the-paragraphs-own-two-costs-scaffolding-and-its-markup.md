@@ -51,3 +51,8 @@ Read `_t_circle.md:26-32` byte-for-byte, including trailing whitespace (`grep -n
 If `:30` is opened for the count correction that `260823-1635_*` asks for, take these in the same edit — they are the same three lines and the same deadline, and a second pass over a frozen Grounding is not available.
 
 Recast `:29`'s promise to match what the paragraph now says: one accepted cost, plus the correction. Backtick the four literals and drop the trailing space. Either scope the convention list the way `skills/setup/SKILL.md` scopes it, or shorten it to the parts that hold unconditionally — read first, write only in the directory Setup ran in, report either way — and let the reader open Step 0g for the rest, which is what a worked convention is for.
+
+---
+Resolved: the clause now reads "never remove an existing entry from a list it merges into" and the sentence after it carries Step 0g's own scoping, to the `allow` list and no other field, together with the `defaultMode` scalar replacement and the question that names the value being replaced. Corrected in `_t_circle.md` `## Grounding snapshot` on 260823, before the closure rename.
+
+Written by the orchestrator on the user's explicit instruction at the Phase 3 gate, which is the second such override in this Circle. `agents/orchestrator.md` `## Scope` does not permit it and the sanctioned writer, shaper mode 3, cannot reach this case; the structural reason is filed as `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`. Both overrides are carried into the Closure note, because a Circle-scoped record does not survive closure in any agent's read set.
