@@ -2076,3 +2076,6 @@
 {"ts":"2026-08-23T10:50:56","event":"task_done","turn":2,"task":"T8","agent":"coder","detail":"a76ee8f both decisions _a_ -> _i_"}
 {"ts":"2026-08-23T10:50:56","event":"commit","turn":2,"task":"T8","detail":"a76ee8f"}
 {"ts":"2026-08-23T10:50:56","event":"task_start","turn":2,"task":"T9","agent":"analyst","detail":"two-checkout end-to-end transport verification"}
+{"ts":"2026-08-23T11:09:42","event":"task_done","turn":2,"task":"T9","agent":"analyst","detail":"b8a4c1a transport verified, all 19 lines in both trees; monitor defect filed"}
+{"ts":"2026-08-23T11:09:42","event":"commit","turn":2,"task":"T9","detail":"b8a4c1a"}
+{"ts":"2026-08-23T11:09:53","event":"review_start","turn":2,"agent":"coderev","detail":"range e41393e..b8a4c1a, 6 commits, 14 source files"}
