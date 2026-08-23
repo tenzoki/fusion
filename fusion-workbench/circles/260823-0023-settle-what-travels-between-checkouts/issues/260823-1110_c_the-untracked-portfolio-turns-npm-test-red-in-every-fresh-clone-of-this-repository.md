@@ -6,7 +6,7 @@ The untracked portfolio turns `npm test` red in every fresh clone of this reposi
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `hooks/lib/__tests__/workbench-citation-lint.test.ts:263`, `.gitignore:85`, and step 9 of this Circle's own plan
-**Cross-references:** plan step 2 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md`; `shared/issues/260821-1810_o_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md` (a different cause, same class of failure)
+**Cross-references:** plan step 2 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `shared/issues/260821-1810_o_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md` (a different cause, same class of failure)
 
 ---
 

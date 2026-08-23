@@ -283,7 +283,11 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     // user's recorded answer
     // (`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`),
     // and class L governs what git carries, never what a gate may read.
-    expect(inCorpus(PORTFOLIO), "the corpus predicate admits portfolio.md").toBe(true);
+    // THE LITERAL, NOT `PORTFOLIO`. `inCorpus(PORTFOLIO)` reduces to
+    // `PORTFOLIO === PORTFOLIO` and is invariant under a change to what the
+    // constant names; the literal additionally fails when the constant stops
+    // naming the file the workbench actually writes.
+    expect(inCorpus("portfolio.md"), "the corpus predicate admits portfolio.md").toBe(true);
     const has = (re: RegExp) => all.some((r) => re.test(r) && rels.has(r));
     expect(has(CIRCLE_RECORD_RE), "at least one Circle record is selected").toBe(true);
     expect(has(OPEN_ISSUE_RE), "at least one open issue is selected").toBe(true);

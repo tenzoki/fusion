@@ -53,4 +53,12 @@ Renaming a decision to `_i_` takes it out of the workbench citation gate's corpu
 and `_a_` decisions only (`hooks/lib/__tests__/workbench-citation-lint.test.ts`). Every remaining
 citation of these two records elsewhere uses the `_*_` marker wildcard, so nothing dangled.
 
+**Corrected on 2026-08-23, and the sentence above is left standing because it records what was
+claimed.** The second half of it was false when it was written. Four files cited the two records with
+`_o_` spelled out, and all four were already dangling before this range opened, which is why a search
+for `_a_` — the marker the rename moved away from — came back clean and read as a check. The four are
+named in
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_the-closure-claim-that-nothing-else-cites-the-two-decisions-by-a-hard-marker-is-false-in-four-files.md`
+and were repaired there. The first half stands: the rename itself broke nothing.
+
 Plan step 8 is marked `[DONE]`. Step 9 is the only step left. Nothing was committed.

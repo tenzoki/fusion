@@ -41,3 +41,37 @@ Two honest repairs, and the choice between them is a scope question rather than 
 Widen the probe so the count is taken unconditionally and the pointer only gates the offer. That makes the branch match the name it uses, and costs bytes on a surface with 372 free.
 
 Or narrow the words. Keep the probe and stop calling the branch `MULTIPLE-ACTIVE` outright: say that this step reports several active records **when this checkout has no pointer**, and that the general condition is `/fusion:next`'s to report. That costs nothing and leaves a reader with a true statement.
+---
+
+Resolved: 2026-08-23 by coder. The first of the two repairs this record offers was taken: the probe
+was widened so the count is unconditional and the pointer gates the offer rather than the detection.
+Step 0i's branch now matches the name it uses.
+
+```bash
+[ -f ./fusion-workbench/.active-circle ] && echo pointer-present
+find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/dev/null
+```
+
+The pointer test is written first so `find` is the last command and the block exits 0 in all four
+cases; ordered the other way it exits 1 whenever no pointer is present, which is one of the two
+conditions this step exists to report. The branch table gained the pointer as a second reading:
+nothing printed or one path with `pointer-present` reports nothing, one path without it is
+`MISSING-POINTER` and keeps the offer unchanged, and more than one path is `MULTIPLE-ACTIVE`
+whatever the pointer says. That last clause is the fix. `agents/playmaker.md:94` defines the condition
+with no pointer precondition, and the step now detects the whole of it.
+
+**Verified in a scratch tree, all four cases.** Two records with a pointer present, the shape this
+record calls the likelier one under two checkouts and the one the shipped probe could not see, prints
+`pointer-present` and both paths. Two records with no pointer prints both paths. One record with no
+pointer prints one path. Nothing at all prints nothing. Exit 0 throughout. Run against the live
+workbench the probe prints `pointer-present` and this Circle's own record, which is the report-nothing
+branch and is correct.
+
+**Measured, and the honest fix fitted.** `skills/setup/SKILL.md` 49 075 -> 49 245, +170 bytes. The
+`skills/` surface stands at 240 237 of a 240 439 budget, 202 free, down from 372. No baseline was
+moved and the narrowed-words alternative was not needed.
+`hooks/lib/__tests__/fixtures/surface-growth.golden` was regenerated for that entry and for
+`workbench-citation-lint.test.ts`.
+
+**Files:** `skills/setup/SKILL.md`, `hooks/lib/__tests__/fixtures/surface-growth.golden`. Uncommitted
+at the time of writing; the orchestrator commits.

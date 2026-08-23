@@ -38,3 +38,21 @@ Read at HEAD `b8a4c1a`. `PORTFOLIO` is declared at `:98` and read in `inCorpus` 
 ## Direction, not a prescription
 
 One token: assert `inCorpus("portfolio.md")` with the literal instead of the constant. That keeps every property the repair argued for, holds in a checkout with no portfolio on disk, and additionally fails when the constant stops naming the file the workbench actually writes.
+---
+
+Resolved: 2026-08-23 by coder. `hooks/lib/__tests__/workbench-citation-lint.test.ts` now asserts
+`inCorpus("portfolio.md")` with the literal. Every property the original repair argued for is kept,
+and the assertion additionally fails when `PORTFOLIO` stops naming the file the workbench writes,
+which is the half that was lost.
+
+A four-line comment was added above it saying why the literal and not the constant, so the next reader
+tidying a literal back into a named constant meets the reason first. That is the whole of the cost
+beyond the one token.
+
+**Measured.** Hook-test lines: +4, `workbench-citation-lint.test.ts` 370 -> 374, surface total
+20 177 -> 20 181 lines of a 20 375 budget, 194 free. `hooks/lib/__tests__/fixtures/surface-growth.golden`
+was regenerated for that entry and for `setup/SKILL.md`; no baseline moved.
+
+**Files:** `hooks/lib/__tests__/workbench-citation-lint.test.ts`,
+`hooks/lib/__tests__/fixtures/surface-growth.golden`. Uncommitted at the time of writing; the
+orchestrator commits.

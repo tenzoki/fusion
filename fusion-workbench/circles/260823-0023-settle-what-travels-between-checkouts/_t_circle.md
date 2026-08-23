@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md
+**Active spec/plan:** circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md
 **Active session history:** circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
 
 ---

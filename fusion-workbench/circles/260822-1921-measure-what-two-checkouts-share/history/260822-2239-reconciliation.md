@@ -49,7 +49,7 @@ Phase-4 work it alone may write, two annotated where they stand.
 4. **`shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` had no record of
    the current instance.** One `Also seen: 260822-2236` line appended. Its part 2, making the
    omission detectable, is further from existing than when it was written.
-5. **`shared/decisions/260822-1136_o_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+5. **`shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
    carried no pointer to the measurement that settles its option 1.** The report's `## Findings`
    section 7 measured both the benefit and the ordering cost, and its own recommendation 2 says it was
    deliberately not appended to the record. Appended here as reconciliation evidence. Marker unchanged

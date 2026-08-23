@@ -262,7 +262,7 @@ Result: `Merge made by the 'ort' strategy`, clean status, and both lines present
 
 ## Filed Decisions
 
-- `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_o_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md` — the `_t_` marker travels and `.active-circle` does not, so a second checkout holds an active-marked Circle with no local activation.
+- `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md` — the `_t_` marker travels and `.active-circle` does not, so a second checkout holds an active-marked Circle with no local activation.
 
 ## Sources
 

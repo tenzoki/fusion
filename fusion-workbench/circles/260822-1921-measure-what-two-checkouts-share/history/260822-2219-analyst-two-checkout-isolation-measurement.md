@@ -31,7 +31,7 @@ Two normative statements were measured false. `.fusion-setup` is not written onc
 
 - Report: `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`
 - Defect: `circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_o_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`
-- Open decision: `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_o_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
+- Open decision: `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
 
 ## What is left
 

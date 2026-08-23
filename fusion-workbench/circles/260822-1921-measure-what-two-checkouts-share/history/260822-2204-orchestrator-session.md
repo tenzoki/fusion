@@ -119,7 +119,7 @@ session ran on the spec's `### C1` criteria rather than on a plan, and a spec ca
   assume two orchestrators run safely against one workbench, is satisfied by measurement rather than
   overturned; the three open C2/C3-scoped records (`260822-1136` ×2, `260822-1556`) are untouched by
   this Circle and blocked on nothing it produced. The record filed this session,
-  `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_o_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`,
+  `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`,
   **opens a question the arrangement did not previously have** and is not a tension: it is downstream of
   the Directive's own fourth clause, its option 2 is explicitly refused against the closed writer set of
   `.active-circle`, and the addendum names it. It needs the user, at C2.

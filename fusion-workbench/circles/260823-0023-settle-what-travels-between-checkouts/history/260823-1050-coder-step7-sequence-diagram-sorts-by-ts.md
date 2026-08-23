@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-23
 **Status:** Complete
-**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md`, step 7
+**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 7
 **Agent:** coder
 
 ## What changed

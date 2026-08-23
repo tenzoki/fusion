@@ -24,7 +24,7 @@ bin/fusion-staging-drift:14
 
 `hooks/dist/staging-drift.js:23` carries the first as compiled output and moves with it.
 
-The closure note on `260823-0800_c_…` names `hooks/staging-drift.ts:23` and calls it "a third site this record did not name". It is the third and the fourth: `bin/fusion-staging-drift` is a separate authoring surface, and `CLAUDE.md`'s layout table makes that script's own header the authoritative documentation for the wrapper, with the row deliberately not restating it. So the header a reader is sent to demonstrates a classification the code cannot produce.
+The closure note on `260823-0800_*_…` names `hooks/staging-drift.ts:23` and calls it "a third site this record did not name". It is the third and the fourth: `bin/fusion-staging-drift` is a separate authoring surface, and `CLAUDE.md`'s layout table makes that script's own header the authoritative documentation for the wrapper, with the row deliberately not restating it. So the header a reader is sent to demonstrates a classification the code cannot produce.
 
 ## Verified
 

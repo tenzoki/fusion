@@ -4,7 +4,7 @@
 **Agent:** coder
 **Domain:** code
 **Circle:** `circles/260823-0023-settle-what-travels-between-checkouts`
-**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md`, step 2
+**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 2
 **Status:** Complete
 
 ## What was done

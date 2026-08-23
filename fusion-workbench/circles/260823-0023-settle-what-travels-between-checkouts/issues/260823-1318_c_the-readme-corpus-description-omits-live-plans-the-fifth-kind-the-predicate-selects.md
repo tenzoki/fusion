@@ -38,3 +38,19 @@ Read at HEAD `b8a4c1a`. `git log -S` on both the README sentence and `LIVE_PLAN_
 ## Direction, not a prescription
 
 Add the fifth kind to the row. The test file already carries a one-line statement of it worth reusing: a plan or spec carrying `_o_` or `_p_`, the two states in which an executor is dispatched against the document.
+---
+
+Resolved: 2026-08-23 by coder. The row at `README-hooks.md:369` now names five kinds. Live plans were
+added with the test file's own one-line statement of the clause reused: a plan carrying `_o_` or `_p_`,
+the two states in which an executor is dispatched against the document. The `portfolio.md` clause that
+`e7454e3` added was kept intact and reworded only where the sentence had to accommodate a fifth item.
+
+The omission stops being academic in the same session it was filed in: this Circle's plan is renamed
+to `_c_` by the record beside this one, so the clause selects zero files again, and the row now
+describes what the predicate does rather than what this tree happens to contain.
+
+**Measured.** `README-hooks.md` is on no bounded surface. Net +148 bytes, 48 114 -> 48 262. No new path
+citation and no new record token was introduced, so the `reference-resolution-lint` baseline is
+unmoved and its counts are unchanged.
+
+**Files:** `README-hooks.md`. Uncommitted at the time of writing; the orchestrator commits.

@@ -4,7 +4,7 @@
 **Agent:** coder
 **Domain:** code
 **Circle:** `circles/260823-0023-settle-what-travels-between-checkouts`
-**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md`, step 4
+**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 4
 **Status:** Complete
 
 ## What was done
@@ -36,7 +36,7 @@ version change rewrites the file in the ordinary way.
 - `/Users/k1/Projects/productive/fusion/skills/setup/SKILL.md`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/reference-resolution-lint.test.ts`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/surface-growth.golden`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md`
+- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
   (step 4 marked `[DONE]`)
 
 ## Two gates forced a file outside the step's list, and both are re-approvals

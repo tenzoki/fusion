@@ -2079,3 +2079,10 @@
 {"ts":"2026-08-23T11:09:42","event":"task_done","turn":2,"task":"T9","agent":"analyst","detail":"b8a4c1a transport verified, all 19 lines in both trees; monitor defect filed"}
 {"ts":"2026-08-23T11:09:42","event":"commit","turn":2,"task":"T9","detail":"b8a4c1a"}
 {"ts":"2026-08-23T11:09:53","event":"review_start","turn":2,"agent":"coderev","detail":"range e41393e..b8a4c1a, 6 commits, 14 source files"}
+{"ts":"2026-08-23T11:24:37","event":"review_done","turn":2,"agent":"coderev","detail":"6 issues filed (1 high); all 6 repair checks sound; range corrected to 2f1e3a6..b8a4c1a; coverage now 15/15"}
+{"ts":"2026-08-23T11:24:37","event":"commit","turn":2,"detail":"5fc3201 review artifacts"}
+{"ts":"2026-08-23T11:24:37","event":"gate_hit","turn":2,"detail":"per-Turn Coherence gate + closure scope"}
+{"ts":"2026-08-23T11:30:03","event":"coherence_review","turn":2,"detail":"verdict=ok; Artifact<->Grounding: 10 closed, 7 filed, all 6 repair checks sound; Artifact<->Directive: all 7 C2 criteria stand, last one measured; Grounding<->Directive: both load-bearing decisions now implemented"}
+{"ts":"2026-08-23T11:30:03","event":"gate_response","turn":2,"detail":"continue to closure; user chose to take all six findings in Turn 3"}
+{"ts":"2026-08-23T11:30:03","event":"turn_end","turn":2,"detail":"6 tasks resolved, 6 commits, 7 issues created, 10 issues resolved, 0 agent errors"}
+{"ts":"2026-08-23T11:30:03","event":"turn_start","turn":3,"detail":"Turn 3: all six Turn-2 findings, then closure; head 5fc3201"}

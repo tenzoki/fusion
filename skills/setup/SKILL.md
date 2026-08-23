@@ -350,14 +350,17 @@ A `_t_` Circle record travels between checkouts and `.active-circle` does not (`
 It runs before Step 2 so `bin/fusion-paths` resolves against a Circle activated here. It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
 
 ```bash
-[ -f ./fusion-workbench/.active-circle ] || find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/dev/null
+[ -f ./fusion-workbench/.active-circle ] && echo pointer-present
+find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/dev/null
 ```
 
-- **Nothing printed** — pointer present, or no active record. Report nothing, ask nothing.
-- **One path printed** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*.
+The count is taken unconditionally; the pointer gates the offer, not the detection.
+
+- **No path, or one path with `pointer-present`** — no active record, or this checkout activated it. Report nothing, ask nothing.
+- **One path and no `pointer-present`** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*.
   - **Activate** — `printf '%s\n' "<dir>" > ./fusion-workbench/.active-circle`. Step 2 resolves against it.
   - **Leave** — write nothing; the Circle stays inactive here, and `/fusion:next` can activate it later.
-- **More than one path printed** — `MULTIPLE-ACTIVE`, the condition `agents/playmaker.md` names beside `MISSING-POINTER`. Name every Circle found and say the project holds more than one active record. **Offer nothing and write nothing**: which of several to run here is a portfolio judgement, and `/fusion:next` is where the project makes it. Point the user there.
+- **More than one path, pointer or not** — `MULTIPLE-ACTIVE`, the condition `agents/playmaker.md` names beside `MISSING-POINTER`. Name every Circle found and say the project holds more than one active record. **Offer nothing and write nothing**: which of several to run here is a portfolio judgement, and `/fusion:next` is where the project makes it. Point the user there.
 
 Name the branch that ran in the Done report.
 
