@@ -134,7 +134,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns exactly those three paths; `fusion-workbench/portfolio.md` still exists on disk; `git status --porcelain fusion-workbench/portfolio.md` prints nothing; the `KEPT:` line and `rules/workbench-tracking.md` name the same three entries; the defect is `_c_`.
    - Dependencies: step 1, because the comment cites the rule and the two must agree
 
-3. **`/fusion:setup` declares the union merge driver, creating or amending `.gitattributes`**
+3. [DONE] **`/fusion:setup` declares the union merge driver, creating or amending `.gitattributes`**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`
    - Changes: add Step 0h immediately after Step 0g, which is the project-root-write neighbourhood and the convention this step follows. The block guards with `git rev-parse --is-inside-work-tree`, asks `git check-attr merge -- fusion-workbench/orchestrator-events.jsonl`, and branches as the diagram in `## Approach` shows. On the write branch it guards the final newline, then appends a one-line comment and the rule `fusion-workbench/orchestrator-events.jsonl merge=union`. The prose in the skill body is two sentences and a pointer to `rules/workbench-tracking.md` for why; the reasoning is not repeated here. Add one line to the Done report naming which of the four outcomes occurred, and, on the write branch, the path written.

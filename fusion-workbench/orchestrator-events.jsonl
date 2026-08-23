@@ -2034,3 +2034,6 @@
 {"ts":"2026-08-23T06:48:31","event":"task_done","turn":1,"task":"T2","agent":"coder","detail":"00ce4f0 portfolio.md untracked; KEPT list corrected; defect 260822-1028 closed"}
 {"ts":"2026-08-23T06:48:31","event":"commit","turn":1,"task":"T2","detail":"00ce4f0"}
 {"ts":"2026-08-23T06:48:31","event":"task_start","turn":1,"task":"T2b","agent":"coder","detail":"ROOT_RECORDS + orchestrator class table reclassify portfolio.md"}
+{"ts":"2026-08-23T07:06:38","event":"task_done","turn":1,"task":"T2b","agent":"coder","detail":"cc5abd7 portfolio.md reclassified to LIVE_STATE; defect 260823-0800 closed; one documentary site queued as T2c"}
+{"ts":"2026-08-23T07:06:38","event":"commit","turn":1,"task":"T2b","detail":"cc5abd7"}
+{"ts":"2026-08-23T07:06:38","event":"task_start","turn":1,"task":"T3","agent":"coder","detail":"setup Step 0h: union merge driver in .gitattributes"}

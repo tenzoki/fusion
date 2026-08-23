@@ -533,7 +533,7 @@ function scanHeadingAnchors(
 // and `agents/playmaker.md` enters as the ground for `portfolio.md` moving to class L. records +2:
 // the multi-user specification joins the provenance header, and the merge-driver section cites the
 // decision that chose `merge=union`.
-const BASELINE = { paths: 1286, anchors: 176, records: 118 };
+const BASELINE = { paths: 1287, anchors: 177, records: 118 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

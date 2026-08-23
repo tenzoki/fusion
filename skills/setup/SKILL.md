@@ -313,6 +313,35 @@ Desired contents:
 
 If the project already had `defaultMode: "bypassPermissions"`, say so and skip the question — there is nothing to decide. Any other existing `defaultMode` survives the run untouched unless the user answered yes to the question that named it.
 
+## Step 0h — Declare the union merge driver for the event log
+
+`fusion-workbench/orchestrator-events.jsonl` is the one workbench file every checkout appends to, so git's default text merge turns two checkouts' sessions into a conflict nobody should resolve by hand. This step asks git whether a merge driver already applies there and declares `merge=union` only where none does. `rules/workbench-tracking.md` `## The event log carries a union merge driver` holds the reasoning, including why the question is `git check-attr` and never a text search of `.gitattributes`; do not restate it here.
+
+Like Steps 0f and 0g, the write lands at the project root: `./.gitattributes` in the directory `pwd` reported in Step 0, outside `fusion-workbench/` and never in a subfolder. **This step asks the user nothing**, which is what keeps Step 0g the only step that asks on a normal run.
+
+```bash
+if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
+  D=$(git check-attr merge -- fusion-workbench/orchestrator-events.jsonl | sed 's/.*: //')
+  case "$D" in
+    union) echo "gitattributes: a union merge driver already applies — nothing written" ;;
+    unspecified)
+      [ -s ./.gitattributes ] && [ -n "$(tail -c1 ./.gitattributes)" ] && printf '\n' >> ./.gitattributes
+      printf '# fusion: the orchestrator event log is append-only and two checkouts both append to it.\nfusion-workbench/orchestrator-events.jsonl merge=union\n' >> ./.gitattributes
+      echo "gitattributes: union merge driver written to $(pwd)/.gitattributes" ;;
+    *) echo "gitattributes: left alone — this path already has merge driver '$D'" ;;
+  esac
+else
+  echo "gitattributes: not a git work tree — nothing written"
+fi
+```
+
+Four outcomes, disjoint because `git check-attr` returns exactly one value for `merge` on that path:
+
+- **`union`** — write nothing. A broader glob the project wrote itself may be what set it, and the path already has what the rule asks for.
+- **`unspecified`** — no driver applies, so the comment and the rule line are appended. The `tail -c1` test is what makes that safe: appending to a file whose last byte is not a newline joins the neighbouring rule to the comment and destroys both.
+- **any other value** — leave the file alone and name the driver. `unset`, which a project writes as `-merge`, reports here and is correct to leave: switching the driver off is as deliberate as setting a different one.
+- **not a git work tree** — nothing to ask, nothing to write.
+
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
 Read `./fusion-workbench/agentstate.yaml`.
@@ -427,4 +456,4 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0e had to report about the copied assets, and the permission line Step 0g produced (written and effective next session, declined, or already in place). (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0e had to report about the copied assets, the permission line Step 0g produced (written and effective next session, declined, or already in place), and which of Step 0h's four outcomes occurred (rule written, naming the `.gitattributes` path; a union driver already applying; another driver left alone, named; or no git work tree). (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)
