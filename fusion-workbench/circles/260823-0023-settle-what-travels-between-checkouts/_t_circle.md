@@ -54,3 +54,31 @@ Artifacts outside this Circle that bind it, cited rather than copied per the Ori
 - `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
 
 ## Turn log
+
+## Activation proposal
+
+**Recommended for activation. Proposed 260823-0423 by playmaker session `260823-0423-playmaker-direct-dispatch`.**
+
+This is the only anticipated Circle in the workbench, and it would rank first even against
+company. Both decisions its Grounding rests on were answered after this record was written and
+now carry the answered marker on disk:
+`shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+and
+`circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`.
+No open decision blocks it. The one open decision its Grounding names,
+`shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`,
+is named as deliberately held out of this Circle and placed before C3, so it is a boundary
+statement rather than an obstruction. Its single dependency,
+`260822-1921-measure-what-two-checkouts-share`, is closed coherent, and it left this Circle its
+measurement rather than a loose end.
+
+**One thing for whoever performs the activation.** This record's `**Active spec/plan:**` reads
+`(none yet)` while its `## Grounding snapshot` cites the specification it runs on by path. That
+is correct for an anticipated Circle and stops being correct at activation. Which of the two
+sanctioned routes performs it decides whether the field gets written and whether the
+`## Directive` prose above swaps to the pointer literal, per `rules/circle-records.md`
+`### The Directive is a pointer once a spec exists`. The divergence is filed as
+`shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`.
+
+**No marker was renamed and `.active-circle` was not written.** This block is a proposal. The
+user commits it through `/fusion:next`, or the orchestrator does at Phase 4.

@@ -1,61 +1,65 @@
 # Portfolio
 
-**Generated:** 260822-2253 (by playmaker session 260822-2253-playmaker-orchestrator-phase4)
+**Generated:** 260823-0423 (by playmaker session 260823-0423-playmaker-direct-dispatch)
 **Domain bias:** code
-**git HEAD at run:** `4aaabc3`
+**git HEAD at run:** `fff1291`
 
-**This run holds no user confirmation.** It is a Phase-4 dispatch from the orchestrator after a
-`_t_` → `_c_` transition, so there is no user in the loop. It ranked, regenerated this file, and
-checked whether either live backlog marker needed moving. It split, merged, closed and deferred
-nothing. One deferral is proposed below and waits on the user, unchanged from the previous two runs.
+**This run holds no user confirmation.** It was dispatched directly and has no channel to put a
+question to the user, so it holds no confirmation for any of the four confirm-gated backlog
+operations. It ranked, regenerated this file, wrote one activation proposal, and checked whether
+either live backlog marker needed moving. It split, merged, closed and deferred nothing. One
+deferral is proposed below and still waits on the user.
 
-**No Circle record was written this run.** There is no anticipated Circle to propose for activation,
-no non-terminal Circle to carry a dependency warning, and no non-terminal Circle whose Grounding
-cites a bounded one. Every Circle in the workbench is terminal, and a terminal record is history.
+**One Circle record was written this run**, by append:
+`circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md` now carries an
+`## Activation proposal`. No marker was renamed and `.active-circle` was not written.
 
 **Every path in this file carries `_*_` where a state marker would stand**, per
 `rules/circle-records.md` `### Citation form in the portfolio`. A marker that is being *named* keeps
-its letter: the heading `## Recently closed (_c_ / _b_)` below, and the `_t_` → `_c_` transition this
-run followed, are statements about markers rather than pointers to files.
+its letter: the heading `## Recently closed (_c_ / _b_)` below, and the `_a_` → `_t_` transition the
+proposal above would begin, are statements about markers rather than pointers to files.
 
 ## Active (_t_)
 
-**(none).** The workbench has no active Circle, and `.active-circle` is absent. That is the normal
-post-closure state, not a fault: `260822-1921-measure-what-two-checkouts-share` closed coherent
-minutes before this run and the orchestrator deleted the pointer with the rename. No warning is
-raised for it.
+**(none).** No Circle record carries `_t_` and `.active-circle` is absent. That is the normal state
+between Circles, not a fault, and it is what the activation proposal below exists to end.
 
 ## Anticipated (_a_) — ranked
 
-**(none) — and the empty section understates the position.** No Circle record in the workbench
-carries `_a_`, so there is nothing to rank and no activation proposal was written. But "nothing is
-planned" and "nothing is captured" are different states, and this is the second.
+**Recommended next: `260823-0023-settle-what-travels-between-checkouts` — every input it rests on is
+answered and on disk, and nothing else is waiting.**
 
-Three capabilities are specified and uncaptured. `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
-defines five, of which C0 and C1 are delivered — C0 without ever having a Circle directory, C1 as the
-Circle that just closed. The remaining three exist only as prose in that specification:
+1. **`260823-0023-settle-what-travels-between-checkouts`** (rank 1 of 1, record
+   `circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md`).
 
-- **C2 — what travels between checkouts is settled, and `portfolio.md` stops travelling** (spec `### C2`).
-  It is the natural successor: the Circle that just closed produced both of its open records as
-  declared inputs to C2, and its measurement is what C2 would build the state partition on.
-- **C3 — every record says who wrote it, and a Circle says who is running it** (spec `### C3`).
-- **C4 — presence travels, after the fact** (spec `### C4`).
+   *What travels between checkouts is settled, and the one file two people both write merges without
+   a hand on it.* It is capability C2 of
+   `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, captured through
+   `/fusion:direct` with six user answers already recorded in its `## Grounding snapshot`.
 
-None of the three has a Circle record, so this portfolio cannot rank them, cannot recommend one, and
-cannot tell you which is readiest. Filing one is `/fusion:direct`, and it is the user's act. The gap
-is filed as `shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`,
-whose second fix direction — amending the specification to drop the Circle vocabulary — is a
-different answer to the same gap rather than a lesser one.
+   It would rank first even against company, and the reason is that it carries no open question. The
+   two decisions its Grounding rests on were both answered after the record was written and both
+   carry the answered marker on disk today:
+   `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+   chose the union merge driver, and
+   `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
+   chose the reporting gate. Neither blocks it. The one open decision the Grounding names,
+   `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`,
+   is named as held out of this Circle by the user at the shaping gate and placed before C3 — a
+   boundary statement, not an obstruction, and it is the difference between a Circle that is blocked
+   and one whose scope somebody drew. Its single dependency,
+   `260822-1921-measure-what-two-checkouts-share`, is closed coherent, so the dependencies-closed
+   flag is clear. The evidence it builds on is measurement rather than argument: the merge case was
+   run end to end in
+   `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`,
+   with both the benefit and the cost confirmed. It is ready to activate as it stands.
 
-**Two records the closed Circle left open are inputs to C2, not loose ends.** Both live inside the
-Circle that produced them and are cited by its `## Closure note`:
+   Dependencies: one, closed. Open decisions cited: none blocking, one deliberately excluded.
 
-- `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
-  asks a question the chosen multi-user arrangement did not previously have.
-- `circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`
-  records that one member of the specification's class R3 does not survive measurement.
-
-They are not defects awaiting a fix pass. Whoever shapes C2 reads them first.
+**Two of the five specified capabilities are still uncaptured**, and that is a correction to what
+this file said yesterday rather than a repetition of it. C0 and C1 are delivered, C2 is the record
+above, and C3 and C4 exist only as prose in the specification (`### C3`, `### C4`). Filing one is
+`/fusion:direct`, and it is the user's act. See `spec-circles-unfiled` under `## Warnings`.
 
 ## Backlog — ranked
 
@@ -65,7 +69,7 @@ idea that needs no user act before it can be shaped.**
     /fusion:direct shared/backlog/260814-1733_*_bounded-executor-dispatches.md
 
 **Live and ranked (2).** Both markers already match this run's ranking, so no rename was made. The
-ranking is unchanged from 260822-2104, and so is the single proposal under it.
+ranking is unchanged from 260822-2253, and so is the single proposal under it.
 
 1. **`shared/backlog/260814-1733_*_bounded-executor-dispatches.md`** (recommended, marker `_p_`).
    Bound how long an executor runs before returning to the orchestrator. One idea, promotable whole.
@@ -90,21 +94,21 @@ ranking is unchanged from 260822-2104, and so is the single proposal under it.
 
        defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived
 
-   The case for it is that the entry has stood second across eleven consecutive refreshes on an
+   The case for it is that the entry has stood second across twelve consecutive refreshes on an
    obstruction no ranking pass can clear, and a deferral would say that plainly instead of implying
    the entry is merely runner-up. The case against it is that the idea is live and the blockage is
-   one user act wide. This is a Phase-4 dispatch and holds no confirmation, so the entry stays open
-   and the proposal carries forward verbatim. The next interactive `/fusion:next` is where the user
-   meets it.
+   one user act wide. This run holds no confirmation, so the entry stays open and the proposal
+   carries forward verbatim. An interactive `/fusion:next` is where the user meets it.
 
 ## Recently closed (_c_ / _b_)
 
 1. **`260822-1921-measure-what-two-checkouts-share`** (`_c_`). Closed coherent on 260822 after one
    Turn, two tasks, commits `f90de0c`..`b938f68`. Two checkouts of one project do get isolated
    workbench state, in both arrangements the user intends to use, on the precondition that each tree
-   carries its own `.fusion-setup`. Sharing is only ever the upward walk of `bin/fusion-workbench-root`,
-   never a shared file — a sharper result than the Directive asked for. The nested placement fails,
-   and closes as a recorded bound rather than an open defect.
+   carries its own `.fusion-setup`. Sharing is only ever the upward walk of
+   `bin/fusion-workbench-root`, never a shared file — a sharper result than the Directive asked for.
+   Both questions it left open have since been answered and are inputs to the anticipated Circle
+   above.
 2. **`260821-1042-reply-bounded-whole-question-answered`** (`_c_`). Closed coherent on 2026-08-22
    after seven Turns across two sessions; the final reconciliation returned `review-needed` on the
    Circle's account of itself rather than on its work, and prescribed four writes that were made
@@ -133,15 +137,29 @@ No Circle carries `_d_`.
 
 ## Warnings
 
-**`spec-circles-unfiled`.** Three of the five capabilities in
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` still exist only as prose,
-and with C1 closed the workbench now holds no Circle record at all — anticipated or active. That is
-why the anticipated section above is empty rather than merely short, and it is the reason a portfolio
-refresh can no longer tell you what comes next. Filed as
-`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`;
-its first fix direction is to file the remaining capabilities as anticipated records, and one quarter
-of it was answered by C1 becoming a Circle. C0 stays unrecorded either way: it ran to completion with
-no Circle directory.
+**`spec-circles-unfiled` — corrected, and it is now smaller than it was.** Two of the five
+capabilities in `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` exist only
+as prose: C3 (`### C3`, every record says who wrote it) and C4 (`### C4`, presence travels after the
+fact). This file recorded three yesterday; C2 has since been captured as
+`circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md`, so the count moved and the
+consequence moved with it. A portfolio refresh can tell you what comes next again. Filed as
+`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`,
+whose first fix direction is exactly what happened here, applied once more. C0 stays unrecorded
+either way: it ran to completion with no Circle directory.
+
+**`activation-head-fields-inconsistent` — re-read this run, and correctable again rather than
+historical.** Yesterday its subject had become a terminal record and the warning could only state
+what the defect would cost future activations. The new anticipated Circle puts the same field back
+in play. `circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md` carries
+`**Active spec/plan:** (none yet)` while its `## Grounding snapshot` cites the specification it runs
+on by path — which is correct for an anticipated record and stops being correct the moment somebody
+activates it. Which of the two sanctioned routes performs that activation decides whether the field
+is written, and, through `rules/circle-records.md`
+`### The Directive is a pointer once a spec exists`, whether the record's `## Directive` prose swaps
+to the pointer literal or stands as a second copy of a Directive the spec also states. The choice is
+live and it is one act away. Filed as
+`shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`;
+the activation proposal on the record repeats the caution where whoever activates will see it.
 
 **`portfolio-citation-regression`.** Still open, and this run does not close it. The 260822-2040
 generation of this file spelled a state marker in one path; the Circle transitioned twelve minutes
@@ -149,55 +167,48 @@ later and the citation died. Filed as
 `shared/issues/260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md`.
 Its second consideration measured why nothing else catches this class: the citation gate's pattern
 wants a stamp immediately before the marker, and a Circle record carries its stamp one path segment
-earlier, so a `circles/<dir>/_a_circle.md` pointer is invisible to it. Two clean generations are not
-evidence that the branch which produced the fault has changed. The record is addressed to the
-generator, not to this file.
+earlier, so a `circles/<dir>/<record>` pointer is invisible to it. This run emitted four such
+pointers, all starred. Three clean generations are not evidence that the branch which produced the
+fault has changed. The record is addressed to the generator, not to this file.
 
-**`activation-head-fields-inconsistent`.** Still open, and its subject has moved from a live Circle to
-a closed record. `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md` carries
-`**Active spec/plan:** (none yet)` while its `## Grounding snapshot` cites by path the specification
-it ran on. The cause is that the two sanctioned activation routes disagree: the orchestrator fills the
-field when it knows the file, and `/fusion:next` leaves it as it stands because a skill cannot
-identify the right one. This Circle went through the skill. Filed as
-`shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`.
-The record is now terminal and is history, so the field is not correctable here; what the defect costs
-from now on is every future activation through the skill.
-
-**`session-bookkeeping-froze-again`.** New since the previous refresh, and it is portfolio-relevant
-because it is about the durable record of the Circle this run just filed as closed. The reconciler
-found `agentstate.yaml`, `orchestrator-live.md`, the Circle's `## Turn log` and the session history
-all describing the state before Turn 1, while that Turn ran two tasks to completion. The Turn log and
-the closure note were written before the rename, so the Circle's own record is now complete; the
-workbench-root surfaces are the ones that stayed frozen. This is the fifth instance, and the
-detection that closed the first was deleted on 2026-08-15, so nothing measures the condition any
-more. Filed as
+**`session-bookkeeping-froze-again`.** Unchanged and still open. The reconciler found
+`agentstate.yaml`, `orchestrator-live.md`, the closed Circle's `## Turn log` and the session history
+all describing the state before Turn 1, while that Turn ran two tasks to completion. This is the
+fifth instance, and the detection that closed the first was deleted on 2026-08-15, so nothing
+measures the condition any more. Filed as
 `shared/issues/260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`.
+It is portfolio-relevant again for a forward reason rather than a backward one: the Circle above is
+about to become the next Turn's subject.
 
 **`dead-citation-in-live-store`.** Unchanged. The file `shared/backlog/260811-0826_*_observations.md`,
 the closed entry the two live backlog entries were split out of, names a third sibling in its own
 split note — the radical-simplification entry — that no longer resolves under `shared/backlog/`; an
-archive sweep moved it out of the live store. The entry is closed and is
-history, so nothing depends on the citation; repairing it means correcting the path to the archived
-copy, per the archival case in `rules/circle-records.md`.
+archive sweep moved it out of the live store. The entry is closed and is history, so nothing depends
+on the citation; repairing it means correcting the path to the archived copy, per the archival case
+in `rules/circle-records.md`.
 
-**`open-issue-volume`.** The shared issue store holds 120 open defect records against 149 closed, 24
-of them filed on 2026-08-22 alone. With C1 closed, no Circle is scoped to work any of them. This is
-stated as portfolio context, not as a recommendation: whether that volume warrants a Circle of its
-own is the user's call, and filing one is not this agent's act.
+**`open-issue-volume`.** The shared issue store holds 120 open defect records against 149 closed,
+counts unchanged since the previous refresh. Two of the open ones close with the anticipated Circle
+above, by its own Grounding. The rest are not scoped to any Circle. This is stated as portfolio
+context, not as a recommendation: whether that volume warrants a Circle of its own is the user's
+call, and filing one is not this agent's act.
 
-**`deferred-decision-blocks-a-backlog-entry`.** The second-ranked backlog entry cannot be shaped until
+**`deferred-decision-blocks-a-backlog-entry`.** The second-ranked backlog entry cannot be shaped
+until
 `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
 is revived from the deferred state, which only the user can do. See the proposed deferral above.
 
 **No pointer warning.** `.active-circle` is absent and no Circle record carries `_t_`, which is the
-normal post-closure state. `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER` and
+normal state between Circles. `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER` and
 `MULTIPLE-ACTIVE` all fail to apply.
 
-**No dependency cycle, and none is currently detectable.** The graph is built from non-terminal
-Circles only, and every one of the fifteen Circle records in the workbench is terminal. The graph has
-no nodes, so the absence of a cycle this run is a statement about an empty graph rather than about
-the dependencies anybody wrote.
+**No dependency cycle.** The graph is built from non-terminal Circles only, and there is now exactly
+one: `260823-0023-settle-what-travels-between-checkouts`. Its one dependency edge points at a closed
+Circle, which is outside the node set, so the graph has one node and no edges. A single node cannot
+close a cycle. Unlike the previous two refreshes, this is a statement about a graph that has
+something in it.
 
-**No parent-Grounding-stale condition.** The same emptiness: the two bounded Circles
-(`260820-2051-style-rules-arrive-and-get-measured`, `260816-1741-guard-becomes-observation-only`) have
-no non-terminal Circle that could cite them.
+**No parent-Grounding-stale condition.** The one non-terminal Circle's `## Grounding snapshot` cites
+neither bounded Circle — not `260820-2051-style-rules-arrive-and-get-measured`, not
+`260816-1741-guard-becomes-observation-only` — and names no Artifact from either closure note.
+Checked directly against the record this run rather than inferred from an empty set.

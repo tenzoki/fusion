@@ -48,7 +48,7 @@ This is genuinely the user's, because it trades a split store for one Directive 
 ---
 Answered:
 ---
-Answered: circles/260823-0023-settle-what-travels-between-checkouts/_a_circle.md `## Grounding snapshot`
+Answered: circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md `## Grounding snapshot`
 — user decision at the shaping gate of `/fusion:direct`, 260823: **`/fusion:setup` reports the state and
 offers activation as the user's own act.** It informs; it does not act.
 

@@ -39,9 +39,29 @@ Circle `circles/260822-1921-measure-what-two-checkouts-share/` was activated thr
 `## Grounding snapshot` cites the spec it runs on, by path, in its first sentence:
 `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`.
 
-So the spec exists, the record names it, and the field says nothing. Had the orchestrator performed
-the same activation, its own table's condition — "if one exists and the record does not already cite
-it" — would have been met and the field written.
+So the spec exists, the record names it, and the field says nothing.
+
+**Correction 260823, by the orchestrator that filed this.** The sentence that stood here claimed the
+orchestrator's condition would have been met and the field written. That is wrong, and it was wrong
+about the very case it cited. The condition reads "if one exists **and the record does not already
+cite it**", and the record cites the spec in its Grounding. The condition fails, so the orchestrator
+route leaves the field exactly as the skill route does. **The two routes agree on this record**, and
+the example this was filed on demonstrates nothing.
+
+Checked again on 260823 while activating `circles/260823-0023-settle-what-travels-between-checkouts/`,
+whose record cites its specification twice outside the field. Both routes leave `(none yet)` there
+too, and the shaper had carried a caution into that record on the strength of this defect's original
+wording.
+
+**A divergence remains, and it is narrower than what was filed.** The two routes differ only where a
+spec exists and the record cites it **nowhere** — not in the field, not in the Grounding, not in the
+Dependencies. Then the orchestrator writes the field and the skill does not. Neither of the two
+Circles cited in this record is that case, so the divergence is stated here without a measured
+instance, which is a weaker record than one with evidence and is said plainly rather than dressed up.
+
+What survives unchanged is the consequence, for whenever that case does arise: the pointer literal
+that keeps a record's Directive from duplicating its spec rides a write of the field, so the route
+that declines to write it also declines the swap.
 
 ## Why it is worth a record rather than a shrug
 

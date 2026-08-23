@@ -43,7 +43,7 @@ Option 1, with the reading order made explicit at every consumer. The union driv
 ---
 Answered:
 ---
-Answered: circles/260823-0023-settle-what-travels-between-checkouts/_a_circle.md `## Grounding snapshot`
+Answered: circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md `## Grounding snapshot`
 — user decision at the shaping gate of `/fusion:direct`, 260823: **the union merge driver**, one line in
 `.gitattributes`, which `/fusion:setup` creates or extends so a consuming project gets it too.
 
