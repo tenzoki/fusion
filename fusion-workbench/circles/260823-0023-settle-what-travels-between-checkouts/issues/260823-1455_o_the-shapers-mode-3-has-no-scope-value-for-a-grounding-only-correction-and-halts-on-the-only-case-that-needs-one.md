@@ -14,3 +14,6 @@ Options a repair might take, none of them chosen here: a third scope value namin
 
 **Filed by:** orchestrator
 **Cross-references:** `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`
+
+---
+Also seen: 260823 by orchestrator — the same over-breadth reaches the orchestrator's own scope, and the user overrode it explicitly. `agents/orchestrator.md` `## Scope` enumerates four places the orchestrator may write in a Circle record and `## Grounding snapshot` is not among them, so a factual correction there was refused for the same structural reason the shaper halted: both rules partition their permission by what happens to the Directive, and a Grounding-only correction falls through both. On 260823 the user instructed the orchestrator to make the correction after the shaper's halt, and it did. The exception is recorded here rather than left silent: the orchestrator wrote Grounding prose once, on explicit user instruction, because the sanctioned writer could not. A repair to either rule should cover both, since the gap is one gap seen from two prompts.
