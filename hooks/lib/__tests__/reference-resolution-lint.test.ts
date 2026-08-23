@@ -516,7 +516,16 @@ function scanHeadingAnchors(
 // is the record that granted the permission. That section names its condition by pointing at a
 // neighbouring heading in its own file rather than citing one in the class-(b) adjacent form, so
 // anchors do not move with it.
-const BASELINE = { paths: 1269, anchors: 171, records: 116 };
+// Re-approved 2026-08-23 for the v10.6 release, ONE block for the whole text pass: paths 1269 ->
+// 1284, anchors 171 -> 175, records unmoved. Thirteen of the fifteen paths are the new
+// `docs/upgrading-to-v10-6.md` citing shipped files. The other two are README.md gaining a pointer
+// to that note, and `rules/review-contract.md` entering `skills/help/SKILL.md` with the v10.6
+// paragraph — which displaced the v10.3 one under the update topic's three-release cap, a
+// `docs/…` pointer each way, so that displacement is net zero here. anchors is +4: the note's four
+// `## Where to read more` entries that name a heading, in `skills/next/SKILL.md`,
+// `agents/orchestrator.md`, `skills/setup/SKILL.md` and `README-hooks.md`. records does not move
+// because the note cites no workbench record, on the precedent `docs/upgrading-to-v10-5.md` set.
+const BASELINE = { paths: 1284, anchors: 175, records: 116 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

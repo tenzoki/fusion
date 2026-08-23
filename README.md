@@ -23,7 +23,9 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.5.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.6.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+
+**Upgrading from v10.5?** v10.6 changes one thing you will see: activating a Circle through `/fusion:next` now starts the session in the same turn, instead of printing a sentence saying that one begins. The orchestrator may also have a Directive captured as an anticipated Circle when your own words ask for it, and it still writes no Directive prose itself. Everything else is shipped text your agents read, most of it text that left. Nothing is rewritten and there is nothing to migrate. `docs/upgrading-to-v10-6.md` is the note.
 
 **Upgrading from v10.4?** v10.5 adds one Setup step that speaks to you: `/fusion:setup` now compares the four voice profiles in your workbench against the ones this version ships and asks once whether to replace them or keep yours. Answer "keep mine" if you have edited them; either answer stamps the file so the question does not come back. Everything else is text your agents read, plus two fixes — the monitor's "Dismiss All" works again, and the config template no longer documents an example that is not valid JSON. Nothing is rewritten and there is nothing to migrate. `docs/upgrading-to-v10-5.md` is the note.
 

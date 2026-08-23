@@ -1931,3 +1931,92 @@
 {"ts":"2026-08-22T01:28:07","event":"reconciliation","turn":5,"detail":"verdict review-needed on the account of the work; four prescribed writes made; closes coherent"}
 {"ts":"2026-08-22T01:28:07","event":"portfolio_refresh","turn":5,"detail":"circles/260821-1042-reply-bounded-whole-question-answered/_c_circle.md; shared/history/260822-0319-playmaker-orchestrator-phase4.md"}
 {"ts":"2026-08-22T01:33:59","event":"session_end","detail":"Circle closed coherent; 15 commits; 18 records filed, 17 closed; 2 questions left for the user"}
+{"ts":"2026-08-22T08:09:06","event":"session_start","history_file":"shared/history/260822-1009-orchestrator-session.md","detail":"Setup only; mode not yet resolved. domain=code, max_turns=12"}
+{"ts":"2026-08-22T08:25:23","event":"scope_resolved","detail":"mode=custom; multiuser rebuild of fusion; no backlog entry found; user chose to shape from the request"}
+{"ts":"2026-08-22T08:25:23","event":"shaper_start","agent":"shaper","detail":"multi-user fusion: lift the single-active-orchestrator decision, move session state into the repo"}
+{"ts":"2026-08-22T08:58:22","event":"shaper_done","agent":"shaper","detail":"round 1: four clarification questions returned; 1 issue filed (260822-1028)"}
+{"ts":"2026-08-22T08:58:22","event":"gate_hit","detail":"shaper clarification round 1 relayed to user (4 questions)"}
+{"ts":"2026-08-22T08:58:22","event":"gate_response","detail":"arrangement=multiple checkouts via git; guarantee=true parallelism; identity=full attribution; visibility=presence only"}
+{"ts":"2026-08-22T08:58:22","event":"shaper_start","agent":"shaper","detail":"round 2 with the four answers"}
+{"ts":"2026-08-22T09:28:36","event":"shaper_done","agent":"shaper","detail":"round 2: three questions returned; 1 decision filed (260822-1102 head-room)"}
+{"ts":"2026-08-22T09:28:36","event":"gate_response","detail":"transport=event log only; portfolio=untracked; attribution=person in record, session in event log (user corrected the derivability finding); head-room=cut-only Circle first"}
+{"ts":"2026-08-22T09:28:36","event":"shaper_start","agent":"shaper","detail":"round 3 with four answers and the verified session_id correction"}
+{"ts":"2026-08-22T09:42:49","event":"shaper_done","agent":"shaper","detail":"spec written: shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md; 2 decisions + 1 issue filed"}
+{"ts":"2026-08-22T09:42:49","event":"gate_hit","detail":"spec review gate"}
+{"ts":"2026-08-22T09:44:54","event":"gate_response","detail":"spec approved; proceed to planning"}
+{"ts":"2026-08-22T09:44:54","event":"planner_start","agent":"planner","detail":"C0 cut-only Circle, from spec 260822-1136"}
+{"ts":"2026-08-22T10:01:40","event":"planner_done","agent":"planner","detail":"shared/planning/260822-1154_o_plan-c0-cut-only-circle...md; 9 steps, 1 analyst + 8 coder; 2 decisions + 1 issue filed"}
+{"ts":"2026-08-22T10:01:40","event":"gate_hit","detail":"plan review gate"}
+{"ts":"2026-08-22T10:12:16","event":"gate_response","detail":"plan approved; start the Turn loop"}
+{"ts":"2026-08-22T10:12:16","event":"queue_built","detail":"9 tasks, 1 analyst + 8 coder, 0 blocked at start"}
+{"ts":"2026-08-22T10:12:16","event":"turn_start","turn":1,"detail":"2 ready tasks: P-1 ledger, P-8 record close"}
+{"ts":"2026-08-22T10:12:16","event":"task_start","turn":1,"task":"P-1","agent":"analyst","detail":"cut ledger over four surfaces"}
+{"ts":"2026-08-22T10:12:16","event":"task_start","turn":1,"task":"P-8","agent":"coder","detail":"close 260821-2204 with a Resolved note"}
+{"ts":"2026-08-22T10:22:24","event":"task_done","turn":1,"task":"P-8","agent":"coder","detail":"4a58be1 — record closed on a verified disposition"}
+{"ts":"2026-08-22T10:22:24","event":"commit","turn":1,"task":"P-8","detail":"4a58be1 growth-bound record closes on a verified disposition"}
+{"ts":"2026-08-22T10:22:24","event":"commit","turn":1,"detail":"faac921 shaping and planning records for the multi-user rebuild"}
+{"ts":"2026-08-22T10:36:03","event":"task_done","turn":1,"task":"P-1","agent":"analyst","detail":"ledger: hook tests 83/500, agents 6665/10362, skills 4290/4300"}
+{"ts":"2026-08-22T10:36:03","event":"gate_hit","turn":1,"detail":"Gate A — two of three surfaces fall short on restatement alone"}
+{"ts":"2026-08-22T11:14:05","event":"gate_response","turn":1,"detail":"Gate A: pin log option 2 (trim + relocate 25 entries); agents shortfall closed by relocating the reviewer contract to a shared rule; C0 proceeds"}
+{"ts":"2026-08-22T11:14:05","event":"turn_end","turn":1,"detail":"1 task resolved (P-8), 1 ledger produced (P-1), 2 commits, 5 records filed by sub-agents"}
+{"ts":"2026-08-22T11:14:42","event":"commit","turn":1,"task":"P-1","detail":"aa44a8b cut ledger and Gate A answer"}
+{"ts":"2026-08-22T11:14:42","event":"turn_start","turn":2,"detail":"1 ready task: P-2 hook test cut"}
+{"ts":"2026-08-22T11:14:42","event":"task_start","turn":2,"task":"P-2","agent":"coder","detail":"cut >=500 lines from the hook test suite"}
+{"ts":"2026-08-22T11:37:30","event":"task_done","turn":2,"task":"P-2","agent":"coder","detail":"501 lines cut; head-room 12 -> 513"}
+{"ts":"2026-08-22T11:37:30","event":"commit","turn":2,"task":"P-2","detail":"5afb910 pin re-approval log relocated; 501 lines cut"}
+{"ts":"2026-08-22T11:37:30","event":"task_start","turn":2,"task":"P-3","agent":"coder","detail":"agents/*.md restatement cut plus reviewer-contract relocation"}
+{"ts":"2026-08-22T11:58:44","event":"task_done","turn":2,"task":"P-3","agent":"coder","detail":"agents head-room 1638 -> 16601"}
+{"ts":"2026-08-22T11:58:44","event":"commit","turn":2,"task":"P-3","detail":"181dd8a five claims de-duplicated, reviewer contract relocated"}
+{"ts":"2026-08-22T11:58:44","event":"task_start","turn":2,"task":"P-4","agent":"coder","detail":"cut skills/*/SKILL.md by >=4300 bytes"}
+{"ts":"2026-08-22T12:01:04","event":"gate_hit","turn":2,"detail":"Gate B — shape of the /fusion:help upgrade section"}
+{"ts":"2026-08-22T12:01:04","event":"gate_response","turn":2,"detail":"Gate B: option 2, cap the section at the last N releases with one standing pointer to docs/; step 6 becomes net negative"}
+{"ts":"2026-08-22T12:13:52","event":"task_done","turn":2,"task":"P-4","agent":"coder","detail":"skills head-room 30 -> 4370"}
+{"ts":"2026-08-22T12:13:52","event":"commit","turn":2,"task":"P-4","detail":"c2ad89c two claims de-duplicated across eight skill bodies"}
+{"ts":"2026-08-22T12:13:52","event":"turn_end","turn":2,"detail":"3 tasks resolved (P-2, P-3, P-4); all three cut targets met; 3 commits"}
+{"ts":"2026-08-22T12:14:21","event":"turn_start","turn":3,"detail":"P-7 plus the session-range review"}
+{"ts":"2026-08-22T12:14:21","event":"review_start","turn":3,"agent":"coderev","detail":"range 370bfc5..c2ad89c, 6 commits, 0 prior reviews"}
+{"ts":"2026-08-22T12:14:21","event":"task_start","turn":3,"task":"P-7","agent":"coder","detail":"test for bin/fusion-prose-metric"}
+{"ts":"2026-08-22T12:24:21","event":"review_done","turn":3,"agent":"coderev","detail":"range tiled; 1 High, 1 Low; no cut removed a mechanism, one cut removed a claim its cited home does not carry"}
+{"ts":"2026-08-22T12:29:53","event":"task_done","turn":3,"task":"P-7","agent":"coder","detail":"162-line test; hook head-room 464 -> 302"}
+{"ts":"2026-08-22T12:29:53","event":"commit","turn":3,"task":"P-7","detail":"7c9e3f1 prose-metric test plus the session review"}
+{"ts":"2026-08-22T12:29:53","event":"turn_end","turn":3,"detail":"1 task resolved, 1 review, 2 issues filed"}
+{"ts":"2026-08-22T12:29:53","event":"turn_start","turn":4,"detail":"CR-1 (High, blocking) and CR-2 (Low)"}
+{"ts":"2026-08-22T12:29:53","event":"task_start","turn":4,"task":"CR-1","agent":"coder","detail":"restore the guard rationale to a home that carries it"}
+{"ts":"2026-08-22T12:29:53","event":"task_start","turn":4,"task":"CR-2","agent":"coder","detail":"reunite the stranded doc comment with its function"}
+{"ts":"2026-08-22T12:35:41","event":"task_done","turn":4,"task":"CR-2","agent":"coder","detail":"line-neutral comment move; commit held until CR-1 returns so validation is not run against in-flight edits"}
+{"ts":"2026-08-22T12:42:06","event":"task_done","turn":4,"task":"CR-1","agent":"coder","detail":"620e737 — rationale into the helper header; second-order cut declined with reason"}
+{"ts":"2026-08-22T12:42:06","event":"commit","turn":4,"detail":"620e737 both review findings closed"}
+{"ts":"2026-08-22T12:42:06","event":"task_start","turn":4,"task":"P-5+P-6","agent":"coder","detail":"two skill-body defect fixes; hook surface has 2 lines above the closure clause"}
+{"ts":"2026-08-22T12:56:53","event":"task_done","turn":4,"task":"P-5+P-6","agent":"coder","detail":"6781814 — all three closure clauses hold; pin did not move"}
+{"ts":"2026-08-22T12:56:53","event":"commit","turn":4,"detail":"6781814 help topic capped at 3 releases, Setup Step 0e guarded"}
+{"ts":"2026-08-22T12:56:53","event":"turn_end","turn":4,"detail":"4 tasks resolved (CR-1, CR-2, P-5, P-6); 2 commits"}
+{"ts":"2026-08-22T12:56:53","event":"turn_start","turn":5,"detail":"review of the uncovered range before the closing measurement"}
+{"ts":"2026-08-22T12:56:53","event":"review_start","turn":5,"agent":"coderev","detail":"range c2ad89c..6781814, 3 commits"}
+{"ts":"2026-08-22T13:16:10","event":"review_done","turn":5,"agent":"coderev","detail":"range covered; 0 critical, 0 high, 2 medium, 6 low; previous High repair verified sound"}
+{"ts":"2026-08-22T13:16:10","event":"commit","turn":5,"detail":"c600eb7 second review plus nine defect records"}
+{"ts":"2026-08-22T13:16:10","event":"turn_end","turn":5,"detail":"1 review, 9 issues filed"}
+{"ts":"2026-08-22T13:16:10","event":"turn_start","turn":6,"detail":"repair the four findings this session's own text introduced"}
+{"ts":"2026-08-22T13:16:10","event":"task_start","turn":6,"task":"CR-3","agent":"coder","detail":"two medium plus two low, all self-introduced"}
+{"ts":"2026-08-22T13:32:17","event":"task_done","turn":6,"task":"CR-3","agent":"coder","detail":"77b9a02 — four self-introduced findings repaired"}
+{"ts":"2026-08-22T13:32:17","event":"commit","turn":6,"detail":"77b9a02 four false claims corrected"}
+{"ts":"2026-08-22T13:32:17","event":"task_start","turn":6,"task":"P-9","agent":"coder","detail":"closing measurement of the four surfaces"}
+{"ts":"2026-08-22T13:45:24","event":"task_done","turn":6,"task":"P-9","agent":"coder","detail":"all three targets met; clause 5 fails by 206 bytes and 49 lines"}
+{"ts":"2026-08-22T13:45:24","event":"commit","turn":6,"task":"P-9","detail":"closure measurement"}
+{"ts":"2026-08-22T13:45:24","event":"turn_end","turn":6,"detail":"queue converged: every plan step and every review finding resolved or filed"}
+{"ts":"2026-08-22T15:17:03","event":"reconciliation","detail":"11 discrepancies, 6 corrected, 3 issues + 1 decision filed; verdict review-needed"}
+{"ts":"2026-08-22T15:17:03","event":"coherence_review","detail":"verdict review-needed; Artifact-Directive orthogonal; Grounding-Directive in contradiction"}
+{"ts":"2026-08-22T15:17:03","event":"gate_hit","detail":"Rebalance gate at Phase 3"}
+{"ts":"2026-08-22T15:17:03","event":"gate_response","detail":"Revise Grounding: supersede 260719-2141 and close the session"}
+{"ts":"2026-08-22T15:17:03","event":"rebalance_grounding","detail":"260719-2141 _a_->_s_; new answered record 260822-1610"}
+{"ts":"2026-08-22T15:18:56","event":"session_end","detail":"C0 delivered; 14 commits; 21 issues filed, 8 closed; 9 decisions filed; verdict review-needed resolved by revising the Grounding"}
+{"ts":"2026-08-22T20:04:21","event":"session_start","history_file":"circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md","detail":"Circle 260822-1921-measure-what-two-checkouts-share; domain=code, max_turns=12"}
+{"ts":"2026-08-22T20:10:01","event":"scope_resolved","detail":"mode=custom; 2 tasks from the spec's C1 criteria; no planner pass by user choice"}
+{"ts":"2026-08-22T20:10:01","event":"queue_built","detail":"2 tasks, 1 analyst + 1 orchestrator, 1 blocked"}
+{"ts":"2026-08-22T20:10:01","event":"turn_start","turn":1,"detail":"1 ready task: T-1 the measurement"}
+{"ts":"2026-08-22T20:10:01","event":"task_start","turn":1,"task":"T-1","agent":"analyst","detail":"measure two checkouts over the four-class partition"}
+{"ts":"2026-08-22T20:28:48","event":"task_done","turn":1,"task":"T-1","agent":"analyst","detail":"06d1bd1 — premise holds for both intended arrangements; nested placement fails"}
+{"ts":"2026-08-22T20:28:48","event":"task_done","turn":1,"task":"T-2","agent":"orchestrator","detail":"addendum resolves 'chosen but not proven'"}
+{"ts":"2026-08-22T20:28:48","event":"turn_end","turn":1,"detail":"queue converged: both tasks resolved, 2 commits"}
+{"ts":"2026-08-22T20:59:05","event":"reconciliation","detail":"11 discrepancies, 4 corrected, verdict coherent"}
+{"ts":"2026-08-22T20:59:05","event":"portfolio_refresh","detail":"circles/260822-1921-measure-what-two-checkouts-share/_c_circle.md; shared/history/260822-2253-playmaker-orchestrator-phase4.md"}
+{"ts":"2026-08-22T20:59:05","event":"session_end","detail":"Circle closed coherent; 2 tasks, 3 commits; premise measured and holds"}
