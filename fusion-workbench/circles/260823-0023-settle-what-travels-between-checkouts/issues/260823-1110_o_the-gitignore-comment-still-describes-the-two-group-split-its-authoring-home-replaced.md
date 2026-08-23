@@ -1,0 +1,40 @@
+The `.gitignore` comment still describes the two-group split its authoring home replaced
+
+---
+
+**Severity:** Low
+**Domain:** code
+**Filed by:** coderev, reviewing C2 Turn 1
+**Affects:** `.gitignore:64-68`
+**Cross-references:** plan step 2 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_o_c2-what-travels-between-checkouts-is-settled.md`; `rules/workbench-tracking.md`
+
+---
+
+## What is wrong
+
+The `fusion-workbench` block's comment reads:
+
+```
+# Tracked does not mean all of it:
+# the root-anchored surfaces split into records, which are kept, and live state, which
+# only ever produces diff noise and — restored by a checkout — a lie about a session
+# that ended. The split and its two consequences, one binding the lifecycle skills and one
+# binding any command that sweeps the tree, are stated in rules/workbench-tracking.md,
+# which is their authoring home.
+```
+
+Commit `21ae170` rewrote that authoring home from the two-group record-versus-live-state split into a four-class partition, and commit `00ce4f0` edited this same block one commit later without touching the description. The comment now cites a file that no longer defines what the comment says it defines.
+
+Two smaller things travel with it. "The split and its **two** consequences" still holds, because `rules/workbench-tracking.md` `## Two consequences` kept both. And `.gitignore:70` calls `.guard-state/events.jsonl` "a record too", which is the same retired vocabulary; that half is filed separately as part of the tiling record, since it is one correction in two files.
+
+## Why it matters at all
+
+The comment's stated readers are a human writing a consuming project's `.gitignore` and anyone auditing this repository's own configuration. Both are sent to a rule file to learn a split it no longer states. The `KEPT:` line beneath it is now correct and names the three tracked entries exactly, so the block's operative half is right and only its explanation is stale.
+
+## Verified
+
+Read at HEAD `2f1e3a6`. `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns `.asset-provenance`, `.fusion-setup` and `orchestrator-events.jsonl`, matching the `KEPT:` line and classes R2 and R3 exactly.
+
+## Direction, not a prescription
+
+Rewrite the two sentences in the four-class vocabulary: what git carries is R1, R2 and R3, what stays in the checkout is L, and this repository applies that partition. Keep the two-consequences pointer as it stands.

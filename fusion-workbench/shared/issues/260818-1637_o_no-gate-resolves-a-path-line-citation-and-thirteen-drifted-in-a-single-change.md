@@ -37,3 +37,5 @@ short quoted fragment beside the citation. Thirteen corrections in one change is
 for it. The counter-argument it also carried is real: every prompt edit that shifts a line then
 becomes a lint failure somewhere else, and this project has removed mechanisms whose false-alarm
 rate exceeded their catch rate. Whoever takes this weighs that.
+
+Also seen: 260823-1110 by coderev — a cut in `skills/setup/SKILL.md` sent `rules/fusion-workbench-conventions.md:66` at a blank line, and five `skills/next/SKILL.md` citations in `README-agents.md` drifted two further; the instances are `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_o_the-cut-shifted-two-line-citations-in-an-always-on-rule-and-one-now-points-at-a-blank-line.md`.

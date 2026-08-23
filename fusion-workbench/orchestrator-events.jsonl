@@ -2054,3 +2054,6 @@
 {"ts":"2026-08-23T08:45:47","event":"task_done","turn":1,"task":"T6","agent":"coder","detail":"1400402 briefing states portfolio provenance; skills head-room 2644"}
 {"ts":"2026-08-23T08:45:47","event":"commit","turn":1,"task":"T6","detail":"1400402"}
 {"ts":"2026-08-23T08:45:47","event":"task_start","turn":1,"task":"T7","agent":"coder","detail":"orchestrator: sequence diagram sorts by ts"}
+{"ts":"2026-08-23T08:54:55","event":"task_done","turn":1,"task":"T7","agent":"coder","detail":"2f1e3a6 sequence diagram sorts by ts; agents head-room 14787"}
+{"ts":"2026-08-23T08:54:55","event":"commit","turn":1,"task":"T7","detail":"2f1e3a6"}
+{"ts":"2026-08-23T08:55:16","event":"review_start","turn":1,"agent":"coderev","detail":"9 commits 3ee8eaf..2f1e3a6; 13 source/prompt/rule files; carried list not recorded"}
