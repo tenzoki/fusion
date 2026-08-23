@@ -29,3 +29,21 @@ Read at HEAD `2f1e3a6`. `git show 25f60eb -- skills/setup/SKILL.md` touches only
 ## Direction, not a prescription
 
 Add Step 0i's outcome to the Done enumeration, in the shape Step 0h's entry uses: which branch ran, and on the activating branch the Circle directory name written into `.active-circle`.
+
+---
+
+Resolved: 2026-08-23 by coder. The `## Done` enumeration in `skills/setup/SKILL.md` now ends with
+Step 0i, in the shape Step 0h's entry uses: which branch ran — nothing to report; one active Circle
+with no pointer, named, with whether the user activated it here; or `MULTIPLE-ACTIVE`, every record
+named. The two surfaces no longer compete.
+
+Step 0h's own clause was corrected in the same sentence: "another driver left alone, named" became
+"another value left alone, named", because two of the three values that reach that branch are not
+driver names — see
+`260823-1110_*_step-0h-reports-unset-and-set-as-merge-driver-names-and-the-rule-enumerates-neither.md`.
+
+**Measured.** Part of the `skills/` spend accounted in
+`260823-1110_*_step-0i-collapses-multiple-active-to-head-1-and-names-one-circle-arbitrarily.md`,
+which carries the surface figures for the whole `skills/setup/SKILL.md` pass.
+
+**Files:** `skills/setup/SKILL.md`. Uncommitted at the time of writing; the orchestrator commits.

@@ -34,3 +34,36 @@ Read at HEAD `2f1e3a6`. The six moves were extracted with `git log -p 3ee8eaf..2
 ## Direction, not a prescription
 
 Write one block above the constant covering both moves: `c9eba48`'s `+1 path, +1 anchor` from the Step 0h citation of `rules/workbench-tracking.md` and its section, and `1400402`'s `+1 path, +1 anchor` from the same file and `## The four classes` cited by the new `/fusion:next` paragraph. The history file already carries the second; the point is that the log is the place a later reader looks.
+
+---
+
+Resolved: 2026-08-23 by coder. `hooks/lib/__tests__/reference-resolution-lint.test.ts` gained one
+retrospective block above the constant, covering both unaccounted moves in the form the log uses
+everywhere else: `git:c9eba48` (`paths 1286 -> 1287`, `anchors 176 -> 177`, records unmoved — Step 0h
+of `skills/setup/SKILL.md` citing `rules/workbench-tracking.md` and its
+`## The event log carries a union merge driver` section, one path and one anchor) and `git:1400402`
+(`paths 1291 -> 1292`, `anchors 179 -> 180`, records unmoved — Step 5's checkout clause in
+`skills/next/SKILL.md` citing the same file and its `## The four classes` section). Both were
+recovered from their own commit messages and diffs, not from the history file.
+
+The block states that the constant does not move for it: the two moves ARE the gap the entries
+above left, written down rather than added to. With them entered the chain now runs unbroken —
+`paths 1284 -> 1293`, `anchors 175 -> 180`, `records 116 -> 117` — and every entry closes where the
+next one opens, which is the property the log had lost.
+
+The `git:e7454e3` entry's closing qualification was rewritten rather than kept. It named the
+1291-versus-1292 discrepancy and said it was "not repaired here"; at HEAD that sentence pointed at a
+constant reading 1293 and at a defect this pass closes, so it now says the gap it was written
+against is accounted for in the block above it. Nothing else in that entry changed.
+
+This pass moved the pin itself, so it carries its own entry too: `paths 1293 -> 1294`, anchors and
+records unmoved, the one token being `agents/playmaker.md` entering `skills/setup/SKILL.md` a second
+time in Step 0i's new `MULTIPLE-ACTIVE` branch.
+
+**Measured.** Hook-test lines `20156 -> 20177` (+21, this file alone), head-room `219 -> 198` of
+2 500. No growth-bound baseline moved. `hooks/lib/__tests__/fixtures/surface-growth.golden`
+regenerated for the line count.
+
+**Files:** `hooks/lib/__tests__/reference-resolution-lint.test.ts`,
+`hooks/lib/__tests__/fixtures/surface-growth.golden`. Uncommitted at the time of writing; the
+orchestrator commits.

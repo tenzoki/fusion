@@ -35,3 +35,38 @@ Read at HEAD `2f1e3a6`. The remaining fifteen layout-tree entries plus the two f
 ## Direction, not a prescription
 
 Say it in the classes the file defines: the live `.guard-state/events.jsonl` is class L, its rolled copies under `archive/` are class R1 like every other archived file, and that is one entry classified in one class with its evidence preserved by a mechanism rather than by tracking. Then either the headline claim needs no exception, or the exception is stated in the four-class vocabulary instead of the retired one. Correct `.gitignore:70` in the same pass.
+
+---
+
+Resolved: 2026-08-23 by coder. The partition was fixed and the headline claim left alone, which is
+what the record asked for.
+
+Class L's row now reads "`.guard-state/` in full, its event log included" rather than "apart from
+its event log", so no entry of the layout tree falls outside the four classes. The paragraph on that
+directory keeps its methodological point — the directory is the wrong unit to classify BY — and now
+states the outcome plainly: each file in it is asked separately and every answer comes back class L,
+for reasons that differ. The closing "it is a **record**" is gone; the log is class L, and what a
+past version of it answers is preserved by a mechanism rather than by tracking.
+
+The archive paragraph's exception is gone too, and nothing replaced it, because there was never an
+entry in two classes. The live log and its rolled copies sit under two DIFFERENT entries of the
+layout tree — `.guard-state/`, class L, and `archive/`, class R1 — so the roll moves bytes from one
+entry to the other and each entry still falls in exactly one class. "That is the one entry where the
+classification is split across two classes" was the sentence that falsified the tiling; it is
+replaced by that reasoning.
+
+`.gitignore:70` was corrected in the same pass and is recorded in the closure of
+`260823-1110_*_the-gitignore-comment-still-describes-the-two-group-split-its-authoring-home-replaced.md`.
+
+**One residual, stated rather than left to be found.** `CLAUDE.md`'s Layout row for this rule file
+says it states "why `.guard-state/` is classified per file rather than per directory". That is still
+true of the file — the unit of classification is the file, and the answers happen to be uniform —
+which is why the wording was kept per file rather than collapsed to a directory-level claim. No
+`CLAUDE.md` edit is needed and none was made.
+
+**Measured.** `rules/workbench-tracking.md` is emitted to no agent (`bin/fusion-rules` names it
+nowhere), so it stands on no bounded surface; the always-on core is unaffected by this edit and the
+`rules-emission.golden` shows no movement for it.
+
+**Files:** `rules/workbench-tracking.md`, `.gitignore`. Uncommitted at the time of writing; the
+orchestrator commits.

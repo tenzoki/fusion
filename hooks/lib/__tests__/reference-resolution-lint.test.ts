@@ -549,14 +549,35 @@ function scanHeadingAnchors(
 // which is the +1 anchor (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`) and
 // a +1 path that cancels the `install.sh` spelling leaving Step 0e with the same restatement. records
 // is -1: the pre-v4 ordering rationale cited defect `260717-0115`, and the rationale went with it.
+// Accounted 2026-08-23, retrospectively and out of sequence: the two moves of this range that were
+// approved with no block here. The invariant above puts the accounting in this file, and both had
+// it only in a commit message or a workbench history file (issue
+// `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_two-of-six-baseline-re-approvals-carry-no-accounting-and-the-log-now-contradicts-the-constant.md`).
+// The constant does not move for this entry: these two ARE the gap the entries above left against
+// it, written down rather than added to.
+// `git:c9eba48`, plan step 3, the union merge driver: paths 1286 -> 1287, anchors 176 -> 177,
+// records unmoved. Step 0h of `skills/setup/SKILL.md` cites `rules/workbench-tracking.md` and its
+// `## The event log carries a union merge driver` section — one path and one anchor. The step
+// carries two sentences and points there for the reasoning, so nothing else entered scope.
+// `git:1400402`, plan step 6, the briefing's provenance: paths 1291 -> 1292, anchors 179 -> 180,
+// records unmoved. Step 5's checkout clause in `skills/next/SKILL.md` cites the same file and its
+// `## The four classes` section as the ground for `portfolio.md` being class L — again one path
+// and one anchor. Its accounting lived in a workbench history file, which is not here.
+// With both entered the chain runs unbroken: paths 1284 -> 1293, anchors 175 -> 180, records
+// 116 -> 117, and every entry closes where the next one opens.
 // Re-approved 2026-08-23 for the Turn 1 Critical repair: paths 1292 -> 1293, anchors and records
 // unmoved. The one token is `rules/workbench-tracking.md` entering `README-hooks.md`'s row for the
 // workbench citation gate, where the corpus description now qualifies `portfolio.md` as class L and
-// cites the file that defines the class. Stated against the constant rather than the entry above
-// it: that entry closes at 1291 and the constant reads 1292, which is the unaccounted move filed as
-// `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_two-of-six-baseline-re-approvals-carry-no-accounting-and-the-log-now-contradicts-the-constant.md`
-// and is not repaired here.
-const BASELINE = { paths: 1293, anchors: 180, records: 117 };
+// cites the file that defines the class. It was written against the constant
+// rather than against the entry above it, which closed at 1291 while the constant read 1292; the
+// retrospective block now standing above accounts for that gap.
+// Re-approved 2026-08-23 for the Turn 1 text-correctness pass: paths 1293 -> 1294, anchors and
+// records unmoved. The one token is `agents/playmaker.md` entering `skills/setup/SKILL.md` a second
+// time, in Step 0i's new `MULTIPLE-ACTIVE` branch, which names that condition where the step's
+// opening paragraph names `MISSING-POINTER`. The same pass repaired two `:N` suffixes in
+// `rules/fusion-workbench-conventions.md` and six in `README-agents.md`, and this gate resolves the
+// path and never the line after it, so not one of those registers here.
+const BASELINE = { paths: 1294, anchors: 180, records: 117 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

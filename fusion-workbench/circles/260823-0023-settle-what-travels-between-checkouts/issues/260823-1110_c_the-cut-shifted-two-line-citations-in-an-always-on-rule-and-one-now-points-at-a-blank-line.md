@@ -43,3 +43,44 @@ All five name the Step 5b playmaker dispatch block. That block ends at `skills/n
 ## Direction, not a prescription
 
 Correct the two conventions citations to `:58` and `:65`, and decide whether the "stopped needing its exclusions" clause keeps a supporting sentence in the skill or drops the historical half. Correct the five `README-agents.md` citations against the block as it now stands. Whether a gate should resolve `:N` at all stays with `260818-1637`.
+
+---
+
+Resolved: 2026-08-23 by coder. Both halves are corrected.
+
+`rules/fusion-workbench-conventions.md:66` now cites `skills/setup/SKILL.md:65` (the `find` block
+that bounds the probe, previously `:67`, a blank line) and `skills/setup/SKILL.md:58` (the paragraph
+recording the deadlock cost, previously `:60`, its neighbour). Both were read against HEAD, not
+derived from the shift.
+
+**The historical half was dropped rather than restored, and that is a decision.** The clause read
+"`/fusion:setup` **stopped needing** its exclusions rather than losing them", which rested on a
+sentence `57eaf85` cut from the skill. It now reads "`/fusion:setup` names no exclusion at all",
+which is a claim about HEAD that the cited line supports on its own. Restoring the sentence into
+`skills/setup/SKILL.md` was the alternative and was rejected on two grounds: it would spend `skills/`
+head-room — 1 303 bytes free at the start of this pass — to reinstate text a deliberate cut had just
+removed, and it would put spent history back into a body whose whole recent change was taking it out.
+The always-on surface gains 33 bytes by the cut.
+
+**The five `README-agents.md` citations were corrected too**, against the Step 5b block as it now
+stands: `:53` `skills/next/SKILL.md:170-176` -> `:147-153`; `:59` `:170` -> `:147`; `:60`
+`:167-176` -> `:144-153`; `:61` `:176` -> `:153` and `:179` -> `:156`. All five shift by exactly -23,
+which is the 25 lines they were already stale by at `3ee8eaf` less the two `1400402` added.
+
+**A sixth, not filed and corrected anyway.** The same `README-agents.md:59` cell cited
+`skills/next/SKILL.md:103` for Step 3's `**Domain:**` dispatch; that block is at `:97`. It was on the
+line being edited, and leaving a known-wrong citation beside a corrected one would have been worse
+than the scope discipline it preserved. It is named here rather than filed.
+
+**Measured.** Always-on core `95 285 -> 95 252` bytes, head-room `3 288 -> 3 321` of 12 000; the
+whole -33 is `rules/fusion-workbench-conventions.md`, confirmed by the regenerated
+`rules-emission.golden`. `README-agents.md` is on no bounded surface. No baseline moved.
+
+Whether a gate should resolve a `:N` suffix at all stays open at
+`shared/issues/260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`.
+Nothing here closes it, and this pass is fresh evidence for it: eleven line citations were repaired
+by hand across two files and the suite was green over every one of them.
+
+**Files:** `rules/fusion-workbench-conventions.md`, `README-agents.md`,
+`hooks/lib/__tests__/fixtures/rules-emission.golden`. Uncommitted at the time of writing; the
+orchestrator commits.

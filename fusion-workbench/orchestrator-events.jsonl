@@ -2067,3 +2067,6 @@
 {"ts":"2026-08-23T10:03:39","event":"task_done","turn":2,"task":"T10","agent":"coder","detail":"e7454e3 fresh-clone blocker fixed and verified in a clone"}
 {"ts":"2026-08-23T10:03:39","event":"commit","turn":2,"task":"T10","detail":"e7454e3"}
 {"ts":"2026-08-23T10:03:39","event":"task_start","turn":2,"task":"T11","agent":"coder","detail":"marker write: no plugin-root guard"}
+{"ts":"2026-08-23T10:16:56","event":"task_done","turn":2,"task":"T11","agent":"coder","detail":"d23c706 marker version guarded; skills head-room 1303"}
+{"ts":"2026-08-23T10:16:56","event":"commit","turn":2,"task":"T11","detail":"d23c706"}
+{"ts":"2026-08-23T10:16:56","event":"task_start","turn":2,"task":"T12+T13","agent":"coder","detail":"remaining Turn 1 review findings, batched"}

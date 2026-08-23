@@ -34,3 +34,26 @@ Read at HEAD `2f1e3a6`. The sequence-diagram sort at `:876` and the Observabilit
 ## Direction, not a prescription
 
 This is a note onto C4 rather than a repair here: whoever implements the session-scoped Turn count must sort by `ts` first, or find a window that does not depend on file order at all. Filing it against this Circle rather than appending to `260822-1136` because the cause is this Circle's own change, and the record it affects is a plan input for a capability not yet started.
+
+---
+
+Note appended 2026-08-23 by coder, clearing the Turn 1 review. **This record stays `_o_` and is not
+repaired here.** The eight text-correctness findings of that review were fixed in this pass; this one
+was excluded from it deliberately, because the repair it describes is capability C4's and doing it
+here would implement a Turn count in a Circle whose scope is what travels between checkouts.
+
+What was confirmed against HEAD before leaving it open. `agents/orchestrator.md` still defines the
+Turn number as the `turn_start` events "since this session's `session_start`" at both sites the
+record names, and that window is positional: after a union merge another checkout's block can stand
+after this session's `session_start` line. The merge driver is at HEAD and unchanged.
+
+The consequence for C4 is the reason this note exists rather than a `Resolved:` line. The record
+`shared/issues/260822-1136_o_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+is a plan input for C4, and its `## Direction` proposes finding the last `session_start` and counting
+`turn_start` after it. That derivation was written on 2026-08-22, before the driver existed, and it
+is positional in exactly the way the driver breaks. **Whoever implements the session-scoped Turn
+count must not take that direction as written**: sort by `ts` first, or find a window that does not
+depend on file order at all. The `grep -c` forms this Circle's plan step 7 left alone are unaffected,
+as that step reasoned — they are order-independent.
+
+No file outside this record was touched for it.

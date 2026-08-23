@@ -33,3 +33,27 @@ Read at HEAD `2f1e3a6`. `grep -n portfolio hooks/staging-drift.ts bin/fusion-sta
 ## Direction, not a prescription
 
 Replace `portfolio.md` in both examples with a path the classifier does return `record` for. The suite already made that substitution for its own fixtures and chose a Circle record; using the same one keeps the examples and the tests illustrating one thing. `hooks/dist/` follows from `npm run build`.
+
+---
+
+Resolved: 2026-08-23 by coder. Both authoring sites now print a row the classifier can produce.
+`hooks/staging-drift.ts:23` and `bin/fusion-staging-drift:14` read
+`record M circles/<dir>/_t_circle.md UNSTAGED (a Circle record)`, which is the
+`segments[0] === "circles" && name.endsWith("_circle.md")` branch at `hooks/lib/staging-drift.ts`
+and the same class the suite's `CIRCLE_RECORD` fixture exercises. `hooks/dist/staging-drift.js`
+follows from `npm run build`.
+
+**Why a placeholder and not the fixture's literal path.** The suite uses
+`circles/260811-0100-close-the-findings/_t_circle.md`, which exists only as a scratch fixture. A
+literal Circle-record spelling in shipped text is a citation to both gates that read this repository:
+`reference-resolution-lint` scans `bin/*` comments and `hooks/*.ts` comment lines, and a Circle
+record that does not exist in the workbench does not resolve. `<dir>` makes the token a placeholder
+under `isPlaceholder()`, which is what the surrounding example already does for `stilwerk/…`. The
+class illustrated is identical, which is what the record asked for.
+
+**Measured.** Neither file is on a bounded surface; `hooks/staging-drift.ts` is a CLI entrypoint, not
+a `hooks/lib/__tests__` line. The citation pin did not move for this edit: `portfolio.md` was never a
+counted token and the replacement is exempt.
+
+**Files:** `hooks/staging-drift.ts`, `bin/fusion-staging-drift`, `hooks/dist/staging-drift.js`,
+`hooks/dist/staging-drift.d.ts`. Uncommitted at the time of writing; the orchestrator commits.

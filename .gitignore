@@ -61,17 +61,18 @@ credentials.json
 
 # fusion-workbench. In THIS repository it is deliberately tracked (a consuming project
 # decides for itself; fusion ships no rule for it). Tracked does not mean all of it:
-# the root-anchored surfaces split into records, which are kept, and live state, which
-# only ever produces diff noise and — restored by a checkout — a lie about a session
-# that ended. The split and its two consequences, one binding the lifecycle skills and one
-# binding any command that sweeps the tree, are stated in rules/workbench-tracking.md,
-# which is their authoring home.
+# rules/workbench-tracking.md partitions every root-anchored entry into four classes and
+# is their authoring home. Git carries R1, R2 and R3; class L stays in the checkout that
+# wrote it, because it only ever produces diff noise and — restored by a checkout — a lie
+# about a session that ended. This repository applies exactly that partition, so every
+# path excluded below is class L. The partition's two consequences, one binding the
+# lifecycle skills and one binding any command that sweeps the tree, are stated there too.
 # KEPT: orchestrator-events.jsonl, .fusion-setup, .asset-provenance.
-# The guard's own event log (.guard-state/events.jsonl) is a record too, and it is
-# deliberately NOT excepted here: what preserves it is the archive step of
-# /fusion:cleanup, which rolls it into fusion-workbench/archive/ under a dated name, and
-# the archive store is tracked. So the evidence lands in git without the live log
-# producing a diff on every tool call. Same rule, different form of keeping.
+# The guard's own event log (.guard-state/events.jsonl) is class L like the rest of that
+# directory, and it is deliberately NOT excepted here: what preserves it is the archive
+# step of /fusion:cleanup, which rolls it into fusion-workbench/archive/ under a dated
+# name, where the rolled copy is an ordinary class R1 archived file. So the evidence lands
+# in git without the live log producing a diff on every tool call.
 # Directory entries use `dir/*`, not `dir/`, so a later `!path` exception still works.
 fusion-workbench/agentstate.yaml
 fusion-workbench/orchestrator-live.md

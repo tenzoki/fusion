@@ -47,3 +47,33 @@ If `git check-attr` produces no output, `$D` is empty and the message reads "alr
 ## Direction, not a prescription
 
 Split the catch-all's message by value: `unset` says merging is switched off for this path and fusion is leaving that alone; `set` says the path uses git's default text merge, which is the case the rule exists to prevent, and that Setup will not overrule it; anything else names the driver as today. Add the `set` case to `rules/workbench-tracking.md:51` so the rule enumerates the value space its own mechanism reads.
+
+---
+
+Resolved: 2026-08-23 by coder. Both surfaces name the value space they read.
+
+`skills/setup/SKILL.md` splits the catch-all by value. `set` now reports that the path takes git's
+default text merge (a bare `merge`), naming it as the case the step exists to prevent and saying
+Setup does not overrule it. `unset` reports that merging is switched off for the path (`-merge`).
+Anything else keeps the wording it had and names the driver. Behaviour is unchanged in all three:
+the file is left alone, which was already correct. The step's branch table says the same in prose —
+the fourth outcome reports what was found, "which is not always a driver".
+
+`rules/workbench-tracking.md`'s third branch now enumerates all three: `set` as git's default text
+merge and the behaviour the rule exists to prevent, `unset` as `-merge`, anything else as a driver
+the project picked, all three deliberate and none overruled.
+
+The empty-`$D` case the record names as having no branch of its own is left as it is: it is
+unreachable while the work-tree guard holds, and giving it a branch would assert a value `check-attr`
+does not return.
+
+The step's four-outcome table still reads "Four outcomes", correctly — the shell now has five case
+arms, but the outcomes for the FILE are still nothing written, written, left alone, and not a work
+tree, and the third of those reports three ways.
+
+**Measured.** `rules/workbench-tracking.md` stands on no bounded surface. The `skills/` spend is
+accounted in
+`260823-1110_*_step-0i-collapses-multiple-active-to-head-1-and-names-one-circle-arbitrarily.md`.
+
+**Files:** `skills/setup/SKILL.md`, `rules/workbench-tracking.md`. Uncommitted at the time of
+writing; the orchestrator commits.

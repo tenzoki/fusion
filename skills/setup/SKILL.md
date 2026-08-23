@@ -327,6 +327,8 @@ if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
       [ -s ./.gitattributes ] && [ -n "$(tail -c1 ./.gitattributes)" ] && printf '\n' >> ./.gitattributes
       printf '# fusion: the orchestrator event log is append-only and two checkouts both append to it.\nfusion-workbench/orchestrator-events.jsonl merge=union\n' >> ./.gitattributes
       echo "gitattributes: union merge driver written to $(pwd)/.gitattributes" ;;
+    set) echo "gitattributes: left alone — this path takes git's default text merge (a bare 'merge'), the case this step exists to prevent; Setup does not overrule it" ;;
+    unset) echo "gitattributes: left alone — merging is switched off for this path ('-merge')" ;;
     *) echo "gitattributes: left alone — this path already has merge driver '$D'" ;;
   esac
 else
@@ -338,7 +340,7 @@ Four outcomes, disjoint because `git check-attr` returns exactly one value for `
 
 - **`union`** — write nothing. A broader glob the project wrote itself may be what set it, and the path already has what the rule asks for.
 - **`unspecified`** — no driver applies, so the comment and the rule line are appended. The `tail -c1` test is what makes that safe: appending to a file whose last byte is not a newline joins the neighbouring rule to the comment and destroys both.
-- **any other value** — leave the file alone and name the driver. `unset`, which a project writes as `-merge`, reports here and is correct to leave: switching the driver off is as deliberate as setting a different one.
+- **any other value** — leave the file alone and report what was found, which is not always a driver. `set` is a bare `merge`: git's default text merge, the very behaviour this step prevents, reported as that and still not overruled. `unset` is `-merge`, merging switched off. Anything else is a driver the project chose. All three are deliberate.
 - **not a git work tree** — nothing to ask, nothing to write.
 
 ## Step 0i — Report a Circle this checkout never activated
@@ -348,13 +350,14 @@ A `_t_` Circle record travels between checkouts and `.active-circle` does not (`
 It runs before Step 2 so `bin/fusion-paths` resolves against a Circle activated here. It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
 
 ```bash
-[ -f ./fusion-workbench/.active-circle ] || find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/dev/null | head -1
+[ -f ./fusion-workbench/.active-circle ] || find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/dev/null
 ```
 
 - **Nothing printed** — pointer present, or no active record. Report nothing, ask nothing.
-- **A path printed** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*.
+- **One path printed** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*.
   - **Activate** — `printf '%s\n' "<dir>" > ./fusion-workbench/.active-circle`. Step 2 resolves against it.
   - **Leave** — write nothing; the Circle stays inactive here, and `/fusion:next` can activate it later.
+- **More than one path printed** — `MULTIPLE-ACTIVE`, the condition `agents/playmaker.md` names beside `MISSING-POINTER`. Name every Circle found and say the project holds more than one active record. **Offer nothing and write nothing**: which of several to run here is a portfolio judgement, and `/fusion:next` is where the project makes it. Point the user there.
 
 Name the branch that ran in the Done report.
 
@@ -472,4 +475,4 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0's marker write had to report, whatever Step 0e had to report about the copied assets, the permission line Step 0g produced (written and effective next session, declined, or already in place), and which of Step 0h's four outcomes occurred (rule written, naming the `.gitattributes` path; a union driver already applying; another driver left alone, named; or no git work tree). (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0's marker write had to report, whatever Step 0e had to report about the copied assets, the permission line Step 0g produced (written and effective next session, declined, or already in place), which of Step 0h's four outcomes occurred (rule written, naming the `.gitattributes` path; a union driver already applying; another value left alone, named; or no git work tree), and which Step 0i branch ran (nothing to report; one active Circle with no pointer, named, with whether the user activated it here; or `MULTIPLE-ACTIVE`, every record named). (Setup no longer migrates — a pre-v4 workbench is caught by the layout check in Step 0, which refuses and routes the user to `/fusion:migrate` before any of this runs.)

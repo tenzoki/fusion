@@ -38,3 +38,21 @@ Read at HEAD `2f1e3a6`. `git ls-files fusion-workbench | awk -F/ 'NF==2'` return
 ## Direction, not a prescription
 
 Rewrite the two sentences in the four-class vocabulary: what git carries is R1, R2 and R3, what stays in the checkout is L, and this repository applies that partition. Keep the two-consequences pointer as it stands.
+
+---
+
+Resolved: 2026-08-23 by coder. The `fusion-workbench` block's comment in `.gitignore` was rewritten
+in the four-class vocabulary: `rules/workbench-tracking.md` partitions every root-anchored entry
+into four classes, git carries R1, R2 and R3, class L stays in the checkout that wrote it, and this
+repository applies exactly that partition — so every path excluded below the comment is class L.
+The two-consequences pointer was kept, as the record directed. The `KEPT:` line was correct and is
+untouched.
+
+The guard event log sentence at what was `:70` was corrected in the same pass, per the direction in
+`260823-1110_*_the-guard-event-log-falls-in-no-class-of-a-partition-that-claims-every-entry-falls-in-one.md`:
+it now reads class L like the rest of that directory, with the rolled copy under `archive/` named as
+an ordinary class R1 archived file. The word "record" no longer appears for either.
+
+**Measured.** `.gitignore` is on no bounded surface. Net +163 bytes, 3 470 -> 3 633.
+
+**Files:** `.gitignore`. Uncommitted at the time of writing; the orchestrator commits.

@@ -11,7 +11,7 @@
 #   rows=4
 #   unstaged=2
 #   verdict=unstaged            # or clean, or unchecked
-#     record          M portfolio.md  UNSTAGED  (the Circle portfolio briefing — …)
+#     record          M circles/<dir>/_t_circle.md  UNSTAGED  (a Circle record)
 #     in-flight       M orchestrator-events.jsonl  (append-only — …)
 #     unclassified   ?? stilwerk/…  (not a record store — nothing is claimed about it)
 #
