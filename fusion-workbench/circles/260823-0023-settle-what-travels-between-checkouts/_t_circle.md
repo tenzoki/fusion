@@ -57,9 +57,10 @@ Artifacts outside this Circle that bind it, cited rather than copied per the Ori
 
 ## Turn log
 
-- Turn 1 (session 260823-0721): commits 21ae170..e41393e; Coherence verdict coherent; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
-- Turn 2 (session 260823-0721): commits e7454e3..5fc3201; Coherence verdict coherent; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
-- Turn 3 (session 260823-0721): commits a2a18f9..7cd79f1; Coherence verdict review-needed (reconciler, Grounding claim false); session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
+- Turn 1 (session 260823-0721): commits 3ee8eaf..e41393e, 10 commits; Coherence verdict coherent; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
+- Turn 2 (session 260823-0721): commits e41393e..5fc3201, 6 commits; Coherence verdict coherent; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
+- Turn 3 (session 260823-0721): commits 5fc3201..7cd79f1, 3 commits; no per-Turn Coherence gate ran, the loop went to Phase 3 from here; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
+- Turn 4 (session 260823-0721): commits 7cd79f1..HEAD; opened by the Phase 3 Rebalance verdict review-needed; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
 
 ## Activation proposal
 
