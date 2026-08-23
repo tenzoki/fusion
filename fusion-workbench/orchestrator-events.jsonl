@@ -2073,3 +2073,6 @@
 {"ts":"2026-08-23T10:39:52","event":"task_done","turn":2,"task":"T12+T13","agent":"coder","detail":"18974bc 8 findings closed, 1 annotated for C4"}
 {"ts":"2026-08-23T10:39:52","event":"commit","turn":2,"task":"T12+T13","detail":"18974bc"}
 {"ts":"2026-08-23T10:39:52","event":"task_start","turn":2,"task":"T8","agent":"coder","detail":"close the two answered decision records as implemented"}
+{"ts":"2026-08-23T10:50:56","event":"task_done","turn":2,"task":"T8","agent":"coder","detail":"a76ee8f both decisions _a_ -> _i_"}
+{"ts":"2026-08-23T10:50:56","event":"commit","turn":2,"task":"T8","detail":"a76ee8f"}
+{"ts":"2026-08-23T10:50:56","event":"task_start","turn":2,"task":"T9","agent":"analyst","detail":"two-checkout end-to-end transport verification"}

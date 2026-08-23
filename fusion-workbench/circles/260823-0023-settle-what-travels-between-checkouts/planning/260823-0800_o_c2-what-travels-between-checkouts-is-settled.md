@@ -1,7 +1,7 @@
 # Implementation Plan: C2 — what travels between checkouts is settled
 
 **Date:** 2026-08-23
-**Status:** Draft
+**Status:** Complete
 **Spec:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, capability `### C2`
 **Decidability:** The load-bearing question is *"does this project already declare a union merge driver for `fusion-workbench/orchestrator-events.jsonl`"*, and `/fusion:setup` asks it on every run. It is decidable from an input Setup can obtain. `git check-attr merge -- fusion-workbench/orchestrator-events.jsonl` returns git's own resolved attribute value rather than a guess about one, and it was verified in a scratch repository against five configurations: no `.gitattributes` at all, the exact rule line, a broader glob (`*.jsonl merge=union`), a different driver on the same path, and unrelated rules only. Each returned the correct answer. The undecidable form of the same question is the one a text search asks, *"does `.gitattributes` contain this line"*, which cannot see a broader pattern, a nested attributes file, a macro, or an `info/attributes` entry, and which therefore writes a duplicate rule whenever the driver arrived by any route but the literal one. The mechanism this plan uses is the decided question, not the predicted one. The second question the plan turns on, *"should the setup marker be written on this run"*, is decidable from two inputs Setup already holds: whether the file exists, and whether its `plugin_version` equals the version the plugin ships.
 
@@ -180,7 +180,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: both files carry the `_i_` marker and an `Implemented:` line whose commit hash resolves; no other annotation is added and no existing line is edited; `npm test` is green, which includes the citation gates over the renamed paths.
    - Dependencies: steps 2, 4, 5, 6, 7
 
-9. **Two checkouts, a session in each, and both logs whole afterwards**
+9. [DONE] **Two checkouts, a session in each, and both logs whole afterwards**
    - Executor: `analyst`
    - Files: writes to `$OUT_ANALYSIS`; files defects to `$OUT_ISSUE` if it finds any
    - Changes: no source change. Build the harness the way C1 built its own, under a scratch directory outside this repository, with a local bare remote and two clones, and destroy it at the end. Reuse the C1 method rather than inventing one; `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope` is the worked description. Run `/fusion:setup`'s new Step 0h in each clone so the driver is declared by the mechanism under test rather than by hand. Produce session activity in each clone (appended event lines plus a record under a store), push both, pull each into the other, and account for every line.
