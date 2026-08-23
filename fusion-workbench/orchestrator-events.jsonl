@@ -2037,3 +2037,6 @@
 {"ts":"2026-08-23T07:06:38","event":"task_done","turn":1,"task":"T2b","agent":"coder","detail":"cc5abd7 portfolio.md reclassified to LIVE_STATE; defect 260823-0800 closed; one documentary site queued as T2c"}
 {"ts":"2026-08-23T07:06:38","event":"commit","turn":1,"task":"T2b","detail":"cc5abd7"}
 {"ts":"2026-08-23T07:06:38","event":"task_start","turn":1,"task":"T3","agent":"coder","detail":"setup Step 0h: union merge driver in .gitattributes"}
+{"ts":"2026-08-23T07:21:55","event":"task_done","turn":1,"task":"T3","agent":"coder","detail":"c9eba48 union merge driver as setup Step 0h; skills head-room 4338 -> 1658"}
+{"ts":"2026-08-23T07:21:55","event":"commit","turn":1,"task":"T3","detail":"c9eba48"}
+{"ts":"2026-08-23T07:21:55","event":"task_start","turn":1,"task":"T4","agent":"coder","detail":"setup: conditional marker write, drop setup_pwd; 1658 bytes head-room"}

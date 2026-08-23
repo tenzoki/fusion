@@ -533,7 +533,11 @@ function scanHeadingAnchors(
 // and `agents/playmaker.md` enters as the ground for `portfolio.md` moving to class L. records +2:
 // the multi-user specification joins the provenance header, and the merge-driver section cites the
 // decision that chose `merge=union`.
-const BASELINE = { paths: 1287, anchors: 177, records: 118 };
+// Re-approved 2026-08-23 for step 4 of the C2 plan: paths 1287 -> 1288, anchors 177 -> 178. The
+// conditional setup-marker write in `skills/setup/SKILL.md` cites `rules/workbench-tracking.md`
+// and the section that holds its reasoning. records does not move: the step cites no record.
+// Step 3 moved both counts by one the same way and approved it in `git:c9eba48` with no note here.
+const BASELINE = { paths: 1288, anchors: 178, records: 118 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

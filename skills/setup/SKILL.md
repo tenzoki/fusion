@@ -88,14 +88,12 @@ This is the Circle-container layout defined in `rules/fusion-workbench-conventio
 - **`shared/` is the home for everything with no Circle affiliation** — the Origin Rule's "unknown origin means shared". `investigations/`, `consult/`, `memos/` and `backlog/` exist only there, because none of the four is produced by executing a Directive — and a backlog entry, being an idea that is not yet a unit of work, precedes every Directive there is.
 - **The root-anchored surfaces stay at the root.** `agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl` and `.guard-state/` are read at fixed root-relative paths by `hooks/tracker.ts:33-36` and `bin/monitor:72-75`; `.commit-lock/` by `bin/fusion-commit-lock` and `.session-marker` by `bin/fusion-session-mark`. Never create them anywhere else; none of these consumers has a fallback path. Only `.guard-state/` is pre-created above — the rest appear when their consumer first writes them. The full list is in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`.
 
-Write the setup marker (this is the file every agent and hook looks for to confirm fusion is set up here):
+Write the setup marker (the file every agent and hook looks for to confirm fusion is set up here) only when it is missing or carries a `plugin_version` other than the shipped one; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why:
 
 ```bash
-printf '{"setup_at":"%s","setup_pwd":"%s","plugin_version":"%s"}\n' \
-  "$(date +%Y-%m-%dT%H:%M:%S%z)" \
-  "$(pwd -P)" \
-  "$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')" \
-  > ./fusion-workbench/.fusion-setup
+M=./fusion-workbench/.fusion-setup
+V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1 | sed -E 's/.*"version": *"([^"]+)".*/\1/')"
+[ -f "$M" ] && grep -qF "\"plugin_version\":\"$V\"" "$M" || printf '{"setup_at":"%s","plugin_version":"%s"}\n' "$(date +%Y-%m-%dT%H:%M:%S%z)" "$V" > "$M"
 ```
 
 If `./fusion-workbench/` already existed from a prior fusion version, the `mkdir -p` is harmless and existing content is preserved. Pre-v4 content is caught by the layout check above, which stops Setup before this point and routes the user to `/fusion:migrate` — so a workbench reaching this `mkdir` is already in the container layout.

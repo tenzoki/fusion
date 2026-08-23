@@ -142,7 +142,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: run three times in a scratch repository whose `.gitattributes` already carries a comment and one unrelated rule, the rule line appears exactly once, the neighbour still applies, and runs two and three write nothing; against a `.gitattributes` with no final newline the pre-existing last rule still applies afterwards; against a path already covered by a broader glob nothing is written; against a different driver on that path nothing is written and the driver is named in the report; outside a git work tree nothing is written and the report says why; the `skills/` bound is measured after the edit and reported.
    - Dependencies: step 1
 
-4. **The setup marker is written only when it is missing or the plugin version changed, and `setup_pwd` goes**
+4. [DONE] **The setup marker is written only when it is missing or the plugin version changed, and `setup_pwd` goes**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`
    - Changes: replace the unconditional `printf ... > ./fusion-workbench/.fusion-setup` at `skills/setup/SKILL.md:94`. Resolve the shipped version once, as the current block already does. Write the marker when the file is absent, or when the `plugin_version` it carries differs from the shipped one. Otherwise leave it untouched, writing nothing at all rather than writing identical bytes, because an identical write still moves the modification time and a tracked file's diff is not the only thing a second checkout notices. Drop `setup_pwd` from the emitted JSON; keep `setup_at` and `plugin_version`. Nothing reads `setup_pwd`, which `## Current State` records with the command that establishes it.
