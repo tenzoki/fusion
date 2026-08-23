@@ -2043,3 +2043,8 @@
 {"ts":"2026-08-23T07:36:54","event":"task_done","turn":1,"task":"T4","agent":"coder","detail":"905a8a4 conditional marker write, setup_pwd dropped; skills head-room 1455"}
 {"ts":"2026-08-23T07:36:54","event":"commit","turn":1,"task":"T4","detail":"905a8a4"}
 {"ts":"2026-08-23T07:36:54","event":"task_start","turn":1,"task":"T5","agent":"coder","detail":"setup: MISSING-POINTER report + activation gate; 1455 bytes head-room, tightest step"}
+{"ts":"2026-08-23T07:51:53","event":"task_done","turn":1,"task":"T5","agent":"coder","detail":"25f60eb MISSING-POINTER report + activation gate as Step 0i; skills head-room 33 bytes"}
+{"ts":"2026-08-23T07:51:53","event":"commit","turn":1,"task":"T5","detail":"25f60eb"}
+{"ts":"2026-08-23T07:51:53","event":"gate_hit","turn":1,"task":"T6","detail":"skills/ growth bound: 33 bytes free, T6 cannot be written against it"}
+{"ts":"2026-08-23T08:19:27","event":"gate_response","turn":1,"task":"T6","detail":"user chose: cut to make room, then run T6; no baseline moves"}
+{"ts":"2026-08-23T08:19:27","event":"task_start","turn":1,"task":"T5b","agent":"coder","detail":"cut prose from skills/setup/SKILL.md into rules/workbench-tracking.md to free room for T6"}

@@ -542,7 +542,14 @@ function scanHeadingAnchors(
 // for why the pointer does not travel, `agents/playmaker.md` for the `MISSING-POINTER` name it
 // reuses, and `bin/fusion-paths` for the resolution its placement protects. The conventions
 // clause naming `/fusion:setup` as the pointer's fifth writer cites no path of its own.
-const BASELINE = { paths: 1291, anchors: 178, records: 118 };
+// Re-approved 2026-08-23 for the C2 head-room cut in `skills/setup/SKILL.md`: anchors 178 -> 179,
+// records 118 -> 117, paths unmoved. Eleven prose passages were cut from that body to free head-room
+// on the `skills/` surface, and only two carried a counted token. Step 0d's stamp paragraph dropped
+// its restatement of why the stamp makes staleness decidable and cites the authoring home instead,
+// which is the +1 anchor (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`) and
+// a +1 path that cancels the `install.sh` spelling leaving Step 0e with the same restatement. records
+// is -1: the pre-v4 ordering rationale cited defect `260717-0115`, and the rationale went with it.
+const BASELINE = { paths: 1291, anchors: 179, records: 117 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
