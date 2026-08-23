@@ -2064,3 +2064,6 @@
 {"ts":"2026-08-23T09:42:20","event":"gate_response","turn":1,"detail":"continue"}
 {"ts":"2026-08-23T09:42:20","event":"turn_end","turn":1,"detail":"9 tasks resolved, 10 commits, 13 issues created, 3 issues resolved, 0 agent errors, 2 human gates"}
 {"ts":"2026-08-23T09:42:38","event":"turn_start","turn":2,"detail":"Turn 2: the two blockers, the smaller findings, then T8 and T9; head e41393e"}
+{"ts":"2026-08-23T10:03:39","event":"task_done","turn":2,"task":"T10","agent":"coder","detail":"e7454e3 fresh-clone blocker fixed and verified in a clone"}
+{"ts":"2026-08-23T10:03:39","event":"commit","turn":2,"task":"T10","detail":"e7454e3"}
+{"ts":"2026-08-23T10:03:39","event":"task_start","turn":2,"task":"T11","agent":"coder","detail":"marker write: no plugin-root guard"}

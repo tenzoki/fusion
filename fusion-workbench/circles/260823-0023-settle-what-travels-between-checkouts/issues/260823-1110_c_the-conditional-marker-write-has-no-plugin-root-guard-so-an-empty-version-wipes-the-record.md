@@ -51,3 +51,23 @@ Case 1 is the behaviour the plan's `## Data Structures` prescribes and it holds.
 ## Direction, not a prescription
 
 Guard the resolution and skip the write when it fails, rather than writing an empty version. Something of the shape: resolve `V`, and if it is empty, write nothing, report that the marker could not be evaluated, and carry that into the Done report the way the sibling steps carry their own failures. Not blocking Setup is right; writing a wrong marker is not.
+
+---
+
+**Resolved:** 2026-08-23, coder. `skills/setup/SKILL.md` — the marker block gains one guard line ahead of the condition, in the shape Step 0e already uses for the same problem:
+
+```bash
+[ -n "$V" ] || { echo "marker-version-unresolved"; exit 0; }
+```
+
+An unresolvable version now writes nothing and prints a token, rather than writing `"plugin_version":""`. The two states the record separates stay separate: the condition below the guard is only ever reached with a real version in `$V`, so "could not read the version" never arrives at the comparison as "the version matches". The degenerate `grep -qF '"plugin_version":""'` pattern the second run matched is unreachable for the same reason.
+
+Setup is not blocked, matching Steps 0b, 0d and 0f. The step's own prose and the Setup-complete summary at the end of the skill both now require the outcome to be named, which is what closes the "quiet second run" half of the finding: the run says the version could not be read, and says whether an existing marker was left as it stands or no marker was written at all.
+
+**An existing marker carrying `"plugin_version":""` is left as it is, not repaired, and that is a decision rather than an omission.** Measured in a scratch tree: the unchanged condition already rewrites such a marker on the next run with a readable version, because `grep -qF '"plugin_version":"10.6.0"'` finds no match in it. Repair code would duplicate a repair that already happens. What no code can restore is which version originally produced that workbench — it is off the disk and nothing else records it, so a repair could only invent it. Both properties are stated in the step's new prose.
+
+**Not fixed, and deliberately:** the second, smaller property this record names — the exact-spelling coupling between the block's `grep` and its own `printf` — stands. fusion is still the only writer of the file, so it remains latent, and the guard removes only its degenerate case.
+
+Verified in a scratch tree over seven cases, all passing: fresh workbench with the root set writes the marker; a second run at the same version writes nothing and leaves the modification time byte-for-byte unchanged; a legacy marker carrying `setup_pwd` at the same version is untouched; an existing marker with the root unset is untouched in bytes and modification time; a fresh workbench with the root unset gets no marker; a root that resolves to an unreadable manifest gets no marker; and an empty-version marker self-heals on the next readable run. `npm test` from `hooks/` is green (724 passed). The tree was destroyed after the run.
+
+**Golden regenerated:** `hooks/lib/__tests__/fixtures/surface-growth.golden`, two lines, `setup/SKILL.md 46803 → 48144` and the `skills` total `237795 → 239136`, both the same +1 341 bytes. No baseline moved; `skills/` head-room falls from 2 644 to 1 303 bytes.

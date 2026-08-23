@@ -41,8 +41,8 @@
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
   next/SKILL.md 26218
-  setup/SKILL.md 46803
-  total 237795
+  setup/SKILL.md 48144
+  total 239136
 
 [hook-tests lines]
   commit-message-path.test.ts 354
