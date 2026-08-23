@@ -98,3 +98,33 @@ that does not dispatch a reconciler freezes the same four surfaces with nothing 
 Two of the four citations in the table went stale within minutes of being written, when the Circle
 record moved from `_t_` to `_c_` at closure. They are wildcarded now. That is a second instance of
 the class `260801-1020` is filed on, arriving inside the record that reports the first.
+
+---
+
+**Also seen: 260823-1446 by reconciler — sixth instance, in the very next session, and the diagnostic
+holds exactly.** Measured at HEAD `7cd79f1` for session
+`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md`,
+which ran three Turns and produced 19 commits.
+
+| Surface | Says | Reality |
+|---|---|---|
+| `fusion-workbench/agentstate.yaml` | `# Updated: 260823-0823`; `current_task.id: T1`, `status: queued`; `work_queue` holds T9 and T14 `queued` | T9's report is on disk (`analyses/260823-1302-*.md`) and T14 landed in `a2a18f9`; the plan is `_c_` while `plan_context.plan_file` still spells the `_o_` name it carried at 08:00 |
+| `fusion-workbench/orchestrator-live.md` | `**Turn:** 2/12 \| **Tasks:** 9/15 \| **Commits:** 10`; `## Current` shows T10 `[RUNNING]`; five tasks `[QUEUED]`; `## Up Next` reads "Turn 2 is the last planned Turn" | three Turns ran and closed, 19 commits, every listed task resolved |
+| the Circle record's `## Turn log` | empty: the section header with nothing under it | three Turns, each with a review and a `turn_end` event |
+| the session history file | `**Directive:** (not yet stated — awaiting the user's scope)`; `**Mode:** (unresolved — Phase 0 not yet run)`; `**Status:** In progress`; no `## Session log` section at all, 25 lines in total | `agentstate.yaml` carries the Directive and `mode: plan`; the Turn loop exited at `2026-08-23T12:36:03Z` |
+| `fusion-workbench/orchestrator-events.jsonl` | `session_start`, three `turn_start`/`turn_end` pairs, `scope_resolved`, `queue_built`, task and review events, `coherence_review`, `gate_hit`/`gate_response`, commits | current and complete through Turn 3 |
+
+The asymmetry this record names is reproduced without a single exception: the one surface that stays
+current is the one whose writes ride actions that cannot succeed without them, and the four that freeze
+are end-of-Turn writes a session can skip with nothing breaking.
+
+**Two things are new in this instance and neither weakens the record.** The history file froze harder than
+in the fifth: it never received a Directive at all, so a reader with no `agentstate.yaml` could not
+recover what this session was for. That is a live instance of
+`shared/issues/260817-1836_o_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`,
+and this pass could compute its Artifact↔Directive edge only because `agentstate.yaml` survived — a file
+that is class L and is deleted on a clean exit. And the fifth instance's follow-up said the four surfaces
+were written at Phase 4 "because this record was filed"; one session later they froze again, which is the
+record's own point restated by the tree: what is missing is the detection, not the writing.
+
+Marker stays `_o_`. Nothing in this range builds any of the three options under `## What to consider`.

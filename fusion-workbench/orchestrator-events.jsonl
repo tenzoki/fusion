@@ -2092,3 +2092,10 @@
 {"ts":"2026-08-23T12:10:42","event":"review_done","turn":3,"agent":"coderev","detail":"7 issues filed, no blockers; both distrusted repairs hold; all 8 stopping clauses hold; 3 findings time-bound to the closure rename"}
 {"ts":"2026-08-23T12:10:42","event":"commit","turn":3,"detail":"1544224 review artifacts"}
 {"ts":"2026-08-23T12:10:42","event":"task_start","turn":3,"task":"T15","agent":"coder","detail":"pre-closure work: file the corpus decision, repair 4 dangling C1 citations, fix the live-plan comment"}
+{"ts":"2026-08-23T12:36:03","event":"task_done","turn":3,"task":"T15","agent":"coder","detail":"7cd79f1 corpus decision filed unanswered; 4 citations repaired; head-field wildcard authorised by a sibling section"}
+{"ts":"2026-08-23T12:36:03","event":"commit","turn":3,"task":"T15","detail":"7cd79f1"}
+{"ts":"2026-08-23T12:36:03","event":"turn_end","turn":3,"detail":"3 tasks resolved, 4 commits, 7 issues created, 10 issues resolved"}
+{"ts":"2026-08-23T13:00:19","event":"gate_response","detail":"Rebalance: revise Grounding plus the remaining pre-closure work; user answer names shaper portfolio-activation"}
+{"ts":"2026-08-23T13:00:19","event":"rebalance_grounding","detail":"correct the false first-write claim in the Circle record's Grounding snapshot"}
+{"ts":"2026-08-23T13:00:19","event":"turn_start","turn":4,"detail":"Turn 4: Grounding correction, two due records, review of the two uncovered commits; head 7cd79f1"}
+{"ts":"2026-08-23T13:03:33","event":"shaper_done","agent":"shaper","detail":"halted: mode 3 has no scope value for a Grounding-only correction; gap filed as 260823-1455"}

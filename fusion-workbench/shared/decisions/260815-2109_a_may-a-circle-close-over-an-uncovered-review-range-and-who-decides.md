@@ -164,3 +164,31 @@ note quotes: it includes tracking-file commits a reviewer has nothing to open in
 prose written against it inherits the padding the answer chose to remove and has not. A deep change
 that produces many workbench-only commits will inflate that count in exactly the way option 3 was
 answered to prevent.
+
+---
+**Reconciliation 260823-1446 (reconciler, domain `code`, range `3ee8eaf..7cd79f1`) — marker unchanged at
+`_a_`. Option 1 is in force and was applied; option 3 is still absent from the helper, now across four
+consecutive checks.**
+
+`hooks/lib/review-coverage.ts` contains no occurrence of `shipped` in any casing, so the uncovered set is
+still filtered by coverage alone. The shipped-file split the answer calls for was therefore performed by
+hand in this pass, which is what option 3 exists to stop being a hand operation.
+
+Measured at HEAD: `commits=19 reviews=3 unusable=0 uncovered=2 verdict=uncovered`. Split by hand —
+`1544224` touches only `fusion-workbench/` (the Turn 3 review file and the seven records it filed) and
+drops out of the filtered set; `7cd79f1` touches `rules/circle-records.md`,
+`hooks/lib/__tests__/workbench-citation-lint.test.ts`, `hooks/lib/__tests__/reference-resolution-lint.test.ts`
+and two goldens, and stands. One uncovered shipped commit, in the commit that lands the repairs the Turn 3
+review itself ordered.
+
+**That shape is this record's own cross-referenced case, met again.**
+`circles/260801-1244-curator/issues/260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`
+names exactly it: the commit that discharges a review's findings is the one commit no review opens, because
+the review that would cover it is the one that ordered the work. Nothing here is new evidence for a
+different answer; it is a fourth data point for the one already given.
+
+**Applied as answered, and stated so the next pass does not re-derive it.** Coverage is advisory, so the
+uncovered shipped commit does **not** flag the Artifact↔Grounding edge of this session's Coherence verdict.
+It is carried as a named residual for the Circle's `## Closure note`, which is what option 1 prescribes.
+This is the fourth consecutive verdict computed under this rule and the fourth to reach the same reading,
+which is the consistency the record was filed to buy.

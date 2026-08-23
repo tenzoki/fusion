@@ -1,0 +1,16 @@
+The shaper's mode 3 has no scope value for a Grounding-only correction, and halts on the only case that needs one
+---
+`agents/shaper.md` mode 3 (portfolio-activation) is the only writer of a Circle record's `## Grounding snapshot`. It offers two scope values, and both bind the Grounding permission to something else: under `spec` it rides the creation of a new spec and the writing of `**Active spec/plan:**`, under `directive-only` it rides the replacement of the Directive prose. The two values partition the space by what happens to the Directive, and the Grounding is a passenger in both.
+
+The case "the Directive is correctly a pointer, and one sentence in the Grounding is false" therefore falls through. Dispatched with `**Scope:** directive-only`, the run halts on the first bullet's file test: anything other than the literal `(none yet)` in `**Active spec/plan:**` halts, and this record's field cites its plan. The test guards Directive prose and is read against a field a Grounding correction never touches.
+---
+Measured here on 2026-08-23. The C2 Circle `260823-0023-settle-what-travels-between-checkouts` carries a false claim in its Grounding snapshot, filed as `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`. The user chose correction at the Phase 3 Rebalance gate. The orchestrator dispatched mode 3 with the scope problem stated in the dispatch rather than hidden in the parameter, and asked the shaper to correct or to halt naming its clause. It halted, naming `agents/shaper.md` `## Four invocation modes` point 3, first bullet under `**Scope:** directive-only`.
+
+The refusal is correct and should not be read as the defect. The shaper declined to read a deliberate file test purposively, citing the sentence immediately after it: "This one test is what keeps the invariant from decaying, and it is a test you perform on the file in front of you rather than a rule you have to remember." Reinterpreting it per-case would replace a file test with a judgement call and cost the test exactly what it exists to provide.
+
+The consequence is a deadline nobody can meet through fusion. `## Grounding snapshot` is writable only while a record is `_a_` or `_t_`, and mode 3 is its only writer, so a false Grounding sentence in a Circle that has a spec cannot be corrected by any agent at all before the closure rename. After the rename it cannot be corrected by anyone.
+
+Options a repair might take, none of them chosen here: a third scope value naming the Grounding alone; narrowing the `directive-only` halt so it fires on an attempt to write Directive prose rather than on the field's value; or making the Grounding permission independent of the Directive scope. The first two differ in whether the guard tests intent or state, which is the same question the guard's own history in this project turns on.
+
+**Filed by:** orchestrator
+**Cross-references:** `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`

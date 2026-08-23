@@ -150,13 +150,13 @@ flowchart TD
 **Description:** A person reading `.gitignore` and `rules/workbench-tracking.md` can see which workbench entries git carries between checkouts and which it does not, and the two agree with each other and with the tree. `portfolio.md` is no longer one of them: it is regenerated on demand by `/fusion:next`.
 
 **Acceptance criteria:**
-- [ ] `rules/workbench-tracking.md` carries the four-class partition above, ranging over every entry of the layout tree, and states that a multi-checkout arrangement requires the project to track its workbench. That rule is emitted to no agent, so its bytes fall on no bounded surface.
-- [ ] `rules/workbench-tracking.md` no longer calls `portfolio.md` "authored text, not machine-refreshed". The playmaker regenerates it in full on every run, which is the defect already filed as `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`. That defect is closed by this Circle.
-- [ ] `fusion-workbench/portfolio.md` is removed from git tracking with `git rm --cached`, and an ignore rule is added. The file itself is not deleted from anybody's working tree.
-- [ ] The `KEPT:` comment in `.gitignore` lists exactly the tracked root entries and matches the rule it cites. That closes `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`.
-- [ ] `/fusion:next` states, in the briefing it renders, when the portfolio was generated and that it reflects only what this checkout has pulled. The user accepted that a person who has not pulled sees an older ranking; the timestamp is what lets them notice.
-- [ ] The behaviour of `orchestrator-events.jsonl` under a git merge is decided and implemented, per the open decision `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`. The Circle does not close with that question open, because it is the only file in class R2 and every later capability writes to it.
-- [ ] A person can produce two checkouts, run a session in each, push both, and pull each into the other, and the event log in both trees then holds every line from both sessions with no line lost and no hand editing.
+- [x] `rules/workbench-tracking.md` carries the four-class partition above, ranging over every entry of the layout tree, and states that a multi-checkout arrangement requires the project to track its workbench. That rule is emitted to no agent, so its bytes fall on no bounded surface.
+- [x] `rules/workbench-tracking.md` no longer calls `portfolio.md` "authored text, not machine-refreshed". The playmaker regenerates it in full on every run, which is the defect already filed as `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`. That defect is closed by this Circle.
+- [x] `fusion-workbench/portfolio.md` is removed from git tracking with `git rm --cached`, and an ignore rule is added. The file itself is not deleted from anybody's working tree.
+- [x] The `KEPT:` comment in `.gitignore` lists exactly the tracked root entries and matches the rule it cites. That closes `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`.
+- [x] `/fusion:next` states, in the briefing it renders, when the portfolio was generated and that it reflects only what this checkout has pulled. The user accepted that a person who has not pulled sees an older ranking; the timestamp is what lets them notice.
+- [x] The behaviour of `orchestrator-events.jsonl` under a git merge is decided and implemented, per the open decision `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`. The Circle does not close with that question open, because it is the only file in class R2 and every later capability writes to it.
+- [x] A person can produce two checkouts, run a session in each, push both, and pull each into the other, and the event log in both trees then holds every line from both sessions with no line lost and no hand editing.
 
 **Decisions made:**
 - `portfolio.md` stops travelling and is regenerated on demand (user, answer 6).
@@ -239,7 +239,7 @@ flowchart TD
 
 ## User decisions pending
 
-- [ ] `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` — what happens when two checkouts have both appended to the one tracked log. Blocks the close of C2.
+- [x] `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` — what happens when two checkouts have both appended to the one tracked log. Blocks the close of C2.
 - [ ] `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` — the operating-system account, the git identity, or both. Blocks nothing before C3 and should be answered at C3's planning gate.
 
 ## Reconciliation Log
@@ -321,3 +321,52 @@ and the spec text is not the reconciler's to rewrite.
 
 *C0's fifth criterion is still the only one of its five open*, unchanged from the 260822-1556 entry
 above, and still the orchestrator's at Phase 4.
+
+---
+
+**260823-1446 (reconciler, domain `code`, range `3ee8eaf..7cd79f1`) — marker unchanged at `_o_`,
+`**Status:** Partially Complete` unchanged, C2's seven acceptance criteria ticked, and the C2-blocking
+entry under `## User decisions pending` ticked.**
+
+*Why the marker and the status do not move.* Three of five capabilities are delivered. C3 and C4 are
+untouched: nothing in this range adds a person field to a record template, gives an event line a person,
+or scopes the Turn count to the reading session. `Partially Complete` stays the honest field value, and
+`_o_` stays for the reason the 260822-1556 pass gave.
+
+*C2's seven criteria, verified against the tree rather than against the closure report.* Each was opened
+at its own site at HEAD `7cd79f1`, not read off the plan's `[DONE]` markers:
+
+1. `rules/workbench-tracking.md:21-24` carries the four-class table. Tiling re-counted by hand: the
+   layout tree holds 15 root entries plus the two frozen stores, and the four class rows name 6 + 1 + 2
+   + 8 = 17, no entry twice and none missing.
+2. `not machine-refreshed` appears nowhere under `rules/`, `hooks/`, `agents/` or `skills/`. Every
+   surviving occurrence is a workbench record quoting the retired text, which is evidence rather than a
+   claim.
+3. `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns `.asset-provenance`, `.fusion-setup` and
+   `orchestrator-events.jsonl` and nothing else. `fusion-workbench/portfolio.md` is on disk at 14 963
+   bytes and `git status --porcelain` on it is empty.
+4. `.gitignore:70` reads `# KEPT: orchestrator-events.jsonl, .fusion-setup, .asset-provenance.`, the
+   same three the command returns.
+5. `skills/next/SKILL.md:122` renders the portfolio's `**Generated:**` stamp with the clause that the
+   ranking covers only what this checkout has pulled.
+6. `shared/decisions/260822-1136_i_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+   carries `Implemented: c9eba48`; that commit exists and touches `skills/setup/SKILL.md`, which now
+   holds Step 0h at `:315`.
+7. `circles/260823-0023-settle-what-travels-between-checkouts/analyses/260823-1302-two-checkouts-one-event-log-and-what-the-monitor-makes-of-it.md`
+   reports 19 of 19 event lines present in both clones, files byte-identical, both pulls exiting 0. Its
+   `## Scope` states the bound it accepts, that the sessions were simulated rather than run by a live
+   orchestrator, which is the same bound C1 named for itself.
+
+`cd hooks && npm test` at HEAD: 41 files, 724 tests, exit 0.
+
+*Two boxes that stay unticked, and why neither is stale.* C1's seventh criterion at `:140` is a
+conditional whose antecedent is false: the measurement showed the isolation holds, so the branch that
+would stop the sequence never opened. C0's `:121`, the per-surface closure note, belongs to that Circle's
+own closure and is not this range's to satisfy.
+
+*What C2 leaves behind, stated here because the spec is where C3 and C4 are planned from.* Six open
+defect records and one open decision sit in
+`circles/260823-0023-settle-what-travels-between-checkouts/`, and closing that Circle puts every one of
+them outside every `SCAN_*` the resolver emits. Two of them are C4's own inputs: the second event-log
+reader (`260823-1110_*`) and the monitor's session attribution (`260823-1302_*`). A C4 planner reading
+only `shared/` will not find them.

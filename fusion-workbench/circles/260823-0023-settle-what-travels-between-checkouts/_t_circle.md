@@ -55,6 +55,10 @@ Artifacts outside this Circle that bind it, cited rather than copied per the Ori
 
 ## Turn log
 
+- Turn 1 (session 260823-0721): commits 21ae170..e41393e; Coherence verdict coherent; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
+- Turn 2 (session 260823-0721): commits e7454e3..5fc3201; Coherence verdict coherent; session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
+- Turn 3 (session 260823-0721): commits a2a18f9..7cd79f1; Coherence verdict review-needed (reconciler, Grounding claim false); session history: circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md
+
 ## Activation proposal
 
 **Recommended for activation. Proposed 260823-0423 by playmaker session `260823-0423-playmaker-direct-dispatch`.**

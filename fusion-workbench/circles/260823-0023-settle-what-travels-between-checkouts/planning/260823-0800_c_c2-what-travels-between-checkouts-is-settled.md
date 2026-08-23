@@ -251,3 +251,50 @@ None. No helper signature, no exit code and no emitted key changes. `/fusion:set
 - [ ] Two further surfaces still classify `portfolio.md` as an authored record: `hooks/lib/staging-drift.ts` `ROOT_RECORDS`, whose comment repeats the retired ground and whose classification makes the file a staging fault, and the class table at `agents/orchestrator.md:1138`, which names it as an example of the same class. Both are out of this plan by the dispatch's own scope bound and are filed as `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`. Widening this Circle to cover them is the user's call.
 - [ ] `shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` stands open. C0 proceeded on option 1, no re-baseline, which is why the head-room figures in `## Current State` are what they are. An answer of option 3 would change the arithmetic this plan's `skills/` risk rests on, though not any step's substance.
 - [ ] The Grounding's claim about Setup's first write outside the workbench is inaccurate, filed as a defect. Whether the Circle record itself is corrected is the record's owner's call, not this plan's.
+
+## Reconciliation Log
+
+**260823-1446 (reconciler, domain `code`, range `3ee8eaf..7cd79f1`, 19 commits) — no marker moved and no
+step marker changed. `_c_` and `**Status:** Complete` are both correct.**
+
+*Every one of the nine steps was checked at its own site rather than read off its `[DONE]` marker.*
+
+| Step | Verified at | Result |
+|---|---|---|
+| 1 | `rules/workbench-tracking.md:19-26`, `:13`, `:36-47`, `:59` | four-class table present; tiling re-counted 6+1+2+8 = 17 against 15 root entries plus 2 frozen stores; multi-checkout requirement, merge rule and marker-write condition each appear once; `shared/issues/260816-1049_c_*` closed with a note naming its own overruled fix direction |
+| 2 | `git ls-files`, `.gitignore:62-75` | exactly the three tracked root entries; `portfolio.md` on disk at 14 963 bytes and absent from `git status`; `KEPT:` names the same three; `shared/issues/260822-1028_c_*` closed |
+| 3 | `skills/setup/SKILL.md:315-345` | Step 0h present with the work-tree guard, `git check-attr`, the `tail -c1` newline guard and the four-outcome branch; the Done report at `:481` names which outcome occurred |
+| 4 | `skills/setup/SKILL.md:92-96` | conditional write with the `[ -n "$V" ]` guard ahead of it; `setup_pwd` appears nowhere under `skills/`, `agents/`, `hooks/`, `rules/` or `bin/` |
+| 5 | `skills/setup/SKILL.md:348-363`, `rules/fusion-workbench-conventions.md:82` | `MISSING-POINTER` reused from `agents/playmaker.md:95`; `MULTIPLE-ACTIVE` offers and writes nothing; the pointer's writer enumeration names `/fusion:setup` with its one condition |
+| 6 | `skills/next/SKILL.md:122` | the `**Generated:**` stamp is read rather than computed, with the this-checkout qualification beside it |
+| 7 | `agents/orchestrator.md:876`, `:1332` | both sites require the `ts` sort and the Observability site carries the reason; the Turn-count line at `:91` is untouched, as the step required |
+| 8 | both decision records | `_i_` on both; `Implemented: c9eba48` and `Implemented: 25f60eb`; both commits resolve and both touch the files the notes name |
+| 9 | `circles/260823-0023-settle-what-travels-between-checkouts/analyses/260823-1302-*.md` | report on disk; 19 of 19 lines in both clones, files byte-identical, both pulls exit 0; the `bin/monitor` question answered with a measurement and filed as a defect rather than repaired |
+
+`cd hooks && npm test` at HEAD: 41 files, 724 tests, exit 0. No growth-bound baseline moved in the range.
+
+*The stopping section.* Six of its eight clauses were re-verified directly against this tree. The two
+remaining are answered by run records in scratch trees rather than by tree state, which is correct — this
+repository cannot hold a two-checkout merge, and it still has no `.gitattributes` because Setup has not
+been re-run here since the change landed. That is a bound on the evidence, not a gap in the work, and
+`circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1410-coderev-c2-turn-3.md`
+already states it.
+
+*One divergence between plan and tree, and it is in the plan's own `## Open Questions` rather than in a
+step.* The fourth bullet defers the correction of the Grounding's false first-write claim to "the record's
+owner's call" and names no deadline. The deadline exists and is the `_t_ → _c_` rename, after which
+`## Grounding snapshot` has no sanctioned writer. Filed as
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`
+and carried into this session's `## Coherence` verdict as the flagged edge.
+
+*Review coverage, measured rather than accepted.* `bin/fusion-review-coverage` at HEAD reports
+`commits=19 reviews=3 unusable=0 uncovered=2 verdict=uncovered`. The three reviews tile `3ee8eaf..a2a18f9`;
+`1544224` and `7cd79f1` are outside every declared range. Applying the shipped-file filter of
+`shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` by
+hand, since the helper still does not carry it: `1544224` touches only `fusion-workbench/` and drops out;
+`7cd79f1` touches `rules/circle-records.md`, `hooks/lib/__tests__/workbench-citation-lint.test.ts`,
+`hooks/lib/__tests__/reference-resolution-lint.test.ts` and two goldens, and stands. That record settles
+coverage as advisory, so it does not flag a Coherence edge — it is a residual for the closure note to name.
+
+*Nothing here is a repair.* Two tracking files were corrected in this pass and both are named in
+`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-1446-reconciliation.md`.

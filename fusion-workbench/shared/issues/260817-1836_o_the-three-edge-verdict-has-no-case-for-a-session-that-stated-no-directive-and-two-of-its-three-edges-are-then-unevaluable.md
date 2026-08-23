@@ -69,3 +69,10 @@ That record is about a Directive that exists, is reachable, and was deliberately
 one is about a Directive that was never stated. They share a symptom (the verdict vocabulary is too
 narrow) and have different causes, so a fix for one does not cover the other. Both should be read
 before either is planned.
+
+---
+Also seen: 260823-1446 by reconciler — session
+`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md`
+carries `**Directive:** (not yet stated — session started via /fusion:setup, awaiting the user's scope)`
+after three Turns and 19 commits, and this pass could evaluate both Directive edges only because
+`agentstate.yaml` still held `session.directive` — a class L file that a clean exit deletes.
