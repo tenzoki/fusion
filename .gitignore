@@ -66,7 +66,7 @@ credentials.json
 # that ended. The split and its two consequences, one binding the lifecycle skills and one
 # binding any command that sweeps the tree, are stated in rules/workbench-tracking.md,
 # which is their authoring home.
-# KEPT: orchestrator-events.jsonl, portfolio.md, .fusion-setup.
+# KEPT: orchestrator-events.jsonl, .fusion-setup, .asset-provenance.
 # The guard's own event log (.guard-state/events.jsonl) is a record too, and it is
 # deliberately NOT excepted here: what preserves it is the archive step of
 # /fusion:cleanup, which rolls it into fusion-workbench/archive/ under a dated name, and
@@ -81,6 +81,8 @@ fusion-workbench/.guard-state/*
 fusion-workbench/.commit-lock/*
 # Verbatim copy of the tracked bin/monitor, re-created by /fusion:setup.
 fusion-workbench/monitor
+# Regenerated in full on every playmaker run.
+fusion-workbench/portfolio.md
 
 # .fusion/ is the fusion install directory (install.sh default: ~/.fusion, overridable
 # via FUSION_HOME). Runtime artifact, never source.

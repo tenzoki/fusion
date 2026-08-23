@@ -119,7 +119,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
 
 ## Implementation Steps
 
-1. **The four-class partition is written into `rules/workbench-tracking.md`**
+1. [DONE] **The four-class partition is written into `rules/workbench-tracking.md`**
    - Executor: `coder`
    - Files: `rules/workbench-tracking.md`, `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`
    - Changes: replace the two-bullet records-versus-live-state split with the four-class partition from the specification's `## The state partition` (R1 travels with one writer per file; R2 travels and is appended by many; R3 travels and is written once or per item; L stays in the checkout). Range it over **every** entry of the layout tree in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, including the two frozen stores a workbench may still hold, and state the tiling property: every entry falls in exactly one class, and a new root-anchored surface joins one of them in the commit that creates it. Move `portfolio.md` to class L and delete the clause calling it authored text rather than machine-refreshed. Keep the `.guard-state/` per-file split and the archive-roll paragraph, which the partition inherits rather than replaces. Add three statements this file becomes the home for: that a multi-checkout arrangement requires the project to track its workbench, and why; that `fusion-workbench/orchestrator-events.jsonl` carries a union merge driver, what the line is, why `git check-attr` is the question a mechanism asks about it, and what `/fusion:setup` does in each of the three branches; and that `.fusion-setup` is written when it is missing or when the plugin version changes rather than on every run. Close the defect with a `Resolved:` note and rename it to `_c_`.
@@ -127,7 +127,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Acceptance: a reader can name the class of any entry in the layout tree from this file alone; the string "not machine-refreshed" no longer appears; the multi-checkout requirement, the merge rule and the marker write condition each appear once; the defect is `_c_` with a note that names its overruled recommendation; `npm test` is green, which includes the two citation gates over the new text.
    - Dependencies: none
 
-2. **`portfolio.md` leaves git tracking and the `KEPT:` comment names what is left**
+2. [DONE] **`portfolio.md` leaves git tracking and the `KEPT:` comment names what is left**
    - Executor: `coder`
    - Files: `.gitignore`, `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
    - Changes: `git rm --cached fusion-workbench/portfolio.md`, which removes it from the index and leaves the working-tree file untouched. Add `fusion-workbench/portfolio.md` to the ignored list in the `fusion-workbench` block, beside the entry for `monitor`, with the one-clause reason that it is regenerated in full on every playmaker run. Rewrite the `KEPT:` line to name the three tracked root entries exactly: `orchestrator-events.jsonl`, `.fusion-setup`, `.asset-provenance`. Leave the paragraph explaining why `.guard-state/events.jsonl` is deliberately absent from that list as it stands. Close the defect and rename it to `_c_`.

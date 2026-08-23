@@ -2028,3 +2028,6 @@
 {"ts":"2026-08-23T06:23:08","event":"gate_response","detail":"plan approved; scope widened to include ROOT_RECORDS and orchestrator.md:1138 (task T2b)"}
 {"ts":"2026-08-23T06:23:08","event":"queue_built","detail":"10 tasks, 0 blocked at start; 9 coder, 1 analyst"}
 {"ts":"2026-08-23T06:23:08","event":"turn_start","turn":1,"detail":"Turn 1: T1..T7 source edits; head 3ee8eaf"}
+{"ts":"2026-08-23T06:40:11","event":"task_done","turn":1,"task":"T1","agent":"coder","detail":"21ae170 four-class partition into rules/workbench-tracking.md; defect 260816-1049 closed"}
+{"ts":"2026-08-23T06:40:11","event":"commit","turn":1,"task":"T1","detail":"21ae170"}
+{"ts":"2026-08-23T06:40:11","event":"task_start","turn":1,"task":"T2","agent":"coder","detail":".gitignore: portfolio.md untracked + KEPT list"}
