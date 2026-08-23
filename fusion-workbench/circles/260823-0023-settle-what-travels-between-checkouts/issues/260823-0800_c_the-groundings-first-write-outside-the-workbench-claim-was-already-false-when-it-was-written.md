@@ -28,3 +28,8 @@ So the property the Grounding treats as intact, that every Setup write lands ins
 Read at HEAD `3ee8eaf`: `skills/setup/SKILL.md` Step 0g sections 1, 2 and 3, and the `## Grounding snapshot` paragraph in this Circle's record.
 
 **Found by:** planner, while planning C2.
+
+---
+Resolved: the user corrected the sentence by hand in `_t_circle.md` `## Grounding snapshot` on 260823, before the closure rename. The Grounding now records that Step 0g already writes `.claude/settings.local.json` and appends to `.gitignore` at the project root, so the merge driver is the third such write rather than the first, and Step 0g is a worked convention rather than a precedent being set.
+
+No agent could perform this correction. The shaper is the only writer of a Circle record's `## Grounding snapshot`, and its mode 3 halted: neither of its two scope values covers a Grounding-only correction on a Circle whose `**Active spec/plan:**` cites a file. That gap is filed as `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`, and it is why this record closes against a human edit rather than an agent's.
