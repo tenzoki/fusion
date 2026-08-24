@@ -9,3 +9,6 @@ Scope: `hooks/lib/__tests__/reference-resolution-lint.test.ts:459`; the two roll
 Fix direction: recover the move from `git log -S` between the C2 closing commit and `5b88eb9` and write the one accounting line, retrospectively and marked so, as `260823-1110` did; or state in the 1295 entry that the +1 is unattributed. A comment line costs a test line; hook-test head-room is 0.
 
 Severity: Low.
+
+---
+Resolved: fixed — the +1 path and +1 anchor are commit `0db1fbb` (the orchestrator's `## How you ask the user anything` section), written retrospectively into the rolled log because the test surface has no head-room; `fusion-workbench/shared/analyses/260824-2121-reference-resolution-pin-re-approval-log-entries-26-to-40.md` `## The unaccounted +1, written retrospectively on 2026-08-24`

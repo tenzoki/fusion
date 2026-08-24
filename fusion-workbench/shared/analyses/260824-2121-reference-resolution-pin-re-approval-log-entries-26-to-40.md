@@ -113,3 +113,17 @@ file.
 // The same section names `$PORTFOLIO` and `Active spec/plan:`, which are not paths, and the
 // template and worked-example edits beside it changed a marker letter inside a path already counted.
 ```
+
+## The unaccounted +1, written retrospectively on 2026-08-24
+
+The chain above closes at paths 1294 and anchors 180; the first entry left in the test file opens
+at paths 1295 and anchors 181. The move between them is commit `0db1fbb` (2026-08-24, "the
+orchestrator asks in chat, and the dialog is banned without exception"), which re-approved
+`BASELINE` from `{ paths: 1294, anchors: 180 }` to `{ paths: 1295, anchors: 181 }` with no
+attribution line: its message says only that "two gate baselines moved and both were re-approved".
+The tokens are in the new `## How you ask the user anything` section of `agents/orchestrator.md`: the +1 path is
+`agents/shaper.md` entering that prompt one more time, and the +1 anchor is that section citing
+`rules/user-facing-output.md` `## Length`. Recovered by `git log -S'paths: 1295'` and the diff of
+that commit, not from memory, and it is the same class `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_c_*`
+closed the day before (issue `shared/issues/260824-2145_c_*_the-reference-resolution-pin-chain-has-an-unaccounted-plus-one-between-the-c2-closing-pass-and-c3-step-3.md`).
+The line lives here rather than in the test file because the hook-test surface has no head-room.

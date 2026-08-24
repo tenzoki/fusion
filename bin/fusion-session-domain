@@ -37,7 +37,7 @@
 #
 # The read is deliberately narrow, and its true bound is this: the FIRST
 # `domain:` key sitting exactly two spaces deep, in whichever top-level block
-# holds it, with the value quoted or bare. Only `session:` carries one today
+# holds it, with the value double-quoted or bare. Only `session:` carries one today
 # (`agents/orchestrator.md` `## Persistent State File`), so the read is the session's;
 # a two-space `domain:` added to an earlier block would be read instead, and
 # a `domain:` at any other depth is never read. The three call sites are

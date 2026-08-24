@@ -11,3 +11,6 @@ Plan step 14 is marked [DONE] above a progress line that says it is not
 Attribution: the person half of `Filed by:` is absent because the installed plugin copy (`$FUSION_PLUGIN_ROOT/bin/`) does not carry `bin/fusion-identity`; the guarded call failed with the helper missing, not with exit 4, so an identity was owed and could not be read.
 
 Fix: append one progress line under step 14 (`Progress 260824-2136 (coder): P-14b moved the open-issue control onto a fixture; `npm test` 43 files, 760 tests, exit 0; acceptance met, step marked [DONE]`), so the mark has the line that justifies it.
+
+---
+Resolved: fixed — a dated progress line under step 14 now records that P-14b closed it at `13aaa85`; `circles/260824-1853-close-every-open-defect/planning/260824-1905_p_plan-close-every-open-defect.md:189`

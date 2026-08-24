@@ -48,3 +48,6 @@ rejected in the decision; do not reintroduce either as a supplement without re-o
 - `find fusion-workbench -path '*/issues/*' -name '*_[op]_*' -not -path '*/archive/*'` prints nothing after this record and `260824-1538` close.
 
 What the figures say about the class this record names: the surface stops growing only by cutting, and three of the four blocking bounds are within one ordinary edit of red (2 lines, 216 bytes, 1 770 bytes). That is the next cleanup's subject, tracked by the open decision `shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`, not by this record.
+
+---
+Corrected: 260824-2147 (ontocoder, issue `circles/260824-1853-close-every-open-defect/issues/260824-2155_*_the-umbrella-closure-note-names-two-steps-for-two-rows-the-triage-assigns-to-one.md`) — "which this Circle closed in steps 11 and 12 (triage rows 21 and 23)" reads "step 12 (triage rows 21 and 23)": the triage table assigns both rows to S12 (`circles/260824-1853-close-every-open-defect/planning/260824-1905_p_plan-close-every-open-defect.md:274,276`) and both records cite `agents/orchestrator.md` alone. The `Resolved:` note stands as written.

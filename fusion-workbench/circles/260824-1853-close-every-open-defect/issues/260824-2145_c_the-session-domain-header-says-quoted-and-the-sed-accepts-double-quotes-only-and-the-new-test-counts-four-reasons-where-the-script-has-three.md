@@ -9,3 +9,6 @@ Scope: `bin/fusion-session-domain:41,75`; `hooks/lib/__tests__/fusion-session-do
 Fix direction: either widen the `sed` to `["']?...["']?` and add one `it.each` row (`["single-quoted", "session:\n  domain: 'data'\n"]`, one line, which needs a one-line cut elsewhere: hook-test head-room is 0), or narrow the header to "double-quoted or bare"; and change the test comment's "four-way" to "three-way" (same line count).
 
 Severity: Low.
+
+---
+Resolved: fixed — header narrowed to "double-quoted or bare" to match the `sed`, and the test comment says three-way; `bin/fusion-session-domain:41`, `hooks/lib/__tests__/fusion-session-domain.test.ts:10`

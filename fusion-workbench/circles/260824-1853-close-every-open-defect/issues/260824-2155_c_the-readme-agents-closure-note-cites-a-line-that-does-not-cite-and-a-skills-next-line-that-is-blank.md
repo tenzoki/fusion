@@ -11,3 +11,6 @@ The README-agents closure note cites a line that does not cite and a skills/next
 Attribution: the person half of `Filed by:` is absent because the installed plugin copy (`$FUSION_PLUGIN_ROOT/bin/`) does not carry `bin/fusion-identity`; the guarded call failed with the helper missing, not with exit 4, so an identity was owed and could not be read.
 
 Fix: append a `Corrected:` line to the closed record naming the citing lines as 53, 59, 60, 61, the five tokens including `:97`, and that no `:148` citation exists (the restatement is `:149` and is not cited by the README). The `Resolved:` line stands as written.
+
+---
+Resolved: fixed — a `Corrected:` line names the citing lines 53, 59, 60, 61, the five tokens including `:97`, and that `:148` is a blank line whose restatement sits at `:149`; `circles/260824-1853-close-every-open-defect/issues/260824-2056_c_readme-agents-still-cites-skills-next-at-line-147-153-after-step-10-moved-the-block-to-139-146.md:13`

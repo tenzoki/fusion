@@ -7,7 +7,7 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 
 // `bin/fusion-session-domain` is a bash script; this drives the real one against
 // throwaway workbenches, the way its three skill callers do. Under test is the
-// header's contract: two lines always, in order; the four-way stderr reason on a
+// header's contract: two lines always, in order; the three-way stderr reason on a
 // fallback; exit 3 with NOTHING on stdout when no workbench is above cwd, because
 // a defaulted domain there would be an answer about a project that never ran
 // setup; and the read's true bound, the first two-space `domain:` key in the file

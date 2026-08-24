@@ -100,7 +100,7 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 **Cadence note:** the per-Circle verdict is computed at session end (the orchestrator dispatches the reconciler once at Phase 3, when the Turn loop exits). When a Circle is active (`fusion-workbench/.active-circle` names the `_t_` Circle), that session-end coincides with the Circle boundary, so session-end *is* the per-Circle trigger. For sessions with no active Circle, the session boundary is the proxy.
 
-**The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is anything but `coherent`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
+**The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is anything but `coherent`, or `coherent` with recommendation `state Directive`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
 
 **Compute the three edges.** One line each, with cited evidence.
 
@@ -173,7 +173,7 @@ Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 The recommendation maps from the verdict and the vertex the flagged edge faults:
 - either Directive edge `not evaluable` because no Directive was stated → `state Directive`, whatever the verdict; no Rebalance option addresses a Directive that does not exist
-- `coherent` with every edge evaluable → `none`
+- `coherent` otherwise → `none`; an edge `not evaluable` for any other reason (no commits, for one) carries that reason on its line and changes nothing here
 - `review-needed` with `Artifact↔Grounding` flagged `(Artifact at fault)` → `revise Artifact`
 - `review-needed` with `Artifact↔Grounding` flagged `(Grounding at fault)` or `Grounding↔Directive` flagged → `revise Grounding`
 - `review-needed` with `Artifact↔Directive` flagged (commits orthogonal/away from Directive) → `revise Directive`

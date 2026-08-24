@@ -9,3 +9,6 @@ Scope: `agents/orchestrator.md:574` against `:621-623`. Range `01964e4..13aaa85`
 Fix direction: at `:574` write `git reset --hard` (or "`git reset` with `--hard` or a pathspec-free `--mixed` on a shared index") and say the plain form is the orchestrator's alone, inside the lock; or keep the ban as written and state at step 5 why the orchestrator is exempt. Prose only.
 
 Severity: Low.
+
+---
+Resolved: fixed — the executor rule bans `git reset --hard` and says the plain form in step 5 writes the index only and is the orchestrator's alone, inside the lock; `agents/orchestrator.md:574`

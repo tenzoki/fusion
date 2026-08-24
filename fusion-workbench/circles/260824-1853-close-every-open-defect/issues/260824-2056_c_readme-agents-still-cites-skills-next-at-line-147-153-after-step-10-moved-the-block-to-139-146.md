@@ -9,3 +9,5 @@ Fix direction: re-read the three cells against HEAD and correct them; `260818-16
 Severity: Low.
 ---
 Resolved: fixed — the four `skills/next/SKILL.md` line citations in `README-agents.md` `## Dispatch parameters` were re-read against HEAD: the block is `:139-146`, `**Domain:**` `:138`, `**Proposal source:**` `:146`, the contract restatement `:148`; `README-agents.md:53,58,60,61`
+
+Corrected: 260824-2147 (ontocoder, issue `260824-2155_*_the-readme-agents-closure-note-cites-a-line-that-does-not-cite-and-a-skills-next-line-that-is-blank.md`) — the citing lines of `README-agents.md` are 53, 59, 60 and 61, not 58; between them they carry five `skills/next/SKILL.md` tokens, `:139-146` (53, 60), `:97` and `:138` (59), `:146` and `:148` (61). The `:148` token the note called the contract restatement points at a blank line; the restatement is `skills/next/SKILL.md:149`, so `README-agents.md:61` carries a drifted citation the note did not correct (filed separately). The `Resolved:` line stands as written.

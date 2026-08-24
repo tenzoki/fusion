@@ -9,3 +9,6 @@ Scope: `agents/reconciler.md:175-181`. Range `01964e4..13aaa85`, commit `011cc92
 Fix direction: one more row, "`coherent` with an edge `not evaluable` for any other reason → `none`, and the reason is carried on the edge line", or fold it into row 2 by dropping "with every edge evaluable" and making row 1 the only exception. Prose only.
 
 Severity: Low.
+
+---
+Resolved: fixed — row 2 is now `coherent` otherwise → `none`, with a non-Directive `not evaluable` edge carrying its reason and row 1 the only exception; `agents/reconciler.md:177`

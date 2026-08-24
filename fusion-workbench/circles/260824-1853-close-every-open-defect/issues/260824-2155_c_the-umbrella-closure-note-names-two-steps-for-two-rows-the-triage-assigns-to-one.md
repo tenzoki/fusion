@@ -11,3 +11,6 @@ The umbrella closure note names two steps for two rows the triage assigns to one
 Attribution: the person half of `Filed by:` is absent because the installed plugin copy (`$FUSION_PLUGIN_ROOT/bin/`) does not carry `bin/fusion-identity`; the guarded call failed with the helper missing, not with exit 4, so an identity was owed and could not be read.
 
 Fix: append a `Corrected:` line: "steps 11 and 12" reads "step 12 (triage rows 21 and 23)".
+
+---
+Resolved: fixed — a `Corrected:` line reads the pointer as step 12 for both rows 21 and 23; `shared/issues/260811-1734_c_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md:53`

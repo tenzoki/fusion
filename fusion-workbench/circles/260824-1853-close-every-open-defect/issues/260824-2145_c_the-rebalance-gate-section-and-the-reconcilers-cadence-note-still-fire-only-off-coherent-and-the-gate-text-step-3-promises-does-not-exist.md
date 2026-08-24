@@ -13,3 +13,6 @@ Scope: `agents/orchestrator.md:992-997`, `:1009`; `agents/reconciler.md:103`. Ra
 Fix direction: rewrite the `### Rebalance Gate` trigger sentence to name the `coherent` + `state Directive` case and add the one sentence step 3 promises under the Revise Directive bullet (no spec: shaper is dispatched in user-direct mode with the session's evidence); correct `agents/reconciler.md:103` to "anything but `coherent` with recommendation `none`"; state whether stating a Directive counts against the once-per-session cap, in one place. Prose only; no test line needed. `agents/` head-room is 3 675 bytes.
 
 Severity: Medium. A case the previous record said was "named but not routed" is now routed in one paragraph and un-routed in the section that defines the gate.
+
+---
+Resolved: fixed — the `### Rebalance Gate` trigger names `coherent` + `state Directive`, the Revise Directive bullet states the no-spec entry, the reconciler cadence note matches its mapping, and the cap is answered once (stating is not a revision); `agents/orchestrator.md:992,996,1009`, `agents/reconciler.md:103`

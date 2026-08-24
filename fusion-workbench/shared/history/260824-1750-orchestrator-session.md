@@ -49,3 +49,8 @@ Setup complete. Awaiting the user's Directive.
 ## Turn 2 (from 01964e4)
 
 - Order deviates from the plan's 14-then-15: P-15 (review findings) runs first so that P-14 is the final measurement over the finished tree.
+- Turn 2 closed at 2acb9f8: P-15 (13 findings, 011cc92), P-15b (2, 6b26e2c), P-14 + P-14b (measurement; citation-lint control from fixture, 13aaa85). Open defects reached 0 at 13aaa85. Reviews: ontorev 3 low (1eb7ef6), coderev 5 (1 medium, 2acb9f8). Coherence gate not re-asked (user's Turn 1 answer covers the run to the stop clauses).
+
+## Turn 3 (from 2acb9f8)
+
+- Close the 8 Turn-2 findings; coderev opens 01964e4, the one commit no review covered.
