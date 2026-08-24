@@ -70,22 +70,13 @@ Otherwise proceed to Step 2.
 
 ## Step 2 — Detect domain
 
-Decide which `**Domain:**` value to pass to playmaker.
-
-- If the parent context is an orchestrator session and `$WORKBENCH/agentstate.yaml` exists, read its `session.domain` field. That value is the most accurate — the orchestrator detected it at Setup Step 5.
-- Otherwise (no `agentstate.yaml`, or no `session.domain` field): fall back to `code`.
-
-`agentstate.yaml` is root-anchored, at a fixed workbench-relative path — see `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`.
+Decide which `**Domain:**` value to pass to playmaker. The read has one home, `bin/fusion-session-domain`, whose header carries the contract; call it guarded, as every helper call site is, because an installed copy may predate it:
 
 ```bash
-DOMAIN=""
-if [ -f "$WORKBENCH/agentstate.yaml" ]; then DOMAIN="$(grep -E '^  domain:' "$WORKBENCH/agentstate.yaml" | head -1 | sed -E 's/.*domain:[[:space:]]*"?([a-z]+)"?.*/\1/')"; fi
-DOMAIN="${DOMAIN:-code}"
+if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"; else printf 'domain=code\nsource=helper-missing\n'; fi
 ```
 
-The 2-space leading indent scopes the match to `session:`-block fields (the only place `domain:` lives today); the `"?` around the captured token handles both quoted (`"code"`) and unquoted (`code`) YAML values.
-
-`<detected-domain>` ∈ `{code, data}` for the remainder of this skill.
+`domain=` is `<detected-domain>` ∈ `{code, data}` for the remainder of this skill. A `source=` other than `agentstate` is a fallback: report it beside the value, never apply it silently.
 
 ## Step 3 — Dispatch playmaker
 
@@ -133,11 +124,11 @@ Playmaker's report from Step 3 may name backlog operations it proposed and could
 
 **No proposals, no step.** When the returned report names none, do nothing here — ask nothing, print nothing, go to Step 6. Most runs are that run.
 
-**1. Read the proposals out of the report**, one operation to a line. The four line forms are fixed by the portfolio template in `rules/circle-records.md` `## Backlog — ranked`, and playmaker returns them in the report exactly as it wrote them into the portfolio.
+**1. Read the proposals out of the portfolio**, from the `## Backlog — ranked` section of the file Step 4 read, one operation to a line. The four line forms are fixed by the portfolio template in `rules/circle-records.md` `## Backlog — ranked`; the returned report only says whether this run proposed anything, and is not parsed for the lines.
 
 **2. Ask, once — and a second time only to narrow.** One `AskUserQuestion` naming the operations in plain words with their entry paths shown, and three options: perform all of them, choose which, perform none. **Perform none is an ordinary answer**, not a failure — record it in one line and move on. Follow the tone rules in `## Tone` below; the operations are the content, the mechanics of the relay are not.
 
-**On "choose which", ask the follow-up and let it answer the whole subset.** One further `AskUserQuestion`, one option per proposed operation in the order the report listed them, `multiSelect` so the user marks everything they approve in a single pass. What comes back marked is the approved set; everything unmarked is declined, and neither needs a third question. Step 6 makes exactly this follow-up on **Pick another**, for the same reason — the first question asks how much, the second asks which — so this is that shape rather than a second one. If only one operation was proposed there is nothing to narrow: the option is equivalent to perform-all and you merge the two, the way Step 6 merges its single-entry case. If the follow-up comes back with nothing marked, that is perform-none — record it in one line and dispatch nothing.
+**On "choose which", ask the follow-up and let it answer the whole subset.** One further `AskUserQuestion`, one option per proposed operation in the order the report listed them, `multiSelect` so the user marks everything they approve in a single pass. What comes back marked is the approved set; everything unmarked is declined, and neither needs a third question. Step 6 makes exactly this follow-up on **Pick another**, for the same reason — the first question asks how much, the second asks which — so this is that shape rather than a second one. A split is put to the user one produced entry to an option, not whole: its approved entries are relayed under the `split <entry path>:` header and the unmarked ones dropped, which is the partial split the store actually holds. If only one operation was proposed there is nothing to narrow: the option is equivalent to perform-all and you merge the two, the way Step 6 merges its single-entry case. If the follow-up comes back with nothing marked, that is perform-none — record it in one line and dispatch nothing.
 
 **"Once" bounds the shape, not the count.** Two questions at most, the second strictly narrowing the first's answer, and no third. Do not re-put an operation the user has declined, do not ask them to confirm the set they have just marked, and do not open a question about anything other than the operations already on the table. Choosing a subset is the ordinary answer here, not an edge case: the four fixed line forms in `rules/circle-records.md` `## Backlog — ranked` are one operation to a line precisely so a person can approve them one at a time.
 
@@ -146,7 +137,9 @@ Playmaker's report from Step 3 may name backlog operations it proposed and could
 ```
 **Domain:** <detected-domain>
 **Confirmed operations:**
-- split <entry path> into: <slug> — <title>; <slug> — <title>
+- split <entry path>:
+  - <slug> — <title>
+  - <slug> — <title>
 - merge <entry path>, <entry path> into: <slug> — <title>
 - close <entry path> — <reason>
 - defer <entry path> until <target>
@@ -204,7 +197,7 @@ MARKER="$(basename "$REC" | sed -nE 's/^_([a-z])_.*/\1/p')"
 
 If `$CDIR` is not a directory, `$REC` is empty, or `$MARKER` is not `a`, halt and report the mismatch. Do not rename, do not write the pointer. A directory holding no record, or more than one, is a workbench-state fault the user must resolve — say which it is.
 
-**Where `$MARKER` is `t`, the refusal is in the claim's terms and not the marker's.** Read the record's `**Claim:**` and this checkout's identity from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`, guarded with `[ -x ]` as every helper call site is. Where the field opens with `Claimed ` and names another identity, say who holds the Circle and when the claim was written, then offer one override at an `AskUserQuestion`: *Take it over here* / *Leave it alone*. Taking it appends the `Overridden ` sentence per `$FUSION_SRC/rules/circle-records.md` `### The claim field`, so the first sentence stays and both identities stand in the record, then writes `.active-circle` (Step 6.3) and nothing more: the record already carries `_t_`, so nothing is renamed. Leaving it writes nothing. `Unclaimed`, an absent field, or this checkout's own identity is the mismatch above and is reported as one.
+**Where `$MARKER` is `t`, the refusal is in the claim's terms and not the marker's.** Read the record's `**Claim:**` and this checkout's identity from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`, guarded with `[ -x ]` as every helper call site is. Where the field opens with `Claimed ` and names another identity, say who holds the Circle and when the claim was written, then offer one override at an `AskUserQuestion`: *Take it over here* / *Leave it alone*. Taking it appends the `Overridden ` sentence per `$FUSION_SRC/rules/circle-records.md` `### The claim field`, so the first sentence stays and both identities stand in the record, then writes `.active-circle` (Step 6.3) and nothing more: the record already carries `_t_`, so nothing is renamed. Leaving it writes nothing. `Unclaimed`, an absent field, or this checkout's own identity is the mismatch above and is reported as one. When the helper prints one half or neither (its exits 3, 4 and 5), the claim's value for a partial identity and the comparison against it are what that same section states; read them there and compose nothing.
 
 ### 6.2 — Rename the record
 
@@ -253,7 +246,9 @@ Print the following, rendered in the project's chat language (`## Tone`), changi
 
 > *Activated. The Circle now stands at `_t_` and the `.active-circle` pointer names it.*
 >
-> *A fresh orchestrator session begins against this Circle. The orchestrator now runs Setup (which overwrites the dashboard), takes the Directive of Circle `<candidate-dirname>` as the session Directive — out of the record's `## Directive` while that section holds prose, and out of the spec or plan the record's `**Active spec/plan:**` cites once it holds the pointer instead — and proceeds with Phase 0 → Phase 1 → Phase 2.*
+> *Circle `<candidate-dirname>` is ready to run. An orchestrator session against it runs Setup (which overwrites the dashboard) and proceeds with Phase 0 → Phase 1 → Phase 2; if this message is all that happens next, say "go" and it starts.*
+
+The session Directive is not read off the record here or by any orchestrator step: the Coherence gate resolves it from the active plan, else the active spec, else the session history's `**Directive:**` line, and that chain is the whole resolution.
 
 **Then act on it in the same turn, and who you are decides how.** If you are the orchestrator, this activation is one of the self-initiated runs your own MANDATORY section anticipates: run your Setup now, then continue into Phase 0. Its steps are not restated here and must not be. If you are any other agent, stop here. The printed message stands as the user's next step, and this skill starts no session on its own.
 

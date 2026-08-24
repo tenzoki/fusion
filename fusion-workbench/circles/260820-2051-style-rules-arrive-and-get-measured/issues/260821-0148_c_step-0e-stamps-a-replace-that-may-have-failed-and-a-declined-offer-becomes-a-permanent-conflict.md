@@ -33,3 +33,6 @@ Classifying it as a conflict is arguably the honest reading — both copies real
 **Owner:** `coder`.
 **Severity:** Medium for part 1 (a user-requested change is silently recorded as done), Low-Medium for part 2 (a warning with no off-switch on a step whose stated design is to ask at most once).
 **Direction, not a prescription.** Part 1 has an obvious shape and it is the one Step 0d already uses: guard the `cp`, stamp the destination. Part 2 is a design question rather than a bug to patch, and this record should not pre-empt it: either case 4 gets a way to be acknowledged, or the decline path should not produce a state that lands there.
+
+---
+Resolved: fixed — the replace loop guards the `cp`, stamps the destination and names a failed copy `replace-failed` so it is offered again rather than recorded as done; case 4 names its two ways out (replace by hand, or keep and delete the file's provenance line, which asks once more and then falls silent); `skills/setup/SKILL.md:206`, `:216-226`, `:242`

@@ -26,3 +26,6 @@ Fix direction: state the third case in Step 0i and say what it does, matching th
 
 ---
 **Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** Both sides re-read at HEAD. `skills/setup/SKILL.md:351` splits the claim two ways, `Claimed ` naming another identity and `Unclaimed`-or-absent, and says nothing about `Claimed ` naming this checkout. `skills/next/SKILL.md:207` closes with "`Unclaimed`, an absent field, or this checkout's own identity is the mismatch above and is reported as one", which is the third case. The asymmetry stands.
+
+---
+Resolved: fixed — Step 0i names the third case, `Claimed ` with this checkout's own identity, and says it behaves as today, matching the three-way split `/fusion:next` Step 6.1 uses; `skills/setup/SKILL.md:357`

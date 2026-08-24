@@ -35,3 +35,6 @@ no open home, so it gets one here.
 This is a contract mismatch between a skill body and an agent prompt, not a defect in either taken
 alone. Whoever fixes it decides one of two things: the handoff stops asserting the read, or the
 orchestrator gains the step and the resolution chain gains a documented fourth entry.
+
+---
+Resolved: fixed — the Step 6.5 message no longer asserts a Directive read, and the line under it says the Coherence gate's three-source chain is the whole resolution; `skills/next/SKILL.md:249-251`

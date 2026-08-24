@@ -125,3 +125,6 @@ Not costed here.
 
 The three differ in who is assumed to notice that a session has not started, which is the question
 under all of them. Today the answer is the user, by asking.
+
+---
+Resolved: fixed — verified at HEAD that the imperative instruction to the executing agent stands outside the printed block and the false closing sentence is gone; the printed message now also tells the user to say "go" when nothing follows it (option 1), so a non-orchestrator reader leaves an honest next step; `skills/next/SKILL.md:249`, `:253`

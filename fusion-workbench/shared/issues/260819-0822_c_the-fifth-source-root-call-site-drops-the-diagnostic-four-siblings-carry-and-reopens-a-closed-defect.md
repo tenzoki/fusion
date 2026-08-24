@@ -69,3 +69,6 @@ reason to weigh that record rather than to refile it.
 
 Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
+
+---
+Resolved: fixed — the one-liner is the four-line guarded shape its siblings carry, with the `${FUSION_PLUGIN_ROOT:-}` expansion and the stderr line, and the prose names the one root tried; `skills/archive/SKILL.md:39-44`

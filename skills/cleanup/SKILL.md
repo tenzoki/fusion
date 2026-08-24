@@ -100,16 +100,13 @@ The goal is that no unfinished work is lost when the session ends.
 
 1. If `fusion-workbench/agentstate.yaml` exists, read it. Its `work_queue` entries with status other than `done`/`skipped`/`deferred` are unfinished. (This file is root-anchored — the hooks read it there. It is not resolved by `fusion-paths`.)
 
-   **Capture the session's domain here, before anything deletes the file** — item 4 of this step removes `agentstate.yaml`, and Step 3 (Reconcile) needs the value it holds. Same one-liner `/fusion:next` Step 2 and `/fusion:direct` Step 3 use:
+   **Capture the session's domain here, before anything deletes the file** — item 4 of this step removes `agentstate.yaml`, and Step 3 (Reconcile) needs the value it holds. The same guarded call `/fusion:next` Step 2 and `/fusion:direct` Step 3 make; `bin/fusion-session-domain`'s header carries the contract:
 
    ```bash
-   DOMAIN=""
-   if [ -f "$WORKBENCH/agentstate.yaml" ]; then DOMAIN="$(grep -E '^  domain:' "$WORKBENCH/agentstate.yaml" | head -1 | sed -E 's/.*domain:[[:space:]]*"?([a-z]+)"?.*/\1/')"; fi
-   DOMAIN_SOURCE="agentstate.yaml"; [ -n "$DOMAIN" ] || DOMAIN_SOURCE="fallback"
-   DOMAIN="${DOMAIN:-code}"
+   if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"; else printf 'domain=code\nsource=helper-missing\n'; fi
    ```
 
-   Hold `$DOMAIN` and `$DOMAIN_SOURCE` for the rest of the run. The 2-space indent scopes the match to the `session:` block, and the `"?` handles a quoted or unquoted YAML value.
+   Hold `domain=` as `$DOMAIN` and `source=` as `$DOMAIN_SOURCE` for the rest of the run.
 2. Skim every path in `$SCAN_PLANS` for open or in-progress plans with unmarked or `[IN PROGRESS]` steps. `$SCAN_PLANS` may name **two** directories — the active Circle's and the shared one. Skim both, or unfinished work in one of them is silently missed.
 
    Match the marker (the underscore is inert — no escaping needed):
@@ -163,7 +160,7 @@ Report: the list of commits created (hash + summary) and push result.
 Dispatch the reconciler to bring tracking files in line with ground truth.
 
 - Use the `$DOMAIN` captured in Step 1. **This skill obtains the domain; it never decides one.** The decision is made in exactly one place — Setup Step 5 of `$FUSION_SRC/agents/orchestrator.md` — and `agentstate.yaml` carries the verdict that run produced. A second statement of that heuristic anywhere else drifts from the first and the two then disagree inside a single session, which is what the plugin's own `domain-cascade.test.ts` now fails on: it scans the file set `REACH.fileSet` names in `hooks/lib/domain-cascade.ts`, whose reach `describeReach()` renders into `README-hooks.md` and the suite compares byte-for-byte, and only the orchestrator's prompt may state the cascade. Read the reach off that rendered block rather than from a copy here, which is how the claim in this file went one file set short of the gate once already.
-- With no `agentstate.yaml` (a cleanup run outside an orchestrator session), `$DOMAIN` is `code` — the same fallback `/fusion:next` and `/fusion:direct` take, and the cascade's own no-evidence exit. Report which of the two applied, never just the value.
+- With no `agentstate.yaml` (a cleanup run outside an orchestrator session), `$DOMAIN` is `code` — the same fallback `/fusion:next` and `/fusion:direct` take, and the cascade's own no-evidence exit. Report `$DOMAIN_SOURCE` beside it, never just the value.
 - `Agent(fusion:reconciler)` with the dispatch prompt prefixed by `**Domain:** $DOMAIN` on its own line.
 - Read the reconciler's returned summary; note any discrepancies it fixed or flagged.
 
@@ -213,7 +210,7 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 - Issues filed for open tasks: N (with paths)
 - Commits created across both phases: list (hash + summary)
 - Push: pushed to `<branch>` / skipped (`--no-push`) / **rejected** (with the git error)
-- Reconcile: domain used, and where it came from (`agentstate.yaml` or the fallback); discrepancies fixed/flagged
+- Reconcile: domain used, and where it came from (`$DOMAIN_SOURCE`); discrepancies fixed/flagged
 - Archive: files moved (count) into `<archive folder>` / nothing to archive
 - Normative surfaces changed: entries approved and applied, per surface; every entry that came back `stale` or `failed`, by id and reason; or that the ledger was rejected, or that the survey proposed nothing
 - Activity log: updated

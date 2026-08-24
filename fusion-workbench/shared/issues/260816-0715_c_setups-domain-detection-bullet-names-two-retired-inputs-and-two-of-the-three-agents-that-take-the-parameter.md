@@ -58,3 +58,6 @@ That closure holds; this is a separate surface the record never named.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md:323` still names the retired `decisions_count` and `analyses_count` (both in `RETIRED_COUNT_NAMES` at `hooks/lib/domain-cascade.ts:113`) and still omits `playmaker`, which `agents/orchestrator.md:847` does pass the parameter to. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the parenthetical naming the inputs is dropped so the delegation carries it, and `playmaker` joins the two agents named; `skills/setup/SKILL.md:443`

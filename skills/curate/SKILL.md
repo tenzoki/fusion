@@ -103,7 +103,7 @@ Read the run file again with the `Read` tool. The apply pass appended one outcom
 Report, in this order:
 
 1. **What changed** — the count applied, per surface.
-2. **What did not, and why** — every `stale` and every `failed` entry by id and file, with the reason as the agent wrote it. A write the project's guard configuration denied is a **failed** entry, never an applied one. Do not summarise these away: a partial apply reported as a completion is the failure this whole shape exists to avoid.
+2. **What did not, and why** — every `stale` and every `failed` entry by id and file, with the reason as the agent wrote it. A write that did not land is a **failed** entry carrying whatever reason it had, never an applied one. Do not summarise these away: a partial apply reported as a completion is the failure this whole shape exists to avoid.
 3. **How to undo it** — the revert paths, which each entry carries. For a git-tracked surface that is `git checkout -- <path>`; an entry whose file is not under version control says in those words that no revert path exists.
 4. **The run file's path**, in the trailing details block, as the durable record of the run.
 

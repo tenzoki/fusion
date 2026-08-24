@@ -46,15 +46,13 @@ mkdir -p "$WORKBENCH/$OUT_CIRCLE"
 
 ## Step 3 — Detect domain
 
-Same pattern as `/fusion:next` Step 2: prefer `agentstate.yaml` if present, else default `code`. `agentstate.yaml` is root-anchored, at a fixed workbench-relative path (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`).
+The same guarded call `/fusion:next` Step 2 makes; `bin/fusion-session-domain`'s header carries the contract:
 
 ```bash
-DOMAIN=""
-if [ -f "$WORKBENCH/agentstate.yaml" ]; then DOMAIN="$(grep -E '^  domain:' "$WORKBENCH/agentstate.yaml" | head -1 | sed -E 's/.*domain:[[:space:]]*"?([a-z]+)"?.*/\1/')"; fi
-DOMAIN="${DOMAIN:-code}"
+if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain" ]; then "$FUSION_PLUGIN_ROOT/bin/fusion-session-domain"; else printf 'domain=code\nsource=helper-missing\n'; fi
 ```
 
-`<detected-domain>` ∈ `{code, data}` — passed to shaper so it sets the Circle's `**Domain:**` field correctly. The user can edit the field later if the heuristic misjudged.
+`domain=` is `<detected-domain>` ∈ `{code, data}`, and a `source=` other than `agentstate` is reported beside it — passed to shaper so it sets the Circle's `**Domain:**` field correctly. The user can edit the field later if the heuristic misjudged.
 
 ## Step 4 — Dispatch shaper in anticipated-circle mode
 
@@ -138,4 +136,4 @@ This is the entire user-facing output.
 
 User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's chat language (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`; the language comes from the `**Language:**` line in `CLAUDE.md`, resolved per `rules/fusion-workbench-conventions.md` `## Project language`). Every prompt and hint specified above is written here in English because a skill body ships to projects of every language; render each of them in that chat language. For this skill specifically: the Step-5 confirmation leads with the **Circle's name and path** (the action surface — the user wants to know where it lives) and the one-line refined Directive, then the hints. Don't bury the path mid-paragraph.
 
-Concise. The user invoked this to capture a Directive, not to read meta-commentary. Shaper handles the clarification dialogue; this skill is the entry point and the post-write confirmation.
+Concise. The user invoked this to capture a Directive, not to read meta-commentary. Shaper composes the clarification rounds; this skill puts each round to you and carries your answers back, then confirms the write.

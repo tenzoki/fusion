@@ -36,11 +36,16 @@ Two rules follow from the container premise, and they are what keep this skill s
 "$FUSION_PLUGIN_ROOT/bin/fusion-paths" archive
 
 # The rule this skill is the named consumer of. No emission reaches a skill, so read it here.
-[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")" || FUSION_SRC="$FUSION_PLUGIN_ROOT"
+if [ -x "${FUSION_PLUGIN_ROOT:-}/bin/fusion-source-root" ]; then
+  FUSION_SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
+else
+  echo "fusion: no bin/fusion-source-root in the installed plugin at $FUSION_PLUGIN_ROOT — the source root falls back to that install copy" >&2
+  FUSION_SRC="$FUSION_PLUGIN_ROOT"
+fi
 cat "$FUSION_SRC/rules/workbench-tracking.md"
 ```
 
-**Read that file in full before Step 2**, the way an agent reads every path `fusion-rules` emits: its record-versus-live-state split is what decides which workbench entries this skill must preserve rather than discard. If neither root yields the file, say so and continue — the tier tables below still apply, but the classification behind them is then unread.
+**Read that file in full before Step 2**, the way an agent reads every path `fusion-rules` emits: its record-versus-live-state split is what decides which workbench entries this skill must preserve rather than discard. If the resolved root does not hold the file, say so and continue — the tier tables below still apply, but the classification behind them is then unread.
 
 Hold the emitted `KEY=value` values for the rest of the skill. `$WORKBENCH` is absolute; everything else is workbench-relative. On a non-zero exit from `fusion-paths`, read the code — it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
@@ -99,7 +104,7 @@ These are non-negotiable defaults. The user can override them at the `refine` st
    - `$WORKBENCH/$PORTFOLIO`
    - `$WORKBENCH/.guard-state/` **apart from `events.jsonl`** — the throttle stores in there each describe *now* and are rewritten in place. An `escalation.json` may still be sitting there in a project set up under an older fusion; it is inert at this version, nothing rewrites it, and `/fusion:setup` is what offers to delete it — archiving it is not this skill's call either way. The append-only `events.jsonl` beside them is not a state file and has its own case; see *Rolling the guard event log* below.
    - `$WORKBENCH/.commit-lock/`, `$WORKBENCH/.session-marker`, `$WORKBENCH/.active-circle`, `$WORKBENCH/.fusion-setup`
-   - `$WORKBENCH/monitor`, `$WORKBENCH/stilwerk/`, `$WORKBENCH/stashes/`
+   - `$WORKBENCH/monitor`, `$WORKBENCH/stilwerk/`, `$WORKBENCH/stashes/`, `$WORKBENCH/.migration-v2-backup/`
    - Anything already under the archive store.
 
 2. **Active markers — never archive in tier modes:**
@@ -133,7 +138,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 ### Rolling the guard event log
 
-`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record: every block, halt, cleared halt, advisory override and fail-open the hooks have emitted, across every session, in every Circle. It is classified as **evidence, not telemetry** (`rules/workbench-tracking.md`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
+`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record across every session, in every Circle: one `guard_allow` row per write-tool call, one `guard_advisory` per configuration problem, one `guard_error` per fail-open, and, in a log written before 2026-08-16, the `guard_block`, `guard_halt` and `halt_cleared` rows nothing writes any more. It is classified as **evidence, not telemetry** (`rules/workbench-tracking.md`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
 
 **There is no line or byte ceiling anywhere, and none may be added** — not here, not in `hooks/lib/events.ts`. Every ceiling expressible in lines or bytes discards the oldest lines first, and the oldest lines are the `guard_block`, `guard_halt` and `halt_cleared` events: 0.6 % of the file when it was measured, and the only lines that record the guard ever enforcing anything. A guard that forgets it halted is a strange guard.
 

@@ -84,3 +84,6 @@ Unchanged from the second pass but for a six-line drift (`:130` → `:136`). Nei
 **Live obligation, and it is one sentence.** The remedy the record specifies is unchanged and needs no judgement: the log holds one `guard_allow` per write-tool call, one `guard_advisory` per configuration problem, one `guard_error` per fail-open, and — in a log written before 2026-08-16 — the `guard_block`, `guard_halt` and `halt_cleared` rows nothing writes any more. Drop "advisory override", which was never a type. Leave `:138` and the no-ceiling argument alone; that argument is still sound and `rules/fusion-workbench-conventions.md` already carries the clause that keeps it sound.
 
 The severity reading holds at Low and the cost is unchanged: an agent reading this skill forms the picture backwards — historical enforcement rows and no allow rows, where the truth is the reverse and has been for three releases.
+
+---
+Resolved: fixed — the sentence names the three live row kinds and the three historical ones, and "advisory override" is gone; the no-ceiling argument two lines down is untouched; `skills/archive/SKILL.md:141`

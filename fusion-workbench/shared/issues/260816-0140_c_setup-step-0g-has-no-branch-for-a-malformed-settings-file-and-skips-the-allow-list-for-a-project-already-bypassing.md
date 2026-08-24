@@ -40,3 +40,6 @@ The measurement behind "bare tool names only" (`:224`) is recorded and unaffecte
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md` still says parse and union with no parse-failure branch, and the already-bypassing branch still skips the write, so such a project never receives the allow list. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — a settings file that does not parse gets no question and no write and is reported for the user to fix by hand; an already-bypassing project skips the question and still gets the allow list unioned and reported; `skills/setup/SKILL.md:279`, `:311`

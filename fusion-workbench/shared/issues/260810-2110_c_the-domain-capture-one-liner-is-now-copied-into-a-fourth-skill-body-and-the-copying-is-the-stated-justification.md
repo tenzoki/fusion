@@ -46,3 +46,6 @@ than either alone, and one design decision should cover both.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). The count in the title is now wrong and the defect is not. `skills/seed-from-plane/` left with the Plane mirror on 2026-08-15, so three copies remain rather than four: `skills/next/SKILL.md:88`, `skills/direct/SKILL.md:57`, `skills/cleanup/SKILL.md:107`. No mechanism was introduced — there is no domain helper in `bin/` and no `DOMAIN` key in `bin/fusion-paths`. The reserved half of decision `260810-2145` is what this record waits on, and that record is deliberately still answered rather than implemented for exactly this reason.
+
+---
+Resolved: fixed — the three inline reads are three guarded calls to `bin/fusion-session-domain` (step 7's helper), which prints `domain=` and `source=` so a fallback is reported and not applied silently; `skills/next/SKILL.md:76`, `skills/direct/SKILL.md:52`, `skills/cleanup/SKILL.md:106`

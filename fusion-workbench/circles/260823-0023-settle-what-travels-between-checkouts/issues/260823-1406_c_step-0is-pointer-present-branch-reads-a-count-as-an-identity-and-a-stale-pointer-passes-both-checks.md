@@ -33,3 +33,6 @@ Two notes that are **not** findings. The block exits 1 when `./fusion-workbench/
 Read the pointer's content rather than its existence, and compare it against the directory the found record sits in. That is one `head -n 1` and one string test in a block that already computes both halves; the surface has 202 bytes left, which is the constraint to check first.
 
 The cheaper alternative is to make the sentence true: say the branch reports nothing when a pointer is present, without claiming the pointer names the Circle that was found.
+
+---
+Resolved: fixed — the branch text says what it does, report nothing when a pointer is present whichever Circle it names, and no longer infers that this checkout activated the record (the cheaper form the record offered); `skills/setup/SKILL.md:356`

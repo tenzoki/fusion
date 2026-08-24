@@ -203,7 +203,7 @@ done
 2. **`case0-unclassifiable`** — the copies differ and no checksum was ever recorded. This is every workbench that existed before this step. Name the file, say plainly that fusion **cannot tell an adaptation from a stale copy** for it, and carry that warning into the offer. Do not guess which it is.
 3. **`case2-stale`** — the project's copy is exactly what it was given, and the shipped file has moved. Offer the replace. This is the case the capability exists for.
 4. **`case3-adapted`** — the project edited its copy and the shipped file did not move. Say nothing about it and do not touch it.
-5. **`case4-conflict`** — both moved. Name it as a conflict and offer no one-click replace. The file is neither changed nor stamped, so it is named again on every run until a human resolves it by hand.
+5. **`case4-conflict`** — both moved. Name it as a conflict and offer no one-click replace. The file is neither changed nor stamped, so it is named again on every run until a human resolves it by hand, and say the two ways out: copy the shipped file over the project's (case 1 next run), or keep the project's and delete its line from `./fusion-workbench/.asset-provenance` (case 0 next run, asked once, then silent). A declined offer lands here the next time the plugin moves; that is the honest reading, and this is its exit.
 6. **`case5-missing-local`** — the project has no copy. Step 0d makes one, so its copy failed or was skipped; until it exists `bin/fusion-rules` emits no path for that profile and every agent runs the session without it. Name it in the Done report with that consequence. This step does not copy it — presence is Step 0d's job, and a second copier is a second place to keep right.
 7. **`case6-missing-shipped`** — the resolved root has no copy. That is a broken install or an unexpected root, not anything about the project. Name it in the Done report as that; the project's file is neither changed nor stamped.
 
@@ -213,15 +213,20 @@ done
 
 Two options: **"Replace them"** and **"Keep mine"**.
 
-**Both answers end the same way, and that end state is what stops the question repeating.** On "replace", copy the shipped file over the project's, then stamp. On "keep mine", change no file and stamp anyway.
+**Both answers end the same way, and that end state is what stops the question repeating.** On "replace", copy the shipped file over the project's and stamp **the destination**, so a copy that failed is named, left unstamped, and offered again next run rather than recorded as done. On "keep mine", change no file and stamp anyway.
 
 ```bash
 SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
 [ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }
-for rel in <the files to replace>; do cp "$SRC/$rel" "./fusion-workbench/$rel"; done
+PROV=./fusion-workbench/.asset-provenance; [ -f "$PROV" ] || : > "$PROV"
+for rel in <the files to replace>; do
+  cp "$SRC/$rel" "./fusion-workbench/$rel" || { echo "$rel replace-failed"; continue; }
+  h="$(shasum -a 256 "./fusion-workbench/$rel" | cut -c1-64)"
+  grep -v "  $rel$" "$PROV" > "$PROV.t"; printf '%s  %s\n' "$h" "$rel" >> "$PROV.t"; mv -f "$PROV.t" "$PROV"
+done
 ```
 
-Then stamp, with `<rel...>` the case-1 files plus every file the question covered, whichever way it was answered:
+Then stamp the rest, with `<rel...>` the case-1 files plus every file the question covered that was kept:
 
 ```bash
 SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
@@ -234,7 +239,7 @@ for rel in <rel...>; do
 done
 ```
 
-Report in the Done report: which files were replaced, which were kept, which were named as conflicts, which were missing on either side (cases 5 and 6), and, when the block printed `source-root-unresolved`, that the assets were not compared at all. When every file came back `case1-equal`, say nothing about this step — a run with nothing to report is the normal run.
+Report in the Done report: which files were replaced, which printed `replace-failed`, which were kept, which were named as conflicts, which were missing on either side (cases 5 and 6), and, when the block printed `source-root-unresolved`, that the assets were not compared at all. When every file came back `case1-equal`, say nothing about this step — a run with nothing to report is the normal run.
 
 ## Step 0f — Ensure the project configuration file is present locally
 
@@ -271,7 +276,7 @@ One `AskUserQuestion`, in the project's chat language, naming the file and what 
 
 Two options. **"Yes, write it" is the default and the recommended choice.** "No, keep the prompts" is the other; nothing is written and Setup continues.
 
-Read `.claude/settings.local.json` first if it exists and note `permissions.defaultMode`. Already `bypassPermissions` — skip the question (§3). Any **other** value — the question must name it and say plainly what happens to it: *this project currently sets `defaultMode: "<existing>"`; saying yes replaces it.* A replacement the question did not name is not a replacement the user consented to.
+Read `.claude/settings.local.json` first if it exists. **A file that does not parse as JSON gets no question and no write**: report it in §3 as a file the user fixes by hand, naming the path, and continue Setup. Otherwise note `permissions.defaultMode`. Already `bypassPermissions` — skip the question, still union the `allow` list (§2, item 3), and report the union (§3). Any **other** value — the question must name it and say plainly what happens to it: *this project currently sets `defaultMode: "<existing>"`; saying yes replaces it.* A replacement the question did not name is not a replacement the user consented to.
 
 ### 2. On "yes", write it
 
@@ -302,7 +307,8 @@ Desired contents:
 - **Wrote it:** name the path, say the permission change takes effect **on the next session** — Claude Code reads permission settings only at startup, so this session still prompts — and say whether `.gitignore` was modified. If a `defaultMode` was replaced, name the old value beside the new one. Do not claim the current session is now unlocked.
 - **Declined:** say plainly that per-tool approval prompts stay on for this project, and that Setup can seed the file on a later run.
 
-If the project already had `defaultMode: "bypassPermissions"`, say so and skip the question — there is nothing to decide. Any other existing `defaultMode` survives the run untouched unless the user answered yes to the question that named it.
+If the project already had `defaultMode: "bypassPermissions"`, say so, say the `allow` list was unioned, and skip the question — there is nothing to decide. Any other existing `defaultMode` survives the run untouched unless the user answered yes to the question that named it.
+- **Malformed:** name the path, say the file did not parse and was left exactly as it was, and that the offer returns once it parses.
 
 ## Step 0h — Declare the union merge driver for the event log
 
@@ -347,8 +353,8 @@ find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/
 
 The count is taken unconditionally; the pointer gates the offer, not the detection.
 
-- **No path, or one path with `pointer-present`** — no active record, or this checkout activated it. Report nothing, ask nothing.
-- **One path and no `pointer-present`** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*. Read the record's `**Claim:**` too: where it opens with `Claimed ` and names an identity other than the one just read, name the holder and the time **before** the offer, and the offer overrides, writing the field's `Overridden ` sentence per `rules/circle-records.md` `### The claim field`. `Unclaimed`, or no field, behaves as today.
+- **No path, or one path with `pointer-present`** — report nothing, ask nothing: a pointer is present, whichever Circle it names.
+- **One path and no `pointer-present`** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*. Read the record's `**Claim:**` too: where it opens with `Claimed ` and names an identity other than the one just read, name the holder and the time **before** the offer, and the offer overrides, writing the field's `Overridden ` sentence per `rules/circle-records.md` `### The claim field`. `Unclaimed`, no field, or this checkout's own identity behaves as today.
   - **Activate** — `printf '%s\n' "<dir>" > ./fusion-workbench/.active-circle`. Step 2 resolves against it.
   - **Leave** — write nothing; the Circle stays inactive here, and `/fusion:next` can activate it later.
 - **More than one path, pointer or not** — `MULTIPLE-ACTIVE`, the condition `agents/playmaker.md` names beside `MISSING-POINTER`. Name every Circle found and say the project holds more than one active record. **Offer nothing and write nothing**: which of several to run here is a portfolio judgement, and `/fusion:next` is where the project makes it. Point the user there.
@@ -434,7 +440,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
   "Keep it" is the other: nothing is written, Setup continues, and the offer comes back on the next run.
 
   **Name the effect exactly, and claim nothing beyond it.** Deleting the file removes a leftover flag. It does not clear a halt, unblock writes or restore write access, because at this version nothing is blocked and nothing was taken away. Report it in the Setup-complete summary in those terms: the flag was deleted and nothing about what is allowed changed, or the flag was left in place.
-- Workbench-domain detection: run the heuristic in `$FUSION_SRC/agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
+- Workbench-domain detection: run the heuristic in `$FUSION_SRC/agents/orchestrator.md` Setup Step 5. Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner`, `reconciler` and `playmaker` dispatches; the user may override at any individual dispatch.
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
   ```bash
@@ -464,7 +470,7 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
   TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
   echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the Step 4 path>\"}" >> ./fusion-workbench/orchestrator-events.jsonl
   ```
- 
+
 - Overwrite `./fusion-workbench/orchestrator-live.md` with the real session Directive and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
 
 ## Done
