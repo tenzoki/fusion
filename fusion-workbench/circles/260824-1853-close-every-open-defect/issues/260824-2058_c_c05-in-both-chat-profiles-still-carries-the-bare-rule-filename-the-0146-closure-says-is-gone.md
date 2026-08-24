@@ -9,3 +9,5 @@ The `Resolved:` note on `circles/260820-2051-style-rules-arrive-and-get-measured
 **Cross-references:** triage row 187 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`; commit `43cdde6`
 
 Fix direction: give C05 the same prose form C04 got ("the rule on user-facing output"), in both languages and both copies, and keep the four `diff -q` pairs empty. Verify with `grep -n 'user-facing-output.md' stilwerk/chat-voice-*.yaml` printing nothing.
+---
+Resolved: fixed — C05 and the header comment of both chat profiles now name the rule in prose, in the shipped file and the workbench copy alike; `stilwerk/chat-voice-en.yaml:49`, `stilwerk/chat-voice-de.yaml:51`

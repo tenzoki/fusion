@@ -9,3 +9,5 @@ Row 100 (`shared/issues/260822-0120_*_the-german-blacklist-forbids-an-ordinary-c
 **Cross-references:** triage row 100 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`; commit `43cdde6`
 
 The 0120 record's `Affects:` named only the chat profile, so the closure is correct as scoped; this is the sibling instance. Fix direction: drop the entry or replace it with a real German AI marker, in both copies.
+---
+Resolved: fixed — AI01 in the German writing profile carries `Allerdings,` in place of `Das heißt,`, the same substitution the chat profile took at row 100, in both copies; `stilwerk/default-voice-de.yaml:137`

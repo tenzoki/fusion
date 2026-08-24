@@ -1,6 +1,6 @@
 # Chat Voice (English)
 # Short-form chat style: gate prompts, AskUserQuestion text, status reports,
-# brief replies. Complements user-facing-output.md with language-specific
+# brief replies. Complements the rule on user-facing output with language-specific
 # anti-patterns. NOT for long-form prose: that uses the long-form writing
 # profile.
 
@@ -45,8 +45,8 @@ whitelist:
   - id: C05
     name: "Sketch structure instead of narrating it"
     instruction: |
-      For a structure, prefer a small ASCII sketch to prose. The rule is in
-      user-facing-output.md.
+      For a structure, prefer a small ASCII sketch to prose. The rule is stated
+      in the rule on user-facing output.
     examples:
       - |
         Customer ──<  Order  ──<  LineItem  >──  Product
