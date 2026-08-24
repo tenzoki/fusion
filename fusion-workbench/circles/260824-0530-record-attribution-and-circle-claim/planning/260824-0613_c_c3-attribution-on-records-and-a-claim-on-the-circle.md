@@ -1,7 +1,7 @@
 # Implementation Plan: every record names its author, and an active Circle names the checkout holding it
 
 **Date:** 2026-08-24
-**Status:** Partially Complete
+**Status:** Complete
 **Spec:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, capability `### C3`, read under the binding correction in `circles/260824-0530-record-attribution-and-circle-claim/_t_circle.md` `## Grounding snapshot`
 **Decidability:** The load-bearing question is whether a fusion run can name the person who wrote a record and the checkout that holds a Circle, from inputs the run can obtain where it stands. It splits in two, and the two halves have different answers. **The person is decidable**: `git config user.name` and `user.email` are readable in every tree that takes part in the git transport, and they are the same identity that transport already carries on every commit, so nothing is inferred. Where they are unset the question is not decidable from any input the run holds, and the mechanism does not approximate: it halts and says which value is missing. **The checkout is not decidable from any travelling input, and not reliably decidable from a derived one either.** Two checkouts of one person carry one git identity, which is the collision the field exists to prevent; and hostname plus workbench path, the obvious derivation, is not unique by construction, because two machines carrying a default hostname with the same clone path produce one value (`inference:`, not measured). So what changes is the mechanism rather than the precision of an estimate, which is what `rules/critical-stance.md` §4 asks for: the identifier is **minted locally once and stored where git never reaches**, and a created value is decidable by construction because nothing has to be read back out of ambiguous inputs. One residual case is genuinely open and is filed rather than assumed, namely a tree that is not a git work tree at all: `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.
 
@@ -467,7 +467,7 @@ flowchart TD
       figures are reported and each is inside its budget; no baseline map differs from `HEAD` before
       this Circle; the prose metric is reported per changed rule file.
 
-12. [IN PROGRESS] **Close the three decisions and write the Turn log**
+12. [DONE] **Close the three decisions and write the Turn log**
     - Executor: `analyst`
     - Files: `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
       `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`,

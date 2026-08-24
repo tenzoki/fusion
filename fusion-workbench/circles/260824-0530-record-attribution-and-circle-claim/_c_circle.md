@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_o_c3-attribution-on-records-and-a-claim-on-the-circle.md
+**Active spec/plan:** circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md
 **Active session history:** circles/260824-0530-record-attribution-and-circle-claim/history/260824-0539-orchestrator-session.md
 
 ---
@@ -61,3 +61,24 @@ Artifacts outside this Circle that bind it, cited rather than copied per the Ori
 - `skills/next/SKILL.md` and `agents/orchestrator.md` `## Circle head fields`, the two activation performers
 
 ## Turn log
+
+- Turn 1 (session 260824-0539): commits `4a00f12`..`0f5889e`; Coherence verdict review-needed; session history: `circles/260824-0530-record-attribution-and-circle-claim/history/260824-0539-orchestrator-session.md`
+- Turn 2 (session 260824-0539): commits `0f5889e`..`3535596`; Coherence verdict coherent, from the Phase 3 reconciliation: the per-Turn gate did not run, the loop having exited on the net-negative-progress circuit breaker before it; session history: `circles/260824-0530-record-attribution-and-circle-claim/history/260824-0539-orchestrator-session.md`
+
+## Closure note
+
+**Closed coherent (`_c_`) on 260824**, on the three-edge verdict in `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md` and the `## Coherence` section of `circles/260824-0530-record-attribution-and-circle-claim/history/260824-0539-orchestrator-session.md`. Twenty-two active decisions checked, none in contradiction; nineteen commits over `e209011..3535596`, all moving toward the Directive.
+
+**What was built.** One helper answers who is writing and from which checkout. The three record templates carry the person; the Circle record carries a claim whose value a reader classifies by its literal opening; both activation routes write that claim from one authoring home, and `/fusion:next` refuses a Circle another checkout holds, naming the holder and the time, with an override that leaves both identities in the record. The collision is detected and not prevented, and `rules/circle-records.md` says so in a sentence no reader can mistake for a promise.
+
+**Two gaps the closure carries rather than hides.**
+
+The plan's stopping clause on the growth bounds is **false as written**: it names one cut where two landed, and the second is the one the plan's own risk table asks for. Filed as `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_the-plans-stopping-clause-names-one-cut-and-two-landed.md`. Four of the seven properties that do hold hold with a named exception, each of which has an open record.
+
+The plan's release precondition requires `bin/fusion-review-coverage` to name no uncovered commit. It reads `uncovered=1`, and the uncovered commit is `cf7a5b0`, the commit carrying the second review itself: a review's own commit enters the range and no later review opens it, so the precondition cannot read zero at closure. The same shape was filed from another Circle on 2026-08-14. It does not block this closure, under `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`, answered 2026-08-16: the uncovered set is filtered to commits touching shipped files, coverage stays advisory, and the gap is named here. `cf7a5b0` touches four files, all under `fusion-workbench/`, so it filters out. In substance the range is fully reviewed, across two review files declaring `**Not-opened:** none`.
+
+**Sixteen open defect records leave this Circle open by the user's explicit decision** at the Coherence gate, which was to repair the two high-severity findings and leave the rest. They are not lost: twelve sit in this Circle's issue store and four in `shared/`, and the reconciliation annotated all of them.
+
+**The capability is inert in this repository until the next release.** `rules/fusion-workbench-conventions.md` `### Who filed it` reads the helper from `$FUSION_PLUGIN_ROOT`, which predates it, so every record filed here loses its person half while a working `./bin/fusion-identity` sits in the tree. The Circle foresaw the window and wrote the branch for it. Whether the work-tree preference reaches helper resolution is part (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` and stays open.
+
+**No `**Claim:**` field was written at closure.** This record was created before the field existed, so it carries none, and `rules/circle-records.md` `### The claim field` reads an absent field as `Unclaimed` and prescribes no migration. Writing one now would be a rewrite of a record this Circle's own eighth stopping property forbids.
