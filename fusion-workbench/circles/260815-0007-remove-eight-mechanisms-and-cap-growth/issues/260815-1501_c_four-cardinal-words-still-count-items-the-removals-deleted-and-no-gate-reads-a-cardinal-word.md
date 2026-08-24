@@ -75,3 +75,6 @@ Correct the four words. Whether the class earns a gate is a separate judgement a
 | `bin/fusion-rules:437` "The other fifteen agents" | **stands** — `ls agents/*.md` is 15, so fourteen others |
 
 The class claim is unchanged and is the point of the record: no gate reads a spelled-out cardinal. `derivable-enumerations-lint.test.ts` checks seven enumerations, all of them by parsing a list and diffing it against the tree; a bare English numeral in prose is invisible to every one of them.
+
+---
+Resolved: fixed — `README-agents.md:186` reads One side loop; the two `bin/fusion-rules` comments are plan step 7's and `skills/help` was already fixed; `README-agents.md:186`

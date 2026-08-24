@@ -32,3 +32,6 @@ The cheapest moment to do this is whenever `260814-1915` is answered, because op
 `README-agents.md:53` still bounds exactly two multi-line values by name (`**Draft:**`, `**Confirmed operations:**`) as a closed enumeration; `**Initiated by:**` is not among them and its own row at `:67` states no termination rule and carries no "(may span lines)" marker. `agents/shaper.md:66-68` declares the halt for a missing value and states nothing about where the value ends.
 
 The decision the record hoped would carry the fix — `decisions/260814-1915_*` — is still `_o_`, so the parser question (where does a free-prose parameter value stop) is still unowned.
+
+---
+Resolved: fixed — the preamble names three multi-line values and gives `**Initiated by:**` a termination rule (next `**<Keyword>:**` line or end of the parameter block), and its row says may span lines; `README-agents.md:53`, `:67`

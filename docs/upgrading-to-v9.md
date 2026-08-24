@@ -32,8 +32,11 @@ under the Circle `260815-0007-remove-eight-mechanisms-and-cap-growth` in the sou
 
 ## What to do in your project
 
-Six checks. Each is optional — nothing here is load-bearing, and skipping all six leaves a
-working installation with some dead files in it.
+Six checks. Four of them remove dead files, and skipping those four leaves a working
+installation with some dead files in it. Two change behaviour that is otherwise silent, and are
+not optional in that sense: check 2, because a retired domain value falls back to `code` without
+a word, and check 3 where the retired queue still holds work you never transferred, because
+nothing else in the workbench carries it.
 
 ### 1. Delete the Plane bridge's files
 

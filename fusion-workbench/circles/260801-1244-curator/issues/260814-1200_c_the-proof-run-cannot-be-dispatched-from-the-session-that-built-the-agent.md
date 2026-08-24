@@ -75,3 +75,6 @@ release process rather than to this Circle; recorded here so the observation is 
 `grep -rn -i 'two-session\|roster reload' agents/ skills/ rules/ docs/ README*.md CLAUDE.md` returns nothing. The general shape — that an agent built in a session cannot be dispatched by that session — is written down nowhere; the only related instruction is `CLAUDE.md:96`, which tells a developer to `fusion --update` and restart, and is about stale *rules*, not about a roster that has grown a member.
 
 The divergence the record's first note flagged is present again today: the installed copy at `~/.fusion` reads `10.2.0` and this tree reads `10.3.0`. Whether a session's agent roster is still pinned at start cannot be settled by reading the tree; it needs a launched session, which is what makes this record's own subject the obstacle to closing it.
+
+---
+Resolved: fixed — the between-releases paragraph now states the two-session shape (an agent built in a session is dispatched from the next, or headlessly against the work tree) as a documented pattern; `CLAUDE.md:99`

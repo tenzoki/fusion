@@ -38,3 +38,6 @@ The two facts that distinguish this file from its neighbours, both verifiable in
 it is a **conditional** emission, not part of the always-on set, and its audience is exactly `coderev`
 and `ontorev` behind an `IS_REVIEWER_AGENT` flag. That flag form matters — `derivable-enumerations-lint`
 needs it rather than a literal, because the audience is two agents.
+
+---
+Resolved: fixed — a `rules/review-contract.md` row stating the conditional emission to exactly `coderev` and `ontorev` behind `IS_REVIEWER_AGENT`; `CLAUDE.md:51`

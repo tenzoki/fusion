@@ -47,3 +47,6 @@ No gate compares a claim in `CLAUDE.md` against the file it is a claim about. `r
 resolves paths and headings, not assertions; `derivable-enumerations-lint` carries no check for this
 row. This is the same hole the `templates/` and `docs/` inventory rows record in their own text — a
 statement about a shipped file's contents that nothing recomputes.
+
+---
+Resolved: fixed — the `docs/` row now says `README.md` points at every note while `/fusion:help`'s update topic carries the last three releases and one standing line to `docs/`; `CLAUDE.md:54`

@@ -47,3 +47,6 @@ this: the file is prose, and nothing holds a preamble in agreement with the sect
 remove dead files and that two change behaviour that is otherwise silent — check 2, the domain
 fallback, and check 3 where the retired queue still holds untransferred work. `docs/` is on no bounded
 surface, so the correction costs nothing.
+
+---
+Resolved: fixed — the preamble splits four dead-file checks from the two that change silent behaviour, naming check 2's domain fallback and check 3's untransferred work; `docs/upgrading-to-v9.md:35-39`

@@ -19,3 +19,6 @@ Verified at HEAD `f77633f`: `grep -n 'always did\.\.' CLAUDE.md` returns line 72
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `CLAUDE.md:72` still reads "always did.." with the doubled full stop. The file has one write path, the curator at a user gate, and no curator apply pass has run since this was filed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the doubled full stop is one; `CLAUDE.md:76`
