@@ -63,3 +63,6 @@ printing one of them, and note that the metric will then be measuring half the r
 `chat-voice-de.yaml:89` still uses U+2013 where its first uses U+2014. Turn 3 rewrote AI04 in the
 same file and did not reach AI02, which is what this record predicted. Both German profiles still
 measure zero em-dashes, so nothing is red.
+
+---
+Resolved: fixed — both German AI02 instructions now name the character (Geviertstrich, U+2014) rather than print an en dash, and every AI02 example exhibits U+2014; the mark is named rather than printed because both German files sit under 1000 prose words and a printed em-dash would fail bin/fusion-prose-metric; stilwerk/chat-voice-de.yaml:82, stilwerk/chat-voice-de.yaml:89, stilwerk/default-voice-de.yaml:143, stilwerk/default-voice-de.yaml:149-150, mirrored to fusion-workbench/stilwerk/

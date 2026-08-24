@@ -72,3 +72,6 @@ For C06, `signifikantesten` to `treffendsten` is minus three bytes.
 Both predate this Turn's range. `dce8894` edited C06's instruction and did not touch this
 sentence; neither commit touched AI01. Found while reading every German entry as German prose,
 which is the check `260821-2205` established for this Circle.
+
+---
+Resolved: fixed — AI01's fourth German example is Allerdings, (the discourse marker That said, pairs with) and C06 reads treffendsten; stilwerk/chat-voice-de.yaml:98, stilwerk/chat-voice-de.yaml:62, mirrored to fusion-workbench/stilwerk/

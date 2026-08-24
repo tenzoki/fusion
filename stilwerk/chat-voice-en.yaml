@@ -38,8 +38,8 @@ whitelist:
     name: "Terse without sentence-length targets"
     instruction: |
       Keep it short. The line caps for a gate prompt and for a chat reply are
-      stated in user-facing-output.md under "## Length" and are not restated
-      here. Do not enforce sentence-length bands; short sentences are normal
+      stated in the rule on user-facing output, section "Length", and are not
+      restated here. Do not enforce sentence-length bands; short sentences are normal
       and welcome in chat.
 
   - id: C05
@@ -79,8 +79,9 @@ blacklist:
     instruction: |
       Avoid em-dashes for parenthetical asides, in chat too. Use commas,
       parentheses, colons, or two separate sentences. The telegraphic-with-
-      parentheses pattern (clause, jargon aside, clause, compressed reason)
-      is the most common AI tell in gate prompts and AskUserQuestion options.
+      parentheses pattern (a clause, an em-dash, a jargon aside, another
+      em-dash, a compressed reason) is the most common AI tell in gate prompts
+      and AskUserQuestion options.
     examples:
       - "Opt 1 — yes, but with the (a) choice for the 13 — else the trail reads wrong."
       - "three options — fast, cheap, good — two of them"

@@ -39,3 +39,6 @@ The instruction forbids `–` U+2013 and then uses `–` three times in its own 
 **Severity:** Low-Medium. The English half is a text-quality regression on the surface whose conditioning effect is this Circle's own premise. The German half is a file stating a rule and breaking it in the same entry.
 **Direction, not a prescription.** The English half has a repair on the file's own prescribed list that costs no em-dash and no word count: the `:29` form, which names the mark. The German half has no repair inside step 7's scope, because `–` is neither what the metric counts nor what step 7 was scoped to touch, so it needs a scope decision before it needs an edit. Restoring em-dashes to the English entry is ruled out by criterion 1.
 **Cross-references:** `shared/issues/260816-1330_o_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` (the precedent this was judged against); the step's own history record, named above, which records both halves honestly.
+
+---
+Resolved: fixed — both AI02 sketches name the mark instead of using it, in the form of rules/user-facing-output.md:29 (a clause, an em-dash, a jargon aside, another em-dash, a compressed reason); stilwerk/chat-voice-en.yaml:81-83, stilwerk/chat-voice-de.yaml:84-86, mirrored to fusion-workbench/stilwerk/

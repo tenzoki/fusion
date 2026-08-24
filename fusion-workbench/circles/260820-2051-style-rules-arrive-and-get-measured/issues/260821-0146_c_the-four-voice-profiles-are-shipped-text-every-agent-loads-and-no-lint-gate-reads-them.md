@@ -23,3 +23,6 @@ and the German counterpart at `stilwerk/chat-voice-de.yaml:42-44`. Replacing a c
 **Owner:** `coder` if the answer is to extend `surface()`; `ontocoder` if the answer is to change what the profiles say instead.
 **Severity:** Medium. Nothing is broken at HEAD. The exposure is that four files loaded on every dispatch in every consuming project now carry a cross-file citation that no gate reads, on a surface whose other citation classes are gated precisely because they were measured to rot.
 **Direction, not a prescription.** Adding `stilwerk/*.yaml` to `surface()` is the obvious move and it is not free: the profiles' `examples:` values are full of deliberate anti-exhibits, and the gate would need the same kind of exemption reasoning the file's header at `:24-95` already works through for comments. Whether that cost is worth paying for four files, or whether the citation should be dropped back to prose that names no path, is the author's call.
+
+---
+Resolved: fixed — the C04 cap pointer in both chat profiles names the rule on user-facing output and its Length section in prose with no path or heading token, so no citation stands ungated; stilwerk/chat-voice-en.yaml:40-42, stilwerk/chat-voice-de.yaml:42-44, mirrored to fusion-workbench/stilwerk/

@@ -99,3 +99,6 @@ does. Moving it into a Circle that goes terminal tonight would also bury it.
 
 **Left where it is, with the origin recorded here** so a later reader is not misled into treating
 the divergence as inherited. Nothing in this record's diagnosis or its three routes is affected.
+
+---
+Resolved: fixed — the tricolon rule in both writing profiles carries its own id, AI12, so AI04 names the chat enumeration rule alone across the family (route 1 applied to the writing side, which nothing cites by id); stilwerk/default-voice-en.yaml:165, stilwerk/default-voice-de.yaml:168, mirrored to fusion-workbench/stilwerk/

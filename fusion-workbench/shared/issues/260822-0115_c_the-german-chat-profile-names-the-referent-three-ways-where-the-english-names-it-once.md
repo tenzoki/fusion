@@ -56,3 +56,6 @@ prescription.
 
 Pre-existing. Neither `dce8894` nor `dbf259a` touched C02 or AI05. Found while reading every
 remaining entry in both languages for the name-covers-instruction fault `dce8894` closed for C06.
+
+---
+Resolved: fixed — C02 and AI05 now share one German term, Bezugswort, in name and instruction; stilwerk/chat-voice-de.yaml:25, stilwerk/chat-voice-de.yaml:27, stilwerk/chat-voice-de.yaml:106, mirrored to fusion-workbench/stilwerk/
