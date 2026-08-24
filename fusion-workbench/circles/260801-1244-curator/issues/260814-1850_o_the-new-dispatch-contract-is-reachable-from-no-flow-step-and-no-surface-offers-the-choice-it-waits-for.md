@@ -45,7 +45,7 @@ not when deciding whether to. A duty to ask that lives behind a dispatch table i
 arrives at.
 
 **A live consumer, already on disk.**
-`circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
+`circles/260801-1244-curator/issues/260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
 names its own repair path: "Writing it is the shaper's in portfolio-activation mode, or the
 orchestrator's within its three head fields." That record's remaining surface is a stale
 `## Grounding snapshot` on this Circle's own record — precisely the thing mode 3 is the sanctioned

@@ -70,5 +70,5 @@ have moved the count and failed `npm test` with no text edit behind it.
 
 So the coupling is confirmed by a real trigger, and the gap between "did not fire" and "cannot fire" is
 one citation's location. That raises the confidence in the record rather than lowering its urgency, and
-it pairs with `260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`:
+it pairs with `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`:
 the corpus that shields the gate here is the same corpus no gate reads. Marker stays open.

@@ -128,6 +128,6 @@ Session history: `history/260805-2117-orchestrator-session.md` (Turns 1–3, com
 Reconciliation: `history/260805-2334-reconciliation.md`.
 Open issues remaining in this Circle at closure: 79, all claimed by other Circles' scope
 (64 Textschicht, 8 shell-reachability, 2 plane/framework, 1 priced deferral) plus the
-user-side unite-cocreator emission measurement (`issues/260805-2323_o_die-emissionsmessung…`).
+user-side unite-cocreator emission measurement (`issues/260805-2323_*_die-emissionsmessung…`).
 
 *Reconciliation 260806-1152 (reconciler, workbench-wide pass): the closure note's count of 79 open issues was right, but its breakdown enumerates only 76 — it omitted `issues/260804-2100_*` (a ninth shell-classifier record) and `issues/260805-1150_*` (README pin, then still open) and counted the corpus one low. Current state at HEAD `cde5319`: **18 open** in this Circle — 6 routed corpus findings (3× `260805-1830_*`, 2× `260805-1839_*`, `260805-1859_*_das-guard-event-log…`), 9 shell-classifier records routed to `circles/260804-1205-shell-reachability-model` (8× `260804-*` plus `260804-2100_*`), the unowned advisory-clamp deferral `260803-1352_*`, the framework observation `260805-1548_*_beim-filen…`, and the user-side unite measurement `260805-2323_*`. Closed since the Circle closed: 60 corpus findings (Textschicht Circle), plus `260805-1150_*` and `260805-1548_*_der-plane-testfixture…` (this pass, fixes verified at HEAD).*
