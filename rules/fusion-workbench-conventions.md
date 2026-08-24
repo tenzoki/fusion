@@ -288,6 +288,8 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 
 `<sender>` on a review file is `coderev` or `ontorev`. It is what distinguishes the two review kinds now that they share one `reviews/` directory: it is mandatory, and the document header repeats it. Older files may carry a third sender, `conceptrev`, retired with its agent on 2026-08-15.
 
+**Cite a record by its full filename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. No two records share a full basename once the marker is normalised, so the naming convention holds and only the citation form was ever at fault. **No pattern above changes.**
+
 The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task files are **append** logs (`/fusion:memo` adds to them), while the cadence digest is **overwritten** on each `/fusion:cadence` run (it is a fresh snapshot of the work cadence, not a history of its own runs).
 
 ## State Markers — issues and planning
@@ -479,12 +481,21 @@ This applies to:
 ---
 <short description>
 ---
+**Filed by:** <agent name or "user">, <person>
 <context>
 ```
 
 **Decision file format**: see the Decision Record Template below.
 
 Brief but precise: enough context to understand the item without the original conversation.
+
+### Who filed it
+
+Both formats carry `**Filed by:**`, and its `<person>` half is the `PERSON=` line of `bin/fusion-identity`, in git's own `Name <email>` form. Read it from there and nowhere else: compose no value and substitute none.
+
+Two of that helper's exit codes are opposite instructions to you. **Exit 1** is a git work tree whose `user.name` or `user.email` is unset: **halt, report the reason the helper printed, and file nothing.** **Exit 4** is a tree that is not a git work tree at all, so no identity is owed: **file normally, with the person half absent rather than empty.** On every other code `PERSON=` is printed and you carry on. The condition is evaluated in the helper and stated here once; no agent prompt restates it.
+
+**One precondition, and no code checks it:** a person uses the same git identity on every machine they run fusion from. A machine configured differently reads as somebody else, and `/fusion:next` then refuses that person's own Circle, a false positive it cannot tell from the collision it is built for.
 
 ## Decision Record Template
 
@@ -497,7 +508,7 @@ Body:
 
 ---
 **Domain:** code | data
-**Filed by:** <agent name or "user">
+**Filed by:** <agent name or "user">, <person>
 **Cross-references:** <paths to related defects, analyses, plans, or decision records — in this Circle, in another Circle, or in shared/. Cite where they are; never copy them here.>
 
 ---

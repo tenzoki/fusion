@@ -306,7 +306,7 @@ flowchart TD
      at most 20 375 lines, which is its 260824 figure of 20 187 plus its remaining 188; no baseline
      in `surface-growth-bound.test.ts` has been edited.
 
-6. **Put the person into the always-on rule text, and classify the new file, in one commit**
+6. [DONE] **Put the person into the always-on rule text, and classify the new file, in one commit**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md`, `rules/decision-record-examples.md`,
      `rules/workbench-tracking.md`, `.gitignore`

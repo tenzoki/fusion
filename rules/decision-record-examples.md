@@ -17,7 +17,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 ---
 **Domain:** code
-**Filed by:** shaper
+**Filed by:** shaper, Kai Stalmann <kai@qantr.com>
 **Cross-references:** issues/260430-1900_o_rag-sanitisation.md
 
 ---

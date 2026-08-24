@@ -2132,3 +2132,6 @@
 {"ts":"2026-08-24T09:30:43","event":"task_done","turn":1,"task":"S4","agent":"coder","detail":"3ba7a46 bin/fusion-identity, six exit codes; .checkout-id classified in the same commit"}
 {"ts":"2026-08-24T09:30:43","event":"commit","turn":1,"task":"S4","detail":"3ba7a46"}
 {"ts":"2026-08-24T09:35:36","event":"task_start","turn":1,"task":"S5","agent":"coder","detail":"test the helper, 182 lines free against a 180-line cap"}
+{"ts":"2026-08-24T09:46:52","event":"task_done","turn":1,"task":"S5","agent":"coder","detail":"b7f8326 180-line test, 8 cases; hook-test surface 20373/20375"}
+{"ts":"2026-08-24T09:46:52","event":"commit","turn":1,"task":"S5","detail":"b7f8326"}
+{"ts":"2026-08-24T10:02:22","event":"task_start","turn":1,"task":"S6","agent":"coder"}
