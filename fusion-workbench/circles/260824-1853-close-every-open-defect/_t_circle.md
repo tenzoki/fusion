@@ -4,14 +4,14 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260824-1853: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
-**Active spec/plan:** (none yet)
+**Active spec/plan:** circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md
 **Active session history:** shared/history/260824-1750-orchestrator-session.md
 
 ---
 
 ## Directive
 
-When this Circle completes, no defect record anywhere in the workbench carries `_o_` or `_p_`: not one of the 126 open records in `shared/issues/`, not one of the 94 open records in the issue stores of the sixteen terminal Circles, and not one filed while the Circle ran. Every record reached one of three endings, and its `Resolved:` note says which. A fixable defect was fixed, in batches by surface (`agents/`, `skills/`, `rules/`, `hooks/`, `docs/`, workbench records), with the fix landed and the record closed in the same step. A defect that later changes made moot, or that cannot be fixed, was closed with a `Resolved:` note that states the reason, written without a prior gate. A defect that is not closable as a defect, because its fix needs a decision nobody has answered, because it is an idea the size of a Circle, or because the multi-user specification assigns it to its still-open capability C4, was closed with a `Resolved:` note pointing at the decision record, the backlog entry, or C4 that now carries it, and nothing of the multi-user specification's closed capabilities C1 to C3 was undone. The four growth bounds on `agents/`, `skills/`, the always-on rules and the hook tests are green at the end, and a fix that needed bytes a bounded surface did not have paid for them with a cut on the same surface in the same step. `npm test` is green. Open decisions stayed outside the Circle unless one blocked a fix, and the Circle ended with one closing review round and one final Turn after it, so the review's own findings are among the records closed.
+See `**Active spec/plan:**` above. The cited spec or plan states the Directive in force.
 
 ## Grounding snapshot
 
