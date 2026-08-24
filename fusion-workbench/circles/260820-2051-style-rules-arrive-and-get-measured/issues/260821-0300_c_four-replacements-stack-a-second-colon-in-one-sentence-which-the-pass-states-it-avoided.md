@@ -45,3 +45,6 @@ but in a different sentence each time, and are not part of this finding.
 **The fix.** `:84`, `:343` and `:34` take a full stop and a capital, which is what the pass did at
 its other 11 split sites and costs no word. `:40` takes a full stop after `Exit codes)`, or nothing,
 since the reading is not actually at risk there and the site was listed for completeness.
+
+---
+Resolved: fixed — full stop and capital at the asset-provenance sentence (rules/fusion-workbench-conventions.md:87), the marker-globs sentence (rules/fusion-workbench-conventions.md:348) and the simplest-solution line (rules/critical-stance.md:42); the agent-setup site left as is

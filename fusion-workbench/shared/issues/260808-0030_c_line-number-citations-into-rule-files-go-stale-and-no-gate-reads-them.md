@@ -97,3 +97,6 @@ strongest evidence this record has that the fault is not carelessness but the ab
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` still resolves paths, heading anchors and record wildcards, and never bounds a line number. Two further instances have accumulated on the record since filing, which is evidence the class is still producing. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — option 1: one clause under `## Filename Patterns` says cite a rule file by heading anchor, never by line number, and that no gate resolves path:N; rules/fusion-workbench-conventions.md:291

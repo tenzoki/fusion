@@ -58,3 +58,6 @@ as the binding decision — a provenance citation, which analysis `260818-0715` 
 deliberately out of scope, and which must keep the real name to resolve at all.
 `hooks/lib/__tests__/fusion-paths.test.ts:82` uses the token as a test constant and reaches no
 consuming session. Marker stays `_o_`. Log: `shared/history/260818-0814-reconciliation.md`.
+
+---
+Resolved: fixed — the two rule sites take bin/fusion-paths' placeholder form <YYMMDD-HHMM>-<slug> (rules/fusion-workbench-conventions.md:28, rules/fusion-workbench-conventions.md:83); bin/fusion-paths carries it since step 7; residual: skills/next/SKILL.md:5 still carries the real name at this HEAD, step 10's half

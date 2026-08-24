@@ -317,7 +317,7 @@ carrying `setup_pwd`, contradicting R3's "already tolerates a second writer". Re
 source: `skills/setup/SKILL.md:94-98` writes `printf ... > ./fusion-workbench/.fusion-setup` with
 `$(pwd -P)`, and this repository's own committed marker reads
 `"setup_pwd":"/Users/k1/Projects/productive/fusion"`. The defect is filed as
-`circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_o_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
+`circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
 The R3 paragraph is not edited here: which of the three surfaces changes is a design choice for C2,
 and the spec text is not the reconciler's to rewrite.
 

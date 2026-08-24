@@ -103,3 +103,6 @@ Also seen: 260817-1613 by reconciler — two live instances in `circles/260816-1
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/circle-records.md` `## Circle record template` still carries no citation-form rule; the wildcard convention exists only for the portfolio template. A reconciler addendum on the record dated 260817-1613 found two further live stale citations. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the record template names the wildcard citation form for every prose section once, beside the head-field rule that already existed; the 21 standing stale citations are not swept here; rules/circle-records.md:165

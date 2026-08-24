@@ -51,6 +51,7 @@ Before you finalise a diagram, read it as a critic would. This check is the only
 - **Cycles** — are there unexplained cycles? A dependency cycle in the graph is a dependency cycle in the architecture (cf. `HYG-NO-CYCLES`). If a cycle is intentional, say why in the prose.
 - **Layering** — can you draw a clean direction (top-down / left-right) without edges fighting it? Edges that run against the grain signal a boundary violation.
 - **Orphans** — is every node reachable and connected? A floating node is a piece of design with no stated relationship.
+- **Agreement with the prose** — does the graph say what the document says? For a dependency DAG: every edge is a dependency the prose declares, and every dependency the prose declares is an edge. For every other type, the same test against the relations the prose names. The five shape questions above reward a missing edge, since a graph with one edge fewer is less tangled by every measure they name, so this is the one question that catches it.
 
 If your own diagram fails these, the fix is almost never "draw it neater" — it is "the design has the problem the graph is showing you." Fix the design, then redraw. This is `HYG-FIX-DESIGN` applied to the picture.
 

@@ -55,8 +55,8 @@ Your file should appear on a `review …` line with its range and its `not-opene
 
 For each topic the user raises or each module you scope, write one working file. What "analyse it thoroughly" means for your domain is your prompt's to say; the file itself is this file's:
 
-1. Save it directly to `$OUT_REVIEW/YYMMDD-NN-<sender>-<short-description>.md`, where `NN` is a sequential counter within the session (01, 02, 03…).
-2. The `<sender>` segment is mandatory, because the review kinds share one store (`rules/fusion-workbench-conventions.md` `## Filename Patterns`).
+1. Save it directly to `$OUT_REVIEW/YYMMDD-HHMM-<sender>-<topic>.md`: the one review pattern of `rules/fusion-workbench-conventions.md` `## Filename Patterns`, which is the shape `bin/fusion-review-coverage` parses a sender out of. A two-digit counter in the stamp position parses as no sender at all.
+2. The `<sender>` segment is mandatory, because the review kinds share one store.
 3. Each file carries the two mandated header fields above, then one self-contained finding, its evidence as file:line citations, a recommendation, and the scope it affects.
 
 ## The final consolidated review

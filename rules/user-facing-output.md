@@ -15,8 +15,8 @@ This rule governs short-form output: status reports, gate prompts, `AskUserQuest
 
 Short-form chat output (gate prompts, `AskUserQuestion` text, status reports, chat replies) follows the **chat profile** (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`), a deliberately lean profile:
 
-- Its **blacklist** is the load-bearing half: em-dash overuse, AI stock phrases, mechanical enumeration, vague pronoun openers, filler intensifiers, rhetorical question-answer pairs, sycophantic or paternalistic validation, hollow abstractions. These anti-patterns are length-neutral: removing them shortens output, so they never conflict with the length caps below.
-- Its **whitelist** is minimal and chat-appropriate: action-first, name the referent (no bare counts or codes), direct address, terse. It carries **no** sentence-length bands or paragraph-shape targets. Those belong to the long-form writing profile and would fight the caps in `## Length`.
+- Its **blacklist** is the load-bearing half, all nine entries: em-dash overuse (AI02), AI stock phrases (AI01), vague pronoun openers (AI05), filler intensifiers (AI06), mechanical enumeration (AI04), rhetorical question-answer pairs (AI07), announcing structure (AI08), hollow abstractions (L04), sycophantic or paternalistic validation (AI11). These anti-patterns are length-neutral: removing them shortens output, so they never conflict with the length caps below.
+- Its **whitelist** is minimal and chat-appropriate, all six entries: action-first (C01), name the referent, no bare counts or codes (C02), direct address (C03), terse (C04), sketch structure (C05), one name and one formulation per thing (C06). It carries **no** sentence-length bands or paragraph-shape targets: those belong to the long-form writing profile and would fight the caps in `## Length`.
 
 **Answer, don't validate.** When the user is right, a plain "Yes" or the substantive answer is enough. Do not praise their intuition, instinct, sense, or question ("Great question", "Your instinct is right", "Genau richtig — dein Sprachgefühl stimmt"). Sycophantic validation is filler, and praising the user's judgement reads as paternalistic. State the fact; the user can see for themselves that they were right.
 
@@ -110,7 +110,7 @@ Every cap above is the budget for the whole output it names, trailing Details in
 ## Effort estimates
 
 - **No agent emits an effort estimate unless the user explicitly asked for one in the current exchange.** Unsolicited estimates are noise: the monitor's session-scoped ETA already covers that need.
-- **When the user asks**, write exactly one line at the end of the relevant document or reply, in the form `estimated effort (ai-based): about <N> <unit>`. The phrasing is locked: lowercase, the word "about" (not `~`), and an explicit unit (`min`, `h`, or `day`).
+- **When the user asks**, write exactly one line at the end of the relevant document or reply, in the form `estimated effort (ai-based): about <N> <unit>`. The phrasing is locked: lowercase, the word "about" (not `~`), and an explicit unit: `min`, `h`, or `day`.
 - **The number is AI-paced**: roughly aligned with what the monitor's session-scoped ETA would predict for this kind of work, not a human-hour estimate.
 
 Banned patterns: do not write `~5 hours`, `roughly half a day`, or any hour count not preceded by an explicit user request in the current exchange.
@@ -119,7 +119,7 @@ Banned patterns: do not write `~5 hours`, `roughly half a day`, or any hour coun
 
 Before: `Bundle A: ~6 steps, 5 hours`
 
-After: `Bundle A: 6 steps`, followed, only if the user asked, by a separate trailing line `estimated effort (ai-based): about 45 min`.
+After: `Bundle A: 6 steps` (followed, only if the user asked, by a separate trailing line `estimated effort (ai-based): about 45 min`).
 
 ## Self-review before sending: the readability gate
 

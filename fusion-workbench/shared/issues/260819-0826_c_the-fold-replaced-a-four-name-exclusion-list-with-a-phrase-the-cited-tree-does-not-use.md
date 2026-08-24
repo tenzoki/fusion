@@ -52,3 +52,6 @@ undoes the fold's saving; the second keeps it and puts the criterion where the c
 
 Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
+
+---
+Resolved: fixed — verified at HEAD: the scope sentence no longer says 'artifact and legacy stores'; the four-class partition names circles/, shared/, archive/, stilwerk/ and the two frozen stores in its R1 row, so the scope reads forward again; rules/workbench-tracking.md:21

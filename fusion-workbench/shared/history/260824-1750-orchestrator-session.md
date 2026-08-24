@@ -35,3 +35,12 @@
 ## Session log
 
 Setup complete. Awaiting the user's Directive.
+
+## Turn 1 (571f945 → d5c34cd)
+
+- Circle `260824-1853-close-every-open-defect` captured via `/fusion:direct` (shaper, two rounds, four user answers), activated by the orchestrator (`2cdd372`), planned by the planner (`a68ff85`; 15 steps, 220 records triaged).
+- Plan gate answered: approve; row 92 to `_i_`; `CLAUDE.md` via coder. The ontocoder gate is read as covered by the plan approval plus the user's autonomy instruction.
+- Tasks P-1 to P-12 done across 13 commits: 8475c28, 34d682c, 32e286a, 43cdde6, e31a73d, a760849, f3f7895, b0fd2f0, 1ea8fed, 8140cf3, d5c34cd. Open defects 220 → 26.
+- Three recurring blockers, each resolved by a follow-up dispatch: stale-marker citations after renames (two ontocoder repair runs, one edit each in two terminal Circle records, authorised as citation repairs); the reference-lint pin measuring the whole tree (re-approved once at 1350/189 in `d5c34cd`, so commits f3f7895, b0fd2f0, 1ea8fed, 8140cf3 are red on that pin and the growth golden in isolation; HEAD is green, 42 files / 749 tests); the new helper's `CLAUDE.md` row (P-7b).
+- Head-room after Turn 1: agents/ about 3 500 bytes, skills/ 1 770, hook tests 10 lines, always-on rules 431 (P-13 pending).
+- Turn 1 review dispatched (coderev, ontorev) over `571f945..d5c34cd`; P-13 dispatched in parallel.

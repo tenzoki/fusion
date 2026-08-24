@@ -73,3 +73,6 @@ the fault this record was opened on. It closes when that paragraph is rewritten 
 mechanism as it is and either restores the history-line ask or drops it deliberately, and dropping
 it is the constraint removal option 2 already says needs a decision. Fault 1 is filed as
 `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0042_*_the-always-on-rule-states-two-things-about-the-voice-profile-fallback-that-stopped-being-true.md`.
+
+---
+Resolved: fixed — the paragraph states the mechanism as it stands (the helper names the fallback on standard error) and restores the ask: an agent that keeps a session history records that line once; rules/fusion-workbench-conventions.md:253

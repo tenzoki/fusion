@@ -63,3 +63,6 @@ them: `rules/user-facing-output.md` was repunctuated in the earlier pass and tha
 clauses to it. So the file that owns the vague-pronoun-opener blacklist still exhibits the figure
 three times, four lines below where it bans it. The fix is three replacements of the class the
 Circle just performed on four other files.
+
+---
+Resolved: fixed — the last standing opener ('Those belong') joins its sentence with a colon; the other two were already gone at HEAD; rules/user-facing-output.md:19

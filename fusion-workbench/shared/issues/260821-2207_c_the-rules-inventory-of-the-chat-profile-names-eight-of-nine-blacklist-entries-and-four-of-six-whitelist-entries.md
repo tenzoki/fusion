@@ -68,3 +68,6 @@ names four of the six whitelist entries. What did change is the cost this record
 new clause reached a profile-less project after all, as its own bullet at
 `rules/user-facing-output.md:81`. So the concrete consequence is gone and the inventory defect is
 not.
+
+---
+Resolved: fixed — both bullets name every entry by name and id, nine and six; rules/user-facing-output.md:18

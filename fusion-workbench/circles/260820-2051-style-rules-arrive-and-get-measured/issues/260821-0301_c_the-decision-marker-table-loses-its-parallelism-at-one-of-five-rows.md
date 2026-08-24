@@ -51,3 +51,6 @@ The em-dash becomes the colon the other four rows use, and the internal colon be
 One token gains a capital (`code` → `Code`), which is the same class of change the pass makes at its
 11 split sites, and the token stream is otherwise unmoved. All five rows are then parallel and no
 sentence carries two colons.
+
+---
+Resolved: fixed — the _i_ row takes the colon the other four use; the internal colon became ', and' rather than a full stop and capital, because a capital 'Code' drops the row out of the domain-cascade hole measurement (hooks/lib/domain-cascade.ts REACH.holes[0].cost) and that pin is outside this step's files; no sentence carries two colons; rules/fusion-workbench-conventions.md:323

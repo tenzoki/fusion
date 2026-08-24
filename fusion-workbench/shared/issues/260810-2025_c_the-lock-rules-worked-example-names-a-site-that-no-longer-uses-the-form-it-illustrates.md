@@ -61,3 +61,6 @@ restate it. Whoever edits the worked example above should state the `cd` in the 
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Both halves still hold, and the file moved without them being fixed. The rule is now `rules/commit-lock.md` (renamed from `workbench-stash-and-lock.md` on 2026-08-15); its worked example at `:42` still names the orchestrator Phase 2 Step 3b retry-after-bugfixer as internal control flow, while `agents/orchestrator.md:546` uses the `with` form there. The second half is worse than unfixed: the fact that `with` performs a `cd`, and that pathspecs must therefore be absolute, is documented at the call site (`agents/orchestrator.md:537`) and still absent from the rule file that is its stated authoring home.
+
+---
+Resolved: fixed — the false worked example is dropped and the criterion left bare (no shipped site holds the lock across control flow), 'before staging' became 'in the held command', and the `cd` the `with` form performs is stated in the rule with the absolute-pathspec consequence; rules/commit-lock.md:42, rules/commit-lock.md:44

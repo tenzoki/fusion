@@ -39,11 +39,13 @@ Stale-lock detection at 60 seconds, on two paths. With a holder file: if the rec
 - `with <tag> -- <cmd...>` — canonical pattern: acquire, run, release on any exit
 - `check` — diagnostic; print lock state, no mutation
 
-The `with` form is canonical; explicit `acquire`/`release` is for special cases like internal control-flow (retry after bugfixer in orchestrator Phase 2 Step 3b).
+The `with` form is canonical; explicit `acquire`/`release` exists for control-flow that has to run inside the held region, and no shipped call site holds the lock that way today.
+
+**`with` performs a `cd`.** It resolves the workbench root (`bin/fusion-workbench-root`, walking up from the caller's working directory) and runs the wrapped command there: not the caller's directory, and not the git toplevel. Every pathspec in the held command is therefore written absolute; a toplevel-relative or caller-relative staging list exits 128 with nothing staged wherever the three directories differ.
 
 ### Who acquires
 
-- **Orchestrator** at Phase 2 Step 3b — before staging and committing.
+- **Orchestrator** at Phase 2 Step 3b — staging and committing in the held command.
 - **Coder / ontocoder / bugfixer** ONLY if they commit directly (rare; default is the orchestrator commits on their behalf).
 - **`/fusion:commit` and `/fusion:cleanup`** — the two skills that commit; each wraps every stage+commit pair in `with <skillname> --` (tags `commit`, `cleanup`). Skills are never served by `bin/fusion-rules`; their bodies carry the instruction and cite this section directly.
 - **Other agents** — never commit, never need the lock.

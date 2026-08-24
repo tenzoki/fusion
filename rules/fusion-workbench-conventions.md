@@ -25,7 +25,7 @@ A **Circle is a directory**, not a file. Everything a unit of work produces live
 ```
 fusion-workbench/
 ├── circles/
-│   └── 260716-1847-workbench-umbau/   # one directory per unit of work
+│   └── <YYMMDD-HHMM>-<slug>/      # one directory per unit of work
 │       │                              # stable name: <YYMMDD-HHMM>-<directive-slug>, NO marker
 │       ├── _t_circle.md              # the Circle record — carries the state marker
 │       ├── planning/                  # spec and plan of THIS unit of work
@@ -52,7 +52,7 @@ fusion-workbench/
 ├── .active-circle                     # pointer to the active Circle directory
 ├── .fusion-setup                      # setup marker (JSON: timestamp + plugin version)
 ├── .asset-provenance                  # what setup copied, checksummed at the moment of copying
-├── .checkout-id                    # this checkout's identifier, minted once by bin/fusion-identity
+├── .checkout-id                       # this checkout's identifier, minted once by bin/fusion-identity
 │
 │   # ── Root-anchored. The hooks, the monitor and the bin/ helpers read these ──
 │   # ── HERE, at fixed root-relative paths. Do not move them.               ──
@@ -64,7 +64,7 @@ fusion-workbench/
 └── .session-marker                     # bin/fusion-session-mark, hooks/lib/staging-drift.ts
 ```
 
-**Two legacy stores are absent from this tree on purpose.** A workbench may carry `stashes/`, written by the Circle stash skills removed on 2026-08-15, and `.migration-v2-backup/`, left by the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) as its rollback copy. Nothing shipped writes to either any more: a line in the tree above would read as a store the plugin still creates. Frozen content is not live content, so live-tree consumers keep it out. `skills/log-activity/SKILL.md:82`, `skills/archive/SKILL.md:102` and `agents/playmaker.md:61` exclude `stashes/` by path, all but the archive skill `.migration-v2-backup/` too. `/fusion:setup` names no exclusion at all: it bounds its probe to the two live trees (`skills/setup/SKILL.md:65`), leaving every frozen store outside by construction. Do not drop the three that remain: `skills/setup/SKILL.md:58` records the cost, a Setup that refuses permanently and routes to a migration with nothing to do.
+**Two legacy stores are absent from this tree on purpose.** A workbench may carry `stashes/`, written by the Circle stash skills removed on 2026-08-15, and `.migration-v2-backup/`, left by the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) as its rollback copy. Nothing shipped writes to either any more: a line in the tree above would read as a store the plugin still creates. Frozen content is not live content, so live-tree consumers keep it out. `skills/log-activity/SKILL.md:82`, `skills/archive/SKILL.md:107` and `agents/playmaker.md:61` exclude both by path. `/fusion:setup` names no exclusion at all: it bounds its probe to the two live trees (`skills/setup/SKILL.md:65`), leaving every frozen store outside by construction. Do not drop the three that remain: `skills/setup/SKILL.md:58` records the cost, a Setup that refuses permanently and routes to a migration with nothing to do.
 
 **The root-anchored surfaces are not negotiable.** Each is bound to a fixed root-relative path by every consumer named beside it in the tree, and none of those consumers has a fallback path: relocating one into a Circle or into `shared/` breaks it silently. The column names a consumer that only *names* the path, in an exclusion or classification list, next to one that reads the file: what breaks on a move is the same dependency either way.
 
@@ -80,11 +80,11 @@ Whether a consuming project tracks its workbench at all is that project's decisi
 
 **The review types collapse into one `reviews/`.** codereview and ontoreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
 
-`fusion-workbench/.active-circle` is a one-line pointer file containing the **directory name** of the active Circle (e.g. `260716-1847-workbench-umbau`): no marker, no `circles/` prefix, no `.md`. It is absent when no Circle is active. Because the directory name is stable across the Circle's whole lifecycle, the pointer no longer has to be re-pointed on every marker change. Its writer set is closed and enumerated here (decision `260806-0015_*_wem-gehoert-die-circle-aktivierung`). On the activation path there are three writers: the orchestrator **writes** it on `_a_→_t_` activation (after user confirmation of playmaker's proposal) and **deletes** it on `_t_→_c_/_b_/_s_/_d_` closure at Phase 4; `/fusion:next` writes it in its user-confirmed interactive-activation branch; `/fusion:setup` writes it in exactly one condition, the confirmed branch of its `MISSING-POINTER` gate, where this checkout holds a `_t_` record with no pointer and the user answered yes to activating that Circle here. Two lifecycle skills touch it outside activation, each in one bounded way: `/fusion:migrate` re-points it from the pre-v4 filename form to the directory name, and `/fusion:cleanup` clears it only when the active Circle's record already carries a terminal marker. No other party writes it; a new writer adds itself to this enumeration in the same commit. The pointer is the single source of truth for "active Circle": `agentstate.yaml` does NOT duplicate this field.
+`fusion-workbench/.active-circle` is a one-line pointer file containing the **directory name** of the active Circle (`<YYMMDD-HHMM>-<slug>`): no marker, no `circles/` prefix, no `.md`. It is absent when no Circle is active. Because the directory name is stable across the Circle's whole lifecycle, the pointer no longer has to be re-pointed on every marker change. Its writer set is closed and enumerated here (decision `260806-0015_*_wem-gehoert-die-circle-aktivierung`). On the activation path there are three writers: the orchestrator **writes** it on `_a_→_t_` activation (after user confirmation of playmaker's proposal) and **deletes** it on `_t_→_c_/_b_/_s_/_d_` closure at Phase 4; `/fusion:next` writes it in its user-confirmed interactive-activation branch; `/fusion:setup` writes it in exactly one condition, the confirmed branch of its `MISSING-POINTER` gate, where this checkout holds a `_t_` record with no pointer and the user answered yes to activating that Circle here. Two lifecycle skills touch it outside activation, each in one bounded way: `/fusion:migrate` re-points it from the pre-v4 filename form to the directory name, and `/fusion:cleanup` clears it only when the active Circle's record already carries a terminal marker. No other party writes it; a new writer adds itself to this enumeration in the same commit. The pointer is the single source of truth for "active Circle": `agentstate.yaml` does NOT duplicate this field.
 
 `fusion-workbench/.checkout-id` holds eight lowercase hex characters naming **this checkout** and nothing else: `bin/fusion-identity` mints it on first read and never again, and it is the second half of a Circle's claim, beside the person. It is class L in `rules/workbench-tracking.md` and never travels, for the reason the field exists at all: a checkout that pulled another checkout's copy would be indistinguishable from it.
 
-`fusion-workbench/.asset-provenance` records what `/fusion:setup` copied into the workbench: one line per asset in the shape `shasum -a 256` prints: the checksum taken at the moment of copying, then the asset's path relative to the workbench. It is the third input that makes "is this project's copy stale, or has the project adapted it" decidable, which the two files alone are not: one difference, two causes. `/fusion:setup` is its only writer and its only reader, and an asset with no line is one the record says nothing about rather than one it classifies.
+`fusion-workbench/.asset-provenance` records what `/fusion:setup` copied into the workbench: one line per asset in the shape `shasum -a 256` prints. The checksum is taken at the moment of copying, then comes the asset's path relative to the workbench. It is the third input that makes "is this project's copy stale, or has the project adapted it" decidable, which the two files alone are not: one difference, two causes. `/fusion:setup` is its only writer and its only reader, and an asset with no line is one the record says nothing about rather than one it classifies.
 
 The `fusion-workbench/` is anchored to the directory where setup was run: the working directory `pwd` reports, not necessarily the git toplevel. A subfolder may legitimately have its own independent workbench, separate from any workbench at a parent level; the plugin's hooks resolve `process.cwd()` directly and follow whichever directory is active.
 
@@ -250,7 +250,7 @@ The writing profile follows its surface's language, not the artifact declaration
 
 `bin/fusion-rules` emits the chat profile path for every agent and the writing profile path only for long-form-prose agents. The two paths may name different languages; for a project whose chat and artifacts differ that is the intended configuration, not a fault to report or work around.
 
-Each family keeps its own missing-variant fallback, and the fallback is **per family, not shared**: when the resolved language's variant is missing (e.g. the artifact language is `de` but no `default-voice-de.yaml` exists), `bin/fusion-rules` falls back to the `-en.yaml` variant of that same family. Standard output carries the resolved path alone, so the fallback names itself on standard error instead, giving the family, the requested variant and the resolved one. Whether an agent is obliged to record that event is open, and no surface states such an obligation today (`circles/260801-1244-curator/issues/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`). If neither variant of a family exists, the agent emits nothing for that family and follows `rules/user-facing-output.md` alone: that rule always applies, regardless of profile presence.
+Each family keeps its own missing-variant fallback, and the fallback is **per family, not shared**: when the resolved language's variant is missing (e.g. the artifact language is `de` but no `default-voice-de.yaml` exists), `bin/fusion-rules` falls back to the `-en.yaml` variant of that same family. Standard output carries the resolved path alone; the fallback names itself on standard error, giving the family, the requested variant and the resolved one. An agent that keeps a session history records that line in it, once. If neither variant of a family exists, the agent emits nothing for that family and follows `rules/user-facing-output.md` alone: that rule always applies, regardless of profile presence.
 
 **Exempt surfaces: English, whatever either line says.** Two groups, cut by who the text reaches. The first holds in every project; the second is a criterion a project evaluates against itself, not a list of paths.
 
@@ -288,7 +288,7 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 
 `<sender>` on a review file is `coderev` or `ontorev`. It is what distinguishes the two review kinds now that they share one `reviews/` directory: it is mandatory, and the document header repeats it. Older files may carry a third sender, `conceptrev`, retired with its agent on 2026-08-15.
 
-**Cite a record by its full filename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. No two records share a full basename once the marker is normalised, so the naming convention holds and only the citation form was ever at fault. **No pattern above changes.**
+**Cite a record by its full filename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. No two records share a full basename once the marker is normalised, so the naming convention holds and only the citation form was ever at fault. **No pattern above changes.** Cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no gate resolves `path:N`.
 
 The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task files are **append** logs (`/fusion:memo` adds to them), while the cadence digest is **overwritten** on each `/fusion:cadence` run (it is a fresh snapshot of the work cadence, not a history of its own runs).
 
@@ -320,7 +320,7 @@ Decision records carry a richer state marker that distinguishes "the answer is r
 |--------|---------|
 | `_o_` | Open: the question has been filed but not yet answered. Initial state on creation. |
 | `_a_` | Answered: a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location with `Answered: <path>:<line> — <one-line summary>`. Cite the path as it stands, whether that is inside a Circle or in `shared/`. The decision is not yet realised in code or data. `_a_` does not assert that realising it is still possible: when the subject was removed before anyone built against it, the body gains a `Retired:` line and the marker does not move. |
-| `_i_` | Implemented. The answer has been realised: code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <path>:<line> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. `_i_` does not assert that the implementation still exists: when it is later removed and no decision overrode it, the body gains a `Retired:` line and the marker does not move, so the marker alone cannot tell a live implementation from a retired one. |
+| `_i_` | Implemented: the answer has been realised, and code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <path>:<line> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. `_i_` does not assert that the implementation still exists: when it is later removed and no decision overrode it, the body gains a `Retired:` line and the marker does not move, so the marker alone cannot tell a live implementation from a retired one. |
 | `_d_` | Deferred: the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target. |
 | `_s_` | Superseded: a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <path> — <reason>`. |
 
@@ -345,7 +345,7 @@ Each decision store holds both layers; the marker carries the layer information.
 
 ## Marker globs
 
-The delimiter is an underscore, not brackets, and that choice is what keeps the marker cheap to read as a glob. `[` and `]` are shell-glob metacharacters: a marker written in bracket form inside a glob is silently a *character class* matching the single marker letter, so a glob of the shape `circles/*/…-circle.md` with a bracketed `t` resolves to `circles/*/t-circle.md`, matches the empty set, and under `bash` fails *silently*: the unmatched pattern expands to itself, the customary `[ -e "$f" ] || continue` guard drops it, and the count comes back `0` on a workbench full of Circles (`HYG-NO-SILENT-FAIL`). That trap was hit five times in a single session. The underscore is inert in both glob and regex: `_t_circle.md` matches literally, with no escaping and no character-class surprise.
+The delimiter is an underscore, not brackets, and that choice is what keeps the marker cheap to read as a glob. `[` and `]` are shell-glob metacharacters: a marker written in bracket form inside a glob is silently a *character class* matching the single marker letter, so a glob of the shape `circles/*/…-circle.md` with a bracketed `t` resolves to `circles/*/t-circle.md`, matches the empty set, and under `bash` fails *silently*. The unmatched pattern expands to itself, the customary `[ -e "$f" ] || continue` guard drops it, and the count comes back `0` on a workbench full of Circles (`HYG-NO-SILENT-FAIL`). That trap was hit five times in a single session. The underscore is inert in both glob and regex: `_t_circle.md` matches literally, with no escaping and no character-class surprise.
 
 Two forms are correct. Use them verbatim:
 
@@ -469,7 +469,7 @@ This applies to:
 
 **Where it goes** is the Origin Rule's answer, resolved for you: defects to `$OUT_ISSUE`, decisions to `$OUT_DECISION`. Both point into the active Circle when there is one and into `shared/` when there is not. The one judgment left to you is the one the Origin Rule names: did this arise from the active Directive, or did you merely find it nearby? If the latter, file it in the shared store even while a Circle is active.
 
-**Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in the target store, plus `shared/` when a Circle is active. Names only, never bodies: a costlier check gets skipped. On a hit, append one line to that record: `Also seen: YYMMDD-HHMM by <agent> — <one clause>`. No second file, no marker moves. **In doubt, write the new record**: a duplicate costs one merge, an unfiled defect costs the defect. This step never ends with nothing written.
+**Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in every `$SCAN_ISSUES` store. Names only, never bodies: a costlier check gets skipped. A hit is a slug naming the same file or the same mechanism as yours. On a hit, append one line at the end of that record: `Also seen: YYMMDD-HHMM by <agent> — <one clause>`. No second file, no marker moves. **In doubt, write the new record**: a duplicate costs one merge, an unfiled defect costs the defect. This step never ends with nothing written.
 
 **NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, history logs, or any other location.** Embedded items get lost. Each item is a separate file in its own store.
 
@@ -493,7 +493,7 @@ Brief but precise: enough context to understand the item without the original co
 
 Both formats carry `**Filed by:**`, and its `<person>` half is the `PERSON=` line of `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`, in git's own `Name <email>` form. Call it guarded, as every helper call site is: `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]`. Read it from there and nowhere else: compose no value and substitute none.
 
-Two of that helper's exit codes are opposite instructions to you. **Exit 1** is a git work tree whose `user.name` or `user.email` is unset: **halt, report the reason the helper printed, and file nothing.** **Exit 4** is a tree that is not a git work tree at all, so no identity is owed: **file normally, with the person half absent rather than empty.** On every other code `PERSON=` is printed and you carry on. The condition is evaluated in the helper and stated here once; no agent prompt restates it.
+Two of that helper's exit codes are opposite instructions to you. **Exit 1** is a git work tree whose `user.name` or `user.email` is unset: **halt, report the reason the helper printed, and file nothing.** **Exit 4** is a tree that is not a git work tree at all, so no identity is owed, and **exit 5** is that tree with the checkout half unresolved too: on both, **file normally, with the person half absent rather than empty.** On exit 0 and 3 `PERSON=` is printed and you carry on; exit 2 is a usage error in your own call. The condition is evaluated in the helper and stated here once; no agent prompt restates it.
 
 **A helper that is not installed is a third branch and neither of those two.** `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is absent there and a bare call is exit 127, which is none of the codes above. When the guard fails, **file with the person half absent as exit 4 does, and report that attribution was dropped because the helper was missing.** The record looks like exit 4's and the reason does not: exit 4 means no identity was owed, this means one was owed and could not be read. Do not halt, or an install one release behind stops every filing in the project.
 
@@ -534,14 +534,9 @@ Body:
 ## Recommendation
 
 <If the filing agent has a recommendation, state it with reasoning. Otherwise omit.>
-
----
-Answered: <set when status moves to _a_>
-Implemented: <set when status moves to _i_>
-Deferred: <set when status moves to _d_>
-Superseded by: <set when status moves to _s_>
-Retired: <set when the subject is removed; the marker stays _i_ or _a_>
 ```
+
+No footer: a record gains its annotation line at the transition, per `## Inline State Tracking`. A stub left by the old placeholder footer stays as it stands.
 
 **There is no `Status:` head field, and you do not write one.** It duplicated the marker and
 drifted from it: 39 of 94 records carried a header naming a state their marker did not, a

@@ -55,3 +55,6 @@ the two filename patterns one — three surfaces state it and one is a `\d{4}` r
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/review-coverage.ts:193` still requires a four-digit stamp, while `agents/coderev.md:112` and `agents/ontorev.md:102` both mandate a two-digit counter for per-topic files, which parse to a null sender. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the per-topic working file takes the one review pattern YYMMDD-HHMM-<sender>-<topic>.md that the parser reads, and the rule says a two-digit counter parses as no sender; the two reviewer prompts already cite the contract; rules/review-contract.md:58

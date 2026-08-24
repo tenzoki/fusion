@@ -41,3 +41,6 @@ rate exceeded their catch rate. Whoever takes this weighs that.
 Also seen: 260823-1110 by coderev — a cut in `skills/setup/SKILL.md` sent `rules/fusion-workbench-conventions.md:66` at a blank line, and five `skills/next/SKILL.md` citations in `README-agents.md` drifted two further; the instances are `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-cut-shifted-two-line-citations-in-an-always-on-rule-and-one-now-points-at-a-blank-line.md`.
 
 Also seen: 2026-08-23 by coder, clearing that record. Eleven line citations were repaired by hand across `rules/fusion-workbench-conventions.md` and `README-agents.md`, and the suite was green over every one of them both before and after. The citation named above now carries the `_*_` wildcard form, which is the second time in one range that a marker move rather than a line move broke a pointer — a different fault from the one this record measures, and noted only because both were found by a human reading rather than by a gate.
+
+---
+Resolved: fixed — closes with 260808-0030: the always-on rule now says a rule file is cited by heading anchor, never by line number, because no gate resolves path:N; the lint extension (option 1 of the closed record) is not built; rules/fusion-workbench-conventions.md:291

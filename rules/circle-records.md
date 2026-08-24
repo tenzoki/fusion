@@ -162,6 +162,8 @@ The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creati
 
 The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `_S_circle.md`, per the State Markers section above.
 
+**Every path citation in the record's prose carries `_*_` at the marker position**, in `## Grounding snapshot`, `## Dependencies`, `## Turn log`, `## Closure note` and the sections playmaker appends alike. Nothing regenerates a Circle record, so the argument is the target's transitions alone: a spelled marker dies at the first one and stays dead. The pointer-versus-statement test of `### Citation form in the portfolio` governs here too, and `### Citation form in a Circle record's head field` covers the head fields.
+
 ### The claim field
 
 **`Claim:` names the checkout that currently holds this Circle active.** It is the second of the
@@ -171,7 +173,7 @@ because one person's two checkouts carry one git identity and would pass any tes
 the value carries the person *and* the checkout identifier, both read from `bin/fusion-identity`
 (`PERSON=` and `CHECKOUT=`) and composed nowhere else.
 
-The field takes one of exactly two literal openings:
+The field takes one of exactly three literal openings:
 
 ```
 Unclaimed
@@ -181,10 +183,25 @@ Unclaimed
 Claimed YYMMDD-HHMM: <person>, checkout <id>.
 ```
 
+```
+Claimed YYMMDD-HHMM, identity partial: <the `PERSON=` or `CHECKOUT=` line the helper printed, verbatim, or `none (exit 5)`>.
+```
+
 `Unclaimed` is the value of an anticipated (`_a_`) Circle and of a Circle that has reached a
 terminal marker. The `Claimed ` form is written at the `_a_ → _t_` rename and written back to
 `Unclaimed` at the rename out of `_t_`. Who performs each write is authored where that act is, not
 here.
+
+**The third opening is what the activator writes when `bin/fusion-identity` printed one half or
+neither** (its exits 3, 4 and 5; exit 4 is a non-git project, which fusion supports on purpose).
+It composes nothing: the value is the line the helper printed, or the word `none`. An empty slot in
+the second form (`Claimed 260824-1500: , checkout 3f9a1c07.`) is the "empty rather than absent"
+the person rule forbids, and `Unclaimed` would say the Circle is free while it is held. **A reader
+compares on the halves both sides carry.** The claim matches this checkout when at least one half
+is shared and every shared half is equal; a claim written from exit 5 shares nothing and matches no
+checkout, so the reader treats it as another party's and offers the override. Whether a non-git
+project should carry a claim at all is open: with no transport there is no collision to detect, and
+this form records the activation rather than settles that question.
 
 **A takeover appends a second sentence rather than replacing the first**, so both people stand in
 the field and the override is visible in the record:
@@ -282,8 +299,10 @@ Binding decision: `shared/decisions/260818-1504_*_how-does-a-circle-record-carry
 ## Backlog — ranked
 
 <Ranked `_o_`/`_p_` backlog entries. First line: `Recommended to shape: <entry path> — <rationale>` with the `/fusion:direct <entry path>` invocation under it; a multi-idea top entry instead takes `Recommended to split first: <entry path> — <n> ideas, top one is <slug>` and no invocation. Each entry: path, the idea in one line, rank, and indented under it what this run proposed for that entry — a proposed split showing the pieces it would produce.
-Then `Performed this run:` and the operations it performed, whose entries have left the ranking. Both use these four forms, one operation to a line, so a person can approve one at a time and `/fusion:next` can relay the line verbatim into a second dispatch:
-`split <entry path> into: <slug> — <title>; <slug> — <title>`
+Then `Performed this run:` and the operations it performed, whose entries have left the ranking. Both use these four forms, one operation to a line, so a person can approve one at a time and `/fusion:next` can relay the line verbatim into a second dispatch. A split is the exception in shape and not in principle: a header line, then one indented line per produced entry, so each entry is approved and relayed on its own and a partial split is the ordinary case rather than an unrepresentable one:
+`split <entry path>:`
+`  - <slug> — <title>`
+`  - <slug> — <title>`
 `merge <entry path>, <entry path> into: <slug> — <title>`
 `close <entry path> — <reason>`
 `defer <entry path> until <target>`

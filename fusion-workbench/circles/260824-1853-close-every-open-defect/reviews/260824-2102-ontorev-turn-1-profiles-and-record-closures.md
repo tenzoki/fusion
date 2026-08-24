@@ -52,7 +52,7 @@ Critical 0, High 0, Medium 0, Low 7.
 
 ### Record hygiene
 
-6. **One history filename off-pattern** (Low). `history/260824-2042_coder_p-7b-session-domain-layout-row.md`. Issue `260824-2100_*_a-history-filename-in-this-circle-uses-underscores-where-the-pattern-has-hyphens.md`.
+6. **One history filename off-pattern** (Low). `history/260824-2042-coder-p-7b-session-domain-layout-row.md`. Issue `260824-2100_*_a-history-filename-in-this-circle-uses-underscores-where-the-pattern-has-hyphens.md`.
 7. **Row 66 has no ending any more** (Low). The triage note asserts a fix that is not at HEAD (`rules/user-facing-output.md:19` still opens with "Those belong"); the S2 executor saw it and left the record `_o_` (`history/260824-2016-…:17`), and no later step lists the row. Issue `260824-2101_*_triage-row-66-asserts-a-fix-that-is-not-at-head-and-the-record-it-leaves-open-has-no-step.md`.
 
 ## Cross-cutting observations

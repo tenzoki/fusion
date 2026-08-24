@@ -59,3 +59,6 @@ where `rules/user-facing-output.md`'s own exhibits are handled.
 
 **What must not be done instead.** Restoring `:12`'s em-dash and leaving `:17`'s in place. That puts
 the file at 2 against a permit of 1.
+
+---
+Resolved: fixed — the two parenthetical specimens and the Before/After pair moved into block quotes, both specimens carry their em-dash again, and bin/fusion-prose-metric reads 0 of a permit of 1; rules/critical-stance.md:14

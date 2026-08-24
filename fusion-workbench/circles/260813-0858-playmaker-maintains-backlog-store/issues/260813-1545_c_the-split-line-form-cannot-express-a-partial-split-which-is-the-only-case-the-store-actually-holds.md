@@ -53,3 +53,6 @@ One operation, one line, all pieces on it.
 **The evidence note stands too, and should not be read as weaker than it is.** This is still reasoning from the forms and from one real input rather than from an observed failure; no end-to-end acceptance run has happened since. But the one real input has not gone away — the store still holds the multi-idea entry the record measured.
 
 Of the record's two remedies, the second is now the cheaper: one line per produced entry under a `split <entry path>:` header is the same shape Step 5b's follow-up already puts to the user, so the template would be catching up with the skill rather than leading it.
+
+---
+Resolved: fixed — the portfolio template takes the header form (split <entry path>: then one indented <slug> — <title> line per produced entry), matching skills/next/SKILL.md; residual: agents/playmaker.md:207 still carries the single-line form; rules/circle-records.md:303

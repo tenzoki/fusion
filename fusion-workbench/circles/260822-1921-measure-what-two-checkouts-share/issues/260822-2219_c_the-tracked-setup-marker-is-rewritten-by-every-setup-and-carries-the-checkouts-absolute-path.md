@@ -18,3 +18,6 @@ A second, smaller point in the same file: `setup_pwd` is published to everybody 
 A live instance stands in this repository's own working tree at the moment of filing. `git diff fusion-workbench/.fusion-setup` shows the tracked marker moving from `{"setup_at":"2026-08-22T00:17:26+0200","setup_pwd":"/Users/k1/Projects/productive/fusion","plugin_version":"10.4.0"}` to `{"setup_at":"2026-08-22T10:06:53+0200", ...,"plugin_version":"10.5.0"}`, rewritten by the Setup that ran this morning. One checkout already produces a diff on it per Setup; several checkouts produce a conflict.
 
 Not fixed here: this pass is read-only on the project's files. Any fix touches the classification in `rules/workbench-tracking.md`, the R3 paragraph in the spec, or the marker write in `skills/setup/SKILL.md`, and which of the three is the right one is a design choice rather than a correction.
+
+---
+Resolved: fixed — setup_pwd is gone from the marker at HEAD and Setup writes it only on change; the R3 row now says the marker is rewritten with the same content per plugin version, carrying no path and no timestamp of its own; rules/workbench-tracking.md:23

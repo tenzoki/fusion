@@ -44,3 +44,6 @@ Fix direction: name exit 5 beside exit 4 rather than in the residual, since the 
 
 ---
 **Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** Confirmed by probe. Run from a directory that is neither a git work tree nor under any workbench, `bin/fusion-identity` printed nothing on stdout, named both causes on stderr and exited 5. `rules/fusion-workbench-conventions.md:496` still reads "On every other code `PERSON=` is printed and you carry on", and the sentence two above it forbids composing a value, so an agent meeting exit 5 has a branch and no act it can perform.
+
+---
+Resolved: fixed — exit 5 is named beside exit 4 (file with the person half absent), the residual is enumerated as exits 0 and 3, and exit 2 is named as a usage error; rules/fusion-workbench-conventions.md:496

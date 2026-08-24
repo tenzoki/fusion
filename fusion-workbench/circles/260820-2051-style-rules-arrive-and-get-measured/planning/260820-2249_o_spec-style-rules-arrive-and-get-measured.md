@@ -498,8 +498,8 @@ one is the decision that this Circle advances rather than closes.
 | Record | Cause | Resolved by | Note |
 |---|---|---|---|
 | `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` | RC3 | C3, C6 | Closes when the corpus is at the ceiling under the stated metric and the table's membership is a derivation. |
-| `shared/issues/260816-1330_o_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` | RC3 | C3 | Its own proposed marks are the acceptance criterion. |
-| `shared/issues/260816-1330_o_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` | RC3 | C3 | Same. |
+| `shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` | RC3 | C3 | Its own proposed marks are the acceptance criterion. |
+| `shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` | RC3 | C3 | Same. |
 | `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md` | RC1 | C6 | The progress note is corrected; the commit message stands. |
 | `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md` | RC1 | C6 | Plus the inverted `workbench-tracking` claim found today. |
 | `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` | RC1 | C1, C2 | Its option 2 as a test is not affordable; C1 is the same mechanism as a Setup step. |
@@ -508,7 +508,7 @@ one is the decision that this Circle advances rather than closes.
 | `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` | RC1 | C6 | Appended note on the run file, not a rewrite. |
 | `shared/issues/260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` | RC1 | C9 | Its item 2 lands unconditionally; item 1 is question 3 below. |
 | `circles/260801-1244-curator/issues/260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` | RC1 | C8 | About 800 bytes against 2 259 of head-room. |
-| `circles/260801-1244-curator/issues/260814-1332_o_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md` | RC2 | C7 | A §4 case: the mechanism moves, not the wording. Subject to question 6. |
+| `circles/260801-1244-curator/issues/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md` | RC2 | C7 | A §4 case: the mechanism moves, not the wording. Subject to question 6. |
 | `shared/issues/260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` | RC2 | C5, **in part** | The ambiguity is removable now; the two numbers are question 2. |
 | `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` | RC2 | C4, **in part** | C4 closes the opener half. The record's structural half, that the rule prescribes relocation and states no total budget, is question 5. |
 | `shared/issues/260818-1452_c_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md` | RC2 | **already closed** | Read for its pattern. Its resolution is the template C4 and C5 follow: a clause plus a demonstrated before and after, with the cost reported against the head-room. Not reopened. |

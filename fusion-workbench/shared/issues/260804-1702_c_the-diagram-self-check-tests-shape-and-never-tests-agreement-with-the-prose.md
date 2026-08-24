@@ -23,3 +23,6 @@ Touches `rules/design-diagrams.md`, which is on `guard.protectedPaths` — a fix
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/design-diagrams.md:47-54` still lists only the five shape questions and says nothing about agreement with the prose. The `conceptrev` agent that produced the motivating findings was retired on 2026-08-15, which does not touch the rule text this record is about. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the self-check gains an agreement question (every edge a declared dependency, every declared dependency an edge, the same test against the prose's relations for other types); rules/design-diagrams.md:54

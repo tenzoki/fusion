@@ -45,3 +45,6 @@ cited record leaves open, which is why this record proposes no wording for it.
   edit, which is the cited record's question and not this one's, or the reference goes.
 - The always-on byte cost of the correction is reported against the head-room, like every other change
   to this corpus in this Circle.
+
+---
+Resolved: fixed — with 260814-1332: the sentence claiming the helper emits only the resolved path is gone, and the history-line obligation is stated rather than referred to; rules/fusion-workbench-conventions.md:253

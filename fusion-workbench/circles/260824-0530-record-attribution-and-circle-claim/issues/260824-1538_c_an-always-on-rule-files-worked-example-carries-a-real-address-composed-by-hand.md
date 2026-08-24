@@ -22,3 +22,6 @@ Adjacent: `shared/issues/260818-0715_*_four-shipped-surfaces-use-a-real-fusion-c
 
 ---
 **Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** `rules/decision-record-examples.md:20` still reads `**Filed by:** shaper, Kai Stalmann <kai@qantr.com>`. Independently confirmed that the address is composed rather than read: `./bin/fusion-identity` prints `PERSON=Kai Stalmann <ks@qantr.com>`, and `git log --format=%ae e209011..HEAD` gives `ks@qantr.com` on every commit in the range. The file is one of the five always-on rules, so it is loaded on every dispatch of every agent in every consuming project and ships in the tarball.
+
+---
+Resolved: fixed — the worked example takes the fictional identity Ada Lovelace <ada@example.com>, matching rules/circle-records.md; rules/decision-record-examples.md:20

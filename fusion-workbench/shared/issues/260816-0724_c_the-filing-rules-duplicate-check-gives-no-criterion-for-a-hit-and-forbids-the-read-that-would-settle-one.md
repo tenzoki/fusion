@@ -37,3 +37,6 @@ mechanism", with the tie-breaker as written — and one naming where the line go
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `rules/fusion-workbench-conventions.md:461` still says names only, never bodies, with no criterion for a hit and no statement of where the cross-reference line goes. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — a hit is a slug naming the same file or the same mechanism, the Also-seen line goes at the end of the record, and the store list is $SCAN_ISSUES rather than a restatement of it; rules/fusion-workbench-conventions.md:472

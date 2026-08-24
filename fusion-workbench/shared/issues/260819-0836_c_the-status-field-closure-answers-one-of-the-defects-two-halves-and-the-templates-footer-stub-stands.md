@@ -78,3 +78,6 @@ Whichever is taken, the always-on rule set moves, so both goldens regenerate.
 
 **Found by:** reconciler, final reconciliation of session `260818-2301`, verified at HEAD `83488e9`.
 No Circle is active, so it is filed in the shared store under the Origin Rule.
+
+---
+Resolved: fixed — option 1: the five-line placeholder footer left the decision-record template, a record gains its annotation line at the transition per `## Inline State Tracking`, existing stubs stay; rules/fusion-workbench-conventions.md:539

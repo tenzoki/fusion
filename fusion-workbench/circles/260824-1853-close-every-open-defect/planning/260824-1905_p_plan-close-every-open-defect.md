@@ -170,7 +170,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Closes: 15, 21, 22, 23, 29, 30, 31, 47, 55, 58, 59, 69, 73, 80, 81, 93, 126, 138, 141, 161, 164, 165, 177, 218
     - Acceptance: `turn-budget-lint`, `executor-verification-report-lint`, `domain-cascade` tests and `surface-growth-bound` green; `agents/` head-room stated before and after; `grep -c 'monitor-reset\|260810-1205\|counts 88 files' agents/orchestrator.md` prints 0 for the instruction sites.
 
-13. **`rules/`: the always-on core and the conditional files**
+13. [DONE] **`rules/`: the always-on core and the conditional files**
     - Executor: `coder`
     - Files: `rules/fusion-workbench-conventions.md`, `rules/user-facing-output.md`, `rules/critical-stance.md`, `rules/decision-record-examples.md`, `rules/agent-setup.md` (verify only), `rules/circle-records.md`, `rules/review-contract.md`, `rules/commit-lock.md`, `rules/design-diagrams.md`, `rules/workbench-tracking.md`
     - Changes: per row. Always-on head-room 431 bytes: the placeholder footer cut (85, about 300 bytes) is made **first** and pays for 61, 8, 95 and 217; 196 costs the block-quote markers only; 211 and 68 are neutral; 198 and 197 are punctuation. `rules-emission-golden.test.ts` is run after each file. Conditional files are outside the bound and inside the role report; 26, 149 and 213 add to `rules/circle-records.md`, which already reports over for `playmaker` and `shaper` (210), so the step names the new figure in its report. Every edit under `rules/` keeps the `**Provenance:**` header and the heading spellings other files cite (the coder greps each heading it touches across the tree first, per 193).

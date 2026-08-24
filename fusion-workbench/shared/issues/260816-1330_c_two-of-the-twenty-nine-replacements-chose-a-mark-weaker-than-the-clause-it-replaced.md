@@ -38,3 +38,6 @@ Commit `6049d3e` made 29 replacements in `rules/user-facing-output.md` and prese
 review gate R1 asked exactly this question of the four files it did repair and answered it: mark
 strength held at 152 of 155 sites. The two sites here are from the earlier pass and were not in
 scope. Both proposed marks are on the four-mark list at `:140` and neither changes a word.
+
+---
+Resolved: fixed — a colon at the locked-phrasing clause and parentheses at the exemplar boundary, no word changed; rules/user-facing-output.md:113, rules/user-facing-output.md:122
