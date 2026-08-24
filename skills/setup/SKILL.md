@@ -328,11 +328,17 @@ else
 fi
 ```
 
-## Step 0i — Report a Circle this checkout never activated
+## Step 0i — This checkout's identity, and a Circle it never activated
 
 A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`, the condition `agents/playmaker.md` names and `/fusion:next` renders. A pointer deleted by hand is that same state, same report, same offer.
 
 It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
+
+**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`, minting `fusion-workbench/.checkout-id` where none exists. Its header documents the six exit codes and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged.
+
+```bash
+[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
+```
 
 ```bash
 [ -f ./fusion-workbench/.active-circle ] && echo pointer-present
@@ -342,7 +348,7 @@ find ./fusion-workbench/circles -mindepth 2 -maxdepth 2 -name '_t_circle.md' 2>/
 The count is taken unconditionally; the pointer gates the offer, not the detection.
 
 - **No path, or one path with `pointer-present`** — no active record, or this checkout activated it. Report nothing, ask nothing.
-- **One path and no `pointer-present`** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*.
+- **One path and no `pointer-present`** — the directory name is its second-to-last segment. Read the record's first `## Directive` line, then one `AskUserQuestion` in the project's chat language: name both, say the Circle is active in the project but not in this checkout, and offer *Activate it here* / *Leave it inactive*. Read the record's `**Claim:**` too: where it opens with `Claimed ` and names an identity other than the one just read, name the holder and the time **before** the offer, and the offer overrides, writing the field's `Overridden ` sentence per `agents/orchestrator.md` `## Circle head fields`. `Unclaimed`, or no field, behaves as today (`rules/circle-records.md` `### The claim field`).
   - **Activate** — `printf '%s\n' "<dir>" > ./fusion-workbench/.active-circle`. Step 2 resolves against it.
   - **Leave** — write nothing; the Circle stays inactive here, and `/fusion:next` can activate it later.
 - **More than one path, pointer or not** — `MULTIPLE-ACTIVE`, the condition `agents/playmaker.md` names beside `MISSING-POINTER`. Name every Circle found and say the project holds more than one active record. **Offer nothing and write nothing**: which of several to run here is a portfolio judgement, and `/fusion:next` is where the project makes it. Point the user there.

@@ -407,7 +407,7 @@ flowchart TD
      surface to 20 332, and `npm test` is green at 732 passing tests with this step's work
      unchanged. `agents/*.md` measures 407 098 bytes, inside the 407 137 ceiling.
 
-9. **`/fusion:setup` mints the identifier and reports a claim it does not hold**
+9. [DONE] **`/fusion:setup` mints the identifier and reports a claim it does not hold**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`
    - Changes: two small edits, both bounded by the head-room step 3 bought.
