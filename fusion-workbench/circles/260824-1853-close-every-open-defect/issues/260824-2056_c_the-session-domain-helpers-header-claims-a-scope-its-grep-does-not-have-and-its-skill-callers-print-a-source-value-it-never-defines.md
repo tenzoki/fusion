@@ -11,3 +11,5 @@ Three header-versus-behaviour gaps in the new `bin/fusion-session-domain` (commi
 Fix direction: for 1, either state the true bound ("the first two-space `domain:` key in the file") or anchor the read to the `session:` block with an awk range; for 2, capture with a permissive class and validate after; for 3, add `helper-missing` to the header's `source` vocabulary as the value a caller prints when the helper itself is absent, and mirror it in the `CLAUDE.md` row.
 
 Severity: Low.
+---
+Resolved: fixed — the header states the true bound (the first `domain:` key exactly two spaces deep, in whichever top-level block holds it, which only `session:` does today) instead of the `session:`-scope claim, the `sed` captures the value as itself so `domain: Code` is named as `Code`, and `helper-missing` is defined as the third `source` value a caller prints on its `[ -x ]` miss, in the header and in the `CLAUDE.md` row; `bin/fusion-session-domain:16,25-28,38-43,73-75`, `CLAUDE.md` `bin/fusion-session-domain` row

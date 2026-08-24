@@ -9,12 +9,12 @@
 
 Seven citations in six files spelled the `_o_` marker of four records the previous run renamed to `_c_`. Each was rewritten to the `_*_` wildcard form (`rules/fusion-workbench-conventions.md` `## Filename Patterns`), one token per line, nothing else touched:
 
-- `circles/260801-1244-curator/issues/260814-1850_o_the-new-dispatch-contract-is-reachable-from-no-flow-step-and-no-surface-offers-the-choice-it-waits-for.md:48`
+- `circles/260801-1244-curator/issues/260814-1850_*_the-new-dispatch-contract-is-reachable-from-no-flow-step-and-no-surface-offers-the-choice-it-waits-for.md:48`
 - `circles/260801-1244-guard-rules-write/_c_circle.md:131` (terminal Circle record; citation repair authorised by the orchestrator)
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_o_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md:8`
-- `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_o_spec-style-rules-arrive-and-get-measured.md:505`
-- `shared/issues/260816-0725_o_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md:73`
-- `shared/issues/260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md:6,15`
+- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md:8`
+- `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md:505`
+- `shared/issues/260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md:73`
+- `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md:6,15`
 
 The lint run before editing named exactly these seven and nothing outside the task's list.
 

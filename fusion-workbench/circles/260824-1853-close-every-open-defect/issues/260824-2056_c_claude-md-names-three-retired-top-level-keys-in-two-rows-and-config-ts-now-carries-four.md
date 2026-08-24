@@ -7,3 +7,5 @@ Commit `e31a73d` (step 6) added `churn` to `RETIRED_TOP_LEVEL_KEYS` in `hooks/li
 Fix direction: name the fourth key in both `CLAUDE.md` rows and in `docs/upgrading-to-v10.md`'s retired-key paragraph, or replace the enumeration with a pointer at `RETIRED_TOP_LEVEL_KEYS` in `hooks/lib/config.ts`, which is what the templates row already does for its own inventory.
 
 Severity: Low.
+---
+Resolved: fixed — both `CLAUDE.md` rows and `docs/upgrading-to-v10.md` name `churn` as the fourth retired key and point at `RETIRED_TOP_LEVEL_KEYS` in `hooks/lib/config.ts` for the set; `grep -n churn CLAUDE.md docs/upgrading-to-v10.md`

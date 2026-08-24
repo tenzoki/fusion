@@ -29,7 +29,7 @@ See `**Active spec/plan:**` above. The cited spec or plan states the Directive i
 
 **Two conditions the user set beside the answers.** The Circle ends with one closing review round and one final Turn to close what the review filed; and the batches run as autonomously as the executors can, by surface.
 
-**Prior records of the same shape.** `shared/issues/260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-*.md` and the C0 cut-only Circle `260822-1154` are the precedents for paying with cuts; `shared/decisions/260822-1102_a_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` is the accepted decision that governs a Circle whose work exceeds a bound.
+**Prior records of the same shape.** `shared/issues/260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-*.md` and the C0 cut-only Circle `260822-1154` are the precedents for paying with cuts; `shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` is the accepted decision that governs a Circle whose work exceeds a bound.
 
 ## Dependencies
 

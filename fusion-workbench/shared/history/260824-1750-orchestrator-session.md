@@ -44,3 +44,8 @@ Setup complete. Awaiting the user's Directive.
 - Three recurring blockers, each resolved by a follow-up dispatch: stale-marker citations after renames (two ontocoder repair runs, one edit each in two terminal Circle records, authorised as citation repairs); the reference-lint pin measuring the whole tree (re-approved once at 1350/189 in `d5c34cd`, so commits f3f7895, b0fd2f0, 1ea8fed, 8140cf3 are red on that pin and the growth golden in isolation; HEAD is green, 42 files / 749 tests); the new helper's `CLAUDE.md` row (P-7b).
 - Head-room after Turn 1: agents/ about 3 500 bytes, skills/ 1 770, hook tests 10 lines, always-on rules 431 (P-13 pending).
 - Turn 1 review dispatched (coderev, ontorev) over `571f945..d5c34cd`; P-13 dispatched in parallel.
+- Turn 1 closed at 01964e4 (P-13: 24 rules defects, always-on head-room 431 → 209). Reviews: coderev 9 findings (1 high), ontorev 7 (all low), committed e7fc2a1 / f0b07b6. Coherence gate: user chose continue.
+
+## Turn 2 (from 01964e4)
+
+- Order deviates from the plan's 14-then-15: P-15 (review findings) runs first so that P-14 is the final measurement over the finished tree.

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
@@ -10,7 +10,7 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 //
 // WHAT IS UNDER TEST IS THE EXIT TABLE, because the exit code is the whole
 // interface: a caller keys on the number and cannot key on stderr prose. All
-// six codes are exercised below. The script's own header states that table;
+// six codes are exercised below, exit 1 by both of its ways in. The script's own header states that table;
 // this file asserts it rather than restating it.
 //
 // THE TWO PROPERTIES WORTH MORE THAN THE REST: exit 1 DOMINATES (an unset git
@@ -87,11 +87,11 @@ interface Run {
   checkout: string | null;
 }
 
-function run(f: Fixture, ...args: string[]): Run {
+function run(f: Fixture, env: Record<string, string> = {}, ...args: string[]): Run {
   const r = spawnSync(script, args, {
     cwd: f.dir,
     encoding: "utf-8",
-    env: { ...process.env, ...gitEnv(f.dir) },
+    env: { ...process.env, ...gitEnv(f.dir), ...env },
   });
   const stdout = r.stdout ?? "";
   const value = (key: string): string | null => {
@@ -129,6 +129,22 @@ describe("bin/fusion-identity", () => {
       expect(existsSync(f.idFile), "a failing call minted an identifier").toBe(false);
     });
   }
+
+  it("exit 1: halts with nothing on stdout when git cannot be run at all", () => {
+    // A PATH holding `bash` (for the shebang) and `dirname`, the one external
+    // the script reaches before the person half: exit 1 and not exit 4, because
+    // without git nothing about the tree is established (issue 260824-1538).
+    const f = fixture({ git: "both", workbench: true });
+    mkdirSync(join(f.dir, "bin"));
+    for (const tool of ["bash", "dirname"]) {
+      symlinkSync(spawnSync("sh", ["-c", `command -v ${tool}`], { encoding: "utf-8" }).stdout.trim(), join(f.dir, "bin", tool));
+    }
+    const r = run(f, { PATH: join(f.dir, "bin") });
+    expect(r.status).toBe(1);
+    expect(r.stdout).toBe("");
+    expect(r.stderr).toContain("git is not on PATH");
+    expect(existsSync(f.idFile)).toBe(false);
+  });
 
   it("exit 3: prints PERSON alone when no workbench sits above the working directory", () => {
     const f = fixture({ git: "both", workbench: false });
@@ -177,7 +193,7 @@ describe("bin/fusion-identity", () => {
   });
 
   it("exit 2: rejects an argument without printing a value", () => {
-    const r = run(fixture({ git: "both", workbench: true }), "--help");
+    const r = run(fixture({ git: "both", workbench: true }), {}, "--help");
     expect(r.status).toBe(2);
     expect(r.stdout).toBe("");
   });

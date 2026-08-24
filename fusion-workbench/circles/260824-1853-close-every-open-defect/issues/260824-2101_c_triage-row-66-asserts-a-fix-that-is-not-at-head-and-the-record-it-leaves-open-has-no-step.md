@@ -9,3 +9,5 @@ Row 66 of the plan assigns `shared/issues/260816-1330_*_the-repunctuation-replac
 **Cross-references:** `…/history/260824-2016-ontocoder-close-moot-unfixable-and-fixed-records.md:17`
 
 Fix: append a progress note to the plan moving row 66 to S13, and let the S13 coder replace the opener in the same commit that closes the record.
+---
+Resolved: moot — step 13 replaced the opener and closed the record as fixed before this one was read: `rules/user-facing-output.md` at HEAD carries no "Those belong" (`grep -c 'Those belong' rules/user-facing-output.md` prints 0) and `shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` is `_c_`; the plan's row 66 stands as the record of the wrong assertion

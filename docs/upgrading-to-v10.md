@@ -62,8 +62,8 @@ the one loss of this migration you would not otherwise notice, and it looks exac
 working session.
 
 **Copy nothing else across.** Everything else that file carried configured the guard, which
-decides nothing now. The three top-level keys that held it — `guard`, `decisions` and
-`escalation` — are retired: if one of them turns up inside `fusion.json`, the loader names
+decides nothing now. The top-level keys that held it — `guard`, `decisions`, `escalation` and,
+since 260824, `churn` (the set is `RETIRED_TOP_LEVEL_KEYS` in `hooks/lib/config.ts`) — are retired: if one of them turns up inside `fusion.json`, the loader names
 it, ignores it and leaves the rest of the file alone, once per guarded tool call until you
 delete the key.
 

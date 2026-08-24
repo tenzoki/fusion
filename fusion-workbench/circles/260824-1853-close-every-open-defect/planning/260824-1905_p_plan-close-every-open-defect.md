@@ -193,6 +193,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Dependencies: step 14 and the review round
     - Closes: every record filed into this Circle's `issues/` by the review round
     - Acceptance: the review files declare a `**Reviewed-range:**` that, together, tiles the Circle's range or the closure note names the gap per `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`; `$OUT_ISSUE` holds no `_o_`; `npm test` green.
+    - Progress 260824-2140 (coder): 13 of the 15 review-round records closed (11 fixed, 1 moot, 1 referred (backlog)); both reviews declare `571f945..d5c34cd`. Two remain `_o_` for `ontocoder`, both stilwerk YAML edits outside the coder's scope: `260824-2058_*_c05-in-both-chat-profiles-still-carries-the-bare-rule-filename-the-0146-closure-says-is-gone.md` and `260824-2058_*_the-german-writing-profile-still-bans-das-heisst-after-the-chat-profile-stopped-doing-so.md`. Not `[DONE]` until those two close.
 
 ## Where this Circle stops
 

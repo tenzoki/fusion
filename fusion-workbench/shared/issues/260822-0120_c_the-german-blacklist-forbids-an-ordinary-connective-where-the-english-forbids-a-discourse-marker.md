@@ -75,3 +75,4 @@ which is the check `260821-2205` established for this Circle.
 
 ---
 Resolved: fixed — AI01's fourth German example is Allerdings, (the discourse marker That said, pairs with) and C06 reads treffendsten; stilwerk/chat-voice-de.yaml:98, stilwerk/chat-voice-de.yaml:62, mirrored to fusion-workbench/stilwerk/
+Corrected: 260824-2125 by coder — the `Resolved:` line above cites `stilwerk/chat-voice-de.yaml:98` for `Allerdings,`; at `43cdde6` and at HEAD the line is 99 (the AI02 instruction above it grew by one line in the same commit). Issue `circles/260824-1853-close-every-open-defect/issues/260824-2059_*_two-stilwerk-closure-notes-cite-a-line-one-above-the-text-they-name.md`.

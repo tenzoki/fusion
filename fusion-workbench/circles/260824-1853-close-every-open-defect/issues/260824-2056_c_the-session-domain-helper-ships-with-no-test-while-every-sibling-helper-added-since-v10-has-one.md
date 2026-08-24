@@ -9,3 +9,5 @@ Constraint the fix meets: the hook-test line budget stood at 10 lines of head-ro
 Fix direction: one `fusion-session-domain.test.ts` with a fixture workbench: quoted and bare `data`, missing file, missing key, invalid value, `domain:` under a non-session block, no workbench (exit 3, empty stdout), one argument (exit 2).
 
 Severity: Medium.
+---
+Resolved: fixed — `hooks/lib/__tests__/fusion-session-domain.test.ts` drives the script in a fixture workbench over quoted and bare `data`, the four fallback reasons (missing file, missing key, invalid value, uncapturable value) plus a deeper-nested key, the first-two-space-key bound, exit 3 with empty stdout and exit 2; its 78 lines were paid for by rolling 92 lines of the reference-resolution re-approval log into `shared/analyses/260824-2121-reference-resolution-pin-re-approval-log-entries-26-to-40.md`; `cd hooks && npx vitest run lib/__tests__/fusion-session-domain.test.ts`

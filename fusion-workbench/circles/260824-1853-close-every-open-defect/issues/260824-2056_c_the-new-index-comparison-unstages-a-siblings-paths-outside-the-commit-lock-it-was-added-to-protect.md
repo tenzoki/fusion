@@ -7,3 +7,5 @@ The new index comparison unstages a sibling's paths outside the commit lock it w
 Fix direction: move the comparison and the `git restore --staged` calls inside the `bash -c '…'` the lock wraps, so index read, unstage, add and commit are one held sequence; or state in the same step that the comparison runs unheld and why that is accepted.
 
 Severity: Low.
+---
+Resolved: fixed — the held command now begins with `git reset -q`, so the unstage, the add and the commit are one held sequence and the pre-lock `git diff --cached --name-only` only names a sibling's paths to the user; `agents/orchestrator.md` Phase 2 Step 3b step 5 (`git reset -q && git add … && git commit`)

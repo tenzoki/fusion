@@ -461,6 +461,9 @@ describe("bin/fusion-paths", () => {
       const r = run(project, "planner");
       expect(r.status).not.toBe(0);
       expect(r.stdout).toBe("");
+      // The placeholder is bare in the script: inside double quotes a backtick
+      // ran it as a command substitution and the message lost it (issue 260824-2056).
+      expect(r.stderr).toContain("<YYMMDD-HHMM>-<slug>");
     });
 
     it("rejects a pointer carrying a path, a prefix, or a marker", () => {
@@ -471,8 +474,7 @@ describe("bin/fusion-paths", () => {
         expect(r.status, `pointer '${bad}' must be rejected`).not.toBe(0);
         expect(r.stdout).toBe("");
       }
-      // A marker-carrying name is not a bare name of an existing directory,
-      // so it fails the existence check rather than the shape check.
+      // A marker-carrying name fails the existence check, not the shape check.
       writeFileSync(join(workbench, ".active-circle"), `260716-1847[t]-workbench-umbau\n`);
       expect(run(project, "planner").status).not.toBe(0);
     });

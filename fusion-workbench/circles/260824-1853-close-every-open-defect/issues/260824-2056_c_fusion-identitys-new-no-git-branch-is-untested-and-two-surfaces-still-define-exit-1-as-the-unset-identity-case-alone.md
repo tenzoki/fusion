@@ -12,3 +12,5 @@ Commit `1ea8fed` (step 7) split `bin/fusion-identity`'s person half on `command 
 Fix direction: one test case for the no-git PATH asserting exit 1, empty stdout and the "git is not on PATH" line; one clause in `### Who filed it` and in the `CLAUDE.md` row: "or a `git` that cannot be run at all".
 
 Severity: Medium (an untested exit that halts every filing agent).
+---
+Resolved: fixed — one exit-1 case drives the script on a PATH holding only `bash` and `dirname` (exit 1, empty stdout, the `git is not on PATH` line, nothing minted), and the conventions rule and the `CLAUDE.md` row both name a `git` that cannot be run as the second way into exit 1; `hooks/lib/__tests__/fusion-identity.test.ts` "exit 1: halts with nothing on stdout when git cannot be run at all", `rules/fusion-workbench-conventions.md` `### Who filed it` (net -11 bytes on the always-on surface)

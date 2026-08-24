@@ -59,3 +59,4 @@ remaining entry in both languages for the name-covers-instruction fault `dce8894
 
 ---
 Resolved: fixed — C02 and AI05 now share one German term, Bezugswort, in name and instruction; stilwerk/chat-voice-de.yaml:25, stilwerk/chat-voice-de.yaml:27, stilwerk/chat-voice-de.yaml:106, mirrored to fusion-workbench/stilwerk/
+Corrected: 260824-2125 by coder — the `Resolved:` line above cites `stilwerk/chat-voice-de.yaml:106` for the AI05 `Bezugswort` sentence; at `43cdde6` and at HEAD the line is 107 (the AI02 instruction above it grew by one line in the same commit). Issue `circles/260824-1853-close-every-open-defect/issues/260824-2059_*_two-stilwerk-closure-notes-cite-a-line-one-above-the-text-they-name.md`.

@@ -7,3 +7,5 @@ Commit `f3f7895` (step 8) re-verified the `skills/direct/SKILL.md` line citation
 Fix direction: re-read the three cells against HEAD and correct them; `260818-1637` stays the record for the class.
 
 Severity: Low.
+---
+Resolved: fixed — the four `skills/next/SKILL.md` line citations in `README-agents.md` `## Dispatch parameters` were re-read against HEAD: the block is `:139-146`, `**Domain:**` `:138`, `**Proposal source:**` `:146`, the contract restatement `:148`; `README-agents.md:53,58,60,61`

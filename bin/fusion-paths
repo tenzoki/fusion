@@ -259,7 +259,7 @@ if [ -f "$POINTER" ]; then
   CIRCLE_NAME="$(head -n 1 "$POINTER" | tr -d '\r' | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
 
   if [ -z "$CIRCLE_NAME" ]; then
-    echo "fusion-paths: $POINTER is empty. It must hold the active Circle's directory name (`<YYMMDD-HHMM>-<slug>`, one line, no trailing path), or be absent when no Circle is active." >&2
+    echo "fusion-paths: $POINTER is empty. It must hold the active Circle's directory name (<YYMMDD-HHMM>-<slug>, one line, no trailing path), or be absent when no Circle is active." >&2
     exit 3
   fi
 

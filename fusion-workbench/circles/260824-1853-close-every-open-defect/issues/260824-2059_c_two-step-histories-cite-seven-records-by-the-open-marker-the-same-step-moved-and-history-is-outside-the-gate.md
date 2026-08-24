@@ -20,3 +20,5 @@ All six are `_c_` at `d5c34cd`, renamed by this range. `hooks/lib/__tests__/work
 **Cross-references:** `rules/fusion-workbench-conventions.md` `## Filename Patterns` (cite with the marker wildcarded); `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
 
 Fix: star the marker in all nine positions. Whether history files should enter the corpus is the open question of 260816-0119 and 260823-1414, not this record's.
+---
+Resolved: fixed — the marker is starred in every pointer the record names: seven positions across the two history files, the `_a_` on `_t_circle.md:32` and the `_o_` on `shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md:15`; whether history enters the corpus stays with 260816-0119; `grep -c '_o_the\|_o_spec\|_o_closing' circles/260824-1853-close-every-open-defect/history/260824-2019-*.md circles/260824-1853-close-every-open-defect/history/260824-2032-*.md` prints 0 for both

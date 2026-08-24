@@ -13,7 +13,7 @@
 # `bin/fusion-paths` uses, always both and always in this order:
 #
 #   domain=code                  # code | data
-#   source=agentstate            # or `default`
+#   source=agentstate            # or `default`; a caller prints `helper-missing`
 #
 #   domain  the value of `session.domain` in fusion-workbench/agentstate.yaml
 #           when that file exists and the key holds `code` or `data`; `code`
@@ -21,7 +21,10 @@
 #   source  `agentstate` when the value was read from the file; `default` when
 #           it was not, so a caller that must report a fallback rather than
 #           apply it silently has the fact on its own line. A `default` is
-#           never silent: one line on stderr says why.
+#           never silent: one line on stderr says why. A third value,
+#           `helper-missing`, is never printed here: it is what each call site
+#           prints on its `[ -x ]` miss, when this program is not installed at
+#           all, so the same line reports that case too.
 #
 # Exit codes:
 #   0  both lines printed. A fallback is still a 0: the caller decides what a
@@ -32,10 +35,12 @@
 #      session for the domain to be the domain of, and `domain=code` here
 #      would be a made-up answer about a project that has not run setup.
 #
-# The read is deliberately narrow: the key must sit two spaces deep, which
-# scopes it to the `session:` block, and the value may be quoted or bare.
-# Anything else in the file, including a `domain:` at another depth, is not
-# this session's domain and is not read. The three call sites are
+# The read is deliberately narrow, and its true bound is this: the FIRST
+# `domain:` key sitting exactly two spaces deep, in whichever top-level block
+# holds it, with the value quoted or bare. Only `session:` carries one today
+# (`agents/orchestrator.md` `## Persistent State File`), so the read is the session's;
+# a two-space `domain:` added to an earlier block would be read instead, and
+# a `domain:` at any other depth is never read. The three call sites are
 # skills/next/SKILL.md, skills/direct/SKILL.md and skills/cleanup/SKILL.md,
 # each guarded with `[ -x ]` (decision 260810-0921) because an installed copy
 # may predate this helper.
@@ -65,7 +70,9 @@ fi
 state="$root/fusion-workbench/agentstate.yaml"
 domain=''
 if [ -f "$state" ]; then
-  domain="$(grep -E '^  domain:' "$state" | head -1 | sed -E 's/^  domain:[[:space:]]*"?([a-z]+)"?.*/\1/' || true)"
+  # Capture whatever stands there, so a value that is not `code` or `data`
+  # is named as itself on stderr rather than as the whole line.
+  domain="$(grep -E '^  domain:' "$state" | head -1 | sed -E 's/^  domain:[[:space:]]*"?([^"[:space:]]*)"?.*/\1/' || true)"
 fi
 
 case "$domain" in

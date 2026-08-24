@@ -243,3 +243,4 @@ no count was re-run for this note.
 
 ---
 Resolved: referred — the six emitted files measure under the ceiling at HEAD and the one untouched member, `CLAUDE.md`, is held by `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`; the progress note's two faulty sentences are corrected in the note appended above; shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:231
+Corrected: 260824-2125 by coder — the `Resolved: referred` line above names no kind; it is `referred (decision)`, the decision being the `260820-2314_*` record it cites. Issue `circles/260824-1853-close-every-open-defect/issues/260824-2100_*_seven-backlog-referrals-close-onto-entries-that-do-not-exist-and-one-referral-names-no-kind.md`.

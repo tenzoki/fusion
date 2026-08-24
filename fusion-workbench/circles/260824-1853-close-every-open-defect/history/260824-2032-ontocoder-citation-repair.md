@@ -11,9 +11,9 @@
 | File | Line(s) |
 |---|---|
 | `circles/260801-1244-rule-provenance-header/_c_circle.md` | 34 |
-| `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_o_spec-style-rules-arrive-and-get-measured.md` | 455, 461, 509, 513, 515 |
-| `shared/issues/260819-0822_o_the-fifth-source-root-call-site-drops-the-diagnostic-four-siblings-carry-and-reopens-a-closed-defect.md` | 66 |
-| `shared/issues/260822-0119_o_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md` | 9 |
+| `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md` | 455, 461, 509, 513, 515 |
+| `shared/issues/260819-0822_*_the-fifth-source-root-call-site-drops-the-diagnostic-four-siblings-carry-and-reopens-a-closed-defect.md` | 66 |
+| `shared/issues/260822-0119_*_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md` | 9 |
 
 The lint named nothing that was not a stale-marker citation.
 

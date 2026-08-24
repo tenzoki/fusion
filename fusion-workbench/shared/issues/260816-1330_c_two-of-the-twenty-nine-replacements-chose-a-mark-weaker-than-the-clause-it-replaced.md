@@ -12,7 +12,7 @@ Commit `6049d3e` made 29 replacements in `rules/user-facing-output.md` and prese
 **Owner:** `coder`. Both are one-character changes of the same class the original pass performed, and neither touches a word.
 **Severity:** Low. `:112` is the substantive one: it is the single site in the change where the logical force of a clause moved, and it moved on the clause that says its own phrasing may not move.
 **Filed in the shared store** per the Origin Rule: no Circle is active.
-**Cross-references:** `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` (the parent register defect); `shared/issues/260816-1330_o_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` (the other mark-choice finding from the same pass).
+**Cross-references:** `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` (the parent register defect); `shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` (the other mark-choice finding from the same pass).
 
 **Verified at HEAD `6049d3e`** by reading `rules/user-facing-output.md:112` and `:121` against `git show 52b8665:rules/user-facing-output.md`.
 

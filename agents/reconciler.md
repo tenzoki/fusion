@@ -173,15 +173,15 @@ Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 
 The recommendation maps from the verdict and the vertex the flagged edge faults:
 - either Directive edge `not evaluable` because no Directive was stated → `state Directive`, whatever the verdict; no Rebalance option addresses a Directive that does not exist
-- `coherent` → `none`
+- `coherent` with every edge evaluable → `none`
 - `review-needed` with `Artifact↔Grounding` flagged `(Artifact at fault)` → `revise Artifact`
 - `review-needed` with `Artifact↔Grounding` flagged `(Grounding at fault)` or `Grounding↔Directive` flagged → `revise Grounding`
 - `review-needed` with `Artifact↔Directive` flagged (commits orthogonal/away from Directive) → `revise Directive`
 - `directive-partially-met` or `bounded-closure-proposed` → `accept Bounded Closure`
 
-If multiple edges are flagged, list the recommendation that resolves the highest-leverage one (Directive first, then Grounding, then Artifact). The orchestrator presents the four-option Rebalance gate regardless; the recommendation is advisory.
+If multiple edges are flagged, list the recommendation that resolves the highest-leverage one (Directive first, then Grounding, then Artifact). The orchestrator presents the four-option Rebalance gate regardless, and fires it on `coherent` too when the recommendation is `state Directive`, where Revise Directive is the option that states one; the recommendation is advisory.
 
-**Rationale for the priority order.** The recommendation prefers fundamental causes over surface ones: a wrong Directive forces wrong Artifact and wrong Grounding, so revising Directive resolves more drift than revising Artifact. The order is: **Revise Directive** (most fundamental — the destination is wrong) → **Revise Grounding** (the basis is wrong) → **Revise Artifact** (the work is wrong but the destination + basis are right) → **Accept Bounded Closure** (the destination is unreachable). However: this is a *recommendation*, not a directive. The user always chooses; the reconciler's prioritisation surfaces the most-likely-fundamental option first to reduce decision fatigue, not to short-circuit user judgement. Foundation V3 §2.1 supports this ordering by treating Grounding-revision and Directive-revision as more impactful than per-Turn Artifact-retries.
+**Rationale for the priority order.** A wrong Directive forces wrong Artifact and wrong Grounding, so revising the Directive resolves more drift than revising the Artifact: **Revise Directive** (the destination is wrong) → **Revise Grounding** (the basis is wrong) → **Revise Artifact** (the work is wrong, destination and basis right) → **Accept Bounded Closure** (the destination is unreachable). The user always chooses; the order surfaces the most-likely-fundamental option first (Foundation V3 §2.1).
 
 ## Rules
 
