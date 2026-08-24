@@ -146,3 +146,8 @@ Answered: option 1 — a `Retired:` annotation on `_a_` as well, with the citati
 The reason for staying inside the existing family rather than minting a second vocabulary: `_i_` already has exactly this annotation for exactly this shape of event, an implementation that was later deleted. An answer whose subject was deleted before anyone wrote the implementation is the same event one step earlier, and giving it its own word would put two names on one fact — which is the defect class this project has removed repeatedly.
 
 The measurement that made the question answerable came from the Circle-store reconciliation of 2026-08-19 (`shared/history/260819-1400-reconciliation-circles.md`): **there is no third instance.** Two records, one rule, no population to migrate.
+
+---
+Implemented: 30d6f0a — `rules/fusion-workbench-conventions.md` `### Decision files` — the `Retired:` annotation now covers `_a_` as well as `_i_`, at three sites in one family rather than as a second block, with the citation naming what removed the subject of the answer. Applied to both records the decision names: `shared/decisions/260806-1152_a_*` and `shared/decisions/260810-2032_a_*`, each citing the commit that deleted its subject. Both hashes were verified against the tree by listing each commit's deletion set rather than carried from the reconciliation report. +502 bytes on the always-on rule set.
+
+One wording imprecision was found and deliberately left: `260806-1152` says its commit "cut the `## Stashes` half out of the rule file", where git records the whole of `rules/workbench-stash-and-lock.md` deleted and `rules/commit-lock.md` added. The record describes the effect correctly and the mechanism loosely; correcting it would edit a record's account of its own past.

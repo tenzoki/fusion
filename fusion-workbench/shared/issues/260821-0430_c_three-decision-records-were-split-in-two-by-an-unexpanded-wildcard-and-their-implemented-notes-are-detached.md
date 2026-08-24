@@ -57,3 +57,6 @@ asks whether two records share a stamp inside one store.
 
 This changes three decision markers, which is Grounding, and it was found after the Circle that could
 have carried it had closed. It is the user's to approve.
+
+---
+Resolved: fixed — each phantom's Implemented note (with commit 30d6f0a named) is appended to its record, the three records are renamed _a_ to _i_ and the three *-named files are deleted, so `find fusion-workbench -name '*\**'` returns nothing; cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts

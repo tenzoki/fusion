@@ -56,3 +56,6 @@ so belongs in `rules/circle-records.md` and is a decision, not this fix.
 `decisions/260815-0007_i_does-fusion-cleanup-block-…:7` still cites `circles/260815-0007-…/_a_circle.md`. The Circle record is `_c_circle.md` at HEAD, so the citation names a marker two transitions behind (`_a_` → `_t_` → `_c_`), and the citing record itself moved `_a_` → `_i_` since filing.
 
 This is the decision-store half of a class with three live carriers in this store (with `260815-1247_*_the-implemented-decision-records-two-cross-references-…` and, until this pass closed it as moot, the backlog `**Related:**` line). **The correct form is the wildcard**, `_*_circle.md` — `rules/circle-records.md` states both correct globs and `rules/fusion-workbench-conventions.md` `## Marker globs` explains why the underscore makes it safe. No gate reads workbench-to-workbench citations, which is why every instance of this class is found by hand.
+
+---
+Resolved: fixed — the citation at line 7 of the cleanup-gate decision record now takes the wildcard form _*_circle.md, which resolves at the Circle's current _c_ marker and after any later transition; cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts

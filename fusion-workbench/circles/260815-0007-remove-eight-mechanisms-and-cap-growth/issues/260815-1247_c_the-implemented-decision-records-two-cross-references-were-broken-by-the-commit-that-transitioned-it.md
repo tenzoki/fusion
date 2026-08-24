@@ -65,3 +65,6 @@ fix does not settle it.
 `shared/decisions/260811-2009_i_…:7` still cites `shared/issues/260810-1135_*_…` and `shared/issues/260811-1409_*_…` with a literal `_o_` in each marker position; open that line for the exact spelling. Both targets are `_c_` at HEAD. Two literal markers, two dangling citations, same class as `260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed` in this store.
 
 The citing record is in `shared/decisions/`, outside this Circle-store pass's write scope, so it is annotated here and not corrected. The fix is the wildcard marker position, `_*_`.
+
+---
+Resolved: fixed — the two marker positions on line 7 of shared/decisions/260811-2009 are now _*_ and resolve to the _c_ targets; the third citation on that line was left as it stood; cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts

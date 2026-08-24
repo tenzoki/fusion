@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** shaper (anticipated-circle mode)
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_a_circle.md` § Grounding snapshot → The administrative surface; `skills/cleanup/SKILL.md` § Autonomy and safety, Step 5; `skills/curate/SKILL.md`; `agents/curator.md`; `shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md` § 5
+**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_*_circle.md` § Grounding snapshot → The administrative surface; `skills/cleanup/SKILL.md` § Autonomy and safety, Step 5; `skills/curate/SKILL.md`; `agents/curator.md`; `shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md` § 5
 
 ---
 

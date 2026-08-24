@@ -7,8 +7,8 @@
 **Cross-references:**
 `shared/decisions/260809-1224_d_is-the-decision-governed-escalation-check-3-a-live-feature.md` — **the predecessor question, whose deferral trigger this record reports as met.** Read it first; this record is the successor it does not ask,
 `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (the plan this arose from; its `**Decidability:**` line carries the same measurement),
-`shared/issues/260812-0843_o_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md` (the user's decision, which named this as "a measurement for the plan, not a premise"),
-`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md` §Finding 1 ("Escalation: keep, unchanged"), corrected by `shared/issues/260812-1232_o_the-four-mechanisms-analysis-says-escalation-has-one-input-and-the-code-has-two.md`,
+`shared/issues/260812-0843_*_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md` (the user's decision, which named this as "a measurement for the plan, not a premise"),
+`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md` §Finding 1 ("Escalation: keep, unchanged"), corrected by `shared/issues/260812-1232_*_the-four-mechanisms-analysis-says-escalation-has-one-input-and-the-code-has-two.md`,
 `shared/analyses/260809-1101-guard-support-layer.md` recommendation C5, which `260809-1224` blocks,
 `hooks/guard.ts:604-649` (CHECK 3), `hooks/lib/escalation.ts`, `hooks/clear-halt.ts`
 

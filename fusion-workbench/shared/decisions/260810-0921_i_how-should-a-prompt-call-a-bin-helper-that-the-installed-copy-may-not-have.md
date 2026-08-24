@@ -104,7 +104,7 @@ Superseded by:
 ---
 Reconciliation 260810-1205 (reconciler, domain `code`) — **stays `_o_`; awaiting the user.**
 
-Two citations in the header were re-pointed, not rewritten: `260810-0508` moved `_o_` → `_c_` in `ed87d87` and `260810-0939` (in the sibling record `260810-1010`) moved `_o_` → `_c_` in `7ddacbc`, so both are wildcarded to `_*_` on the precedent of `260807-0158_a_how-is-a-unique-record-filename-obtained.md`. The general problem is filed as `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
+Two citations in the header were re-pointed, not rewritten: `260810-0508` moved `_o_` → `_c_` in `ed87d87` and `260810-0939` (in the sibling record `260810-1010`) moved `_o_` → `_c_` in `7ddacbc`, so both are wildcarded to `_*_` on the precedent of `260807-0158_a_how-is-a-unique-record-filename-obtained.md`. The general problem is filed as `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
 
 The half of the gap that `260810-0508` covered is closed — v7.1.0 shipped, and `git ls-tree v7.1.0 bin/` now contains `fusion-count-sources`, absent from `v7.0.0`. The half this decision covers is untouched: `agents/orchestrator.md` Setup Step 5 still calls the helper through `$FUSION_PLUGIN_ROOT` with no branch for its absence, so the recommendation in this record (report the absence in the cascade's own `counted_by=none` vocabulary) has not been taken.
 

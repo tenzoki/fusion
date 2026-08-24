@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** shared/issues/260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md (the depth defect, with the measured Cargo-workspace evidence, and the record that explicitly asked for this decision); shared/issues/260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md (the branch-order defect from the same review, fixable independently); circles/260801-1244-guard-rules-write/issues/260805-1830_o_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md (the original consuming-project report); shared/issues/260809-1729_c_... (closed as a duplicate of 260807-1951)
+**Cross-references:** shared/issues/260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md (the depth defect, with the measured Cargo-workspace evidence, and the record that explicitly asked for this decision); shared/issues/260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md (the branch-order defect from the same review, fixable independently); circles/260801-1244-guard-rules-write/issues/260805-1830_*_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md (the original consuming-project report); shared/issues/260809-1729_c_... (closed as a duplicate of 260807-1951)
 
 ---
 

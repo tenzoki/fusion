@@ -55,3 +55,6 @@ spelling: a citation corrected to the wildcard form here would no longer be the 
 All nine literal `_o_` citations are still in place. Seven targets have since moved — two by transition (`260812-1232` decision to `_i_`, `260805-1830` to `_c_`) and five by the `260817-1907` archive sweep, which took `shared/planning/260801-1122` and three `shared/issues/` records out of the live store entirely. Two still resolve. The starred siblings on the same lines all still resolve, which is the whole argument the record made.
 
 The record said "this is about the ones that will break next, not about a break." It is now about seven breaks. Rewriting the nine marker positions to `_*_` is unchanged in cost and is now a repair rather than a precaution.
+
+---
+Resolved: fixed — the seven still-literal marker positions of the nine are now _*_ (the two in 260810-1635 were already starred at HEAD); the same citation in 260810-2145 was starred at all three of its occurrences; cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts

@@ -52,3 +52,6 @@ the four commits since the record was filed touched either decision file.
 **What changed around it.** On 2026-08-18 the decision-record head lost its `**Status:**` field (`rules/fusion-workbench-conventions.md` `## Decision Record Template`, binding decision `shared/decisions/260818-2212_*`), so the filename marker is now the state's only source — which makes the *footer* the only place a transition can be evidenced. The record's argument is stronger at HEAD than when it was filed: with the head field gone, a record without the footer block has nowhere at all to record how it moved.
 
 Note for whoever adds the block: that same rule says a record written before the removal keeps its `**Status:**` field untouched, including through a transition. This record's subject carries one; leave it.
+
+---
+Resolved: fixed — the record now ends with the footer block: Answered and Implemented filled (the Implemented line names 30d6f0a), Deferred, Superseded by and Retired empty; its Status head field is left as it stood; cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts

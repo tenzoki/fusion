@@ -99,3 +99,14 @@ Answered: option 1 — `**Initiated by:**` is required on every mode-3 run and t
 The self-test's second half is measured false: two headless probes on Claude Code 2.1.232 showed a top-level `--agent fusion:shaper` run holds no `AskUserQuestion` either, so "if you do not hold it you were dispatched" does not distinguish the two cases. A rule that halts a run on a missing line cannot rest on a test that cannot tell which case it is in.
 
 Requiring the line unconditionally costs one sentence in a prompt and removes the discrimination entirely. What it does not do is make the line trustworthy — an audit line is written by the party being audited, and that residual belongs in the prompt beside the requirement rather than in this record alone.
+
+---
+Implemented: 30d6f0a — `agents/shaper.md` requires `**Initiated by:**` on every mode-3 run and the self-test is deleted. The residual is carried into the prompt beside the requirement rather than left in this record alone: requiring the line removes the false discrimination but does not make the line trustworthy, because an audit line is written by the party being audited.
+
+Two other surfaces believed the two-case rule and were repaired: `agents/orchestrator.md`, which said a dispatched shaper halts without the line, and the `README-agents.md` dispatch row, which carried the rule and named the self-test. +469 bytes on `agents/`, the tightest surface, leaving 2 259.
+
+Five prompts still tell a top-level run it holds `AskUserQuestion`, which the same probes measured false for a headless run. They are **not** repaired here and are filed as `shared/issues/260820-1755_*_five-agent-prompts-tell-a-top-level-run-it-holds-askuserquestion-*`: that sentence is about the clarification channel rather than the audit line, and correcting it needs the interactive-parent measurement this record's option 3 names and nobody has taken.
+
+Deferred:
+Superseded by:
+Retired:

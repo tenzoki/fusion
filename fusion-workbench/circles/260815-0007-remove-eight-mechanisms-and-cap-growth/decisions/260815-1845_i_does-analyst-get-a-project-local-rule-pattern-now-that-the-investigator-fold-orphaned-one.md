@@ -74,3 +74,10 @@ Answered: option 3 — both. `analyst` gets a `PATTERNS` arm so a small project-
 The reason for not taking option 1 alone: the manifest is a `./rules/context-manifest.yaml` a project must author, validate and keep in step, and requiring it for a single small rule file is disproportionate to what the fold took away. A consuming project that had filled in the investigator's capture layout should not have to build a manifest to get one file loaded again.
 
 The reason for not taking option 2 alone: the manifest is the right answer for a large or topic-scoped corpus and is already documented as such in `docs/upgrading-to-v9.md` §4 and `skills/help/SKILL.md` §5. Removing it would trade one gap for another.
+
+---
+Implemented: 30d6f0a — `bin/fusion-rules` gives `analyst` a `PATTERNS` arm on the bare token `analyst`, so a project-local `./rules/analyst-*.md` loads by filename, and the context manifest stays the documented route for a larger corpus. The token was chosen over `analysis` and the reason is measured: the glob is a substring match, so `analysis` would sweep up a project's own `gap-analysis.md` or `impact-analysis.md`, which are subject matter rather than agent configuration. Verified in a scratch consuming project — `analyst-capture-layout.md` matches; `investigator-capture-layout.md`, `gap-analysis.md` and `coding-hygiene.md` do not.
+
+The orphaned `investigator-capture-layout.md` is deliberately not rescued by widening the pattern: a rename is cheaper than the manifest entry `docs/upgrading-to-v9.md` §4 already offers, and widening to catch one filename would have caught much else. Three statements the arm made false were repaired in the same change — the `README-agents.md` table, the "only route" claim in `skills/help/SKILL.md` §5, and `docs/upgrading-to-v9.md` §4.
+
+The emission golden did **not** move, contrary to the dispatch's expectation: it measures in a neutral working directory with no project rules, so a project-local pattern arm adds no line to it.
