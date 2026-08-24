@@ -1,7 +1,7 @@
 # Implementation Plan: close every open defect in the workbench
 
 **Date:** 2026-08-24
-**Status:** In Progress
+**Status:** Complete
 **Spec:** none — planned from the Circle record `circles/260824-1853-close-every-open-defect/_*_circle.md` (anticipated-circle mode wrote no spec)
 **Decidability:** The load-bearing question is "which of the three endings does this record get, judged from the tree at HEAD `2cdd372`?" It is decidable from the inputs the executor has for 214 of the 220 records: the record's own text against the file it names, and `git log` for whether the subject still exists. For six records (48, 145, 163, and the measurement halves of 36, 90, 129) the condition lives on a host or an interactive session this tree cannot reach, so the question "does it still hold?" is undecidable from here. The mechanism changes for those six: they close as unfixable from this repository, with the measurement command stated in the note, and never as fixed. No record's ending is left to the executor's guess; every one is assigned below.
 
@@ -75,14 +75,14 @@ The graph has one intentional fan-in at S14 (every surface batch precedes the me
 
 Every step: **Closes** names the rows of `## Triage` it closes, and the table names the record paths. An executor reads every record it closes in full before touching anything; the table's note is the ending, not the evidence.
 
-1. **File the eight decision records this Circle refers to**
+1. [DONE] **File the eight decision records this Circle refers to**
    - Executor: `analyst`
    - Files: `$OUT_DECISION/YYMMDD-HHMM_o_<topic>.md`, eight records, per the decision-record template
    - Changes: one record each, options and constraints from the referring defect records, no recommendation where the referring record gave none. The eight, with the short names the table uses: **D-license** (does fusion ship a `LICENSE`, given `plugin.json` says MIT, or does the installer's copy list drop the entry; from 144, 166); **D-origin** (does the dispatch prompt carry the task's origin, and does a sub-agent's history follow it or the pointer; from 6, 121); **D-record-writers** (who writes the reverse `## Dependencies` citation on an earlier anticipated Circle, whether `/fusion:next` fills `**Active spec/plan:**`, and whether shaper mode 3 gets a Grounding-only scope; from 41, 116, 206); **D-rename-staging** (is a marker rename `git mv` or `mv`, may a sub-agent leave the index dirty, and is append-and-rename one act; from 12, 16, and the class of 47, 177); **D-dialog-allowlist** (does the orchestrator's `tools:` grant of `AskUserQuestion` go; from 125); **D-dialog-skills** (do the nine skill bodies that present dialogs follow the ban, and what the interactive-parent measurement would settle; from 125, 90); **D-report-baseline** (does the executor report contract get a form for a named pre-existing failure, or a per-change test selection; from 11); **D-scan-scope** (do `archive/` and terminal Circles' stores enter any `SCAN_*` set, or is the exclusion written down; from 2, 204).
    - Dependencies: none
    - Acceptance: eight `_o_` files in `$OUT_DECISION`, each with `**Cross-references:**` naming its referring defect records in wildcard form; `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` green.
 
-2. **Close the records that are moot, unfixable from here, or already true at HEAD**
+2. [DONE] **Close the records that are moot, unfixable from here, or already true at HEAD**
    - Executor: `ontocoder`
    - Files: the 33 records the table marks S2; nothing else
    - Changes: append `Resolved:` with the reason and, for "already true", the verifying command and its output at HEAD; rename to `_c_`.
@@ -90,7 +90,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 9, 39, 43, 45, 48, 66, 76, 77, 84, 86, 96, 102, 106, 107, 111, 127, 128, 136, 137, 145, 151, 153, 156, 158, 163, 171, 176, 181, 182, 183, 191, 192, 208
    - Acceptance: none of the 33 carries `_o_`; every note names one of the three endings; the citation lint is green.
 
-3. **Close the records that are referred**
+3. [DONE] **Close the records that are referred**
    - Executor: `ontocoder`
    - Files: the 32 records the table marks S3; `shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` (one `Also seen:` line for 173)
    - Changes: `Resolved: referred …` naming the decision record's path (from step 1 or an existing one), the backlog entry's path, or `### C4` of the spec; for backlog referrals with no entry yet, the note says "backlog entry to be filed by the user" and names the idea in one clause.
@@ -98,7 +98,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 1, 2, 3, 4, 6, 7, 11, 12, 16, 32, 33, 34, 36, 41, 44, 103, 116, 118, 121, 125, 143, 144, 157, 166, 169, 170, 173, 193, 202, 203, 204, 206
    - Acceptance: every note's target path resolves; the six backlog ideas appear verbatim in the executor's report for the closure note.
 
-4. **Repair stale citations in decision records and the three phantom files**
+4. [DONE] **Repair stale citations in decision records and the three phantom files**
    - Executor: `ontocoder`
    - Files: the nine `shared/decisions/` records 131 enumerates; `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`; `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`; the three `_a_` records and three `_i_*.md` phantoms under `circles/260801-1244-curator/decisions/` and `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/`
    - Changes: marker positions to `_*_` where the record is a pointer (131, 152, 155); for 92 append each phantom's text to its record under a `---` separator, add the `Implemented:` line, `mv` the record `_a_` to `_i_`, delete the phantom; 139's footer block lands in the same edit.
@@ -106,7 +106,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 92, 131, 139, 152, 155
    - Acceptance: `find fusion-workbench -name '*\**'` returns nothing; every citation of the three records still resolves; the citation lint is green.
 
-5. **Correct counts, notes and clauses inside workbench records**
+5. [DONE] **Correct counts, notes and clauses inside workbench records**
    - Executor: `ontocoder`
    - Files: the 28 records the table marks S5 and the files each row names (histories, reviews, analyses, plans, the spec, two open decision records)
    - Changes: appended corrections, never rewrites of what a run recorded (`Revised by:` on a closed record, a dated note on a history or review, an amended clause on a plan); the spec gains one sentence (115); 63 and 67 close on the corrected progress note.
@@ -130,7 +130,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 20, 35, 60, 91, 99, 101, 108, 159, 179, 185, 214
    - Acceptance: each helper's header still matches what it prints; `bin/monitor` served against this workbench renders the two new warning classes and the staleness mark; `bin/fusion-identity` in a tree with no `git` on `PATH` prints its own sentence and the code its header names.
 
-8. **`docs/`, `README*`, `CLAUDE.md`**
+8. [DONE] **`docs/`, `README*`, `CLAUDE.md`**
    - Executor: `coder`
    - Files: `CLAUDE.md`, `README-agents.md`, `docs/upgrading-to-v9.md`
    - Changes: per row; eight sentences in `CLAUDE.md`, three rows in `README-agents.md`, one preamble in the v9 note. `derivable-enumerations-lint` reads `CLAUDE.md`, so the new rule-file row (120) follows the shape of its neighbours.
@@ -138,7 +138,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 14, 54, 56, 110, 120, 129, 140, 160
    - Acceptance: `npm test` green; `bin/fusion-prose-metric CLAUDE.md` reports no more em-dashes than at HEAD.
 
-9. **`stilwerk/` profiles, shipped and workbench copies**
+9. [DONE] **`stilwerk/` profiles, shipped and workbench copies**
    - Executor: `ontocoder`
    - Files: `stilwerk/chat-voice-en.yaml`, `stilwerk/chat-voice-de.yaml`, `stilwerk/default-voice-en.yaml`, `stilwerk/default-voice-de.yaml`, and the four under `fusion-workbench/stilwerk/`
    - Changes: per row; every edit lands in both copies byte-identically, verified by `diff -q`; the id namespace change (98) is one new id in both languages; YAML parses (`ruby -ryaml -e 'YAML.safe_load'` or equivalent); `bin/fusion-prose-metric stilwerk/*.yaml` stays `ok`.
@@ -178,15 +178,16 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Closes: 5, 8, 17, 26, 57, 61, 68, 72, 74, 82, 85, 95, 130, 149, 184, 196, 197, 198, 201, 211, 213, 215, 217
     - Acceptance: `rules-emission-golden.test.ts` green with the always-on head-room stated before and after; `bin/fusion-prose-metric` over the five core files reads `ok`; `provenance-header-lint` and `reference-resolution-lint` green.
 
-14. **Closing measurement and the umbrella records**
+14. [DONE] **Closing measurement and the umbrella records**
     - Executor: `coder`
     - Files: `shared/issues/260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`, `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_a-fifth-budget-crossed-in-this-range-and-the-verification-step-measured-four.md`
     - Changes: run the suite; compute the four head-rooms and the role report; confirm all four baseline maps are byte-identical to `2cdd372`; write the figures into the two records' `Resolved:` notes (210's note names the two role crossings and their sizes) and into the step report for the closure note.
     - Dependencies: steps 5, 6, 8, 9, 13
     - Closes: 25, 210
     - Acceptance: `npm test` exit 0; `git diff 2cdd372 -- hooks/lib/__tests__/surface-growth-bound.test.ts hooks/lib/__tests__/rules-emission-golden.test.ts` shows no baseline line changed; `find fusion-workbench -path '*/issues/*' -name '*_[op]_*' -not -path '*/archive/*'` prints nothing.
+    - Progress 260824-2150 (coder): measured at `6b26e2c`; 43 files, 760 tests, exit 0; head-room left `agents/` 3 675 bytes, `skills/` 1 770 bytes, hook tests 2 lines, always-on rules 216 bytes; role report over for `playmaker` (+3 351), `shaper` (+2 963), `orchestrator` (+208); no baseline line changed; the open-issue `find` prints nothing. Rows 25 and 210 closed `fixed`. **Acceptance not met after the closures:** `npm test` exits 1 on `workbench-citation-lint.test.ts` > "holds the four kinds the user's answer named", which asserts "at least one open issue is selected" (line 293); with zero open issues in the tree, the Circle's own stopping criterion makes that assertion false. A shipped-file edit is outside this dispatch; the orchestrator decides. Step 14 not `[DONE]`.
 
-15. **Close what the review round filed**
+15. [DONE] **Close what the review round filed**
     - Executor: `coder`
     - Files: whatever the `coderev` and `ontorev` passes over this Circle's range name, and their records in `$OUT_ISSUE`
     - Changes: the orchestrator dispatches the review round after step 14 (its Step 3c over the whole Circle range); this step then fixes or closes every record it filed, under the same three endings and the same budget rule; a finding whose fix is a decision is referred to a record this step files.
@@ -194,6 +195,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Closes: every record filed into this Circle's `issues/` by the review round
     - Acceptance: the review files declare a `**Reviewed-range:**` that, together, tiles the Circle's range or the closure note names the gap per `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`; `$OUT_ISSUE` holds no `_o_`; `npm test` green.
     - Progress 260824-2140 (coder): 13 of the 15 review-round records closed (11 fixed, 1 moot, 1 referred (backlog)); both reviews declare `571f945..d5c34cd`. Two remain `_o_` for `ontocoder`, both stilwerk YAML edits outside the coder's scope: `260824-2058_*_c05-in-both-chat-profiles-still-carries-the-bare-rule-filename-the-0146-closure-says-is-gone.md` and `260824-2058_*_the-german-writing-profile-still-bans-das-heisst-after-the-chat-profile-stopped-doing-so.md`. Not `[DONE]` until those two close.
+    - Progress 260824-2150 (coder): both closed by `ontocoder` (log `260824-2129-ontocoder-p15b-close-the-last-two-review-findings.md`); `$OUT_ISSUE` holds no `_o_`.
 
 ## Where this Circle stops
 

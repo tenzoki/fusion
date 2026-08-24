@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import {
   workbenchRoot,
   WORKBENCH_PRESENT,
@@ -175,9 +177,9 @@ export function inCorpus(rel: string): boolean {
   );
 }
 
-/** Workbench-relative paths of every file the gate judges. */
-export function corpusFiles(): { rel: string; abs: string }[] {
-  return markdownFilesUnder(workbenchRoot).filter((f) => inCorpus(f.rel));
+/** Workbench-relative paths of every file the gate judges under `root`. */
+export function corpusFiles(root = workbenchRoot): { rel: string; abs: string }[] {
+  return markdownFilesUnder(root).filter((f) => inCorpus(f.rel));
 }
 
 // --- the gate ---------------------------------------------------------------
@@ -237,11 +239,9 @@ describe("workbench citation lint: every citation in a live record resolves", ()
   });
 
   it("degrades loudly, not silently, when the workbench is absent", () => {
-    // Without this the gate passes vacuously on a fresh clone: `corpusFiles()`
-    // returns nothing, the loop never runs, and an empty violation list is
-    // indistinguishable from a clean one. In THIS repo the workbench is tracked
-    // in git, so its absence means the checkout is broken, not that there is
-    // nothing to check.
+    // Without this the gate passes vacuously on a fresh clone: an empty violation
+    // list over no files is indistinguishable from a clean one. In THIS repo the
+    // workbench is tracked, so its absence means the checkout is broken.
     expect(
       WORKBENCH_PRESENT,
       "fusion-workbench/.fusion-setup not found — the workbench citation gate scanned nothing. " +
@@ -264,34 +264,36 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
   const all = markdownFilesUnder(workbenchRoot).map((f) => f.rel);
 
   it("holds the four kinds the user's answer named", () => {
-    // THE PORTFOLIO IS PUT TO THE PREDICATE AND THE OTHER THREE TO THE TREE. The
-    // difference is `rules/workbench-tracking.md`'s class partition, not a
-    // shortcut. Those three kinds are class R1 — git carries them — so every
-    // checkout has instances and "the tree carries one" is a claim git can keep.
-    // `portfolio.md` moved to class L on 2026-08-23: regenerated in full by every
-    // playmaker run, untracked and ignored. No clone of this repository has one,
-    // and a tree assertion here was red in all of them while passing here only
-    // because `git rm --cached` left a working copy on disk
-    // (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`).
-    //
-    // ASSERTED INSTEAD IS WHAT THE CLAUSE WAS FOR: the corpus admits the
-    // portfolio, so wherever one exists its citations are judged. That holds in
-    // every checkout and can only break by the clause leaving `inCorpus`, which
-    // is the failure this line exists to catch. Coverage is unchanged —
-    // `corpusFiles()` filters what is on disk, so an absent portfolio costs
-    // nothing. DROPPING IT FROM THE CORPUS IS NOT THE REPAIR: the corpus is a
-    // user's recorded answer
-    // (`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`),
-    // and class L governs what git carries, never what a gate may read.
-    // THE LITERAL, NOT `PORTFOLIO`. `inCorpus(PORTFOLIO)` reduces to
-    // `PORTFOLIO === PORTFOLIO` and is invariant under a change to what the
-    // constant names; the literal additionally fails when the constant stops
-    // naming the file the workbench actually writes.
+    // TWO KINDS ARE PUT TO THE TREE AND TWO ARE NOT. Circle records and live
+    // decisions are class R1 (`rules/workbench-tracking.md`): git carries them,
+    // so "the tree carries one" is a claim every checkout can keep. `portfolio.md`
+    // is class L since 2026-08-23, absent from every fresh clone, where a tree
+    // assertion was red
+    // (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`);
+    // it is put to the predicate, BY LITERAL, so the case also fails when the
+    // constant stops naming the file the workbench writes. An open issue is what
+    // a clean workbench has none of by design, so a control needing one on disk
+    // failed exactly when the project reached the state it works towards
+    // (`circles/260824-1853-close-every-open-defect/issues/260824-2136_*_the-workbench-citation-lints-positive-control-requires-an-open-issue-on-disk-so-a-clean-workbench-fails-it.md`);
+    // that control runs the production selection over a scratch workbench the
+    // case writes. A positive control belongs to a fixture the test owns, not to
+    // the state of the tree it lints. DROPPING A KIND IS NOT THE REPAIR: the
+    // corpus is a user's recorded answer
+    // (`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`).
     expect(inCorpus("portfolio.md"), "the corpus predicate admits portfolio.md").toBe(true);
     const has = (re: RegExp) => all.some((r) => re.test(r) && rels.has(r));
     expect(has(CIRCLE_RECORD_RE), "at least one Circle record is selected").toBe(true);
-    expect(has(OPEN_ISSUE_RE), "at least one open issue is selected").toBe(true);
     expect(has(LIVE_DECISION_RE), "at least one live decision is selected").toBe(true);
+    const tmp = mkdtempSync(join(tmpdir(), "citation-corpus-"));
+    const open = "shared/issues/260101-0000_o_x.md";
+    mkdirSync(join(tmp, "shared/issues"), { recursive: true });
+    writeFileSync(join(tmp, open), "an open issue\n");
+    writeFileSync(join(tmp, "shared/issues/260101-0000_c_y.md"), "a closed one\n");
+    try {
+      expect(corpusFiles(tmp).map((f) => f.rel), "an open issue is selected, a closed one is not").toEqual([open]);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
   });
 
   it("takes a Circle record in every state, not only the active one", () => {
