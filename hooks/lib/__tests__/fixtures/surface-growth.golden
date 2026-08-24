@@ -21,13 +21,13 @@
   editor.md 13635
   ontocoder.md 13000
   ontorev.md 7031
-  orchestrator.md 153206
+  orchestrator.md 155704
   planner.md 19238
   playmaker.md 38216
   reconciler.md 19701
-  shaper.md 28005
+  shaper.md 28468
   taskplanner.md 14070
-  total 404137
+  total 407098
 
 [skills bytes]
   archive/SKILL.md 24854
@@ -80,7 +80,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 520
-  reference-resolution-lint.test.ts 1111
+  reference-resolution-lint.test.ts 1112
   review-coverage-mandate.test.ts 354
   review-coverage.test.ts 819
   rules-emission-golden.test.ts 1165
@@ -91,4 +91,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 523
   workbench-citation-lint.test.ts 374
-  total 20331
+  total 20332

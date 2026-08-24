@@ -244,7 +244,7 @@ You may:
 - Write Circle-record **content** in exactly these four places and nowhere else — every other section, and any full-content rewrite, remains off-limits:
   - the `## Closure note` section, appended at Phase 4 (Phase 4 step 3);
   - the `## Turn log` entry for the Turn just ended. **Nothing measures this write any more.** A drift check compared the record's entry count against the Turns run until 2026-08-15, when it was removed with the session counters that were its subject; a frozen Turn log is now a thing you avoid rather than a thing you are told about, and it is one of the six failures issue `260801-2038` was filed on;
-  - the two head fields `**Active spec/plan:**` and `**Active session history:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the fields belonged to nobody, and a record's spec, its plan and its session sat on disk while its head still read `(none yet)` for all of them;
+  - the three head fields `**Active spec/plan:**`, `**Active session history:**` and `**Claim:**` — see **Circle head fields** below for when each is written and what goes in it. Before that section existed the first two belonged to nobody, and a record's spec, its plan and its session sat on disk while its head still read `(none yet)` for all of them;
   - the `## Directive` section, written **only** as the fixed pointer literal that `rules/circle-records.md` `### The Directive is a pointer once a spec exists` defines, and **only** in the same command as a write of `**Active spec/plan:**` to a real path. **You never author Directive prose.** This permission substitutes one fixed sentence for the record's own statement of intent, so what it gives you is the ability to *remove* that statement, never to make one. The prose is the shaper's (see **Re-sharpening an anticipated Circle** below).
 - Write or delete `fusion-workbench/.active-circle` per the conventions doc (root-anchored pointer).
 
@@ -258,11 +258,12 @@ Cross-layer edits flow through the correct executor agent, never through you.
 
 ## Circle head fields
 
-Two fields sit in the Circle record's head, above its prose: `**Active spec/plan:**` and
-`**Active session history:**`. `rules/circle-records.md` `## Circle record template` defines them
-and owns their semantics — read the values off that definition, in particular its rule that both
-hold **workbench-relative paths, not bare filenames**, because a spec written before the Circle
-existed legitimately lives in another store. This section says only *when you write them*, which
+Three fields sit in the Circle record's head, above its prose: `**Active spec/plan:**`,
+`**Active session history:**` and `**Claim:**`. `rules/circle-records.md` `## Circle record template`
+defines them and owns their semantics — read the values off that definition, in particular its rule
+that the first two hold **workbench-relative paths, not bare filenames**, because a spec written
+before the Circle existed legitimately lives in another store, and its `### The claim field` for the
+claim's two literal openings. This section says only *when you write them*, which
 until now nothing did.
 
 **They were nobody's work, and that is what made them wrong.** Activation renamed the record
@@ -282,8 +283,27 @@ whole of the defence: the measurement that used to catch the skip afterwards is 
 |---|---|---|
 | `_a_`→`_t_` activation, with the record rename | `**Active spec/plan:**` | the spec or plan this Circle runs on, if one exists and the record does not already cite it; otherwise leave the field as it stands |
 | `_a_`→`_t_` activation, with the record rename | `**Active session history:**` | your session's history file, if you are the session doing the activating; otherwise leave `(none yet)` |
+| `_a_`→`_t_` activation, with the record rename | `**Claim:**` | the `Claimed ` form, its person and checkout from `bin/fusion-identity` (`PERSON=`, `CHECKOUT=`) and composed nowhere else |
+| `_t_`→terminal, in the same command that clears `.active-circle` (Phase 4 step 4) | `**Claim:**` | `Unclaimed` |
 | Setup step 6, with the creation of the history file | `**Active session history:**` | the file you just created |
 | Step 0b.2 step 3, with the read of the returned plan | `**Active spec/plan:**` | that plan |
+
+**The claim's two rows carry no condition; the `**Active spec/plan:**` row above them does, and the
+difference is not an oversight in either.** That row's condition — "if one exists and the record does
+not already cite it" — is what makes its value depend on *who* activated: the two sanctioned
+performers of the `_a_`→`_t_` rename are you and `/fusion:next`, and only one of them is ever in a
+position to name the spec. The defect that records this is
+`260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
+under `$SCAN_ISSUES`, and it is **open and narrowed**: on 260823 its filer withdrew the case it was filed on, both Circles
+measured had the two routes agreeing, and what stands is a divergence confined to a Circle whose spec
+exists and is cited nowhere in the record — stated with no measured instance. Read that record before
+reasoning from it; do not carry its original wording forward. Nothing of that shape can reach the
+claim, and the reason is structural rather than lucky: the claim's value is the output of one command
+that either performer runs where it stands, so there is no fact one route holds and the other lacks,
+and nothing for a condition to test. **The two rows and this paragraph are the authoring home for
+both performers.** `/fusion:next` writes the activation row's value from here and cites this section
+for it, rather than restating either the value or this reason: a second copy of a condition in a
+second prompt is the duplication `rules/critical-stance.md` §2 calls a defect.
 
 **Every write of `**Active spec/plan:**` that moves it off `(none yet)` also replaces the record's
 `## Directive` body with the pointer literal, in the same command** — both rows above that write a
@@ -907,9 +927,9 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    mv "$DIR/_t_circle.md" "$DIR/_c_circle.md"
    ```
 
-   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record. No head field is written at closure: the marker on the filename is the state (see **Circle head fields**). The Closure note cites the orchestrator session history file path and the Phase-3 verdict.
+   (or `_b_`). Quote both operands. Unquoted, the shell reads `_t_` as a bracket expression matching the single character `t`; today that happens to fall back to the literal name because nothing matches, but the moment a file named `t-circle.md` exists next to it the `mv` addresses that file instead — silently, and with the record it was meant to rename left untouched. Then append a `## Closure note` section to the renamed record. No head field is written by *this* command: the marker on the filename is the state, and no field duplicates it. The one head field a closure moves is `**Claim:**`, and it rides step 4 (see **Circle head fields**). The Closure note cites the orchestrator session history file path and the Phase-3 verdict.
 
-4. **Clear `.active-circle`.** Run `rm -f fusion-workbench/.active-circle`. (Use `rm -f`; absence after this point is the canonical "no active Circle" state.) Clearing the pointer is what makes a closure a closure — the one act in this step that cannot be skipped and still leave a closed Circle.
+4. **Clear `.active-circle`, and write the claim back in the same command.** Run `rm -f fusion-workbench/.active-circle` and set the renamed record's `**Claim:**` to `Unclaimed` together (see **Circle head fields**). (Use `rm -f`; absence after this point is the canonical "no active Circle" state.) Clearing the pointer is what makes a closure a closure — the one act in this step that cannot be skipped and still leave a closed Circle. The claim rides it for the same reason every other field write rides its act, and because the two say the same thing to different readers: the pointer tells this checkout no Circle is active, the field tells every *other* checkout the same.
 
 5. **Dispatch playmaker.** Use `Agent(fusion:playmaker)` with the prompt prefix `**Domain:** <detected-domain-from-Setup-Step-5>`. Playmaker regenerates `$PORTFOLIO` to reflect the closure and (per its process Step 5, "Detect Bounded-Closure propagation") writes any `## Parent grounding stale` notes for `_b_` propagation.
 

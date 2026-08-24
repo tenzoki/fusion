@@ -379,7 +379,7 @@ flowchart TD
      gain a value inside a field they already carry, and step 7 is this plan's only step that
      touches this file, so the value had nowhere else to land.
 
-8. **Make both activation routes write the claim from one authoring home**
+8. [DONE] **Make both activation routes write the claim from one authoring home**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`, `agents/shaper.md`
    - Changes: `## Circle head fields` gains two rows and one paragraph. The rows: `_a_` to `_t_`
@@ -399,6 +399,13 @@ flowchart TD
      `agents/shaper.md` writes both fields at creation; the defect is cited in its narrowed form and
      is not closed by this step, because its subject is a different field; `agents/*.md` measures at
      most 407 137 bytes; `npm test` is green.
+   - **As built (260824): the step's writes were complete and correct; only its last acceptance
+     clause was outstanding.** The hook-test line surface stood at 20 376 against a budget of
+     20 375, one line over, and the one line was this step's own re-approval accounting note in
+     `hooks/lib/__tests__/reference-resolution-lint.test.ts`. The step stopped rather than move a
+     baseline. A separate cut of 44 lines of spent comment prose from three hook test files took the
+     surface to 20 332, and `npm test` is green at 732 passing tests with this step's work
+     unchanged. `agents/*.md` measures 407 098 bytes, inside the 407 137 ceiling.
 
 9. **`/fusion:setup` mints the identifier and reports a claim it does not hold**
    - Executor: `coder`

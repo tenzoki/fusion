@@ -591,7 +591,8 @@ function scanHeadingAnchors(
 // anchor, `## Path Resolution`). records -1 is the defect Step 0e cited for why it exists.
 // Re-approved 2026-08-24 (C3 step 6): paths 1303 -> 1304, the rest unmoved; the one token is `bin/fusion-identity`, cited by the conventions file's new `### Who filed it`.
 // Re-approved 2026-08-24 (C3 step 7): paths 1304 -> 1305, the rest unmoved; the one token is `bin/fusion-identity` again, cited by `rules/circle-records.md`'s new `### The claim field`.
-const BASELINE = { paths: 1305, anchors: 181, records: 119 };
+// Re-approved 2026-08-24 (C3 step 8): paths 1305 -> 1310, anchors 181 -> 183, records 119 -> 120. The five paths are `bin/fusion-identity` and `rules/critical-stance.md` newly cited in `agents/orchestrator.md` `## Circle head fields`, plus `bin/fusion-identity`, `rules/fusion-workbench-conventions.md` and `rules/circle-records.md` newly cited in `agents/shaper.md`'s frontmatter fill; the two anchors are that fill's `### Who filed it` and `### The claim field`; the one record is the route-dependence defect `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`, cited by the new no-condition paragraph. The orchestrator's own bare mention of `### The claim field` carries no adjacent path and so registers in neither class.
+const BASELINE = { paths: 1310, anchors: 183, records: 120 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
