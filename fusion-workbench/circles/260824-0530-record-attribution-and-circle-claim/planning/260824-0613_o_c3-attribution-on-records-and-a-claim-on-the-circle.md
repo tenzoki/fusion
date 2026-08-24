@@ -428,7 +428,7 @@ flowchart TD
      names another identity, and is unchanged otherwise; the helper call is `[ -x ]`-guarded; the
      `skills/` surface is at or below 240 237 bytes; `npm test` is green.
 
-10. **`/fusion:next` refuses, names the holder, and writes the claim on activation**
+10. [DONE] **`/fusion:next` refuses, names the holder, and writes the claim on activation**
     - Executor: `coder`
     - Files: `skills/next/SKILL.md`
     - Changes: three edits.
