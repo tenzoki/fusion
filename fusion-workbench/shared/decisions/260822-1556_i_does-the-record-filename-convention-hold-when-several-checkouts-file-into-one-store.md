@@ -180,3 +180,20 @@ the commit that lands the rule text, and not in this step.
 `_a_` and not `_i_`. The answer is on disk; no rule text has been written, no gate has changed, and
 `## Filename Patterns` at HEAD still carries no citation rule. Step 6 of the plan writes the
 sentence, and this record moves to `_i_` then.
+
+---
+Implemented: 2b055a0 — the citation form is normative rule text in `rules/fusion-workbench-conventions.md` `## Filename Patterns`, and no filename pattern changed.
+
+## As realised, 260824
+
+The hash was checked against its own diff with `git show`, not read off its subject line. One paragraph was added to `## Filename Patterns`, directly under the `<sender>` rule:
+
+> **Cite a record by its full filename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. No two records share a full basename once the marker is normalised, so the naming convention holds and only the citation form was ever at fault. **No pattern above changes.**
+
+It carries the re-measured figures from this record's own table, 111 of 545 across 876 files, and the row that leaves `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` intact, zero files sharing a full basename once the marker is normalised.
+
+**The three conditions this answer set for itself were checked against the tree and all hold.** `git diff e209011..HEAD -- rules/fusion-workbench-conventions.md`, over the Circle's whole commit range, is additions with one exception, and that exception is the `**Filed by:**` template line gaining its person half. The artifact-kind table is untouched. No identifier entered a filename, no corpus-wide rename ran, and nothing mints a name.
+
+**What the answer said it would not change, it did not.** No test was altered by `2b055a0` beyond the two regenerated goldens and one re-approved citation baseline, and the question of whether the citation gate should additionally fail on an ambiguous resolution is still undecided and still unfiled.
+
+**`### What this unblocks` is discharged in the same pass as this line.** `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` moves to `_i_` on the same commit, which is the condition it set for itself and restated in three reconciliations.

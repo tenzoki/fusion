@@ -193,3 +193,24 @@ authorised: the premise that it collides was measured false. A change that intro
 resolution, an ordinal suffix or a `bin/fusion-newname` would be re-deciding a settled question, and
 it would lengthen or mix the width of every identifier in a corpus of roughly 1000 records. What is
 open is only the rule text.
+
+---
+Implemented: 2b055a0 — the cite-by-full-filename rule landed in `rules/fusion-workbench-conventions.md` `## Filename Patterns`, which is the condition this record set for itself and restated in three reconciliations.
+
+## The condition, and how it was established (260824)
+
+This record's answer left exactly one act outstanding, and four passages of this file name it: the answer's own closing paragraph, and the reconciliations of 260807-1941, 260808-0030 and 260819-1400. All four say the same thing. The record moves to `_i_` when the cite-by-full-filename rule lands in `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
+
+It landed in `2b055a0`, in that file and in that section, as one added paragraph under the `<sender>` rule:
+
+> **Cite a record by its full filename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. No two records share a full basename once the marker is normalised, so the naming convention holds and only the citation form was ever at fault. **No pattern above changes.**
+
+Three checks, each run against the tree rather than inferred from a commit subject.
+
+1. **It is in the named section of the named file at HEAD**, not in a neighbour and not in a second file. Read directly out of `rules/fusion-workbench-conventions.md` `## Filename Patterns`, and confirmed as the whole of that commit's change to the section by `git show 2b055a0 -- rules/fusion-workbench-conventions.md`.
+2. **It reads as normative rather than as practice**, which is the precise gap the 260819-1400 reconciliation recorded when it wrote that the rule was followed throughout the corpus and "written down nowhere it can be read as normative". It sits in an always-on rule file every agent loads, it is in the imperative, and it states the negative case as well as the positive one.
+3. **Nothing this record forbade was done.** `git diff e209011..HEAD -- rules/fusion-workbench-conventions.md`, over the whole Circle range, is additions with a single exception, the `**Filed by:**` template line gaining a person half. The artifact-kind table is unchanged. No second resolution appeared, no ordinal suffix, no `bin/fusion-newname`, and no existing file was renamed for its name. One helper was added in the same Circle, `bin/fusion-identity`, and it mints a checkout identifier rather than a filename.
+
+**The measurement this record's answer rests on was re-taken and reproduces where it matters.** The corpus has grown from 579 record files to 876, and the count of stamps carried by more than one file rose from 84 to 111 of 545 distinct stamps. The row that decides this record is unchanged at zero: no two records share a full basename once the marker is normalised. That re-measurement, and the answer that authorised the rule text, are in `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`.
+
+**One thing left exactly as it stands.** The header of this record still cites `## Filename Patterns` at lines 185-208, and the section has moved twice since. It is the first measured instance of `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`, and repairing it here would remove the evidence that issue rests on.

@@ -80,3 +80,23 @@ Measured on 260824 in `/Users/k1/Projects/test`: a repository with **no remote c
 The consequence lands on the claim rather than on attribution. A person working from a second machine whose git configuration differs is read as somebody else, and `/fusion:next` refuses their own Circle. That is a false positive, not a detected conflict, and it is the one failure the refusal cannot tell apart from the collision it is built for. The override in `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C3` clears it: the field then carries both identities, which makes the doubling visible to the next reader instead of hiding it.
 
 **The mitigation chosen is a stated precondition and no mechanism:** the same git identity on every machine a person runs fusion from. Step 6 of `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` writes that sentence into the rule text; this record states that it is the mitigation, and that no code checks it.
+
+---
+Implemented: 3ba7a46, 2b055a0, 0a726b5, d34141c, 12b56d1, 9efe19f — the two-value design is on disk: one helper prints the git identity and mints the checkout identifier, the rules take attribution from the first and the claim from both, and four writers fill the fields.
+
+## As realised, 260824
+
+Each hash was checked against its own diff with `git show --stat`, not read off its subject line.
+
+| Commit | What it put on disk | Which half of the answer it realises |
+|---|---|---|
+| `3ba7a46` | `bin/fusion-identity`, 223 lines. `PERSON=` is read from `git config user.name` and `user.email`; `CHECKOUT=` is read from `fusion-workbench/.checkout-id`, minted there on first read. | Both. It is the one place either value is obtained. |
+| `2b055a0` | `rules/fusion-workbench-conventions.md` `### Who filed it`, plus the person half of `**Filed by:**` in the issue format, the decision template and the worked example. | Attribution. The person is the git identity, read from the helper and composed nowhere else. |
+| `0a726b5` | `rules/circle-records.md` `### The claim field`, plus `**Claim:**` in the Circle record template. | The claim. The value carries the person and the checkout identifier, and the collision is stated as detected rather than prevented. |
+| `d34141c` | `agents/orchestrator.md` `## Circle head fields` gains the two claim rows; `agents/shaper.md` fills both identity fields at creation. | The claim's writers. |
+| `12b56d1` | `skills/setup/SKILL.md` Step 0i calls the helper, which is where the identifier is minted. | The mint. |
+| `9efe19f` | `skills/next/SKILL.md` refuses a Circle whose claim names another identity, and appends the `Overridden ` sentence on a takeover. | The claim's reader. |
+
+**The correction this record appended after the answer was given is realised as the record itself describes it**, a stated precondition and no mechanism. `2b055a0` writes the same-git-identity-on-every-machine sentence into `### Who filed it`, with the statement that no code checks it and that the false positive it produces is one `/fusion:next` cannot tell from a real collision.
+
+**Two things this line does not claim.** It does not claim the registry was reconsidered: nothing in the range adds one, and `bin/fusion-identity` reads no shared file. And it does not claim the halt rule covers a tree that is not a git work tree at all, which is a separate question answered in this Circle's own store by `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.
