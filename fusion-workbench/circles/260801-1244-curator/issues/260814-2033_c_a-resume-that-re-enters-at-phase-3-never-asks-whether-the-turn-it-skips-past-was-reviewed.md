@@ -51,3 +51,6 @@ running this Circle, in this Circle's own last Turn.
 `agents/orchestrator.md` Setup Step 1's resume branch (`:86-96`) still derives three things from the anchor — the anchor itself, `commits=` via `git rev-list --count`, `turns=` via a `turn_start` count — and nothing about review coverage. `bin/fusion-review-coverage` is called at Phase 2 step 3c (`:590-593`) and at Phase 4 (`:829-835`), both of which a Phase-3 re-entry skips.
 
 **What changed:** the record proposed adding the call beside the `bin/fusion-state-drift` call in the same branch. That helper was deleted on 2026-08-15 (`f45f76a`), so there is no neighbouring call to add it to; the resume branch would gain its first coverage read rather than a second measurement. Cost is one `[ -x ]`-guarded call, unchanged.
+
+---
+Resolved: fixed — the resume branch takes the `[ -x ]`-guarded coverage read, and a non-zero `uncovered` count over the interrupted Turn routes Continue back through Step 3c; agents/orchestrator.md:119

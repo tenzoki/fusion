@@ -82,3 +82,6 @@ decision `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citati
 answered that class option 1: nothing new carries the obligation. The body is left unedited on that
 basis rather than silently repaired. Marker stays `_o_`.
 Log: `shared/history/260818-0814-reconciliation.md`.
+
+---
+Resolved: fixed — option 2: the record identifier leaves the report bullet and the correction it carried stays; the rationale sites keep it; agents/orchestrator.md:953

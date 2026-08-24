@@ -30,3 +30,6 @@ Adjacent, and a different question: `circles/260824-0530-record-attribution-and-
 
 ---
 **Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** `agents/orchestrator.md:286` still reads "its person and checkout from `bin/fusion-identity` (`PERSON=`, `CHECKOUT=`) and composed nowhere else", with no root, no `[ -x ]` guard and no citation of `### Who filed it`. This pass reads it as the exception on property 2 of the plan's `## Where this Circle stops`: the claim's authoring home is correct about who writes the field and when, and is not runnable as written from a consuming project.
+
+---
+Resolved: fixed — the `**Claim:**` row calls the helper in the rooted, `[ -x ]`-guarded form and cites `rules/fusion-workbench-conventions.md` `### Who filed it` for the exit branches; agents/orchestrator.md:286

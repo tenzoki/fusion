@@ -38,3 +38,6 @@ Qualify `:215`: create the file on the fresh and Restart branches; on **Continue
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:206` still says create the history file unconditionally while `:100` still says a session keeps one for its whole life. The tension is unedited. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — Setup step 6 creates the history file on fresh and Restart only, and on Continue reads `session.history_file`; agents/orchestrator.md:214

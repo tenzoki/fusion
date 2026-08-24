@@ -25,3 +25,6 @@ An always-loaded prompt states that the uncovered-range decision is unfiled, eig
 ## Fix direction
 
 Replace the clause with what the record now says: a Circle may close over an uncovered range, coverage is advisory and never a blocker, and the closure note names the gap. Cite `260815-2109` rather than restating its reasoning. The `never a blocker` half of the sentence is correct as it stands and should survive the edit; only the claim about the decision being unfiled is false. `agents/*.md` head-room should be re-measured afterwards, though the edit is expected to be net negative.
+
+---
+Resolved: fixed — Step 3c states the answered position (a Circle may close over an uncovered range, coverage advisory, closure note names the gap) and cites `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`; residual: `bin/fusion-review-coverage` line 58 still says "unfiled decision" and is outside this step's file set (`bin/` is step 7's); agents/orchestrator.md:655

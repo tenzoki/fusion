@@ -77,3 +77,6 @@ lint was never built, and acceptance criterion 2 as written fails against the tr
 the line-level exemption its sibling `commit-message-path.test.ts` uses for a line that marks its
 reference as retired or absent. Filed as
 `shared/issues/260811-1617_*_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md`.
+
+---
+Resolved: fixed — the `/fusion:monitor-reset` witness is dropped and the append-only instruction stands on its own; the proposed slash-command lint (item 2) was not built, per the 260824 correction above; agents/orchestrator.md:217

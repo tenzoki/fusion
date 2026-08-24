@@ -64,3 +64,6 @@ Also seen: 260817-1613 by reconciler — recurred in session 260816-1841, commit
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:542` still commits with no pathspec and no surplus check over `git diff --cached --name-only`. The record-s own trailer records a recurrence in session 260816-1841 at commit `dbbad70`, filed separately under the guard Circle-s issue store, so the failure is reproducing rather than dormant. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — Step 3b step 5 compares `git diff --cached --name-only` against the staging list before the held command and unstages the surplus; the class question (may a sub-agent stage at all) is `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md`; agents/orchestrator.md:621

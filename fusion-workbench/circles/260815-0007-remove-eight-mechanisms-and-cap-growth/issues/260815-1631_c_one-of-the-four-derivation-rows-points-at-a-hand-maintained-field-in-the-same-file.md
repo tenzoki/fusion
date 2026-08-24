@@ -65,3 +65,6 @@ sentence and the row disagree.
 `agents/orchestrator.md:1053` still states the criterion — *"it holds no counts … every one of them is **derivable at read time** from a record that cannot silently freeze"* — and `:1059` still derives `progress.tasks_total`/`_done`/`_skipped`/`_errored` from *"the `status` field of the `work_queue` entries in this same file"*. That substitutes four freezable counters for one freezable hand-maintained list in the same file, under a criterion that exists to forbid exactly that.
 
 The live instance is absent only because `agentstate.yaml` is deleted at clean exit; the row is prompt text and is written afresh every session. Three of the four derivation rows point outside the file (git, the event log); this one does not.
+
+---
+Resolved: fixed — the `work_queue` row states its criterion narrowly: hand-written, meeting the criterion only for the done count that `task_done` events also carry, with `queued` and `deferred` named as having no event; agents/orchestrator.md:1112

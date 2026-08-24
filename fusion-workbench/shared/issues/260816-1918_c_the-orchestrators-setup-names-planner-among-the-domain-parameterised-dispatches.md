@@ -14,3 +14,6 @@ The cost is small and specific: an orchestrator that follows this line prefixes 
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:151` still names `planner` among the domain-parameterised dispatches while `agents/planner.md` parses no `**Domain:**` line. The same file already gets it right at `:191`, so it now contradicts itself. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — `planner` deleted from the domain-parameterised list; agents/orchestrator.md:159

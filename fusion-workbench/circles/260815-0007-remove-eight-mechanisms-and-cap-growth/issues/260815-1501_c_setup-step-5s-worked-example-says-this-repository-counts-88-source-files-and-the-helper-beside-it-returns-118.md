@@ -80,3 +80,6 @@ bin/fusion-count-sources
 The gap has been 30, then 23, and is now 10 — the sentence never moved and the tree moved three times, once toward it and twice away. The `data` clause still states no figure at all, so the worked example illustrates one half of a two-input heuristic.
 
 A hand-written count of a directory every session writes to is wrong the day after it is written; `CLAUDE.md` has twice removed such a figure rather than re-measuring it, and that is the remedy this line wants. The example does not need the number to work — it needs the shape.
+
+---
+Resolved: fixed — the worked example drops this repository's number and keeps the shape, the remedy the 260819 note asked for; agents/orchestrator.md:195

@@ -44,3 +44,6 @@ gate writes the fixed string `Circle stop conditions`". One cell, no mechanism.
 
 Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
+
+---
+Resolved: fixed — the `gate_hit` row names the fixed string `Circle stop conditions`; agents/orchestrator.md:1287

@@ -55,3 +55,6 @@ and scope the "three surfaces" sentence to the block. No schema change.
 `agents/orchestrator.md:1028` still defines `directive_revisions_this_session: <integer; initialised to 0; capped at 1>`. `:1053` still says *"The block is called \`control:\` because it holds no counts"*. `:1062` still says *"none of them is a tally: a git anchor and two pieces of control state"*, and the write point at `:1079` increments the integer.
 
 The distinction the record asks for — a counter that bounds an action is control state, a counter that tallies work done is a count — is defensible and is written down nowhere in the file. Until it is, the block's own explanation contradicts the field two lines above it, and a reader reconciling the two has no basis to prefer either.
+
+---
+Resolved: fixed — the block's explanation draws the control-state versus tally distinction and the "three surfaces" sentence is scoped to the block; agents/orchestrator.md:1106,1115

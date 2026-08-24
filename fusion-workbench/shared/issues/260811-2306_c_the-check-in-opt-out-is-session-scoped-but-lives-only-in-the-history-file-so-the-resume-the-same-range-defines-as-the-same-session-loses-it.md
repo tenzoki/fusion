@@ -45,3 +45,6 @@ If the choice is instead to let a resume re-ask, say so at `:629` — "the accep
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:651` still records the acceptance in prose in the history file, and the inherited-field list at `:109` still carries no boolean for it, so a resumed session still loses the opt-out. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the second option: the opt-out is stated as not surviving an interruption, and a resumed session asks once more; agents/orchestrator.md:732

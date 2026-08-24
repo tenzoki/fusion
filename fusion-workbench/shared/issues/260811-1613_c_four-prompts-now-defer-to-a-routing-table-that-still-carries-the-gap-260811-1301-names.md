@@ -75,3 +75,6 @@ find a sentence that is not there.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All four surfaces still defer to the table (`agents/coder.md:24`, `agents/ontocoder.md:24`, `agents/planner.md:45`, `README-agents.md:45`) and the table still has no `Cargo.toml` row, so the pointer resolves to nothing on the case it is cited for. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — closes with 260811-1301: the table names `Cargo.toml` and its tiebreaker states the role-not-extension rule in the words the four prompts quote; agents/orchestrator.md:525,539

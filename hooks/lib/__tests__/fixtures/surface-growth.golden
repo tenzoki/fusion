@@ -14,35 +14,35 @@
 [agents bytes]
   analyst.md 21038
   bugfixer.md 11509
-  coder.md 9665
+  coder.md 9649
   coderev.md 8145
   consultant.md 14329
-  curator.md 34190
+  curator.md 34183
   editor.md 13635
-  ontocoder.md 13278
+  ontocoder.md 13262
   ontorev.md 7098
-  orchestrator.md 155704
+  orchestrator.md 159498
   planner.md 19423
   playmaker.md 38951
   reconciler.md 20738
-  shaper.md 28412
+  shaper.md 28833
   taskplanner.md 14070
-  total 410185
+  total 414361
 
 [skills bytes]
-  archive/SKILL.md 24854
+  archive/SKILL.md 25223
   cadence/SKILL.md 17244
-  cleanup/SKILL.md 23569
+  cleanup/SKILL.md 23404
   commit/SKILL.md 6233
-  curate/SKILL.md 12467
-  direct/SKILL.md 10682
+  curate/SKILL.md 12476
+  direct/SKILL.md 10613
   help/SKILL.md 17287
   log-activity/SKILL.md 13564
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
-  next/SKILL.md 27275
-  setup/SKILL.md 45170
-  total 237219
+  next/SKILL.md 27450
+  setup/SKILL.md 46301
+  total 238669
 
 [hook-tests lines]
   commit-message-path.test.ts 354
@@ -80,7 +80,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 520
-  reference-resolution-lint.test.ts 1078
+  reference-resolution-lint.test.ts 1080
   review-coverage-mandate.test.ts 354
   review-coverage.test.ts 818
   rules-emission-golden.test.ts 1165
@@ -91,4 +91,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 374
-  total 20363
+  total 20365

@@ -79,3 +79,6 @@ stating the same procedure in three prompts — `rules/critical-stance.md` §2.
 
 ---
 Also seen: 260821-2211 by coderev — a fresh instance, in the workbench rather than the code tree. Reviewing Circle `circles/260821-1042-reply-bounded-whole-question-answered`, I ran `sed -i '' ... *.md` over that Circle's `issues/` directory to normalise citation markers in my own two records, while a concurrent `ontorev` was filing five records into the same directory. All seven files carry my write mtime. The five I did not author are untracked, so no original exists to diff against; the only substitution the command could make in them is at the marker position of that Circle's plan citation, `_o_` to `_*_`, which is the wildcard form `rules/fusion-workbench-conventions.md` prescribes, so nothing broke. The class is the same as this record: a wildcard write into a live shared tree that another executor holds, with no lock and no per-file scoping.
+
+---
+Resolved: fixed — the dispatch fence now says the not-to-touch list covers temporary writes and a destructive verification runs against a scratch copy (the chosen option 1, with the option-3 fence line it argued for); agents/orchestrator.md:571

@@ -129,3 +129,6 @@ Step 3b step 4 still states the staging shape as a list of explicitly named path
 **What it needs is a decision, and that is why it will not close by being worked.** The record says so itself — *"Undecided, and deliberately left open rather than proposed as a fix"* — and one of its three options (forbid sub-agents from staging at all) changes what several agent prompts are allowed to do. Whoever takes it should file the decision record first and let the fix follow it, rather than picking an option inside a defect record.
 
 **Nothing here disputes that the repository is intact.** Re-verified at HEAD: `git diff --cached --quiet` and `git diff --quiet` both exit 0 for the paths this Circle touched, and both halves of every one of the four absorbed renames are in the history (`bee46e7` carries the content edits `dbbad70` left behind).
+
+---
+Resolved: fixed — closes with `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`: option 1 of this record (assert the index against the list before staging, unstage and report the surplus) is in Step 3b step 5; the class question stays in `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md`; agents/orchestrator.md:621

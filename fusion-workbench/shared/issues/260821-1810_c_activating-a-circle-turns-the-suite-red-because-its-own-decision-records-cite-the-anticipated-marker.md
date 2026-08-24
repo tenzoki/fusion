@@ -47,3 +47,6 @@ Adjacent and not the same:
 `shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md`
 measures stale citations written *inside* Circle records. This one is about citations *of* a Circle
 record from elsewhere, and about the rename that breaks them all at once.
+
+---
+Resolved: fixed — the four citations were already in the wildcard form at HEAD; the decision-filing instruction now says a citation of a Circle record uses `_*_circle.md` because activation renames the file; agents/orchestrator.md:1014

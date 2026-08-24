@@ -122,7 +122,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 10, 18, 27, 28, 40, 42, 49, 50, 62, 109, 123, 124, 142, 154, 162, 167, 168, 175, 209, 212
    - Acceptance: `npm test` green; `surface-growth-bound.test.ts` green with the hook-test head-room stated before and after; `committed-dist.test.ts` green; every negative control added calls the production function it controls.
 
-7. **`bin/` helpers and `install.sh`**
+7. [DONE] **`bin/` helpers and `install.sh`**
    - Executor: `coder`
    - Files: `bin/monitor`, `bin/fusion-rules`, `bin/fusion-paths`, `bin/fusion-prose-metric`, `bin/fusion-turn-budget`, `hooks/turn-budget.ts`, `bin/fusion-identity`, new `bin/fusion-session-domain`, `.gitignore`
    - Changes: per row. The new helper prints `domain=` and `source=` in the `KEY=value` shape, reads `session.domain` from `agentstate.yaml`, falls back to `code` naming the fallback, carries the usage and exit table in its own header, and gets its `!bin/` line (27's test then pins it). `bin/fusion-paths` takes the fabricated placeholder form for 72. `install.sh` is not edited: the `LICENSE` entry waits on D-license.
@@ -146,7 +146,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 94, 97, 98, 100, 187, 188
    - Acceptance: `rules-voice-profile.test.ts` green; the four `diff -q` pairs print nothing; `grep -c '–'` over the two German files is 0 outside `examples:`.
 
-10. **`skills/*/SKILL.md`**
+10. [DONE] **`skills/*/SKILL.md`**
     - Executor: `coder`
     - Files: `skills/setup/SKILL.md`, `skills/next/SKILL.md`, `skills/direct/SKILL.md`, `skills/cleanup/SKILL.md`, `skills/archive/SKILL.md`, `skills/curate/SKILL.md`; `README-agents.md` and `agents/shaper.md` for 51 only
     - Changes: per row. Head-room 3 220 bytes; 19 (three copies become three guarded calls), 205 and 215 shrink the surface; 52, 189, 219, 213's read and 149's relay add. The step states the surface's head-room before and after.
@@ -154,7 +154,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Closes: 19, 46, 51, 52, 53, 75, 78, 119, 180, 186, 189, 205, 219
     - Acceptance: `path-literal-lint`, `turn-budget-lint` and `surface-growth-bound` green; `skills/` head-room not below zero and stated.
 
-11. **`agents/*.md` except the orchestrator**
+11. **`agents/*.md` except the orchestrator** [DONE]
     - Executor: `coder`
     - Files: `agents/reconciler.md`, `agents/analyst.md`, `agents/bugfixer.md`, `agents/curator.md`, `agents/planner.md`, `agents/shaper.md`, `agents/playmaker.md`, `agents/coder.md`, `agents/ontocoder.md`, `agents/coderev.md`, `agents/ontorev.md`
     - Changes: per row. The reconciler edit is one edit for 70, 71 and 122 (a disjoint, complete verdict set with its mapping). 146 adds `$OUT_DECISION` to five prompts, which `fusion-paths.test.ts` then covers; 147 and 90 shrink.
@@ -162,7 +162,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Closes: 37, 70, 71, 88, 89, 90, 105, 117, 122, 146, 147, 148, 150, 174, 178
     - Acceptance: `bin/fusion-paths <agent>` emits `OUT_DECISION` for the five; `playmaker-backlog-mandate-lint` green; `agents/` head-room stated before and after.
 
-12. **`agents/orchestrator.md`**
+12. **`agents/orchestrator.md`** [DONE]
     - Executor: `coder`
     - Files: `agents/orchestrator.md`
     - Changes: per row, twenty-four edits in one file; 73, 161, 69 and 22 cut, 47, 138, 141 and 15 add. The two dialog decisions from step 1 are cited from `## How you ask the user anything` (125). Every `path:N` the file carries in the edited regions is checked against the file, per 8.

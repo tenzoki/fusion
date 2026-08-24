@@ -53,3 +53,6 @@ Verified at HEAD `83488e9` by reading `agents/orchestrator.md:864` and `agents/p
 
 Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
+
+---
+Resolved: fixed — shape 1: Phase 4 step 2b skips any clause wholly inside angle brackets and asks nothing when none is left; agents/orchestrator.md:918
