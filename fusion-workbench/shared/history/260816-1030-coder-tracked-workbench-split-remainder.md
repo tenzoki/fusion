@@ -95,3 +95,13 @@ The four distinct totals all shift by exactly 80: 89 623 → 89 703 (the ten fiv
 
 `RULE_BASELINE` did not move and was not touched. The regeneration recorded the growth; the
 head-room stands at 8 870 bytes of the 12 000-byte budget.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Item 1 under `## What changed` names a four-entry KEPT line as what
+landed. The line that landed in `b18a8cf` has three entries, `orchestrator-events.jsonl`,
+`portfolio.md`, `.fusion-setup`: the fourth, `.guard-state/events.jsonl`, was reverted before the
+commit because the records bullet in the conventions file is a classification list and not a tracking
+list, and that file is ignored by `.gitignore`. The reversal and its reasoning are recorded in
+`shared/history/260816-1040-coder-gitignore-kept-line.md`, committed in the same commit; the two files
+read as one record. Filed as
+`shared/issues/260816-1051_*_the-main-session-history-states-the-reverted-four-entry-kept-line-as-what-landed.md`.

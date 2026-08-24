@@ -23,10 +23,6 @@
 - Churn ranking: 451 entries, 224 absent, 2 noise, 10 ranked; top file hooks/lib/__tests__/rules-emission-golden.test.ts
 - Voice profiles: chat-voice-de.yaml, default-voice-en.yaml (chat de, artifacts en)
 
-## Per-Turn Log
-
-(none yet)
-
 ## Shaping — clarification round 1 (answered)
 
 Dispatched `shaper` in anticipated-circle mode with both simplification backlog entries as the
@@ -575,3 +571,9 @@ uncovered de10bab chore(circle): the simplification Circle closes coherent, and 
 | Orchestrator errors caught by mechanism or review | 6 |
 
 Record counts are the derived ones, taken from the stores rather than tallied.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). An empty `## Per-Turn Log` stub holding `(none yet)` stood above the
+Setup snapshot's end, at `:26-28`, above the real `## Per-Turn Log` with its Turn sections. The stub
+was removed on 260824; the real section is unchanged. Filed as
+`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_*_the-session-history-file-carries-an-empty-duplicate-per-turn-log-stub-above-the-real-one.md`.

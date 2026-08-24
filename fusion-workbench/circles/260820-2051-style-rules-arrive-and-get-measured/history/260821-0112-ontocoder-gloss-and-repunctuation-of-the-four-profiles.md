@@ -178,3 +178,14 @@ to the session scratchpad so the split is mechanical rather than hand-edited:
 From the repository root, with the tree as this task left it: `git apply -R partB.patch` puts the tree
 at part A only, and `git apply partB.patch` restores it. `git apply -R --check partB.patch` was run
 and passes.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The paragraph "On strength, the second record's fault" says five
+of the six English replacements took the colon; this record's own table gives three colons
+(`chat-voice-en.yaml:4`, `:11`, `:21`) and three commas (the three at `:86`). Six replacements, three
+colons, three commas. The verdict the paragraph discharges holds on the corrected count: every
+appositive or explanatory break took a colon, and the three commas at `:86` are the one site where the
+choice was not forced. The sentence "A pronoun opener can only be created by splitting a sentence" is
+also stated too strongly; the argument that holds is the paragraph's own next one, that none of the four
+pronouns was written by this pass. Filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md`.

@@ -370,3 +370,10 @@ a commit that edited 40 lines of that same file, which is a cheaper miss.
 derivations — pair it with whichever plane fix lands first), `-0501`, `-0502`, `-0503`, `-0504`,
 `-0505`, `-0506`, `-0507`, `-0508`, `-0509`, `-0510`, `-0511`. Turn 1's own sequencing still
 applies to them.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `**Range:**` line says 6 commits;
+`git rev-list --count ff70d3a..c923935`, HEAD at this review's write time, returns 5. The nine
+findings and the file counts in the same header are right. The count stays typed, as the Turn 1
+review's totals do; the correction is this note. Filed as the second instance in
+`shared/issues/260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`.

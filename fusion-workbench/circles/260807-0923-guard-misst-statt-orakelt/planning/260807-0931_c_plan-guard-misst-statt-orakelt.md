@@ -285,7 +285,7 @@ Geprüft gegen HEAD `e684eae` (Tag `v6.0.0`), nicht gegen die Statuszeilen des P
 | S5 | Tests und Messkorpus | Suite in dieser Reconciliation neu gefahren: **30 Dateien, 1002 Tests, alle grün**, 94 s. Commit `436d78c`. |
 | S6 | Textschicht | `rules/protected-path-internals.md` existiert nicht mehr; `rules/protected-path-discipline.md` beschreibt die Messung. Commit `436d78c`. |
 | S7 | Emissions-Goldfixture | Commit `5a3cad4`. |
-| S8 | MECE als vierter Abschnitt in `rules/critical-stance.md` | Abschnitt `## 4. A case split is disjoint and complete — or the question is cut wrong` steht dort, mit der Pflichtzeile `**Decidability:**` im Plankopf. Commit `327d0b6`. |
+| S8 | MECE als vierter Abschnitt in `rules/critical-stance.md` | Abschnitt `## 4. A case split is disjoint and complete, or the question is cut wrong` steht dort, mit der Pflichtzeile `**Decidability:**` im Plankopf. Commit `327d0b6`. |
 | S9 | Buchführung | Drei Befunde `_c_` mit Belegzeile, Entscheidungssatz `260807-0825` auf `_i_`. In dieser Reconciliation nachgezählt und bestätigt. Commit `5a3cad4`. |
 | S10 | Vorprüfung im Fremdprojekt | Commit `72543dd`; `hooks/package.json` baut mit `rm -rf dist && tsc`, `hooks/dist/lib/` enthält keine Waisen des Klassifizierers mehr. |
 | S11 | Freigabe | `.claude-plugin/plugin.json` steht auf `6.0.0`, `git tag --points-at HEAD` liefert `v6.0.0`. Commit `e684eae`. |
@@ -293,3 +293,9 @@ Geprüft gegen HEAD `e684eae` (Tag `v6.0.0`), nicht gegen die Statuszeilen des P
 **Eine Abweichung zwischen Plan und Baum, keine Beanstandung.** Der Plan sagt in `## Ausgangslage`, `command-word.ts` und `fs-locator.ts` blieben stehen, weil sie anderen Herren dienen. Das trifft zu und ist der einzige Rest an Befehlstext-Analyse im ausgelieferten Code: `command-word.ts` löst das Programmwort für `git-branch-guard.ts` auf, `fs-locator.ts` bedient die Regel-Ausnahme auf der Schreibwerkzeug-Seite. Keiner von beiden leitet aus einem Befehlstext einen geschriebenen Pfad ab.
 
 **Zitierform korrigiert.** Die Kopfzeile `**Bindende Entscheidung:**` nannte `260807-0825_a_*`; der Satz steht seit `5a3cad4` auf `_i_`. Auf die Wildcard-Form `_*_` gezogen, wie sie `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` festlegt. Dieselbe Verwesung stand in Schritt 9 und Schritt 10 des Plans (`260807-0251_o_*`, `260807-0252_o_*`, `260807-0930_o_*`, `260807-1202_o_*`) — dort bewusst **nicht** angefasst: das sind Arbeitsanweisungen, die den damaligen Zustand beschreiben, und sie umzuschreiben hieße die Aufgabenstellung im Nachhinein zu verändern.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The citation of `rules/critical-stance.md` section 4 in this file
+spelled the heading with the em-dash it carried at `327d0b6`; `b393a45` (260821) repunctuated the
+heading to a comma and the citation went dead. It now carries the current spelling. Filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md`.

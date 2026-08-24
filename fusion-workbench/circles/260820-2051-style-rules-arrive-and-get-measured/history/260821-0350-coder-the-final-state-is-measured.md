@@ -338,3 +338,12 @@ No shipped file was changed by this step.
 ## Verification
 
 `cd hooks && npm test` exits 0. 40 test files, 718 tests, all passing.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Section 4's `+2 138` is the delta over the five plugin rule files,
+which is the set the growth bound in `rules-emission-golden.test.ts` reads. The set `bin/fusion-rules
+coder` emits is six, the five plus `fusion-workbench/stilwerk/chat-voice-de.yaml`, and it gained
+`+2 265` over the same range (100 222 to 102 487 bytes); the 127-byte difference is the workbench
+chat profile. Section 5's "always-on total" is the six-file set. Both figures are right for their own
+set and neither section said the sets differ. Filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0413_*_the-final-measurement-note-means-two-different-sets-by-always-on-and-its-headline-delta-is-the-smaller-one.md`.

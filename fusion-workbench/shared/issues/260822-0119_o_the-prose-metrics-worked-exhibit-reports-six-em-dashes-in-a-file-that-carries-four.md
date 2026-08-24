@@ -6,7 +6,7 @@ The prose metric's worked exhibit reports six em-dashes in a file that carries f
 **Domain:** code
 **Filed by:** ontorev, reviewing `084c626..dbf259a`, review file `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
 **Affects:** `bin/fusion-prose-metric:66-67` and `:112-120`
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` (why nothing catches this); `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0147_o_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
+**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` (why nothing catches this); `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
 
 ---
 

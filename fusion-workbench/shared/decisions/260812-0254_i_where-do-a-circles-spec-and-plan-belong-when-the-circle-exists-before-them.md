@@ -138,3 +138,14 @@ The `**Status:** open` head field is left exactly as it stands. This record is a
 population `260818-2212_i_should-the-decision-records-status-field-exist-at-all-...` measured, and
 that record's answer is explicit that a record written before the field's removal keeps it, because
 hand-correcting one destroys the evidence the removal was decided on.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `## Answer` sentence "The existing twelve Circles are migrated,
+not left" rests on a premise the workbench was not in. Measured on 260812, ten of the twelve Circles
+already held their planning documents inside their own directories, and `shared/planning/` held seven
+files, six of them written with no Circle active; the one Circle-origin file had been lifted out of
+its Circle deliberately at closure. The migration therefore touched one candidate, not twelve, and
+plan step 12 never ran: the gate answered leave it (the reconciliation note above records both). The
+placement rule the answer sets is unaffected; what this note corrects is the record's account of what
+the migration cost. Filed as
+`shared/issues/260812-1720_*_the-migration-premise-in-the-circle-placement-decision-does-not-match-the-workbench.md`.

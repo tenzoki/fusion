@@ -72,3 +72,13 @@ each by 154 bytes. The always-on head-room went from 5 035 to 5 189 bytes, since
 bytes rather than spending them: the core-only emission measures 93 384 against a budget of 98 573.
 
 **Suite.** `cd hooks && npm test` exits 0, 40 files and 718 tests.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The paragraph on the two failure modes says three commas were used
+in `rules/critical-stance.md`, all on an `X, not Y` appositive. Five em-dashes became commas: `:5`,
+`:29` and `:51` are the `X, not Y` case; `:38` coordinates two imperative clauses and carries no `not`;
+`:47`, a section heading, joins two independent clauses with a comma before `or`, which is the clause
+boundary the paragraph says none sits on. The heading comma at `:47` stays: a colon is ungrammatical
+there, a full stop leaves a heading in two sentences, and the file's one permitted prose em-dash is
+spent at `:17`. Filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0257_*_the-repunctuation-record-claims-three-commas-where-five-were-made-and-one-sits-on-a-clause-boundary.md`.

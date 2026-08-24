@@ -173,7 +173,7 @@ roughly 36 lines, and every section below it moved. The `## Timestamps` citation
 
 Not rewritten here, because the general case is the point rather than this one number: nothing in
 the suite reads a line citation. Filed as
-`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
+`shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
 which names this record as its first measured instance.
 
 ---

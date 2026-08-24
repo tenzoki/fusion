@@ -435,3 +435,13 @@ proposed.
 - [ ] Is relocation row R1 in scope for step 3, given that it reaches three files the step does not name and does not reduce reviewer context? Not filed as a decision, because it is a scope question for Gate A rather than a standing choice for the project.
 - [ ] Why does my exact-sentence measurement of `skills/*/SKILL.md` report 6 788 bytes where the plan reports 12 022? Both are floors and neither is load-bearing for the ledger, which was built by reading. The discrepancy is recorded rather than resolved.
 - [ ] Row H5's 40 lines is the one estimate in the hook-test ledger. Building the helper is the only way to settle it, and that is step 2's work.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). `## Scope` opens "Measured at HEAD `370bfc5`". The tree this ledger
+read was `faac921`: `370bfc5` is the session's start anchor, and two commits stood between them,
+`4a58be1` (plan step 8's closure of a growth-bound record, appended note and `_o_` to `_c_` rename)
+and `faac921` (the multi-user spec and the C0 plan). Both touch workbench records alone; every shipped
+surface is byte-identical at the two anchors, so no measurement here moves. What the misdating cost is
+the defect `shared/issues/260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`,
+which reported `4a58be1`'s own effect as a pre-existing state. Filed as
+`shared/issues/260822-1556_*_the-cut-ledger-states-a-head-anchor-two-commits-behind-where-it-ran.md`.

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
+**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
 
 ---
 
@@ -168,3 +168,18 @@ conditioned by.
 
 **What this note does not change.** The marker stays `_a_`. Option 4's content is a measurement
 that has not run, and no correction to a denominator runs it.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). **The protocol this record's measurement runs under**, cited here
+so the link runs both ways:
+`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`.
+**The pre-repair window, its total row:** five files frozen by path, measured at `fac97f4` with
+`bin/fusion-prose-metric`, 54 prose em-dashes over 5 219 prose words, 10.3 per 1000; lowest per-file
+rate 5.0, highest 18.8; author mix coder three, playmaker one, orchestrator one (protocol section 8).
+**The threshold:** the prediction is met when the post-repair window's total row rate is strictly
+below 5.0 prose em-dashes per 1000 prose words (section 7). **The window condition:** the
+post-repair window opens at the commit that closed that Circle, holds the five most recent usable
+history files written after it by a session that read neither that Circle's own history files nor
+this one's, and is usable only at five files; fewer than five leaves this marker at `_a_` (sections 4
+to 6 and 12). The marker stays `_a_`: a pointer is not a measurement. Filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0413_*_the-decision-record-the-measurement-reports-on-does-not-cite-the-protocol-that-defines-it.md`.

@@ -91,6 +91,8 @@ flowchart TD
 
 **Why C1 comes before anything is built.** The arrangement the user chose is the option the superseded decision could not take, because it rested on a fact nobody has ever verified: that N checkouts really produce N isolated workbenches rather than sharing one at a common parent. If that fact does not hold, C2 through C4 are all wrong, and they are wrong in a way no amount of care inside them would reveal. C1 is the cheapest possible refutation of the whole sequence, so it runs when refuting is still cheap.
 
+**What happened to the sequence (appended 260824).** C0 ran as a plan in `shared/` with no Circle directory and no Circle record, so its closure had nothing to transition; C1 to C3 have their own Circles under `circles/` and closed as Circles (`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`).
+
 ## Capabilities
 
 ### C0: The four bounded surfaces have room again

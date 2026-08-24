@@ -16,7 +16,7 @@
 
 The 28 corrections are true. I re-derived every claim the four `CLAUDE.md` edits make against the mechanism each one describes, resolved every citation in all nineteen decision records against the stores, and found no correction that replaces a wrong claim with a wrong claim. The golden fixture moved sizes and totals only — no path set, no emission order, no agent's file list. `npm test` is green at 1 030 tests.
 
-Five findings, none in behaviour. The load-bearing one is a correction that is not false but is materially incomplete: the layout tree's consumer column now names `bin/monitor` alone for three surfaces that four `hooks/lib` modules also read at a fixed path, on a line whose own prose promises the reader that the column names every consumer.
+Six findings, none in behaviour. The load-bearing one is a correction that is not false but is materially incomplete: the layout tree's consumer column now names `bin/monitor` alone for three surfaces that four `hooks/lib` modules also read at a fixed path, on a line whose own prose promises the reader that the column names every consumer.
 
 ## Totals
 
@@ -27,7 +27,7 @@ Five findings, none in behaviour. The load-bearing one is a correction that is n
 | Medium | 4 |
 | Low | 2 |
 
-Three are filed under `circles/260801-1244-curator/issues/` and two under `shared/issues/`, all at stamp `260814-1419`. The split is the Origin Rule: two of them concern commit `ae21c87`, which landed inside this Turn but was not caused by this Circle's Directive.
+Four are filed under `circles/260801-1244-curator/issues/` and two under `shared/issues/`, all at stamp `260814-1419`. The split is the Origin Rule: two of them concern commit `ae21c87`, which landed inside this Turn but was not caused by this Circle's Directive.
 
 ## What was verified, and how
 
@@ -169,3 +169,9 @@ issue files exist at stamp `260814-1419` — four under `circles/260801-1244-cur
 under `shared/issues/`. So the split is four and two, not three and two. Filed as
 `circles/260801-1244-curator/issues/260814-1450_o_the-turn-3-review-states-five-findings-and-a-three-two-split-while-carrying-six-and-a-four-two-split.md`.
 Findings are not rewritten by a reconciliation pass; the note is left beside them.
+
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The two summary counts the note above describes were corrected in place on
+260824: `## Summary` now opens "Six findings" and `## Totals` now says "Four are filed under", so the two
+sentences a reader meets first agree with the table, the numbered findings, the commit message and the
+disk. No finding was touched. Filed as
+`circles/260801-1244-curator/issues/260814-1450_*_the-turn-3-review-states-five-findings-and-a-three-two-split-while-carrying-six-and-a-four-two-split.md`.

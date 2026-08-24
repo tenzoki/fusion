@@ -3,14 +3,14 @@ The repunctuation replaced three em-dashes with three vague pronoun openers, whi
 ---
 Commit `6049d3e` turned ten clauses of `rules/user-facing-output.md` into their own sentences. Three of the ten now open with a bare demonstrative or pronoun: `:22` "Those belong to the long-form writing profile", `:57` "It *is* the shorter form", `:83` "That forces the reader to keep proving the names refer to the same object".
 
-`rules/user-facing-output.md:18`, four lines above the first of them, lists "vague pronoun openers" among the chat profile's blacklist, and `fusion-workbench/stilwerk/chat-voice-de.yaml:104-112` (AI05) bans a sentence that opens with an unspecific back-reference. The whole argument for the repunctuation, stated in `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`, is that a model follows the register of its conditioning text more reliably than a numeric clause inside that text. If that argument holds for the em-dash it holds for the opener, and the pass moved one blacklisted figure into another rather than out of the file.
+`rules/user-facing-output.md:18`, four lines above the first of them, lists "vague pronoun openers" among the chat profile's blacklist, and `fusion-workbench/stilwerk/chat-voice-de.yaml:104-112` (AI05) bans a sentence that opens with an unspecific back-reference. The whole argument for the repunctuation, stated in `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`, is that a model follows the register of its conditioning text more reliably than a numeric clause inside that text. If that argument holds for the em-dash it holds for the opener, and the pass moved one blacklisted figure into another rather than out of the file.
 
 ---
 **Found by:** coderev, review of `b18a8cf..6049d3e`, review file `shared/reviews/260816-1330-coderev-repunctuation-and-gate-contract.md`.
 **Owner:** `coder` for the three marks; the change is repunctuation of the same class the original pass performed and needs no rewording.
 **Severity:** Low-Medium. Nothing is broken. The cost is that the always-on file still exhibits a figure it names as an anti-pattern, on the exact surface whose conditioning effect is the motivating defect's own premise.
 **Filed in the shared store** per the Origin Rule: no Circle is active.
-**Cross-references:** `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` (the parent register defect, still `_o_`); `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` finding 10.
+**Cross-references:** `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` (the parent register defect, still `_o_`); `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` finding 10.
 
 **Verified at HEAD `6049d3e`.** A case-sensitive comparison of the normalised token streams shows exactly ten tokens gaining a capital and none losing one. Three of the ten are `those`, `it` and `that`:
 

@@ -31,7 +31,19 @@ hooks/lib/__tests__/domain-cascade.test.ts (27), README-hooks.md (24).
 
 ## Turns
 
-(none yet)
+Filled on 260824 from `## Per-Turn Log` below, which was written as the session ran; this section
+never was (`circles/260801-1244-curator/issues/260814-1450_*_the-turn-3-bookkeeping-says-no-review-ran-in-the-commit-that-landed-the-review.md`).
+
+- Turn 1: T1, T2, T3 completed; T4 deliberately held.
+- Turn 2: T5 and T4 completed; commits `5a1ec16`, `5c843e6`, `00f4a0b`.
+- Turn 3: T6 completed, T7 blocked; commits `7421f51`, `2a8a2f7`; ended at a Rebalance gate.
+- Turn 3, continued (after the resume): T7 and T8 completed; commits `1a36fe4`, `0301909`; the
+  Turn-3 review filed six findings in `18173e1`.
+- Turn 4: T9 completed; commits `18173e1`, `bf9553f`, `0b14d03`, `d5b71f1`, `6d433c2`; six review
+  findings, two High.
+- Turn 5: T10 completed; commits `9f4cdac`, `41c224c`; four review findings, two High; Rebalance gate.
+- Turn 6: T11, T12, T13 completed; commits `f0d9d60`, `b90ea28`, `d270666`, `d90b794`; one High,
+  two Low; coherent.
 
 ## User decisions recorded this session
 
@@ -191,6 +203,13 @@ is not on its path; it should be rebuilt before anything consumes it as current.
 - Review findings: none yet — the incremental review for this Turn has not run
 - Circuit breaker status: OK
 - Coherence: not yet evaluated for this Turn
+
+  *Correction appended 260824 (ontocoder, plan step 5).* The two bullets above were false in the
+  commit that wrote them: `18173e1` landed this Turn's incremental review,
+  `circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`, with six findings
+  (four Medium, two Low, split four under the Circle's `issues/` and two under `shared/issues/`),
+  and the per-Turn `coherence_review` for Turn 3 was recorded `ok` at 12:42:06 before the Rebalance
+  gate at 13:13:35. The bullets stand as written; this note is the correction.
 
 **What T7 established.** The curator surveyed the three normative surfaces of fusion's own
 repository and proposed 28 corrections, every one of them tier 1: a checkable statement about the

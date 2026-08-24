@@ -438,3 +438,12 @@ procedure that several consumers must run verbatim: a rule file with a derived a
 8. F4 (latent — pair it with whichever plane fix lands first), F11, F12, F13, F15, F16, F17, F14.
 
 **Do not sequence F14 (version bump) ahead of F1.** Release step 0 is "Validate first."
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `### Totals` table and the sentence beneath it are left as
+written. Tallied from the seventeen finding headings this file carries (`grep -cE '^\*\*F[0-9]+ · '`
+returns 17), the counts are High 3, Medium 7, Low 7, seventeen in all, and the sentence should read
+seventeen; the stamp range `260810-0455` to `260810-0511` is right and every record in it is real.
+The totals stay typed rather than derived: no gate reads a review's count, and a reader who needs the
+number recounts the `**F<n> ·` headings. Filed as
+`shared/issues/260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`.

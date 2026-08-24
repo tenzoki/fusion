@@ -506,14 +506,19 @@ its extension.
 - The two decisions the Grounding named as this Circle's work carry an answer on disk, and the
   third, `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md`, has the
   condition it set for itself met.
-- All four growth bounds pass with no baseline having moved, and the only cut made is the one step 3
-  names in its own commit message.
+- All four growth bounds pass with no baseline having moved, and every cut made is named in its own
+  commit message. *(Amended 260824: the clause named one cut and two landed, `5b88eb9` and `8092c11`;
+  see the note under this section.)*
 - No record written before this Circle has been rewritten, and no filename pattern anywhere has
   changed.
 
 **A precondition on any release or tag that carries this work.** The Circle's review must have run
-over the full commit range before a tag is pushed, and `bin/fusion-review-coverage` must name no
-uncovered commit in that range. This clause exists because a Circle whose review was made a
+over the full commit range before a tag is pushed; `bin/fusion-review-coverage` is run over that range,
+and any commit it names as uncovered is a named residual in the closure note, since coverage is
+advisory and the closure note is where the gap is recorded
+(`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+option 1). *(Amended 260824: the clause read "must name no uncovered commit", which a review that
+lands in its own commit can never satisfy; see the note under this section.)* This clause exists because a Circle whose review was made a
 precondition of its tag was tagged and pushed without the pass, and only a post-release
 reconciliation noticed. Binding decision:
 `shared/decisions/260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`.
@@ -522,6 +527,16 @@ reconciliation noticed. Binding decision:
 `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
 must be answered before step 6 writes the halt rule, because that rule is the answer written down.
 It is answerable at this plan's gate.
+
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Two clauses above were amended in place, each marked where it stands. The growth-bound clause
+named one cut where two landed: `5b88eb9` in `skills/setup/SKILL.md` (step 3) and `8092c11`, 44 lines of
+comment prose across three hook test files (task S8b), the response the plan's own risk table prescribes.
+The release precondition was written as "must name no uncovered commit", against an instrument the project
+had already decided is advisory (option 1 of `260815-2109`), and at closure it named exactly one commit,
+`cf7a5b0`, the review file's own, which touches no shipped file. Filed as
+`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_the-plans-stopping-clause-names-one-cut-and-two-landed.md`
+and
+`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
 
 ## Data Structures
 

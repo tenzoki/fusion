@@ -282,7 +282,7 @@ wrong, it is inverted, and it makes the pending measurement's dose look weaker t
 - [ ] The wrong `workbench-tracking` claim is corrected wherever it stands live, which at HEAD is the
       decision record's 260819 reconciliation and this Circle's own Grounding snapshot.
 - [ ] The unreproducible token count in the progress note on
-      `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+      `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
       is corrected: the identity is stated without a total, or with the tokenisation that produces
       one, and the capitalisation claim is stated in the direction the evidence shows, which is ten
       tokens gaining a capital and none losing one.
@@ -452,13 +452,13 @@ effect here. Sequence C1 early enough that the second write is the mechanism's o
 ## Out of Scope
 
 - **Any test or gate that measures a prose property.** Not authorised until C10 has run.
-- **`shared/issues/260812-0253_o_rules-lose-their-effect-during-a-long-dispatch.md`.** Its stated
+- **`shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`.** Its stated
   cause was refuted by measurement on 260817: within-document em-dash compliance improves toward the
   end of a document, which is the opposite of decay with context depth. Its remaining remedy, attaching
   a rule to the act it governs, is gated on decision `260810-0710`, which is deferred. It is a
   dispatch-architecture question, not a style-rule question.
 - **The second half of
-  `shared/issues/260812-0253_o_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`.**
+  `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`.**
   See `## User Decisions Pending` question 5.
 - **`CLAUDE.md`'s own em-dash rate.** It is not emitted by `bin/fusion-rules` and is not part of the
   corpus this Circle repairs.
@@ -497,22 +497,22 @@ one is the decision that this Circle advances rather than closes.
 
 | Record | Cause | Resolved by | Note |
 |---|---|---|---|
-| `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` | RC3 | C3, C6 | Closes when the corpus is at the ceiling under the stated metric and the table's membership is a derivation. |
+| `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` | RC3 | C3, C6 | Closes when the corpus is at the ceiling under the stated metric and the table's membership is a derivation. |
 | `shared/issues/260816-1330_o_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` | RC3 | C3 | Its own proposed marks are the acceptance criterion. |
 | `shared/issues/260816-1330_o_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` | RC3 | C3 | Same. |
-| `shared/issues/260816-1330_o_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md` | RC1 | C6 | The progress note is corrected; the commit message stands. |
+| `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md` | RC1 | C6 | The progress note is corrected; the commit message stands. |
 | `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md` | RC1 | C6 | Plus the inverted `workbench-tracking` claim found today. |
 | `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` | RC1 | C1, C2 | Its option 2 as a test is not affordable; C1 is the same mechanism as a Setup step. |
 | `shared/issues/260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` | RC1 | C1 | Its candidate 1 is a narrower version of what C1 does generally. |
 | `shared/issues/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` | RC1 | C2 | All three parts: the number, the de/en divergence, the trailing space. |
-| `shared/issues/260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` | RC1 | C6 | Appended note on the run file, not a rewrite. |
-| `shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` | RC1 | C9 | Its item 2 lands unconditionally; item 1 is question 3 below. |
+| `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` | RC1 | C6 | Appended note on the run file, not a rewrite. |
+| `shared/issues/260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` | RC1 | C9 | Its item 2 lands unconditionally; item 1 is question 3 below. |
 | `circles/260801-1244-curator/issues/260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` | RC1 | C8 | About 800 bytes against 2 259 of head-room. |
 | `circles/260801-1244-curator/issues/260814-1332_o_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md` | RC2 | C7 | A §4 case: the mechanism moves, not the wording. Subject to question 6. |
 | `shared/issues/260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` | RC2 | C5, **in part** | The ambiguity is removable now; the two numbers are question 2. |
-| `shared/issues/260812-0253_o_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` | RC2 | C4, **in part** | C4 closes the opener half. The record's structural half, that the rule prescribes relocation and states no total budget, is question 5. |
+| `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` | RC2 | C4, **in part** | C4 closes the opener half. The record's structural half, that the rule prescribes relocation and states no total budget, is question 5. |
 | `shared/issues/260818-1452_c_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md` | RC2 | **already closed** | Read for its pattern. Its resolution is the template C4 and C5 follow: a clause plus a demonstrated before and after, with the cost reported against the head-room. Not reopened. |
-| `shared/issues/260812-0253_o_rules-lose-their-effect-during-a-long-dispatch.md` | none of the three | **left open** | Cause refuted by measurement; remedy gated on a deferred decision. Out of scope, stated above. |
+| `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` | none of the three | **left open** | Cause refuted by measurement; remedy gated on a deferred decision. Out of scope, stated above. |
 | `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` | RC3 | C10 | Advanced, not necessarily closed. Its marker follows the three-outcome scheme in question 4. |
 
 One record is added by this spec:

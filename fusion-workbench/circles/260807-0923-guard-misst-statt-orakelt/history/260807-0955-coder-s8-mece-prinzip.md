@@ -9,7 +9,7 @@
 ## Was geändert wurde
 
 **`rules/critical-stance.md`** — neuer Abschnitt 4, "A case split is disjoint and
-complete — or the question is cut wrong". Drei Sätze in aufsteigender Kostenordnung:
+complete, or the question is cut wrong". Drei Sätze in aufsteigender Kostenordnung:
 disjunkt und vollständig, sonst Defekt; lässt es sich nicht herstellen, ist der Schnitt
 falsch; ist die Frage aus den Eingaben des Mechanismus unentscheidbar, wechselt der
 Mechanismus statt der Näherung. Dazu vier gesetzte Teile:
@@ -92,3 +92,9 @@ Die drei Tore, die dieser Schritt hätte reißen können, sind grün:
 - **`rules/critical-stance.md` ist englisch, die Projektsprache ist `de`.** Der neue Abschnitt
   wurde auftragsgemäß englisch geschrieben, damit die Datei nicht halb und halb wird. Der Bruch
   bleibt bestehen und ist absichtlich nicht behoben — er ist als Beobachtung gemeldet.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The citation of `rules/critical-stance.md` section 4 in this file
+spelled the heading with the em-dash it carried at `327d0b6`; `b393a45` (260821) repunctuated the
+heading to a comma and the citation went dead. It now carries the current spelling. Filed as
+`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md`.

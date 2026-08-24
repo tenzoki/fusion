@@ -66,3 +66,14 @@ Two separable pieces, and the first does not depend on the second.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:209` still cites `/fusion:monitor-reset`, and `ls skills/` returns twelve directories, none of them that one. The reference lint still resolves only path-shaped citations, not slash-command names. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The sentence under `## Suggested direction` item 2, "Built-in Claude
+Code commands are not in that namespace, so the rule has no exceptions to carve", is retracted. One
+exception exists in a shipped skill body: `skills/setup/SKILL.md` names the retired
+`/fusion:migrate-workbench-v2` to explain why `.migration-v2-backup/` is on an exclusion list (at
+`:49` when the exception was found on 260811, at `:60` at the 260817 reconciliation). The proposed
+lint was never built, and acceptance criterion 2 as written fails against the tree; a lint would need
+the line-level exemption its sibling `commit-message-path.test.ts` uses for a line that marks its
+reference as retired or absent. Filed as
+`shared/issues/260811-1617_*_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md`.

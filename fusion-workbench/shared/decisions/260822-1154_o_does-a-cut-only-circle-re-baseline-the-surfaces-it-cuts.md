@@ -60,3 +60,6 @@ the same slice and diffed at this pass (413, 389, 1 554 and 1 042 bytes). `## Re
 `hooks/lib/__tests__/helpers/growth-bound.ts` is also unchanged in the range, so event 1's wording
 still reads the way this record says invites the raise. One Circle's practice is not an answer:
 the record binds the next cut-only Circle and nothing on disk settles it.
+
+---
+Also seen: 260824-2022 by ontocoder — `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1942_*_nothing-detects-a-raised-growth-baseline-and-the-only-bound-on-one-is-a-comment.md` asks the neighbouring question, whether a baseline *raise* is meant to be detectable by anything other than a human reading a diff: the doctrine names two events at which a baseline moves and nothing asserts that a third has not happened. Referred here at its closure.

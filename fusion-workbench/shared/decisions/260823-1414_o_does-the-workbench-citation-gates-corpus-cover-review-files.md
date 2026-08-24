@@ -104,7 +104,7 @@ reads outside its own argument; options 1 and 4 cost nothing to land and nothing
 
 ## Measured
 
-At HEAD `a2a18f9` on 2026-08-23, over `circles/*/reviews/*.md` and `shared/reviews/*.md`, counting
+At HEAD `7cd79f1` on 2026-08-23, over `circles/*/reviews/*.md` and `shared/reviews/*.md`, counting
 bare-record tokens of the form `YYMMDD-HHMM_x_<slug>.md` outside fenced blocks and resolving each
 against the tree by filename:
 
@@ -125,3 +125,11 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `## Measured` anchor was changed from `a2a18f9` to `7cd79f1`,
+this record's own filing commit. The file counts in the table (90, 34, 3) and the "90 exist today" in
+`## Question` are the tree at `7cd79f1`; at `a2a18f9` the first and third read 89 and 2, because the
+active Circle's third review was added one commit later. The token and dangling figures (522, 270 in
+64, 116 in 22, zero) are identical at both anchors and are unchanged. Filed as
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1640_*_the-corpus-decisions-measured-block-declares-an-anchor-whose-tree-gives-different-file-counts.md`.

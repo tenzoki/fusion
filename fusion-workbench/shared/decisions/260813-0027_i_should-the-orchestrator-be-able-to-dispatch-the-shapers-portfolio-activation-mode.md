@@ -174,3 +174,16 @@ The `Implemented:` footer was re-derived from the tree rather than taken on repo
 `README-agents.md:66-68` carries the roster rows that permit the dispatch, which is the surface the
 Turn-4 review found still forbidding it and Turn 5 corrected in `9f4cdac`. All three surfaces agree
 at HEAD.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `Answered:` footer above cites a location that does not hold the
+answer and a trigger that postdates the gate; it stands as written, and this is the correction.
+**Where the answer is recorded:** `fusion-workbench/orchestrator-events.jsonl`, the `gate_response`
+event at `2026-08-14T13:13:35` ("Rebalance gate: revise Grounding") and the `rebalance_grounding`
+event at the same timestamp, which names option 2 and this record; the cited `## Coherence` section of
+`shared/history/260813-2345-orchestrator-session.md` is the reconciler's verdict and records no user
+answer. **The ordering:** what preceded the gate was the per-Turn `coherence_review` recorded `ok` and
+the net-negative `circuit_breaker`, both at 12:42:06; the reconciler's `review-needed` verdict was
+written at 14:57, one hour and forty-four minutes after the gate, and could not have triggered it.
+Filed as
+`circles/260801-1244-curator/issues/260814-1850_*_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`.

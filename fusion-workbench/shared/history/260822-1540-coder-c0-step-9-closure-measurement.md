@@ -283,3 +283,12 @@ suite runs.
 Two scratch scripts and one extracted tree under the session scratchpad
 (`measure.mjs`, `core.mjs`, `at370/`) were deleted after the measurement. Nothing was written inside
 the repository or the workbench except this file.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `agents/*.md` paragraph assigns both reviewer prompts' whole
+reduction, 9 504 bytes, to `rules/review-contract.md`. The relocation is 8 894 bytes, the figure the
+step-3 history and the decision record carry; the other 610 are the two reviewer prompts' share of the
+five-claim cut (305 each), since the five claims stood in all fifteen prompts and not in thirteen.
+The following sentence should read "the remaining 5 459 bytes across the other thirteen prompts".
+The totals are unaffected: 14 963 cut, `agents/*.md` at 16 601 bytes of head-room either way. Filed as
+`shared/issues/260822-1556_*_the-closure-measurement-assigns-610-bytes-of-the-five-claim-cut-to-the-reviewer-contract-relocation.md`.

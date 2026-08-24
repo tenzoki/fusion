@@ -2,7 +2,7 @@
 
 **Directive:** (not yet stated — Setup ran on its own; the user's request follows)
 **Mode:** (unresolved — Phase 0 has not run)
-**Status:** In progress
+**Status:** Complete
 
 ## Setup snapshot
 
@@ -243,3 +243,9 @@ included a pause to commit; Turns 2 and 6 were not, because their dispatches wen
 previous Turn's commits were still being written. The obligation did not ride an act, and this
 project's own rule for that case — an obligation standing beside an act is the one that gets
 skipped — predicted it.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `**Status:**` line read `In progress` after this session had
+ended; set to `Complete` on 260824, nine days after the fact. Nothing else in the file was changed.
+Filed as
+`shared/issues/260819-1511_*_a-session-history-file-is-left-at-status-in-progress-after-its-session-ended.md`.

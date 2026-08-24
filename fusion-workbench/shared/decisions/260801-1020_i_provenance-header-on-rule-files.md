@@ -59,7 +59,7 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
-Answered: shared/history/260801-0936-orchestrator-session.md '## Design decisions (session, 260801)' D3/D-e — Full adoption now: rule files carry a provenance header, all nine plugin rule files are backfilled, and a lint gate fails a rule file that lacks one. User chose full adoption over the shaper's proposed adopt-going-forward-and-defer-backfill default. Realised as acceptance criteria in shared/planning/260801-1122_o_spec-normative-consolidation.md.
+Answered: shared/history/260801-0936-orchestrator-session.md '## Design decisions (session, 260801)' D3/D-e — Full adoption now: rule files carry a provenance header, all nine plugin rule files are backfilled, and a lint gate fails a rule file that lacks one. User chose full adoption over the shaper's proposed adopt-going-forward-and-defer-backfill default. Realised as acceptance criteria in shared/planning/260801-1122_*_spec-normative-consolidation.md.
 
 **Reconciliation 260801-2029 (reconciler) — NOT promoted to `_i_`. Marker stays `_a_`.**
 

@@ -318,3 +318,13 @@ sequenceDiagram
     R-->>O: coherent, one further overstated closure
     Note over O: Converged
 ```
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The Turn 2 paragraph on U3 justifies leaving the migration gap open
+with "the removal is in no released version". The tag half is true: `v10.2.0` is on an ancestor. The
+conclusion drawn from it is not, because `install.sh` defaults to `heads/main` and `fusion --update`
+re-fetches the same ref, so a user who installed or updated after `b54ace5` carries the removal while
+their `plugin.json` still reads `10.2.0`. The reasoning that holds is that the version string does not
+distinguish who has the change from who does not, which is a stronger argument for the release-time
+check the open record carries and a different one from the one recorded. Filed as
+`shared/issues/260819-0823_*_the-installed-base-premise-behind-leaving-the-migration-gap-open-is-contradicted-by-install-shs-default-ref.md`.

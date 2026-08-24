@@ -63,7 +63,7 @@ off the shell semantics of an unset expansion, not measured.
 
 **Fix direction.** Replace the one-liner with the four-line shape its siblings carry, adapting only
 the closing sentence, and reword the following paragraph to name the one root actually tried. Note
-that `260816-0133_o_the-setup-and-migrate-probes-are-byte-identical-in-three-copies-with-no-gate-against-the-next-drift.md`
+that `260816-0133_*_the-setup-and-migrate-probes-are-byte-identical-in-three-copies-with-no-gate-against-the-next-drift.md`
 is the standing record that nothing gates this kind of drift; this is a fresh instance of it and a
 reason to weigh that record rather than to refile it.
 
