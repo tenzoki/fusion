@@ -1,0 +1,223 @@
+#!/usr/bin/env bash
+# fusion-identity — the one place a fusion run obtains who wrote a record and
+# which checkout it was written in.
+#
+# Usage:
+#   fusion-identity
+#
+# Takes no arguments. Output on stdout, in the KEY=value shape
+# `bin/fusion-paths` established, at most two lines and always in this order:
+#
+#   PERSON=Kai Stalmann <kai@qantr.com>
+#   CHECKOUT=3f9a1c07
+#
+#   PERSON    git's own `Name <email>` form, read from `git config user.name`
+#             and `git config user.email`. Read, never written.
+#   CHECKOUT  eight lowercase hex characters, read from
+#             fusion-workbench/.checkout-id, minted there on first read and
+#             never again.
+#
+# Every reason on stderr, one line each. The program prints no value it did not
+# read or mint: there is no default, no placeholder and no fallback anywhere
+# below, and a line it cannot produce is absent rather than empty.
+#
+# Exit codes:
+#   0  both lines printed.
+#   1  inside a git work tree whose `user.name`, `user.email`, or both are
+#      unset or empty. Names which. Nothing on stdout. **The caller halts,
+#      reports the reason, files nothing, and substitutes no value.** This is
+#      the only code that means stop.
+#   2  usage error: an argument was given, or -h/--help.
+#   3  the checkout identifier could not be resolved. `PERSON=` is printed,
+#      `CHECKOUT=` is not. The caller carries on.
+#   4  no git identity is owed, because this is not a git work tree.
+#      `CHECKOUT=` is printed, `PERSON=` is not. The caller carries on, files
+#      the record with the agent alone, and the person field is absent rather
+#      than empty.
+#   5  3 and 4 together: neither line is printed. The caller carries on.
+#
+# ---------------------------------------------------------------------------
+# Why 1 and 4 are different codes, and why they must stay different
+#
+# They are the two halves of one answer, and merging them makes this program
+# undecidable for its callers. A prompt keys on the exit code and cannot key on
+# stderr prose (`rules/fusion-workbench-conventions.md` `## Path Resolution` ->
+# Exit codes, where 3 and 4 "must never be merged" for the same reason).
+#
+#   1  says *stop, something is wrong*. A tree that intends to commit and
+#      cannot is misconfigured, and a record filed from it would name nobody.
+#   4  says *carry on, there is nothing to name*. A directory that is not a git
+#      repository takes no part in the multi-checkout arrangement, so no
+#      identity is owed and none is missing.
+#
+# fusion supports a non-git project deliberately and in shipped code
+# (`skills/setup/SKILL.md` Step 0h, `bin/fusion-count-sources`, neither of which
+# treats the absence of git as a fault). Folding 4 into 1 would withdraw that
+# support as a side effect of a field on a template. Binding record:
+# `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
+# option 2.
+#
+# The halt condition is evaluated **here and nowhere else**. No agent prompt
+# restates it; they read the code. A halt condition restated per caller is the
+# thicket `rules/critical-stance.md` §2 rules out.
+#
+# ---------------------------------------------------------------------------
+# Why 3, 4 and 5 are three codes rather than one "partial"
+#
+# The two halves are independent facts about the tree, so the outcome space is
+# a 2x2 and the table tiles it: both halves resolved (0), the checkout half
+# missing (3), the person half not owed (4), neither (5). A caller therefore
+# learns which line is absent from a number, instead of testing stdout for the
+# absence of a line, which in shell is the reliable way to mistake an empty
+# capture for a present one.
+#
+# Exit 1 dominates the table. When the identity is unset the caller stops, so
+# the checkout half is moot: nothing is printed, nothing is minted, and the
+# call leaves no trace. A failing call has no side effect.
+#
+# ---------------------------------------------------------------------------
+# Exit 3 names an outcome, never a cause
+#
+# Three different things reach it: no workbench above the working directory, an
+# existing `.checkout-id` that does not hold an identifier, and a workbench the
+# minting write could not reach. The caller does the same thing in all three,
+# and the cause is on stderr for the human. The code is deliberately phrased as
+# "the identifier could not be resolved" and not as "this project has no
+# workbench", so that a broken install is never reported as an answer about the
+# project. That is the distinction `bin/fusion-turn-budget` draws with two codes
+# and this program draws inside one, because there the two causes changed what
+# the user had to go and fix and here they do not.
+#
+# A `.checkout-id` holding anything but eight lowercase hex is reported and
+# **never overwritten.** A value that is already in use elsewhere is not this
+# program's to destroy, and re-minting over it would hand two checkouts the
+# same history under two different identifiers.
+#
+# ---------------------------------------------------------------------------
+# Minting, and why it is minted at all
+#
+# The identifier distinguishes two checkouts held by one person, which is the
+# collision the field exists to prevent, so the git identity cannot supply it.
+# Hostname plus workbench path is the obvious derivation and was rejected on the
+# one property the field exists for: it is unique only where hostnames are, and
+# default hostnames repeat. A minted random value is unique by construction.
+#
+# The write is a noclobber redirect (`set -C`), which is O_EXCL: it either
+# creates the file exclusively or fails. Two agents racing therefore mint one
+# identifier, because the loser's write fails and both then read the winner's
+# file. The value is read back after the write on every path, so what is printed
+# is what the file holds rather than what this process generated. `/dev/urandom`
+# supplies four bytes; `od -tx1` renders them lowercase.
+#
+# Minting happens here rather than only in `/fusion:setup`, and that is the
+# point of doing it on first read: a checkout set up under an older fusion would
+# otherwise halt on every filing until Setup were re-run.
+#
+# `fusion-workbench/.checkout-id` is class L in `rules/workbench-tracking.md`.
+# It never travels, and a checkout that pulls another checkout's copy of it is
+# the one failure that makes the field meaningless.
+
+set -eu
+
+usage() {
+  cat >&2 <<'USAGE'
+usage: fusion-identity
+Prints PERSON=<name> <<email>> and CHECKOUT=<8 hex>, each only if it could be
+read or minted. See the header of this script for the exit-code table; exit 1
+is the only code that means the caller halts.
+USAGE
+}
+
+if [ "$#" -ne 0 ]; then
+  usage
+  exit 2
+fi
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# --- the person half --------------------------------------------------------
+#
+# Established before anything is written, so the halt path has no side effect.
+
+person=''
+
+if command -v git >/dev/null 2>&1 &&
+   [ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" = "true" ]; then
+  name="$(git config --get user.name 2>/dev/null || true)"
+  email="$(git config --get user.email 2>/dev/null || true)"
+
+  missing=''
+  verb='is'
+  [ -z "$name" ] && missing='user.name'
+  [ -z "$email" ] && { [ -n "$missing" ] && { missing="$missing and user.email"; verb='are'; } || missing='user.email'; }
+
+  if [ -n "$missing" ]; then
+    printf 'fusion-identity: inside a git work tree, but git %s %s not set.\n' "$missing" "$verb" >&2
+    printf 'fusion-identity: no record can name its author here. Set the missing value with `git config --global <key> "..."`.\n' >&2
+    exit 1
+  fi
+
+  person="$name <$email>"
+else
+  printf 'fusion-identity: not a git work tree, so no identity is owed and none is missing.\n' >&2
+fi
+
+# --- the checkout half ------------------------------------------------------
+
+checkout=''
+root=''
+
+if [ ! -x "$here/fusion-workbench-root" ]; then
+  printf 'fusion-identity: %s is missing — the plugin install is incomplete.\n' \
+    "$here/fusion-workbench-root" >&2
+else
+  root="$("$here/fusion-workbench-root" 2>/dev/null || true)"
+  [ -n "$root" ] || printf 'fusion-identity: no fusion workbench above %s. Run /fusion:setup.\n' "$(pwd)" >&2
+fi
+
+if [ -n "$root" ]; then
+  target="$root/fusion-workbench/.checkout-id"
+
+  if [ ! -e "$target" ]; then
+    minted="$(LC_ALL=C od -An -N4 -tx1 -v < /dev/urandom | tr -d ' \n')"
+    if [ "${#minted}" -ne 8 ]; then
+      printf 'fusion-identity: could not read four bytes from /dev/urandom.\n' >&2
+    elif ! ( set -C; printf '%s\n' "$minted" > "$target" ) 2>/dev/null; then
+      # Either another process won the race (the file now exists and is read
+      # below) or the workbench could not be written to (the read below fails).
+      :
+    fi
+  fi
+
+  if [ -r "$target" ]; then
+    # Read back on every path, minted or not: what is printed is what the file
+    # holds. `head -1` so a file someone appended to is reported as invalid
+    # rather than silently truncated to its first line.
+    held="$(head -1 "$target" 2>/dev/null | tr -d ' \t\r\n' || true)"
+    if printf '%s' "$held" | LC_ALL=C grep -Eq '^[0-9a-f]{8}$'; then
+      checkout="$held"
+    else
+      printf 'fusion-identity: %s does not hold an identifier (expected 8 lowercase hex). It was not overwritten; inspect it, and delete it only if no record cites it.\n' \
+        "$target" >&2
+    fi
+  elif [ -e "$target" ]; then
+    printf 'fusion-identity: %s exists but cannot be read.\n' "$target" >&2
+  else
+    printf 'fusion-identity: could not mint %s — the workbench is not writable.\n' "$target" >&2
+  fi
+fi
+
+# --- report -----------------------------------------------------------------
+
+if [ -n "$person" ]; then printf 'PERSON=%s\n' "$person"; fi
+if [ -n "$checkout" ]; then printf 'CHECKOUT=%s\n' "$checkout"; fi
+
+if [ -n "$person" ] && [ -n "$checkout" ]; then
+  exit 0
+elif [ -n "$person" ]; then
+  exit 3
+elif [ -n "$checkout" ]; then
+  exit 4
+else
+  exit 5
+fi

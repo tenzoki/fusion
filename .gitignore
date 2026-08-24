@@ -39,6 +39,7 @@ bin/*
 !bin/fusion-staging-drift
 !bin/fusion-turn-budget
 !bin/fusion-prose-metric
+!bin/fusion-identity
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
@@ -78,6 +79,10 @@ fusion-workbench/agentstate.yaml
 fusion-workbench/orchestrator-live.md
 fusion-workbench/.session-marker
 fusion-workbench/.active-circle
+# The checkout identifier, minted once by bin/fusion-identity. Class L for the
+# reason the field exists: a checkout that pulled another checkout's copy would
+# be indistinguishable from it, which is the collision the identifier prevents.
+fusion-workbench/.checkout-id
 fusion-workbench/.guard-state/*
 fusion-workbench/.commit-lock/*
 # Verbatim copy of the tracked bin/monitor, re-created by /fusion:setup.

@@ -589,7 +589,7 @@ function scanHeadingAnchors(
 // Step 1 and the Turn-count rationale in Step 5), `bin/fusion-paths` (Step 0i's ordering rationale)
 // and `rules/fusion-workbench-conventions.md` (the top-of-file restatement, which is also the -1
 // anchor, `## Path Resolution`). records -1 is the defect Step 0e cited for why it exists.
-const BASELINE = { paths: 1291, anchors: 180, records: 117 };
+const BASELINE = { paths: 1303, anchors: 181, records: 119 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the

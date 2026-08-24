@@ -86,3 +86,35 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+
+## Answer (user, 260824)
+
+**Option 2: halt only inside a git work tree.** The user was walked through the question a second
+time and chose it, following the recommendation rather than the literal reading of his own earlier
+sentence.
+
+`bin/fusion-identity` therefore evaluates two states and not one. Inside a git work tree whose
+`user.name` or `user.email` is unset, it halts and reports which value is missing. Outside a work
+tree it reports that there is no identity to read, the record carries the agent alone exactly as
+every record does today, and the person field is **absent rather than empty**.
+
+**What the answer rests on.** The obligation and the transport get the same boundary, and git is the
+boundary the whole capability is drawn on. The user's earlier instruction was given about a case he
+named, a tree that intends to commit and cannot, and extending it to a case he did not name would
+have withdrawn single-user non-git operation as a side effect of a field on a template. fusion
+supports that case deliberately today, in `skills/setup/SKILL.md` Step 0h and in
+`bin/fusion-count-sources`, neither of which treats the absence of git as a fault.
+
+**The accepted cost, stated rather than glossed.** Two branches instead of one, and a second reading
+of what "no git configuration" means. The absence of the field carries information only because the
+rule that produces it is written down, which is step 6's work. And the third constraint above still
+holds: records written before this Circle are not rewritten, so an absent field can never by itself
+say anything about the tree a record was written in.
+
+**Unchanged by this answer:** no value is ever substituted for a missing identity, and the condition
+is evaluated in one place.
+
+---
+Answered: circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md `## Answer (user, 260824)` — option 2, halt only inside a git work tree; outside one the person field is absent rather than empty.

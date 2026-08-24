@@ -250,7 +250,7 @@ flowchart TD
      240 237; `npm test` is green; no Setup or `/fusion:next` behaviour is removed, only restated
      text; the commit message names the cut and the measured figure.
 
-4. **Add `bin/fusion-identity`, the one identity mechanism**
+4. [DONE] **Add `bin/fusion-identity`, the one identity mechanism**
    - Executor: `coder`
    - Files: `bin/fusion-identity` (new), `.gitignore`, `CLAUDE.md`
    - Changes: a POSIX shell helper, no node half and no compiled half, following
@@ -272,6 +272,24 @@ flowchart TD
      it; `npm test` is green, which is what proves the `CLAUDE.md` row landed; the header carries
      the usage block and the full exit-code table; the helper prints no value it did not read or
      mint.
+   - **As built (260824), two departures from the step text above, both forced by the answer to the
+     open decision, which the step text predates.** (a) **The exit table has six codes, not four.**
+     The step folds "not a git work tree" into exit 1, and the decision's option 2 makes the two
+     states opposite instructions to the caller, so they cannot share a code a prompt keys on.
+     Exit 1 is now the only halting code; exit 4 is "no identity is owed", non-halting, person field
+     absent rather than empty; 3 is the checkout half unresolved and 5 is both halves missing, so the
+     2x2 of outcomes tiles. Reasoning in the helper's own header, `## Why 1 and 4 are different
+     codes` and `## Why 3, 4 and 5 are three codes`. (b) **`.checkout-id`'s classification rode this
+     commit, not step 6's.** `rules/workbench-tracking.md` binds a new root-anchored surface to a
+     class "in the same commit that creates it", and `rules/fusion-workbench-conventions.md`
+     `## fusion-workbench Layout` says the same of a `bin/` helper that adds one. This commit is the
+     one that makes the surface exist, and an unclassified `.checkout-id` is a live defect rather
+     than a documentation gap: untracked-but-not-ignored, it would travel between checkouts and
+     hand two checkouts one identifier, which is the collision the field exists to prevent. Step 6
+     therefore finds three of its bullets already done — the layout-tree line, the class L entry and
+     the `.gitignore` class L line — and inherits a **spent 537 bytes** of its 2 400-byte always-on
+     allowance (the five measured 95 252 before and 95 789 after; the step's 97 652 cap is
+     unchanged, leaving 1 863 of the allowance).
 
 5. **Test the helper, inside the hook-test line budget**
    - Executor: `coder`
