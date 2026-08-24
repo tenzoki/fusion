@@ -453,7 +453,7 @@ flowchart TD
       sentence and both identities remain readable; `## Boundaries` lists the new write; the
       `skills/` surface is at or below 240 237 bytes; `npm test` is green.
 
-11. **Verify, and measure all four bounds**
+11. [DONE] **Verify, and measure all four bounds**
     - Executor: `coder`
     - Files: none changed except `hooks/lib/__tests__/fixtures/surface-growth.golden`, regenerated
     - Changes: run `npm test` and `claude plugin validate .`. Regenerate the surface golden with
