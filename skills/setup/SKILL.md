@@ -25,7 +25,7 @@ echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 
 Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`. Each shell call gets a fresh shell, so every executable check in this file calls the helper again rather than relying on the variable surviving.
 
-**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string, every `$FUSION_SRC/…` citation then resolves from `/`, and the two steps that cite one without an inline fallback — the Turn budget in Step 2 and the domain detection in Step 3 — would find nothing and say nothing about why. Step 0e cites none: it re-resolves the root in each of its own blocks and skips itself when that comes back empty. The check is this print, once, rather than a test at each site. When it prints `UNRESOLVED`, name it in the Setup-complete summary, say that no step citing a plugin file was run and which ones those were, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a section you could not open. That is `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs* applied to a held root: nothing is read through a value that came back empty, and the run names the value instead.
+**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string, every `$FUSION_SRC/…` citation then resolves from `/`, and the two steps that cite one without an inline fallback — the Turn budget in Step 2 and the domain detection in Step 3 — would find nothing and say nothing about why. Step 0e cites none: it re-resolves the root in each of its own blocks and skips itself when that comes back empty. The check is this print, once, rather than a test at each site. When it prints `UNRESOLVED`, name it in the Setup-complete summary, say that no step citing a plugin file was run and which ones those were, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a section you could not open.
 
 **Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header.
 
@@ -55,7 +55,7 @@ Running the `mkdir` first splits the workbench across two layouts and leaves eve
 
 Detection is by artifact presence, not by version — a workbench with no out-of-format artifacts has nothing to migrate regardless of which version created it. It fires on two shapes: a pre-v4 type-folder / flat-Circle layout, **and** a container-layout workbench whose filenames still carry the old bracket-form state marker (`…[o]-….md`) instead of the underscore form. Both route to `/fusion:migrate`, which brings the workbench fully to the current format. Read-only:
 
-**The bracket-marker probe walks the two trees `/fusion:migrate` converts, and nothing else — do not widen it.** It anchors its `find` at `shared/` (any depth) and `circles/` (from depth 2), which is the same candidate list migrate's reformat pass renames (`skills/migrate/SKILL.md:54,87`). A live markered artifact has nowhere else to be: the workbench root holds fixed-name session surfaces and `stilwerk/` fixed-name configuration, and `archive/`, `stashes/` and `.migration-v2-backup/` hold content deliberately taken out of circulation — the archive step of `/fusion:cleanup` (reachable alone as `/fusion:cleanup --only archive`) moves it there, the removed stash skills froze it, and the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) left the backup copy behind as its rollback path. A frozen artifact keeps the filename it carried when it was frozen, so a workbench that ever archived pre-underscore content carries bracket markers forever, and not one of them is live. A probe reaching them reads an unconverted workbench, refuses Setup permanently, and routes the user to a migration that reports nothing to do — a deadlock rather than a mere false positive. The principle underneath: this check exists to catch artifacts that would become *unreachable* when the new store is created beside them, and nothing outside the two live trees is on any agent's search path to begin with.
+**The bracket-marker probe walks the two trees `/fusion:migrate` converts, and nothing else — do not widen it.** It anchors its `find` at `shared/` (any depth) and `circles/` (from depth 2), which is the same candidate list migrate's reformat pass renames (`skills/migrate/SKILL.md:54,87`). A live markered artifact has nowhere else to be: the workbench root holds fixed-name session surfaces and `stilwerk/` fixed-name configuration, and `archive/`, `stashes/` and `.migration-v2-backup/` hold content deliberately taken out of circulation. A frozen artifact keeps the filename it carried when it was frozen, so a workbench that ever archived pre-underscore content carries bracket markers forever, and not one of them is live. A probe reaching them reads an unconverted workbench, refuses Setup permanently, and routes the user to a migration that reports nothing to do — a deadlock rather than a mere false positive. The principle underneath: this check exists to catch artifacts that would become *unreachable* when the new store is created beside them, and nothing outside the two live trees is on any agent's search path to begin with.
 
 **The bracket-marker probe matches the marker shape, not any bracket pair.** The `find` name test `'*[[]*[]]*.md'` is only the cheap prefilter; the `grep` behind it keeps a file only when its basename carries the actual old marker form `[x]-` with `x` one of `oatcibspd` — exactly the set `/fusion:migrate`'s rename pass converts (`s/\[([oatcibspd])\]-/_\1_/g`, `skills/migrate/SKILL.md` Step 4). The detector must only look for things the executor can remove: a name like `notes [draft].md` carries a bracket pair no migration will ever rename, and flagging it would refuse Setup permanently while `/fusion:migrate` correctly reports nothing to do — the same deadlock the tree bound above closes, arrived at from the shape side.
 
@@ -83,7 +83,7 @@ mkdir -p ./fusion-workbench/circles ./fusion-workbench/shared/planning ./fusion-
 This is the Circle-container layout defined in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`. Three things about it are worth knowing here:
 
 - **A Circle is a directory, not a file.** `circles/` starts empty; each unit of work later gets `circles/<YYMMDD-HHMM>-<slug>/` with its own `planning/`, `issues/`, `decisions/`, `history/`, `reviews/` and `analyses/`. Setup does not create any Circle.
-- **`shared/` is the home for everything with no Circle affiliation** — the Origin Rule's "unknown origin means shared". `investigations/`, `consult/`, `memos/` and `backlog/` exist only there, because none of the four is produced by executing a Directive — and a backlog entry, being an idea that is not yet a unit of work, precedes every Directive there is.
+- **`shared/` is the home for everything with no Circle affiliation** — the Origin Rule's "unknown origin means shared". `investigations/`, `consult/`, `memos/` and `backlog/` exist only there.
 - **The root-anchored surfaces stay at the root.** `agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl` and `.guard-state/` are read at fixed root-relative paths by `hooks/tracker.ts:33-36` and `bin/monitor:72-75`; `.commit-lock/` by `bin/fusion-commit-lock` and `.session-marker` by `bin/fusion-session-mark`. Never create them anywhere else; none of these consumers has a fallback path. Only `.guard-state/` is pre-created above — the rest appear when their consumer first writes them. The full list is in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`.
 
 Write the setup marker (the file every agent and hook looks for to confirm fusion is set up here) only when it is missing or carries a `plugin_version` other than the shipped one, and only when that shipped version can be read at all; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run` says why:
@@ -96,10 +96,6 @@ V="$(grep '"version"' "$FUSION_PLUGIN_ROOT/.claude-plugin/plugin.json" | head -1
 ```
 
 **`marker-version-unresolved` says the version could not be read, which is not the same as the version matching.** The version now decides whether anything is written, so an unreadable one leaves no comparison to make: the block writes nothing and prints that token. Setup is not blocked, the same way Steps 0b, 0d and 0f do not block. A marker is never written with an empty version, because the next run's comparison cannot tell an empty one apart from a real one, and the version that produced this workbench would be gone with nothing else recording it. Report the token in the Setup-complete summary together with whichever of the two outcomes followed: an existing marker was left exactly as it stands, or the workbench has no marker at all and is therefore not set up here until the session is restarted and Setup run again.
-
-A marker already carrying `"plugin_version":""` is left as it is rather than repaired. The condition above repairs the field on its own: the next run with a readable version finds no match for it and rewrites it. What no run can restore is which version originally produced that workbench, and that is off the disk with nothing else holding it.
-
-If `./fusion-workbench/` already existed from a prior fusion version, the `mkdir -p` is harmless and existing content is preserved. Pre-v4 content is caught by the layout check above, which stops Setup before this point and routes the user to `/fusion:migrate` — so a workbench reaching this `mkdir` is already in the container layout.
 
 Obtain current time: `date +%H:%M`.
 
@@ -119,7 +115,7 @@ This makes the monitor show the new session immediately, even while the rest of 
 
 ## Step 0b — Refresh the monitor binary locally
 
-Always re-copy the monitor from the installed plugin so the project's copy matches the current plugin version (a stale local monitor from an earlier install is the most common dashboard bug). Copy to a temp file and atomically `mv` it into place — this overwrites cleanly even when a monitor process is currently running (avoids `Text file busy` / `ETXTBSY`):
+Always re-copy the monitor from the installed plugin so the project's copy matches the current plugin version. Copy to a temp file and atomically `mv` it into place — this overwrites cleanly even when a monitor process is currently running (avoids `Text file busy` / `ETXTBSY`):
 
 ```bash
 [ -n "$FUSION_PLUGIN_ROOT" ] && [ -f "$FUSION_PLUGIN_ROOT/bin/monitor" ] && { cp "$FUSION_PLUGIN_ROOT/bin/monitor" ./fusion-workbench/monitor.new && chmod +x ./fusion-workbench/monitor.new && mv -f ./fusion-workbench/monitor.new ./fusion-workbench/monitor && P=./fusion-workbench/.asset-provenance && { [ -f "$P" ] || : > "$P"; } && h="$(shasum -a 256 ./fusion-workbench/monitor | cut -c1-64)" && { grep -q "^$h  monitor$" "$P" || { grep -v "  monitor$" "$P" > "$P.t"; printf '%s  monitor\n' "$h" >> "$P.t"; mv -f "$P.t" "$P"; }; }; }
@@ -132,7 +128,7 @@ If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history fi
 
 ## Step 0c — Concurrent-session check (advisory)
 
-Fusion has no concurrency lock. Two orchestrators on the same project can corrupt `agentstate.yaml`, double-dispatch tasks, and race on `.guard-state/` counters. Setup checks for an active session marker and warns the user.
+Setup checks for an active session marker and warns the user.
 
 ```bash
 "$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" check
@@ -177,7 +173,7 @@ If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history fi
 
 ## Step 0e — Compare the copied assets against the ones this version ships
 
-Step 0d copies a profile once and never looks again, so a profile improved in the plugin never reaches a project that was set up before the improvement (`shared/issues/260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md`). This step closes that. It reads the record Step 0d writes, classifies each asset, and asks **at most one question**.
+This step reads the record Step 0d writes, classifies each asset, and asks **at most one question**.
 
 **Every block below resolves the shipped root itself**, into `$SRC`, with the same guarded `bin/fusion-source-root` call and the same `$FUSION_PLUGIN_ROOT` fallback the top of this file uses. No block here reads `$FUSION_SRC`: that variable is assigned in another shell, is empty by the time these run, and an instruction to substitute the printed path is not a guard. **A root that resolves to nothing skips the step**: ask nothing, change nothing, and say in the Done report that the assets were not compared.
 
@@ -203,7 +199,7 @@ done
 
 **The eight tokens, and the precedence is the branch order above rather than a preference.** The first is `source-root-unresolved`, the skip above: it ends the block before any file is classified, and it is reported rather than enumerated. Cases 5 and 6 are the two ways a comparison has nothing to compare; they are split because they route to different fixes, and both are reported in branch order, the local one first when both hold, because neither is silent by design.
 
-1. **`case1-equal`** — the project's copy *is* the shipped copy. Report nothing. Stamp it: the observation is unambiguous, and recording it is what keeps a workbench that matches today out of case 0 on the day the profile improves.
+1. **`case1-equal`** — the project's copy *is* the shipped copy. Report nothing. Stamp it.
 2. **`case0-unclassifiable`** — the copies differ and no checksum was ever recorded. This is every workbench that existed before this step. Name the file, say plainly that fusion **cannot tell an adaptation from a stale copy** for it, and carry that warning into the offer. Do not guess which it is.
 3. **`case2-stale`** — the project's copy is exactly what it was given, and the shipped file has moved. Offer the replace. This is the case the capability exists for.
 4. **`case3-adapted`** — the project edited its copy and the shipped file did not move. Say nothing about it and do not touch it.
@@ -217,7 +213,7 @@ done
 
 Two options: **"Replace them"** and **"Keep mine"**.
 
-**Both answers end the same way, and that end state is what stops the question repeating.** On "replace", copy the shipped file over the project's, then stamp. On "keep mine", change no file and stamp anyway — the shipped checksum records *this divergence was seen and kept*, which turns the file into case 3 on the next run and re-raises it only when the plugin moves again.
+**Both answers end the same way, and that end state is what stops the question repeating.** On "replace", copy the shipped file over the project's, then stamp. On "keep mine", change no file and stamp anyway.
 
 ```bash
 SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
@@ -237,8 +233,6 @@ for rel in <rel...>; do
   grep -v "  $rel$" "$PROV" > "$PROV.t"; printf '%s  %s\n' "$h" "$rel" >> "$PROV.t"; mv -f "$PROV.t" "$PROV"
 done
 ```
-
-The `grep -q` skip is what makes a second Setup with nothing changed in between rewrite no file at all.
 
 Report in the Done report: which files were replaced, which were kept, which were named as conflicts, which were missing on either side (cases 5 and 6), and, when the block printed `source-root-unresolved`, that the assets were not compared at all. When every file came back `case1-equal`, say nothing about this step — a run with nothing to report is the normal run.
 
@@ -260,8 +254,6 @@ First check whether the project already has one. This is read-only and always al
   ```bash
   [ -f ./fusion.json ] || { cp "$FUSION_PLUGIN_ROOT/templates/fusion.json" ./fusion.json && echo "fusion.json template copied — inherits fusion's own Turn budget until you edit it"; }
   ```
-
-The `[ -f ]` guard inside the copy stays regardless, so the block is safe on its own for anyone who runs it without the probe.
 
 This step does nothing about a leftover `fusion-guard.json`. Naming that file is the configuration loader's job: it names the file, names the Turn-budget key and says where that key belongs now, once per guarded tool call until the file is deleted. Do not read the old file here, and do not offer to move anything out of it.
 
@@ -296,7 +288,7 @@ Desired contents:
 }
 ```
 
-`defaultMode` is the load-bearing field; the `allow` list is belt-and-suspenders for tools the bypass mode still gates. **Bare tool names only** — no scoped path form may be written here under any wording, because none of them match.
+**Bare tool names only** — no scoped path form may be written here under any wording, because none of them match.
 
 1. `mkdir -p .claude`.
 2. Read `.claude/settings.local.json` if present. If absent, create it with the JSON above.
@@ -336,18 +328,11 @@ else
 fi
 ```
 
-Four outcomes, disjoint because `git check-attr` returns exactly one value for `merge` on that path:
-
-- **`union`** — write nothing. A broader glob the project wrote itself may be what set it, and the path already has what the rule asks for.
-- **`unspecified`** — no driver applies, so the comment and the rule line are appended. The `tail -c1` test is what makes that safe: appending to a file whose last byte is not a newline joins the neighbouring rule to the comment and destroys both.
-- **any other value** — leave the file alone and report what was found, which is not always a driver. `set` is a bare `merge`: git's default text merge, the very behaviour this step prevents, reported as that and still not overruled. `unset` is `-merge`, merging switched off. Anything else is a driver the project chose. All three are deliberate.
-- **not a git work tree** — nothing to ask, nothing to write.
-
 ## Step 0i — Report a Circle this checkout never activated
 
 A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`, the condition `agents/playmaker.md` names and `/fusion:next` renders. A pointer deleted by hand is that same state, same report, same offer.
 
-It runs before Step 2 so `bin/fusion-paths` resolves against a Circle activated here. It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
+It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
 
 ```bash
 [ -f ./fusion-workbench/.active-circle ] && echo pointer-present
@@ -372,7 +357,7 @@ Read `./fusion-workbench/agentstate.yaml`.
 - **If it exists:** a prior session was interrupted. You MUST do ALL of:
   0a. **Schema check (v2.9.0).** If the saved `agentstate.yaml` contains the legacy fields `cycle:` or `goal:` (instead of the current `turn:` / `directive:`), it is a pre-v2.9.0 snapshot that cannot be replayed against v2.9.0 fields. The schema rename is a hard break — there is no soft alias. Tell the user "schema mismatch — please restart", offer **Restart only** (delete `agentstate.yaml` and proceed with fresh setup), and do not attempt to resume. Skip the remaining sub-steps once Restart is chosen.
   1. Read the file completely.
-  2. **Derive how far the session got before you summarise it, rather than reading it off the file.** The saved state carries no counters — it never carries a number that could be stale, because the fields that could be were removed on 2026-08-15 along with the check that caught them (`agents/orchestrator.md` **Persistent State File → Format**). It used to: `agentstate.yaml` said `commits: 0` while git counted 6, 7, 8 and 12, measured six times (issue `260801-2038`). Take the two figures from the records that could not freeze:
+  2. **Derive how far the session got before you summarise it, rather than reading it off the file.** The saved state carries no counters. Take the two figures from the records that could not freeze:
 
      ```bash
      A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' ./fusion-workbench/agentstate.yaml 2>/dev/null)
@@ -406,7 +391,7 @@ Read every path `fusion-rules` emits. The helper emits `fusion-workbench-convent
 
 `fusion-paths` resolves where this session writes and searches, and prints `KEY=value` lines (`OUT_HISTORY`, `OUT_ISSUE`, `SCAN_ISSUES`, …).
 
-**Pass `orchestrator`, not `setup`.** Every other skill passes its own name, because `fusion-paths` reads a consumer's key set out of its prompt and each skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill is the exception: it *is* the orchestrator's Setup, and the values resolved here are held by the **orchestrator** for the whole session — including steps that live in `$FUSION_SRC/agents/orchestrator.md` and not in this file. Passing `setup` would yield only the keys this file happens to name, and the orchestrator would be short the rest.
+**Pass `orchestrator`, not `setup`.** Every other skill passes its own name, because `fusion-paths` reads a consumer's key set out of its prompt and each skill is its own consumer (`rules/fusion-workbench-conventions.md` `## Path Resolution`). This skill is the exception: it *is* the orchestrator's Setup, and the values resolved here are held by the **orchestrator** for the whole session — including steps that live in `$FUSION_SRC/agents/orchestrator.md` and not in this file.
 
 Hold these values for the rest of the session and use them wherever a later step names a `$OUT_*` or `$SCAN_*` value — they are the only correct answer to "where does this go". Never guess a path when the resolver fails; stop and report.
 
@@ -428,7 +413,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
   [ -f ./fusion-workbench/.guard-state/escalation.json ] && grep -q '"haltActive"[[:space:]]*:[[:space:]]*true' ./fusion-workbench/.guard-state/escalation.json && echo "legacy halt flag present" || echo "no legacy halt flag"
   ```
 
-  **`no legacy halt flag` — say nothing at all.** An absent file, an unreadable one and `haltActive: false` are the ordinary case, and none of them gets a line in the Setup report. Every other idempotent step here is silent when it has nothing to do, and a Setup that narrates its no-ops is a Setup nobody reads.
+  **`no legacy halt flag` — say nothing at all.** An absent file, an unreadable one and `haltActive: false` are the ordinary case, and none of them gets a line in the Setup report.
 
   **`legacy halt flag present`** — this project is carrying state written by a mechanism fusion no longer ships. **No check fusion still ships can raise a halt**, and no code at this version reads the flag: nothing is blocked by it, and no tool behaves differently whether the file stays or goes. Do not attribute the flag to a particular check — two of them could set it, and which one this project met is not readable from the file. Offer to delete it with one `AskUserQuestion`, in the project's chat language, the same way Step 0g asks its question:
 
@@ -442,7 +427,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
   "Keep it" is the other: nothing is written, Setup continues, and the offer comes back on the next run.
 
-  **Name the effect exactly, and claim nothing beyond it.** Deleting the file removes a leftover flag. It does not clear a halt, unblock writes or restore write access, because at this version nothing is blocked and nothing was taken away. A user who reads "the halt is cleared" believes write access has just been handed back, and it never left. Report it in the Setup-complete summary in those terms: the flag was deleted and nothing about what is allowed changed, or the flag was left in place.
+  **Name the effect exactly, and claim nothing beyond it.** Deleting the file removes a leftover flag. It does not clear a halt, unblock writes or restore write access, because at this version nothing is blocked and nothing was taken away. Report it in the Setup-complete summary in those terms: the flag was deleted and nothing about what is allowed changed, or the flag was left in place.
 - Workbench-domain detection: run the heuristic in `$FUSION_SRC/agents/orchestrator.md` Setup Step 5 (the `decisions_count`/`analyses_count`/`code_files`/`data_files` block). Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner` and `reconciler` dispatches; the user may override at any individual dispatch.
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
@@ -452,7 +437,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
   Output is one `<count> <marker>` line per state (`2 a`, `1 t`); no Circles prints nothing. `find` drives the loop so a missing or empty `circles/` yields no input and the count is zero — no unmatched glob to abort under zsh, no unexpanded pattern to miscount.
 
-  **The underscore marker is inert as a glob.** `_a_circle.md` matches literally — no character-class surprise, no escaping — so the enumeration above (and any per-state glob such as `circles/*/_a_circle.md`) resolves correctly, and `find -name '_a_circle.md'` needs no special handling. The enumeration form is still preferred: it reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
+  The underscore marker is inert as a glob (`rules/fusion-workbench-conventions.md` `## Marker globs`).
 
   If any Circles exist, print a one-line advisory pointing to `/fusion:next` for portfolio review. If none exist, no hint is printed — opt-in behaviour preserved. The orchestrator's Setup Step 5 contains the canonical implementation.
 
@@ -473,7 +458,7 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
   TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
   echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the Step 4 path>\"}" >> ./fusion-workbench/orchestrator-events.jsonl
   ```
-  That field is the session's identity in an append-only log, and a Turn count taken over `turn_start` events runs from the first `session_start` carrying it — which is what lets the count span an interrupted session's resume instead of restarting at zero. Since the Turn number stopped being written to `agentstate.yaml`, this log is the only place it can be read (`agents/orchestrator.md` Phase 2).
+ 
 - Overwrite `./fusion-workbench/orchestrator-live.md` with the real session Directive and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
 
 ## Done

@@ -233,7 +233,7 @@ flowchart TD
      option 2, the rule text it implies and the file that text lands in; no filename pattern is
      changed anywhere in this step.
 
-3. **Cut `skills/` far enough to pay for steps 9 and 10**
+3. [DONE] **Cut `skills/` far enough to pay for steps 9 and 10**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md` primarily; any other `skills/*/SKILL.md` the measurement
      justifies
