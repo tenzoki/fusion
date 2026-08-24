@@ -263,7 +263,7 @@ Three fields sit in the Circle record's head, above its prose: `**Active spec/pl
 defines them and owns their semantics — read the values off that definition, in particular its rule
 that the first two hold **workbench-relative paths, not bare filenames**, because a spec written
 before the Circle existed legitimately lives in another store, and its `### The claim field` for the
-claim's two literal openings. This section says only *when you write them*, which
+claim's three literal openings. This section says only *when you write them*, which
 until now nothing did.
 
 **They were nobody's work, and that is what made them wrong.** Activation renamed the record

@@ -204,7 +204,9 @@ A dispatch prompt carrying a `**Confirmed operations:**` block means: perform ex
 ```
 **Domain:** <detected-domain>
 **Confirmed operations:**
-- split <entry path> into: <slug> — <title>; <slug> — <title>
+- split <entry path>:
+  - <slug> — <title>
+  - <slug> — <title>
 - merge <entry path>, <entry path> into: <slug> — <title>
 - close <entry path> — <reason>
 - defer <entry path> until <target>

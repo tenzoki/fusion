@@ -18,3 +18,6 @@ Commit `01964e4` adds to `rules/fusion-workbench-conventions.md` `## Filename Pa
 **Proposed fix.** Two halves. (1) State the precedence in the `_a_`/`_i_` rows and the `### Decision files` template: for a rule file the location is `file.md` `## Section`; `path:line` stays for code and data, where a line is what the reader opens. One clause in each place, pointing at `## Filename Patterns` rather than restating it. (2) The 24 `Resolved:` lines are records (ontocoder's): rewrite each `rules/<file>.md:N` as the heading anchor of the section it landed in. This is a mechanical pass over the 24 files the commit's stat names.
 
 **Cross-reference.** `shared/issues/260818-1637_c_…` chose not to build the lint extension (its `Resolved:` says so), so nothing will catch the next instance either; that choice is not reopened here.
+
+---
+Resolved: fixed — the `## Filename Patterns` clause now scopes the heading-anchor form to living text and names a `Resolved:`/`Answered:`/`Implemented:` line as a point-in-time citation whose form is `path:line`, so the 24 notes and the two annotation rows stand; rules/fusion-workbench-conventions.md:291

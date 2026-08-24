@@ -16,3 +16,6 @@ The commit-lock header does not carry the `cd` the rule now states as part of it
 **Why it matters.** The `cd` is the one property of `with` that silently changes what a `git add` line does, and the header is the surface a skill author reads when composing a held command from the script rather than from the rule. It is the property that cost the orchestrator a measured pathspec failure (`agents/orchestrator.md` Step 3b step 4).
 
 **Proposed fix.** Two sentences in the header's `with` entry: the command runs from the workbench root (`fusion-workbench-root` from the caller's directory), so pathspecs in it are written absolute. No behaviour change.
+
+---
+Resolved: fixed — the `with` usage entry now says the command runs from the workbench root and every pathspec in it is written absolute; bin/fusion-commit-lock:48-51

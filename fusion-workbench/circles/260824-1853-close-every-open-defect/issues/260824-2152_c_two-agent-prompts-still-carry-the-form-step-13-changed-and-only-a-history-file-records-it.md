@@ -13,3 +13,6 @@ Two agent prompts still carry the form step 13 changed, and only a history file 
 - Both residuals are stated in `circles/260824-1853-close-every-open-defect/history/260824-2059-coder-step-13-rules.md` `## Departures from the records' proposals` and in the `Resolved:` lines of `…260813-1545_c_…` and `…260824-1538_c_the-claim-has-no-defined-value…`. A `grep -rl 'literal opening\|playmaker.md:207'` over this Circle's `issues/` and `shared/issues/` finds no record. `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`: "NEVER put issues or decisions inside … history logs".
 
 **Proposed fix.** `agents/orchestrator.md:266`: "three literal openings". `agents/playmaker.md:207`: the header form with two indented produced-entry lines, matching `rules/circle-records.md` and `skills/next/SKILL.md:140`. Both are inside the `agents/` growth bound; the second adds one line.
+
+---
+Resolved: fixed — the orchestrator says three literal openings and the playmaker emits the `split <entry path>:` header form with indented produced-entry lines; agents/orchestrator.md:266, agents/playmaker.md:207-209

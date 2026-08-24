@@ -44,8 +44,11 @@
 #
 #   fusion-commit-lock with <tag> -- <command...>
 #       Canonical pattern. Acquire, run the command preserving its exit
-#       code, release (even on error or signal via trap). Use this form
-#       unless you have internal control-flow that requires explicit
+#       code, release (even on error or signal via trap). The command runs
+#       from the workbench root (fusion-workbench-root, walked up from the
+#       caller's directory), not from the caller's directory or the git
+#       toplevel, so every pathspec in it is written absolute. Use this
+#       form unless you have internal control-flow that requires explicit
 #       acquire/release.
 #
 #   fusion-commit-lock check
