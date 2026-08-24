@@ -162,13 +162,14 @@ process.on("exit", reapMonitors);
  * of `bin/monitor` (the server is a python heredoc inside it), so driving the
  * interactive case through it adds no dependency this suite did not already
  * have. The reader thread exists so the pty buffer cannot fill and wedge the
- * monitor mid-banner; nothing asserts on what it reads.
+ * monitor mid-banner; nothing asserts on what it reads. stderr is NOT on the
+ * pty: the gate keys on stdout alone, and the browser-gap cases read stderr.
  */
 const PTY_RUNNER = `
 import os, subprocess, sys, threading
 
 master, slave = os.openpty()
-proc = subprocess.Popen(sys.argv[1:], stdin=slave, stdout=slave, stderr=slave,
+proc = subprocess.Popen(sys.argv[1:], stdin=slave, stdout=slave, stderr=None,
                         close_fds=True)
 os.close(slave)
 
@@ -254,7 +255,12 @@ interface MonitorOpts {
    * caller chose rather than the default the program picks when nobody chose.
    */
   bind?: string | null;
+  /** Pipe the monitor's stderr into `lastStderr` instead of discarding it. */
+  stderr?: boolean;
 }
+
+/** What the monitor started last wrote to stderr, when `stderr: true` asked for it. */
+let lastStderr = "";
 
 /** Start the real monitor against `wb` and return the port it answers on. */
 async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number> {
@@ -271,20 +277,11 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
     }
   }
   const [cmd, ...args] = opts.tty === true ? ["python3", ptyRunner(), ...argv] : argv;
-  // MONITOR_BIND=127.0.0.1: the monitor's default bind is the wildcard (LAN
-  // dashboard), and on 2026-08-06 this machine measured macOS parking a
-  // non-loopback listener of a process without Local Network permission in
-  // CLOSED state — never LISTEN — and dropping its inbound SYNs even from
-  // loopback, which made the fetch poll below hang. A loopback bind was exempt.
-  // The pin is what made the suite deterministic regardless of that state, and
-  // it stays: a case whose subject is the panel should not be able to fail for
-  // the host's privacy configuration.
-  //
-  // The pin is therefore also a blind spot, and it is deliberate rather than
-  // total. `bind: null` below reaches the default, and the one case whose
-  // subject *is* the bind uses it — guarded by a probe, because on a host in
-  // the 2026-08-06 state that case genuinely cannot run. See the
-  // "default wildcard bind" describe block at the bottom of this file.
+  // MONITOR_BIND=127.0.0.1: the default wildcard bind hangs the fetch poll on
+  // a macOS host without Local Network permission (measured 2026-08-06), so
+  // the pin keeps a panel case from failing for the host's privacy settings.
+  // `bind: null` reaches the default for the one probe-guarded case whose
+  // subject IS the bind, in the "default wildcard bind" block at the bottom.
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     MONITOR_BIND: "127.0.0.1",
@@ -293,10 +290,12 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
   if (opts.bind === null) delete env.MONITOR_BIND;
   else if (typeof opts.bind === "string") env.MONITOR_BIND = opts.bind;
   const proc = spawn(cmd, args, {
-    stdio: "ignore",
+    stdio: ["ignore", "ignore", opts.stderr === true ? "pipe" : "ignore"],
     detached: true,
     env,
   });
+  lastStderr = "";
+  proc.stderr?.on("data", (chunk: Buffer) => { lastStderr += chunk.toString(); });
   running.push(proc);
   // A child that never execs — python3 gone from PATH, bin/monitor not
   // executable — emits `error` on a spawn nobody listens to, and Node re-raises
@@ -313,15 +312,10 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
         ? `${cmd} was killed by ${signal} before the server answered`
         : `${cmd} exited with status ${code} before the server answered`;
   });
-  // No wall-clock budget here. This wait used to give up after 15 s, and under
-  // three concurrent suites the python3 pty runner -> bash -> fork chain does
-  // not finish inside a budget like that — the case then failed for load rather
-  // than for anything about the monitor
-  // (`shared/issues/260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`).
-  // The two exits below are events: the server answers, or the process that
-  // would have answered is gone. The vitest case timeout is the one deadline
-  // left, and it is a deadlock guard rather than an assumption about how fast
-  // this machine forks.
+  // No wall-clock budget: a 15 s one failed under three concurrent suites
+  // (issue 260811-1409). The two exits are events — the server answers, or
+  // the process that would have answered is gone — and the vitest case timeout
+  // is the one deadline left, as a deadlock guard.
   for (;;) {
     try {
       const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
@@ -505,11 +499,9 @@ describe("bin/monitor — warnings panel capacity", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The archive roll. `/fusion:archive` bounds the guard event log by MOVING it
-// into the archive store and starting a fresh empty one — there is no line or
-// byte ceiling anywhere, because every ceiling drops the oldest lines and the
-// oldest lines are the guard_block / guard_halt / halt_cleared events (decision
-// `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`).
+// The archive roll. The archive step of `/fusion:cleanup` bounds the guard
+// event log by MOVING it into the archive store and starting a fresh empty one
+// (no line or byte ceiling: `hooks/lib/events.ts` header says why).
 //
 // That leaves the monitor reading a file the roll just emptied, and a moment
 // where `mv` has run and the re-create has not. Both are states the panel meets
@@ -788,41 +780,48 @@ describe("bin/monitor — the fail-open row", () => {
 });
 
 // ---------------------------------------------------------------------------
-// The browser launch.
+// The browser launch. `bin/monitor` once ended with an unconditional `open`,
+// so one `npm test` run opened eleven tabs on eleven dead ports. The fix is a
+// gate on `[ -t 1 ]` plus an independent MONITOR_NO_BROWSER opt-out, and the
+// gate is what closes it: the harness sets no variable, and neither does the
+// next non-interactive caller nobody has written yet.
 //
-// `bin/monitor` ended with an unconditional `open http://localhost:$PORT`. The
-// suite above spawns it eleven times, each on a throwaway free port whose
-// server afterEach kills seconds later, so one `npm test` run opened eleven
-// browser tabs on eleven ports that answer nothing, each stealing focus as it
-// arrived. Run repeatedly, and at one point by five agents in parallel, that
-// rendered the machine close to unusable. The tabs surfaced wherever the user
-// happened to be working, so the flood was first reported against a consuming
-// project; every process involved was this repository's own test harness.
-//
-// The fix is a gate on `[ -t 1 ]` plus an independent MONITOR_NO_BROWSER
-// opt-out, and the cases below are why the gate rather than the opt-out is
-// what closes it: the harness sets no variable, and neither does the next
-// non-interactive caller nobody has written yet.
-//
-// HOW THESE MEASURE IT. A fake `open` is placed first on PATH and appends its
-// argv to a marker file, so "a tab was opened" is a file that exists rather
-// than a token found in the script's text. A lint that greps `bin/monitor`
-// for `-t 1` would pass on a decoy in a comment and on a gate that is present
-// but unreachable; this asserts on what the running script does.
+// HOW THESE MEASURE IT. A fake `open` first on PATH appends its argv to a
+// marker file, so "a tab was opened" is a file that exists rather than a
+// token in the script's text; this asserts on what the running script does.
 // ---------------------------------------------------------------------------
 
-/** A directory holding a fake `open` that records its argv instead of opening. */
-function fakeOpen(): { dir: string; marker: string } {
+/**
+ * A directory holding a fake `open` that records its argv instead of opening,
+ * exiting `exit`; with `linux`, a `uname` shim beside it makes the monitor
+ * pick `xdg-open` as its launcher.
+ */
+function fakeOpen(opts: { exit?: number; linux?: boolean } = {}): { dir: string; marker: string } {
   const dir = mkdtempSync(join(tmpdir(), "fusion-fakeopen-"));
   const marker = join(dir, "opened.txt");
   const script = join(dir, "open");
-  writeFileSync(script, `#!/bin/sh\nprintf '%s\\n' "$@" >> '${marker}'\n`);
+  writeFileSync(script, `#!/bin/sh\nprintf '%s\\n' "$@" >> '${marker}'\nexit ${opts.exit ?? 0}\n`);
   chmodSync(script, 0o755);
+  if (opts.linux === true) {
+    writeFileSync(join(dir, "uname"), "#!/bin/sh\necho Linux\n");
+    chmodSync(join(dir, "uname"), 0o755);
+  }
   return { dir, marker };
 }
 
-function pathWith(dir: string): string {
-  return `${dir}:${process.env.PATH ?? ""}`;
+/** `dir` first on PATH; with `without`, every directory holding that command is dropped. */
+function pathWith(dir: string, without?: string): string {
+  const rest = (process.env.PATH ?? "").split(":").filter((d) => !(without && existsSync(join(d, without))));
+  return [dir, ...rest].join(":");
+}
+
+/** Wait for `lastStderr` to match `re`, or for `proc` to exit; true when it matched. */
+async function waitForStderr(re: RegExp, proc: ChildProcess): Promise<boolean> {
+  for (;;) {
+    if (re.test(lastStderr)) return true;
+    if (proc.exitCode !== null || proc.signalCode !== null) return re.test(lastStderr);
+    await new Promise((r) => setTimeout(r, 50));
+  }
 }
 
 /**
@@ -905,6 +904,30 @@ describe("bin/monitor — the browser launch", () => {
       expect(readFileSync(marker, "utf8").trim()).toBe(
         `http://127.0.0.1:${port}`,
       );
+    },
+    30000,
+  );
+
+  // The browser-gap line (issue 260810-2027): in silence a person promised a
+  // tab cannot tell an absent launcher from a server that never started.
+  it(
+    "names the gap on stderr when the launcher exits non-zero",
+    async () => {
+      const { dir } = fakeOpen({ exit: 1 });
+      await startMonitor(seedWorkbench([]), { tty: true, stderr: true, env: { PATH: pathWith(dir) } });
+      expect(await waitForStderr(/could not open a browser/, lastMonitor())).toBe(true);
+      expect(lastStderr).toMatch(/^monitor: open could not open a browser\. Open http:\/\/127\.0\.0\.1:\d+ yourself; set MONITOR_NO_BROWSER=1/m);
+    },
+    30000,
+  );
+
+  it(
+    "names the gap on stderr when no launcher is on PATH",
+    async () => {
+      const { dir } = fakeOpen({ linux: true });
+      await startMonitor(seedWorkbench([]), { tty: true, stderr: true, env: { PATH: pathWith(dir, "xdg-open") } });
+      expect(await waitForStderr(/on PATH/, lastMonitor())).toBe(true);
+      expect(lastStderr).toMatch(/^monitor: no xdg-open on PATH\. Open http:\/\/localhost:\d+ yourself; set MONITOR_NO_BROWSER=1/m);
     },
     30000,
   );

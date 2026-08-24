@@ -176,9 +176,9 @@ describe("orchestrator acceptance of an executor report", () => {
   });
 });
 
-// The coder's Implementation Process exactly as it stood at HEAD before this
-// change. A gate that has only ever seen the fixed text proves nothing about
-// what it would catch.
+// The coder's pre-fix Implementation Process, abridged: the `### Report shape`
+// heading is supplied so `reportShape()` reaches `assertReportShape`, the
+// assertion under test, instead of throwing at the parser (issue 260810-0510).
 const preFixCoderProcess = [
   "### Report shape",
   "",

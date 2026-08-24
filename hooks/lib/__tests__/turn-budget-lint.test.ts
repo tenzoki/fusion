@@ -446,11 +446,13 @@ describe("the unresolved branch claims only the bound it actually has", () => {
         `without putting a bound where it stood leaves the unresolved branch with no exit that ` +
         `is guaranteed to arrive — the defect, minus its description. Issue 260811-2142.`,
     ).toBe(true);
+    const gate = text.split(`#### ${ANCHOR}`)[1]?.split(/^#{1,4} /m)[0] ?? "";
     expect(
-      text.includes("AskUserQuestion"),
-      `${ORCHESTRATOR} must put the question through AskUserQuestion, the way every other human ` +
-        `gate in this prompt reaches the user. The count configuration could not supply is asked ` +
-        `for, not invented.`,
+      /ask in chat/.test(gate) && text.includes("## How you ask the user anything"),
+      `${ORCHESTRATOR} must put the question to the user as plain chat text under the ${ANCHOR} ` +
+        `gate, the shape \`## How you ask the user anything\` defines for every gate in this ` +
+        `prompt (a dialog tool is banned there). The count configuration could not supply is ` +
+        `asked for, not invented. Issue 260824-1538.`,
     ).toBe(true);
     expect(
       text.split(ANCHOR).length - 1,

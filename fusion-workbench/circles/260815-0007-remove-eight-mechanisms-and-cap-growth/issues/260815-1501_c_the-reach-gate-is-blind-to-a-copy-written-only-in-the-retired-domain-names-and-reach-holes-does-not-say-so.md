@@ -74,3 +74,6 @@ Direction 1 is the one the file's own reasoning for `RETIRED_COUNT_NAMES` argues
 `hooks/lib/domain-cascade.ts:722-724` — `DOMAIN_LITERAL_RE` is still built from `DOMAINS` alone. `RETIRED_DOMAINS` still feeds only `parseCascade` (`:451`) and never the detector, so a cascade copy written purely in `strategic`/`knowledge` is invisible to the reach gate. And `REACH.holes` (`:946-982`) still carries its four entries — bare words, table-and-wrapped-lines, paraphrase naming no input, synonym inputs — with no entry for a retired-domain-only copy.
 
 The second half is the one that costs most and is cheapest to fix: a gate that enumerates its own blind spots and omits one is read as complete. One entry in `REACH.holes` discharges it even if the detector is left alone.
+
+---
+Resolved: fixed — direction 1: `DOMAIN_LITERAL_RE` in `hooks/lib/domain-cascade.ts` is built from `[...DOMAINS, ...RETIRED_DOMAINS]` (`cascadeBlocks`/`extractCascadeBlock` verified to derive from `DOMAINS` alone and untouched), `REACH.covered` gains an entry carrying the record's two probes, the measured cost over `REACH.fileSet` is zero and the one cost outside it is `CLAUDE.md` moving from `clean` to `fires`, recorded in its `excluded` note; `README-hooks.md` regenerated from `describeReach()`; `cd hooks && npx vitest run lib/__tests__/domain-cascade.test.ts`

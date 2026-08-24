@@ -4,35 +4,19 @@ import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
-// Deliverable-language lint (issue 260811-1732, decision 260811-1732's answer
+// Deliverable-language lint (issue 260811-1732; decision
 // `260807-2131_*_which-language-governs-a-customer-deliverable.md`, option 3).
 //
-// The defect: `agents/editor.md` read the project's chat declaration to decide
-// a customer deliverable's language, with the dispatching task as an optional
-// override. Under the language boundary as authored, a deliverable is a file
-// that persists, so the ARTIFACT declaration governed it — and the editor was
-// reading the other line. Either way it had a project-wide default, and a
-// project's deliverables are not reliably in one language. What a wrong default
-// produces is not an error: it is a FINISHED document in the wrong language,
-// found by the customer rather than by a stop.
+// The defect: `agents/editor.md` read a project-wide declaration to decide a
+// customer deliverable's language, and a wrong default is not an error but a
+// FINISHED document in the wrong language, found by the customer. The fix has
+// no default: the dispatch names the language and the editor halts otherwise.
+// A fallback can only return by the prompt naming one of the two project
+// declarations, so the first case asserts those tokens are absent.
 //
-// The fix has no default at all. The dispatching task names the language and
-// the editor halts when it does not. The whole value of the answer is that the
-// failure is LOUD, so the thing worth pinning is the absence of a fallback —
-// and a fallback can only be reintroduced by the prompt naming one of the two
-// project declarations as a source. That is a token this prompt can simply not
-// contain, which is what the first case below asserts.
-//
-// What this gate is, honestly (rules/critical-stance.md §2, §4): it checks the
-// CONTRACT IS PRESENT IN THE PROMPT and that the two tokens which could
-// reintroduce a default are absent from it. It does not and cannot check that a
-// dispatched run halted — nothing here executes at dispatch time. A prompt
-// instruction is overridable under task pressure; this project has a worked
-// case of a "MUST" losing to the urgency of a user request. What the gate buys
-// is that the contract cannot quietly leave the prompt, and that a later edit
-// cannot restore "or the project's language line" without `npm test` saying so.
-//
-// A guard, not a fixer: it reads and asserts, it never rewrites a prompt.
+// Honestly (rules/critical-stance.md §2, §4): this checks the CONTRACT IS IN
+// THE PROMPT and cannot check that a dispatched run halted. What it buys is
+// that the contract cannot quietly leave the prompt. A guard, not a fixer.
 // ---------------------------------------------------------------------------
 
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
@@ -127,6 +111,20 @@ describe("the conventions file's language split stays four-way", () => {
       /the dispatching task names/i.test(section),
       `${CONVENTIONS} "## Project language" must name the dispatching task as the deliverable's source`,
     ).toBe(true);
+  });
+
+  it("is cited by content on every shipped surface, never by ordinal", () => {
+    // "the fourth case" once resolved silently to the bullet stating the
+    // opposite rule (issue 260811-2245). Same-line window around the name.
+    const hits: string[] = [];
+    for (const rel of ["agents/orchestrator.md", "agents/editor.md", "CLAUDE.md", CONVENTIONS]) {
+      read(rel).split("\n").forEach((line, i) => {
+        if (/Project language/.test(line) && /\b(first|second|third|fourth|fifth) case\b/i.test(line)) {
+          hits.push(`${rel}:${i + 1}`);
+        }
+      });
+    }
+    expect(hits, "cite a `## Project language` case by its content, not its position").toEqual([]);
   });
 
   it("keeps the two persisted cases disjoint by who the file is for", () => {

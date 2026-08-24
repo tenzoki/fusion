@@ -42,3 +42,6 @@ If a third copy is judged too many to pin, the other cut is to have Setup call t
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The probe expression is one unique 218-character string across `skills/setup/SKILL.md:67`, `skills/migrate/SKILL.md:54` and `:87`, and no test asserts the equality. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — one case in `hooks/lib/__tests__/path-literal-lint.test.ts` extracts the `{ [ -d "$WB/shared" ] … grep -E '…'` expression from both skill bodies, asserts three sites and one string, and fails naming the drift when migrate's reformat probe is edited alone; `cd hooks && npx vitest run lib/__tests__/path-literal-lint.test.ts`

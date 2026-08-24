@@ -1,14 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, chmodSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, chmodSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 
-// bin/fusion-paths is a bash script. There is no unit-testable module to
-// import, so the tests drive the real script through child_process against a
-// throwaway workbench fixture — the same thing an agent's Setup step does.
-// This test is at hooks/lib/__tests__/; the script is at bin/.
+// bin/fusion-paths is a bash script, so the tests drive the real one through
+// child_process against a throwaway workbench, as an agent's Setup step does.
 const fusionPaths = join(pluginRoot, "bin", "fusion-paths");
 
 const AGENTS = [
@@ -18,10 +16,10 @@ const AGENTS = [
   "editor", "curator",
 ];
 
-const SKILLS = [
-  "archive", "cleanup", "commit", "curate", "direct", "help",
-  "log-activity", "memo", "migrate", "next", "setup",
-];
+// Read off the tree, not hand-written: a hand-written roster omitted two skills
+// and nothing said so (issue 260814-1001; `skillDirs()` in the enumeration lint).
+const SKILLS = readdirSync(join(pluginRoot, "skills"), { withFileTypes: true })
+  .filter((d) => d.isDirectory()).map((d) => d.name).sort();
 
 /** The prompt file a name resolves to — the same rule the script applies. */
 function promptPath(name: string): string {

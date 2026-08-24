@@ -21,28 +21,25 @@
 //   a Circle's own record `circles/<stamp>-<slug>/_x_circle.md`. The wildcard
 //   `_*_` at the marker position matches any state marker; a citation carrying
 //   an exact marker resolves exactly, and one whose record exists only under a
-//   DIFFERENT marker is the stale-marker class. An ellipsis (`…`) is a
-//   deliberate truncation and matches any infix. A citation not ending in `.md`
-//   is a prefix.
+//   DIFFERENT marker is the stale-marker class. An ellipsis, `…` or ASCII
+//   `...`, is a deliberate truncation and matches any infix. A citation not
+//   ending in `.md` is a prefix.
 //
-//   The Circle-record form arrived last, on 2026-08-19, and the gap it closed
-//   is worth stating: it is the form the repairs of this Circle's steps 7 and 8
-//   ADOPTED for an archived Circle, and until it tokenised the gate was silent
-//   over every one of them — green because it could not see them, which is a
-//   different fact from green because they are right. See
-//   `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2321_*_a-citation-of-a-circle-record-produces-no-token-so-the-gate-cannot-see-the-form-the-repair-adopted.md`
-//   and the user's answer at its foot.
+//   NOT READ, ON PURPOSE: the pre-v4 bracket marker (`260717-1918[o]_slug`).
+//   It is retired syntax that `/fusion:migrate` rewrites; a grammar that
+//   accepted it would remove the only pressure to rewrite it. With a store
+//   prefix it tokenises up to the `[` and prefix-matches the file, so a stale
+//   bracket marker is never found (issue 260812-2136, the second half).
 //
-// WHAT THIS FILE ADDS, and why it is here rather than in the gate: a fourth
-// token class, the **bare timestamp**. `260722-1943` in running prose carries
-// no store, no kind and no slug, so nothing on disk disambiguates it from the
-// other artifacts written in that minute. The gate cannot judge it and does not
-// try — `BARE_RE` requires a marker precisely so a plain stamp never fires. A
-// measurement must still count them, because "how many citations in this
-// corpus cannot be resolved by any mechanism" is a different question from
-// "how many are wrong", and the residual belongs in the answer rather than in
-// the silence around it. Bare timestamps are never violations and are never
-// counted as resolved, so their presence changes nothing the gate sees.
+//   The Circle-record form arrived last, on 2026-08-19; until it tokenised the
+//   gate was silent over every citation in that form (issue 260819-2321).
+//
+// WHAT THIS FILE ADDS: a fourth token class, the **bare timestamp**.
+// `260722-1943` in running prose carries no store, kind or slug, so the gate
+// cannot judge it (`BARE_RE` requires a marker). A measurement must still count
+// them, because "how many citations cannot be resolved by any mechanism" is a
+// different question from "how many are wrong". Bare timestamps are never
+// violations and never counted as resolved.
 //
 // This file is test-scoped on purpose. It is excluded from the `tsc` build
 // (tsconfig excludes `lib/__tests__`), so it adds nothing to `hooks/dist/` and
@@ -93,7 +90,7 @@ const REC_RE = new RegExp(
   "(?:fusion-workbench\\/)?" +
     "(?:(circles\\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/|(shared)\\/)?" +
     `(${STORES})\\/` +
-    "([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)?[A-Za-z0-9._…*-]*)",
+    "([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)?[A-Za-z0-9._…*-]*)",  // `.` admits ASCII `...`
   "g",
 );
 
@@ -351,11 +348,11 @@ const pathOf = (e: WorkbenchEntry) => (e.relDir ? `${e.relDir}/${e.base}` : e.ba
 
 /**
  * A basename matcher from a cited basename: `_*_` matches any single-letter
- * marker, `…` matches any infix, and a citation that does not end in `.md` is
- * a prefix (truncated citations are everyday in the corpus).
+ * marker, `…` or `...` matches any infix, and a citation that does not end in
+ * `.md` is a prefix (truncated citations are everyday in the corpus).
  */
 function basenameMatcher(cited: string): RegExp {
-  const segs = cited.split("…").map((s) =>
+  const segs = cited.split(/…|\.\.\./).map((s) =>
     s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/_\\\*_/g, "_[a-z]_"),
   );
   const tail = cited.endsWith(".md") ? "$" : "";

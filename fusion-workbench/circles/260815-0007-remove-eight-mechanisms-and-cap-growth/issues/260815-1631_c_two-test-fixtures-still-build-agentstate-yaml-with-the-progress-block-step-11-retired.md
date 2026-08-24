@@ -52,3 +52,6 @@ grep -n 'progress:' hooks/lib/__tests__/review-coverage.test.ts hooks/lib/__test
 Both synthetic builders still model the `progress:` block step 11 retired. Both files were edited between the closure and HEAD without the fixtures being brought forward. The schema they should mirror is `control:` at `agents/orchestrator.md:1026-1028`.
 
 No test fails as a result — the two consumers read the git anchor, not the block — which is exactly why it survives: a fixture that models a retired shape is only wrong to a reader, until the day someone derives the real schema from it.
+
+---
+Resolved: fixed — both fixtures (`hooks/lib/__tests__/review-coverage.test.ts` `writeState()`, `hooks/lib/__tests__/staging-drift.test.ts` `WORKBENCH_FILES`) now write the `control:` block with `turn_start_head`, the shape `agents/orchestrator.md` defines, and no `progress:` line; `grep -n "progress:" hooks/lib/__tests__/review-coverage.test.ts hooks/lib/__tests__/staging-drift.test.ts` is empty

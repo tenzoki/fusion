@@ -166,7 +166,7 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // That is the silent raise `helpers/growth-bound.ts` names, and it is the same
 // argument that kept `rules-emission-golden.test.ts` out of this step. The gap
 // between the plan's claim and the measurement is filed as
-// `circles/260816-1741-guard-becomes-observation-only/issues/260817-1032_o_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`.
+// `circles/260816-1741-guard-becomes-observation-only/issues/260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`.
 //
 // WHAT THIS RE-BASELINE ABSOLVES, written as text so it survives the numbers
 // moving. `TEST_LINE_BASELINE` drops five entries whose files are gone — 1 263

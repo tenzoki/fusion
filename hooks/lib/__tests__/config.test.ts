@@ -319,7 +319,7 @@ describe("a retired top-level key is named, not carried through in silence", () 
     ]);
   });
 
-  it("names each of the three, once per key and not once per leaf inside it", () => {
+  it("names each of the four, once per key and not once per leaf inside it", () => {
     // A retired container is not a container to walk into: its leaves are
     // retired with it, and one advisory naming the container beats one per leaf
     // inside a key that no longer means anything.
@@ -327,11 +327,12 @@ describe("a retired top-level key is named, not carried through in silence", () 
       guard: { enabled: false, protectedPaths: [], defaultSensitivity: "high" },
       decisions: [{ id: "D-1", category: "api", statement: "…" }],
       escalation: { blocksBeforeHalt: 7 },
+      churn: { changesPerSessionWarning: 50 },
     });
 
     const { diagnostics } = load(root);
-    expect(diagnostics).toHaveLength(3);
-    for (const key of ["guard", "decisions", "escalation"]) {
+    expect(diagnostics).toHaveLength(4);
+    for (const key of ["guard", "decisions", "escalation", "churn"]) {
       expect(diagnostics.some((d) => d.includes(`"${key}" no longer exists`))).toBe(true);
     }
   });
@@ -573,15 +574,10 @@ function projectSeededWithTemplate(): string {
 }
 
 /**
- * The top-level keys of `fusion.json` that a project is documented to set for
- * itself, and which the drift check below therefore admits as a difference
- * between this repository's copy and the shipped template. This list is the ONE
- * place that exemption is stated: a setting that becomes project-configurable
- * later is admitted by adding its top-level key here and nowhere else.
- *
- * `orchestrator` is here because `templates/fusion.json`'s own `_turnBudget`
- * note tells every project that this file is the only place to change the
- * orchestrator's Turn budget, and this repository is such a project.
+ * The top-level keys of `fusion.json` a project is documented to set for itself
+ * (`templates/fusion.json`, `_turnBudget`), which the drift check below admits
+ * as a difference between this repository's copy and the template. The ONE
+ * place that exemption is stated: a new project-settable key is added here.
  */
 const PROJECT_SET_KEYS = ["orchestrator"] as const;
 
@@ -691,6 +687,24 @@ function withoutProjectSetKeys(text: string): string {
   for (const key of PROJECT_SET_KEYS) out = cutTopLevelEntry(out, key);
   return out;
 }
+
+describe("the drift check's cut helper, on every entry position", () => {
+  // Synthetic inputs, so both branches of `cutTopLevelEntry` run whatever
+  // shape the two real files take (issue 260814-2128).
+  const V = '{ "maxTurns": 5 }';
+  const cases: [string, string, string][] = [
+    ["first", `{\n  "orchestrator": ${V},\n  "a": 1\n}`, `{\n  "a": 1\n}`],
+    ["middle", `{\n  "a": 1,\n  "orchestrator": ${V},\n  "b": 2\n}`, `{\n  "a": 1,\n  "b": 2\n}`],
+    ["last", `{\n  "a": 1,\n  "orchestrator": ${V}\n}`, `{\n  "a": 1\n}`],
+    ["only", `{\n  "orchestrator": ${V}\n}`, `{\n}`],
+    ["in a string value, left alone", `{\n  "_n": "the orchestrator key",\n  "a": 1\n}`, `{\n  "_n": "the orchestrator key",\n  "a": 1\n}`],
+  ];
+  for (const [label, input, expected] of cases) {
+    it(`cuts the ${label} entry exactly`, () => {
+      expect(withoutProjectSetKeys(input)).toBe(expected);
+    });
+  }
+});
 
 describe("the seeded template declares inheritance and declares nothing", () => {
   it("merges to fusion's own defaults and nothing else", () => {

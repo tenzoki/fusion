@@ -58,3 +58,6 @@ Also seen: 260817-1613 by reconciler — a second live instance in the same file
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still scans only `hooks/lib/*.ts` and top-level `hooks/*.ts`, and both stale citations the record names are still stale. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the two stale comment citations now spell the marker position `_*_` (`hooks/lib/__tests__/surface-growth-bound.test.ts`, the `260817-1032` issue; `hooks/lib/__tests__/reference-resolution-lint.test.ts`, the `260806-0015` decision sample); scanning `__tests__/` itself stays out of scope per `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`; `grep -n "_[oa]_" hooks/lib/__tests__/surface-growth-bound.test.ts hooks/lib/__tests__/reference-resolution-lint.test.ts`

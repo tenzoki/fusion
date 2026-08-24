@@ -36,3 +36,6 @@ established-naming-the-gap.md` (the behaviour this would gate),
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1572` and `:1574` still print both browser-gap lines to stderr, and the test harness still starts the monitor with stderr discarded (`hooks/lib/__tests__/monitor-warnings-panel.test.ts:296`, `stdio: "ignore"`), so neither line can be asserted. Only the three pre-existing cases the record names are present; no case for a non-zero-exit launcher shim or an absent launcher was added. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — two cases in `hooks/lib/__tests__/monitor-warnings-panel.test.ts` read the monitor's stderr through the pty runner (stderr no longer on the pty; `stderr: true` pipes it into `lastStderr`) and assert the browser-gap line for a launcher exiting non-zero and for no `xdg-open` on PATH, each shown failing with the `echo` deleted from `bin/monitor`; paid by three comment-prose cuts in the same file; `cd hooks && npx vitest run lib/__tests__/monitor-warnings-panel.test.ts`

@@ -18,15 +18,10 @@ import { pluginRoot, shippedPrompts } from "./helpers/citation-scan.js";
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites a prompt.
 //
-// The gate reads only `agents/` and `skills/`. It does NOT read the files that
-// DEFINE the stores, because those are not in its file set. That used to be
-// stated as a two-item aside; it is now the `DEFINITION_SITES` constant below,
-// and the change is deliberate. When `rules/fusion-workbench-conventions.md` was
-// partitioned, each shard that inherited a definition also inherited the right
-// to name store directories — and it inherited it by passing a gate that never
-// looked, not by anyone deciding. An enumeration somebody has to edit is the
-// difference between the two. If the file set is ever widened to include these
-// paths, they must become explicit exemptions.
+// The gate reads only `agents/` and `skills/`, never the files that DEFINE the
+// stores; those are enumerated in `DEFINITION_SITES` below so that a new
+// definition site is decided rather than inherited by passing a gate that
+// never looked. Widen the file set and they must become explicit exemptions.
 // ---------------------------------------------------------------------------
 
 
@@ -291,6 +286,22 @@ describe("path-literal lint: the definition sites are enumerated, not assumed", 
         `stores. The two cannot both hold: widening the file set means turning these into ` +
         `real exemptions in scan(), not leaving them on a list the gate never consults.`,
     ).toEqual([]);
+  });
+});
+
+describe("path-literal lint: setup's bracket probe and migrate's reformat list are one string", () => {
+  // Three copies of one `find` expression, pinned rather than factored: a skill
+  // body is a prompt, not a shell library (issue 260816-0133).
+  it("the three sites select the same files, byte for byte", () => {
+    const PROBE = /\{ \[ -d "\$WB\/shared" \][^\n]*?grep -E '[^']*'/g;
+    const sites = ["skills/setup/SKILL.md", "skills/migrate/SKILL.md"].flatMap((rel) =>
+      [...readFileSync(join(pluginRoot, rel), "utf-8").matchAll(PROBE)].map((m) => m[0]),
+    );
+    expect(sites.length, "setup's probe, migrate's survey and migrate's reformat pass").toBe(3);
+    expect(
+      new Set(sites).size,
+      "setup's bracket probe and migrate's reformat candidate list must select the same files; three sites, one string",
+    ).toBe(1);
   });
 });
 

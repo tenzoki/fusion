@@ -30,3 +30,6 @@ Strip a declared `ROOT_VARS` prefix in `scanHeadingAnchors` the way `scanPluginP
 ## Found by
 
 C3 step 10 (`skills/next/SKILL.md`), reported by `coder` in `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1502-coder-c3-step10-next-refuses-and-claims.md` and verified against the source by the orchestrator before filing. Filed in the shared store rather than the Circle's: two of the four instances predate the Circle and the defect is in the citation gate, not in anything this Directive caused.
+
+---
+Resolved: fixed — `ANCHOR_RE` captures an optional `$VAR/` root and `scanHeadingAnchors` classifies it against `ROOT_VARS` the way `scanPluginPaths` does; the three `$FUSION_SRC/`-rooted anchors in `skills/next/SKILL.md` entered scope and `BASELINE.anchors` moved 185 -> 188 with a re-approval comment (the fourth the record counted was the duplicate the C3 citation repairs removed), shown failing with the strip reverted; `cd hooks && npx vitest run lib/__tests__/reference-resolution-lint.test.ts`

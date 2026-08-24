@@ -128,3 +128,13 @@ supposed to exercise instead of calling it — still holds there. Marker unchang
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Half of this is moot and half is untouched. `queue-ground-lint.test.ts` no longer exists: it went in `dd312eb` with the persisted task list, in Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, so its negative control cannot be repaired and does not need to be. The second instance stands unchanged — `hooks/lib/__tests__/executor-verification-report-lint.test.ts:180-193` still carries a hand-written `preFixCoderProcess` fixture that omits step 2 and prepends a heading the real pre-fix text never had (checked against `git show 1f2faaf^:agents/coder.md`). Marker stays open on that one.
+
+---
+**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Part 1's subject, `hooks/lib/__tests__/queue-ground-lint.test.ts`,
+was deleted in `dd312eb` with the persisted task list, so that half cannot be acted on, verified or
+closed by a diff. This record is narrowed to part 2, the `executor-verification-report-lint.test.ts`
+fixture, which stands. The `**Affects:**` line is left as the reviewer saw it. Filed as
+`shared/issues/260822-1154_*_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`.
+
+---
+Resolved: fixed — part 1 is moot since `dd312eb` deleted `queue-ground-lint.test.ts`; part 2 is fixed, the fixture comment in `hooks/lib/__tests__/executor-verification-report-lint.test.ts` now says the `### Report shape` heading is supplied so the parser reaches `assertReportShape`, and no longer claims the text is the pre-fix prompt verbatim; `cd hooks && npx vitest run lib/__tests__/executor-verification-report-lint.test.ts`

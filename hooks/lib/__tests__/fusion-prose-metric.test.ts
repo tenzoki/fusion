@@ -12,16 +12,10 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // narrowing to U+2014, and the exit-code table.
 //
 // THE CASE THE PROGRAM EXISTS FOR is that a file's exhibits of the em-dash fault
-// are not instances of it. The measurement it replaced was `grep -o` over a
-// whole file; it read rules/user-facing-output.md as 6 em-dashes and failed that
-// file against its own ceiling, where 4 were quoted anti-examples and 2 were
-// code-span mentions in the clause stating the ceiling. That divergence is
-// pinned below against a synthetic fixture of the same shape, not against the
-// shipped file, so a corpus edit cannot redden this gate.
-//
-// Every expected number was derived by hand from the header's rule before the
-// script was run, then confirmed against it. Issue 260821-0144, in circles/
-// 260820-2051-style-rules-arrive-and-get-measured/issues/.
+// are not instances of it; that divergence is pinned against a synthetic fixture
+// rather than the shipped file, so a corpus edit cannot redden this gate. Every
+// expected number was derived by hand from the header's rule before the script
+// was run. Issue 260821-0144, and 260822-1506 for the two limits and the total.
 
 const script = join(pluginRoot, "bin", "fusion-prose-metric");
 const dir = mkdtempSync(join(tmpdir(), "fusion-prose-metric-"));
@@ -110,6 +104,24 @@ describe("fusion-prose-metric: the four regions that are not prose", () => {
     // Region 4 alone is keyed on the extension. The same text as Markdown has no
     // subtree to exclude and all three em-dashes are prose.
     expect(measure("profile.md", lines).em).toBe(3);
+  });
+});
+
+describe("fusion-prose-metric: the two limits the header states, and the total row", () => {
+  it("does not exclude an indented (4-space) code block", () => {
+    expect(measure("indented.md", ["Kept — one.", "", "    code — here"])).toMatchObject({ em: 2, words: 6 });
+  });
+
+  it("does not match a code span that closes on a later line", () => {
+    const row = measure("multiline.md", ["Open `span — here", "closes` — there."]);
+    expect(row).toMatchObject({ em: 2, words: 7 });
+  });
+
+  it("sums the total row over the files, with its own rate, permit and verdict", () => {
+    const a = write("a.md", ["One — two."]); // 1, 3
+    const b = write("b.md", ["Three — four — five."]); // 2, 5
+    const r = spawnSync(script, [a, b], { encoding: "utf-8" });
+    expect(r.stdout).toMatch(/^total \(2 files\)\s+3\s+8\s+375\.0\s+0\s+over$/m);
   });
 });
 

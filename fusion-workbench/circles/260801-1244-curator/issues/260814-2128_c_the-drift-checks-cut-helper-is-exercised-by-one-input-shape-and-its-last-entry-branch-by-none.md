@@ -60,3 +60,6 @@ A second, cheaper point worth deciding at the same time: `PROJECT_SET_KEYS` cuts
 Both call sites of `withoutProjectSetKeys` are still inside the single `it("is what this repository's own fusion.json is…")` in `hooks/lib/__tests__/config.test.ts` — `:750` is the anti-vacuity assertion that returns early, `:752` is the one real input shape. `cutTopLevelEntry`'s last-entry branch at `:675-679` (the `// The last entry` comment) is still reached by no test.
 
 The v10 rename `fusion-guard.json` → `fusion.json` moved this helper's subject and rewrote the file around it without adding a table-driven case, which is the second edit to pass over the gap.
+
+---
+Resolved: fixed — one table-driven `describe` in `hooks/lib/__tests__/config.test.ts` calls `withoutProjectSetKeys` on five synthetic inputs (first, middle, last, only, and the key name inside a string value) asserting the exact output, so both branches of `cutTopLevelEntry` run; the last-entry case was shown failing with its comma-removal line deleted; paid by a docstring cut in the same file; `cd hooks && npx vitest run lib/__tests__/config.test.ts`

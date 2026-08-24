@@ -123,3 +123,6 @@ Three things, and they are separable:
 **Discharged.** The unsupportable "no project ever set it" claim is gone from `hooks/lib/config.ts` (`fab8a4b`). The structural impossibility is gone too: `RETIRED_TOP_LEVEL_KEYS` now retires at *container* scope — `guard`, `decisions`, `escalation` — so the table can hold an entry for a whole removed section, which it could not when it keyed on leaves.
 
 **Standing.** `churn` is still not an entry in it. `grep -n 'churn' hooks/lib/config.ts` returns one hit, at `:56`, and it is history prose in the module header, not a retirement entry. So a project whose configuration still declares `churn` is carried through silently — no advisory, no drop notice — which is exactly what `templates/fusion.json`'s `_what` note promises does not happen. One entry in the table closes it.
+
+---
+Resolved: fixed — `churn` joins `RETIRED_TOP_LEVEL_KEYS` in `hooks/lib/config.ts` with a reason naming the heatmap and the date, so a project still declaring it gets one advisory per guarded call; the four-key advisory case in `config.test.ts` covers it and fails with the entry removed; `hooks/dist/` rebuilt; `cd hooks && npx vitest run lib/__tests__/config.test.ts lib/__tests__/committed-dist.test.ts`

@@ -86,9 +86,8 @@ const WORKBENCH_FILES: Record<string, string> = {
     '  directive: "close the findings"',
     '  history_file: "shared/history/260811-0100-orchestrator.md"',
     '  git_head_at_start: "HEAD"',
-    "progress:",
-    "  turn: 1",
-    "  commits: 0",
+    "control:",
+    '  turn_start_head: "HEAD"',
     "",
   ].join("\n"),
 };

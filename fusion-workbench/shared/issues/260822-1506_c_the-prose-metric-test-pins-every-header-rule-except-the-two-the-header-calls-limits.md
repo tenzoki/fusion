@@ -61,3 +61,6 @@ discovered when `npm test` goes red. Whoever takes it should read
 `shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md` first: three of
 the twelve lines would be comment, and that record is the open question about what comment costs on
 this surface.
+
+---
+Resolved: fixed — three cases in `hooks/lib/__tests__/fusion-prose-metric.test.ts` pin the indented block (2/6, not excluded), the span closing on a later line (2/7, not matched) and the `total (2 files)` row (3, 8, 375.0, 0, over); the first and third were shown failing on a script that excludes indented lines and one that relabels the row, the second is pinned but was not mutated; paid by a header cut; `cd hooks && npx vitest run lib/__tests__/fusion-prose-metric.test.ts`

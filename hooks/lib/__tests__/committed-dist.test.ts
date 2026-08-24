@@ -33,45 +33,31 @@ import { fileURLToPath } from "node:url";
 //
 // ## What it does, and the order it does it in
 //
-// A compile is a function of source, configuration and compiler version. Source
-// and artifact are both in the git object store and readable without touching
-// the working tree; the configuration is committed. The compiler version is the
-// only free variable, and the answering decision names it as the thing that
-// would redden the suite for no defect. So the first case asserts the toolchain
-// IS the pinned one and says, on failure, that this is not an artifact defect.
-//
-// The three cases are a CHAIN, and the order below is the order of the
-// preconditions, not of the work: the extraction and the compile both happen in
-// `beforeAll`, before any case runs. What the later cases do is assert, in
-// order, the conditions under which their own subject is evaluable at all —
-// toolchain, then extraction, then compile. Each precondition is a `beforeAll`
-// FIELD, and a case that meets one names THAT and nothing else. The toolchain
-// field was the one missing: without it a wrong compiler reddened the artifact
-// case, whose remedy is `npm run build`, and following it committed a `dist`
-// built by the unpinned compiler — a worse tree than the one it repaired
+// A compile is a function of source, configuration and compiler version. The
+// first two are committed; the compiler version is the only free variable, and
+// the answering decision names it as the thing that would redden the suite for
+// no defect. So the first case asserts the toolchain IS the pinned one and
+// says, on failure, that this is not an artifact defect — without it a wrong
+// compiler reddened the artifact case, whose remedy is `npm run build`, and
+// following it committed a `dist` built by the unpinned compiler
 // (`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-artifact-case-of-the-dist-gate-carries-no-toolchain-guard-so-a-mismatch-reddens-it-with-the-wrong-remedy.md`).
-//
-// What carries the pin is `package.json` `devDependencies.typescript`, which is
-// an EXACT version and is committed. `package-lock.json` is gitignored here, so
-// it is a local-consistency leg of the first case rather than the pin itself —
-// present, it must agree; absent, the case says so and names the install.
+// The three cases are a CHAIN of preconditions, each a `beforeAll` field:
+// toolchain, then extraction, then compile. The pin is `package.json`
+// `devDependencies.typescript`, an EXACT version; `package-lock.json` is
+// gitignored, so it is a local-consistency leg rather than the pin.
 //
 // ## The two things this must not write
 //
-// `hooks/dist/` and `hooks/.build-staging/` are both shared between concurrent
-// runs, and not reading or writing the shared tree during a run is the
-// constraint the answering decision attached. So the extracted source, the
-// compile output and the committed artifact this compares against all live
-// under one `mkdtempSync(tmpdir())` directory. The one thing taken from the
-// live checkout is `hooks/node_modules`, by symlink, read-only in practice and
-// not a build output.
+// `hooks/dist/` and `hooks/.build-staging/` are shared between concurrent runs,
+// so the extracted source, the compile output and the committed artifact all
+// live under one `mkdtempSync(tmpdir())` directory; `hooks/node_modules` is
+// taken by symlink, read-only in practice.
 //
 // ## Loud, never silent
 //
-// A gate that skips when git is unavailable is silent in exactly the case it
-// exists for. `git rev-parse HEAD` failing, or `git archive` yielding no tree,
-// is a FAILURE naming that as the reason — the same discipline as the
-// "degrades loudly, not silently" case in `reference-resolution-lint.test.ts`.
+// `git rev-parse HEAD` failing, or `git archive` yielding no tree, is a FAILURE
+// naming that as the reason — a gate that skips when git is unavailable is
+// silent in exactly the case it exists for.
 // ---------------------------------------------------------------------------
 
 /** `hooks/` — the directory holding package.json, tsconfig.json and dist/. */
@@ -325,5 +311,22 @@ describe("the committed hooks/dist is the compilation of the committed source", 
         FIX,
     ).toEqual({ differing: [], missing: [], extra: [] });
     expect(fresh.length, "the compile emitted nothing — nothing was compared").toBeGreaterThan(0);
+  });
+});
+
+describe("every helper in bin/ is tracked, so the tarball ships it", () => {
+  // `.gitignore` excludes `bin/*` and re-includes each helper by name, and a
+  // helper without its line is dropped from the tarball silently: every call
+  // site guards with `[ -x ]`, so nothing errors (issue 260811-2147).
+  it("git ls-files bin/ equals the directory listing", () => {
+    const git = spawnSync("git", ["ls-files", "bin/"], { cwd: REPO_ROOT, encoding: "utf8" });
+    expect(git.status, git.stderr).toBe(0);
+    const listed = git.stdout.trim().split("\n").map((p) => p.replace(/^bin\//, "")).sort();
+    const onDisk = readdirSync(join(REPO_ROOT, "bin")).sort();
+    expect(
+      listed,
+      "a file in bin/ git does not track: add `!bin/<name>` to .gitignore; a tracked name " +
+        "with no file: remove its `!bin/<name>` line",
+    ).toEqual(onDisk);
   });
 });

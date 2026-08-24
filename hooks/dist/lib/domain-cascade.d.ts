@@ -110,7 +110,8 @@ export interface CascadeStatement {
     span: number;
     /** The unit as written, trimmed; a 2-line unit is joined with one space. */
     text: string;
-    domains: Domain[];
+    /** Live or retired: a retired name in a statement is what makes it stale. */
+    domains: string[];
     inputs: NamedInput[];
 }
 export interface StatementUnit {
@@ -186,6 +187,9 @@ export declare const REACH: {
         readonly probes: readonly [string];
     }, {
         readonly claim: string;
+        readonly probes: readonly [string, string];
+    }, {
+        readonly claim: string;
         readonly probes: readonly [string];
     }];
     readonly holes: readonly [{
@@ -212,7 +216,7 @@ export declare const REACH: {
         readonly note: string;
     }, {
         readonly glob: "CLAUDE.md";
-        readonly measured: "clean";
+        readonly measured: "fires";
         readonly note: string;
     }, {
         readonly glob: "README-hooks.md";

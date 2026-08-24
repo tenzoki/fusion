@@ -200,3 +200,6 @@ hooks/lib/__tests__/monitor-warnings-panel.test.ts:508
 ```
 
 Two comment sources and their two compiled mirrors, plus one test comment, now disagree with `rules/fusion-workbench-conventions.md:81`. The record's own question — is a code comment in scope for a *presentational* collapse, when the skill directory it names is still registered and still invocable — is unanswered, and it is a decision rather than a repair. That is what keeps the marker on.
+
+---
+Resolved: fixed — the two remaining sources, `hooks/lib/events.ts` and the archive-roll comment in `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, now name the archive step of `/fusion:cleanup` (`--only archive`), matching `rules/fusion-workbench-conventions.md`; `npm run build` refreshed the two compiled mirrors; `grep -rn "/fusion:archive" hooks/ --include="*.ts" --include="*.js"` is empty

@@ -96,7 +96,13 @@ export type Domain = (typeof DOMAINS)[number];
 //   RETIRED_DOMAINS      — `parseCascade` refuses a branch assigning one, with
 //                          a message saying it was retired rather than the
 //                          generic "not a domain". Re-adding a branch is a
-//                          decision, not a typo, and it fails saying so.
+//                          decision, not a typo, and it fails saying so. And
+//                          `domainLiteralsIn` still recognises them, for the
+//                          same reason the count names are kept: a copy
+//                          written only in the two retired outcomes is a
+//                          stale copy the reach gate must see (issue
+//                          260815-1501). `cascadeBlocks` keeps deriving from
+//                          DOMAINS alone, or the definition site stops parsing.
 //   RETIRED_COUNT_NAMES  — the grammar no longer accepts these as inputs, but
 //                          `inputsNamedIn` still recognises them, because the
 //                          plainest second copy anyone will meet from here on
@@ -719,16 +725,18 @@ export function countsFromHelperOutput(stdout: string): Pick<
  * Bare words are deliberately not matched — see `REACH.holes` for the measured
  * cost of matching them.
  */
+const DOMAIN_NAMES = [...DOMAINS, ...RETIRED_DOMAINS].join("|");
 const DOMAIN_LITERAL_RE = new RegExp(
-  `(\`|"|')(${DOMAINS.join("|")})\\1|\\*\\*(${DOMAINS.join("|")})\\*\\*`,
+  `(\`|"|')(${DOMAIN_NAMES})\\1|\\*\\*(${DOMAIN_NAMES})\\*\\*`,
   "g",
 );
 
-function domainLiteralsIn(line: string): Set<Domain> {
-  const out = new Set<Domain>();
+/** Any domain name the detector recognises: live, or retired with its branch. */
+function domainLiteralsIn(line: string): Set<string> {
+  const out = new Set<string>();
   DOMAIN_LITERAL_RE.lastIndex = 0;
   let m: RegExpExecArray | null;
-  while ((m = DOMAIN_LITERAL_RE.exec(line)) !== null) out.add((m[2] ?? m[3]) as Domain);
+  while ((m = DOMAIN_LITERAL_RE.exec(line)) !== null) out.add(m[2] ?? m[3]);
   return out;
 }
 
@@ -766,7 +774,8 @@ export interface CascadeStatement {
   span: number;
   /** The unit as written, trimmed; a 2-line unit is joined with one space. */
   text: string;
-  domains: Domain[];
+  /** Live or retired: a retired name in a statement is what makes it stale. */
+  domains: string[];
   inputs: NamedInput[];
 }
 
@@ -934,6 +943,19 @@ export const REACH = {
     },
     {
       claim:
+        "A stale copy written only in the two retired outcomes, `strategic` and `knowledge`. " +
+        "The retired names are recognised as domain names for the same reason the retired " +
+        "counts are recognised as inputs: a paragraph written before 2026-08-15 and never " +
+        "re-read is the copy most likely to be met from here on.",
+      probes: [
+        "Pick `strategic` when decisions_count >= issues_count, else `knowledge` when " +
+          "analyses_count > 0 and code_files == 0.",
+        "Use `strategic` if the open decisions outnumber the open issues, and `knowledge` if " +
+          "there are analyses but no source files.",
+      ],
+    },
+    {
+      claim:
         "One sentence hard-wrapped across two lines. A line and its continuation are scanned " +
         "joined, which is the shape this repository's own 78-column prose produces by default.",
       probes: [
@@ -996,11 +1018,13 @@ export const REACH = {
     },
     {
       glob: "CLAUDE.md",
-      measured: "clean",
+      measured: "fires",
       note:
         "A consumer by the same contract that puts `rules/` in the file set, and it is not " +
-        "scanned. That is an uncovered file, not a justified exclusion: it is clean today and " +
-        "nothing keeps it clean.",
+        "scanned. It measured clean until the retired domain names joined the detector on " +
+        "2026-08-24; its agent-roster line, which names the two retired values beside the " +
+        "two live ones and the words the input list carries, now selects. That is the one " +
+        "measured cost of the widening, and it falls outside the scanned set.",
     },
     {
       glob: "README-hooks.md",

@@ -23,86 +23,47 @@ import {
 // nachziehen, plan step 14 — the review's "cheapest structural investment").
 //
 // The plugin's shipped text surfaces cite three kinds of targets, and all three
-// kinds have gone stale in measured numbers (16 dead workbench-record
-// references in one review pass). This gate resolves every reference it can
-// read mechanically and fails on a dangling one:
+// have gone stale in measured numbers. This gate resolves every reference it
+// can read mechanically and fails on a dangling one:
 //
 //   (a) plugin-file paths — `rules/<name>.md`, `agents/<name>.md`,
-//       `hooks/lib/<name>.ts`, `bin/<name>`, … — checked for existence against
-//       the repo tree. The bare `lib/<name>.ts` spelling is the SAME class:
-//       it is how this repository's hook modules are cited in prose, because
-//       it is how they are imported, and it resolves against `hooks/`
-//       (`resolveToken`). It was unrecognised until 2026-08-16, so 34
-//       citations written that way were never checked and three dangling ones
-//       stood through a removal that expected the gate to name them
-//       (issue 260812-1407). A `$VAR/<path>` spelling is checked the same way with
-//       the variable stripped, PROVIDED the variable is declared in ROOT_VARS
-//       as naming the plugin tree; an undeclared variable in front of a
-//       plugin-shaped path FAILS rather than being skipped (see ROOT_VARS for
-//       why, and for the one bound that remains). A `./rules/...` spelling is
-//       the CONSUMING project's rule directory by convention and is never
-//       checked here.
+//       `hooks/lib/<name>.ts`, the bare `lib/<name>.ts` spelling (how the hook
+//       modules are imported; resolves against `hooks/`, `resolveToken`),
+//       `bin/<name>`, … — checked for existence against the repo tree. A
+//       `$VAR/<path>` spelling is checked with the variable stripped PROVIDED
+//       the variable is declared in ROOT_VARS as naming the plugin tree; an
+//       undeclared variable in front of a plugin-shaped path FAILS rather than
+//       being skipped. A `./rules/...` spelling is the CONSUMING project's rule
+//       directory by convention and is never checked here.
 //   (b) section-heading anchors in the adjacent form `` `file.md` `## Section` ``
-//       — the cited heading must exist in the cited file (prefix match, so
-//       `## Path Resolution` satisfies `## Path Resolution (Pfadauflösung)`;
-//       heading LEVEL is not compared). Only the file-then-heading adjacent
-//       form is parsed; a bare `## X` with no file on the same line is
-//       ambiguous between "see section X" and "write a section named X"
-//       (playmaker appends `## Dependency warning` sections to records it does
-//       not contain), so it is out of scope by design.
+//       — the cited heading must exist in the cited file (prefix match; heading
+//       LEVEL is not compared). A bare `## X` with no file on the line is
+//       ambiguous between "see section X" and "write a section named X", so it
+//       is out of scope by design.
 //   (c) workbench-record citations — `260806-0015_*_<slug>.md` and its
 //       store-/Circle-/`shared/`-prefixed forms, plus bare Circle-directory
-//       citations `circles/<stamp>-<slug>`. The citation grammar is decision
-//       D1's wildcard form (`YYMMDD-HHMM_*_<slug>`, the `*` at the marker
-//       position matching any state marker —
-//       circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/
-//       260806-0015_*_zitierform-fuer-workbench-records.md). A citation that
-//       still carries an exact marker is resolved exactly; if its record
-//       exists only under a DIFFERENT marker, that is the "stale marker"
-//       defect class D1 eliminated and the failure message says to rewrite the
-//       marker position to `_*_`. An ellipsis (`…`) in a citation is a
-//       deliberate truncation and matches any infix.
+//       citations. The grammar is decision D1's wildcard form (the `*` at the
+//       marker position matches any state marker); a citation carrying an exact
+//       marker whose record exists only under a DIFFERENT marker is the stale-
+//       marker class, and the failure says to rewrite the position to `_*_`.
+//       The parser lives in `./helpers/citation-scan.ts`, because a second
+//       caller runs the same grammar over the workbench itself
+//       (`workbench-citation-lint.test.ts`); its header carries the grammar.
 //
-//       Class (c)'s parser lives in `./helpers/citation-scan.ts`, because a
-//       second caller needs the same grammar over a corpus this gate does not
-//       scan: the workbench itself, where the citations are densest and where
-//       nobody had counted the dangling ones (issue 260812-1720, plan
-//       `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`
-//       step 11). The gate's behaviour is unchanged by the move — the helper's
-//       `scanRecordCitations` is the same function under the same name, and the
-//       cases below are the ones that guarded it before.
+// THE WORKBENCH BOUND: class (c) resolves against THIS repo's own
+// `fusion-workbench/` tree, because the records the shipped texts cite are
+// fusion's own development records and a consuming project never runs this
+// suite. Absent the workbench, class (c) degrades to syntax-only and a describe
+// block below records the degradation instead of passing silently.
 //
-// THE WORKBENCH BOUND, stated plainly: class (c) resolves against THIS repo's
-// own `fusion-workbench/` tree. That is correct, not a shortcut — this lint
-// runs only in the plugin's test suite, and the records the shipped texts cite
-// are fusion's own development records, which legitimately exist only in this
-// repository's workbench. A consuming project never runs this suite. When the
-// workbench is absent (fresh clone — `fusion-workbench/` is a runtime artifact
-// and gitignored), class (c) degrades to syntax-only per the plan step: the
-// citations still parse, existence is not judged, and a describe block below
-// records the degradation instead of passing silently.
-//
-// Exemptions are by PATTERN first (the plan's falsifier warns against an
-// allowlist that swallows real defects):
-//   - a token carrying a placeholder (`<`, `>`, `$`, `{`, or a glob `*`
-//     anywhere but the marker position) is template syntax, not a reference;
-//   - a class-(c) token on a blockquote line (`> …`) sits in a worked
-//     before/after example (user-facing-output.md's example session reports);
-//   - a class-(c) token following `e.g.` within the SAME clause of the line is
-//     an announced illustration (playmaker's rationale examples). The bound is
-//     the clause, not the line: a `)`, a `;` or a sentence end between the
-//     `e.g.` and the token closes the announcement, so a citation in a later
-//     clause that merely shares the line with an unrelated `e.g.` is resolved
-//     normally;
-//   - a class-(c) token whose slug contains `foo` is a fabricated name
-//     (`plan-foo` in circle-records.md and migrate);
-//   - `rules/decision-record-examples.md` is exempt from class (c) wholesale:
-//     the file IS the worked-example corpus and every record it walks is
-//     fabricated by design.
-// What remains is a small enumerated EXAMPLE_PATHS list for class (a) — the
-// guard documentation's fabricated command operands (`rm rules/x.md`) — with a
-// reason per entry and a guard test asserting none of them exists in the tree,
-// so an entry can never swallow a reference to a real file.
+// Exemptions are by PATTERN first (an allowlist swallows real defects): a token
+// carrying placeholder syntax is a template, not a reference; a class-(c)
+// token on a blockquote line sits in a worked example; one following `e.g.`
+// within the SAME clause is an announced illustration (the clause, not the
+// line, is the bound — issue 260806-1031); a slug containing `foo` is
+// fabricated; `rules/decision-record-examples.md` is exempt wholesale. What
+// remains is the enumerated EXAMPLE_PATHS list for class (a), with a reason per
+// entry and a guard test asserting none of them exists in the tree.
 //
 // This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
 // asserts, it never rewrites a text.
@@ -117,13 +78,9 @@ interface SurfaceFile {
    *  (`# …`), hooks/lib TS sources (`// …`, `/* …`, `* …`). Absent: all lines. */
   commentRe?: RegExp;
   /** true: only class (c) record citations are scanned. hooks/lib comments are
-   *  classifier documentation, dense with fabricated path operands
-   *  (`rules/retired`, `rules/link`, `rules/up/x`, …) that class (a) would each
-   *  need an EXAMPLE_PATHS entry for — an ever-growing allowlist of exactly the
-   *  kind the exemption-design note above warns against. Record citations are
-   *  the class that measurably rots there (issue 260805-1839: five stale `_a_`
-   *  markers across three modules), and they carry no fabricated twins in
-   *  comments, so class (c) runs at full strength. */
+   *  classifier documentation, dense with fabricated path operands that class
+   *  (a) would each need an EXAMPLE_PATHS entry for; record citations are the
+   *  class that measurably rots there (issue 260805-1839). */
   recordsOnly?: boolean;
 }
 
@@ -405,7 +362,11 @@ function scanPluginPaths(
 
 // --- class (b): section-heading anchors -------------------------------------
 
-const ANCHOR_RE = /`([A-Za-z0-9._\/-]+\.md)`\s*(?:→\s*)?`(#{1,6}) ([^`]+)`/g;
+// The file token may carry a `$VAR/` root; it is classified against ROOT_VARS
+// exactly as `scanPluginPaths` classifies one, so the two scanners agree on the
+// shape (issue 260824-1506: four `$FUSION_SRC/`-rooted anchors went unchecked).
+const ANCHOR_RE =
+  /`(?:\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?\/)?([A-Za-z0-9._\/-]+\.md)`\s*(?:→\s*)?`(#{1,6}) ([^`]+)`/g;
 
 /** All shipped .md files, for unique-basename resolution of a bare `file.md`. */
 function shippedMd(): Map<string, string[]> {
@@ -436,7 +397,8 @@ function scanHeadingAnchors(
     ANCHOR_RE.lastIndex = 0;
     let m: RegExpExecArray | null;
     while ((m = ANCHOR_RE.exec(text)) !== null) {
-      const [, fileTok, , headingText] = m;
+      const [, rootVar, fileTok, , headingText] = m;
+      if (rootVar !== undefined && ROOT_VARS[rootVar] !== true) continue; // not the plugin tree
       if (isPlaceholder(fileTok) || isPlaceholder(headingText)) continue;
       // Resolve the file: as a path from the repo root, else as a unique
       // basename among the shipped .md surface. A basename that resolves to
@@ -589,13 +551,20 @@ function scanHeadingAnchors(
 // Step 1 and the Turn-count rationale in Step 5), `bin/fusion-paths` (Step 0i's ordering rationale)
 // and `rules/fusion-workbench-conventions.md` (the top-of-file restatement, which is also the -1
 // anchor, `## Path Resolution`). records -1 is the defect Step 0e cited for why it exists.
+// Re-approved 2026-08-24 (C3 steps 4-5, `3ba7a46`; written after the fact from `git show 3ba7a46` per issue 260824-1512): paths 1291 -> 1303, anchors 180 -> 181, records 117 -> 119. The twelve paths are the plugin files `bin/fusion-identity`'s header cites (`bin/fusion-paths`, `bin/fusion-turn-budget`, `bin/fusion-count-sources`, `rules/critical-stance.md`, `rules/workbench-tracking.md`, `rules/fusion-workbench-conventions.md`, `skills/setup/SKILL.md`), the helper cited by its new `CLAUDE.md` row and by the edits to `rules/fusion-workbench-conventions.md` and `rules/workbench-tracking.md`; the anchor is the helper's `## Path Resolution` citation; the two records are the exit-4 decision `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`, cited by the helper and by the `CLAUDE.md` row. The test file landed in `b7f8326` and is outside this gate's surface.
 // Re-approved 2026-08-24 (C3 step 6): paths 1303 -> 1304, the rest unmoved; the one token is `bin/fusion-identity`, cited by the conventions file's new `### Who filed it`.
 // Re-approved 2026-08-24 (C3 step 7): paths 1304 -> 1305, the rest unmoved; the one token is `bin/fusion-identity` again, cited by `rules/circle-records.md`'s new `### The claim field`.
 // Re-approved 2026-08-24 (C3 step 8): paths 1305 -> 1310, anchors 181 -> 183, records 119 -> 120. The five paths are `bin/fusion-identity` and `rules/critical-stance.md` newly cited in `agents/orchestrator.md` `## Circle head fields`, plus `bin/fusion-identity`, `rules/fusion-workbench-conventions.md` and `rules/circle-records.md` newly cited in `agents/shaper.md`'s frontmatter fill; the two anchors are that fill's `### Who filed it` and `### The claim field`; the one record is the route-dependence defect `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`, cited by the new no-condition paragraph. The orchestrator's own bare mention of `### The claim field` carries no adjacent path and so registers in neither class.
 // Re-approved 2026-08-24 (C3 step 9): paths 1310 -> 1316, anchors 183 -> 186, records unmoved. All nine tokens are Step 0i's in `skills/setup/SKILL.md`: `bin/fusion-identity` three times (the identity paragraph, plus both `$FUSION_PLUGIN_ROOT`-rooted spellings on its bash line), `rules/fusion-workbench-conventions.md` with `### Who filed it`, and in the one-path branch `agents/orchestrator.md` with `## Circle head fields` and `rules/circle-records.md` with `### The claim field`; `fusion-workbench/.checkout-id` is under no plugin directory and registers nowhere.
 // Re-approved 2026-08-24 (C3 step 10): paths 1316 -> 1319, anchors and records unmoved. All three tokens are in Step 6.1's new claim branch in `skills/next/SKILL.md`: `bin/fusion-identity`, `$FUSION_SRC/agents/orchestrator.md` and `$FUSION_SRC/rules/circle-records.md`. The two headings adjacent to the last two, `## Circle head fields` and `### The claim field`, register as no anchor at all: `scanHeadingAnchors` resolves its file token literally and does not strip a ROOT_VARS prefix the way `scanPluginPaths` does, so a `$VAR/`-rooted anchor is skipped — which is why Step 6.2's older citation of the same section never counted either.
 // Re-approved 2026-08-24 for the two C3 citation repairs: paths 1319 -> 1318, anchors 186 -> 185, records unmoved. Three edits, and every swap is one token out for one token in. In `skills/next/SKILL.md` Step 6.1 the override citation moves from `$FUSION_SRC/agents/orchestrator.md` to `$FUSION_SRC/rules/circle-records.md`, where the `Overridden ` form is actually authored, and the bare `bin/fusion-identity` gains its `$FUSION_PLUGIN_ROOT` root; both are net zero, and the -1 is the trailing duplicate citation of that same section, now redundant one sentence after it. In `skills/setup/SKILL.md` Step 0i the same override citation moves `agents/orchestrator.md` `## Circle head fields` -> `rules/circle-records.md` `### The claim field`, net zero in both classes because the anchor is unrooted here, and the second -1 path and the -1 anchor are that step's trailing duplicate of the section, removed for the same reason. The +1 path is `rules/fusion-workbench-conventions.md` `### Who filed it`, where one bare `bin/fusion-identity` became two `$FUSION_PLUGIN_ROOT`-rooted spellings, the prose call and the `[ -x ]` guard beside it. Both defects are `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_both-override-call-sites-cite-a-section-that-does-not-define-the-sentence-they-must-write.md` and `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_the-filing-rule-names-the-identity-helper-with-no-root-no-guard-and-no-branch-for-its-absence.md`.
-const BASELINE = { paths: 1318, anchors: 185, records: 120 };
+// `records` left the pin on 2026-08-24 (issue 260816-0725): that class resolves
+// against the workbench, which the archive step rewrites in the ordinary course
+// of a session, so its count moved with housekeeping and not with text. The
+// class is still scanned and a dangling record still fails above; the corpus
+// itself is `workbench-citation-lint.test.ts`'s to measure.
+// Re-approved 2026-08-24 (this Circle's step 6, issue 260824-1506): anchors 185 -> 188, paths unmoved. `scanHeadingAnchors` now strips a ROOT_VARS prefix, so the three `$FUSION_SRC/`-rooted anchors in `skills/next/SKILL.md` entered scope: `rules/circle-records.md` `### The claim field`, `agents/orchestrator.md` `## Circle head fields` and `rules/circle-records.md` `### The Directive is a pointer once a spec exists`; the fourth the issue counted was the duplicate the C3 citation repairs removed.
+const BASELINE = { paths: 1318, anchors: 188 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
@@ -640,14 +609,8 @@ describe("reference-resolution lint: every reference in the shipped text resolve
     ).toEqual([]);
   });
 
-  it("resolved exactly the pinned number of references in each class", () => {
-    const pinned = { paths: BASELINE.paths, anchors: BASELINE.anchors, records: BASELINE.records };
-    const actual = {
-      paths: counts.paths,
-      anchors: counts.anchors,
-      records: WORKBENCH_PRESENT ? counts.records : BASELINE.records,
-    };
-    expect(actual, BASELINE_MESSAGE).toEqual(pinned);
+  it("resolved exactly the pinned number of references in each plugin class", () => {
+    expect({ paths: counts.paths, anchors: counts.anchors }, BASELINE_MESSAGE).toEqual(BASELINE);
   });
 
   it("degrades loudly, not silently, when the workbench is absent", () => {
@@ -876,7 +839,7 @@ describe.runIf(WORKBENCH_PRESENT)("reference-resolution lint: class (c) behaviou
   // A real record with a marker, picked from the live workbench so the
   // fixtures cannot rot when records move: whatever exists now is cited.
   const sample = workbenchIndex().find((e) => /^[0-9]{6}-[0-9]{4}_[a-z]_.+\.md$/.test(e.base));
-  const stampSlug = sample!.base; // e.g. 260806-0015_a_zitierform-….md
+  const stampSlug = sample!.base; // e.g. 260806-0015_*_zitierform-….md
   const marker = stampSlug.match(/_([a-z])_/)![1];
   const otherMarker = marker === "z" ? "y" : String.fromCharCode(marker.charCodeAt(0) + 1);
   const wildcard = stampSlug.replace(/_[a-z]_/, "_*_");

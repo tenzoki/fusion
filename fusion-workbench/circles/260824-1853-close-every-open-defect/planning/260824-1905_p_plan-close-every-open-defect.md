@@ -114,7 +114,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
    - Closes: 13, 24, 38, 63, 64, 65, 67, 79, 83, 87, 104, 112, 113, 114, 115, 132, 133, 134, 135, 172, 190, 194, 195, 199, 200, 207, 216, 220
    - Acceptance: each named file carries the appended text; the citation lint is green; no file outside `fusion-workbench/` changes.
 
-6. **`hooks/`: source, tests and their comments**
+6. [DONE] **`hooks/`: source, tests and their comments**
    - Executor: `coder`
    - Files: `hooks/lib/config.ts`, `hooks/lib/domain-cascade.ts`, `hooks/lib/events.ts`, `hooks/lib/__tests__/helpers/citation-scan.ts`, and the test files rows 10, 18, 27, 28, 42, 49, 50, 62, 109, 123, 124, 142, 162, 167, 168, 175, 209, 212 name; `README-hooks.md` where `describeReach()` renders into it; `hooks/dist/` via `npm run build`
    - Changes: per row. Line budget: 40 lines of head-room; the additions (18, 27, 28, 50, 109, 142, 212, 209) cost about 70 lines, so the step cuts at least the difference from comment prose in the same files it touches, the way `8092c11` did, and names each cut in the commit message. `BASELINE` in the reference lint moves with a re-approval comment (123, 209) and by no more than the four anchors 123 measured. 42 is net negative; 62 removes an exact pin.

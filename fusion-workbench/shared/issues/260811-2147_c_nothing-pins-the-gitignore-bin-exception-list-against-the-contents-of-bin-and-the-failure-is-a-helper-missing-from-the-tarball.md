@@ -52,3 +52,6 @@ The same shape covers the mirror case a `git ls-files` comparison also catches f
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: No test compares `git ls-files bin/` against the directory. The twelve `!bin/` exception lines currently match the twelve helpers, which is coincidence rather than a gate: nothing catches the next helper added without its line. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — one case in `hooks/lib/__tests__/committed-dist.test.ts` compares `git ls-files bin/` against `readdirSync(bin)` and names the file and the `.gitignore` line to add or remove, shown failing on an untracked `bin/zz-untracked`; `cd hooks && npx vitest run lib/__tests__/committed-dist.test.ts`

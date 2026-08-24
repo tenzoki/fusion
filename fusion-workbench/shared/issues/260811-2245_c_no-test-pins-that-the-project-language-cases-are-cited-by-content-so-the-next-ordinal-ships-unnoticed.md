@@ -32,3 +32,6 @@ One case in `deliverable-language-lint.test.ts`: assert that no shipped surface 
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/deliverable-language-lint.test.ts` has no ordinal-citation scan; it tests only the deliverable-language default. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — one case in `hooks/lib/__tests__/deliverable-language-lint.test.ts` fails when `agents/orchestrator.md`, `agents/editor.md`, `CLAUDE.md` or the conventions file cites a `## Project language` case by ordinal on the same line; the check flags line 358 of `agents/orchestrator.md` as `9f84254` left it; `cd hooks && npx vitest run lib/__tests__/deliverable-language-lint.test.ts`

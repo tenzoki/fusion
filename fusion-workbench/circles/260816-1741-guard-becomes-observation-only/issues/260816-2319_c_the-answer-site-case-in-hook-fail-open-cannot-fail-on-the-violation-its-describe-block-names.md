@@ -104,3 +104,6 @@ reports either way. Left open by the same user decision that left `260816-2320` 
 2. The failure the record predicts is not a hypothetical about a hypothetical maintainer. It is about `hooks/guard.ts:202`, the single `answer("guard", allow, () => emitEvent(…))` call that is now the whole of the hook's write-path bookkeeping. Anyone making a deep change to the guard will read that line, and this test will show green whether they preserve its ordering or not.
 
 The record's `inference:` — that no observable separates the two columns once `{}` is the only reachable verdict — was re-checked against `hooks/guard.ts` at HEAD and still holds: 223 lines, no `permissionDecision`, no `"deny"`, no `hookSpecificOutput`, `allow()` at `:124`, `:132`, `:145` and `:193`, `{}` on every path. Whoever picks this up should write that bound into the comment or disprove the inference. Green and unannotated remains the one outcome the record argues against.
+
+---
+Resolved: fixed — the comment on the `answer`-site case in `hooks/lib/__tests__/hook-fail-open.test.ts` now states the bound the record proves: with `{}` the only reachable verdict no observable separates the real ordering from the violated one, so the case pins the fail-open tail and not the order; no assertion added; `cd hooks && npx vitest run lib/__tests__/hook-fail-open.test.ts`

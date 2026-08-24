@@ -216,6 +216,7 @@ cd hooks && npm run build && cd .. \
 - A paraphrase naming the counts in prose — code files, source files, data files, and the decisions, issues, analyses and commits the retired branches read — rather than by variable name.
 - A paraphrase written with the cascade's own variable names.
 - A stale copy restating the retired four-outcome cascade. Its two surviving outcomes still fire, and the four counts only the retired branches ever read are still recognised as inputs, so the likeliest second copy from here on is caught rather than walked past.
+- A stale copy written only in the two retired outcomes, `strategic` and `knowledge`. The retired names are recognised as domain names for the same reason the retired counts are recognised as inputs: a paragraph written before 2026-08-15 and never re-read is the copy most likely to be met from here on.
 - One sentence hard-wrapped across two lines. A line and its continuation are scanned joined, which is the shape this repository's own 78-column prose produces by default.
 
 **Not caught.** Each line is asserted to still be a miss, so closing one of these turns the suite red until this list is corrected:
@@ -228,7 +229,7 @@ cd hooks && npm run build && cd .. \
 **Not scanned**, with what running the gate over it yields today:
 
 - `docs/*.md` — clean. Left out on a measured cost that has since expired. `docs/philosophy.md:19` said what each of four domains PRIORITISED, in a line shape-identical to a paraphrase, and scanning `docs/` meant either that false positive or an exemption list. With two domains the line names no count and the directory now measures clean, so the reason for the exclusion is gone and only the exclusion is left. That is an uncovered directory, not a justified one.
-- `CLAUDE.md` — clean. A consumer by the same contract that puts `rules/` in the file set, and it is not scanned. That is an uncovered file, not a justified exclusion: it is clean today and nothing keeps it clean.
+- `CLAUDE.md` — fires. A consumer by the same contract that puts `rules/` in the file set, and it is not scanned. It measured clean until the retired domain names joined the detector on 2026-08-24; its agent-roster line, which names the two retired values beside the two live ones and the words the input list carries, now selects. That is the one measured cost of the widening, and it falls outside the scanned set.
 - `README-hooks.md` — clean. Documentation about the gate, including this block. Not scanned, and it would be wrong to scan the file whose job is to quote the claim.
 
 <!-- END generated: domain-cascade reach -->

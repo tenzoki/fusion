@@ -300,11 +300,14 @@ describe("a report that fails decides nothing — the verdict stands either way"
   it(
     "keeps the allow and loses only the trace when the state directory is unwritable",
     () => {
-      // The `answer` site. What distinguishes this from the fail-open case at
-      // the top of the file is the last assertion: the row was genuinely LOST.
-      // A run where `events.jsonl` landed anyway would satisfy the verdict
-      // assertions while proving nothing about what happens when the report
-      // fails, which is the whole subject.
+      // The `answer` site. The last assertion holds the row was LOST, against
+      // a guard that wrote it anyway. What no assertion here can hold is the
+      // ORDER this describe names: with `{}` the only reachable verdict, a
+      // `guard.ts` that emitted first and allowed second produces the same
+      // stdout, exit, single stderr marker and absent log as the real one
+      // (issue 260816-2319, the inference re-checked at HEAD). The case
+      // pins the fail-open tail, not the ordering; the marker count that
+      // discriminates in the `bestEffort` case below has no twin here.
       withUnwritableStateDir((root) => {
         const run = runRaw(guardEntry(), root, "PreToolUse", "Edit", {
           file_path: resolve(root, PAYLOAD),

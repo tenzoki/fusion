@@ -72,3 +72,6 @@ So the coupling is confirmed by a real trigger, and the gap between "did not fir
 one citation's location. That raises the confidence in the record rather than lowering its urgency, and
 it pairs with `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`:
 the corpus that shields the gate here is the same corpus no gate reads. Marker stays open.
+
+---
+Resolved: fixed — `BASELINE` in `hooks/lib/__tests__/reference-resolution-lint.test.ts` pins `paths` and `anchors` only; the `records` class is still scanned and a dangling record still fails, but its count is no longer pinned against workbench contents, so the archive step cannot redden this file (the workbench corpus is `workbench-citation-lint.test.ts`'s to measure); `cd hooks && npx vitest run lib/__tests__/reference-resolution-lint.test.ts`

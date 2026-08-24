@@ -13,24 +13,17 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 // six codes are exercised below. The script's own header states that table;
 // this file asserts it rather than restating it.
 //
-// THE TWO PROPERTIES WORTH MORE THAN THE REST.
-//   - Exit 1 DOMINATES: an unset git identity stops the run before the checkout
-//     half is touched, so nothing is printed and no `.checkout-id` is minted. A
-//     failing call that left a file behind would be a side effect on the error
-//     path, which is the kind of defect a test catches once and never again.
-//   - Exit 4 is NOT a halt. Outside a git work tree no identity is owed, the
-//     helper prints `CHECKOUT=` alone, and the caller files the record with the
-//     person field absent rather than empty. Binding record:
-//     `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
-//     option 2.
+// THE TWO PROPERTIES WORTH MORE THAN THE REST: exit 1 DOMINATES (an unset git
+// identity stops the run before the checkout half is touched, so nothing is
+// printed and no `.checkout-id` is minted), and exit 4 is NOT a halt (outside a
+// git work tree no identity is owed; binding record
+// `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
+// option 2). A third, the never-overwrite of a malformed identifier, is the
+// mint-once property seen from the succeeding side (issue 260824-1538).
 //
-// WHAT IS DELIBERATELY NOT TESTED HERE: the concurrent mint. The script's write
-// is a noclobber redirect, so two racing processes mint one identifier; a test
-// of it would fork twenty children, cost seconds of wall-clock on every run and
-// land in the load-sensitive flakiness this suite already has filed
-// (`shared/issues/260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`).
-// The mint-once case below covers what a caller can observe — one identifier
-// across successive calls — and the race was exercised by hand when it landed.
+// DELIBERATELY NOT TESTED: the concurrent mint. The write is a noclobber
+// redirect; a test would fork twenty children and land in the load-sensitive
+// flakiness already filed (`shared/issues/260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`).
 
 const script = join(pluginRoot, "bin", "fusion-identity");
 const tmpRoots: string[] = [];
@@ -170,6 +163,17 @@ describe("bin/fusion-identity", () => {
     expect(second.checkout).toBe(first.checkout);
     // Not merely equal output: the file itself was not rewritten.
     expect(readFileSync(f.idFile, "utf-8")).toBe(held);
+  });
+
+  it("never overwrites: a malformed .checkout-id is left byte-identical and exits 3", () => {
+    const f = fixture({ git: "both", workbench: true });
+    writeFileSync(f.idFile, "not-hex\n");
+    const r = run(f);
+    expect(r.status).toBe(3);
+    expect(r.person).toBe("Test Person <t@example.com>");
+    expect(r.checkout).toBeNull();
+    expect(r.stderr).toContain("was not overwritten");
+    expect(readFileSync(f.idFile, "utf-8")).toBe("not-hex\n");
   });
 
   it("exit 2: rejects an argument without printing a value", () => {

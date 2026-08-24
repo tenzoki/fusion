@@ -93,8 +93,9 @@
  *   - `RETIRED_PROJECT_FILES` — a whole FILE at the project root that fusion no
  *     longer reads. Today: `fusion-guard.json`, replaced by `fusion.json`.
  *   - `RETIRED_TOP_LEVEL_KEYS` — a top-level KEY inside the file that is read.
- *     Today: `guard`, `decisions`, `escalation`, which is what a project sees
- *     if it copies its old file across rather than starting from the template.
+ *     Today: `guard`, `decisions`, `escalation` and `churn`, which is what a
+ *     project sees if it copies its old file across rather than starting from
+ *     the template.
  *
  * The leaf-scoped table has no members after this release and is gone with
  * them: `guard.protectedPaths` now sits inside a retired container, so the

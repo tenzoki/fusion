@@ -24,3 +24,6 @@ Fix direction: one case. Fixture with `workbench: true` and `git: "both"`, write
 
 ---
 **Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** `grep -n 'malformed' hooks/lib/__tests__/fusion-identity.test.ts` returns nothing, so the branch is still untested. The property itself was confirmed live during this pass, by accident rather than by design: a probe that removed `tr` and `grep` from `PATH` drove the helper into the malformed branch, which reported "It was not overwritten; inspect it, and delete it only if no record cites it" and left `fusion-workbench/.checkout-id` byte-identical at `5e8248d7`. The behaviour holds and nothing in the suite would notice if it stopped.
+
+---
+Resolved: fixed — one case in `hooks/lib/__tests__/fusion-identity.test.ts` writes `not-hex` into `.checkout-id`, expects exit 3, `PERSON` present, no `CHECKOUT`, "was not overwritten" on stderr and the file byte-identical; shown failing with the hex guard in `bin/fusion-identity` widened to accept anything; paid by a header cut in the same file; `cd hooks && npx vitest run lib/__tests__/fusion-identity.test.ts`

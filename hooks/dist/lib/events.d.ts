@@ -57,7 +57,8 @@ export interface GuardEvent {
  * this, and the only lines recording the guard ever enforcing anything. A guard
  * that forgets it halted is a strange guard.
  *
- * What bounds the file instead is `/fusion:archive`, which rolls the live log
+ * What bounds the file instead is the archive step of `/fusion:cleanup`
+ * (`--only archive`), which rolls the live log
  * into the archive store under a dated name and starts a fresh empty one. The
  * log is classified as evidence, not telemetry, in
  * `rules/fusion-workbench-conventions.md` `### Which of them a tracked

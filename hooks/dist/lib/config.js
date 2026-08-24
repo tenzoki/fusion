@@ -93,8 +93,9 @@
  *   - `RETIRED_PROJECT_FILES` — a whole FILE at the project root that fusion no
  *     longer reads. Today: `fusion-guard.json`, replaced by `fusion.json`.
  *   - `RETIRED_TOP_LEVEL_KEYS` — a top-level KEY inside the file that is read.
- *     Today: `guard`, `decisions`, `escalation`, which is what a project sees
- *     if it copies its old file across rather than starting from the template.
+ *     Today: `guard`, `decisions`, `escalation` and `churn`, which is what a
+ *     project sees if it copies its old file across rather than starting from
+ *     the template.
  *
  * The leaf-scoped table has no members after this release and is gone with
  * them: `guard.protectedPaths` now sits inside a retired container, so the
@@ -270,6 +271,10 @@ const RETIRED_TOP_LEVEL_KEYS = {
     guard: "fusion's guard decides nothing. It observes the write tools and reports what it could not read here, and it has no settings of its own.",
     decisions: "the decision-governed check that read this list was removed with the guard's verdict.",
     escalation: "the consecutive-block counter and the halt it raised were removed with the guard's verdict.",
+    // Retired on 2026-08-24, nine days after the heatmap it configured left: a
+    // copy of the plugin's old `hooks/config.json` carried the block, so a
+    // project may well still declare it (issue 260815-1247).
+    churn: "the per-file churn heatmap and its warning thresholds were removed on 2026-08-15.",
 };
 /** A type name for a diagnostic, short enough to read in a dashboard row. */
 function describeValue(value) {

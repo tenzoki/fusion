@@ -597,7 +597,9 @@ describe("the reach gate catches the copy it was written for", () => {
     // this is the assertion that it is still visible.
     const found = findCascadeStatements(CLEANUP_COPY);
     expect(found.length).toBe(1);
-    expect(found[0].domains.sort()).toEqual(["code", "data"]);
+    // All four outcomes: the retired two are recognised so a copy written only
+    // in them is not walked past (REACH.covered, issue 260815-1501).
+    expect(found[0].domains.sort()).toEqual(["code", "data", "knowledge", "strategic"]);
     expect(found[0].inputs).toContain("decisions_count");
     expect(found[0].inputs).toContain("analyses_count");
   });

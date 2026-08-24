@@ -12,22 +12,22 @@
 # does not move any baseline and therefore never clears a bound.
 
 [agents bytes]
-  analyst.md 20821
-  bugfixer.md 11503
-  coder.md 9383
-  coderev.md 8078
+  analyst.md 21038
+  bugfixer.md 11509
+  coder.md 9665
+  coderev.md 8145
   consultant.md 14329
-  curator.md 33921
+  curator.md 34190
   editor.md 13635
-  ontocoder.md 13000
-  ontorev.md 7031
+  ontocoder.md 13278
+  ontorev.md 7098
   orchestrator.md 155704
-  planner.md 19238
-  playmaker.md 38216
-  reconciler.md 19701
-  shaper.md 28468
+  planner.md 19423
+  playmaker.md 38951
+  reconciler.md 20738
+  shaper.md 28412
   taskplanner.md 14070
-  total 407098
+  total 410185
 
 [skills bytes]
   archive/SKILL.md 24854
@@ -46,49 +46,49 @@
 
 [hook-tests lines]
   commit-message-path.test.ts 354
-  committed-dist.test.ts 329
-  config.test.ts 795
+  committed-dist.test.ts 332
+  config.test.ts 809
   context-manifest.test.ts 472
-  deliverable-language-lint.test.ts 140
+  deliverable-language-lint.test.ts 138
   derivable-enumerations-lint.test.ts 453
   domain-cascade-order-lint.test.ts 234
-  domain-cascade.test.ts 909
+  domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 168
   fusion-commit-lock.test.ts 371
   fusion-count-sources.test.ts 442
-  fusion-identity.test.ts 180
-  fusion-paths.test.ts 878
-  fusion-prose-metric.test.ts 162
+  fusion-identity.test.ts 184
+  fusion-paths.test.ts 876
+  fusion-prose-metric.test.ts 174
   glob-nomatch-lint.test.ts 148
   guard-bash-integration.test.ts 393
   guard-project-config-integration.test.ts 423
   guard-state-shape.test.ts 251
-  helpers/citation-scan.ts 950
+  helpers/citation-scan.ts 947
   helpers/growth-bound.ts 123
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
-  hook-fail-open.test.ts 621
+  hook-fail-open.test.ts 624
   hooks-wiring.test.ts 103
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
-  monitor-warnings-panel.test.ts 1079
-  path-literal-lint.test.ts 327
+  monitor-warnings-panel.test.ts 1102
+  path-literal-lint.test.ts 338
   paths.test.ts 51
   plan-stopping-section-lint.test.ts 284
   playmaker-backlog-mandate-lint.test.ts 391
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 520
-  reference-resolution-lint.test.ts 1115
+  reference-resolution-lint.test.ts 1078
   review-coverage-mandate.test.ts 354
-  review-coverage.test.ts 819
+  review-coverage.test.ts 818
   rules-emission-golden.test.ts 1165
   rules-voice-profile.test.ts 351
   sentence-identifier-containment.test.ts 425
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 674
+  staging-drift.test.ts 673
   surface-growth-bound.test.ts 608
-  turn-budget-lint.test.ts 523
+  turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 374
-  total 20335
+  total 20363
