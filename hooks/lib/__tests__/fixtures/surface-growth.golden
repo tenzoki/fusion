@@ -52,7 +52,7 @@
   deliverable-language-lint.test.ts 140
   derivable-enumerations-lint.test.ts 453
   domain-cascade-order-lint.test.ts 234
-  domain-cascade.test.ts 924
+  domain-cascade.test.ts 909
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 168
   fusion-commit-lock.test.ts 371
@@ -61,12 +61,12 @@
   fusion-paths.test.ts 878
   fusion-prose-metric.test.ts 162
   glob-nomatch-lint.test.ts 148
-  guard-bash-integration.test.ts 417
+  guard-bash-integration.test.ts 393
   guard-project-config-integration.test.ts 423
   guard-state-shape.test.ts 251
   helpers/citation-scan.ts 950
   helpers/growth-bound.ts 123
-  helpers/guard-harness.ts 975
+  helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 621
   hooks-wiring.test.ts 103
@@ -91,4 +91,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 523
   workbench-citation-lint.test.ts 374
-  total 20375
+  total 20331

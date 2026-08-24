@@ -466,28 +466,13 @@ describe("the gate catches the four edits that defeated its predecessor", () => 
 // Reach: exactly one consumer states the cascade (issue 260810-1918).
 //
 // Everything above measures the definition. This measures how far the gate
-// reaches, which is what the previous two rounds got wrong — in the same place,
-// twice:
-//
-//   Round 1 asserted a second definition was unrepresentable. One existed:
-//   `skills/cleanup/SKILL.md` carried the cascade as one prose sentence, in the
-//   pre-fix order, with no `counted_by == "none"` case. One project came out of
-//   a single session with two different domains, Setup and cleanup disagreeing,
-//   and the domain selects the reconciler's ground-truth protocol.
-//
-//   Round 2 replaced that with a scoped measurement naming three holes. A review
-//   measured a fourth against the shipped build (issues 260810-2110): a domain
-//   name outside backticks or double quotes was invisible, so the plainest
-//   possible second copy walked past. It also found the detector line-scoped
-//   while this repository's prose is hard-wrapped, and the file set justified as
-//   "the files an agent executes" while `rules/` is that too.
-//
-// Both times the gate was sound and the SENTENCE next to it was broader. So the
-// sentence is gone: `REACH` in `hooks/lib/domain-cascade.ts` holds the file set,
-// what is caught, what is missed and what is not scanned, each line carrying
-// probes this file runs. The `README-hooks.md` paragraph is rendered from the
-// same object and compared byte-for-byte. A claim that outruns the gate now
-// fails here rather than being found by the next reviewer.
+// reaches. Two earlier rounds got that wrong, in the same place both times, by
+// standing a claim beside a sound gate that was broader than the gate (issue
+// 260810-2110). So the sentence is gone: `REACH` in `hooks/lib/domain-cascade.ts`
+// holds the file set, what is caught, what is missed and what is not scanned,
+// each line carrying probes this file runs. The `README-hooks.md` paragraph is
+// rendered from the same object and compared byte-for-byte. A claim that
+// outruns the gate now fails here rather than being found by the next reviewer.
 //
 // The file set is the CONSUMER set and it carries no exemptions, deliberately.
 // `path-literal-lint.test.ts` scans agents and skills and exempts `setup` and

@@ -14,11 +14,6 @@
  * memoisation (the config loader's cache is keyed, but a process is still the
  * unit of resolution) from deciding the next case's answer.
  *
- * A second, louder reason — the write guard's stand-down inside this repository,
- * which made every denial assertion here pass vacuously — went with the guard's
- * last verdict on 2026-08-16; `CLAUDE.md`'s opening section carries the removal
- * and the rule it established. The requirement above outlived it unchanged.
- *
  * ## The macOS symlink trap
  *
  * `mkdtemp` under `os.tmpdir()` hands back `/var/folders/…` on macOS while the

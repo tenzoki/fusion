@@ -31,30 +31,6 @@ import {
 //   * `git checkout HEAD -- <paths>` runs, which is fusion's own revert
 //     strategy and the one command it cannot afford to lose.
 //
-// ## What was here, and why five cases went in step 9
-//
-// The file is a survivor of three removals and this is the fourth. It carried
-// the end-to-end half of a classifier that read a shell command and predicted
-// which files it was about to write (retired 2026-08-07, undecidable from the
-// inputs it had); then the git branch policy that predicted whether a command
-// would move HEAD (deleted 2026-08-09); then the protected-path deny and its
-// fingerprint (2026-08-12).
-//
-// What went on 2026-08-16 was the last two denies and the stand-down above them:
-// the `self-detect stand-down` describe, whose whole subject was a branch that
-// no longer exists; two cases asserting a CHECK 3 block on a governed path; the
-// precondition case that asserted a block in order to prove the harness was
-// pointed somewhere the check ran; and the `macOS realpath trap` case, whose
-// subject was a deny arriving as a SILENT ALLOW through an unresolved path —
-// indistinguishable, now that everything allows, from correct behaviour. The
-// trap itself is not gone and the harness still resolves its root; what moved is
-// which side of it bites, and `helpers/guard-harness.ts` states the current one.
-//
-// This file was in no step's Files list while the plan's Testing Strategy named
-// it first among those that "must stay green throughout" (issue `260816-2021`).
-// Both statements were about the two properties above, which were green
-// throughout and are green here.
-//
 // Each case is still a fresh subprocess against a temporary project root. That
 // is a requirement of the thing under test rather than a style choice: every
 // hook resolves its project by walking up from its own working directory, so a
