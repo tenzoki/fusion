@@ -105,3 +105,10 @@ build — and conflating the two would widen that record's question while it is 
 and is load-bearing by decision, not by accident. A change that renames a record's marker carries
 the grep for the old name itself; a change that removes or narrows the lint removes the only thing
 standing behind this answer.
+
+---
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **A worked instance landed in Circle `260824-0530-record-attribution-and-circle-claim`, and it was carried by hand.**
+
+That Circle made the wildcarded citation form normative (`rules/fusion-workbench-conventions.md` `## Filename Patterns`, commit `2b055a0`) and then, at `0f5889e`, moved `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` from `_a_` to `_i_`. Two citations of that record in `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` named the old marker literally, and they were rewritten to the `_*_` form at `6d439ba` — one commit *before* the rename that would have staled them, by a writer who saw it coming rather than by any mechanism.
+
+So the obligation was met, and it was met by a person reading ahead. Nothing carried it. The new rule text makes the correct form normative and still names no carrier, which is precisely this record's question.

@@ -24,3 +24,6 @@ role 'circle-records.md + design-diagrams.md' — shaper
 Fix direction: no cut is required by this record. What is required is that the crossing is on the record — either as a line in the Circle's closure note naming which two roles crossed and by how much, or as its own open item for the next cleanup. Naming it is the fix; the cut is a separate judgement.
 
 Adjacent, and deliberately not pre-empted: `shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` is open and this record takes no position in it.
+
+---
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** Re-measured by running the instrument rather than reading the record. `npx vitest run lib/__tests__/rules-emission-golden.test.ts` passes and prints the role rule-text report on stderr for two roles: `playmaker` at 22 798 bytes against a budget of 21 302, and `shaper` at 27 632 against 26 975, both attributing the growth to `circle-records.md +13 496`. The report ends "This does not fail the suite", so the fifth instrument still reports where nobody is looking, which is the record's whole subject.

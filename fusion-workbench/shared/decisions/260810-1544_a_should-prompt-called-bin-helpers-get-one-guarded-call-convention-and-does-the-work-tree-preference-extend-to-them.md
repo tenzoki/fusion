@@ -78,3 +78,12 @@ record of its own, and this record cannot move to `_i_` while it is the only hom
 are its evidence, and the question is already stated in this record's `## Question` — and this record
 then moves to `_i_` on part (b) alone, which is exactly the split its own paragraph at `:15`
 prescribes for a record whose state is not a single value.
+
+---
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **Part (c) is now load-bearing for a shipped capability, which it was not when the record was answered.**
+
+Circle `260824-0530-record-attribution-and-circle-claim` added `bin/fusion-identity` and made `rules/fusion-workbench-conventions.md` `### Who filed it` read it from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"` and, in that section's own words, "nowhere else". Measured here: `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]` is **false** in this repository, because `$FUSION_PLUGIN_ROOT` resolves to `/Users/k1/.fusion` and the installed copy predates the helper, while `./bin/fusion-identity` in the work tree exits 0 and prints `PERSON=Kai Stalmann <ks@qantr.com>` and `CHECKOUT=5e8248d7`.
+
+The consequence is that every record filed in fusion's own repository loses its person half until the next release, with a working helper in the tree. Four records filed by the second review pass carry `**Filed by:** coderev` with no person half, and this reconciliation pass filed two more the same way. That is the rule working exactly as written, and it is the first time the unanswered part (c) has changed what a shipped record contains rather than only which copy of a rule file an agent reads.
+
+Nothing is filed against it, deliberately: part (c) is open by the user's own decision and `CLAUDE.md` states the residual in the rules-loading convention. This note exists so the next pass reads it as a measured instance rather than re-deriving it.

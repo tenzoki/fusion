@@ -207,3 +207,18 @@ the citations point at homes that carry what they cite, and the filing rule name
 `### Who filed it` as it now stands, `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]` is false on
 this machine, so the absent-helper branch applies: file with the person half absent, and report that
 attribution was dropped because the helper was missing. Reported here and in chat.
+
+
+---
+
+## Reconciliation annotation — 260824-1637 (reconciler, Phase 3, HEAD `cf7a5b0`)
+
+Findings are not rewritten here. All three are open at HEAD and each was re-checked against the tree rather than inherited. Log: `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`.
+
+- **Exit-5 residual branch (Medium).** Confirmed by probe: outside a git work tree and outside any workbench the helper printed neither line and exited 5, while `rules/fusion-workbench-conventions.md:496` still routes every other code into "`PERSON=` is printed and you carry on".
+- **Fourth bare call in `agents/orchestrator.md` (Medium).** Confirmed: `:286` unchanged, no root, no guard, no delegation. This pass carries it as the named exception on property 2 of the plan's `## Where this Circle stops`.
+- **Setup's narrower claim branch (Low).** Confirmed: `skills/setup/SKILL.md:351` splits two ways, `skills/next/SKILL.md:207` three.
+
+**This review's four verified claims were spot-checked and hold.** The override split (`grep -c Overridden agents/orchestrator.md` = 0), the surviving `Unclaimed`-or-absent branches at both sites, the disjointness of `### Who filed it`, and green `npm test` at HEAD (42 files, 732 tests).
+
+**On the attribution note.** Independently confirmed, and it applies to this pass too. `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]` is false in this checkout, while `./bin/fusion-identity` in the work tree exits 0 and prints a person. The two records this pass filed therefore carry no person half, for the same reason and under the same branch. The governing open question is part (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`, which now has this measured instance in its own reconciliation note.

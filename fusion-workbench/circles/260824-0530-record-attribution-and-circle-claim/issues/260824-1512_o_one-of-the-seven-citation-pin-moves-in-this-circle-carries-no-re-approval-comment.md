@@ -13,3 +13,6 @@ What that costs is exactly what the comment convention buys. The pin is the one 
 Fix direction: append one `// Re-approved 2026-08-24 (C3 steps 4-5)` line in the file's established form, naming the delta above and the tokens behind it, placed between the step-3 and step-6 entries so the chain reads in order. No number changes; `npm test` is green at both the current pin and the current corpus.
 
 Not fixed here: plan step 11 permits one file, the regenerated surface golden, and this is a different file.
+
+---
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** Re-checked at HEAD and unchanged. `grep -n 'Re-approved' hooks/lib/__tests__/reference-resolution-lint.test.ts` returns sixteen entries; the C3 chain runs step 3 at `:586`, then step 6 at `:592` opening on `paths 1303 -> 1304`. No entry names `3ba7a46` or plan steps 4 and 5, so the twelve-path gap the record measures is still unaccounted for in the file's own record. Two later re-approvals were added after this record was filed (step 10 at `:596` and the citation repairs at `:597`), and neither closes the gap.

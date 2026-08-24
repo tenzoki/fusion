@@ -242,3 +242,28 @@ orchestrator's route overwrites a standing claim — it renames only `_a_` recor
 `Unclaimed` by construction — so no record was filed. Stated here because the reasoning rests on the
 `_a_`-carries-`Unclaimed` invariant holding, and that invariant is stated in prose
 (`rules/circle-records.md:186`) rather than enforced.
+
+
+---
+
+## Reconciliation annotation — 260824-1637 (reconciler, Phase 3, HEAD `cf7a5b0`)
+
+Findings are not rewritten here; each is marked against the tree as this pass found it. Log: `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`.
+
+| Finding | State at HEAD | Evidence |
+|---|---|---|
+| 1 (High) override citation | **Resolved**, record `_c_` | `3fba5c6`; both call sites now cite `rules/circle-records.md` `### The claim field`; `grep -c Overridden agents/orchestrator.md` = 0 |
+| 2 (High) bare helper call in the filing rule | **Resolved**, record `_c_` | `3fba5c6`; `rules/fusion-workbench-conventions.md:494` carries the rooted form and the `[ -x ]` guard. One residual and one missed site were filed by the second pass |
+| 3 (Medium) claim undefined on a partial identity | Open, confirmed | exit 5 probed live: neither line printed. The record's premise about `:496` is narrower than it states, corrected in its own reconciliation note |
+| 4 (Medium) fifth budget unmeasured | Open, confirmed | `rules-emission-golden.test.ts` run alone: role report fires for `playmaker` 22 798/21 302 and `shaper` 27 632/26 975, and does not fail |
+| 5 (Medium) stale lint assertion | Open, confirmed | `turn-budget-lint.test.ts:449-455` present; `grep -c AskUserQuestion agents/orchestrator.md` = 2, both the ban sentence and the allowlist |
+| 6 (Medium) two unrecorded design forks | Open, confirmed | no decision record on the dialog ban's scope exists anywhere in `$SCAN_DECISIONS` |
+| 7 (Medium) composed address in an always-on example | Open, confirmed | `rules/decision-record-examples.md:20` unchanged; the helper prints `ks@qantr.com` and every commit in the range is authored by it |
+| 8 (Low) exit-4 message names an unestablished cause | Open, **reproduced independently** | inside this git work tree with `git` absent from `PATH`, the helper printed "not a git work tree" and exited without halting |
+| 9 (Low) mint-once refusal untested | Open, confirmed, **and the property verified live** | no `malformed` case in the test file; the refusal fired during an unrelated probe and left `.checkout-id` byte-identical |
+| 10 (Low) stopping clause names one cut | Open, confirmed | this pass reads it as the one false property of the eight; both cuts name themselves in their commit messages |
+| 11 (Low) misalignment and a one-space line | Open, confirmed | comment column 43 against six neighbours at 46; `skills/setup/SKILL.md:467` is one space |
+
+**On this review's own coverage read.** Its `## Verification performed` records `uncovered=15` taken before the file landed. At HEAD the two passes tile all but one commit: `uncovered=1`, and it is `cf7a5b0`, the second review's own commit, which touches no shipped file. Filed as `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
+
+**On the summary's stopping-property count.** This pass reaches the same seven-of-eight and the same false property, and counts four properties holding with a named exception rather than two. The four and their exceptions are enumerated in the plan's `## Reconciliation Log`.
