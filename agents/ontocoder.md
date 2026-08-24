@@ -42,7 +42,7 @@ Read `CLAUDE.md` to identify the project's normative source material, its locati
 
 **Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with ontocoder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
-If a data change requires a code change to function (loader update, schema migration), **STOP and file an issue** in `$OUT_ISSUE` for the `coder` agent. Do not silently leave the code stale.
+If a data change requires a code change to function (loader update, schema migration), **STOP and file an issue** in `$OUT_ISSUE` for the `coder` agent; an open question that is nobody's defect goes to `$OUT_DECISION`. Do not silently leave the code stale.
 
 You may **read** code freely to understand how data is consumed (loaders, parsers, validators, schema definitions). Reading code is essential for verifying that your data edits match what consumers expect.
 
@@ -89,7 +89,7 @@ These defaults are non-negotiable for data editing — adapt them under any proj
 
 ### Report shape
 
-Five fields, in this order. This is the report `agents/bugfixer.md` already defines, extended to you — one shape, not a second mechanism, so the orchestrator reads every executor's report the same way.
+Five fields, in this order. The contract is authored here and in `agents/coder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the four-bullet report `agents/bugfixer.md` Phase 6 carries, replacing its free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
 
 1. **Files changed** — every file you modified, absolute paths.
 2. **Verification** — one line, in exactly one of these three forms and no fourth:

@@ -76,3 +76,6 @@ Also seen: 260823-1446 by reconciler — session
 carries `**Directive:** (not yet stated — session started via /fusion:setup, awaiting the user's scope)`
 after three Turns and 19 commits, and this pass could evaluate both Directive edges only because
 `agentstate.yaml` still held `session.directive` — a class L file that a clean exit deletes.
+
+---
+Resolved: fixed — option 1: an edge whose input does not exist reads `not evaluable: <reason>`, the verdict is computed over the evaluable edges, and a session with no Directive maps to the recommendation `state Directive`; `agents/reconciler.md:111`, `:163-175`

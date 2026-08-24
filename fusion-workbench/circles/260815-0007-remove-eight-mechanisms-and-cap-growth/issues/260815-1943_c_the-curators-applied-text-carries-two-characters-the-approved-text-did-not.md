@@ -34,3 +34,6 @@ grep -o 'and always did..\{0,3\}' CLAUDE.md | od -c
 The doubled period is still in `CLAUDE.md` (the trailing space has collapsed into ordinary sentence spacing). And `agents/curator.md:210` still verifies only the **before** text — *"Before applying an entry, re-read its before-text from disk. Where disk and ledger disagree, mark the entry `stale`"* — with no comparison of what was written against the ledger's `**After:**` block.
 
 The two characters are trivial and the mechanism gap is not: a gated pass whose whole value is that the user approved a specific text has no check that the approved text is what landed. A second curator run has been through this file since (`e8052e7`) without the check being added or the characters removed.
+
+---
+Resolved: fixed — the apply pass re-reads each written region and compares it byte for byte against the ledger's After block, a mismatch being `failed` with both texts named; the `CLAUDE.md` characters are plan step 8; `agents/curator.md:210`

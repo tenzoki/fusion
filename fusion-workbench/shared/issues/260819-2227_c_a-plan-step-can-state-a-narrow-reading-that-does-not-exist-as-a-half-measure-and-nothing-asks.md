@@ -76,3 +76,6 @@ decision, not a defect, and it is not filed here.
 **Filed by** the orchestrator of session `260819-2006`, from a user-relayed consumer report. No Circle
 caused it — the active Circle's Directive is about unobserved failure in fusion's own mechanisms, not about
 the planner contract — so it goes to the shared store under the Origin Rule.
+
+---
+Resolved: fixed — the step format asks it: a step's stated endpoint is a state the artifact can occupy, or the step names the write that makes it one; `agents/planner.md:129`

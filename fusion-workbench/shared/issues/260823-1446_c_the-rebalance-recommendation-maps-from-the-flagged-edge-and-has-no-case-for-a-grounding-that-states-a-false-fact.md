@@ -72,3 +72,6 @@ Not costed here.
 The three differ in whether the mapping is worth keeping mechanical at all. This pass departed from it and
 said so in the `## Coherence` section, which is the honest form under option 3 and a deviation under the
 other two.
+
+---
+Resolved: fixed — option 2: the `Artifact↔Grounding` line names the vertex at fault, `(Artifact at fault)` mapping to `revise Artifact` and `(Grounding at fault)` to `revise Grounding`; `agents/reconciler.md:107`, `:177-178`

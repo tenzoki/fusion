@@ -104,3 +104,6 @@ to the agent that generates the citation rather than to the file that carries it
    `## Activation proposals — never auto-rename`, a section that also causes portfolio text to be
    written and carries no pointer back to the rule. A pointer there, not a second copy of the rule,
    is the shape that would not drift.
+
+---
+Resolved: fixed — the activation-proposal branch now points at the citation paragraph and names the record it cites as starred, and the rule citation reads `###`; the gate's Circle-record blind spot (point 2) is a hook-test matter outside this edit; `agents/playmaker.md:176`, `:168`

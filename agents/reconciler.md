@@ -100,19 +100,22 @@ This step runs **regardless of domain**. The three-edge verdict is the Coherence
 
 **Cadence note:** the per-Circle verdict is computed at session end (the orchestrator dispatches the reconciler once at Phase 3, when the Turn loop exits). When a Circle is active (`fusion-workbench/.active-circle` names the `_t_` Circle), that session-end coincides with the Circle boundary, so session-end *is* the per-Circle trigger. For sessions with no active Circle, the session boundary is the proxy.
 
-**The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is `review-needed` or `bounded-closure-proposed`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
+**The user is informed, not asked.** The reconciler computes the verdict and writes it to history. If the aggregate verdict is anything but `coherent`, the orchestrator (not the reconciler) dispatches the Rebalance gate at Phase 3 step 3 (after consuming this verdict). The reconciler does not present `AskUserQuestion`.
 
 **Compute the three edges.** One line each, with cited evidence.
 
-- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open coderev+ontorev issues`.
+- **Artifact↔Grounding edge** — already implicit in the `code`/`data` protocol output (claims-vs-disk + reviewer-issues count). Restate as one line: `<N> claims verified / <M> drift items / <K> open coderev+ontorev issues`. When flagged, the line names the vertex at fault, because the edge alone does not: `(Artifact at fault)` when the work disagrees with a true Grounding, `(Grounding at fault)` when the Grounding states something disk contradicts.
 - **Artifact↔Directive edge** — read the orchestrator's session history file's `**Directive:**` line and the active plan's `## Directive` (or active spec's equivalent). Walk the commits from `git log <session-start-HEAD>..HEAD` and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`. Cite the commit hashes that motivated the judgement.
 - **Grounding↔Directive edge** — for each directory in `$SCAN_DECISIONS`, glob `*_a_*.md` and `*_o_*.md`. For each record, check whether its content is still consistent with the stated Directive. Produce one prose line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. Cite the conflicting decision-record file paths.
 
-**Compute the aggregate verdict.** One of:
+**An edge whose input does not exist reads `not evaluable: <reason>`**, never a judgement dressed as one. A session that stated no Directive has two such edges; write both that way and compute the verdict over the edges that were evaluable. A vacuous "consistent" is the improvisation `## Setup` forbids.
 
-- `coherent` — all three edges OK.
-- `review-needed` — any edge flagged (drift, orthogonal commits, conflicting decisions). The orchestrator dispatches the Rebalance gate.
-- `bounded-closure-proposed` — the Directive is judged definitively unreachable. Surface this explicitly in the verdict; the orchestrator's Rebalance gate offers Accept Bounded Closure as the recommended option.
+**Compute the aggregate verdict.** One of four, disjoint and complete:
+
+- `coherent` — every evaluable edge OK.
+- `review-needed` — an evaluable edge is flagged (drift, orthogonal commits, conflicting decisions).
+- `directive-partially-met` — the Directive is reachable, at least one clause of it is unmet in the Artifact, and the shortfall is filed. This is a Circle stopped short on purpose: nothing drifted and nothing is unreachable, so neither neighbour fits.
+- `bounded-closure-proposed` — the Directive is judged definitively unreachable.
 
 The verdict is computed deterministically from the edge flags, not from LLM-judgement-from-vibes. Each edge's evidence is cited.
 
@@ -158,22 +161,23 @@ Obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`.
 ```markdown
 ## Coherence
 
-**Verdict:** coherent | review-needed | bounded-closure-proposed
+**Verdict:** coherent | review-needed | directive-partially-met | bounded-closure-proposed
 
 **Edges:**
 - Artifact↔Grounding: <one line>
-- Artifact↔Directive: <one line>
-- Grounding↔Directive: <one line>
+- Artifact↔Directive: <one line, or `not evaluable: <reason>`>
+- Grounding↔Directive: <one line, or `not evaluable: <reason>`>
 
-**Rebalance recommendation:** <none | revise Artifact | revise Grounding | revise Directive | accept Bounded Closure>
+**Rebalance recommendation:** <none | state Directive | revise Artifact | revise Grounding | revise Directive | accept Bounded Closure>
 ```
 
-The recommendation maps from the verdict and dominant flagged edge:
+The recommendation maps from the verdict and the vertex the flagged edge faults:
+- either Directive edge `not evaluable` because no Directive was stated → `state Directive`, whatever the verdict; no Rebalance option addresses a Directive that does not exist
 - `coherent` → `none`
-- `review-needed` with `Artifact↔Grounding` flagged → `revise Artifact`
-- `review-needed` with `Grounding↔Directive` flagged → `revise Grounding`
+- `review-needed` with `Artifact↔Grounding` flagged `(Artifact at fault)` → `revise Artifact`
+- `review-needed` with `Artifact↔Grounding` flagged `(Grounding at fault)` or `Grounding↔Directive` flagged → `revise Grounding`
 - `review-needed` with `Artifact↔Directive` flagged (commits orthogonal/away from Directive) → `revise Directive`
-- `bounded-closure-proposed` → `accept Bounded Closure`
+- `directive-partially-met` or `bounded-closure-proposed` → `accept Bounded Closure`
 
 If multiple edges are flagged, list the recommendation that resolves the highest-leverage one (Directive first, then Grounding, then Artifact). The orchestrator presents the four-option Rebalance gate regardless; the recommendation is advisory.
 

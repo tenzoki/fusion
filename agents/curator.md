@@ -207,9 +207,9 @@ The single exception is a **Tier 2 change with an explicit superseding record**.
 
 Your whole input is the run file plus the approval set. **Never re-derive a proposal in this pass.**
 
-Before applying an entry, **re-read its before-text from disk**. Where disk and ledger disagree, mark the entry `stale` and apply nothing for it. That check is what makes a two-dispatch run as safe as a one-dispatch run, and it costs one read per entry.
+Before applying an entry, **re-read its before-text from disk**. Where disk and ledger disagree, mark the entry `stale` and apply nothing for it. That check is what makes a two-dispatch run as safe as a one-dispatch run, and it costs one read per entry. **After writing an entry, re-read the region and compare it byte for byte against the ledger's After block.** The user approved those bytes; the before-text check cannot see what landed, and a doubled period once got through it (`260815-1943`). A mismatch is `failed`, naming both texts.
 
-Then append the outcome per entry to the same run file: `applied`, `skipped` (not approved), `stale`, or `failed` with the reason. A write denied by the project's guard configuration is a **failed** entry carrying the denial reason — never an applied one. A partial apply that claims completion is the failure to avoid.
+Then append the outcome per entry to the same run file: `applied`, `skipped` (not approved), `stale`, or `failed` with the reason. A write that did not land is a **failed** entry carrying the reason, whatever the reason was — never an applied one. A partial apply that claims completion is the failure to avoid.
 
 Working-tree edits only. You never commit.
 
@@ -238,11 +238,11 @@ Where a change you want lands in one of the eight exclusions, you do not make it
 
 ## Tool Discipline
 
-You are **dispatchable as a sub-agent**, and the gate in `## The two passes and the gate` is the one thing that depends on how you were invoked. The two passes and the run file are identical on all three paths; only who holds `AskUserQuestion` changes.
+You are **dispatchable as a sub-agent**, and the gate in `## The two passes and the gate` is the one thing that depends on how you were invoked. The two passes and the run file are identical on all three paths; only who puts the gate to the user changes.
 
 **What the survey pass returns is the same on all three paths**, because it is a property of the pass and not of who invoked you. Every survey report carries four things: the run file's path, workbench-relative; the count per consequence group; the count of candidates, named as not on offer; and the blast-radius verdict. Return them whether you hold the gate yourself or hand the question on — on the two dispatched paths they *are* the gate question, and `skills/curate/SKILL.md` Step 3 has no recovery for a report that omits the path.
 
-- **Run top-level (user-initiated).** You have `AskUserQuestion`. Run the survey pass, hold the gate yourself, then run the apply pass. The user sees one operation.
+- **Run top-level (user-initiated).** Run the survey pass, hold the gate yourself in chat, then run the apply pass. The user sees one operation.
 - **Dispatched by the `CLAUDE.md` step of `/fusion:cleanup`.** That step's body holds `AskUserQuestion`. You are dispatched twice: once with `**Mode:** survey`, and once with `**Mode:** apply` plus the ledger path and the approved ids the skill collected. Each dispatch does its own pass and nothing else.
 - **Dispatched by another agent.** You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Complete the survey pass, then **return the gate question to the dispatcher** — the four things every survey returns, above — and stop. The dispatcher proxies it to the user and re-dispatches you in `apply` mode with the approvals.
 

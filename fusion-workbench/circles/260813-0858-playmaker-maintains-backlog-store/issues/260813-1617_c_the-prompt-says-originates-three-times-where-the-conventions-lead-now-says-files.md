@@ -69,3 +69,6 @@ The acceptance asked for the noun to change — "files" where it says "originate
 `:3` and `:10` did not get that clause. `:3` is the sentence a dispatcher reads and the one `playmaker-backlog-mandate-lint.test.ts` case 2 pins against the mandate section, and read literally against the split behaviour the same prompt grants — *"Give each distinct idea its own entry … and file the new entries at `_o_`"*, `agents/playmaker.md` Step 2b item 1 — it is still false.
 
 **Why this stays open rather than closing as substantially-fixed.** The record's own argument is that the sentences a reader meets *first* are the ones that must be right, and the frontmatter description is first by construction. Two of the four sites were repaired by adding context; the two that cannot carry context are the two left. The fix is still the one the record names and still costs one word each.
+
+---
+Resolved: fixed — the two remaining sites say `files`/`file`, matching the conventions lead, and the idea-scoped sentence is left alone; `agents/playmaker.md:3`, `:10`

@@ -68,3 +68,6 @@ No case in that file reads `## Dispatch sources`, so the permitted motion the li
 **Neither of the record's two remedies was taken.** `:230` is still a restatement rather than a pointer, and case 2 was not extended. Both are still available and the cheaper one is unchanged: `agents/playmaker.md` already points outward for its other two dispatch sources, so replacing the sentence with a pointer costs a line and removes the surface the lint cannot see.
 
 **One thing worth knowing before someone picks the second remedy.** `agents/playmaker.md` sits under the `agents/` growth bound armed on 2026-08-15 (18 000 bytes of head-room, `hooks/lib/__tests__/surface-growth-bound.test.ts`), and the hook-test surface under its own. The pointer remedy *shrinks* the first and touches neither; the extend-the-lint remedy spends from the second. That asymmetry did not exist when this record was written and it argues for the pointer.
+
+---
+Resolved: fixed — the pointer remedy: the third statement under `## Dispatch sources` is now a pointer at the first bullet of `## Two mandates, by dispatch path`, so the lint's two surfaces are all there are; `agents/playmaker.md:230`

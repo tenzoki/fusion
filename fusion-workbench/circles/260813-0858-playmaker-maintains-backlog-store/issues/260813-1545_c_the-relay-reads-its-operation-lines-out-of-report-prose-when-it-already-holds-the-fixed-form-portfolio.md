@@ -45,3 +45,8 @@ Verbatim as filed. All three unenforced assumptions the record enumerates still 
 **What did change, and it cuts toward the record rather than against it.** Step 5b has since gained a `**Proposal source:** <portfolio> ## Backlog — ranked, generated <stamp>` line in the second dispatch's prompt block (`skills/next/SKILL.md:157`), and a load-bearing stamp check with it: the second run compares that stamp against the portfolio's own `**Generated:**` header and performs nothing when they disagree. So the skill now *names the portfolio as the authoritative source of the proposals in the very prompt it builds from the report* — while still parsing them out of the report. The record's recommendation is one step from being what the file already claims.
 
 The conflict the record names between `rules/user-facing-output.md` and the telegraphic line forms is also unresolved: no exemption for the four operation lines was written into either file. `rules/user-facing-output.md` still exempts dashboard lines, commit messages and monitor strings and does not name these.
+
+---
+Resolved: fixed — playmaker's half: the relay paragraph says the skill reads the operation lines from `## Backlog — ranked` and that the four line forms are a structured artifact exempt from the prose profiles; the `skills/next/SKILL.md` Step 5b half is plan step 10; `agents/playmaker.md:200`
+
+Step 10 note: the `/fusion:next` half landed — Step 5b reads the operation lines from the portfolio's `## Backlog — ranked` and the report only says whether anything was proposed; `skills/next/SKILL.md:127`

@@ -34,3 +34,6 @@ so is more use than a guess in either direction.
 
 Filed by the orchestrator of session `260819-2006` from the executor's report while realising three
 answered decisions. No Circle is active, so it goes to the shared store under the Origin Rule.
+
+---
+Resolved: fixed — the five sentences no longer assert a tool: a top-level run asks in chat, a dispatched run returns the question in its report, so no measurement of tool inheritance is needed for the wording; `agents/analyst.md:44`, `agents/bugfixer.md:41`, `agents/curator.md:245`, `agents/planner.md:71`, `agents/shaper.md:131`

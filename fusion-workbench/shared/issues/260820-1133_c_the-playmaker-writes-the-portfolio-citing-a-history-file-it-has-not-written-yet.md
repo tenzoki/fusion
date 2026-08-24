@@ -39,3 +39,6 @@ terminal.
 
 Filed by the orchestrator of session `260819-2006` from the playmaker's own report. No Circle is active,
 so it goes to the shared store under the Origin Rule.
+
+---
+Resolved: fixed — shape 1: the history log is created before the portfolio and appended to as the run proceeds, and the portfolio section says the cited log exists first; `agents/playmaker.md:236`, `:160`

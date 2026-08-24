@@ -100,3 +100,8 @@ Both halves of the premise are still false, re-measured rather than carried over
 **What a reader planning a deep change needs to know.** Four releases have shipped over this sentence. A curator run that meets a genuinely failed write will attribute it to a guard that cannot have caused it, and the two shipped surfaces that describe fusion's own gated normative-edit path are the ones saying it. The remedy is unchanged and is a cut, not a rewrite: drop the guard clause from both, keep the classification it illustrated — a write that did not land is `failed` with the reason, whatever the reason was — and do not substitute a fusion-specific cause, because the failure classes a curator apply can now meet (read-only file, harness permission denial, disk error) are none of fusion's.
 
 **The pair moves together or not at all.** An agent and the skill that drives it disagreeing about what a `failed` entry means is worse than both being wrong in the same way, which is the state today.
+
+---
+Resolved: fixed — the guard clause is cut from the prompt and the classification kept, a write that did not land being `failed` with whatever reason it had; the `skills/curate/SKILL.md` half is plan step 10; `agents/curator.md:212`
+
+Step 10 note: the `skills/curate/SKILL.md` half landed — the guard clause is cut and a `failed` entry carries whatever reason it had; `skills/curate/SKILL.md:106`

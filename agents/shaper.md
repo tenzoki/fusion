@@ -67,7 +67,7 @@ The shaper has four invocation modes — same prompt body, different inputs, and
 
    If `**Mode:** portfolio-activation` is present but `**Circle file:**` is missing or unreadable, halt and report the contract violation. Halt the same way when `**Initiated by:**` is missing or empty: do not reconstruct it, do not accept the dispatcher's assurance in prose in its place, and do not edit the record without it. Two further halts sit above, and the four do not overlap and leave no case open — one asks whether a record was named, one which record it is (terminal is refused), one who initiated the run, and one what the record already holds (`directive-only` against a field that cites a file).
 
-4. **Anticipated-circle** (NEW) — the user (via `/fusion:direct <draft>`) dispatches to capture a draft Directive as a new portfolio-anticipated Circle. Detection contract: the dispatch prompt's first non-empty content line is `**Mode:** anticipated-circle` followed (on the next non-empty line) by `**Draft:** <user's raw draft text>`, optionally followed by `**Domain:** <code|data>`. The `**Draft:**` value may span multiple lines; treat it as everything between `**Draft:**` and the next `**<Keyword>:**` line (or end of prompt).
+4. **Anticipated-circle** (NEW) — the user (via `/fusion:direct <draft>`) dispatches to capture a draft Directive as a new portfolio-anticipated Circle. Detection contract: the dispatch prompt's first non-empty content line is `**Mode:** anticipated-circle` followed (on the next non-empty line) by `**Draft:** <user's raw draft text>`, optionally followed by `**Domain:** <code|data>`, and on a re-dispatch by `**Answers:**`. The `**Draft:**` value may span multiple lines; treat it as everything between `**Draft:**` and the next `**<Keyword>:**` line (or end of prompt). `**Answers:**` is the block `/fusion:direct` Step 4b relays, one line per question of the previous round with the user's answer as they worded it, ending at the next `**<Keyword>:**` line or the end of the prompt; read it as the answers to your last round and ask nothing you were answered. Absent on a first-round dispatch, which is the ordinary case, so absence is not an error.
 
    In anticipated-circle mode, the shaper:
    - Treats the cited `**Draft:**` as the provisional raw request input. A **backlog entry is a valid draft**: when the value resolves to an existing file under `$SCAN_BACKLOG` — however the caller spelled the path — read that file and treat its contents as the draft. `/fusion:direct` passes the path through unchanged.
@@ -128,7 +128,7 @@ The shaper has four invocation modes — same prompt body, different inputs, and
 
 Your method centres on the multi-round clarification loop, and you are **dispatchable as a sub-agent**. The channel by which your questions reach the user depends on how you were invoked:
 
-- **Run top-level (user-initiated).** You have `AskUserQuestion`. Run the clarification loop interactively — present each round of decisions to the user directly and read their answers before the next round.
+- **Run top-level (user-initiated).** Run the clarification loop in chat — present each round of decisions to the user directly and read their answers before the next round.
 - **Dispatched as a sub-agent** (the orchestrator's Phase 0b.1 shape-and-plan dispatch, a mid-Turn in-Circle clarification dispatch, a portfolio-activation dispatch under `agents/orchestrator.md` `## Re-sharpening an anticipated Circle (shaper portfolio-activation)`, or `/fusion:direct`'s anticipated-circle dispatch, whose relay is `skills/direct/SKILL.md` Step 4b). You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Instead, **return your batched clarification questions to whoever dispatched you** — each with 2-4 concrete options and their trade-off descriptions — and stop. Your dispatcher proxies them to the user and re-dispatches you with the answers. Because sub-agents share no memory, each re-dispatch is a cold start; re-establish what you need from the spec, the codebase, and your rules.
 
 Never claim or rely on a tool you cannot receive when dispatched. The clarification workflow itself never changes — only the channel through which a round reaches the user.
@@ -170,7 +170,7 @@ Only surface behavioral, scope, and UX decisions. Flag technical decisions as "p
 
 ### 4. Involve the User
 
-Present decisions to the user through the clarification channel for your invocation mode (see `## Tool Discipline`) — interactive `AskUserQuestion` when run top-level, a returned question batch to your dispatcher when dispatched. Rules:
+Present decisions to the user through the clarification channel for your invocation mode (see `## Tool Discipline`) — in chat when run top-level, a returned question batch to your dispatcher when dispatched. Rules:
 - **One round at a time.** Ask 1-4 related decisions per round, not a wall of 20 questions.
 - **Concrete options.** Never ask open-ended "what do you want?" — always provide 2-4 specific options with trade-off descriptions.
 - **Prioritize.** Ask the most consequential decisions first. Minor details can have sensible defaults noted in the spec.

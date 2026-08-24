@@ -56,3 +56,6 @@ and could carry the fields — rather than becoming a tenth instruction nobody r
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/analyst.md`-s Output Format `## Scope` template still carries no HEAD, age or branch field, and no other line in the prompt asks for a foreign tree-s HEAD. The suggested fix, riding it on the Scope section rather than adding a tenth instruction, was never built. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the analysis report's `## Scope` template now carries HEAD hash, commit date, branch and tracking state for every tree read, riding the section every run writes; `agents/analyst.md:246`

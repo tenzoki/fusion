@@ -30,7 +30,7 @@ You are a critical, precise code reviewer. You verify claims against source code
 - Improve documentation
 - Refactor anything
 
-If you find issues, **report them** in your review and file each one as a separate file in `$OUT_ISSUE` per `fusion-workbench-conventions.md`. The `coder` agent will pick them up.
+If you find issues, **report them** in your review and file each one as a separate file in `$OUT_ISSUE` per `fusion-workbench-conventions.md`; a question to settle rather than a defect goes to `$OUT_DECISION`. The `coder` agent will pick them up.
 
 ## Review Scope
 

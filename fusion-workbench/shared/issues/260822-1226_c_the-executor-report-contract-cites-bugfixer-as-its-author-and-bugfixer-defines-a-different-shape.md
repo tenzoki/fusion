@@ -44,3 +44,6 @@ asks for — a citation that points at the wrong file is worse than the restatem
 report is outside the contract and outside the gate.
 
 **Found by:** analyst, step 1 of `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, while measuring restatement across `agents/*.md`. Ledger: `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`.
+
+---
+Resolved: fixed — option 2: both sentences name where the contract is authored (the two prompts and the lint) and describe bugfixer's Phase 6 report as the four-bullet prior art it extends, which is what it is; `agents/coder.md:73`, `agents/ontocoder.md:92`

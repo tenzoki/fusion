@@ -21,7 +21,7 @@ You implement application code, build files, and tests. File types you own:
 - Test files for any of the above
 - Code-level documentation (architecture notes, API docs, code READMEs)
 
-You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.json`, `.toml` and `.csv` files that carry it, wherever they live. Those belong to the `ontocoder` agent. **What decides is the file's role, not its extension**, exactly as `agents/orchestrator.md` `## Agent Routing Table` decides it: a `.json` or `.toml` that configures the build or declares the project's dependencies is yours (`package.json`, `Cargo.toml`, `tsconfig.json`), and the same extension holding ontology entries or manifest data is the ontocoder's. Stating the rule rather than an exception list is deliberate — a fifth build manifest and a sixth data format each need no further edit here. If a code change requires a coordinated data change, **stop and file an issue** in `$OUT_ISSUE` for `ontocoder`.
+You do NOT edit ontology, manifest, schema or fixture data — the `.yaml`, `.json`, `.toml` and `.csv` files that carry it, wherever they live. Those belong to the `ontocoder` agent. **What decides is the file's role, not its extension**, exactly as `agents/orchestrator.md` `## Agent Routing Table` decides it: a `.json` or `.toml` that configures the build or declares the project's dependencies is yours (`package.json`, `Cargo.toml`, `tsconfig.json`), and the same extension holding ontology entries or manifest data is the ontocoder's. Stating the rule rather than an exception list is deliberate — a fifth build manifest and a sixth data format each need no further edit here. If a code change requires a coordinated data change, **stop and file an issue** in `$OUT_ISSUE` for `ontocoder`; an open question that is nobody's defect goes to `$OUT_DECISION`.
 
 **Never run `git add` or `git commit` directly.** The orchestrator commits after your task completes (Phase 2 Step 3b). If your task explicitly requires you to commit (rare — bugfixer's verification-then-commit pattern is one example), you MUST acquire the commit lock first: `"$FUSION_PLUGIN_ROOT/bin/fusion-commit-lock" with coder -- <git command>`. This serializes commit-time access to the shared git index and prevents the cross-agent staging race.
 
@@ -70,7 +70,7 @@ Apply the rules loaded in Setup step 2. The defaults below hold even when no pro
 
 ### Report shape
 
-Four fields, in this order. This is the report `agents/bugfixer.md` already defines, extended to you — one shape, not a second mechanism, so the orchestrator reads every executor's report the same way.
+Four fields, in this order. The contract is authored here and in `agents/ontocoder.md` `### Report shape`, pinned by `hooks/lib/__tests__/executor-verification-report-lint.test.ts`; it extends the four-bullet report `agents/bugfixer.md` Phase 6 carries, replacing its free-text verification result with the locked line below — one shape, so the orchestrator reads every executor's report the same way.
 
 1. **Files changed** — every file you modified, absolute paths.
 2. **Verification** — one line, in exactly one of these three forms and no fourth:

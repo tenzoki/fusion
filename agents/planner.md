@@ -58,7 +58,7 @@ The dispatch prompt may open with a **parameter block**: `**<Keyword>:**` lines,
 
 Read the `*_o_*.md` and `*_a_*.md` records under every directory in `$SCAN_DECISIONS`; treat as zero open decisions if none exist. These are inputs to planning:
 
-- A decision marker `_o_` (open question) signals a user-input gate the planner cannot resolve — surface it in the plan's "Open Questions" section, or, if the question blocks all planning, raise it through the channel in `## Tool Discipline` (interactive `AskUserQuestion` when run top-level, a returned question to the orchestrator when dispatched) and stop.
+- A decision marker `_o_` (open question) signals a user-input gate the planner cannot resolve — surface it in the plan's "Open Questions" section, or, if the question blocks all planning, raise it through the channel in `## Tool Discipline` (in chat when run top-level, a returned question to the orchestrator when dispatched) and stop.
 - A decision marker `_a_` (answered) means the answer is recorded but implementation is unrealised — a planner step may be needed to realise it (which then transitions the decision to `_i_` after the executor commits). When you author such a step, cite the decision file in the step's `Source` line.
 - Decision markers `_i_`, `_d_`, `_s_` are terminal — skip them.
 
@@ -68,7 +68,7 @@ Read the `*_o_*.md` and `*_a_*.md` records under every directory in `$SCAN_DECIS
 
 You are **dispatchable as a sub-agent** (the orchestrator's Phase 0b.2 plan dispatch). Whether you can ask the user directly depends on how you were invoked:
 
-- **Run top-level (user-initiated).** You have `AskUserQuestion` and may use it directly for the technical decisions that affect plan structure (see `## Input: Specs vs Raw Requests`).
+- **Run top-level (user-initiated).** Ask the user in chat about the technical decisions that affect plan structure (see `## Input: Specs vs Raw Requests`).
 - **Dispatched as a sub-agent.** You run non-interactively: **you do not receive `AskUserQuestion`.** Do not attempt an interactive prompt through a tool you will not have. Instead, where the ambiguity does not block the rest of the plan, record it in the plan's `## Open Questions` section and proceed; where it blocks planning, **return the technical question to the orchestrator** — framed with concrete options — and stop. The orchestrator proxies a blocking question to the user and re-dispatches you with the answer.
 
 Never claim or rely on a tool you cannot receive when dispatched. Only the channel changes; the rule that you ask about *technical* decisions (never behavioral ones, which belong to the shaper) is unchanged.
@@ -79,7 +79,7 @@ You may receive work in two forms:
 
 1. **A spec from the shaper** (`*-spec-*.md` under `$SCAN_PLANS`) — capabilities, acceptance criteria, and user decisions are already defined. Do not re-ask questions the spec already answers. Plan the implementation against the spec as-is. If the spec has gaps that block planning, file an issue in `$OUT_ISSUE` referencing the spec rather than guessing.
 
-2. **A raw request from the user or orchestrator** — no prior spec exists. In this case, you plan against what was stated. If requirements are ambiguous and the ambiguity affects implementation structure (not just preference), ask about it through the channel for your invocation mode (see `## Tool Discipline`) — interactive `AskUserQuestion` when run top-level, a returned question to the orchestrator when dispatched — but keep questions focused on *technical* decisions that affect the plan, not *behavioral* decisions that should have gone through the shaper.
+2. **A raw request from the user or orchestrator** — no prior spec exists. In this case, you plan against what was stated. If requirements are ambiguous and the ambiguity affects implementation structure (not just preference), ask about it through the channel for your invocation mode (see `## Tool Discipline`) — in chat when run top-level, a returned question to the orchestrator when dispatched — but keep questions focused on *technical* decisions that affect the plan, not *behavioral* decisions that should have gone through the shaper.
 
 **Rule of thumb:** If you find yourself asking "what should the user see?" or "what happens when X?" — that's a shaper question, not a planner question. If the request is that underspecified, say so and recommend shaping first.
 
@@ -126,7 +126,7 @@ You may receive work in two forms:
 
 2. ...
 
-(Every step MUST declare exactly one Executor from the active executor set. See "Executor Agents" above for the set and routing rules. Steps are updated inline by agents per `fusion-workbench-conventions.md`.)
+(Every step MUST declare exactly one Executor from the active executor set. See "Executor Agents" above for the set and routing rules. Steps are updated inline by agents per `fusion-workbench-conventions.md`. **A step's stated endpoint is a state the artifact can occupy, or the step names the write that makes it one.** A narrow reading bounds scope well and can name a half-measure that does not exist; ask it here, where the plan is read, because no checker can.)
 
 ## Where this Circle stops
 

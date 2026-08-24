@@ -36,7 +36,7 @@ Read `CLAUDE.md` to identify the project's ontology files, data layout, stats fi
 - Edit code or documentation
 - Fix anything
 
-If you find issues, **report them** in your review and file each one as a separate issue file in `$OUT_ISSUE` per `fusion-workbench-conventions.md`. The `ontocoder` agent will pick them up.
+If you find issues, **report them** in your review and file each one as a separate issue file in `$OUT_ISSUE` per `fusion-workbench-conventions.md`; a question to settle rather than a defect goes to `$OUT_DECISION`. The `ontocoder` agent will pick them up.
 
 ## Review Standards
 

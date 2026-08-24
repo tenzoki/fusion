@@ -87,3 +87,6 @@ matters most at the moment the marker is written.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/reconciler.md:113-115` still enumerates three verdicts and `:172-176` still maps only those three. This pass hit an adjacent gap in the same vocabulary and filed it as `260817-1836_o_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`; the two are different causes and neither fix covers the other. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — option 1: a fourth verdict `directive-partially-met` (reachable, a clause unmet, the shortfall filed) mapped to `accept Bounded Closure`, in one edit with 260817-1836 and 260823-1446; `agents/reconciler.md:113-118`, `:174-180`
