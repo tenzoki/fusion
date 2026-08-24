@@ -491,9 +491,11 @@ Brief but precise: enough context to understand the item without the original co
 
 ### Who filed it
 
-Both formats carry `**Filed by:**`, and its `<person>` half is the `PERSON=` line of `bin/fusion-identity`, in git's own `Name <email>` form. Read it from there and nowhere else: compose no value and substitute none.
+Both formats carry `**Filed by:**`, and its `<person>` half is the `PERSON=` line of `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`, in git's own `Name <email>` form. Call it guarded, as every helper call site is: `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]`. Read it from there and nowhere else: compose no value and substitute none.
 
 Two of that helper's exit codes are opposite instructions to you. **Exit 1** is a git work tree whose `user.name` or `user.email` is unset: **halt, report the reason the helper printed, and file nothing.** **Exit 4** is a tree that is not a git work tree at all, so no identity is owed: **file normally, with the person half absent rather than empty.** On every other code `PERSON=` is printed and you carry on. The condition is evaluated in the helper and stated here once; no agent prompt restates it.
+
+**A helper that is not installed is a third branch and neither of those two.** `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is absent there and a bare call is exit 127, which is none of the codes above. When the guard fails, **file with the person half absent as exit 4 does, and report that attribution was dropped because the helper was missing.** The record looks like exit 4's and the reason does not: exit 4 means no identity was owed, this means one was owed and could not be read. Do not halt, or an install one release behind stops every filing in the project.
 
 **One precondition, and no code checks it:** a person uses the same git identity on every machine they run fusion from. A machine configured differently reads as somebody else, and `/fusion:next` then refuses that person's own Circle, a false positive it cannot tell from the collision it is built for.
 
