@@ -3,14 +3,14 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** (none yet)
+**Active spec/plan:** circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_o_c3-attribution-on-records-and-a-claim-on-the-circle.md
 **Active session history:** circles/260824-0530-record-attribution-and-circle-claim/history/260824-0539-orchestrator-session.md
 
 ---
 
 ## Directive
 
-After this work, a person reading any record in a pulled workbench can see which human produced it and not only which agent, because the decision-record, defect-record and Circle-record templates each carry the author's git identity in the body and every agent that files a record writes it. A Circle record additionally states who holds it active and from which checkout, written on the activation rename and cleared at the terminal rename, so `/fusion:next` can refuse to activate a Circle another person is already running, name the holder and the time, and let the user override in a way the record then shows. Two checkouts belonging to one person are distinguished, because the claim carries a checkout identifier that never travels; a tree with no git configuration halts with a reason instead of filing under a guessed name; and the record-filename convention has been re-asked against several writers and answered before any template is opened.
+See `**Active spec/plan:**` above. The cited spec or plan states the Directive in force.
 
 ## Grounding snapshot
 
