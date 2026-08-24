@@ -583,7 +583,7 @@ function scanHeadingAnchors(
 // `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`.
 // The same section names `$PORTFOLIO` and `Active spec/plan:`, which are not paths, and the
 // template and worked-example edits beside it changed a marker letter inside a path already counted.
-const BASELINE = { paths: 1294, anchors: 180, records: 118 };
+const BASELINE = { paths: 1295, anchors: 181, records: 118 };
 
 // Stated on the assertion, not left to be inferred: a gate that punishes a
 // legitimate edit without saying what to do gets routed around, which is the
