@@ -57,6 +57,7 @@
   fenced-code-exemption.test.ts 168
   fusion-commit-lock.test.ts 371
   fusion-count-sources.test.ts 442
+  fusion-identity.test.ts 180
   fusion-paths.test.ts 878
   fusion-prose-metric.test.ts 162
   glob-nomatch-lint.test.ts 148
@@ -90,4 +91,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 523
   workbench-citation-lint.test.ts 374
-  total 20193
+  total 20373

@@ -2129,3 +2129,6 @@
 {"ts":"2026-08-24T08:48:04","event":"commit","turn":1,"task":"S3","detail":"5b88eb9"}
 {"ts":"2026-08-24T09:08:51","event":"gate_response","turn":1,"detail":"non-git decision: option 2, halt only inside a git work tree; S4 unblocked"}
 {"ts":"2026-08-24T09:08:51","event":"task_start","turn":1,"task":"S4","agent":"coder","detail":"bin/fusion-identity"}
+{"ts":"2026-08-24T09:30:43","event":"task_done","turn":1,"task":"S4","agent":"coder","detail":"3ba7a46 bin/fusion-identity, six exit codes; .checkout-id classified in the same commit"}
+{"ts":"2026-08-24T09:30:43","event":"commit","turn":1,"task":"S4","detail":"3ba7a46"}
+{"ts":"2026-08-24T09:35:36","event":"task_start","turn":1,"task":"S5","agent":"coder","detail":"test the helper, 182 lines free against a 180-line cap"}

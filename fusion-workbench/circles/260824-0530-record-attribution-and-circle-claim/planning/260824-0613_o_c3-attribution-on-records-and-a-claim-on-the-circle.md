@@ -291,7 +291,7 @@ flowchart TD
      allowance (the five measured 95 252 before and 95 789 after; the step's 97 652 cap is
      unchanged, leaving 1 863 of the allowance).
 
-5. **Test the helper, inside the hook-test line budget**
+5. [DONE] **Test the helper, inside the hook-test line budget**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/fusion-identity.test.ts` (new)
    - Changes: cover the four exits and the mint-once property against temporary trees: both git
