@@ -181,3 +181,6 @@ Also seen: 260816-0713 by coderev — one full-suite run at `f77633f` failed `mo
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Two of three failure shapes are closed and the third is not. The shared-`dist/` build race is fixed: `hooks/scripts/build.mjs` and `run-tests.mjs` now build into a private staging directory and swap it in with a rename rather than removing and rebuilding in place. The commit-lock timing-budget failures are recorded closed on their own evidence. The third shape, the monitor-warnings worker dying under concurrent full-suite load, is still open on the record-s own latest entry (260816-0713, reproduced at `f77633f`) and was not reproduced in sequential runs, which is consistent with its documented low rate rather than evidence against it. Marker stays open on the third shape alone.
+
+---
+Also seen: 260824 by coder (C3 step 2) — `lib/__tests__/guard-state-shape.test.ts` "still reports the gap, and repairs the file instead of failing again" failed on the first full run and passed alone and on three subsequent full runs. The test spawns its own temporary project and read nothing that step wrote, which is one more instance of the load-sensitivity this record describes rather than a new fault.

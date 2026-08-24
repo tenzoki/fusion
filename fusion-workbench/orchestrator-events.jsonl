@@ -2119,3 +2119,6 @@
 {"ts":"2026-08-24T07:01:15","event":"queue_built","detail":"12 tasks, 1 blocked"}
 {"ts":"2026-08-24T07:01:15","event":"turn_start","turn":1,"detail":"head 4a00f12"}
 {"ts":"2026-08-24T07:01:15","event":"task_start","turn":1,"task":"S1","agent":"coder"}
+{"ts":"2026-08-24T07:10:01","event":"task_done","turn":1,"task":"S1","agent":"coder","detail":"e4d53db identity decision _o_ -> _a_"}
+{"ts":"2026-08-24T07:10:01","event":"commit","turn":1,"task":"S1","detail":"e4d53db"}
+{"ts":"2026-08-24T07:10:01","event":"task_start","turn":1,"task":"S2","agent":"coder","detail":"filename answer"}

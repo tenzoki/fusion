@@ -219,7 +219,7 @@ flowchart TD
      the answer supersedes the three options rather than selecting one; the registry is named as
      proposed-and-declined with its reason; no option is marked chosen.
 
-2. **Record the filename answer**
+2. [DONE] **Record the filename answer**
    - Executor: `analyst`
    - Files: `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
    - Changes: add an `## Answer (user, 260824)` section taking option 2, citing this plan as the
