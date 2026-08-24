@@ -34,3 +34,6 @@ thing it counts goes stale silently, because nothing reads a comment.
 - The comment names the same number of agents as the case statement matches, or names no number at
   all and points at the case statement instead.
 - If the count is kept, it is derivable rather than restated, in the shape the neighbouring gates use.
+
+---
+Resolved: fixed — the numeral is dropped and the comment points at the `IS_DIAGRAM_AGENT` case instead; `grep -n "five producers" bin/fusion-rules` prints nothing

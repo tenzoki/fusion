@@ -61,3 +61,6 @@ which changes the denominator on every file the program has ever measured and wo
 `19` re-derived to `16`. The first is the cheaper and, given that the metric reports and never gates,
 almost certainly the right one; the second should not be taken without saying what it does to any
 figure already quoted in a record.
+
+---
+Resolved: fixed — the `words` line states the tokeniser (whitespace-separated token outside the four regions) and that a bare em-dash counts as one, with its direction; the script is unchanged so the test's 19 stands; `bin/fusion-prose-metric` header, output-column table

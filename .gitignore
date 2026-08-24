@@ -40,6 +40,7 @@ bin/*
 !bin/fusion-turn-budget
 !bin/fusion-prose-metric
 !bin/fusion-identity
+!bin/fusion-session-domain
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

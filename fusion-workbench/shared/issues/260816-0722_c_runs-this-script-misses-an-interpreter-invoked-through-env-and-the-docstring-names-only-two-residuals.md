@@ -48,3 +48,6 @@ residual. The first is not free — scanning all tokens re-admits the argv-menti
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1263-1291` still returns on the first non-option token after argv[0] and still names only two residuals, so an interpreter reached through `env` is missed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the docstring names `env` as the third residual, says why it is not closed by scanning every token, and states the bound (the wrapper launches as `python3 "$TMPFILE"`); `bin/monitor` `_runs_this_script`

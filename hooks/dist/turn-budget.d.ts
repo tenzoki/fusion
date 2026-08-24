@@ -32,8 +32,8 @@
  * guard configuration for this to be an exception to. The budget is now the
  * one setting the file carries. A project upgrading over that release still has
  * the old file on disk and hears about it from the loader, on every guarded
- * tool call, until it copies the budget across and deletes it
- * (`260816-1915`, `260816-1916`).
+ * tool call and on this program's stderr, until it copies the budget across
+ * and deletes it (`260816-1915`, `260816-1916`).
  *
  * A project declares a different budget with:
  *
@@ -51,9 +51,13 @@
  *
  *   max_turns=5
  *
- * Diagnostics, if any, go to stderr, one per line, and do not change the exit
- * code: the budget is still resolved, from the layer the dropped key would have
- * overridden.
+ * Every diagnostic the loader returned goes to stderr, one per line, whatever
+ * its class, and none changes the exit code: the budget is still resolved. A
+ * dropped key is one class, and there the value comes from the layer the key
+ * would have overridden. The retired-file advisory is another, and the
+ * costliest: a leftover `fusion-guard.json` names no dropped key because the
+ * file was never read. The loop below writes `config.diagnostics` verbatim and
+ * must stay that wide; narrowing it to drops would silence that line.
  *
  * Exit codes:
  *   0  resolved

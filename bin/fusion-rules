@@ -341,9 +341,16 @@ emit_voice_profile() {
   # obligations as overridable under load (`rules/critical-stance.md`, the
   # closing note of §4). Do not read this notice as compliance.
   #
-  # Stdout is untouched in every case — the emission contract and the byte
-  # identity `hooks/lib/__tests__/rules-emission-golden.test.ts` holds are why
-  # the signal goes to the other stream rather than into a new line format.
+  # Stdout is untouched in every case, and the gate that holds that is
+  # `hooks/lib/__tests__/rules-voice-profile.test.ts`, its two cases that drive
+  # this script in a fixture project: one with `de` declared and the chat
+  # profile removed, asserting stdout is exactly the fallback path plus the
+  # writing profile and stderr exactly the one notice line, and one with `en`
+  # resolved directly, asserting stderr is empty. The emission golden
+  # (`rules-emission-golden.test.ts`) cannot observe this function at all: it
+  # runs from an empty working directory, where both `[ -f ]` guards fail and
+  # nothing is emitted on either stream (issue 260821-0142). That contract is
+  # why the signal goes to the other stream rather than into a new line format.
   # English, per `rules/fusion-workbench-conventions.md` `## Project language`:
   # CLI operator strings are an exempt surface.
   local stem="$1"
@@ -458,7 +465,7 @@ if [ "$IS_PROSE_AGENT" -eq 1 ]; then
   emit_voice_profile "default-voice" "$ARTIFACT_LANG"
 fi
 
-# 1c. Design-diagram agents (the five producers) receive the diagram doctrine:
+# 1c. Design-diagram agents (the IS_DIAGRAM_AGENT case above) receive the diagram doctrine:
 #     when / which Mermaid type, the parseable-form requirement, and the
 #     coherence self-check heuristics. One shared rubric, so every producer
 #     judges its own graph by the same definition.
@@ -487,7 +494,7 @@ fi
 # 1e. The orchestrator additionally receives the commit-lock protocol, whose
 #     audience a mechanism bounds rather than a guess: the lock is taken by
 #     whoever is about to commit, and among the agents that is the orchestrator.
-#     The other fifteen agents keep the pointer line at `## Commit lock` in
+#     The other agents keep the pointer line at `## Commit lock` in
 #     fusion-workbench-conventions.md; the three that may commit directly carry
 #     the lock instruction inline in their own prompts, and the two committing
 #     skills carry it in their own bodies — skills reach rule text by direct

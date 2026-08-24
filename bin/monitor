@@ -164,6 +164,15 @@ GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 #     surfaced by its event — so nothing in this file went looking for a state
 #     file that has ceased to exist, then or now.
 #
+#   - A review gap (review_coverage) and an unstaged record (staging_drift)
+#     are the two siblings of state_drift that outlived it. hooks/tracker.ts
+#     still emits both, throttled on signature so a persisting miss is one
+#     row, and the record that led to them (issue 260811-1143) argued that a
+#     staging_drift row is the one whose subject can be LOST: a record that
+#     missed its commit survives only in the working tree. Until they joined
+#     this set both were written to events.jsonl and read by nothing, which is
+#     the arrangement staging-drift.ts was written to end.
+#
 # Everything else a guard hook writes (guard_allow, tracker_record, clears)
 # is bookkeeping: it records the ordinary path, nobody asked to be told
 # about it, and it stays out of the panel.
@@ -172,6 +181,8 @@ WARNING_EVENT_TYPES = {
     "guard_advisory",
     "guard_error",
     "state_drift",
+    "review_coverage",
+    "staging_drift",
 }
 
 # Subsets of WARNING_EVENT_TYPES, carved out so each can be capped separately.
@@ -180,6 +191,8 @@ WARNING_EVENT_TYPES = {
 ADVISORY_EVENT_TYPES = {"guard_advisory"}
 ERROR_EVENT_TYPES = {"guard_error"}
 DRIFT_EVENT_TYPES = {"state_drift"}
+COVERAGE_EVENT_TYPES = {"review_coverage"}
+STAGING_EVENT_TYPES = {"staging_drift"}
 
 # INDEPENDENT CAPS, NOT ONE SHARED BUDGET.
 #
@@ -234,10 +247,20 @@ DRIFT_EVENT_TYPES = {"state_drift"}
 # reading a log from before the removal, which is the advisory burst exactly.
 # Eight is enough to show the divergence widening, which is the part a reader
 # acts on.
+#
+# 8 each for review gaps and unstaged records, for the rate the drift budget
+# above was sized for and that these two still run at: hooks/tracker.ts
+# throttles both on signature, so a miss that persists is one row and a miss
+# that changes is another. A session that never runs a review, or that files a
+# record per Turn and commits none of them, emits a row per commit; charged to
+# the warning class those rows would evict the historical guard_block and
+# guard_halt rows exactly as the advisory burst would.
 MAX_WARNINGS_RETURNED = 30
 MAX_ADVISORIES_RETURNED = 8
 MAX_ERRORS_RETURNED = 8
 MAX_DRIFTS_RETURNED = 8
+MAX_COVERAGE_RETURNED = 8
+MAX_STAGING_RETURNED = 8
 
 # The carve-outs, in the order a row is charged against them. A row matching
 # none of them is charged to the warning class, which is the default and the
@@ -247,6 +270,8 @@ SUBSET_BUDGETS = (
     (ADVISORY_EVENT_TYPES, MAX_ADVISORIES_RETURNED),
     (ERROR_EVENT_TYPES, MAX_ERRORS_RETURNED),
     (DRIFT_EVENT_TYPES, MAX_DRIFTS_RETURNED),
+    (COVERAGE_EVENT_TYPES, MAX_COVERAGE_RETURNED),
+    (STAGING_EVENT_TYPES, MAX_STAGING_RETURNED),
 )
 
 HTML_PAGE = r"""<!DOCTYPE html>
@@ -577,7 +602,14 @@ HTML_PAGE = r"""<!DOCTYPE html>
       var key = warningKey(w);
       if (seen[key]) continue;
       seen[key] = true;
-      if (localStorage.getItem(key)) continue;
+      // Guarded like the writes below: a browser that refuses storage (a
+      // private window, blocked site data) used to throw here, the render
+      // died before the first row, and the catch at the end of pollDashboard
+      // swallowed it, so the panel never appeared (issue 260812-0253). An
+      // unreadable store means nothing was dismissed.
+      var dismissed = false;
+      try { dismissed = !!localStorage.getItem(key); } catch (e) {}
+      if (dismissed) continue;
       visible.push(w);
     }
     if (visible.length === 0) {
@@ -619,6 +651,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
       // as one more guard event, when what it says is that the counters that
       // stood in the header above had stopped being written. The label names that.
       else if (w.event === 'state_drift') { levelClass = 'warning'; levelLabel = 'Stale state'; }
+      // The two siblings that are still emitted. Same reasoning as the label
+      // above: "Warning" beside "commits no review opened: a1b2c3d" or
+      // "fusion-workbench/… is in no commit" invites the guard reading, and
+      // what each row says is that something the session owes is missing.
+      else if (w.event === 'review_coverage') { levelClass = 'warning'; levelLabel = 'Review gap'; }
+      else if (w.event === 'staging_drift') { levelClass = 'warning'; levelLabel = 'Unstaged record'; }
       var ts = formatLocalTime(w.ts || '', 'date');
       keys.push(warningKey(w));
       html += '<div class="warning-row ' + levelClass + '">' +
@@ -977,10 +1015,32 @@ HTML_PAGE = r"""<!DOCTYPE html>
     }
   }
 
+  // Liveness of the page itself, separate from the liveness of the file it
+  // shows. A poll that fails used to be swallowed whole, so a tab whose server
+  // had gone (restarted on another port, the machine asleep, the socket closed
+  // under a suspended tab) kept every row of its last render, and the panel
+  // asserted a state that had stopped being true with nothing to say so
+  // (issue 260822-0849, option 1). Every successful poll stamps the time; a
+  // failed one reads the stamp, and once it is older than three intervals the
+  // status bar says so in place of the last "Updated:" claim. The rows stay:
+  // they were true when rendered and the mark says how long ago that was.
+  var lastPollOk = 0;
+  var STALE_AFTER = 3 * POLL_INTERVAL;
+  function markPollFailed() {
+    if (!lastPollOk || Date.now() - lastPollOk < STALE_AFTER) return;
+    var secs = Math.round((Date.now() - lastPollOk) / 1000);
+    var dot = document.getElementById('status-dot');
+    var text = document.getElementById('status-text');
+    dot.className = 'status-dot error';
+    text.textContent = 'not polling: last successful poll ' + secs + 's ago; the monitor may have stopped';
+    document.getElementById('last-update').textContent = 'Stale: shown as of ' + new Date(lastPollOk).toLocaleTimeString();
+  }
+
   function pollDashboard() {
     fetch('/api/dashboard')
       .then(function(r) { return r.json(); })
       .then(function(data) {
+        lastPollOk = Date.now();
         updateStatus(data.exists, data.age, data.mode);
         renderWarnings(data.warnings);
         // ETA next to the "Updated:" timestamp — recomputed every poll
@@ -1023,7 +1083,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
             '<div class="no-file">No events yet<span>Events appear here as the orchestrator runs</span></div>';
         }
       })
-      .catch(function() {});
+      .catch(markPollFailed);
   }
 
   function pollState() {
@@ -1282,11 +1342,17 @@ def _runs_this_script(pid):
     into a fresh `mktemp -d` on every run — a prior monitor's script path is
     never today's, so a full-path test would match nothing.
 
-    Two residuals, both of which lose a kill rather than gaining a wrong one,
-    and both of which leave the first question's listener kill untouched: an
-    interpreter or script path containing a space splits across tokens and is
-    not recognised, and an interpreter invoked as `-c` never reaches a script
-    token.
+    Three residuals, each of which loses a kill rather than gaining a wrong
+    one, and each of which leaves the first question's listener kill
+    untouched: an interpreter or script path containing a space splits across
+    tokens and is not recognised; an interpreter invoked as `-c` never reaches
+    a script token; and an interpreter reached through `env` (`env python3
+    …/monitor-server.py`) is not recognised either, because the loop below
+    returns on the first non-option token and that token is `python3`. The
+    third is deliberately not closed by scanning every token, since that
+    re-admits the argv-mention kill named above. The wrapper at the foot of
+    this file launches as `python3 "$TMPFILE"`, so a monitor it started is
+    always matched; the gaps reach only a monitor started some other way.
     """
     try:
         cmd = subprocess.check_output(

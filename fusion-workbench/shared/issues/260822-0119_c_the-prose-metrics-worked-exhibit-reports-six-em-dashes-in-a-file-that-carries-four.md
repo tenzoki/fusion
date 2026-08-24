@@ -86,3 +86,6 @@ Two shapes, and they are not the same decision.
 Owner is `coder`, not `ontocoder`: the fix is prose in a bash header, and no structured data
 changes. The four YAML profiles are correct as they stand and must not be edited to make the
 header true again.
+
+---
+Resolved: fixed — both figures are stated as of revision `fac97f4`, in the past tense, with the note that 617 did not reproduce there either (614); no profile was edited; `bin/fusion-prose-metric` header, "What prose means" item 4 and "The hand count this replaces"

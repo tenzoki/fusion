@@ -27,3 +27,6 @@ Scope: `bin/fusion-identity` only. No caller changes; every caller already branc
 
 ---
 **Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** Reproduced independently rather than inherited from the review. Run from `/Users/k1/Projects/productive/fusion/rules`, a directory inside a genuine git work tree, with `PATH` set to a shim holding `bash`, `od`, `head`, `printf`, `mkdir`, `cat`, `sed`, `dirname` and `basename` but no `git`, the helper printed "not a git work tree, so no identity is owed and none is missing" and exited without halting. The tree is a git work tree and an identity is owed in it, so a record filed from that state would carry no person half and no agent would learn why.
+
+---
+Resolved: fixed — the `else` is split on `command -v git`: no `git` on PATH prints its own sentence and exits 1 (the user's choice, stated in the header's exit-1 entry), a real non-work-tree keeps its message and exit 4; probed with a PATH shim holding no git from inside this work tree: exit 1; `bin/fusion-identity` the person half

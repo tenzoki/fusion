@@ -82,3 +82,6 @@ The two siblings widened by `01932d6` — `agents/orchestrator.md:132` and `skil
 **Live obligation, low cost, and the cost of leaving it is asymmetric.** The loop at `hooks/turn-budget.ts:92-94` writes `config.diagnostics` verbatim, every entry whatever its class, and nothing constrains it to drops. A maintainer reading the authoritative header would be entitled to conclude the contract is drops-only; a future narrowing of that loop would then look like it was honouring a documented contract while silencing the retired-file advisory, which is the costliest line the program prints. That is the same mechanism-versus-record gap `260816-2318` recorded and had fixed.
 
 The remedy named in the record is unchanged and is one paragraph: widen `bin/fusion-turn-budget:13-15` and `hooks/turn-budget.ts:52-57` to the antecedent-and-examples shape `agents/orchestrator.md:132` already uses, and name the retired file explicitly as the diagnostic that is not a drop.
+
+---
+Resolved: fixed — both surfaces take the every-diagnostic wording, name the retired `fusion-guard.json` advisory as the class that is not a drop, and say the loop must stay that wide; `hooks/dist/` rebuilt; `bin/fusion-turn-budget` header, `hooks/turn-budget.ts` "Output and exits"

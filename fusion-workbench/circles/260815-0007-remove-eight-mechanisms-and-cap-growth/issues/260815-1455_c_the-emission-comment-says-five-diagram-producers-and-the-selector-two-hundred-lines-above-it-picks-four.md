@@ -56,3 +56,6 @@ The other three descriptions in the same file were corrected in the same commits
 `bin/fusion-rules:409` still reads `# 1c. Design-diagram agents (the five producers) receive the diagram doctrine:`. Measured by running the helper for every agent and grepping for `design-diagrams.md`, the recipient set is **four**: `planner`, `shaper`, `taskplanner`, `analyst`.
 
 This is one of the four instances `260815-1501_*_four-cardinal-words-still-count-items-the-removals-deleted` enumerates, and it is the instance inside executable text rather than prose — which makes it the cheapest to catch if anyone ever builds the gate that record asks for.
+
+---
+Resolved: fixed — with `shared/issues/260821-0018_*`: the numeral is dropped and the 1c comment names the `IS_DIAGRAM_AGENT` case; the "fifteen agents" in 1e went the same way ("the other agents"); `grep -n "five producers\|fifteen agents" bin/fusion-rules` prints nothing

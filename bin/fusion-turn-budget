@@ -11,9 +11,15 @@
 #
 #   max_turns=5
 #
-# Anything the configuration loader had to drop goes to stderr, one line each,
-# naming the key and why — the loader's standing drop-and-advise behaviour, at
-# the one call that reads this value.
+# Every diagnostic the configuration loader returned goes to stderr, one line
+# each, whatever its class. A dropped key is one class (the line names the key
+# and why, and the budget falls through to the default); the costliest line is
+# not a drop at all: a leftover fusion-guard.json at the project root, which
+# fusion no longer reads a byte of, is named on every call until it is deleted,
+# and no key was dropped because the file was never read. Nothing narrows the
+# stream to drops, and nothing should — a loop that printed only drops would
+# silence exactly that line. This is the one call that reads the budget, so it
+# is where the loader's advice is heard.
 #
 # Exit codes:
 #   0  resolved.

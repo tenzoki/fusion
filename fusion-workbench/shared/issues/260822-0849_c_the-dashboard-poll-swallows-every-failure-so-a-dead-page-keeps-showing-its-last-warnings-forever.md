@@ -48,3 +48,6 @@ Give the panel a liveness signal rather than a silent catch. Options, not decide
 ## The second half of the symptom
 
 Dismissal exists and is broken for any warning whose text carries a double quote, filed as `shared/issues/260817-1217_*` and open since 2026-08-17. So a user meeting a stale row is told nothing about it being stale and may also be unable to click it away. The two records are independent faults with one shared symptom, and neither closes the other.
+
+---
+Resolved: fixed — option 1: every successful poll stamps `lastPollOk`, the catch calls `markPollFailed()`, and past three poll intervals the status bar turns red with the age of the last successful poll and the `Updated:` slot reads `Stale: shown as of <time>`; the rows stay, marked; `bin/monitor` `markPollFailed()`

@@ -26,7 +26,13 @@
 #   1  inside a git work tree whose `user.name`, `user.email`, or both are
 #      unset or empty. Names which. Nothing on stdout. **The caller halts,
 #      reports the reason, files nothing, and substitutes no value.** This is
-#      the only code that means stop.
+#      the only code that means stop. It is also the code for a `git` that
+#      cannot be run at all (not on PATH, or failing to execute): then the
+#      program cannot tell whether an identity is owed, and a run that cannot
+#      ask about identity stops rather than filing silently. That is a choice
+#      and not a correction, and it was the user's (issue 260824-1538): the
+#      alternative, exit 4, would report a broken environment as an answer
+#      about the project, which "Exit 3 names an outcome" below rules out.
 #   2  usage error: an argument was given, or -h/--help.
 #   3  the checkout identifier could not be resolved. `PERSON=` is printed,
 #      `CHECKOUT=` is not. The caller carries on.
@@ -141,8 +147,13 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 person=''
 
-if command -v git >/dev/null 2>&1 &&
-   [ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" = "true" ]; then
+if ! command -v git >/dev/null 2>&1; then
+  # Split from the not-a-work-tree branch below: that one asserts a fact about
+  # the tree, and without git nothing about the tree was established.
+  printf 'fusion-identity: git is not on PATH, so whether an identity is owed cannot be determined.\n' >&2
+  printf 'fusion-identity: no record can name its author here. Install git or put it on PATH.\n' >&2
+  exit 1
+elif [ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" = "true" ]; then
   name="$(git config --get user.name 2>/dev/null || true)"
   email="$(git config --get user.email 2>/dev/null || true)"
 
