@@ -70,3 +70,6 @@ The roll is faithful: the 92 lines deleted at `reference-resolution-lint.test.ts
 1. The Medium (three prose edits in two agent prompts, `agents/` head-room 3 675 bytes). Before the Circle closes: the record it follows was closed as `fixed`.
 2. The reconciler completeness row, the `:574` wording, the session-domain header: same pass, prose only.
 3. The pin-chain accounting: whoever next re-approves the constant writes the retrospective line and pays for it.
+
+---
+Reconciled: 260824-2159 (reconciler) — all five findings closed in `3b0dc93` (records `260824-2145_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.

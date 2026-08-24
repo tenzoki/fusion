@@ -62,3 +62,6 @@ Critical 0, High 0, Medium 0, Low 3.
 ## Recommended sequencing
 
 Nothing blocks. One ontocoder pass, one commit: finding 1 (a progress line under step 14), then findings 2 and 3 (one `Corrected:` line each), then re-run the open-issue `find` so the closure measurement's last line is true again.
+
+---
+Reconciled: 260824-2159 (reconciler) — all three findings closed in `3b0dc93` (records `260824-2155_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.

@@ -154,7 +154,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Closes: 19, 46, 51, 52, 53, 75, 78, 119, 180, 186, 189, 205, 219
     - Acceptance: `path-literal-lint`, `turn-budget-lint` and `surface-growth-bound` green; `skills/` head-room not below zero and stated.
 
-11. **`agents/*.md` except the orchestrator** [DONE]
+11. [DONE] **`agents/*.md` except the orchestrator**
     - Executor: `coder`
     - Files: `agents/reconciler.md`, `agents/analyst.md`, `agents/bugfixer.md`, `agents/curator.md`, `agents/planner.md`, `agents/shaper.md`, `agents/playmaker.md`, `agents/coder.md`, `agents/ontocoder.md`, `agents/coderev.md`, `agents/ontorev.md`
     - Changes: per row. The reconciler edit is one edit for 70, 71 and 122 (a disjoint, complete verdict set with its mapping). 146 adds `$OUT_DECISION` to five prompts, which `fusion-paths.test.ts` then covers; 147 and 90 shrink.
@@ -162,7 +162,7 @@ Every step: **Closes** names the rows of `## Triage` it closes, and the table na
     - Closes: 37, 70, 71, 88, 89, 90, 105, 117, 122, 146, 147, 148, 150, 174, 178
     - Acceptance: `bin/fusion-paths <agent>` emits `OUT_DECISION` for the five; `playmaker-backlog-mandate-lint` green; `agents/` head-room stated before and after.
 
-12. **`agents/orchestrator.md`** [DONE]
+12. [DONE] **`agents/orchestrator.md`**
     - Executor: `coder`
     - Files: `agents/orchestrator.md`
     - Changes: per row, twenty-four edits in one file; 73, 161, 69 and 22 cut, 47, 138, 141 and 15 add. The two dialog decisions from step 1 are cited from `## How you ask the user anything` (125). Every `path:N` the file carries in the edited regions is checked against the file, per 8.
@@ -472,3 +472,22 @@ All 220 open records, in store order (`shared/issues/` first, then the sixteen C
 | 218 | `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1622_*_a-fourth-bare-call-of-the-identity-helper-sits-in-the-orchestrator-and-the-repair-did-not-reach-it.md` | S12 | fixed | `agents/orchestrator.md` | the row takes the rooted, guarded form and cites `### Who filed it` |
 | 219 | `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1623_*_setups-claim-branch-leaves-a-circle-claimed-by-this-checkout-unstated-where-nexts-states-it.md` | S10 | fixed | `skills/setup/SKILL.md` | Step 0i names the third case and says it behaves as today |
 | 220 | `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md` | S5 | fixed | `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` | the clause is amended to the answered decision's substance (option 1) |
+
+## Reconciliation Log
+
+**260824-2159 (reconciler, domain `code`, range `571f945..5ad6185`, HEAD `5ad6185`): marker `_p_` → `_c_`, `**Status:** Complete` confirmed, steps 11 and 12 re-marked in the convention's position.**
+
+*Every step verified against the tree, not the step's own note.* The stopping section's clauses, each re-measured here:
+
+- `find fusion-workbench -path '*/issues/*' -name '*_[op]_*' -not -path '*/archive/*'` prints nothing at `5ad6185`.
+- 250 defect records reached `_c_` in the range (220 renamed, 30 filed and closed inside it, 29 of those in this Circle's own `issues/`, one in `shared/issues/260824-2145_*_the-reference-resolution-pin-chain-has-an-unaccounted-plus-one-between-the-c2-closing-pass-and-c3-step-3.md`). First word after `Resolved:` over the 250: fixed 190, referred 34, moot 21, unfixable 3; the two umbrella records (`shared/issues/260811-1734_*_reduce-the-surface-…md:41`, `circles/260824-0530-…/issues/260824-1538_*_a-fifth-budget-crossed-…md:32`) carry the line in bold rather than at column one, so a `grep '^Resolved:'` count reads 248. Every path a `referred` line names resolves on disk under the wildcard form; every backlog referral names an existing entry or the phrase "to be filed by the user".
+- `cd hooks && npm test` at `5ad6185`: 43 files, 760 tests, exit 0 (re-run by the reconciler, 21.9 s).
+- `git diff 2cdd372 5ad6185 -- hooks/lib/__tests__/surface-growth-bound.test.ts hooks/lib/__tests__/rules-emission-golden.test.ts`: one changed line, a comment citation taking the wildcard form; no `BASELINE` map entry moved.
+- The eight decision records exist as `_o_` in `decisions/` (`32e286a`); each `**Cross-references:**` path resolves and each record is cited by two to five other files.
+- One review round after step 14 (`e7fc2a1`, `f0b07b6` over `571f945..d5c34cd`; `1eb7ef6`, `2acb9f8` over `01964e4..13aaa85`; `3b0dc93` carries the review of `a760849..01964e4`) and its records closed by step 15 and Turn 3 (`011cc92`, `6b26e2c`, `3b0dc93`, `5ad6185`).
+- C1 to C3 stand: `.gitattributes` has no commit in the range; `rules/workbench-tracking.md` changed one row (row 201); `bin/fusion-identity` gained the no-`git` branch and its header note (row 214); `rules/fusion-workbench-conventions.md` names exit 5 (row 217). The spec `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` changed by one appended paragraph and one wildcarded citation; C4's criteria are untouched and three records refer to it.
+- Review coverage at close (`bin/fusion-review-coverage`): four commits uncovered, `1eb7ef6`, `2acb9f8`, `3b0dc93`, `5ad6185`; per `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` (option 1) stated here, not gated.
+
+*One drift, corrected.* Steps 11 and 12 carried `[DONE]` after the title, the other thirteen before it (`rules/fusion-workbench-conventions.md` `### Planning files`); moved, content unchanged.
+
+*One thing the rename leaves.* Fourteen history, issue and review files in this Circle spell the plan's path with `_p_`; those are point-in-time citations carried by their commits, and the three citation gates stay green after the rename (`workbench-citation-lint`, `reference-resolution-lint`, `plan-stopping-section-lint`: 58 tests, exit 0). `agentstate.yaml` names the `_p_` path in `current_task.source_file`; the orchestrator deletes that file on clean exit.

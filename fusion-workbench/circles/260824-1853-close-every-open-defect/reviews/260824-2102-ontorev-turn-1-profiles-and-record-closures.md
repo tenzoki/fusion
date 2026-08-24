@@ -64,3 +64,6 @@ Critical 0, High 0, Medium 0, Low 7.
 ## Recommended sequencing
 
 Nothing here blocks Turn 2. Before the Circle closes: finding 7 (row 66 needs a step, and it is a `rules/` line the S13 coder can carry), then finding 5 (the user's seven memo entries and one appended line each), then findings 1 and 2 together in one ontocoder pass over the profiles with the `diff -q` check, then 3, 4 and 6 as record-only edits in one commit.
+
+---
+Reconciled: 260824-2159 (reconciler) — all seven findings closed in `011cc92` and `6b26e2c` (records `260824-2058_c_*`, `260824-2059_c_*`, `260824-2100_c_*`, `260824-2101_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.

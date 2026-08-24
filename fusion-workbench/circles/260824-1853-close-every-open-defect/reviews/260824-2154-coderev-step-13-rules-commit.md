@@ -53,3 +53,6 @@ The one Medium is the same pattern the Circle has met twice already: a rule is w
 ## Recommended sequencing
 
 None is a release blocker. `2151` first, because its records-half is a mechanical pass an ontocoder can run and its rules-half is one clause in two rows; `2152` and `2153` when the parallel `agents/` and `bin/` edits have landed, so the fix is measured against HEAD rather than a moving tree.
+
+---
+Reconciled: 260824-2159 (reconciler) — all three findings closed in `5ad6185` (records `260824-2151_c_*`, `260824-2152_c_*`, `260824-2153_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.

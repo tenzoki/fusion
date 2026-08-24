@@ -78,3 +78,6 @@ Sampled every note in `b0fd2f0`, `1ea8fed`, `8140cf3`, `d5c34cd` and the code-be
 2. The `state Directive` routing (Medium): needs the reconciler and orchestrator edited together.
 3. The two missing tests (Medium): budgeted against a cut in the same step.
 4. The four Low records: documentation, same Turn or the closing one.
+
+---
+Reconciled: 260824-2159 (reconciler) — all nine findings closed in `011cc92` (records `260824-2056_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.
