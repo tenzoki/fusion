@@ -340,7 +340,7 @@ flowchart TD
      commit; the halt rule appears exactly once in the corpus; no agent prompt restates it; the
      citation rule is stated as normative rather than as practice.
 
-7. **Give the Circle record its claim field**
+7. [DONE] **Give the Circle record its claim field**
    - Executor: `coder`
    - Files: `rules/circle-records.md`
    - Changes: add `**Claim:**` to `## Circle record template`, positioned directly after
@@ -366,6 +366,18 @@ flowchart TD
      openings and the one override literal; the honest limit appears in that file and says
      "detected" and "not prevented" in a sentence a reader cannot mistake for a promise; the reader
      test is stated; the pre-Circle absence rule is stated; `npm test` is green.
+   - **As built (260824): the budget the dispatch expected to block this step is not the budget that
+     binds this file, and the step was not blocked.** `rules/circle-records.md` is emitted to three
+     agents, so it is **role-specific** text, which `hooks/lib/__tests__/rules-emission-golden.test.ts`
+     measures under the report that never fails, not under the hard universal-core bound whose 260
+     remaining bytes the dispatch cited. Two hard gates do reach the file and both had room: the
+     drift ceiling of 145 144 bytes an agent, against a worst role (`orchestrator`) at 123 227 before
+     and 125 854 after; and the emission golden, whose own header says role-specific growth "costs a
+     regeneration, never a cut". The section as written is +2 626 bytes, 20 172 -> 22 798.
+     One departure of substance: `**Filed by:**` in the Circle record template gained `, <person>`
+     in this step. `## Current State` names the Circle record as one of the two record kinds that
+     gain a value inside a field they already carry, and step 7 is this plan's only step that
+     touches this file, so the value had nowhere else to land.
 
 8. **Make both activation routes write the claim from one authoring home**
    - Executor: `coder`

@@ -131,7 +131,8 @@ The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creati
 
 ---
 **Domain:** <code|data>
-**Filed by:** <agent name or "user">
+**Filed by:** <agent name or "user">, <person>
+**Claim:** <Unclaimed, or the `Claimed ` form — see `### The claim field` below>
 **Active spec/plan:** <workbench-relative path to the spec or plan, `_*_` at the marker position, or "(none yet)">
 **Active session history:** <workbench-relative path to the session history file, or "(none yet)">
 
@@ -160,6 +161,60 @@ The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creati
 ```
 
 The directory is `YYMMDD-HHMM-<directive-slug>/` and the record inside it is `_S_circle.md`, per the State Markers section above.
+
+### The claim field
+
+**`Claim:` names the checkout that currently holds this Circle active.** It is the second of the
+record's two identity fields, and the two answer different questions: `Filed by:` says who created
+the record, `Claim:` says where it is being worked. The person alone cannot answer the second one,
+because one person's two checkouts carry one git identity and would pass any test built on it. So
+the value carries the person *and* the checkout identifier, both read from `bin/fusion-identity`
+(`PERSON=` and `CHECKOUT=`) and composed nowhere else.
+
+The field takes one of exactly two literal openings:
+
+```
+Unclaimed
+```
+
+```
+Claimed YYMMDD-HHMM: <person>, checkout <id>.
+```
+
+`Unclaimed` is the value of an anticipated (`_a_`) Circle and of a Circle that has reached a
+terminal marker. The `Claimed ` form is written at the `_a_ → _t_` rename and written back to
+`Unclaimed` at the rename out of `_t_`. Who performs each write is authored where that act is, not
+here.
+
+**A takeover appends a second sentence rather than replacing the first**, so both people stand in
+the field and the override is visible in the record:
+
+```
+Overridden YYMMDD-HHMM by <person>, checkout <id>.
+```
+
+Filled in, a claimed Circle taken over by a second checkout reads:
+
+```
+Claimed 260824-0530: Ada Lovelace <ada@example.com>, checkout 3f9a1c07. Overridden 260824-1145 by Alan Turing <alan@example.com>, checkout 77d0e4c1.
+```
+
+**A reader tells a claimed Circle from an unclaimed one by the literal opening**, which is the same
+shape of test `(none yet)` and `Deliberately deleted ` already carry in this file. `Unclaimed` and
+`Claimed ` share no leading characters, so the test is a first-word read and needs no parsing of
+what follows.
+
+**A record written before this field existed carries no field at all, and is read as `Unclaimed`.**
+Records are not rewritten, so there is no migration set and an absent field is not a defect to
+repair.
+
+**The honest limit, and it is a property of the mechanism rather than a caveat about it.** Two
+people who both pull, both see an empty claim and both activate will both write the field, and git
+refuses the second push. **The collision is detected, not prevented.** Nothing here reserves a
+Circle ahead of the write, and nothing warns the second person before they have already done the
+work of activating. The person who loses that race pulls, sees the claim standing, and picks another
+Circle. That is what choosing git as the transport forecloses, and no value of this field changes
+it.
 
 **`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910_*_plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
 

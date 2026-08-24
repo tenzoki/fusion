@@ -2135,3 +2135,6 @@
 {"ts":"2026-08-24T09:46:52","event":"task_done","turn":1,"task":"S5","agent":"coder","detail":"b7f8326 180-line test, 8 cases; hook-test surface 20373/20375"}
 {"ts":"2026-08-24T09:46:52","event":"commit","turn":1,"task":"S5","detail":"b7f8326"}
 {"ts":"2026-08-24T10:02:22","event":"task_start","turn":1,"task":"S6","agent":"coder"}
+{"ts":"2026-08-24T10:14:22","event":"task_done","turn":1,"task":"S6","agent":"coder","detail":"2b055a0 person field + citation rule; always-on 97392/97652; hook-test 20374/20375"}
+{"ts":"2026-08-24T10:14:22","event":"commit","turn":1,"task":"S6","detail":"2b055a0"}
+{"ts":"2026-08-24T10:14:22","event":"task_start","turn":1,"task":"S7","agent":"coder"}
