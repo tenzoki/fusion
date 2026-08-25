@@ -44,3 +44,6 @@ Two further consequences worth carrying into whoever takes it. The repair direct
 
 ---
 Resolved: referred (C4) — the session identity on emitted lines is C4's first measurement, and sorting alone does not separate the sessions; shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md `### C4`
+
+---
+Resolved: `bin/monitor` serves `/api/dashboard` from this checkout's lines alone. The new `_read_events()` parses every line rather than the last `MAX_EVENTS`, drops the lines whose `checkout` is present and differs from the identifier in `fusion-workbench/.checkout-id`, sorts what remains on the raw `ts` string, then takes the last `MAX_EVENTS`; `_read_checkout_id()` reads that file and never mints it. All four readings measured above are downstream of the one array, so the single change repairs all four, and the method's own comment names them and cites this record. A line carrying no `checkout`, and an identifier that cannot be read at all, each keep every line — today's behaviour exactly, which is what keeps the whole pre-C4 log on the dashboard. Plan step 7 of `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`; the marker was already `_c_` from the referral, so this note is appended beside it rather than replacing it.

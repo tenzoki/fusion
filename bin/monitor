@@ -123,6 +123,8 @@ LIVE_MD = os.path.join(BASE_DIR, "orchestrator-live.md")
 EVENTS_JSONL = os.path.join(BASE_DIR, "orchestrator-events.jsonl")
 STATE_YAML = os.path.join(BASE_DIR, "agentstate.yaml")
 GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
+# This checkout's own identifier. Read, never written: see _read_checkout_id().
+CHECKOUT_ID_FILE = os.path.join(BASE_DIR, ".checkout-id")
 
 # Guard events surfaced as sticky rows in the warnings panel. Three kinds
 # qualify, and the distinction is what the panel is for:
@@ -1225,6 +1227,85 @@ class Handler(http.server.BaseHTTPRequestHandler):
         merged.sort(key=lambda e: e.get("ts") or "")
         return merged
 
+    def _read_checkout_id(self):
+        """This checkout's identifier, read from BASE_DIR/.checkout-id.
+
+        A plain file read, and never a mint. Minting belongs to the
+        fusion-identity helper alone: a dashboard process that creates
+        workbench state is a defect of its own, and this file is class L in the
+        workbench-tracking rule, so it stays in the checkout it was minted in
+        and never travels with a pull.
+
+        Returns None when the file is absent, unreadable or empty, which the
+        caller reads as "keep every line"."""
+        content, exists = self._read_file(CHECKOUT_ID_FILE)
+        if not exists:
+            return None
+        return content.strip() or None
+
+    def _read_events(self):
+        """The event window served at /api/dashboard: this checkout's lines
+        from orchestrator-events.jsonl, chronological, newest MAX_EVENTS last.
+
+        WHY THE READ IS SHAPED THIS WAY. fusion declares merge=union on this
+        file, so a pull interleaves another checkout's session into it and the
+        dashboard is reading two independent sessions as one. Four readings go
+        false at once, and all four are downstream of this single array:
+
+          1. _parse_mode reads events[-1], so another checkout's session_end
+             renders "Session complete" while this session is still working.
+          2. computeETA (client side) drains its pending-task map on every
+             session_end and rejects any task_start older than the last one, so
+             a foreign session_end erases this session's ETA.
+          3. The paired-duration average behind that ETA is computed from
+             whichever start/end pairs survive the interleaving, so the same
+             lines in a different order give a different average.
+          4. The Event Log panel renders this array, so a foreign block can
+             push this session's most recent events out of the window.
+
+        All four were measured, with commands and output, in
+        circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md,
+        which also measured that sorting by ts alone does NOT repair them: it
+        moved reading 1 from vague to wrong. The question is which session a
+        line belongs to, and no ordering of the same bytes answers it. So the
+        repair is identity on the line: parse EVERY line rather than the last
+        MAX_EVENTS (a foreign block can stand anywhere in the file), drop the
+        lines whose checkout is present and differs from ours, sort what
+        remains, then take the last MAX_EVENTS.
+
+        Sorting on the raw ts string is correct for the reason _read_warnings
+        gives above for the guard log: the emit convention writes a fixed-width
+        UTC stamp, so lexical order IS chronological order and no parsing (and
+        no parsing failure) is involved. A line missing ts sorts oldest rather
+        than raising, and the sort is stable, so lines sharing a timestamp keep
+        file order.
+
+        A line carrying no checkout counts as ours, and an unreadable
+        identifier keeps every line — which is today's behaviour exactly. That
+        is the point rather than a fallback: the whole pre-existing log carries
+        no such field and no record is rewritten, so an absent identifier has
+        to read as this checkout's own or the panel would come up empty."""
+        content, exists = self._read_file(EVENTS_JSONL)
+        if not exists or not content.strip():
+            return []
+        mine = self._read_checkout_id()
+        events = []
+        for line in content.strip().split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                ev = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if mine is not None and isinstance(ev, dict):
+                wrote = ev.get("checkout")
+                if wrote and wrote != mine:
+                    continue
+            events.append(ev)
+        events.sort(key=lambda e: (e.get("ts") or "") if isinstance(e, dict) else "")
+        return events[-MAX_EVENTS:]
+
     def do_GET(self):
         if self.path == "/":
             self._headers("text/html")
@@ -1235,18 +1316,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             content, exists = self._read_file(LIVE_MD)
             age = self._file_age(LIVE_MD)
 
-            events = []
-            ev_content, ev_exists = self._read_file(EVENTS_JSONL)
-            if ev_exists and ev_content.strip():
-                lines = ev_content.strip().split("\n")
-                # Take last N events
-                for line in lines[-MAX_EVENTS:]:
-                    line = line.strip()
-                    if line:
-                        try:
-                            events.append(json.loads(line))
-                        except json.JSONDecodeError:
-                            pass
+            events = self._read_events()
 
             resp = json.dumps({
                 "dashboard": content,
