@@ -36,13 +36,13 @@
   commit/SKILL.md 6233
   curate/SKILL.md 12476
   direct/SKILL.md 10613
-  help/SKILL.md 17287
+  help/SKILL.md 17134
   log-activity/SKILL.md 13564
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
   next/SKILL.md 27450
   setup/SKILL.md 46301
-  total 238669
+  total 238516
 
 [hook-tests lines]
   commit-message-path.test.ts 354

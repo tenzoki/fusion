@@ -23,7 +23,9 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.6.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.7.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+
+**Upgrading from v10.6?** v10.7 is a defect-closure release: nothing is removed and nothing at your project root changes. What you can see: the reconciler's verdict set gains `directive-partially-met` and the recommendation `state Directive`, and the Rebalance gate now fires on every verdict but `coherent`; a `fusion.json` still carrying a `churn` key gets an advisory until you delete it; `bin/fusion-session-domain` is new and `bin/fusion-identity` halts when `git` is unreachable. Nothing is rewritten and there is nothing to migrate. `docs/upgrading-to-v10-7.md` is the note.
 
 **Upgrading from v10.5?** v10.6 changes one thing you will see: activating a Circle through `/fusion:next` now starts the session in the same turn, instead of printing a sentence saying that one begins. The orchestrator may also have a Directive captured as an anticipated Circle when your own words ask for it, and it still writes no Directive prose itself. Everything else is shipped text your agents read, most of it text that left. Nothing is rewritten and there is nothing to migrate. `docs/upgrading-to-v10-6.md` is the note.
 
