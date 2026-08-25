@@ -290,5 +290,5 @@ Exit 4 on `turns` earns its own code because of `shared/issues/260825-1430_*_the
 
 ## Open Questions
 
-- [ ] **Where do this Circle's hook-test lines come from?** The surface has 0 lines of head-room, the cut-only Circle's 302 lines are spent, and step 10 needs an estimated 200 to 300. Three options are set out with their costs in `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260825-2140_o_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`. The answer blocks step 10 and nothing else.
+- [ ] **Where do this Circle's hook-test lines come from?** The surface has 0 lines of head-room, the cut-only Circle's 302 lines are spent, and step 10 needs an estimated 200 to 300. Three options are set out with their costs in `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`. The answer blocks step 10 and nothing else.
 - [ ] **Does the estimate in step 3 hold?** `agents/*.md` has 3 007 bytes and steps 3, 8 and 11 spend against it while step 5 returns to it. Measure the surface after step 5 rather than after step 3, and if the sum comes out over, the material to cut is in the same files the plan is already editing.

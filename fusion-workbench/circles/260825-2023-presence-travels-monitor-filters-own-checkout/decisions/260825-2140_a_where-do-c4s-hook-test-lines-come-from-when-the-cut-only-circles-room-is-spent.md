@@ -87,3 +87,6 @@ work is a program, which cannot: a test either exercises the checkout filter or 
 And the plan is arranged so that this question blocks one step and not the Circle. Steps 1 through 9
 touch no test line, so the presence report, the monitor filter and the single Turn count can all be
 built and read while this is open. What waits on the answer is whether they are gated.
+
+---
+Answered: circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md `## Decision answered — the hook-test lines` — option 2, the user's own answer at the orchestrator's gate on 2026-08-26: cut an equal number of lines from the hook-test surface in the same Turn as the addition, name the cut, and move no baseline.

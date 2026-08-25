@@ -2339,3 +2339,9 @@
 {"ts":"2026-08-25T20:07:01","event":"task_start","turn":1,"task":"P-3","agent":"coder","detail":"agents/orchestrator.md event schema carries person and checkout"}
 {"ts":"2026-08-25T20:16:10","event":"task_blocked","turn":1,"task":"P-3","agent":"coder","detail":"edits complete and clean; npm test exit 1 caused solely by sibling P-2's uncommitted hooks/lib/events-query.ts missing its README-hooks.md row, which is in P-2's own scope. Held for a joint validation once P-2 returns; no bugfixer dispatched, the failure is not this task's"}
 {"ts":"2026-08-25T20:17:07","event":"task_done","turn":1,"task":"P-1","agent":"analyst","detail":"report written; (a) yes, (b) split: stdout reaches the model, systemMessage does not, (c) yes. Both branches of step 11 answered positive. Commit held for the joint validation with P-2 and P-3"}
+{"ts":"2026-08-25T20:40:49","event":"commit","turn":1,"detail":"73ca11c — Circle, plan, decision, 2 issues, pre-Turn histories"}
+{"ts":"2026-08-25T20:40:49","event":"commit","turn":1,"task":"P-1","detail":"68038d0 — session-identifier measurement report"}
+{"ts":"2026-08-25T20:40:49","event":"commit","turn":1,"task":"P-2","detail":"97407df — bin/fusion-events"}
+{"ts":"2026-08-25T20:40:49","event":"task_done","turn":1,"task":"P-2","agent":"coder","detail":"97407df"}
+{"ts":"2026-08-25T20:40:49","event":"commit","turn":1,"task":"P-3","detail":"8655ec2 — event lines name their writer"}
+{"ts":"2026-08-25T20:40:49","event":"task_done","turn":1,"task":"P-3","agent":"coder","detail":"8655ec2"}
