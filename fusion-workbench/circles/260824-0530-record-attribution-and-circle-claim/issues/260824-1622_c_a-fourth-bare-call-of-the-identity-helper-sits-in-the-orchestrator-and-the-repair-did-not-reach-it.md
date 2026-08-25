@@ -3,6 +3,7 @@ A fourth bare call of the identity helper sits in the orchestrator and the repai
 `agents/orchestrator.md:286` tells the orchestrator to take the claim's person and checkout "from `bin/fusion-identity`": no root, no `[ -x ]` guard, and no citation of the section that carries the exit branches. It is the same defect `260824-1538_*_the-filing-rule-names-the-identity-helper-with-no-root-no-guard-and-no-branch-for-its-absence.md` closed, at a call site that record's three-row table did not list, so the repair at `3fba5c6` covered three sites of four.
 ---
 **Filed by:** coderev
+**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 Found reviewing `0f5889e..3fba5c6`, the two commits that close the C3 Circle's high-severity findings.
 

@@ -3,6 +3,7 @@ Two stilwerk closure notes cite a line one above the text they name
 Read at the commit that wrote them (`43cdde6`, unchanged since): `shared/issues/260822-0120_*_…:77` cites `stilwerk/chat-voice-de.yaml:98` for `Allerdings,`, which is at line 99; `shared/issues/260822-0115_*_…:61` cites `:106` for the AI05 `Bezugswort` sentence, which is at line 107. The AI02 instruction above both grew by one line in the same commit and the notes were written against the pre-edit numbering. Both `:25`/`:27` cites in 0115 are correct.
 ---
 **Filed by:** ontorev
+**Attribution backfilled 260825 (not written by the filing agent):** `ontorev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Severity:** Low
 **Domain:** data
 **Affects:** `shared/issues/260822-0120_*_the-german-blacklist-forbids-an-ordinary-connective-where-the-english-forbids-a-discourse-marker.md:77`, `shared/issues/260822-0115_*_the-german-chat-profile-names-the-referent-three-ways-where-the-english-names-it-once.md:61`

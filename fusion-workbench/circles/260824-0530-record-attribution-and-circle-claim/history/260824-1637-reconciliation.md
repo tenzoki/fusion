@@ -7,6 +7,7 @@
 **Range:** `e209011..cf7a5b0`, 18 commits
 **HEAD:** `cf7a5b0`
 **Filed by:** reconciler
+**Attribution backfilled 260825 (not written by the filing agent):** `reconciler` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 **Attribution was dropped and the reason is not the usual one.** `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]` is false in this checkout, because `$FUSION_PLUGIN_ROOT` is `/Users/k1/.fusion` and the installed plugin predates the helper this Circle built. Under `rules/fusion-workbench-conventions.md` `### Who filed it`, that is the absent-helper branch: file with the person half absent, and say so. Every record this pass wrote carries `**Filed by:** reconciler` and no person, while `./bin/fusion-identity` in the work tree exits 0 and prints one.
 

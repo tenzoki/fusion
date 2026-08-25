@@ -5,6 +5,7 @@ The Circle's release precondition is written against a measurement that cannot r
 
 ---
 **Filed by:** reconciler
+**Attribution backfilled 260825 (not written by the filing agent):** `reconciler` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 **Found by:** Phase 3 reconciliation of session `260824-0539`, checking the plan's own precondition rather than accepting the dispatch's statement of it.
 

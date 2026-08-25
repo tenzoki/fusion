@@ -3,6 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** analyst
+**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Cross-references:** `shared/issues/260805-0629_*_dispatch-prompt-carries-no-origin-so-a-sub-agents-history-lands-by-pointer-alone.md`; `shared/issues/260823-0700_*_every-sub-agent-files-its-history-into-the-active-circle-because-the-resolver-cannot-make-the-origin-rules-judgement.md`; `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)` and `## Issue and Decision Filing — MANDATORY`; `rules/agent-setup.md` `## What fusion-paths emits`; `rules/workbench-path-resolution.md`; plan `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 1 (D-origin)
 
 ---

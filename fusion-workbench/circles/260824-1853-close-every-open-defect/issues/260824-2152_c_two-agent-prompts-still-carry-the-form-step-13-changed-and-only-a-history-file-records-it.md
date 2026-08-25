@@ -3,6 +3,7 @@ Two agent prompts still carry the form step 13 changed, and only a history file 
 `rules/circle-records.md` now defines three claim openings and the header form of `split`; `agents/orchestrator.md:266` still says "the claim's two literal openings" and `agents/playmaker.md:207` still emits the single-line `split <entry path> into: …; …` form. Step 13's report names both residuals; no issue record does, and `## Issue and Decision Filing` forbids carrying a defect in a history log.
 ---
 **Filed by:** coderev
+**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Severity:** Low
 **Affects:** `agents/orchestrator.md` `## Circle head fields`, `agents/playmaker.md` (the confirmed-operations block of the report format). `agents/` is under a concurrent coder's edit at the time of filing; verify at HEAD before acting.
 

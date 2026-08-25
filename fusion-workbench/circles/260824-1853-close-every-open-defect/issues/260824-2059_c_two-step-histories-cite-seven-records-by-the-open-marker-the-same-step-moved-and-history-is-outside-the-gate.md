@@ -14,6 +14,7 @@ Two step histories cite seven records by the open marker the same step moved, an
 All six are `_c_` at `d5c34cd`, renamed by this range. `hooks/lib/__tests__/workbench-citation-lint.test.ts` `inCorpus()` admits circle records, open issues, live decisions and live plans only, so no history file is judged and these went stale silently. Two further spelled markers sit inside the corpus and resolve today only because their targets have not moved yet: `circles/260824-1853-close-every-open-defect/_t_circle.md:32` (an `_a_` spelling) and `shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md:15`, whose commit `a760849` starred the first citation on the line and left the second.
 ---
 **Filed by:** ontorev
+**Attribution backfilled 260825 (not written by the filing agent):** `ontorev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Severity:** Low
 **Domain:** data
 **Affects:** the two history files above; `circles/260824-1853-close-every-open-defect/_t_circle.md:32`; `shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md:15`

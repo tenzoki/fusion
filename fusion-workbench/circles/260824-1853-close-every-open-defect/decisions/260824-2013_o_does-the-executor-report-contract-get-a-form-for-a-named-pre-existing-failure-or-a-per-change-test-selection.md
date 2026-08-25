@@ -3,6 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** analyst
+**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Cross-references:** `shared/issues/260810-0703_*_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`; `agents/coder.md` and `agents/ontocoder.md` (the `Verification:` forms and the derived `Result`); `rules/critical-stance.md` §2 and §4; plan `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 1 (D-report-baseline)
 
 ---

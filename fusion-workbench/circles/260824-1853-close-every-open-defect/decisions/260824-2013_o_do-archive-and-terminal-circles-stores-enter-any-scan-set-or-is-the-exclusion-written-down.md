@@ -3,6 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** analyst
+**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Cross-references:** `shared/issues/260801-1020_*_scan-keys-never-reach-the-archive-store.md`; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`; `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, where the first was found); `rules/fusion-workbench-conventions.md` `## Path Resolution (Pfadauflösung)` and `## State Markers — decisions` (the Grounding-Historie layer); `rules/workbench-path-resolution.md`; `bin/fusion-paths`; `agents/orchestrator.md` Phase 4; `skills/archive/SKILL.md`; plan `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 1 (D-scan-scope)
 
 ---

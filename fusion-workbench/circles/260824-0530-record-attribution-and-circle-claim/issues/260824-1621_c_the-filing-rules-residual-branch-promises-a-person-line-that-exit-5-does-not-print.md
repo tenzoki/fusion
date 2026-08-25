@@ -3,6 +3,7 @@ The filing rule's residual branch promises a PERSON line that exit 5 does not pr
 `rules/fusion-workbench-conventions.md:496` `### Who filed it` branches on exit 1, exit 4 and "every other code", and says of the residual: "On every other code `PERSON=` is printed and you carry on." That is false for exit 5, where `bin/fusion-identity:222` prints neither line, and for exit 2, where the usage path prints nothing at all. Exit 5 needs exit 4's treatment, filing with the person half absent, and is routed into a branch that tells the agent the value is there.
 ---
 **Filed by:** coderev
+**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 Found reviewing `0f5889e..3fba5c6`, the two commits that close the C3 Circle's high-severity findings.
 

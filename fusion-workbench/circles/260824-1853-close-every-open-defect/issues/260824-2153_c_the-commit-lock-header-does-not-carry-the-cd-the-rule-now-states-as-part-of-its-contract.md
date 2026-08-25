@@ -3,6 +3,7 @@ The commit-lock header does not carry the `cd` the rule now states as part of it
 `rules/commit-lock.md` gained a paragraph "`with` performs a `cd`" with the absolute-pathspec consequence. `CLAUDE.md`'s `bin/fusion-commit-lock` row says the script's own header carries the same contract as the rule for a reader who reaches the file first. The header's usage block for `with` says "Acquire, run the command preserving its exit code, release" and nothing about the directory the command runs in.
 ---
 **Filed by:** coderev
+**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Severity:** Low
 **Affects:** `bin/fusion-commit-lock` (header comment, the `with` usage entry). `bin/` is under a concurrent coder's edit at the time of filing; verify at HEAD before acting.
 

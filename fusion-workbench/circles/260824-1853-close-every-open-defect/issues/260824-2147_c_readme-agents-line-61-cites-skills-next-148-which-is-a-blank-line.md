@@ -3,6 +3,7 @@
 `README-agents.md:61` (the `**Proposal source:**` row of `## Dispatch parameters`) reads "contract restated at `:148`". `skills/next/SKILL.md:148` is a blank line; the sentence "List only the approved operations and drop the rest" that restates the contract is `:149`. Found while correcting the closure note of `260824-2056_c_readme-agents-still-cites-skills-next-at-line-147-153-after-step-10-moved-the-block-to-139-146.md`, whose review finding assumed no README line carried `:148`. `README-agents.md` is a shipped doc outside the ontocoder's scope.
 ---
 **Filed by:** ontocoder
+**Attribution backfilled 260825 (not written by the filing agent):** `ontocoder` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Severity:** Low
 **Domain:** code
 **Affects:** `README-agents.md:61`

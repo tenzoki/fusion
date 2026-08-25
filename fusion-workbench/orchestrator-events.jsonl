@@ -2319,3 +2319,9 @@
 {"ts":"2026-08-25T10:59:13","event":"reconciliation","turn":1,"detail":"9 discrepancies"}
 {"ts":"2026-08-25T10:59:13","event":"coherence_review","turn":1,"detail":"verdict review-needed; recommendation revise Artifact"}
 {"ts":"2026-08-25T10:59:13","event":"gate_hit","turn":1,"agent":"user","detail":"Rebalance gate: reconciler verdict review-needed"}
+{"ts":"2026-08-25T11:35:57","event":"commit","turn":1,"task":"R1","detail":"53d656f reconciliation of the multi-user spec plus five filed defects"}
+{"ts":"2026-08-25T11:35:57","event":"gate_response","turn":1,"agent":"user","detail":"Rebalance: revise Artifact"}
+{"ts":"2026-08-25T11:35:57","event":"rebalance_artifact","turn":1,"detail":"backfill the 28 records with the stated-absence form; user sees no reason against it"}
+{"ts":"2026-08-25T11:35:57","event":"turn_end","turn":1,"detail":"1 task resolved, 6 issues created, 1 closed"}
+{"ts":"2026-08-25T11:35:57","event":"turn_start","turn":2,"detail":"1 ready task"}
+{"ts":"2026-08-25T11:35:57","event":"task_start","turn":2,"task":"R2","agent":"reconciler","detail":"backfill 28 records"}

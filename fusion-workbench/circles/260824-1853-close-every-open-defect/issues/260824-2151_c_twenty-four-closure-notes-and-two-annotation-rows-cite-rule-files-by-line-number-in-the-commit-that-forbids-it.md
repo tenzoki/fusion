@@ -3,6 +3,7 @@ Twenty-four closure notes and two annotation rows cite rule files by line number
 Commit `01964e4` adds to `rules/fusion-workbench-conventions.md` `## Filename Patterns` the clause "Cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no gate resolves `path:N`." The same commit closes 24 records whose `Resolved:` lines all end in `rules/<file>.md:<N>`, and leaves the two decision-annotation rows in the same file mandating the line form.
 ---
 **Filed by:** coderev
+**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Severity:** Medium
 **Affects:** `rules/fusion-workbench-conventions.md` (`## Filename Patterns`, the `_a_` and `_i_` rows of the decision-marker table, `## Inline State Tracking` `### Decision files`), and the 24 issue records commit `01964e4` renamed to `_c_`.
 

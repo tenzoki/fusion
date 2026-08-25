@@ -3,6 +3,7 @@ Setup's claim branch leaves a Circle claimed by this checkout unstated where nex
 `skills/setup/SKILL.md:351` splits the claim read two ways: `Claimed ` naming another identity, and "`Unclaimed`, or no field". A `**Claim:**` opening with `Claimed ` and naming *this* checkout falls through both. `skills/next/SKILL.md:207` closes the same split with three cases, the third being "this checkout's own identity", so the two readers of one field describe different case-spaces.
 ---
 **Filed by:** coderev
+**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 Found reviewing `0f5889e..3fba5c6`, the two commits that close the C3 Circle's high-severity findings. The sentence was edited at `3fba5c6`, which repaired its citation and left the split as it stood.
 
