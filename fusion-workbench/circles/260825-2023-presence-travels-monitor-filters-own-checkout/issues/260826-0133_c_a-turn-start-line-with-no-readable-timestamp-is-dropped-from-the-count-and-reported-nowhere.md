@@ -35,3 +35,16 @@ The drop is also the one that matters most: this helper exists because `shared/i
 **Fix direction.** Return the drop as a figure beside `malformed` — a `skipped` or `unstamped` count — and have `hooks/events-query.ts` name it on stderr the way `noteMalformed` names its own (`:137-139`). Do not fold it into `malformed`: those lines are JSON objects and the two facts are different.
 
 **Scope.** `hooks/lib/events-query.ts`, `hooks/events-query.ts`, `bin/fusion-events` header.
+
+---
+Resolved: `countTurns` now counts the drop and returns it. Its ok branch carries `unstamped` beside `turns` and `malformed`, and `hooks/events-query.ts` names it on stderr through `noteUnstamped`, separately from `noteMalformed`. The two are kept apart exactly as the record asks: a `turn_start` that named a Turn and could not say when is a well-formed JSON object, and a line that was not JSON at all is a different fact about the log. Both the docstring on `countTurns` and the field's own comment now state the drop instead of performing it silently.
+
+**It is on stderr and not on stdout**, which is the record's own fix direction and is the choice taken here rather than a default fallen into. `malformed` sits on stderr for the same reason, and the `bin/fusion-events` header now states the pairing where the output shape is defined: neither count is a figure taken from the log, each says how far the log fell short of letting one be taken, and a `turns` count short by an unstamped line says it is short by an unstamped line. The alternative, a conditional stdout key, would have made the two counts disagree about which stream they live on for no gain a reader of the header does not already get.
+
+Measured against the record's own fixture shape — one `session_start`, one `turn_start` with no `ts`, one with `ts: "nonsense"`, one stamped:
+
+```
+{"ok":true,"turns":1,"unstamped":2,"historyFile":"H","since":"2026-08-25T09:00:00","malformed":0}
+```
+
+The old code returned `turns` short by the same lines with `malformed: 0` and said nothing on either stream.

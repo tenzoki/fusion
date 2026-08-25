@@ -22,7 +22,10 @@
  *   3. **It receives the identity rather than obtaining it.** `PERSON` and
  *      `CHECKOUT` arrive in the environment from `bin/fusion-identity`, which
  *      the wrapper runs. Identity is obtained in exactly one place in the tree,
- *      and that place is not here.
+ *      and that place is not here. What *is* here is the one translation of
+ *      that helper's exit vocabulary into what this program does about it:
+ *      `resolveIdentity` below, which every branch reads instead of testing a
+ *      code of its own.
  *
  * ## Reasons go to stderr, values to stdout
  *
@@ -68,36 +71,101 @@ function envValue(name: string): string | null {
 }
 
 /**
- * What `bin/fusion-identity` reported, phrased for stderr.
+ * What `bin/fusion-identity` reported, resolved once and read from here by
+ * every branch below.
  *
  * The wrapper passes that helper's exit code through untouched, so the reason a
- * half is missing is named here rather than guessed at from the missing value.
- * The codes are its own (see its header); `127` is the wrapper's sentinel for
- * "the installed copy does not carry the helper", which is the ordinary state
- * of an install one release behind the tree that added it.
+ * half is missing is read off a number rather than guessed at from the missing
+ * value. Its header is the authoritative table and this is the single
+ * translation of it in this program.
+ *
+ * **Why the single point.** The vocabulary was read three different ways inside
+ * one change: exit 1 as a halt in one place and as a degradation in another,
+ * and exit 4 folded in with 3 and 5 as though nothing could be *read*, when
+ * what it says is that nothing is *owed*. The helper's own header devotes a
+ * section to why those codes must stay distinguishable, and a per-branch switch
+ * is how they stop being. Records:
+ * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`.
  */
-function identityNote(exit: number | null): string {
-  switch (exit) {
-    case 0:
-      return "";
-    case 1:
-      return "fusion-identity halted: git could not be run, or user.name/user.email are unset.";
-    case 3:
-      return "fusion-identity could not resolve this checkout's identifier.";
-    case 4:
-      return "fusion-identity reports no git identity is owed here (not a git work tree).";
-    case 5:
-      return "fusion-identity resolved neither the person nor the checkout.";
-    case 127:
-      return "bin/fusion-identity is missing — the plugin install does not carry it.";
-    default:
-      return exit === null
-        ? "no identity was passed in; run this through bin/fusion-events."
-        : `fusion-identity exited ${exit}, which is not a code this reader knows.`;
-  }
+interface IdentityStatus {
+  /** The code as the wrapper passed it through; `null` if none reached us. */
+  exit: number | null;
+  /**
+   * Whether a git identity is owed here at all.
+   *
+   * `false` **only** where the helper said so: its 4 (not a git work tree) and
+   * its 5 (that, and the checkout identifier unresolved too). Every other code
+   * is `true`, the codes that could not tell included — `nothing is owed` is
+   * the stronger claim of the two, and a reader that could not establish it
+   * reports a half as unread rather than as not owed.
+   */
+  identityOwed: boolean;
+  /** The one sentence for stderr. Empty on exit 0, where nothing is missing. */
+  note: string;
 }
 
-function readIdentity(): { identity: ReadingIdentity; exit: number | null } {
+const IDENTITY_VOCABULARY = new Map<number, Omit<IdentityStatus, "exit">>([
+  [0, { identityOwed: true, note: "" }],
+  [
+    1,
+    {
+      identityOwed: true,
+      note: "fusion-identity halted: git could not be run, or user.name/user.email are unset.",
+    },
+  ],
+  [
+    3,
+    {
+      identityOwed: true,
+      note: "fusion-identity could not resolve this checkout's identifier.",
+    },
+  ],
+  [
+    4,
+    {
+      identityOwed: false,
+      note: "fusion-identity reports no git identity is owed here (not a git work tree).",
+    },
+  ],
+  [
+    5,
+    {
+      identityOwed: false,
+      note:
+        "fusion-identity reports this is not a git work tree, so no person is owed — and the " +
+        "checkout identifier did not resolve either.",
+    },
+  ],
+  [
+    // The wrapper's sentinel for "the installed copy does not carry the
+    // helper", which is the ordinary state of an install one release behind the
+    // tree that added it. Nothing was asked, so nothing is known about the tree.
+    127,
+    {
+      identityOwed: true,
+      note: "bin/fusion-identity is missing — the plugin install does not carry it.",
+    },
+  ],
+]);
+
+function resolveIdentity(exit: number | null): IdentityStatus {
+  if (exit === null) {
+    return {
+      exit,
+      identityOwed: true,
+      note: "no identity was passed in; run this through bin/fusion-events.",
+    };
+  }
+  const known = IDENTITY_VOCABULARY.get(exit);
+  if (known !== undefined) return { exit, ...known };
+  return {
+    exit,
+    identityOwed: true,
+    note: `fusion-identity exited ${exit}, which is not a code this reader knows.`,
+  };
+}
+
+function readIdentity(): { identity: ReadingIdentity; status: IdentityStatus } {
   const raw = envValue("FUSION_EVENTS_IDENTITY_EXIT");
   const parsed = raw === null ? Number.NaN : Number.parseInt(raw, 10);
   return {
@@ -105,7 +173,7 @@ function readIdentity(): { identity: ReadingIdentity; exit: number | null } {
       person: envValue("FUSION_EVENTS_PERSON"),
       checkout: envValue("FUSION_EVENTS_CHECKOUT"),
     },
-    exit: Number.isInteger(parsed) ? parsed : null,
+    status: resolveIdentity(Number.isInteger(parsed) ? parsed : null),
   };
 }
 
@@ -138,18 +206,34 @@ function noteMalformed(n: number): void {
   if (n > 0) say(`${n} line(s) of the log were not a JSON object and were skipped.`);
 }
 
+/**
+ * `turn_start` lines that named a Turn and could not say when.
+ *
+ * Named separately from `malformed`, because they are well-formed objects and
+ * the two are different facts. Both are on stderr rather than stdout: stdout
+ * carries the figures, and these two say how far the log fell short of letting
+ * them be taken.
+ */
+function noteUnstamped(n: number): void {
+  if (n > 0) {
+    say(
+      `${n} turn_start line(s) carry no readable ts and are not in the count, which is ` +
+        "therefore short by that many Turns.",
+    );
+  }
+}
+
 /* ------------------------------------------------------------------ *
  * presence
  * ------------------------------------------------------------------ */
 
 function presence(root: string, days: number): number {
-  const { identity, exit } = readIdentity();
-  const note = identityNote(exit);
+  const { identity, status } = readIdentity();
 
   if (identity.checkout === null) {
     // Nothing can be classified: with no reading identifier every line carrying
     // one looks like somebody else's, and the report would be fiction.
-    if (note !== "") say(note);
+    if (status.note !== "") say(status.note);
     say("this checkout could not be identified, so no line can be classified. No count printed.");
     return 3;
   }
@@ -176,12 +260,32 @@ function presence(root: string, days: number): number {
   process.stdout.write(out.join("\n") + "\n");
 
   if (r.otherPeople === null) {
-    if (note !== "") say(note);
-    say(
-      "the reading person could not be read, so another person cannot be told from a " +
-        "further checkout of your own. other_people is not printed; every other checkout " +
-        "is counted in other_checkouts and its party line reads `unknown`.",
-    );
+    // Two states reach here and they are not the same fact. A tree that owes no
+    // git identity is not a tree whose identity could not be read: the helper
+    // spends two codes keeping them apart, and folding them printed one line
+    // saying nothing is owed and a second saying nothing could be read.
+    //
+    // **The exit code is 4 for both, deliberately.** What a caller does is
+    // identical — `other_people` is absent from stdout and every party line
+    // reads `unknown` — and exit 0 promises a figure this run did not take. The
+    // wording is what was wrong, and the wording is what changed.
+    if (status.identityOwed) {
+      if (status.note !== "") say(status.note);
+      say(
+        "the reading person could not be read, so another person cannot be told from a " +
+          "further checkout of your own. other_people is not printed; every other checkout " +
+          "is counted in other_checkouts and its party line reads `unknown`.",
+      );
+    } else {
+      // One sentence, naming its own cause: the note would otherwise repeat it
+      // in the words the helper's own stderr has already used.
+      say(
+        "no git identity is owed here (not a git work tree), so there is no reading person " +
+          "to compare against and another person cannot be told from a further checkout of " +
+          "your own. Nothing is missing. other_people is not printed; every other checkout " +
+          "is counted in other_checkouts and its party line reads `unknown`.",
+      );
+    }
     return 4;
   }
 
@@ -193,16 +297,28 @@ function presence(root: string, days: number): number {
  * ------------------------------------------------------------------ */
 
 function turns(root: string): number {
-  const { identity, exit } = readIdentity();
+  const { identity, status } = readIdentity();
+
+  // What the count was taken over, on stdout in the shape the rest of the
+  // output uses. Without it the widening below was announced on stderr alone,
+  // while stdout carried a number and the exit was 0 — so a prompt told to
+  // "never fall back to the whole-file count" could not tell that the helper
+  // just had. Record:
+  // circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/
+  //   260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-
+  //   checkout-is-unresolved-and-stdout-says-nothing.md
+  const scope = identity.checkout === null ? "all-checkouts" : "checkout";
 
   if (identity.checkout === null) {
     // Not a failure here, and deliberately not one: keeping every line is the
     // exact pre-C4 behaviour, which is the stated degradation rather than a
     // fallback. It is said out loud so the figure is never quietly wider than
     // it looks.
-    const note = identityNote(exit);
-    if (note !== "") say(note);
-    say("this checkout could not be identified, so every line is counted, as before C4.");
+    if (status.note !== "") say(status.note);
+    say(
+      "this checkout could not be identified, so every line is counted, as before C4. " +
+        "stdout carries scope=all-checkouts.",
+    );
   }
 
   const state = readStateFile(root);
@@ -231,9 +347,9 @@ function turns(root: string): number {
   noteMalformed(result.malformed);
 
   if (!result.ok) {
-    // Printed, because it was measured: the session is named even though its
-    // count could not be taken.
-    process.stdout.write(`history_file=${result.historyFile}\n`);
+    // Printed, because it was measured: the session is named, and the scope the
+    // search ran over is named, even though the count could not be taken.
+    process.stdout.write(`history_file=${result.historyFile}\nscope=${scope}\n`);
     say(
       result.why === "no-session-start"
         ? "no session_start in this checkout's lines names that history file. That is a " +
@@ -244,7 +360,13 @@ function turns(root: string): number {
     return 4;
   }
 
-  process.stdout.write(`turns=${result.turns}\nhistory_file=${result.historyFile}\n`);
+  noteUnstamped(result.unstamped);
+
+  // `scope` is last so the two lines a caller was written against stay where
+  // they were: a reader that ignores the key reads exactly what it read before.
+  process.stdout.write(
+    `turns=${result.turns}\nhistory_file=${result.historyFile}\nscope=${scope}\n`,
+  );
   return 0;
 }
 

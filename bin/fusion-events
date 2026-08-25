@@ -23,10 +23,48 @@
 #   turns
 #     turns=3
 #     history_file=circles/<stamp>-<slug>/history/<stamp>-orchestrator-session.md
+#     scope=checkout
 #
-# `scope=pulled` is a constant and is the report's own disclaimer: presence
-# reflects only what this checkout has pulled, so a session another person
-# started since the last fetch is invisible here and is not absence.
+# **Two counts are on stderr and never on stdout**: lines of the log that were
+# not a JSON object at all, and `turn_start` lines that named a Turn and could
+# not say when. Neither is a figure taken from the log; each says how far the
+# log fell short of letting one be taken. A `turns` count that is short by an
+# unstamped line says it is short by an unstamped line rather than passing for
+# whole.
+#
+# ---------------------------------------------------------------------------
+# The `scope=` key, which both subcommands print and neither counts
+#
+# It is the figure's own disclaimer, in the shape of a figure's key.
+#
+# **`scope=pulled`** on presence is a constant: presence reflects only what this
+# checkout has pulled, so a session another person started since the last fetch
+# is invisible here and is not absence.
+#
+# **`scope=` on turns is not a constant.** It says what the count was taken
+# over. `checkout` is the ordinary case, this checkout's own lines. It reads
+# `all-checkouts` when the checkout identifier did not resolve, because then
+# every line in the merged file is counted — the exact pre-C4 behaviour, kept
+# deliberately as the stated degradation, and now named on stdout instead of on
+# stderr alone.
+#
+# The key exists rather than a sixth exit code, and that is the whole of the
+# choice. The widening used to be announced on stderr while stdout carried a
+# number and the exit was 0; a caller instructed never to fall back to the
+# whole-file count could not tell that this helper just had, because a prompt
+# reads stdout and an exit code and captures no stderr. **The exit stays 0**:
+# the count was taken, over a scope the key names, so a caller that ignores the
+# key behaves exactly as it did before the key existed. A caller that must not
+# accept a widened count reads the key and treats `all-checkouts` as
+# unavailable. Record:
+# `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md`.
+#
+# `scope=` is printed **last**, so the two lines a caller was written against
+# stay where they were, and it is printed on the exit-4 branch too, where the
+# count could not be taken but the scope the search ran over still was.
+#
+# ---------------------------------------------------------------------------
+# The `party=` line
 #
 # One `party=` line per distinct pair of person and checkout other than this
 # one's, most recent first, carrying five TAB-separated fields: the class, the
@@ -37,6 +75,19 @@
 # Circle is read off `history_file` (`circles/<dir>/…` names its Circle,
 # anything else is `shared`, an absent field is `unknown`) and off no field of
 # its own.
+#
+# **Every field is flattened before it is joined**: a control character inside
+# one, TAB and newline included, becomes a single space. `person` is git's
+# `user.name` and `user.email` as some other machine holds them, and JSON
+# carries a `\t` or a `\n` through the round trip intact — so without this a TAB
+# in a person value shifted every later field by one and a newline split the
+# record in two. The record is therefore always one line of exactly five fields.
+# The flattening is not reversible, which is the price: none of the five fields
+# means anything different for having had a control character taken out of it.
+#
+# **The order is total.** Most recent first, then by checkout, then by person —
+# which is the whole of the pair a party is distinguished by, so no two lines
+# fall back on their position in the file.
 #
 # Three classes, and the split is disjoint and complete:
 #
@@ -57,7 +108,8 @@
 # per subcommand.
 #
 #   0  measured. `other_people=0` and `turns=0` are real answers and reach this
-#      code.
+#      code, and so does a `turns` count taken over `scope=all-checkouts`: the
+#      figure was taken, and the key says what it was taken over.
 #   1  usage error.
 #   2  no fusion workbench above the working directory.
 #   3  presence: no line can be classified, so no count is printed. Two causes,
@@ -65,11 +117,28 @@
 #      could not be read.
 #      turns: there is no session to scope to. Three causes, named on stderr —
 #      no agentstate.yaml, no `session.history_file` in it, or no log.
-#   4  presence: the person half could not be read, so another person cannot be
+#   4  presence: the person half is not in hand, so another person cannot be
 #      told from a further checkout of your own. `other_checkouts` is printed,
 #      `other_people` is not, and every party line reads `unknown`.
-#      turns: no `session_start` in this checkout's lines names that history
-#      file. **A finding, not a zero.**
+#      **Two different states reach this code and stderr says which.** Either
+#      the person could not be read (bin/fusion-identity's 1, 3 or 127, or a
+#      code this reader does not know), or **no git identity is owed at all**
+#      because this is not a git work tree (its 4 and 5). The second is not a
+#      fault and nothing is missing; fusion supports a non-git project
+#      deliberately. The code is 4 for both because what a caller does is
+#      identical, and because exit 0 would promise an `other_people` this run
+#      did not take.
+#      **`other_checkouts` denotes a wider set here.** At exit 0 it counts
+#      further checkouts of the reading person; at exit 4 it counts every other
+#      checkout, because without the reading person none of them can be told
+#      from one of the reader's own. One key, two denotations, and the exit code
+#      is which.
+#      turns: the count could not be taken. `history_file=` and `scope=` are
+#      printed and `turns=` is not. **A finding, not a zero.** Two causes, both
+#      named on stderr: no `session_start` among the counted lines names that
+#      history file, or the one that does carries no readable `ts`, so no window
+#      can be opened. They share what the caller does, which is why one code
+#      carries both — the same reasoning 3 gives below.
 #   5  the plugin's compiled hooks are missing, so nothing could be asked.
 #
 # Two notes on that table, because both are easy to get wrong.
@@ -101,6 +170,16 @@
 # a pure function of the log text, the reading identity and the current time —
 # no git, no workbench, no subprocess — so every case in the classification
 # table above is a fixture string and an assertion.
+#
+# **That helper's exit vocabulary is translated in exactly one place**, and
+# every branch of this reader consults it rather than testing a code of its own:
+# `resolveIdentity` in hooks/events-query.ts. The reason is the helper's own —
+# its header devotes a section to why 1 and 4 must stay distinguishable, and a
+# switch repeated per branch is precisely how they stop being. It had already
+# happened: exit 4 was read as though it said the identity could not be read,
+# when what it says is that none is owed, and the two sentences the program then
+# printed contradicted each other. Record:
+# `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`.
 #
 # The call is `[ -x ]`-guarded per
 # `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:

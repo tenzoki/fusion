@@ -186,7 +186,17 @@ export interface PresenceReport {
    * printed rather than printed as a zero.
    */
   otherPeople: number | null;
-  /** Distinct other checkouts, whoever they turn out to belong to. */
+  /**
+   * Distinct **further checkouts of the reading person** — and, where the
+   * reading person could not be read, every other checkout, because none of
+   * them can then be told from one of the reader's own.
+   *
+   * The key therefore denotes a wider set exactly when `otherPeople` is `null`,
+   * which is the state `bin/fusion-events` reports as exit 4 and whose header
+   * says so beside that row. Two readings of one key is deliberate — the
+   * alternative is a figure that silently changes meaning — and it is the whole
+   * of the difference.
+   */
   otherCheckouts: number;
   malformed: number;
 }
@@ -261,11 +271,16 @@ export function measurePresence(
     circle: circleOf(line.history_file),
   }));
 
-  // Most recent first, then by checkout so the order is total and a test can
-  // assert it.
+  // Most recent first, then by the whole key the map is built on — the
+  // checkout and the person both — so the order is total and a test can assert
+  // it. Breaking on the checkout alone left two parties that share a checkout
+  // and a stamp to order by their position in the file, which is the one input
+  // this module exists to stop reading.
   parties.sort((a, b) => {
     const d = (parseTs(b.ts) ?? 0) - (parseTs(a.ts) ?? 0);
-    return d !== 0 ? d : a.checkout.localeCompare(b.checkout);
+    if (d !== 0) return d;
+    const c = a.checkout.localeCompare(b.checkout);
+    return c !== 0 ? c : (a.person ?? "").localeCompare(b.person ?? "");
   });
 
   const people = new Set<string>();
@@ -293,10 +308,32 @@ export function measurePresence(
   };
 }
 
+/**
+ * Every control character in a rendered field, replaced by one space.
+ *
+ * The separator is a TAB, so a TAB inside a field shifts every later field by
+ * one and a newline splits the record in two. `person` is git's `Name <email>`
+ * as some other machine's `git config` holds it, and JSON carries `\t` and `\n`
+ * through the round trip intact, so the value can hold either. This is the
+ * reasoning that put a NUL in `KEY_SEP` above, carried to the output format,
+ * which is the surface a consumer actually parses.
+ *
+ * Flattening rather than escaping keeps the record five fields wide with no
+ * decoding step at the reader, at the cost of not being reversible. The five
+ * fields are a class, a git identity, a hex identifier, a timestamp and a
+ * directory name; none of them means anything different for having had a
+ * control character flattened out of it.
+ */
+function flattenField(s: string): string {
+  return s.replace(/[\u0000-\u001f\u007f]+/g, " ");
+}
+
 /** One `party=` line. Tab-separated: the person value contains spaces. */
 export function renderParty(p: Party): string {
   const person = p.person ?? "(not recorded)";
-  return [`party=${p.kind}`, person, p.checkout, p.ts, p.circle].join("\t");
+  return [`party=${p.kind}`, person, p.checkout, p.ts, p.circle]
+    .map(flattenField)
+    .join("\t");
 }
 
 /* ------------------------------------------------------------------ *
@@ -304,7 +341,23 @@ export function renderParty(p: Party): string {
  * ------------------------------------------------------------------ */
 
 export type TurnsResult = { malformed: number } & (
-  | { ok: true; turns: number; historyFile: string; since: string }
+  | {
+      ok: true;
+      turns: number;
+      /**
+       * `turn_start` lines carrying no readable `ts`. They cannot be placed
+       * against the anchor, so they are not in `turns` — and they are returned
+       * rather than dropped, per `parseLog`'s rule above: a skipped line that
+       * nobody counts is the silent under-report this module exists to remove.
+       *
+       * Kept apart from `malformed`, which counts lines that were not a JSON
+       * object at all. These are well-formed objects that named a Turn and
+       * could not say when, and the two are different facts about the log.
+       */
+      unstamped: number;
+      historyFile: string;
+      since: string;
+    }
   /**
    * A finding, not a zero. Issue
    * `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`
@@ -328,6 +381,10 @@ export type TurnsResult = { malformed: number } & (
  * genuine chronology: scope by checkout, sort by `ts`, take the first
  * `session_start` naming this history file, count `turn_start` from its stamp
  * on. `turns=0` is a real figure and reaches the ok branch.
+ *
+ * A `turn_start` with no readable `ts` cannot be placed against that anchor, so
+ * it is not counted. It comes back as `unstamped` rather than vanishing, so a
+ * count that is short by a line is a count that says it is short by a line.
  */
 export function countTurns(
   text: string,
@@ -360,11 +417,23 @@ export function countTurns(
   }
 
   let turns = 0;
+  let unstamped = 0;
   for (const e of scoped) {
     if (e.line.event !== "turn_start") continue;
-    if (e.ms === null || e.ms < anchor.ms) continue;
+    if (e.ms === null) {
+      unstamped++;
+      continue;
+    }
+    if (e.ms < anchor.ms) continue;
     turns++;
   }
 
-  return { ok: true, turns, historyFile, since: anchor.line.ts as string, malformed };
+  return {
+    ok: true,
+    turns,
+    unstamped,
+    historyFile,
+    since: anchor.line.ts as string,
+    malformed,
+  };
 }

@@ -172,11 +172,17 @@ export function measurePresence(text, identity, opts) {
         ts: line.ts,
         circle: circleOf(line.history_file),
     }));
-    // Most recent first, then by checkout so the order is total and a test can
-    // assert it.
+    // Most recent first, then by the whole key the map is built on — the
+    // checkout and the person both — so the order is total and a test can assert
+    // it. Breaking on the checkout alone left two parties that share a checkout
+    // and a stamp to order by their position in the file, which is the one input
+    // this module exists to stop reading.
     parties.sort((a, b) => {
         const d = (parseTs(b.ts) ?? 0) - (parseTs(a.ts) ?? 0);
-        return d !== 0 ? d : a.checkout.localeCompare(b.checkout);
+        if (d !== 0)
+            return d;
+        const c = a.checkout.localeCompare(b.checkout);
+        return c !== 0 ? c : (a.person ?? "").localeCompare(b.person ?? "");
     });
     const people = new Set();
     const checkouts = new Set();
@@ -202,10 +208,31 @@ export function measurePresence(text, identity, opts) {
         },
     };
 }
+/**
+ * Every control character in a rendered field, replaced by one space.
+ *
+ * The separator is a TAB, so a TAB inside a field shifts every later field by
+ * one and a newline splits the record in two. `person` is git's `Name <email>`
+ * as some other machine's `git config` holds it, and JSON carries `\t` and `\n`
+ * through the round trip intact, so the value can hold either. This is the
+ * reasoning that put a NUL in `KEY_SEP` above, carried to the output format,
+ * which is the surface a consumer actually parses.
+ *
+ * Flattening rather than escaping keeps the record five fields wide with no
+ * decoding step at the reader, at the cost of not being reversible. The five
+ * fields are a class, a git identity, a hex identifier, a timestamp and a
+ * directory name; none of them means anything different for having had a
+ * control character flattened out of it.
+ */
+function flattenField(s) {
+    return s.replace(/[\u0000-\u001f\u007f]+/g, " ");
+}
 /** One `party=` line. Tab-separated: the person value contains spaces. */
 export function renderParty(p) {
     const person = p.person ?? "(not recorded)";
-    return [`party=${p.kind}`, person, p.checkout, p.ts, p.circle].join("\t");
+    return [`party=${p.kind}`, person, p.checkout, p.ts, p.circle]
+        .map(flattenField)
+        .join("\t");
 }
 /**
  * The Turn count of the session whose history file is `historyFile`.
@@ -220,6 +247,10 @@ export function renderParty(p) {
  * genuine chronology: scope by checkout, sort by `ts`, take the first
  * `session_start` naming this history file, count `turn_start` from its stamp
  * on. `turns=0` is a real figure and reaches the ok branch.
+ *
+ * A `turn_start` with no readable `ts` cannot be placed against that anchor, so
+ * it is not counted. It comes back as `unstamped` rather than vanishing, so a
+ * count that is short by a line is a count that says it is short by a line.
  */
 export function countTurns(text, historyFile, checkout) {
     const { lines, malformed } = parseLog(text);
@@ -242,12 +273,24 @@ export function countTurns(text, historyFile, checkout) {
         return { ok: false, why: "anchor-without-timestamp", historyFile, malformed };
     }
     let turns = 0;
+    let unstamped = 0;
     for (const e of scoped) {
         if (e.line.event !== "turn_start")
             continue;
-        if (e.ms === null || e.ms < anchor.ms)
+        if (e.ms === null) {
+            unstamped++;
+            continue;
+        }
+        if (e.ms < anchor.ms)
             continue;
         turns++;
     }
-    return { ok: true, turns, historyFile, since: anchor.line.ts, malformed };
+    return {
+        ok: true,
+        turns,
+        unstamped,
+        historyFile,
+        since: anchor.line.ts,
+        malformed,
+    };
 }

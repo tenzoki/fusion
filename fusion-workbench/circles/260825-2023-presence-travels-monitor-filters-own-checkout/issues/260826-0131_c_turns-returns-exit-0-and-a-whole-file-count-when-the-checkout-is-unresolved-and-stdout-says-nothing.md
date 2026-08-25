@@ -30,3 +30,28 @@ The consequence lands on the plan's step 5, which instructs the four Turn-count 
 **Fix direction.** Give `turns` a `scope=` key on stdout, taking `checkout` in the ordinary case and `all-checkouts` (or equivalent) when the identifier did not resolve, and state it in the `bin/fusion-events` header beside `scope=pulled`. Whether that case should also leave exit 0 is a second question: a distinct exit code would let a call site branch without parsing, and would match the "never a smaller number" principle more closely than a key does. State the choice in the header either way.
 
 **Scope.** `hooks/lib/events-query.ts`, `hooks/events-query.ts`, `bin/fusion-events`, and the four call sites plan step 5 has yet to write.
+
+---
+Resolved: `turns` now prints a `scope=` key on stdout — `checkout` in the ordinary case, `all-checkouts` where the checkout identifier did not resolve and every line in the merged file was therefore counted. It is printed on the exit-4 branch too, where the count could not be taken but the scope the search ran over still was, and it is printed **last**, so the two lines a caller was written against are byte-identical to before and a caller that ignores the key behaves exactly as it did.
+
+The record's second question — whether the case should also leave exit 0 — was answered by the dispatch, and the header now carries the answer rather than leaving it to be inferred. **The exit stays 0.** The count *was* taken; what was missing was any statement of what it was taken over, and a sixth exit code would change the behaviour of every caller already written against this helper in order to say something a key says without changing anything. A call site that must not accept a widened count reads the key and treats `all-checkouts` as unavailable, which is what plan step 5 needs and could not have.
+
+Changed: `hooks/events-query.ts` (the `scope` binding in `turns()`, written at both exits, with the record cited at it), `bin/fusion-events` header (a section of its own, `The scope= key`, beside `scope=pulled`, and the exit-0 row, which now admits a count taken over `scope=all-checkouts` as measured).
+
+Measured from the work tree:
+
+```
+$ ./bin/fusion-events turns
+turns=2
+history_file=circles/260825-2023-.../history/260825-2123-orchestrator-session.md
+scope=checkout
+EXIT=0
+
+$ FUSION_EVENTS_PERSON='' FUSION_EVENTS_CHECKOUT='' FUSION_EVENTS_IDENTITY_EXIT=5 node hooks/dist/events-query.js turns
+fusion-events: fusion-identity reports this is not a git work tree, so no person is owed — and the checkout identifier did not resolve either.
+fusion-events: this checkout could not be identified, so every line is counted, as before C4. stdout carries scope=all-checkouts.
+turns=2
+history_file=circles/260825-2023-.../history/260825-2123-orchestrator-session.md
+scope=all-checkouts
+EXIT=0
+```

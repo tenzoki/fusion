@@ -22,7 +22,10 @@
  *   3. **It receives the identity rather than obtaining it.** `PERSON` and
  *      `CHECKOUT` arrive in the environment from `bin/fusion-identity`, which
  *      the wrapper runs. Identity is obtained in exactly one place in the tree,
- *      and that place is not here.
+ *      and that place is not here. What *is* here is the one translation of
+ *      that helper's exit vocabulary into what this program does about it:
+ *      `resolveIdentity` below, which every branch reads instead of testing a
+ *      code of its own.
  *
  * ## Reasons go to stderr, values to stdout
  *

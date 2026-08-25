@@ -31,3 +31,8 @@ identity.person null     -> other_people=null other_checkouts=4
 **Fix direction.** Correct the comment at `hooks/lib/events-query.ts:188-190` to say what is counted — further checkouts of the reading person, plus every unclassifiable party when the reading person could not be read — and add one clause to the exit-4 row of the `bin/fusion-events` header saying the key widens there.
 
 **Scope.** `hooks/lib/events-query.ts`, `bin/fusion-events` header, and the renderer plan step 6 has yet to write.
+
+---
+Resolved: the doc comment on `PresenceReport.otherCheckouts` now says what is counted — the reading person's **further checkouts**, and, where the reading person could not be read, every other checkout, because none of them can then be told from one of the reader's own — and names `otherPeople === null` as exactly when the wider reading applies. The exit-4 row of the `bin/fusion-events` header gained the same clause, so a skill body rendering both branches (plan step 6) reads it in the one place the header is authoritative.
+
+No code change. The record's finding stands unaltered: the code matches the plan and the comment did not match the code.

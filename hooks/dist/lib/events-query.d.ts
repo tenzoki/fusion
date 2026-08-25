@@ -126,7 +126,17 @@ export interface PresenceReport {
      * printed rather than printed as a zero.
      */
     otherPeople: number | null;
-    /** Distinct other checkouts, whoever they turn out to belong to. */
+    /**
+     * Distinct **further checkouts of the reading person** — and, where the
+     * reading person could not be read, every other checkout, because none of
+     * them can then be told from one of the reader's own.
+     *
+     * The key therefore denotes a wider set exactly when `otherPeople` is `null`,
+     * which is the state `bin/fusion-events` reports as exit 4 and whose header
+     * says so beside that row. Two readings of one key is deliberate — the
+     * alternative is a figure that silently changes meaning — and it is the whole
+     * of the difference.
+     */
     otherCheckouts: number;
     malformed: number;
 }
@@ -164,6 +174,17 @@ export type TurnsResult = {
 } & ({
     ok: true;
     turns: number;
+    /**
+     * `turn_start` lines carrying no readable `ts`. They cannot be placed
+     * against the anchor, so they are not in `turns` — and they are returned
+     * rather than dropped, per `parseLog`'s rule above: a skipped line that
+     * nobody counts is the silent under-report this module exists to remove.
+     *
+     * Kept apart from `malformed`, which counts lines that were not a JSON
+     * object at all. These are well-formed objects that named a Turn and
+     * could not say when, and the two are different facts about the log.
+     */
+    unstamped: number;
     historyFile: string;
     since: string;
 }
@@ -192,5 +213,9 @@ export type TurnsResult = {
  * genuine chronology: scope by checkout, sort by `ts`, take the first
  * `session_start` naming this history file, count `turn_start` from its stamp
  * on. `turns=0` is a real figure and reaches the ok branch.
+ *
+ * A `turn_start` with no readable `ts` cannot be placed against that anchor, so
+ * it is not counted. It comes back as `unstamped` rather than vanishing, so a
+ * count that is short by a line is a count that says it is short by a line.
  */
 export declare function countTurns(text: string, historyFile: string, checkout: string | null): TurnsResult;

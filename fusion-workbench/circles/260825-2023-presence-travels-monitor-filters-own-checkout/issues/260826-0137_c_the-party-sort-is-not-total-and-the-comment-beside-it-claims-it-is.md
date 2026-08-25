@@ -33,3 +33,15 @@ input order 1,0 -> Beta <b@x>  | Alpha <a@x>
 **Fix direction.** Add `person` as the last tie-break, matching the key the map is built on: `a.checkout.localeCompare(b.checkout) || (a.person ?? "").localeCompare(b.person ?? "")`. One clause, and the comment becomes true.
 
 **Scope.** `hooks/lib/events-query.ts`.
+
+---
+Resolved: the tie-break now falls through to `person` after `checkout`, which is the whole of the pair the party map is keyed on, so the order is total and the comment beside it is true. The comment was rewritten at the same time to name the key rather than to claim the property, and to say what the old form fell back on — position in the file, which is the one input this module exists to stop reading.
+
+Measured with the record's own fixture, two `session_start` lines sharing one timestamp and one checkout and carrying two persons:
+
+```
+input order 0,1 -> Alpha <a@x> | Beta <b@x>
+input order 1,0 -> Alpha <a@x> | Beta <b@x>
+```
+
+Before the change the second line was the first reversed. Plan step 10 can now assert order against a comment that holds.

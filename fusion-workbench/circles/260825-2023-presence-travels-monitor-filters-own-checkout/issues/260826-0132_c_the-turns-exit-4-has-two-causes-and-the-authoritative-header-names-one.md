@@ -36,3 +36,10 @@ countTurns('{"event":"session_start","checkout":"aaaa1111","history_file":"H"}',
 **Fix direction.** Add the second cause to the exit-4 row in `bin/fusion-events`: the `session_start` naming that history file carries no readable `ts`, so no window can be opened. Both causes share what the caller does, which is the reasoning the header already gives for exit 3 naming an outcome rather than a cause, so one code for two causes is right and only the table is short.
 
 **Scope.** `bin/fusion-events` header.
+
+---
+Resolved: the exit-4 row of the `bin/fusion-events` header now names both causes — no `session_start` among the counted lines names that history file, **or** the one that does carries no readable `ts`, so no window can be opened — and states that they share what the caller does, which is why one code carries both, citing the same reasoning the exit-3 row already gives two lines below. The row also now says which keys are printed on that branch (`history_file=` and `scope=`) and which is not (`turns=`).
+
+No code change, per the record: the two causes are correctly one code, and the header rather than the program was the defect.
+
+**One residual, named rather than fixed.** The same omission stands in the plan's `## API Changes` exit table (`planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`). `planning/` was outside this task's file scope, and the record's own `**Scope.**` line names only the header. The header is the authoritative surface and is now complete; the plan's table is a description of the header and is one row short of it.
