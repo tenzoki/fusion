@@ -89,7 +89,7 @@ flowchart TD
 
 ## Implementation Steps
 
-1. **Measure whether a hook can obtain the Claude Code session identifier**
+1. [DONE] **Measure whether a hook can obtain the Claude Code session identifier**
    - Executor: `analyst`
    - Files: `$OUT_ANALYSIS/YYMMDD-HHMM-can-a-hook-obtain-the-session-identifier.md`
    - Changes: answer three questions by measurement, each with the command and its output in the report. (a) Does the SessionStart hook's stdin payload carry a `session_id` field, and is it non-empty? (b) Can a SessionStart hook put a value in front of the model, and does the model reproduce it verbatim when asked? The channel to test is plain stdout, which `CLAUDE.md` records as `additionalContext`, and `hookSpecificOutput.systemMessage`, which `hooks/session-start.ts` already uses for the user. (c) Is `session_id` non-empty on PreToolUse and PostToolUse at run time? Both hooks declare the field (`hooks/guard.ts` `interface HookInput`, `hooks/tracker.ts` `interface HookInput`) and neither reads it. **Method: a throwaway project created outside this repository**, with its own `.claude/settings.json` declaring hooks that write their stdin to a file, driven with `claude -p`. Instrument nothing in this repository: the installed hooks are pinned for the session and a change here would not be the thing measured. The report states, for each of (a), (b) and (c), the answer and what it permits. It proposes nothing.
@@ -103,14 +103,14 @@ flowchart TD
    - Surface: none bounded. `bin/` and `hooks/lib/*.ts` fall outside all four bounds; only `hooks/lib/__tests__/**.ts` is counted, and that is step 10.
    - Dependencies: none.
 
-3. **Every emitted line names its writer**
+3. [DONE] **Every emitted line names its writer**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`
    - Changes: in `### 2. Structured Event Log`, add `person` and `checkout` to the schema example and state in one sentence that both stand on **every** line, with their values read once at Setup from `bin/fusion-identity` behind `[ -x ]` and composed nowhere else, per `rules/fusion-workbench-conventions.md` `### Who filed it`. In Setup step 2, add the resolution of that pair to the helper calls already made there, held for the session beside the Turn budget. In Setup step 8, carry both fields in the `session_start` example. In the `Cleanup` step, carry both in `session_end`. In `**Emitting events:**`, state that the single `echo` carries them. Say plainly what an unresolved half means: the field is **absent rather than empty**, which is the same rule the record templates already follow, and an absent `checkout` reads as this checkout's own to every reader.
    - Surface: `agents/*.md`, estimated +1 100 to +1 400 bytes of the 3 007 available. Step 5 returns bytes to the same surface.
    - Dependencies: none.
 
-4. **`/fusion:setup` emits the same line**
+4. [DONE] **`/fusion:setup` emits the same line**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`
    - Changes: in Step 5, carry `person`, `checkout` and `detail` on the `session_start` line, taking the first two from the values Step 0i already read and stating that they are held for this step. The `detail` field closes `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md`; the contract it satisfies is authored in step 3 and is cited, never restated.
@@ -131,7 +131,7 @@ flowchart TD
    - Surface: `skills/*/SKILL.md`, estimated +700 to +900 bytes across the two files, against the 1 923 available plus whatever step 5 returns.
    - Dependencies: step 2, which supplies `presence`.
 
-7. **The monitor reads its own checkout**
+7. [DONE] **The monitor reads its own checkout**
    - Executor: `coder`
    - Files: `bin/monitor`
    - Changes: at `/api/dashboard`, parse **every** line rather than the last `MAX_EVENTS`, drop the lines whose `checkout` is present and differs from this checkout's, sort what remains on the raw `ts` string, and then take the last `MAX_EVENTS`. Sorting on the raw string is correct for the same reason `_read_warnings` already gives for the guard log: the emit convention writes a fixed-width UTC stamp, so lexical order is chronological order, a line missing `ts` sorts oldest rather than raising, and the sort is stable. Read this checkout's identifier from `BASE_DIR/.checkout-id` as a plain file read, and **never mint it**: minting belongs to `bin/fusion-identity`, and a dashboard process must not create workbench state. An unreadable identifier keeps every line, which is today's behaviour exactly. One change repairs all four false readings, because `_parse_mode`, `computeETA`, the paired-duration average and the Event Log panel are all downstream of the one array. Add a comment naming the four and the record that measured them.
@@ -145,7 +145,7 @@ flowchart TD
    - Surface: `agents/*.md`, estimated +150 bytes.
    - Dependencies: step 3.
 
-9. **The reader's repair is authored once**
+9. [DONE] **The reader's repair is authored once**
    - Executor: `coder`
    - Files: `rules/workbench-tracking.md`
    - Changes: extend `## The event log carries a union merge driver` where it already states that the repair belongs to the reader. Name what the repair is after this Circle, in two clauses: every line carries the checkout that wrote it, and a reader scopes by that field before it sorts by `ts`. Name the rule that an absent identifier reads as the reading checkout's own, and name the cost the user accepted with it, that another checkout's pre-C4 lines already merged in read as this checkout's. Name the three readers by path and say which of them keeps other checkouts and which drop them.

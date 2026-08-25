@@ -465,10 +465,10 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
   ```bash
   [ -f ./fusion-workbench/orchestrator-events.jsonl ] || touch ./fusion-workbench/orchestrator-events.jsonl
   ```
-- Append a `session_start` event (one line, appended — never overwrite the file). It carries `history_file`, the path from Step 4:
+- Append a `session_start` event (one line, appended — never overwrite the file). It carries `person` and `checkout`, held from Step 0i's read and not read again; `history_file`, the path from Step 4; and `detail`, the session Directive and mode. Their contract, the unresolved-half rule included, is authored in `agents/orchestrator.md` `### 2. Structured Event Log` and not restated here.
   ```bash
   TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
-  echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the Step 4 path>\"}" >> ./fusion-workbench/orchestrator-events.jsonl
+  echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"person\":\"<PERSON>\",\"checkout\":\"<CHECKOUT>\",\"history_file\":\"<the Step 4 path>\",\"detail\":\"<Directive and mode>\"}" >> ./fusion-workbench/orchestrator-events.jsonl
   ```
 
 - Overwrite `./fusion-workbench/orchestrator-live.md` with the real session Directive and snapshot counts (replace the placeholder `Initializing` line). The dashboard is now live for the monitor.
