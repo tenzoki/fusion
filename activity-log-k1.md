@@ -24,7 +24,15 @@
 
 ## High-level arc
 
-- **08-17 Mon** [6-19] — 51 items; workbench, release, circle
+- **08-25 Tue** [7-17] — 26 items; four, attribution, records
+- **08-24 Mon** [6-22] — 157 items; step, coder, close
+- **08-23 Sun** [6-29] — 101 items; workbench, turn, coder
+- **08-22 Sat** [8-29] — 104 items; workbench, does, coder
+- **08-21 Fri** [10-27] — 115 items; circles, reply, coder
+- **08-20 Thu** [7-28] — 133 items; coder, gate, rules
+- **08-19 Wed** [7-29] — 59 items; coder, record, citation
+- **08-18 Tue** [7-24] — 75 items; record, circle, gate
+- **08-17 Mon** [4-22] — 78 items; docs, workbench, guard
 - **08-16 Sun** [7-28] — 115 items; review, rules, guard
 - **08-15 Sat** [7-26] — 205 items; review, records, orchestrator
 - **08-14 Fri** [8-28] — 131 items; records, circle, review
@@ -59,7 +67,8 @@
 
 | Week of (Mon) | Days active | Avg active hours/day |
 |---------------|-------------|----------------------|
-| 2026-08-17    | 1           | 13.9                  |
+| 2026-08-24    | 2           | 13.0                  |
+| 2026-08-17    | 7           | 19.9                  |
 | 2026-08-10    | 7           | 19.4                  |
 | 2026-08-03    | 7           | 14.8                  |
 | 2026-07-27    | 4           | 7.8                  |
@@ -1971,10 +1980,14 @@
 | 04:27 | docs: the v10 upgrade note tells a project what to do about its configuration file | g |
 | 04:30 | step 12 migration note for consuming projects | h |
 
-## 2026-08-17 (Mon) [6-19]
+## 2026-08-17 (Mon) [4-22]
 
 | Time | Topic | Src |
 |------|-------|-----|
+| 04:00 | step 11 shipped text says what the guard is | h |
+| 04:09 | docs: the shipped text says the guard decides nothing | g |
+| 04:27 | docs: the v10 upgrade note tells a project what to do about its configuration file | g |
+| 04:30 | step 12 migration note for consuming projects | h |
 | 05:30 | step 13 decision records annotated | h |
 | 05:47 | chore(decisions): nine records follow the code, and one is deliberately left alone | g |
 | 08:45 | curator run | h |
@@ -2012,21 +2025,854 @@
 | 16:13 | the reconcilers verdict vocabulary has no case for a directive that is reachable but deliberately not reached | i |
 | 16:18 | reconciliation | h |
 | 16:22 | docs(workbench): the second reconciliation, and the verdict vocabulary that has no word for this Circle | g |
-| 16:39 | Circle record: 260816-1741-guard-becomes-observation-only | k |
 | 16:40 | docs(circle): the guard Circle closes bounded, with the clause it deliberately did not reach | g |
 | 16:43 | playmaker orchestrator phase4 | h |
-| 16:45 | portfolio | w |
 | 16:46 | docs(portfolio): the portfolio after a bounded closure, with an empty slot and two warnings | g |
 | 16:49 | docs(workbench): the session closes with its budget, its coverage and what it got wrong | g |
 | 18:21 | orchestrator session | h |
-| 18:26 | orchestrator live | w |
 | 18:27 | chore(workbench): the session that opened and closed without a Directive | g |
 | 18:36 | reconciliation | h |
 | 18:36 | the three edge verdict has no case for a session that stated no directive and two of its three edges are then unevaluable | i |
 | 19:06 | chore(workbench): the reconciliation the plan's own closure condition had been waiting for | g |
 | 19:12 | chore(workbench): the archive pass that had to be narrowed twice before it was safe | g |
 | 19:25 | curator run | h |
+| 19:50 | coder regate after curator edits | h |
+| 19:52 | chore(workbench): the two session records the normative pass produced | g |
+| 19:52 | docs: the activity log this project never had | g |
+| 19:52 | docs: three surfaces stop deriving an emission list from a property that stopped holding | g |
+| 19:52 | test: three baselines re-approved, and the third was caused by the note explaining the second | g |
+| 20:25 | chore(release): version 10.0.2 | g |
+| 20:37 | orchestrator session | h |
+| 21:10 | the hook sentences cite fusions own workbench ids and a fusion commit hash into a consuming projects session | i |
+| 21:19 | coder hook sentences drop fusion ids | h |
+| 21:22 | fix(hooks): the two model-facing sentences stop citing fusion's own records | g |
+| 21:30 | coderev turn 1 range 82a860d bd2db5c | r |
+| 21:30 | the git add prohibition s restated justification holds for u alone and is false for the other three shapes | i |
+| 21:31 | nothing stops a fusion workbench id returning to an emitted hook sentence because the lint reads comment lines only | i |
+| 21:32 | the staging sentences source comment attributes f38f37d to git add a while the same file attributes it to u | i |
+| 21:38 | coder staging sentence per shape justification | h |
+| 21:40 | fix(hooks): each forbidden staging shape gets the justification that holds for it | g |
+| 21:47 | coderev turn 2 range bd2db5c 6b6436d | r |
+| 21:47 | the staging drift wrapper header still carries the re opens f38f37d wording corrected twice in the typescript | i |
+| 21:47 | the staging sentences completeness claim leaves the quoted pathspec glob unaccounted for | i |
+| 21:55 | coder quoted glob clause and wrapper header | h |
+| 22:00 | fix(hooks): the fourth forbidden staging shape reaches a clause, and the wrapper header follows | g |
+| 22:07 | a closed records resolution note states a judgement head reversed and every citation points backward | i |
+| 22:07 | reconciliation | h |
+| 22:15 | how does a closed defect record point at a later reversal of the judgement in its resolution note | d |
+| 22:30 | coder revised by footer | h |
+| 22:32 | feat(rules): a closed defect record can point at a later reversal of its own reasoning | g |
+
+## 2026-08-18 (Tue) [7-24]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 07:08 | orchestrator session | h |
+| 07:09 | chore(release): version 10.1.0 | g |
+| 07:15 | analyst fusion internal identifiers reaching consumers | h |
+| 07:15 | four shipped surfaces use a real fusion circle directory name as the format example | i |
+| 07:15 | preventing fusion internal identifiers from reaching a consuming project | a |
+| 07:15 | the orchestrator prompt names a fusion record inside the instruction for what to report to the user | i |
+| 07:19 | docs(analysis): a containment gate, because neither shape nor resolution can decide a foreign identifier | g |
+| 07:33 | coder sentence identifier containment gate | h |
+| 07:36 | test(hooks): an emitted sentence may carry only identifiers its own input supplied | g |
+| 07:45 | the registry completeness parse misses an aliased and a namespace import so a named builder still escapes | i |
+| 07:46 | the containment headers nothing authored in the source claim is wider than the relation it enforces | i |
+| 07:47 | the hex exclusions stated miss rate is 1 in 700 and the arithmetic gives 1 in 960 | i |
+| 07:48 | coderev turn 1 range 1dc062d 33645a2 | r |
+| 07:59 | coder containment gate three review findings | h |
+| 08:05 | fix(hooks): the completeness assertion reads the imported name, and refuses what it cannot read | g |
+| 08:14 | reconciliation | h |
+| 08:14 | what covers the plugin repo shaped exempt surface record now that the convention rule was not chosen | d |
+| 10:30 | coder exempt surface split | h |
+| 10:31 | fix(rules): the exempt-surface list states a criterion instead of universalising one repository's paths | g |
+| 10:32 | docs(workbench): the session that shipped the fix and then gated the channel it came through | g |
+| 14:52 | gate options name the category of what is being decided instead of stating its content | i |
+| 14:52 | orchestrator session | h |
+| 15:04 | how does a circle record carry its directive once a spec exists and who may correct it before one does | d |
+| 15:10 | coder gate option substance clause | h |
+| 15:11 | fix(rules): a gate option names the thing it decides, not the kind of thing | g |
+| 15:12 | does the shapers third mode keep the name portfolio activation once it also corrects an active circles directive | d |
+| 15:12 | planner circle record directive pointer | h |
+| 15:12 | the circle records directive becomes a pointer and gains a writer | p |
+| 15:12 | the dispatch parameter tables prompt line citations are resolved by no gate and two are already ten lines off | i |
+| 15:12 | the next skills activation handoff tells the orchestrator to read the circle records directive and no orchestrator step does | i |
+| 16:33 | coder circle record directive pointer | h |
+| 16:37 | no gate resolves a path line citation and thirteen drifted in a single change | i |
+| 16:37 | the next skill still asserts a directive read the orchestrator does not perform and the precedence is unstated | i |
+| 16:38 | feat(circles): the record's Directive is a pointer once a spec exists, and prose gains a writer | g |
+| 17:03 | coder v10 2 release material and two fixture reapprovals | h |
+| 17:59 | coder v10 2 renumbering swept and golden regenerated | h |
+| 18:03 | chore(release): version 10.2.0 | g |
+| 20:50 | curator run | h |
+| 21:04 | the cleanup skills consolidation measurement carries a flag name where a shell variable belongs | i |
+| 21:10 | coder regenerate rules emission golden | h |
+| 21:14 | chore(workbench): the curator run, its regeneration log, and a defect in the step that reported them | g |
+| 21:14 | docs(rules): the shaper citation follows the line it names | g |
+| 21:24 | orchestrator session | h |
+| 22:10 | a defect record cites a verification run that no copy of the code it names can produce | i |
+| 22:12 | should the decision records status field exist at all now that the circle records has been removed | d |
+| 22:14 | docs(decisions): the decision record's own Status field gets the question the Circle record's already had | g |
+| 22:14 | fix(workbench): a reported typo that no copy of the file has ever carried | g |
+| 22:27 | the correction note that closed a fabricated measurement carries a false universal of its own | i |
+| 22:28 | the status field decision record miscounts its own measurement in three places | i |
+| 22:30 | reconciliation | h |
+| 22:40 | fix(workbench): the session corrects the two errors its own reconciler found in it | g |
+| 22:48 | the status field record still carries three figures on the criterion it replaced | i |
+| 22:49 | the only correction block quotes two measurements without the head they were taken at and both are false at the commit that carries them | i |
+| 22:54 | fix(workbench): a figure about the tree is pinned to a HEAD, because writing it moves the tree | g |
+| 22:56 | chore(workbench): the session record for three Turns and four self-inflicted defects | g |
+| 23:01 | orchestrator session | h |
+| 23:43 | the answered precondition decision names a planner section that agents planner md does not have | i |
+| 23:55 | t3 where this circle stops | h |
+| 00:01 | an executor reached for git stash while two were dispatched in parallel | i |
+| 00:10 | t4 reference resolution baseline re approval note | h |
+| 00:13 | feat(rules): a tracked workbench gets its own rule file, and a plan's stopping condition gets a reader | g |
+| 00:23 | t2 status field leaves the decision record template | h |
+| 00:28 | refactor(rules): a decision record states its state once, on its filename | g |
+| 00:28 | the project language rule names a record status pairing that no record kind still has | i |
+| 00:38 | the gitignore comment still says the conventions file states the split that moved out of it | i |
+| 00:38 | two shipped surfaces still say four topics after the conventions header table grew to five | i |
+| 00:39 | the archive skill says it reads the new rule and no step in its process reads it | i |
+| 00:39 | the new plan section is neither mandatory nor guarded against the unfilled template stub | i |
+| 00:40 | phase 4 step 2b emits gate hit with no fixed reason so the measurement its decision reserves cannot be made | i |
+| 00:40 | the implemented note labels the analyst dispatch total as the always on rule set | i |
+| 00:41 | the decision record status removal got none of the three migration surfaces the circle record removal got | i |
+| 00:41 | the status position carves an exception for a record you are transitioning and never says what it is | i |
+| 00:42 | the move turned an adjacent duplicate enumeration of the root entries into a cross file one | i |
+| 00:42 | the staging drift comment repoint left two ragged lines and ships in dist | i |
+| 00:44 | coderev turn 1 tracked workbench move plan stopping section status removal | r |
+
+## 2026-08-19 (Wed) [7-29]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 07:28 | chore(workbench): the Turn-1 record, its review, and twelve defects the pass produced | g |
+| 07:47 | u4 consolidation pass | h |
+| 07:56 | the v10 2 migration note still states the status position with the qualifier the rule just dropped | i |
+| 07:57 | chore(workbench): the Turn-2 record and the one finding left open on judgement | g |
+| 07:57 | fix(rules): the archive skill actually reads the rule it was the named consumer of | g |
+| 08:21 | the status qualifier closure names one remaining site and a shipped agent prompt still carries it | i |
+| 08:22 | the fifth source root call site drops the diagnostic four siblings carry and reopens a closed defect | i |
+| 08:23 | the installed base premise behind leaving the migration gap open is contradicted by install shs default ref | i |
+| 08:24 | the stub guard holds only for a section that is nothing but the stub and the closure claims otherwise | i |
+| 08:25 | the fixed gate reason string is absent from the observability row a grep builder reads | i |
+| 08:26 | the fold replaced a four name exclusion list with a phrase the cited tree does not use | i |
+| 08:27 | the fold note credits the header table with carrying verbatim what the rule files own lede carries | i |
+| 08:28 | the stopping section is made mandatory for plans whose only stated reader never runs | i |
+| 08:32 | coderev turn 2 ten closures carried scope and the baseline re approval | r |
+| 08:36 | the status field closure answers one of the defects two halves and the templates footer stub stands | i |
+| 08:37 | an untracked zero byte test txt sits at the repository root and no ignore rule covers it | i |
+| 08:40 | reconciliation | h |
+| 08:41 | chore(workbench): the session closes coherent, and four of its own closure notes did not | g |
+| 11:22 | status qualifier leaves the orchestrator prompt | h |
+| 11:27 | fix(agents): the Status position stops excluding the only case an agent meets | g |
+| 11:47 | chore(release): version 10.3.0 | g |
+| 14:00 | reconciliation circles | h |
+| 14:00 | reconciliation decisions | h |
+| 14:00 | reconciliation shared issues | h |
+| 15:11 | a bare stamp citation is ambiguous when two records share it and one turn log resolves to the wrong record | i |
+| 15:11 | a session history file is left at status in progress after its session ended | i |
+| 15:11 | the archive citation filter reads shipped text and never the workbench so archiving dangles citations invisibly | i |
+| 15:12 | chore(workbench): three reconciliation passes, and the finding that the backlog is placed wrong rather than stale | g |
+| 16:45 | shaper four constraints on deep change | h |
+| 16:45 | what defines the citation gates corpus and what happens when a marker move changes it | d |
+| 17:32 | playmaker direct dispatch | h |
+| 20:06 | orchestrator session | h |
+| 20:16 | does the citation gate judge the stamp name class which scanrecordcitations does not read | d |
+| 20:16 | four constraints on deep change | p |
+| 20:16 | planner four constraints on deep change | h |
+| 20:29 | chore(circles): a Circle for the four constraints, its plan, and the two questions the plan refused to answer | g |
+| 20:38 | coder four write tools through the hook | h |
+| 20:42 | coder pin the compiler and assert the committed artifact | h |
+| 20:44 | coder deletion annotation form | h |
+| 20:45 | coder repair the stale marker citations | h |
+| 20:57 | coder consolidation after five concurrent steps | h |
+| 21:01 | coder regenerate the rules emission golden | h |
+| 21:04 | feat(hooks): the shipped artifact is asserted against its source, and four write tools reach the hook | g |
+| 22:13 | coder repair the wrong store citations | h |
+| 22:13 | the citation grammar cannot express a record inside archive so a corrected archive path still scans as wrong store | i |
+| 22:27 | a plan step can state a narrow reading that does not exist as a half measure and nothing asks | i |
+| 22:35 | coder findrecord resolves a record inside an archive sweep | h |
+| 22:38 | fix(hooks): a citation can name a record inside an archive sweep, and forty-two stop being wrong | g |
+| 22:50 | a decision records cross reference names a defect record that was never filed and the intended target is not recoverable | i |
+| 22:50 | coder resolve the citations that resolve to nothing | h |
+| 23:00 | circledirs did not learn the archive prefix that findrecord did so an archived circle directory stays unexpressible | i |
+| 23:00 | fix(workbench): every citation in the live surfaces resolves, or is a statement that means to be literal | g |
+| 23:15 | coder repair the stamp name citations that name nothing | h |
+| 23:21 | a citation of a circle record produces no token so the gate cannot see the form the repair adopted | i |
+| 23:21 | fix(workbench): the stamp-name citations resolve, and the gate's blind spot is named before it is armed | g |
+| 23:40 | coder the citation grammar learns the circle record form | h |
+| 05:24 | fix(hooks): the citation grammar learns the Circle-record form, and the blind spot is measured rather than argued | g |
+| 05:30 | coder repair what the circle record grammar made visible | h |
+| 05:30 | twenty six citations in the corpus are statements rather than pointers and no exemption expresses that | i |
+
+## 2026-08-20 (Thu) [7-28]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 07:13 | coder the citation scanner learns the fenced code block | h |
+| 07:18 | feat(hooks): a citation inside a fenced code block is exempt, and an unclosed fence exempts nothing | g |
+| 07:18 | fix(workbench): the newly visible Circle-record citations are repaired, and the corpus question is settled by measurement | g |
+| 07:27 | coder the twenty four statement citations are rewritten as addresses | h |
+| 07:30 | fix(workbench): a claim no longer spells an address, and the corpus reaches zero without an allowlist | g |
+| 07:42 | coder arm the blocking workbench citation gate | h |
+| 07:48 | feat(hooks): the workbench's own citations are held by a blocking gate, and it reddened on arrival | g |
+| 08:05 | coderev four constraints on deep change | r |
+| 08:05 | neither new blocking gate is named on any shipped surface | i |
+| 08:05 | the artifact case of the dist gate carries no toolchain guard so a mismatch reddens it with the wrong remedy | i |
+| 08:05 | the circle records active spec plan field spells an exact marker that the gate will redden on the plans next transition | i |
+| 08:05 | the citation gates corpus excludes only archive so a frozen copy tree would enter a blocking gate | i |
+| 08:05 | the new gate says the sibling pin was re approved four times and the file carries fourteen notes | i |
+| 08:05 | the plan is still status draft under the open marker with nine of its ten steps done | i |
+| 08:05 | the plan names a gitignored lockfile as one of the two places the compiler is pinned | i |
+| 08:05 | the plans node types residual states a grep result that does not reproduce | i |
+| 08:05 | the session bookkeeping froze at the planning step while ten commits landed | i |
+| 08:05 | the step that spent the always on rule budget reported green without the figure its siblings report | i |
+| 08:05 | the token for token case restates gate kinds as a literal and nothing catches the next drift | i |
+| 08:05 | three issues resolved inside this range still carry the open marker and no resolved footer | i |
+| 08:05 | two decisions this circle realised in code are still answered with no implemented citation | i |
+| 08:22 | chore(circles): the Circle's own tracking catches up, and its new gate caught the orchestrator doing it | g |
+| 08:30 | reconciliation | h |
+| 09:06 | the citation gates corpus has no planning clause so an open plan is a live surface outside the gate | i |
+| 09:06 | the deletion annotation form was not applied to the surviving reference of the circle it uses as its worked example | i |
+| 09:06 | the three per task surfaces disagree with each other and one field re dangled at the plan transition | i |
+| 09:16 | chore(circles): the reconciliation before closure, and the gate catches a second party | g |
+| 09:17 | the first plan written after the stopping section was made mandatory does not carry it | i |
+| 10:44 | a gate that a plan carries its stopping section | h |
+| 10:45 | coder the citation gates corpus is corrected in both directions | h |
+| 10:51 | coder three mechanism defects in the dist and citation gates | h |
+| 11:18 | fix(hooks): the Circle closes its own findings instead of leaving them, and three gates get the corrections they needed | g |
+| 11:20 | coder the remaining text defects and the turns consolidation | h |
+| 11:26 | playmaker direct dispatch | h |
+| 11:33 | the playmaker writes the portfolio citing a history file it has not written yet | i |
+| 11:36 | chore(circles): the four-constraints Circle closes coherent, with what it did not reach written into the note | g |
+| 12:22 | fix(workbench): the archive filter's consequence is gone, removed by a change made for something else | g |
+| 17:47 | coder three decisions realised | h |
+| 17:55 | five agent prompts tell a top level run it holds askuserquestion and a headless one does not | i |
+| 17:57 | feat(rules): three answered decisions are realised, and the citation gate catches the orchestrator twice in one day | g |
+| 18:10 | coder v10 4 release material | h |
+| 18:15 | chore(release): version 10.4.0 | g |
+| 20:25 | chore(workbench): the session record, with the seven unreviewed commits named and four faults owned | g |
+| 20:51 | shaper style rules arrive and get measured | h |
+| 21:03 | orchestrator session | h |
+| 21:59 | chore(circles): the style-rules Circle is activated, and its first defect is one nobody may fix | g |
+| 22:41 | chore(circles): the activation defect is withdrawn on the user's judgement | g |
+| 22:49 | shaper spec style rules arrive and get measured | h |
+| 22:49 | spec style rules arrive and get measured | p |
+| 22:49 | the always on corpus is said to have grown by a file that is emitted to no agent | i |
+| 23:08 | analyst spec assessment | h |
+| 23:08 | assessment of the style rules spec | a |
+| 23:14 | can this circle close coherent when its fourth outcome has no measurement window | d |
+| 23:14 | does a foreclosure clause cost its own line and what caps the description field | d |
+| 23:14 | does the scope key go into the two long form writing profiles | d |
+| 23:14 | does this circle take the structural half of the verbosity record | d |
+| 23:14 | is claude md inside the corpus this circle repairs | d |
+| 23:14 | is the em dash ceiling read per file or across the always on corpus | d |
+| 23:14 | is the voice profile fallback capability in scope given 116 lines of hook test head room | d |
+| 23:14 | what threshold does the registered measurement use and which marker does each outcome earn | d |
+| 23:18 | feat(circles): the style-rules Circle gets its spec, an assessment that moves it, and eight decisions | g |
+| 23:24 | is the work tree the refresh source when setup runs in the plugins own repository | d |
+| 23:24 | plan style rules arrive and get measured | p |
+| 23:24 | planner plan style rules arrive and get measured | h |
+| 23:24 | where does the copied asset provenance record live | d |
+| 23:32 | feat(circles): the plan for the style-rules Circle, built for a bounded close | g |
+| 23:45 | coder prose metric becomes a program | h |
+| 23:48 | feat(bin): the prose em-dash counting rule becomes a program, and it corrects the table that defined it | g |
+| 23:54 | analyst prose register measurement protocol | h |
+| 23:54 | prose register measurement protocol | a |
+| 23:59 | feat(circles): the measurement protocol is registered before anything is repaired, and its exclusion is made symmetric | g |
+| 00:18 | fusion rules calls the diagram agents the five producers and its own case lists four | i |
+| 00:20 | coder setup stamps and offers a refresh | h |
+| 00:25 | feat(setup): a copied asset carries what it was given, so a stale copy stops being indistinguishable from an edit | g |
+| 00:35 | coder voice profile fallback says so on stderr | h |
+| 00:42 | feat(rules): the voice-profile fallback says so on stderr, and the record it was meant to close stays open | g |
+| 00:42 | the always on rule states two things about the voice profile fallback that stopped being true | i |
+| 00:49 | ontocoder chat profiles stop restating the caps | h |
+| 00:53 | fix(stilwerk): the chat profiles stop restating a number the rule owns, and the two languages agree again | g |
+| 01:00 | ontocoder writing profiles carry the handle | h |
+| 01:03 | fix(stilwerk): the writing profiles name their own role, and the step is not marked done because its criterion cannot be met | g |
+| 01:12 | ontocoder gloss and repunctuation of the four profiles | h |
+| 01:17 | fix(stilwerk): the German chat profile carries the English handle, closing step 6's unreachable criterion | g |
+| 01:17 | fix(stilwerk): the two chat profiles reach zero prose em-dashes, and no word changed | g |
+| 01:20 | coder workbench copies refreshed by the mechanism | h |
+| 01:24 | feat(workbench): the profile revisions reach this project through the mechanism, which is the point of them | g |
+| 01:40 | setup step 0e reads fusion src which does not survive the fresh shell every bash call gets | i |
+| 01:41 | setup step 0e has a sixth outcome absent that none of its five documented cases covers | i |
+| 01:42 | the voice profile fallback commit cites a golden that cannot observe the code it changed | i |
+| 01:43 | the provenance record is verified with a command whose answer depends on the cwd nobody states | i |
+| 01:44 | the authoritative prose metric has no test and the hook test surface has 43 of 2500 lines left | i |
+| 01:45 | chore(reviews): the Turn 1 review reads thirteen unreviewed commits and finds the refresh mechanism does not run | g |
+| 01:45 | coderev turn 1 prose metric setup step 0e and the repunctuation | r |
+| 01:46 | the four voice profiles are shipped text every agent loads and no lint gate reads them | i |
+| 01:47 | the english em dash entry lost its inline demonstration and the german one still breaks its own rule | i |
+| 01:48 | step 0e stamps a replace that may have failed and a declined offer becomes a permanent conflict | i |
+| 01:49 | the repunctuation records evidence paragraph carries a count that does not reconcile with its own table | i |
+| 02:05 | coder step 0e resolves its own root and names what is missing | h |
+| 02:05 | step 6s acceptance criterion names a file the step does not touch and is unreachable from inside it | i |
+| 02:08 | fix(setup): Step 0e resolves its own root, and the sixth outcome becomes two named ones | g |
+| 02:17 | coder three always on rule files reach their ceiling | h |
+| 02:24 | fix(rules): three always-on rule files reach their ceiling, and the pass returns bytes rather than spending them | g |
+| 02:42 | coder the conventions file reaches its em dash ceiling | h |
+| 02:42 | step 12s two acceptance criteria cannot both hold because 21 of the 115 em dashes are in table cells | i |
+| 02:47 | fix(rules): the conventions file reaches its ceiling, and four kept marks turn out to be load-bearing for a measured reason | g |
+| 02:50 | three of four section headings carry 58 citations and no gate notices when one is renamed | i |
+| 02:57 | coderev turn 2 the repunctuation and the repaired step 0e | r |
+| 02:57 | the repunctuation record claims three commas where five were made and one sits on a clause boundary | i |
+| 02:58 | six headings were renamed in the earlier commit of the same turn with no census and two citations are now dead | i |
+| 02:59 | the flattery specimen lost the em dash that is the specimen while its sibling two lines below kept one | i |
+| 03:00 | four replacements stack a second colon in one sentence which the pass states it avoided | i |
+| 03:01 | the decision marker table loses its parallelism at one of five rows | i |
+| 03:02 | step 0es repair guards one of its three blocks and its done report omits the outcome that guard emits | i |
+| 03:07 | chore(reviews): gate R1 answers its question — the two content defects did not recur, the evidence defect did | g |
+| 03:16 | coder the opening sentence test and the gate clauses cost | h |
+| 03:16 | feat(rules): the fact-first requirement gains the condition under which a sentence fails it | g |
+| 03:17 | feat(rules): a foreclosure takes its own line, and the arithmetic that makes it fit is written out | g |
+| 03:22 | coder records state the always on set as a derivation | h |
+| 03:31 | fix(workbench): the records that describe the always-on corpus stop listing it and start deriving it | g |
+| 03:31 | fix(workbench): three records gain a note, and not one existing sentence moves | g |
+| 03:35 | coder curator long form enumeration | h |
+| 03:42 | fix(agents): the curator states which of its outputs take the long-form voice, and now all eight prose prompts do | g |
+| 03:50 | coder the final state is measured | h |
+| 03:57 | chore(circles): the final state is measured, and two of the four budgets are all but spent | g |
+| 04:13 | the decision record the measurement reports on does not cite the protocol that defines it | i |
+| 04:13 | the final measurement note means two different sets by always on and its headline delta is the smaller one | i |
+| 04:14 | does a corpus repair circle carry a budget for what its own new clauses may spend | d |
+| 04:16 | reconciliation | h |
+| 04:21 | chore(circles): the style-rules Circle closes bounded, and the reconciler caught five numbers nobody had checked | g |
+| 04:26 | playmaker orchestrator phase4 | h |
+| 04:30 | three decision records were split in two by an unexpanded wildcard and their implemented notes are detached | i |
+| 04:32 | chore(workbench): the portfolio records an empty board, and a split decision record surfaces on the way out | g |
+| 04:32 | chore(workbench): the session record, with nine unreviewed commits named and four of its own faults owned | g |
+
+## 2026-08-21 (Fri) [10-27]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 10:47 | shaper reply bounded whole question answered | h |
+| 11:08 | is claude mds register repair inside this circle | d |
+| 11:08 | may an agent read the session transcripts as a source of evidence | d |
+| 11:08 | what may the circles own new clauses cost | d |
+| 11:08 | which surfaces may this circle change | d |
+| 11:10 | feat(circles): a Circle for the register itself, with its four scoping questions answered before it starts | g |
+| 11:11 | chore(circles): the shaper's own log for the new Circle, which the previous commit's staging list missed | g |
+| 12:19 | orchestrator session | h |
+| 12:44 | curator run | h |
+| 14:55 | re approve two text gate baselines | h |
+| 15:05 | attribution comment for the paths re approval | h |
+| 15:09 | docs: eight statements the project's own history had already falsified | g |
+| 15:09 | test: re-approve three text-gate pins the normative edits moved | g |
+| 15:10 | chore(workbench): the session record and the three agent logs behind it | g |
+| 15:36 | playmaker direct dispatch | h |
+| 16:42 | orchestrator session | h |
+| 18:01 | what total caps a session summary now that no reply has an uncapped tail | d |
+| 18:05 | plan reply bounded whole question answered | p |
+| 18:10 | activating a circle turns the suite red because its own decision records cite the anticipated marker | i |
+| 18:12 | planner the plan for the bounded reply | h |
+| 20:04 | what happens to the directive when the plan a circle runs on deliberately does not state one | d |
+| 20:10 | coder repair four citations broken by activation | h |
+| 20:11 | feat(circles): the reply-bounding Circle goes active, and the board records why | g |
+| 20:12 | docs(circles): the plan finds three routes out of the length cap where the Circle expected one | g |
+| 20:12 | fix(circles): four citations survive the next transition instead of only this one | g |
+| 20:20 | analyst the reply length baseline is frozen | h |
+| 20:20 | reply length baseline | a |
+| 20:24 | docs(circles): the reply-length baseline is frozen, and it closes the gap the Grounding left open | g |
+| 20:35 | coder close the three routes out of the length cap | h |
+| 21:08 | coder regenerate two golden fixtures after step 2 | h |
+| 21:20 | coder the reply answers the question that was put | h |
+| 21:32 | ontocoder two register habits in four profile files | h |
+| 21:45 | coder the cut that pays for steps 2 and 3 | h |
+| 21:47 | coder the corpus is measured | h |
+| 21:53 | feat(rules): a reply is bounded whole, answers what was asked, and the file pays for saying so | g |
+| 21:53 | feat(stilwerk): two register habits reach the profiles, and the profiles pay for them | g |
+| 21:54 | chore(circles): six agent logs, the plan's progress, and one figure corrected in place | g |
+| 21:54 | test: three pins follow the corpus, and one of them grew a bounded surface | g |
+| 22:01 | the new c06 clause lives only in a profile a project may not have | i |
+| 22:02 | two entry names no longer cover their instructions and ai04s only example is not a triad | i |
+| 22:03 | a fourth route out of the length cap stands and the file names it as the remedy | i |
+| 22:03 | ai04s remedy change the item count does not answer its new fault using a list at all | i |
+| 22:04 | a growth bound lost half its head room against a stated stopping criterion and the finding lives only in a history log | i |
+| 22:04 | the c05 cut traded self contained text for citations on a surface no gate reads | i |
+| 22:05 | the german ai04 clause reads as a calque of the english one | i |
+| 22:06 | the german voice profiles name en dash as the character to avoid while every other surface counts em dash | i |
+| 22:07 | the rules inventory of the chat profile names eight of nine blacklist entries and four of six whitelist entries | i |
+| 22:10 | ontorev two register habits in the four chat voice profiles | r |
+| 22:12 | the new information architecture clause ends in a fragment in the file that forbids fragments | i |
+| 22:13 | the plans progress commit marked two of six completed steps done | i |
+| 22:14 | a step log defends a bounded surface with a count taken over a different file set than the bound | i |
+| 22:15 | coderev the bounded reply circle | r |
+| 22:30 | coder the fourth route and the fragment | h |
+| 22:51 | ontocoder ai04 states one test instead of two remedies | h |
+| 22:51 | the rules blacklist gloss names three part lists while ai04 now governs enumeration | i |
+| 23:05 | coder two clauses that reach a project with no profile | h |
+| 23:11 | fix(rules): the fourth route closes, and two clauses reach a project with no profile | g |
+| 23:11 | fix(stilwerk): AI04 states one test where it had carried two remedies | g |
+| 23:12 | chore(circles): two reviews, thirteen findings, and the six of them Turn 2 closed | g |
+| 23:27 | refactor(hooks): two attribution blocks become one, returning four lines to the bound | g |
+| 23:30 | coder consolidate two attribution blocks into one | h |
+| 23:49 | closing the plan and the verbosity record dangles seventeen marker literal citations | i |
+| 23:49 | reconciliation | h |
+| 00:10 | measurement briefing does the rule change shorten a reply | a |
+| 00:15 | chore(workbench): reconciliation checks five claims against the tree and blocks two renames | g |
+| 00:16 | chore(workbench): the session log closes at three Turns | g |
+| 00:16 | docs(circles): a briefing for the measurement this Circle could not run | g |
+| 00:19 | orchestrator session | h |
+| 00:26 | forty eight commits stand behind the manifest version so two bin helpers are unreleased and one is absent from every install | i |
+| 00:27 | coder the bounds own figure replaces the wrong one | h |
+| 00:28 | ontocoder c06 renamed and paid for by its own restatement | h |
+| 00:35 | analyst three before figures and the after measurement | h |
+| 00:35 | the briefings contamination grep marks 49 of 72 transcripts primed because the setup skill body names the files it greps for | i |
+| 00:35 | three before figures and the after measurement defined | a |
+| 00:35 | two installed copies report the same version and differ in which bin helpers they carry | i |
+| 00:39 | docs(workbench): the absent helper is a symptom, and the tag is forty-eight commits behind | g |
+| 00:39 | fix(stilwerk): C06 gets the name its second half earned, paid for by its own restatement | g |
+| 00:39 | fix(workbench): the bound's own figure replaces the one measured over a different set | g |
+| 00:53 | feat(circles): the three before-figures land, and the contamination test the briefing wrote does not work | g |
+| 01:02 | fix(stilwerk): the profiles stop pointing at a path that is not there, and drop two anchors no gate holds | g |
+| 01:05 | ontocoder c05 and c04 pointers respelled bare and anchors dropped | h |
+| 01:15 | the german chat profile names the referent three ways where the english names it once | i |
+| 01:16 | coderev the measurement report reproduces and its after run does not | r |
+| 01:16 | commit e202016s message attributes to a log a figure the log never carried | i |
+| 01:16 | the after runs records per session arm names a join between transcripts and session stamps that does not exist | i |
+| 01:16 | the contamination command reads a scratch directory it never clears | i |
+| 01:16 | the fold of the version gap records dropped the fusion rules half and the closure note says nothing was lost | i |
+| 01:16 | the head room correction left two figures for one quantity in adjacent clauses | i |
+| 01:16 | the report uses session for two different units and section 7 compares counts across them | i |
+| 01:17 | the anchor removal argument holds for c05 and not for c04 | i |
+| 01:18 | ai04 denotes two different rules in the two profiles a prose agent loads together | i |
+| 01:19 | the prose metrics worked exhibit reports six em dashes in a file that carries four | i |
+| 01:20 | the german blacklist forbids an ordinary connective where the english forbids a discourse marker | i |
+| 01:21 | ontorev the c06 rename and the respelled pointers | r |
+| 01:22 | c04s name covers three of its four sentences and the fourth belongs to c01 | i |
+| 01:32 | chore(circles): two reviews tile the Turn's five commits and return twelve findings | g |
+| 01:42 | coder the plan closes and three records with it | h |
+| 01:52 | chore(workbench): the plan closes, and sixteen citations survive the marker that moved | g |
+| 02:00 | ontocoder c04s fourth sentence moves and its section pointer returns | h |
+| 02:14 | fix(circles): the after-run drops a restriction it could never apply, and says so | g |
+| 02:14 | fix(stilwerk): C04's fourth sentence moves to the entry that owns its subject, and its section pointer returns | g |
+| 02:14 | fix(workbench): the folded record's heavier half is carried into the live one | g |
+| 02:17 | coder two commands in workbench documents corrected | h |
+| 02:23 | fix(circles): the briefing warns off its own contamination test, and a scratch directory is cleared | g |
+| 02:34 | reconciliation | h |
+| 02:34 | the session log stops one commit and one turn short and its head still says the directive is unresolved | i |
+| 02:46 | chore(workbench): reconciliation reaches coherent, and the Circle's account of itself catches up | g |
+| 02:51 | ontorev the moved clause and the restored anchor | r |
+| 02:51 | the german line shift moved four citations in three further records and neither note names them | i |
+| 02:52 | the c04 c05 anchor split is verified in english and asserted for german where its premise is false | i |
+| 03:10 | coder six citations repointed and two overstated notes annotated | h |
+| 03:18 | chore(circles): the last uncovered commit is reviewed, and six shifted citations are repointed | g |
+| 03:19 | playmaker orchestrator phase4 | h |
+| 03:28 | feat(circles): the reply-bounding Circle closes coherent, with three residuals named | g |
+| 03:33 | chore(workbench): the closure broke two citations of the record it closed, and the session log closes | g |
+
+## 2026-08-22 (Sat) [8-29]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 08:49 | docs(workbench): a warning that outlived its cause, because the panel cannot tell a dead poll from a quiet one | g |
+| 08:49 | the dashboard poll swallows every failure so a dead page keeps showing its last warnings forever | i |
+| 09:00 | the config templates own worked example of its only setting is not valid json | i |
+| 09:01 | fix(config): the template's own worked example of its only setting now parses | g |
+| 09:09 | fix(docs): the placeholder that reads like a literal becomes the one that does not | g |
+| 09:32 | fix(monitor): the dismissal key stops travelling through the markup | g |
+| 09:46 | the v10 5 release note reaches the readme and not fusion help because the skills bound has 30 bytes | i |
+| 09:47 | release: fusion v10.5.0 | g |
+| 10:09 | orchestrator session | h |
+| 10:28 | the gitignore kept list names three tracked records and the rule it cites names four | i |
+| 11:02 | what happens when a planned circles required work exceeds the remaining head room | d |
+| 11:36 | how does the tracked event log behave when two checkouts both appended to it | d |
+| 11:36 | shaper multi user fusion | h |
+| 11:36 | spec fusion becomes a multi user tool | p |
+| 11:36 | two definitions of the turn count disagree and the resume snippet counts every session in the log | i |
+| 11:36 | which identity does an attributed record carry when the transport is git | d |
+| 11:54 | an open defect cites a test file deleted eleven days ago and half of it is unfixable | i |
+| 11:54 | does a cut only circle re baseline the surfaces it cuts | d |
+| 11:54 | does the hook test line budget cover comment prose | d |
+| 11:54 | plan c0 cut only circle buys head room on four bounded surfaces | p |
+| 11:54 | planner c0 cut only circle | h |
+| 12:15 | coder close the growth bound record on a verified disposition | h |
+| 12:21 | chore(workbench): a growth-bound record closes on a disposition verified against the tree | g |
+| 12:22 | docs(workbench): the multi-user rebuild is specified, its first Circle planned, and the requirement it started from is retired | g |
+| 12:26 | analyst cut ledger | h |
+| 12:26 | cut ledger for three bounded surfaces | a |
+| 12:26 | the executor report contract cites bugfixer as its author and bugfixer defines a different shape | i |
+| 12:27 | plan step 4 names a duplication record whose own fix direction forbids the cut the step asks for | i |
+| 12:28 | plan step 8 asks for a closure that was already made and the record already carries the note | i |
+| 12:29 | where does the reference resolution pins re approval attribution log live | d |
+| 13:14 | docs(workbench): the cut ledger measures the room and finds two of three surfaces short | g |
+| 13:18 | coder cut the hook test suite by 500 lines | h |
+| 13:18 | reference resolution pin re approval log entries 1 to 25 | a |
+| 13:30 | where does the reviewer contract live when the agents surface has to give back bytes | d |
+| 13:37 | refactor(hooks): the pin's re-approval log stops accumulating in a file measured by the line | g |
+| 13:50 | coder cut agents surface step3 | h |
+| 13:58 | refactor(agents): five claims lose their fifteen copies, and the reviewer contract gets one home | g |
+| 14:13 | refactor(skills): two claims restated across eight bodies lose their copies | g |
+| 14:20 | coder cut skills surface step4 | h |
+| 14:21 | coderev c0 cut only circle | r |
+| 14:21 | two skill bodies lost the x guard rationale to a header that does not carry it | i |
+| 14:22 | the doc comment for shippedprompts is stranded above agentnames | i |
+| 14:25 | coder plan c0 step 7 prose metric test | h |
+| 14:29 | test(hooks): the prose metric gets the test its own header asked for, and the range gets its first review | g |
+| 14:35 | coder move stranded doc comment | h |
+| 14:37 | coder guard rationale into the helper header | h |
+| 14:41 | fix(bin): the helper header gains the rationale its four pointers were already claiming it held | g |
+| 14:50 | coder c0 steps 5 and 6 two defects on the skills surface | h |
+| 14:56 | fix(skills): the help topic stops growing without bound, and Setup's repair guards all three of its blocks | g |
+| 15:03 | claude mds docs row says fusion help points at every upgrade note and the cap made that false | i |
+| 15:06 | coderev the guard rationale repair and the capped help topic | r |
+| 15:06 | setups exit code sentence ends in a colon introducing a list that was cut | i |
+| 15:06 | the declined second order cut is declined on a reason the same commit made false | i |
+| 15:06 | the help caps standing line makes three claims about docs and none of the three resolves | i |
+| 15:06 | the help caps standing line names one silent action and the v9 note holds a second | i |
+| 15:06 | the prose metric counts a bare em dash as a prose word and only the test says so | i |
+| 15:06 | the prose metric test pins every header rule except the two the header calls limits | i |
+| 15:06 | the v9 upgrade notes preamble calls six checks optional and check 2 describes a silent behaviour change | i |
+| 15:06 | two of the c0 plans stopping clauses cannot both be answered yes for a repair the first one demands | i |
+| 15:10 | five of fifteen not opened entries name records that do not exist and no gate reads that field | i |
+| 15:15 | docs(workbench): the second review tiles the range and finds the repair sound and two claims false | g |
+| 15:26 | coder four review repairs | h |
+| 15:32 | fix(skills): four claims this session wrote turn out to be false, and the reason for one of them does not survive restating | g |
+| 15:40 | coder c0 step 9 closure measurement | h |
+| 15:45 | docs(workbench): the closing measurement, and one clause the Circle cannot answer yes | g |
+| 15:56 | does the record filename convention hold when several checkouts file into one store | d |
+| 15:56 | reconciliation | h |
+| 15:56 | the closure measurement assigns 610 bytes of the five claim cut to the reviewer contract relocation | i |
+| 15:56 | the cut ledger states a head anchor two commits behind where it ran | i |
+| 15:56 | the spec names five circles and the workbench holds none of them so c0 closed with nothing to transition | i |
+| 16:08 | chore(workbench): reconciliation reaches review-needed, and the edge to the Directive is orthogonal rather than toward it | g |
+| 16:10 | how does fusion support several people working one project at once | d |
+| 16:35 | may the orchestrator have a directive captured and by which route | d |
+| 17:17 | docs(workbench): the record that forbade concurrency is superseded, a month after it answered and a day after the project changed its mind | g |
+| 17:19 | chore(workbench): the session log closes, with one clause answered no and one edge orthogonal | g |
+| 19:21 | shaper measure what two checkouts share | h |
+| 19:24 | feat(circles): the first anticipated Circle, captured through a skill the orchestrator invoked | g |
+| 19:48 | coder orchestrator fusion direct permission | h |
+| 20:01 | feat(agents): the orchestrator may have a Directive captured, and still writes none | g |
+| 20:40 | playmaker direct dispatch | h |
+| 20:45 | a circles head fields end up in different states depending on which of the two activation routes ran | i |
+| 20:50 | the portfolio generator spelled a marker again and the citation died at the next transition | i |
+| 21:04 | playmaker direct dispatch | h |
+| 21:12 | feat(circles): the first Circle this workbench ever ranked is activated, and two blind spots surface on the way | g |
+| 22:04 | orchestrator session | h |
+| 22:19 | analyst two checkout isolation measurement | h |
+| 22:19 | the tracked setup marker is rewritten by every setup and carries the checkouts absolute path | i |
+| 22:19 | what does a second checkout do with a circle record marked active that it never activated | d |
+| 22:19 | what two checkouts of one project actually share | a |
+| 22:26 | feat(circles): the premise holds, measured, and the three-way question turned out to have two answers | g |
+| 22:28 | docs(workbench): the answer that was chosen but not proven is now proven, and the sentence saying otherwise stays | g |
+| 22:36 | the four session bookkeeping surfaces froze again and the detection that closed the first record has been removed | i |
+| 22:39 | reconciliation | h |
+| 22:52 | chore(circles): the Circle closes coherent, and the record filed against this session's bookkeeping is the reason four surfaces got written | g |
+| 22:53 | playmaker orchestrator phase4 | h |
+| 22:59 | chore(workbench): the portfolio has nothing left to rank, and says so in words rather than in a count | g |
+| 00:23 | shaper settle what travels between checkouts | h |
+| 00:31 | feat(circles): C2 is captured, and the two decisions its Grounding rests on stop living only there | g |
+| 04:23 | playmaker direct dispatch | h |
+| 04:37 | feat(circles): C2 is activated, and the record filed about spelled markers gets a third instance written by its own author | g |
+| 05:10 | the activation chain hands off to a parent thread that is the same thread | i |
+| 05:13 | docs(workbench): the activation chain hands off to a parent thread that is the same thread | g |
+| 05:35 | coder next skill 6 5 imperative continuation | h |
+| 05:40 | fix(next): the activation step stops describing the continuation and instructs it | g |
+
+## 2026-08-23 (Sun) [6-29]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 06:32 | coder v10 6 release text | h |
+| 06:43 | release: fusion v10.6.0 | g |
+| 06:45 | claude mds layout table enumerates rule files and gained no row for the one v10 6 adds | i |
+| 06:48 | docs(workbench): three sub-agents in a row filed into the active Circle, and the rule that would have stopped them asks about something else | g |
+| 07:00 | every sub agent files its history into the active circle because the resolver cannot make the origin rules judgement | i |
+| 07:21 | orchestrator session | h |
+| 08:00 | c2 what travels between checkouts is settled | p |
+| 08:00 | does the two checkout transport verification become a shipped check | d |
+| 08:00 | planner c2 what travels between checkouts | h |
+| 08:00 | the groundings first write outside the workbench claim was already false when it was written | i |
+| 08:00 | two further surfaces classify portfolio md as an authored record | i |
+| 08:35 | coder the four class partition | h |
+| 08:40 | docs(rules): what git carries between checkouts is a four-class partition, and the portfolio leaves the carried set | g |
+| 08:41 | coder portfolio leaves tracking | h |
+| 08:48 | chore(workbench): the portfolio stops travelling between checkouts, and the kept list finally names what git carries | g |
+| 09:00 | coder portfolio stops being an authored record | h |
+| 09:06 | fix(hooks): the staging classifier stops calling the portfolio an authored record, and the general case is what the fix is for | g |
+| 09:16 | coder setup declares the union merge driver | h |
+| 09:21 | feat(setup): the one file two checkouts both append to gets a merge driver, and Setup asks git rather than reading the file | g |
+| 09:30 | coder the setup marker is written on change | h |
+| 09:36 | fix(setup): the setup marker is written when something changed, and stops publishing the path of the checkout it was written in | g |
+| 09:47 | coder c2 step5 | h |
+| 09:51 | feat(setup): a checkout that pulled an active Circle is told so, and activating it stays the user's own act | g |
+| 10:31 | c2 head room cut in setup skill | h |
+| 10:35 | refactor(setup): eleven passages of spent reasoning leave the setup skill, and every step still says what to do | g |
+| 10:40 | coder next briefing states its provenance | h |
+| 10:45 | feat(next): the portfolio briefing says when the ranking was made and that it covers only what this checkout pulled | g |
+| 10:50 | coder step7 sequence diagram sorts by ts | h |
+| 10:54 | fix(orchestrator): the session sequence diagram sorts the log by ts, because a union merge stops the file being chronological | g |
+| 11:10 | coderev c2 turn 1 | r |
+| 11:10 | step 0h reports unset and set as merge driver names and the rule enumerates neither | i |
+| 11:10 | step 0i collapses multiple active to head 1 and names one circle arbitrarily | i |
+| 11:10 | the conditional marker write has no plugin root guard so an empty version wipes the record | i |
+| 11:10 | the cut shifted two line citations in an always on rule and one now points at a blank line | i |
+| 11:10 | the done report enumeration omits step 0i while step 0i instructs it to report | i |
+| 11:10 | the gitignore comment still describes the two group split its authoring home replaced | i |
+| 11:10 | the guard event log falls in no class of a partition that claims every entry falls in one | i |
+| 11:10 | the merge driver unsorts a second event log reader whose repair direction is positional | i |
+| 11:10 | the retired staging drift example survives at two authoring sites and the closure names one | i |
+| 11:10 | the untracked portfolio turns npm test red in every fresh clone of this repository | i |
+| 11:10 | two of six baseline re approvals carry no accounting and the log now contradicts the constant | i |
+| 11:18 | docs(workbench): the Turn 1 review tiles all nine commits and finds two release blockers, one of them in a fresh clone only | g |
+| 12:00 | coder turn 1 critical portfolio corpus assertion | h |
+| 12:03 | fix(hooks): the citation gate asks whether the portfolio is in the corpus instead of whether it is on this disk | g |
+| 12:12 | coder guard the setup marker version | h |
+| 12:16 | fix(setup): an unreadable plugin version stops the marker write instead of being written into it | g |
+| 12:35 | coder turn 1 remaining findings | h |
+| 12:39 | fix(workbench): eight of the review's nine remaining findings close, and the ninth is annotated for the capability that owns it | g |
+| 12:43 | coder two decision records close as implemented | h |
+| 12:50 | docs(workbench): the two decisions this Circle was built on move from answered to implemented | g |
+| 13:02 | c2 step 9 two checkout transport verification | h |
+| 13:02 | the monitor attributes a merged event log to one session and reports another checkouts state | i |
+| 13:02 | two checkouts one event log and what the monitor makes of it | a |
+| 13:09 | docs(workbench): two checkouts keep every event line, and the monitor turns out to read a log that no longer says whose it is | g |
+| 13:18 | coderev c2 turn 2 | r |
+| 13:18 | step 0i detects multiple active only when the pointer is absent while naming the whole condition | i |
+| 13:18 | ten record citations in the turn 1 review dangle after this turns renames and no gate covers reviews | i |
+| 13:18 | the closure claim that nothing else cites the two decisions by a hard marker is false in four files | i |
+| 13:18 | the plan is status complete with every step done and still carries the open marker | i |
+| 13:18 | the portfolio corpus assertion passes the constant to itself and no longer pins the name | i |
+| 13:18 | the readme corpus description omits live plans the fifth kind the predicate selects | i |
+| 13:24 | docs(workbench): the Turn 2 review finds every repair sound and ten dangling citations in the review that ordered them | g |
+| 13:45 | coder turn 2 review six findings cleared | h |
+| 13:47 | fix(workbench): fourteen citations stop pointing at markers that moved, and the detection that named a whole condition now sees all of it | g |
+| 14:02 | four hard marker citations of the c1 circle record dangle in the same files this turn repaired | i |
+| 14:03 | closing a circle removes its open records from every agents scan set and no closure step says so | i |
+| 14:04 | a question the closing pass left to the user has no open record anywhere only a closed defects prose | i |
+| 14:05 | the window to correct the groundings false claim closes with the circle and nothing says so | i |
+| 14:06 | step 0is pointer present branch reads a count as an identity and a stale pointer passes both checks | i |
+| 14:07 | the live plan clauses own comment still says the tree has no live plan and two stand in it | i |
+| 14:08 | the plan field now carries a wildcard and no rule authorises one in a circle record head field | i |
+| 14:10 | coderev c2 turn 3 | r |
+| 14:10 | docs(workbench): the closing review confirms both distrusted repairs and names what the rename would bury | g |
+| 14:14 | coder turn 3 the before the rename set | h |
+| 14:14 | does the workbench citation gates corpus cover review files | d |
+| 14:36 | fix(workbench): the question this session left in a closure note becomes an open record, and the head-field wildcard gets a rule that authorises it | g |
+| 14:46 | reconciliation | h |
+| 14:46 | the rebalance recommendation maps from the flagged edge and has no case for a grounding that states a false fact | i |
+| 14:55 | the shapers mode 3 has no scope value for a grounding only correction and halts on the only case that needs one | i |
+| 16:19 | docs(workbench): the Circle's Turn log is filled after three Turns, and the shaper's scope vocabulary turns out to have no case for this correction | g |
+| 16:24 | docs(workbench): the Grounding's false claim is corrected by hand, because no agent was permitted to correct it | g |
+| 16:35 | the corrected grounding undercounts setups project root writes and omits step 0f | i |
+| 16:36 | all three turn log ranges drop their own first commit the fault this circle already fixed once | i |
+| 16:37 | turn log entry 3 books a per circle reconciler verdict against a turn that had no coherence gate | i |
+| 16:38 | three figures in the reconcilers coherence section are wrong and one contradicts its own detail file | i |
+| 16:39 | the reconcilers review annotation wrote two hard marker citations and one died one commit later | i |
+| 16:40 | the corpus decisions measured block declares an anchor whose tree gives different file counts | i |
+| 16:41 | the wildcard records claim that every other circle record spells a hard marker is false six already star it | i |
+| 16:42 | the hand written grounding correction breaks the paragraphs own two costs scaffolding and its markup | i |
+| 16:45 | coderev c2 turn 4 | r |
+| 16:47 | docs(workbench): the closing review tiles the last four commits, and finds the Grounding correction wrong by one and the Turn log wrong three times | g |
+| 21:19 | fix(workbench): the Grounding names the two steps that already wrote at the project root, and drops the ordinal that was wrong twice | g |
+| 21:30 | reconciliation | h |
+| 21:34 | docs(workbench): the verdict is taken again against the changed Grounding, and lands on a smaller clause in the same three lines | g |
+| 21:38 | fix(workbench): the Grounding's sixth clause gets the bound Step 0g gives it, and the last flagged edge clears | g |
+| 21:53 | playmaker orchestrator phase4 | h |
+| 21:59 | feat(circles): C2 closes coherent, and the closure note carries what the rename would otherwise strand | g |
+| 04:43 | coder orchestrator asks in chat | h |
+| 05:30 | shaper record attribution and circle claim | h |
+| 05:39 | orchestrator session | h |
+| 05:39 | playmaker direct dispatch | h |
+
+## 2026-08-24 (Mon) [6-22]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 06:04 | feat(circles): C3 is captured and activated, and Setup declares the merge driver in the repository that built it | g |
+| 06:04 | fix(agents): the orchestrator asks in chat, and the dialog is banned without exception | g |
+| 06:13 | c3 attribution on records and a claim on the circle | p |
+| 06:13 | does a filing agent halt in a tree that is not a git work tree at all | d |
+| 06:13 | planner c3 attribution and claim | h |
+| 09:03 | coder step1 identity answer | h |
+| 09:10 | docs(workbench): the identity question is answered by a design its own option set did not contain | g |
+| 09:20 | coder step2 filename answer | h |
+| 09:25 | docs(workbench): the filename convention holds, and what several writers break is a citation rather than a name | g |
+| 10:42 | coder c3 step3 skills cut | h |
+| 10:48 | refactor(setup): twenty-two passages of restated reasoning leave the setup skill, and every step still says what to do | g |
+| 11:23 | coder c3 step4 fusion identity | h |
+| 11:30 | feat(bin): one helper answers who is writing and from which checkout, and its exit codes tile the four ways that can fail | g |
+| 11:45 | coder c3 step5 identity test | h |
+| 11:46 | test(hooks): the identity helper's six exits are pinned, and the error path is proved to leave nothing behind | g |
+| 12:10 | coder step 6 person field and citation rule | h |
+| 12:14 | feat(rules): the person who filed a record is defined once, and a citation stops naming a record by its stamp alone | g |
+| 12:24 | feat(rules): a Circle record says who holds it, and the collision it cannot prevent is written down as a property | g |
+| 12:25 | coder c3 step7 claim field | h |
+| 13:09 | coder c3 step8 claim authoring home | h |
+| 13:45 | coder hook test line cut | h |
+| 14:46 | refactor(hooks): forty-four lines of spent prose leave the hook tests, and not one assertion goes with them | g |
+| 14:47 | feat(agents): both activation routes write a Circle's claim from one authoring home, and the shaper fills both identity fields at creation | g |
+| 14:55 | coder c3 step9 setup identity and claim | h |
+| 14:56 | coder c3 step9 baseline reapproval | h |
+| 14:58 | feat(setup): Setup mints the checkout identifier on first read, and names the holder of a claim this checkout does not hold | g |
+| 15:02 | coder c3 step10 next refuses and claims | h |
+| 15:06 | the anchor gate silently skips every var rooted citation on an assumption the path gate falsifies | i |
+| 15:07 | feat(next): activation refuses a Circle another checkout holds, names who holds it and since when, and writes the claim when it does activate | g |
+| 15:12 | coder c3 step11 verification and four bounds | h |
+| 15:12 | one of the seven citation pin moves in this circle carries no re approval comment | i |
+| 15:16 | test(circles): C3 verifies green and reports its consumption of all four growth budgets, and one pin move turns out to carry no accounting | g |
+| 15:24 | analyst c3 step12 close three decisions | h |
+| 15:26 | docs(decisions): three answered decisions reach implemented, one of them after seventeen days of waiting on a condition it set itself | g |
+| 15:38 | a fifth budget crossed in this range and the verification step measured four | i |
+| 15:38 | a lint asserts the orchestrator must use the tool the prompt now bans and passes on the ban itself | i |
+| 15:38 | an always on rule files worked example carries a real address composed by hand | i |
+| 15:38 | both override call sites cite a section that does not define the sentence they must write | i |
+| 15:38 | coderev c3 attribution and claim full range | r |
+| 15:38 | the checkout identifier is never overwritten and no test holds that property | i |
+| 15:38 | the claim has no defined value when the identity helper produces one half or neither | i |
+| 15:38 | the filing rule names the identity helper with no root no guard and no branch for its absence | i |
+| 15:38 | the identity helpers exit 4 message names a cause it never established | i |
+| 15:38 | the new layout row is misaligned and a cut left a line holding one space | i |
+| 15:38 | the plans stopping clause names one cut and two landed | i |
+| 15:38 | two design forks from the dialog ban were put to the user in chat and recorded only in a history log | i |
+| 16:11 | coder c3 two citation defects | h |
+| 16:15 | docs(reviews): the C3 range gets its only review pass, and nine of its eleven findings stay open | g |
+| 16:15 | fix(rules): two citations stop pointing at homes that do not carry what they cite, and the filing rule names the helper it actually calls | g |
+| 16:21 | the filing rules residual branch promises a person line that exit 5 does not print | i |
+| 16:22 | a fourth bare call of the identity helper sits in the orchestrator and the repair did not reach it | i |
+| 16:23 | setups claim branch leaves a circle claimed by this checkout unstated where nexts states it | i |
+| 16:25 | coderev c3 two fix commits | r |
+| 16:28 | docs(reviews): the second pass closes the Circle's coverage and finds the exit code the repaired rule forgot | g |
+| 16:37 | an always loaded prompt states that the uncovered range decision is unfiled eight days after it was answered | i |
+| 16:37 | reconciliation | h |
+| 16:37 | the circles release precondition is written against a measurement that cannot read zero at closure | i |
+| 16:47 | docs(circles): the C3 reconciliation returns coherent, and finds a release precondition its own instrument can never satisfy | g |
+| 17:21 | feat(circles): C3 closes coherent, and its closure note carries the two gaps rather than tidying them away | g |
+| 17:21 | playmaker orchestrator phase4 | h |
+| 17:30 | docs(history): the C3 session closes with its budget read off the stores, and records that closing a Circle costs a session the ability to measure itself | g |
+| 17:50 | orchestrator session | h |
+| 18:53 | shaper close every open defect | h |
+| 18:54 | feat(circles): the defect-closure Circle is captured and activated, and the session that runs it is named in its head | g |
+| 19:05 | plan close every open defect | p |
+| 19:05 | planner close every open defect | h |
+| 20:12 | docs(planning): the defect-closure plan assigns all 220 open records an ending before any executor runs, and the Circle record points at it | g |
+| 20:13 | do archive and terminal circles stores enter any scan set or is the exclusion written down | d |
+| 20:13 | do the nine skill bodies that present dialogs follow the dialog ban | d |
+| 20:13 | does fusion ship a license file or does the installer stop naming one | d |
+| 20:13 | does the dispatch prompt carry the tasks origin and does a sub agents history follow it | d |
+| 20:13 | does the executor report contract get a form for a named pre existing failure or a per change test selection | d |
+| 20:13 | does the orchestrators tools grant of askuserquestion go now that the orchestrator may not call it | d |
+| 20:13 | how is a marker rename performed and staged and by whom | d |
+| 20:13 | who writes the circle record fields that no current party may write | d |
+| 20:15 | ontocoder p4 stale citations and phantom merge | h |
+| 20:16 | fix(workbench): three decision records absorb the phantom files that held their implemented notes, and nine pointer citations stop spelling a marker | g |
+| 20:16 | ontocoder close moot unfixable and fixed records | h |
+| 20:17 | analyst files eight decision records | h |
+| 20:19 | ontocoder repair seven citations and close row 102 | h |
+| 20:20 | docs(decisions): eight open questions the defect records kept re-asking get a record each, so that a defect can be referred rather than silently answered | g |
+| 20:20 | docs(workbench): thirty-one defect records close as moot, unfixable from this tree, or already true at HEAD, each note naming its evidence | g |
+| 20:22 | ontocoder close the 32 referred records | h |
+| 20:24 | ontocoder p9 the stilwerk profiles shipped and workbench copies | h |
+| 20:25 | fix(stilwerk): the German profiles name the em-dash they count, the tricolon rule gets its own id, and shipped and workbench copies are byte-identical again | g |
+| 20:30 | coder p6 hooks source tests and comments | h |
+| 20:30 | coder step 8 docs readme claude md | h |
+| 20:30 | ontocoder p5 corrections inside workbench records | h |
+| 20:31 | fix(hooks): twenty defects in the hook source and tests close, and the additions are paid for by comment prose in the same files | g |
+| 20:32 | ontocoder citation repair | h |
+| 20:33 | docs(workbench): sixty defect records close as referred or corrected in place, and the citations their renames broke take the wildcard form | g |
+| 20:34 | coder p11 agent prompts | h |
+| 20:40 | coder step 7 bin helpers | h |
+| 20:40 | the new session domain helper has no claude md layout row and the enumeration lint is red until it gets one | i |
+| 20:42 | coder p 7b session domain layout row | h |
+| 20:44 | coder step12 orchestrator | h |
+| 20:47 | coder step 10 skills | h |
+| 20:49 | docs: nine sentences in CLAUDE.md, README-agents and the v9 note stop describing a fusion that no longer exists, and the new helper gets its Layout row | g |
+| 20:49 | fix(agents): fifteen defects in eleven agent prompts close, and the reconciler's verdict set becomes disjoint and complete | g |
+| 20:49 | fix(bin): eleven helper defects close, one helper answers the session domain from agentstate, and the identity helper names an unreachable git | g |
+| 20:49 | fix(orchestrator): twenty-four defects in the orchestrator prompt close, and the Coherence gate reads the reconciler's new verdict set | g |
+| 20:49 | fix(skills): thirteen defects in six skill bodies close, and three domain one-liners become one guarded helper call | g |
+| 20:56 | claude md names three retired top level keys in two rows and config ts now carries four | i |
+| 20:56 | coderev turn 1 defect closure range | r |
+| 20:56 | fusion identitys new no git branch is untested and two surfaces still define exit 1 as the unset identity case alone | i |
+| 20:56 | readme agents still cites skills next at line 147 153 after step 10 moved the block to 139 146 | i |
+| 20:56 | the new empty pointer message in fusion paths runs its placeholder as a command substitution | i |
+| 20:56 | the new index comparison unstages a siblings paths outside the commit lock it was added to protect | i |
+| 20:56 | the orchestrators resume paragraph names two re entry points for a continue and does not say which case takes which | i |
+| 20:56 | the reconcilers state directive recommendation overlaps the coherent row and the orchestrator never surfaces it | i |
+| 20:56 | the session domain helper ships with no test while every sibling helper added since v10 has one | i |
+| 20:56 | the session domain helpers header claims a scope its grep does not have and its skill callers print a source value it never defines | i |
+| 20:58 | c05 in both chat profiles still carries the bare rule filename the 0146 closure says is gone | i |
+| 20:58 | docs(reviews): the Turn 1 range gets its code review, and nine findings enter the Circle, one of them a helper message that runs its placeholder as a command | g |
+| 20:58 | the german writing profile still bans das heisst after the chat profile stopped doing so | i |
+| 20:59 | coder step 13 rules | h |
+| 20:59 | docs(reviews): the Turn 1 record layer and profiles get their data review, and seven low findings enter the Circle | g |
+| 20:59 | two step histories cite seven records by the open marker the same step moved and history is outside the gate | i |
+| 20:59 | two stilwerk closure notes cite a line one above the text they name | i |
+| 21:00 | a history filename in this circle uses underscores where the pattern has hyphens | i |
+| 21:00 | seven backlog referrals close onto entries that do not exist and one referral names no kind | i |
+| 21:01 | triage row 66 asserts a fix that is not at head and the record it leaves open has no step | i |
+| 21:02 | ontorev turn 1 profiles and record closures | r |
+| 21:07 | fix(rules): twenty-four defects across nine rule files close, paid for by the decision template's placeholder footer | g |
+| 21:21 | reference resolution pin re approval log entries 26 to 40 | a |
+| 21:29 | fix: thirteen of the Turn 1 review findings close, the empty-pointer message in fusion-paths stops running its placeholder, and two helpers gain the tests their siblings had | g |
+| 21:29 | ontocoder p15b close the last two review findings | h |
+| 21:30 | fix(stilwerk): the last two review findings close, and the chat profiles stop naming a rule file by its bare filename | g |
+| 21:36 | coder p14b citation lint positive control | h |
+| 21:36 | the workbench citation lints positive control requires an open issue on disk so a clean workbench fails it | i |
+| 21:39 | test(hooks): the closing measurement lands, the last two records close, and the citation lint's positive control stops requiring an open defect on disk | g |
+| 21:40 | coder step 15 close the review round records | h |
+| 21:45 | coderev turn 2 review closure range | r |
+| 21:45 | docs(reviews): the Turn 2 record layer gets its data review, and three note-level findings enter the Circle | g |
+| 21:45 | the narrowed coherent row is still not complete an edge not evaluable for any reason but a missing directive matches no row | i |
+| 21:45 | the orchestrators held commit now runs git reset while the rule it hands every executor lists git reset as a command that rewrites files | i |
+| 21:45 | the rebalance gate section and the reconcilers cadence note still fire only off coherent and the gate text step 3 promises does not exist | i |
+| 21:45 | the reference resolution pin chain has an unaccounted plus one between the c2 closing pass and c3 step 3 | i |
+| 21:45 | the session domain header says quoted and the sed accepts double quotes only and the new test counts four reasons where the script has three | i |
+| 21:46 | docs(reviews): the Turn 2 code range gets its review, and five findings enter the workbench, one of them the Rebalance gate that still fires off the old verdict set | g |
+| 21:47 | ontocoder t3 notes close the turn 2 data review findings | h |
+| 21:47 | readme agents line 61 cites skills next 148 which is a blank line | i |
+| 21:50 | coder step 14 closing measurement | h |
+| 21:50 | coder t3 code close the turn 2 review findings | h |
+| 21:51 | fix: the nine Turn 2 review findings close, and the Rebalance gate fires on the reconciler's whole verdict set rather than on coherent alone | g |
+| 21:51 | twenty four closure notes and two annotation rows cite rule files by line number in the commit that forbids it | i |
+| 21:52 | two agent prompts still carry the form step 13 changed and only a history file records it | i |
+| 21:53 | the commit lock header does not carry the cd the rule now states as part of its contract | i |
+| 21:54 | coderev step 13 rules commit | r |
+| 21:55 | ontorev turn 2 profiles closed and the record layer at close | r |
+| 21:55 | plan step 14 is marked done above a progress line that says it is not | i |
+| 21:55 | the readme agents closure note cites a line that does not cite and a skills next line that is blank | i |
+| 21:55 | the umbrella closure note names two steps for two rows the triage assigns to one | i |
+| 21:56 | fix(rules): the heading-anchor clause scopes itself to living text, so a closure note may cite the line it closed on, and two prompts follow the forms the rules commit changed | g |
+| 21:59 | reconciliation | h |
+| 22:02 | docs(circles): the reconciliation returns coherent, the plan closes, and the session history carries the verdict | g |
+| 22:10 | coder t3 rules close the step 13 review findings | h |
+
+## 2026-08-25 (Tue) [7-17]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 07:07 | playmaker orchestrator phase4 | h |
+| 07:09 | feat(circles): the defect-closure Circle closes coherent with 250 records closed and none left open, and its closure note carries the seven ideas, six measurements and five commits it could not settle | g |
+| 07:17 | chore(release): fusion v10.7.0 | g |
+| 07:18 | coder release v10 7 0 edits | h |
+| 08:58 | orchestrator session | h |
+| 10:19 | nothing checks that a tracked workbenchs gitignore matches the four class partition | i |
+| 10:30 | does setup repair a gitignore that departs from the four class partition | d |
+| 10:30 | may a project depart from the four class partition deliberately and say so once | d |
+| 12:41 | docs(workbench): a consumer's gitignore departure gets its defect record, and two decisions settle that Setup repairs it and how far a project may depart | g |
+| 12:41 | reconciliation | h |
+| 12:50 | a bounded circle holds a draft spec with 49 unreconciled criteria that no scan reaches | i |
+| 12:50 | a conditional acceptance criterion has no notation for a false antecedent so three passes re derived the same explanation | i |
+| 12:50 | a session history section is written in german on a surface the language rule assigns to the artifact language | i |
+| 12:50 | twenty eight records filed since the attribution rule landed carry no person half and no stated reason | i |
+| 12:59 | the rebalance gate mandates four options and the output rule caps a gate at three | i |
+| 13:29 | every session runs one release behind on a bin helper the same repository just added | i |
+| 13:35 | docs(workbench): the multi-user spec is reconciled against the tree, and the attribution gap turns out to be a 21-hour window in which the installed plugin had no identity helper | g |
+| 13:51 | docs(workbench): thirty-one records filed while the identity helper was unreachable get their attribution backfilled, marked as retrospective rather than passed off as compliance | g |
+| 14:30 | reconciler attribution backfill | h |
+| 14:30 | reconciliation | h |
+| 14:30 | the event log froze at turn 2 while the dashboard stayed current inverting the diagnostic six instances rest on | i |
+| 14:40 | the archive safety filter checks only claude md while the citation lint guards a corpus thirty one files wider | i |
+| 14:53 | curator run | h |
+| 14:56 | does claude mds register repair reach the curators pass and under what evidence | d |
+| 14:56 | three shipped surfaces say the retired configuration key set is three and the loader holds four | i |
+| 17:01 | reference baseline reapproval | h |
 
 ## Total commits
 
-571 git commits since project start (2026-06-21).
+964 git commits since project start (2026-06-21).
