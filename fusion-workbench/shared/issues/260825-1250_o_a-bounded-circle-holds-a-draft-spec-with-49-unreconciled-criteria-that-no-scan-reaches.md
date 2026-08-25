@@ -54,3 +54,24 @@ work.
 delivered Circle actually shipped, and the file that would answer it is outside every scan.
 
 **Found by:** reconciler, session-end pass over `a99e680..cfab17e`, HEAD `cfab17e`.
+
+---
+
+**Reconciliation 260825-1430 (reconciler, domain `code`, HEAD `3d4b181`). Stays `_o_`. The
+substance holds; the opening sentence is already false.**
+
+The spec's header no longer reads `Draft`. It reads `**Status:** Partially Complete`, set in
+`53d656f`, the same commit that filed this record: the pass corrected the header and then
+described the file as it had found it. The correction is right and the description is stale,
+and I am leaving both as they stand rather than editing the summary, because the header move
+is the smallest half of what this record is about.
+
+**Everything else is unchanged at HEAD**, checked against the file rather than against this
+record: `grep -c '^- \[x\]'` returns 0 and `grep -c '^- \[ \]'` returns 49, the marker is
+still `_o_`, the Circle still carries `_b_`, and `bin/fusion-paths` still emits no `SCAN_*`
+that reaches a terminal Circle's stores. The 49 criteria are as unreconciled as when this was
+filed, and the reason no pass will reach them is the open decision this record already cites.
+
+**Read the title as naming the file, not its header field.** A bounded Circle holds a spec
+with 49 unreconciled criteria that no scan reaches. That sentence is true at HEAD and is the
+work this record tracks.

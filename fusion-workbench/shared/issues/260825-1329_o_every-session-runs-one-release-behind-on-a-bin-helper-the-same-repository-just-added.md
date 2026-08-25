@@ -67,3 +67,32 @@ that only exists for this situation.
 
 Medium in effect and high in reach: every helper this repository adds carries the same window,
 and every prompt that calls one takes the miss branch inside it.
+
+---
+
+**Reconciliation 260825-1430 (reconciler, domain `code`, HEAD `3d4b181`). Stays `_o_`. The
+mechanism is unchanged; two counts in the body are superseded.**
+
+Nothing in `a99e680..3d4b181` touches helper resolution. Every call site is still
+`"$FUSION_PLUGIN_ROOT/bin/<name>"`, part (c) of `shared/decisions/260810-1544_*` is still
+unanswered, and neither of the two candidate directions is built. The defect is open on its
+own terms.
+
+**What is stale is arithmetic, not analysis.** This record states *28 unattributed records*
+in its summary and at `## What was measured`, and *42 records filed while the helper was
+unreachable* under `## Why the miss is silent`. Both numbers came from the first pass over
+the set. The cross-referenced record was corrected in `3d4b181` and now states 31 and 45
+against the same predicate; I reproduced its table independently at HEAD and read 70 total,
+25 person, 14 reason, 31 neither. So the failure rate this record quotes as *67 per cent*
+(28 of 42) is 69 per cent (31 of 45). The body is left as written, because the correction
+belongs where the measurement lives:
+`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`
+`## What was measured` and its `### Three passes produced three different counts of one set`
+carry the current figures and why three passes disagreed.
+
+**One claim of this record was verified rather than carried over.** The 21-hour window is
+real: `bin/fusion-identity` was added to the work tree in `3ba7a46` at 2026-08-24 11:30:31
+and the installed copy at `~/.fusion/bin/fusion-identity` carries mtime 2026-08-25 08:29.
+All 31 records in the set are stamped between `260824-1621` and `260824-2155`, inside that
+window without exception, and every in-window record stamped `260825` carries its person
+half.

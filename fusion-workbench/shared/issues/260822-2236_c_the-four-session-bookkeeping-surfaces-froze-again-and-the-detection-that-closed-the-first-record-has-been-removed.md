@@ -131,3 +131,6 @@ Marker stays `_o_`. Nothing in this range builds any of the three options under 
 
 ---
 Resolved: referred (backlog) — a freeze detection over the surviving surfaces (`work_queue` statuses, the Circle record's Turn-log entries, the `turn_end` events) is the idea, one with part 2 of 260801-1020, and nothing this Circle can build without re-adding a removed mechanism; backlog entry to be filed by the user
+
+---
+Revised by: `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md` — the referral above names `turn_end` events among the surviving surfaces a freeze detection would read, and in session `260825-0858` the `turn_end` event is precisely what did not fire while the dashboard stayed correct; the marker stays `_c_` and the `Resolved:` note stands as written.
