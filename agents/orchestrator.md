@@ -127,6 +127,13 @@ Remaining setup (after step 1 is resolved):
    - **Sub-agents run their own rules check.** Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here.
    - **On exit 4**, beyond what `agent-setup.md` says (an internal `fusion-paths` bug; the user's workbench is fine, so do **not** send them to check `.active-circle`), report it as a fusion bug and file an issue at `$OUT_ISSUE`.
    - **Root-anchored surfaces the resolver does not cover.** `fusion-workbench/agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/` and `.session-marker` stay at the workbench root at fixed paths, because the hooks, the monitor and the `bin/` helpers read them there and none of them has a fallback. Keep naming those literally.
+   - **Who and which checkout.** Every event line you emit names both (**Structured Event Log**). Resolve the pair once, here, and hold it for the session:
+
+     ```bash
+     [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
+     ```
+
+     It prints `PERSON=` and `CHECKOUT=`; compose neither value yourself. `rules/fusion-workbench-conventions.md` `### Who filed it` governs the call, including the exit that halts you.
    - **The Turn budget.** Phase 2 runs a bounded number of Turns. The bound is a per-project setting and this prompt does not carry it: it is declared in the project's `fusion.json` as `{"orchestrator": {"maxTurns": <n>}}`, merged per leaf over fusion's built-in default. Two layers, and it is the only setting fusion resolves. Resolve it once, here, and hold the answer for the whole session — every later step that shows or compares a Turn count means **this** value, written below as `<max-turns>`.
 
      ```bash
@@ -218,10 +225,10 @@ Remaining setup (after step 1 is resolved):
       ```bash
       [ -f fusion-workbench/orchestrator-events.jsonl ] || touch fusion-workbench/orchestrator-events.jsonl
       ```
-    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only). It carries `history_file`, the workbench-relative path from step 6:
+    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only). It carries `person` and `checkout` from step 2, as every line does, and `history_file`, the workbench-relative path from step 6:
       ```bash
       TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
-      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"history_file\":\"<the step 6 path>\",\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
+      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"person\":\"<PERSON>\",\"checkout\":\"<CHECKOUT>\",\"history_file\":\"<the step 6 path>\",\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
       ```
       **That field is the session's identity, and it is why a resume can be told from a restart.** A resumed session emits this line too — it is a new process — and puts the *same* path in it, because the history file is one of the fields **What a resumed session inherits** keeps. So the log carries two `session_start` lines naming one file, and a Turn count taken over `turn_start` events runs from the **first** of them, spanning the interruption exactly as `session.git_head_at_start` does. A restarted session creates a new history file at step 6 and therefore names a different one, and its count starts where it should. Nothing else in the log distinguishes those two cases, and since the Turn number is no longer written down anywhere, this log is the only place it can be read.
     - **REFRESH DASHBOARD** — update the dashboard (written in step 0) with session Directive and snapshot counts
@@ -939,7 +946,7 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 ### Cleanup
 
-- Emit `session_end` event.
+- Emit `session_end` event, carrying `person` and `checkout` as every line does.
 - **Run the staging check one last time** (see **Staging check**), before the report below. This is the last boundary at which a record left out of every staging list can still be committed by this session; after it, the miss belongs to whoever opens the tree next. Name any `record` row to the user and commit it with the housekeeping split.
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
 - **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session. **Anything about this session that is not in `orchestrator-events.jsonl`, in git or in a workbench record ceases to exist at this line**, including the whole `work_queue`, which since the persisted task list was removed has no other durable copy. Emit before you delete, not after.
@@ -1253,6 +1260,8 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
 {
   "ts": "2026-04-08T15:23:01",
   "event": "<event_type>",
+  "person": "Ada Lovelace <ada@example.com>",
+  "checkout": "5e8248d7",
   "turn": 2,
   "task": "P:1513-D1",
   "agent": "coder",
@@ -1261,6 +1270,8 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
 ```
 
 Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`). `session_start` carries one field of its own, `history_file`: the session's identity in a log where a resume appends a second `session_start` (Setup step 8).
+
+**`person` and `checkout` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. Both values come from the guarded `bin/fusion-identity` call at Setup step 2 and are composed nowhere else. **A half that did not resolve makes its field absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line.
 
 **Event types:**
 
@@ -1303,7 +1314,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 
 **Obtain timestamps** from `date -u +%Y-%m-%dT%H:%M:%S` for each event. Do not estimate or reuse timestamps.
 
-**Emitting events:** Use a single `echo '{"ts":"...","event":"..."}' >> fusion-workbench/orchestrator-events.jsonl` command per event. The append operator (`>>`) ensures concurrent reads are safe.
+**Emitting events:** Use a single `echo '{"ts":"...","event":"...","person":"...","checkout":"..."}' >> fusion-workbench/orchestrator-events.jsonl` command per event — that one `echo` carries the pair held from Setup step 2. The append operator (`>>`) ensures concurrent reads are safe.
 
 ### 3. Post-Session Sequence Diagram
 

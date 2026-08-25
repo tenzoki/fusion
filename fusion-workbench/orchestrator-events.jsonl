@@ -2325,3 +2325,17 @@
 {"ts":"2026-08-25T11:35:57","event":"turn_end","turn":1,"detail":"1 task resolved, 6 issues created, 1 closed"}
 {"ts":"2026-08-25T11:35:57","event":"turn_start","turn":2,"detail":"1 ready task"}
 {"ts":"2026-08-25T11:35:57","event":"task_start","turn":2,"task":"R2","agent":"reconciler","detail":"backfill 28 records"}
+{"ts":"2026-08-25T16:20:39","event":"session_start","history_file":"shared/history/260825-1820-orchestrator-session.md","detail":"Directive not yet stated; mode unresolved"}
+{"ts":"2026-08-25T19:23:38","event":"session_start","history_file":"circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md","detail":"Circle 260825-2023-presence-travels-monitor-filters-own-checkout activated; C4 of the multi-user spec"}
+{"ts":"2026-08-25T19:30:42","event":"scope_resolved","detail":"mode custom; shaping done in the Circle record, plan missing; next step planner; agents planner then coder/coderev/reconciler; gates expected: plan approval, ontocoder tasks"}
+{"ts":"2026-08-25T19:30:42","event":"planner_start","detail":"C4 of shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md plus the Circle record"}
+{"ts":"2026-08-25T20:06:05","event":"planner_done","detail":"circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md — 11 steps, 10 coder + 1 analyst"}
+{"ts":"2026-08-25T20:06:05","event":"gate_hit","detail":"Plan review (Phase 0b step 0b.2)"}
+{"ts":"2026-08-25T20:06:06","event":"gate_response","detail":"approve — run steps 1-9, step 10 deferred pending the hook-test-lines decision"}
+{"ts":"2026-08-25T20:06:06","event":"queue_built","detail":"10 tasks queued (steps 1-9 + step 11 conditional); step 10 blocked on an open decision; 6 blocked by dependency at build time"}
+{"ts":"2026-08-25T20:06:43","event":"turn_start","turn":1,"detail":"3 ready tasks: P-1, P-2, P-3"}
+{"ts":"2026-08-25T20:07:01","event":"task_start","turn":1,"task":"P-1","agent":"analyst","detail":"measure session_id availability in hooks"}
+{"ts":"2026-08-25T20:07:01","event":"task_start","turn":1,"task":"P-2","agent":"coder","detail":"bin/fusion-events + hooks/lib/events-query.ts"}
+{"ts":"2026-08-25T20:07:01","event":"task_start","turn":1,"task":"P-3","agent":"coder","detail":"agents/orchestrator.md event schema carries person and checkout"}
+{"ts":"2026-08-25T20:16:10","event":"task_blocked","turn":1,"task":"P-3","agent":"coder","detail":"edits complete and clean; npm test exit 1 caused solely by sibling P-2's uncommitted hooks/lib/events-query.ts missing its README-hooks.md row, which is in P-2's own scope. Held for a joint validation once P-2 returns; no bugfixer dispatched, the failure is not this task's"}
+{"ts":"2026-08-25T20:17:07","event":"task_done","turn":1,"task":"P-1","agent":"analyst","detail":"report written; (a) yes, (b) split: stdout reaches the model, systemMessage does not, (c) yes. Both branches of step 11 answered positive. Commit held for the joint validation with P-2 and P-3"}
