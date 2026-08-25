@@ -67,3 +67,18 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+
+**Reconciliation 260825-1241 (reconciler, domain `code`, HEAD `cfab17e`).** Option 1 is on disk and
+the record never recorded it. `skills/setup/SKILL.md` Step 0e resolves its comparison root through
+`[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$(...)"` in all three of its bash blocks
+— the classification block, the replace block and the stamp block — with the `source-root-unresolved`
+skip the record's option 1 required. `CLAUDE.md`'s `bin/fusion-source-root` row states the same
+outcome and cites this record for it, so the normative surface the record's second constraint names
+already matches what ships. Marker `_o_` → `_i_`: the answer skipped the recorded-answer step and
+went straight to code, which `rules/fusion-workbench-conventions.md` `## Inline State Tracking`
+allows.
+
+---
+Implemented: 3464575 — `skills/setup/SKILL.md` Step 0e resolves its root through `bin/fusion-source-root` (option 1); the mechanism itself landed in `dc78da2` against `$FUSION_PLUGIN_ROOT` and this commit moved it.

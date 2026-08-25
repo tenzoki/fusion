@@ -2311,3 +2311,11 @@
 {"ts":"2026-08-25T06:58:05","event":"session_start","history_file":"shared/history/260825-0858-orchestrator-session.md","detail":"Setup complete; Directive not yet stated; domain code; max_turns 12"}
 {"ts":"2026-08-25T08:31:06","event":"gate_response","agent":"user","detail":"Setup must repair a departing .gitignore rather than report it; decision filed as _a_, follow-up filed as _o_"}
 {"ts":"2026-08-25T09:48:33","event":"gate_response","agent":"user","detail":"option 1 with the .checkout-id exception; both decision records now _a_; no opt-out mechanism to be built"}
+{"ts":"2026-08-25T10:41:27","event":"scope_resolved","detail":"mode custom; 1 task; reconciler; domain code"}
+{"ts":"2026-08-25T10:41:27","event":"queue_built","detail":"1 task, 0 blocked"}
+{"ts":"2026-08-25T10:41:27","event":"turn_start","turn":1,"detail":"1 ready task"}
+{"ts":"2026-08-25T10:41:27","event":"task_start","turn":1,"task":"R1","agent":"reconciler","detail":"reconcile the multi-user spec"}
+{"ts":"2026-08-25T10:59:13","event":"task_done","turn":1,"task":"R1","agent":"reconciler","detail":"9 drift items: 6 corrected, 3 filed; 5 new defects total"}
+{"ts":"2026-08-25T10:59:13","event":"reconciliation","turn":1,"detail":"9 discrepancies"}
+{"ts":"2026-08-25T10:59:13","event":"coherence_review","turn":1,"detail":"verdict review-needed; recommendation revise Artifact"}
+{"ts":"2026-08-25T10:59:13","event":"gate_hit","turn":1,"agent":"user","detail":"Rebalance gate: reconciler verdict review-needed"}

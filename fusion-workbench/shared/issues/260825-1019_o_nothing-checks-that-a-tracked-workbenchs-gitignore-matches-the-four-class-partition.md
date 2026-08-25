@@ -78,3 +78,40 @@ Whether a project may depart deliberately and say so once is open at
 `shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`,
 and the repair cannot be built before it is settled: the opt-out's existence decides the
 repair's shape.
+
+---
+
+**Reconciliation 260825-1241 (reconciler, domain `code`, HEAD `cfab17e`) — marker unchanged at `_o_`.
+Two findings, and the second decides where the work goes.**
+
+**The stated blocker has cleared.** The closing paragraph above says the repair "cannot be built
+before it is settled" and calls
+`shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`
+open. At HEAD that record carries `_a_` and an `Answered:` line: option 1, direction A repaired for
+classes R2 and R3 only, direction B reported except for `.checkout-id`, and no opt-out mechanism
+built. Its sibling `shared/decisions/260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`
+carries `_a_` likewise. Both were answered in the same commit that filed this record, so the
+paragraph was true when written and is not now. The record stays `_o_` because the repair is not
+built; nothing blocks building it.
+
+**No capability of the multi-user spec covers this, and the nearest text is a constraint that does
+not forbid it.** Read against
+`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`: C0 is head-room, C1 is the
+isolation measurement, C3 is attribution, C4 is presence. C2 is the only candidate and its subject is
+**this repository's** `.gitignore` — its criteria name `git rm --cached fusion-workbench/portfolio.md`
+and the `KEPT:` comment in fusion's own file, both verified against this tree by the `260823-1446`
+pass. A consuming project's `.gitignore` appears in no criterion of any capability.
+
+The spec's `## Constraints` carries the closest sentence: *"The multi-checkout arrangement requires
+the project to track its workbench. fusion ships no rule about that and does not acquire one here."*
+That forecloses a **rule obliging a project to track**, and the answered decision ships no such rule:
+`rules/workbench-tracking.md` `## Whether to track the workbench at all` still leaves the choice to
+the project, and Setup never repairs an R1 exclusion, which is the entire content of that choice.
+What Setup would acquire is a repair *within* a project that has already chosen to track. The
+constraint survives intact.
+
+So this is a genuine gap rather than an unstated capability, and the follow-on work is new. `inference:`
+its own Circle rather than a sixth capability on this spec: the spec is agreed, its remaining
+capability is C4, and this work has a Directive of its own, two decisions already answered for it, and
+no dependency on C4. Adding it here reopens an agreed document to carry work that shares nothing with
+it but a rule file. That is a judgement about where the work goes, not a finding — the user decides.

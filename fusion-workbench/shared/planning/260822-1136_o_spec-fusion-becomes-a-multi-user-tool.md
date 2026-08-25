@@ -120,7 +120,7 @@ flowchart TD
 - [x] After the four fixes, `skills/*/SKILL.md` has at least 3 000 bytes of head-room and the hook test suite at least 300 lines, measured by the same summation the bound performs.
 - [x] `agents/*.md` has at least 12 000 bytes of head-room, which is what C3 and C4 need to write into the agent prompts.
 - [x] No baseline map is edited. The three maps in `hooks/lib/__tests__/surface-growth-bound.test.ts` and the map in `hooks/lib/__tests__/rules-emission-golden.test.ts` are byte-identical before and after this Circle, except where a re-baseline follows an actual cut and the cut is named in the same commit, which is event 1 of `## Re-baselining` in `hooks/lib/__tests__/helpers/growth-bound.ts`.
-- [ ] The Circle's closure note states, per surface, what was cut and what the head-room measured before and after.
+- [x] The Circle's closure note states, per surface, what was cut and what the head-room measured before and after. *(Ticked 260825-1241 with the deviation stated: C0 had no Circle and therefore no closure note, which `## The Circle sequence` now records at `:94`. The content this criterion asks for is on disk in full at `shared/history/260822-1540-coder-c0-step-9-closure-measurement.md` `## The four surfaces`, a section per surface naming what was cut and the head-room before and after.)*
 
 **Decisions made:**
 - Cut-only Circle rather than paying per step or declaring a third re-baselining moment (user, at the gate on 2026-08-22).
@@ -176,13 +176,13 @@ flowchart TD
 2. **The record-to-session join is weak and is not made load-bearing.** Filenames carry minute resolution, and two sessions of one person can write inside one minute. This spec therefore states plainly that no capability walks from a record to a session. The record carries the person, which is what attribution was asked for. The session appears only in the event log, which the hooks write. If the join is ever needed, it arrives as a body field under condition 1, and it is not needed by anything specified here.
 
 **Acceptance criteria:**
-- [ ] The decision-record template in `rules/fusion-workbench-conventions.md` `## Decision Record Template` carries the person alongside the agent in its `**Filed by:**` field, and the template states the form.
-- [ ] The defect-record format and the Circle-record template in `rules/circle-records.md` carry the same field in the same form. One form, three record kinds.
-- [ ] Every agent that files a record writes the field. The value is read from the environment the way `/fusion:memo` reads it today, which is `$USER`. No second identity mechanism is introduced, because a mechanism that duplicates one already in the system is a defect rather than a solution.
-- [ ] The Circle record gains a claim field that says which person holds the Circle active and from which checkout. It is written when the record is renamed from anticipated to active, and cleared when the record reaches a terminal marker. Both writes ride the rename that already happens, so no new obligation is created.
-- [ ] `/fusion:next` refuses to activate a Circle whose claim field names somebody else, and says who holds it and when the claim was written. The user can override, in which case the claim field records both people and the override is visible in the record.
-- [ ] The honest limit is stated in `rules/circle-records.md`: two people who both pull, both see an empty claim and both activate will both write the field, and git will refuse the second push. The collision is **detected** rather than prevented, which is what answer 1 forecloses by choosing git as the transport. A person who loses that race pulls, sees the claim, and picks another Circle.
-- [ ] Records written before this Circle are not rewritten. The field appears going forward, the same way the filename patterns did.
+- [x] The decision-record template in `rules/fusion-workbench-conventions.md` `## Decision Record Template` carries the person alongside the agent in its `**Filed by:**` field, and the template states the form.
+- [x] The defect-record format and the Circle-record template in `rules/circle-records.md` carry the same field in the same form. One form, three record kinds.
+- [ ] Every agent that files a record writes the field. The value is read from the environment the way `/fusion:memo` reads it today, which is `$USER`. No second identity mechanism is introduced, because a mechanism that duplicates one already in the system is a defect rather than a solution. *(Two halves, and they fail differently — see the 260825-1241 entry in `## Reconciliation Log`. The second half is **stale**, overridden by `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`, which the user answered on 260824 against the option set: attribution is the git identity, read from `bin/fusion-identity`. The first half is **unmet on disk**: 28 of the 63 records filed since the obligation landed carry `**Filed by:**` with no person half and no stated reason for its absence, filed as `shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`.)*
+- [x] The Circle record gains a claim field that says which person holds the Circle active and from which checkout. It is written when the record is renamed from anticipated to active, and cleared when the record reaches a terminal marker. Both writes ride the rename that already happens, so no new obligation is created.
+- [x] `/fusion:next` refuses to activate a Circle whose claim field names somebody else, and says who holds it and when the claim was written. The user can override, in which case the claim field records both people and the override is visible in the record.
+- [x] The honest limit is stated in `rules/circle-records.md`: two people who both pull, both see an empty claim and both activate will both write the field, and git will refuse the second push. The collision is **detected** rather than prevented, which is what answer 1 forecloses by choosing git as the transport. A person who loses that race pulls, sees the claim, and picks another Circle.
+- [x] Records written before this Circle are not rewritten. The field appears going forward, the same way the filename patterns did.
 
 **Decisions made:**
 - Person in the record, session only in the event log (user, answer 8).
@@ -242,7 +242,7 @@ flowchart TD
 ## User decisions pending
 
 - [x] `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` — what happens when two checkouts have both appended to the one tracked log. Blocks the close of C2.
-- [ ] `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` — the operating-system account, the git identity, or both. Blocks nothing before C3 and should be answered at C3's planning gate.
+- [x] `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` — the operating-system account, the git identity, or both. Blocks nothing before C3 and should be answered at C3's planning gate. *(Answered by the user on 260824 and implemented the same day; the record carries `_i_` with an `Answered:` and an `Implemented:` line naming six commits. The answer is none of the three options: attribution takes the git identity, the claim takes the git identity plus a locally minted checkout identifier.)*
 
 ## Reconciliation Log
 
@@ -372,3 +372,105 @@ defect records and one open decision sit in
 them outside every `SCAN_*` the resolver emits. Two of them are C4's own inputs: the second event-log
 reader (`260823-1110_*`) and the monitor's session attribution (`260823-1302_*`). A C4 planner reading
 only `shared/` will not find them.
+
+---
+
+**260825-1241 (reconciler, domain `code`, range `a99e680..cfab17e`) — marker unchanged at `_o_`,
+`**Status:** Partially Complete` unchanged, six of C3's seven acceptance criteria ticked, C0's fifth
+ticked with a deviation stated, and the second entry under `## User decisions pending` ticked.**
+
+*Why the marker and the status do not move.* Four of five capabilities are delivered. C4 is untouched,
+and each of its seven criteria was checked rather than assumed: `orchestrator-events.jsonl` carries no
+`person` key on any line (its three matches for the word are prose inside `detail` strings, from two
+gate responses and one task report); `skills/setup/SKILL.md` Step 0c reports only the same-checkout
+marker; the SessionStart `session_id` measurement C4 names as its own first step has not been run; and
+`agents/orchestrator.md:99` still counts every `turn_start` in the whole log against the session-scoped
+definition at `:1111`. That last one deserves a note, because its defect record is **closed and the
+code is unchanged**: `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+carries `_c_` with `Resolved: referred (C4)`, so the fix lives only in C4's sixth criterion now. The
+seventh criterion is a negative that currently holds — `git ls-files fusion-workbench | awk -F/ 'NF==2'`
+returns `.asset-provenance`, `.fusion-setup` and `orchestrator-events.jsonl` and nothing else — but it
+is a constraint on C4's own work and cannot be discharged before that work exists. `Partially Complete`
+stays the honest field value, and `_o_` stays for the reason the `260822-1556` pass gave.
+
+*C3's seven criteria, opened at their own sites at HEAD rather than read off a closure report.*
+
+1. **Met.** `rules/fusion-workbench-conventions.md` `## Decision Record Template` carries
+   `**Filed by:** <agent name or "user">, <person>`, and `### Who filed it` states the form, the
+   source (`bin/fusion-identity` `PERSON=`, git's own `Name <email>`), the guarded call, and what each
+   of the helper's exit codes obliges.
+2. **Met.** The defect format under `## Issue and Decision Filing — MANDATORY` carries the identical
+   line, and `rules/circle-records.md` `## Circle record template` carries it as well. One form,
+   three record kinds, as the criterion asks.
+3. **Not met, and its two halves fail differently — this is the one criterion of the seven that is
+   open.** See the dedicated paragraph below.
+4. **Met.** `rules/circle-records.md` `## Circle record template` carries `**Claim:**`, and
+   `### The claim field` defines the three literal openings (`Unclaimed`, `Claimed `, and the
+   partial-identity form) plus the value's two halves, person and checkout, both from
+   `bin/fusion-identity`. The writers are in place: `agents/orchestrator.md` `## Circle head fields`
+   writes the `Claimed ` form on the `_a_`→`_t_` rename, and `agents/shaper.md` writes `Unclaimed` at
+   creation. The clearing half is verifiable on disk — `circles/260824-1853-close-every-open-defect/_c_circle.md`,
+   terminal, reads `**Claim:** Unclaimed`.
+5. **Met.** `skills/next/SKILL.md` Step 6.1 refuses in the claim's terms, names who holds the Circle
+   and when, and offers one override at an `AskUserQuestion`; taking it appends the `Overridden `
+   sentence so both identities stand in the record.
+6. **Met.** `rules/circle-records.md` `### The claim field` states the honest limit in the criterion's
+   own terms and in one sentence: *"The collision is detected, not prevented."*
+7. **Met, in the rule and on disk.** `rules/circle-records.md` `### The claim field` states that a
+   record written before the field carries no field and is read as `Unclaimed`, and that records are
+   not rewritten. Measured: 19 records in the workbench carry a person half, every one of them stamped
+   260824 or later, and no record predating the Circle carries one.
+
+*The third criterion, which the orchestrator flagged as stale and is both stale and unmet.* Its second
+half prescribes reading the value "the way `/fusion:memo` reads it today, which is `$USER`". That is
+**stale**, and the spec's own `## Constraints` names the record that made it so:
+`shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
+was answered by the user on 260824 against its own option set — attribution takes the git identity,
+the claim takes the git identity plus a locally minted checkout identifier — and `bin/fusion-identity`
+implements exactly that. The criterion's text no longer describes what the project decided, which is
+itself the finding, and the answered record governs.
+
+A corrected second half does not repair the first, and the first is **unmet**. Of the 63 records filed
+after `2b055a0` landed `### Who filed it` on 260824 at 12:14, 18 carry the person half, 17 carry the
+stated absence the rule's exit-127 branch prescribes, and **28 carry neither** — across six agents
+(`analyst` 8, `ontorev` 10, `coderev` 5, `coder` 3, `reconciler` 2, `planner` 1), so it is the
+obligation's reach rather than one prompt. Filed as
+`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`.
+C3 is therefore substantially delivered and not complete: six criteria of text, one criterion of
+behaviour, and the behaviour is the one that is short.
+
+*C0's fifth criterion, ticked with the deviation stated, on the precedent this log already carries for
+C1's fifth.* It asks the Circle's closure note to state per surface what was cut and what the head-room
+measured before and after. **The content exists in full**, at
+`shared/history/260822-1540-coder-c0-step-9-closure-measurement.md` `## The four surfaces`: four
+sections, each headed with the before and after figures (always-on rule core 3 509 → 3 509,
+`agents/*.md` 1 638 → 16 601, `skills/*/SKILL.md` 30 → 4 661, hook tests 12 → 302 lines), and its
+`## The seven stopping clauses, read back` answers the same clause. **The home does not and cannot.**
+C0 ran as a plan in `shared/` with no Circle directory and no Circle record, which
+`## The Circle sequence` records at `:94`, and the defect that raised the question
+(`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`)
+is closed by that statement rather than by a Circle being created — retro-fitting one would break the
+`shared/`-rooted citations other records already carry. Left unticked, the box would stay open for the
+life of the spec against work nobody can do. Ticked, with the deviation named here, it says what
+happened. C0 is now 5 of 5.
+
+*C1's seventh stays unticked and now has its own record.* It is a conditional whose antecedent is
+false: the measurement showed the isolation holds, so the stopping branch never opened. Three passes
+have now re-derived that same explanation, and the checkbox notation has no third state to carry it,
+so a reader counting what remains reads C1 as 6 of 7 forever. Filed as
+`shared/issues/260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`.
+
+*The pending-decisions list is now clear, and both entries were cleared elsewhere rather than here.*
+The C2-blocking event-log record carries `_i_`; the identity record carries `_i_` with an `Answered:`
+line citing the user's answer of 260824 and an `Implemented:` line naming six commits, each checked
+against its own diff. The unticked box was the stale artifact, not the marker.
+
+*One thing this range does that no capability covers.* `shared/issues/260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md`
+and the two decisions answering it were filed in `cfab17e`, this range's only commit. They are about a
+**consuming project's** `.gitignore`; C2 delivered agreement between fusion's own `.gitignore` and
+`rules/workbench-tracking.md` and reaches no further. The spec's `## Constraints` sentence
+("fusion ships no rule about that and does not acquire one here") forecloses a rule obliging a project
+to track and is **not** contradicted: the answered decision leaves that choice with the project and
+never repairs an R1 exclusion. So the work is a genuine gap rather than an unstated capability. The
+argument for it being its own Circle rather than a sixth capability here is written on that defect
+record; it is the user's call and not the reconciler's.

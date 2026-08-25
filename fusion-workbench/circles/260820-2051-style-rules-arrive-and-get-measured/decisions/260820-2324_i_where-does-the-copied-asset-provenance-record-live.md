@@ -62,3 +62,17 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+**Reconciliation 260825-1241 (reconciler, domain `code`, HEAD `cfab17e`).** Option 1 is on disk,
+including both documentation obligations its `## Constraints` attached to it, and the record never
+recorded any of it. `fusion-workbench/.asset-provenance` exists at the workbench root and is written
+and read by `skills/setup/SKILL.md` Step 0e alone, one `shasum -a 256` line per asset, exactly the
+shape option 1 specifies. The layout tree gained its row in `rules/fusion-workbench-conventions.md`
+`## fusion-workbench Layout` with a paragraph under it, and `rules/workbench-tracking.md`
+`## The four classes` classifies it R3 beside `.fusion-setup` — the same commit obligation the second
+constraint named. Option 2's fallback was not taken: the marker is untouched by the asset comparison.
+Marker `_o_` → `_i_`, for the reason its sibling `260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
+carries.
+
+---
+Implemented: dc78da2 — `fusion-workbench/.asset-provenance` is the root-anchored one-line-per-asset record of option 1, written and read only by `/fusion:setup` Step 0e, with its layout-tree row and its R3 classification landed with it.

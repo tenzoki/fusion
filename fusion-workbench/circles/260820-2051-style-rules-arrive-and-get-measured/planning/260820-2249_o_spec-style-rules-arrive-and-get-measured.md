@@ -1,7 +1,7 @@
 # Spec: the style rules every agent loads are the ones fusion ships, and their effect is measured
 
 **Date:** 2026-08-20
-**Status:** Draft
+**Status:** Partially Complete
 **Source:** In-Circle clarification dispatched by the orchestrator against the Directive of
 `circles/260820-2051-style-rules-arrive-and-get-measured`, with sixteen open defect records and one
 answered decision named as the material.
@@ -648,3 +648,39 @@ unpicking the others. Stamp `260820-2314`.
     comparison inline rather than into a new test file.
 11. **A `coderev` pass runs over the corpus repair** before the Circle's reconciliation, on the
     precedent of the first repunctuation pass, which introduced new defects while repairing old ones.
+
+## Reconciliation Log
+
+**260825-1241 (reconciler, domain `code`, HEAD `cfab17e`) — marker unchanged at `_o_`,
+`**Status:** Draft` → `Partially Complete`, and no acceptance criterion ticked.**
+
+*Why the header moves.* `Draft` is false against a Circle that was planned, executed and closed
+against this spec. `circles/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md`
+`## Closure note` records Bounded Closure on 260821 with three of the Directive's four outcomes
+reached, and the plan beside this file carries `_c_` with seventeen `[DONE]` steps.
+`Partially Complete` is the honest field value, on the closure note's own authority.
+
+*Why no box is ticked, and why that is not this pass's omission.* The file carries ten capabilities
+and 49 acceptance criteria, none of them marked, and at least C1's mechanism is demonstrably at HEAD
+(`skills/setup/SKILL.md` Step 0e, all five cases plus the two the sixth outcome was split into).
+Verifying 49 criteria against the tree is a reconciliation pass of its own, and this session's
+Directive is `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. Ticking them
+from the closure note rather than from the tree would be exactly the substitution
+`rules/critical-stance.md` §3 forbids. The gap is filed as
+`shared/issues/260825-1250_*_a-bounded-circle-holds-a-draft-spec-with-49-unreconciled-criteria-that-no-scan-reaches.md`,
+which also records why no future scan reaches this file: the Circle is terminal, so no `SCAN_PLANS`
+the resolver emits names its store.
+
+*Two of its decision records were transitioned in this pass.* `decisions/260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
+and `decisions/260820-2324_*_where-does-the-copied-asset-provenance-record-live.md` both carried
+`_o_` with empty annotation stubs while option 1 of each is on disk — `bin/fusion-source-root` in all
+three of Step 0e's bash blocks, and `fusion-workbench/.asset-provenance` with its layout-tree row and
+its R3 classification. Both are now `_i_`, citing `3464575` and `dc78da2`.
+
+*The other nine open decisions in this Circle stay open, and each says so itself.* Eight of the
+`260820-2314_*` records carry a `## Answer:` section written by an orchestrator during an unattended
+run, under a closing paragraph stating in terms that it is not the user's answer and that the record
+is filed `_o_` so the user meets it live. `260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`
+carries the same disclaimer in its own words. Transitioning any of them would convert an
+orchestrator's proposal into recorded Grounding, which is the failure one of them already records
+happening and being overturned by the user on 2026-08-21.

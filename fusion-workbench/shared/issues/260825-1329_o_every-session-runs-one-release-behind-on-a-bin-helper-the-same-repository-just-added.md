@@ -1,0 +1,69 @@
+Every session runs one release behind on a bin/ helper the same repository just added
+
+---
+`bin/fusion-identity` landed in the work tree at 260824-1130 and reached the installed copy
+at `$FUSION_PLUGIN_ROOT` only at 260825-0829, on the next `fusion --update`. For those 21
+hours every `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]` call site in every prompt took
+its miss branch, in a repository whose own work tree held the helper the whole time. This is
+the direct cause of the 28 unattributed records, and it is structural rather than a one-off.
+---
+**Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
+**Cross-references:** shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md (the consequence this explains); CLAUDE.md `## Release process` (the two-session shape, stated for agents only); shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md (the guard convention that makes the miss silent)
+
+## What was measured
+
+Timestamps, 260825:
+
+| Fact | When |
+|---|---|
+| `bin/fusion-identity` added to the work tree (`3ba7a46`) | 260824-1130 |
+| `### Who filed it` added to the rules (`2b055a0`) | 260824-1214 |
+| Installed copy at `$FUSION_PLUGIN_ROOT` refreshed | 260825-0829 |
+| Every silent record's filename stamp | between 260824-1621 and 260824-2155 |
+
+Every one of the 28 records lacking the field falls inside the window in which the helper
+was in the tree and not in the install. Not one falls outside it.
+
+## Why this is structural and not an accident of one release
+
+`bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` prefer the work tree when
+`bin/fusion-plugin-cwd` says cwd is this repository, so **rules** written here take effect in
+the same session. Helper **resolution** does not: every call site is written
+`"$FUSION_PLUGIN_ROOT/bin/<name>"`, which is the installed copy, pinned for the session.
+Whether the work-tree preference should reach helper resolution is part (c) of
+`shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention...`
+and is deliberately unanswered.
+
+The consequence is that this repository can never exercise a helper it just wrote, in the
+session that wrote it, through the call sites that use it. `CLAUDE.md` `## Release process`
+states exactly this shape for **agents** ("a Circle that builds an agent and proves it by
+running it is a two-session shape") and says nothing about helpers, although the pin is the
+same pin and the window is longer, because a helper needs no restart to be noticed missing,
+only to be noticed present.
+
+## Why the miss is silent, which is the part that hurts
+
+The guarded call convention (decision `260810-0921`, option a1: tolerate and report) has each
+call site print one line on stderr and continue. That is right for a single call. Across a
+session it means the absence is reported once per call site into a stream nobody aggregates,
+and the agent proceeds down a branch whose output is indistinguishable from ordinary work
+unless the agent also writes the reason down. Of the 42 records filed while the helper was
+unreachable, 14 wrote the reason and 28 did not: a 67 per cent failure rate on the branch
+that only exists for this situation.
+
+## Candidate directions, none preferred here
+
+1. **Answer part (c) of `260810-1544`**: let helper resolution prefer the work tree in this
+   repository, as rule resolution already does. Closes the window at its source, and only for
+   fusion's own development.
+2. **Setup measures the gap once** and says so: compare `bin/` in the work tree against
+   `$FUSION_PLUGIN_ROOT/bin/`, and name any helper present in one and absent in the other. One
+   line in the Done report, no behaviour change, and it makes a 21-hour blind window visible on
+   its first screen instead of a day later.
+3. **Extend the `CLAUDE.md` two-session paragraph to helpers**, which costs nothing and fixes
+   nothing, but stops the next person rediscovering it.
+
+## Severity
+
+Medium in effect and high in reach: every helper this repository adds carries the same window,
+and every prompt that calls one takes the miss branch inside it.
