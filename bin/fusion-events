@@ -1,0 +1,169 @@
+#!/usr/bin/env bash
+# fusion-events — read fusion-workbench/orchestrator-events.jsonl by the
+# identity on each line, rather than by a line's position in the file.
+#
+# Usage:
+#   fusion-events presence [--days N]      who else has been here (default 7)
+#   fusion-events turns                    this session's Turn count
+#
+# Output on stdout, one KEY=value per line in the shape bin/fusion-paths
+# established. Every reason goes to stderr, including bin/fusion-identity's own,
+# which is passed through untouched. **A figure that could not be taken is
+# absent from stdout and named on stderr; nothing here prints a zero it did not
+# measure.**
+#
+#   presence
+#     window_days=7
+#     scope=pulled
+#     other_people=1
+#     other_checkouts=1
+#     party=person<TAB>Jane Roe <jane@example.com><TAB>4f21ab90<TAB>2026-08-24T09:12:00<TAB>260824-0530-record-attribution-and-circle-claim
+#     party=checkout<TAB>Kai Stalmann <ks@qantr.com><TAB>9c30ee11<TAB>2026-08-25T07:40:00<TAB>shared
+#
+#   turns
+#     turns=3
+#     history_file=circles/<stamp>-<slug>/history/<stamp>-orchestrator-session.md
+#
+# `scope=pulled` is a constant and is the report's own disclaimer: presence
+# reflects only what this checkout has pulled, so a session another person
+# started since the last fetch is invisible here and is not absence.
+#
+# One `party=` line per distinct pair of person and checkout other than this
+# one's, most recent first, carrying five TAB-separated fields: the class, the
+# person, the checkout, the timestamp of that pair's most recent `session_start`
+# in the window, and the Circle it ran on. **The separator is a TAB** because
+# the person value is git's `Name <email>` form and contains spaces by
+# construction. A person the line did not record renders `(not recorded)`; the
+# Circle is read off `history_file` (`circles/<dir>/…` names its Circle,
+# anything else is `shared`, an absent field is `unknown`) and off no field of
+# its own.
+#
+# Three classes, and the split is disjoint and complete:
+#
+#   this checkout's own   `checkout` absent, or equal to ours. Not presence, and
+#                         not printed. **An absent identifier reads as ours**,
+#                         which is what carries the whole pre-C4 log and what
+#                         makes an unresolved reader behave exactly as it did
+#                         before this helper existed.
+#   checkout              a further checkout of the reading person.
+#   person                another party — named by its person where the field is
+#                         present, and counted as its own party by its checkout
+#                         where it is not.
+#   unknown               reached only on exit 4, where the two cannot be told
+#                         apart at all.
+#
+# Exit codes. The 0/1/2 core is shared with bin/fusion-paths and
+# bin/fusion-rules; 3 and 4 are this helper's own and mean something different
+# per subcommand.
+#
+#   0  measured. `other_people=0` and `turns=0` are real answers and reach this
+#      code.
+#   1  usage error.
+#   2  no fusion workbench above the working directory.
+#   3  presence: no line can be classified, so no count is printed. Two causes,
+#      both named on stderr — this checkout could not be identified, or the log
+#      could not be read.
+#      turns: there is no session to scope to. Three causes, named on stderr —
+#      no agentstate.yaml, no `session.history_file` in it, or no log.
+#   4  presence: the person half could not be read, so another person cannot be
+#      told from a further checkout of your own. `other_checkouts` is printed,
+#      `other_people` is not, and every party line reads `unknown`.
+#      turns: no `session_start` in this checkout's lines names that history
+#      file. **A finding, not a zero.**
+#   5  the plugin's compiled hooks are missing, so nothing could be asked.
+#
+# Two notes on that table, because both are easy to get wrong.
+#
+# **3 names an outcome, never a cause**, the way bin/fusion-identity's 3 does.
+# Its causes differ in what a human goes and fixes, and not at all in what the
+# caller does, so the cause is on stderr and the code is one number.
+#
+# **A broken install is 5 here and 3 in the sibling helpers.** Each of
+# bin/fusion-turn-budget, bin/fusion-review-coverage and bin/fusion-staging-drift
+# spends its 3 on it, for the reason their headers give: "there is nothing to check"
+# is an answer about the project, and a broken install must never be reported as
+# one. That reasoning is why the code moved rather than the principle — here 3
+# is already an answer about the project, so the broken install needs a number
+# of its own.
+#
+# ---------------------------------------------------------------------------
+# Why the identity is passed in rather than looked up
+#
+# `bin/fusion-identity` is the one place in the tree a run obtains who wrote a
+# record and which checkout holds it. This script runs it, and hands PERSON,
+# CHECKOUT and its exit code to the node program in the environment
+# (FUSION_EVENTS_PERSON, FUSION_EVENTS_CHECKOUT, FUSION_EVENTS_IDENTITY_EXIT).
+#
+# Two things follow, and both are the point. The criterion stays evaluated in
+# one place: nothing downstream re-derives a person from git or mints a checkout
+# identifier, and a reader that could not obtain either says so from a number
+# rather than by testing an empty capture. And `hooks/lib/events-query.ts` stays
+# a pure function of the log text, the reading identity and the current time —
+# no git, no workbench, no subprocess — so every case in the classification
+# table above is a fixture string and an assertion.
+#
+# The call is `[ -x ]`-guarded per
+# `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
+# an installed copy need not carry a helper added between releases, and a bare
+# call would be exit 127 in the middle of this script. The missing case is
+# passed through as the sentinel 127 and reported, never silently treated as an
+# unidentified checkout.
+#
+# ---------------------------------------------------------------------------
+# Why this exists
+#
+# The event log is class R2 in rules/workbench-tracking.md and carries
+# `merge=union`, so after a pull it holds two checkouts' lines with no ordering
+# between the blocks — and every reader treated it as one session's chronology.
+# Sorting it moves that reading from vague to wrong rather than repairing it
+# (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`).
+# So membership is read off the line instead of inferred from its neighbours,
+# and this is the two readings that follow.
+#
+# `turns` also replaces four copies of a whole-file `grep -c turn_start`, which
+# counted every checkout's Turns and every previous session's. It reports
+# `unavailable` to its callers through exit 3 and 4 rather than through a
+# smaller number, because the defect being repaired is exactly a count that
+# looked like an answer.
+#
+# The work is hooks/dist/events-query.js, resolved relative to this script
+# rather than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree
+# each run their own build. node is already a hard requirement — the guard hooks
+# are node programs (hooks/hooks.json).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/events-query.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-events: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 5
+fi
+
+# --- the identity, obtained in the one place that obtains it ----------------
+
+id_out=''
+id_exit=127
+
+if [ ! -x "$here/fusion-identity" ]; then
+  echo "fusion-events: $here/fusion-identity is missing — this install predates it." >&2
+else
+  # Its stderr passes through: the cause of a missing half is worth more to a
+  # human than the code alone, and the node program phrases only what the code
+  # can carry.
+  if id_out="$("$here/fusion-identity")"; then
+    id_exit=0
+  else
+    id_exit=$?
+  fi
+fi
+
+person="$(printf '%s\n' "$id_out" | sed -n 's/^PERSON=//p' | head -1)"
+checkout="$(printf '%s\n' "$id_out" | sed -n 's/^CHECKOUT=//p' | head -1)"
+
+export FUSION_EVENTS_PERSON="$person"
+export FUSION_EVENTS_CHECKOUT="$checkout"
+export FUSION_EVENTS_IDENTITY_EXIT="$id_exit"
+
+exec node "$entry" "$@"

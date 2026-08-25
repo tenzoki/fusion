@@ -41,6 +41,7 @@ bin/*
 !bin/fusion-prose-metric
 !bin/fusion-identity
 !bin/fusion-session-domain
+!bin/fusion-events
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
