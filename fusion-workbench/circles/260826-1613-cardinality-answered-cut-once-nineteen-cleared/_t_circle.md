@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Unclaimed
+**Claim:** Claimed 260826-1758: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
 **Active spec/plan:** (none yet)
 **Active session history:** (none yet)
 
@@ -105,3 +105,40 @@ The cardinality record was filed on seven instances. Three more have been measur
 - `260825-2023-presence-travels-monitor-filters-own-checkout`. Every one of the nineteen findings, the open cardinality question, and the ranked cut reserve come from it. Its record carries the bounded marker and is terminal, which is why two of the nineteen are corrections filed beside it rather than inside it.
 
 ## Turn log
+
+## Activation proposal
+
+**Proposed for activation at 260826-1705**, by playmaker session `260826-1705`
+(`shared/history/260826-1705-playmaker-direct-dispatch.md`). This is a proposal and not an
+activation: the record's marker is unchanged and `fusion-workbench/.active-circle` was not written.
+
+**Why this Circle, and not merely because it is the only one.** It is the sole anticipated Circle in
+the portfolio, so the ranking is uncontested, and the recommendation would be worth little if that
+were the whole of it. Three properties earn it. Every input its Grounding names resolves on disk and
+was checked this run: the four-option cardinality record, the ranked cut reserve at
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260826-0715-cut-candidates-for-two-growth-bounded-surfaces.md`,
+the cut-only precedent at
+`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`,
+and all nineteen inherited defect records. The three surface figures in the Grounding were re-measured
+independently this run against the tree at commit `2ff5030` and reproduce exactly: 26 lines free of
+20 375 on the hook tests, 47 bytes of 417 843 on `agents/`, 16 bytes of 240 439 on `skills/`. And the
+Circle's inheritance is currently stranded, in the sense that closing its parent removed all nineteen
+records from every agent's scan set; activation is what brings them back into scope.
+
+**The one heuristic flag, stated rather than suppressed.** The ranking rule counts a dependency
+closed only when the depended-on record carries the closed-coherent marker.
+`260825-2023-presence-travels-monitor-filters-own-checkout` carries the Bounded-Closure marker
+instead, which raises the flag. Reading the closure note rather than the marker dissolves it: the
+note states that all four Directive clauses hold and that the bounded marker was written because a
+Rebalance ran, not because the Directive proved unreachable. Nothing this Circle depends on is
+unfinished work in the parent.
+
+**The same reading applies to its open decision.** The Circle's Grounding cites one unresolved
+decision record,
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`.
+Under the ordinary heuristic an open decision in a Grounding is a reason to hold a Circle back. Here
+it is the Circle's first capacity: answering it is the work, not a precondition of the work.
+
+**What activation should expect, and it is in the Grounding rather than added here.** The Circle is
+sequential by construction, since its second capacity cannot be sized until its first has landed, and
+the user accepted that when choosing the order. Nothing in this proposal argues against it.
