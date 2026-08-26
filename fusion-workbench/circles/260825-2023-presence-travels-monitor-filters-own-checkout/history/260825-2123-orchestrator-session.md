@@ -123,3 +123,49 @@ This subsection re-issues the verdict over `e66f7d5`. Working notes at
 **Rebalance recommendation:** revise Artifact
 
 **Why this is not `coherent`, stated plainly.** The three named causes hold; a fourth stands in their place, in shipped text, in the same class, introduced by this Circle and missed by the commit that corrected the others. Calling the aggregate `coherent` would assert the pattern stopped, and the seventh instance is the evidence that it did not. The defect itself is one word and costs one small task; what it is worth is the method note in the filed record — the sixth pass's count-word sweep was structurally blind to a cardinality carried by a bare enumeration and by the word *half*, and that blindness, not the word, is the durable finding.
+
+## Portfolio update
+
+Playmaker ran at Phase 4 after the `_t_`→`_b_` transition at `8d06759`. History:
+`shared/history/260826-1301-playmaker-orchestrator-phase4.md`; `portfolio.md` regenerated whole.
+
+**The portfolio holds no non-terminal Circle.** Nineteen records: 15 closed-coherent, 3
+bounded, 1 superseded, and no anticipated or active one. C4 was the only anticipated record
+the 260825-2051 ranking had, and activating it consumed it. `Recommended next:` reads
+`(none)`, and the dependency-cycle check is recorded as vacuous rather than clean, because a
+graph with no nodes proves nothing.
+
+**No `## Parent grounding stale` note was written, for a structural reason.** That note is
+appended to a Circle record and no non-terminal record exists to receive one. The stale parent
+is `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, a plan, which the
+playmaker may not edit. It went to `## Warnings` with three measured departures: the spec still
+reads `**Status:** Partially Complete` with marker `_o_` although all five capabilities have
+run and every Circle is terminal; all seven C4 acceptance criteria are still written `[ ]`,
+including ones the closure note reports verified; and `## Constraints` still says attribution
+reuses `$USER` and calls the identity decision open, while that decision carries `_i_` and the
+same spec ticks it elsewhere. Reconciling it is a reconciler dispatch or a hand edit.
+
+**The playmaker found an eighth wrong count, in this session's own closure note.** It reads
+"Sixteen defect records stay open" where fourteen are open, at the very commit that wrote it,
+inside the paragraph reporting the seven-instance pattern as the Circle's Bounded-Closure
+Artifact. Filed as `shared/issues/260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md`
+and left uncorrected: the record is terminal and `rules/circle-records.md` holds that a
+contradiction preserved in a terminal record is evidence.
+
+It is the strongest instance in the set. The seven prior were written by executors and found
+by later passes; this one was written by the party making the argument, in the sentence making
+it, with all seven in front of it. And it was catchable from inside the paragraph, whose own
+following sentences enumerate 5, 2 and 7.
+
+**Backlog:** order unchanged, no rename needed. Rank 1 `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`,
+rank 2 `shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`, whose thesis C4 just
+supplied evidence for and whose blocker has cleared further than the entry knows. Promoting it
+needs one act only the user can perform: reviving decision
+`shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+from deferred to open by hand.
+
+**Where the fourteen open defects belong:** one Circle, not two and not distributed. No
+anticipated Circle exists to distribute them to, and two Circles would pay the hook-test cut
+and its user gate twice. The playmaker's three shaping notes: make the cut that Circle's first
+capability rather than a step inside a larger one, answer the cardinality question before
+fixing the prose defects, and treat the two direction calls as gates rather than work.
