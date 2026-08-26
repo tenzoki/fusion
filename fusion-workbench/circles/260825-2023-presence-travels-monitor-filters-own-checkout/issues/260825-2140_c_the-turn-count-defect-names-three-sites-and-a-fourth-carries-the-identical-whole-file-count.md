@@ -47,3 +47,6 @@ the other left, twice: the `session_start` emit is the same shape and is filed s
 Repairing the fourth site in isolation would produce a fourth definition. The plan cited above routes
 all four through one implementation, `bin/fusion-events turns`, so the count has one definition that
 is executable rather than four that are prose.
+
+---
+Resolved: all four sites now read one implementation, `bin/fusion-events turns`. The two `grep -c` blocks (`agents/orchestrator.md` Setup Step 1 sub-step 3, `skills/setup/SKILL.md` Step 1 sub-step 2) became the same `[ -x ]`-guarded call; `agents/orchestrator.md` Phase 2 step 3 states the definition once and cites the helper as its one implementation, and the `progress.turn` row of the Persistent-State derivation table now names the helper instead of restating the derivation. `scope=all-checkouts` — the helper's own signal that it could not identify this checkout and counted every checkout in the merged log — is reported as `unavailable` with its reason at both call sites, and the number is never printed: that is the whole-file count this record was filed about. Circle plan step 5.

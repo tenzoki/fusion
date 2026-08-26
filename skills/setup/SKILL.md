@@ -374,12 +374,15 @@ Read `./fusion-workbench/agentstate.yaml`.
      ```bash
      A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' ./fusion-workbench/agentstate.yaml 2>/dev/null)
      C=$([ -n "$A" ] && git rev-list --count "$A"..HEAD 2>/dev/null)
-     T=$(grep -c '"event":"turn_start"' ./fusion-workbench/orchestrator-events.jsonl 2>/dev/null)
      echo "commits=${C:-unavailable}"
-     echo "turns=${T:-unavailable}"
+     if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-events" ]; then
+       "$FUSION_PLUGIN_ROOT/bin/fusion-events" turns
+     else
+       echo "turns=unavailable (this install predates bin/fusion-events)"
+     fi
      ```
 
-     The task tallies come from counting the `work_queue` entries by `status` in the file you just read. Report a figure that could not be taken as `unavailable`, never as `0` — an absent anchor is not a session with no commits. Each figure is captured into a variable and reported on its own emptiness, never on the exit code of the command that took it: `git rev-list` prints nothing when the anchor no longer resolves, and `grep -c` prints `0` **and** exits non-zero when the log carries no match, so a form that branched on `||` printed the number and the fallback word together. `turns=0` is the opposite case and is a real figure: the log was read and the session stopped before its first Turn.
+     The task tallies come from counting the `work_queue` entries by `status` in the file you just read. Report a figure that could not be taken as `unavailable`, never as `0`: an absent anchor is not a session with no commits. `git rev-list` prints nothing rather than failing when the anchor no longer resolves, so the commit count is read off its variable's emptiness and never off an exit code; the `if`/`else` is deliberate for the same reason, since a `&&`/`||` one-liner prints the fallback word after a helper that ran and reported a real non-zero. **The Turn count is `bin/fusion-events turns` and nothing else.** Its `turns=` line is the figure only when it also prints `scope=checkout`. Every other outcome is `unavailable` with its reason named: `scope=all-checkouts` (the helper could not identify this checkout and counted every checkout in the merged log — report that reason and **never the number**, which is the whole-file count this call exists to abolish), no `turns=` line at all (exit 3 or 4), or an absent helper. `turns=0` is a real figure: the log was read and the session stopped before its first Turn.
   3. Present a summary to the user:
      - Session Directive and mode
      - Progress (the Turn and commit counts derived in sub-step 2, tasks completed vs total from `work_queue`)

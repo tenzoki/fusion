@@ -117,7 +117,7 @@ flowchart TD
    - Surface: `skills/*/SKILL.md`, estimated +300 to +400 bytes of the 1 923 available. Step 5 returns bytes to the same surface.
    - Dependencies: step 3, which fixes the field names and their absence rule.
 
-5. **One Turn count, one implementation, four sites**
+5. [DONE] **One Turn count, one implementation, four sites**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`, `skills/setup/SKILL.md`
    - Changes: replace the `grep -c` block in `agents/orchestrator.md` Setup Step 1 sub-step 3 and the identical block in `skills/setup/SKILL.md` Step 1 sub-step 2 with a guarded call to `bin/fusion-events turns`. Keep the surrounding care that a figure which could not be taken is reported as `unavailable` and never as `0`, and that `turns=0` is a real figure. In `agents/orchestrator.md` Phase 2 step 3 and in the Persistent State File derivation table, state the definition once and cite the helper as the implementation of it, rather than restating the derivation in a second place. **Where the helper is unreachable, report `unavailable` and name the reason; never fall back to the whole-file count**, because that is the defect being repaired. Both defect records named in `## Current State` close with this step.

@@ -96,12 +96,15 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
      ```bash
      A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' fusion-workbench/agentstate.yaml 2>/dev/null)
      C=$([ -n "$A" ] && git rev-list --count "$A"..HEAD 2>/dev/null)
-     T=$(grep -c '"event":"turn_start"' fusion-workbench/orchestrator-events.jsonl 2>/dev/null)
      echo "commits=${C:-unavailable}"
-     echo "turns=${T:-unavailable}"
+     if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-events" ]; then
+       "$FUSION_PLUGIN_ROOT/bin/fusion-events" turns
+     else
+       echo "turns=unavailable (this install predates bin/fusion-events)"
+     fi
      ```
 
-     The task tallies come from counting `work_queue` entries by `status` in the file you just read. A figure that could not be taken is reported as `unavailable`, never as `0` — an absent anchor is not a session with no commits. Each figure is captured into a variable and reported on its own emptiness, never on the exit code of the command that took it: `git rev-list` prints nothing when the anchor no longer resolves, and `grep -c` prints `0` **and** exits non-zero when the log carries no match, so a form that branched on `||` printed the number and the fallback word together. `turns=0` is the opposite case and is a real figure: the log was read and the session stopped before its first Turn.
+     The task tallies come from counting `work_queue` entries by `status` in the file you just read. A figure that could not be taken is reported as `unavailable`, never as `0`: an absent anchor is not a session with no commits. `git rev-list` prints nothing rather than failing when the anchor no longer resolves, so the commit count is read off its variable's emptiness and never off an exit code; the `if`/`else` is deliberate for the same reason, since a `&&`/`||` one-liner prints the fallback word after a helper that ran and reported a real non-zero. **The Turn count is `bin/fusion-events turns` and nothing else** — Phase 2 step 3 states the definition it implements. Its `turns=` line is the figure only when it also prints `scope=checkout`. Every other outcome is `unavailable` with its reason named: `scope=all-checkouts` (the helper could not identify this checkout and counted every checkout in the merged log — report that reason and **never the number**, which is the whole-file count this call exists to abolish), no `turns=` line at all (exit 3 or 4), or an absent helper. `turns=0` is a real figure: the log was read and the session stopped before its first Turn.
   4. Present the saved state to the user as a summary:
      - Session Directive and mode
      - How far the session got — the Turn count and commit count derived in step 3, and tasks completed vs total from `work_queue`
@@ -551,7 +554,7 @@ At most `<max-turns>` Turns — the Turn budget resolved at Setup Step 2 — num
 
 1. **Running the Unresolved-budget check-in** — but only when this session's Turn budget came back unresolved at Setup Step 2, and never before Turn 1, at whose start no Turn has elapsed to check in on. The gate is defined under Step 3d, where the bound it stands in for is written; this is where it runs. It **gates the emission in step 3**: no `turn_start` is emitted until the check-in has been answered *Continue*, so a Turn the user declines is a Turn the log never counted and the anchor in step 2 is never recorded for. When the budget resolved, this step does not exist at all — the *Max Turns reached* row of the Step 3d table is doing the same work, and asking as well would be asking for a bound the session already has.
 2. Recording `control.turn_start_head` in `agentstate.yaml` with `git rev-parse --short HEAD` (the value `<turn-start-HEAD>` referenced by Step 3c and Step 3c-bis below sources from this field).
-3. Emitting a `turn_start` event. **This is the Turn number's only record.** Nothing writes the Turn count to `agentstate.yaml` any more, so the count of `turn_start` events in `orchestrator-events.jsonl` since this session's `session_start` is what "which Turn is this" means, here and everywhere below. A Turn re-entered by a resume is not one this session started — it was started by the session that is gone and it already has its `turn_start`, so emit no second one or the log counts that Turn twice. It runs no check-in either, for the same reason: it is not a Turn this session is deciding to spend. Step 1 resumes at the next Turn.
+3. Emitting a `turn_start` event. **This is the Turn number's only record.** Nothing writes the Turn count to `agentstate.yaml` any more, so what "which Turn is this" means, here and everywhere below, is the `turn_start` events **this checkout wrote** in `orchestrator-events.jsonl` since this session's `session_start` — and `bin/fusion-events turns` is that definition's one implementation. Read the figure from the helper; do not derive it again anywhere. A Turn re-entered by a resume is not one this session started — it was started by the session that is gone and it already has its `turn_start`, so emit no second one or the log counts that Turn twice. It runs no check-in either, for the same reason: it is not a Turn this session is deciding to spend. Step 1 resumes at the next Turn.
 4. **REFRESHING DASHBOARD** — set `**Turn:** <N>/<max-turns>` to the current Turn number over the resolved budget (`<N>/--` when it is unresolved), reset "This Turn" section to show the Turn's tasks as `[QUEUED]`.
 
 **This sequence is what every route that creates a Turn runs**, and that is why the check-in sits in it. Phase 2 is entered here from Phase 1, from Step 3e's refresh, from the *Revise Artifact* answer at Step 3c-bis, and from *Revise Artifact* at Phase 3 — four routes create a Turn, one entry, no per-route carve-out. Three of them once bypassed the gate. Two further entries into Phase 2 create no Turn and run none of this: the interrupted-session resume (Setup step 1) and the *Revise Grounding* resume at `paused_at_task`.
@@ -1115,7 +1118,7 @@ Fields under `plan_context` are optional — include only what is relevant to th
 | What you used to read here | Where you read it now |
 |---|---|
 | `progress.commits` | `git rev-list --count <session.git_head_at_start>..HEAD` |
-| `progress.turn` | the `turn_start` events in `orchestrator-events.jsonl` since this session's `session_start` |
+| `progress.turn` | `bin/fusion-events turns`, the one implementation of the definition stated at Phase 2 step 3 |
 | `progress.tasks_total` / `_done` / `_skipped` / `_errored` | the `status` field of the `work_queue` entries in this same file — hand-written, so this row meets the criterion above only for the done count, which the `task_done` events also carry; `queued` and `deferred` have no event |
 | `progress.max_turns` | `bin/fusion-turn-budget`, resolved once at Setup Step 2 — it reads a configured ceiling and was never a session count |
 
