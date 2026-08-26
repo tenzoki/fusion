@@ -169,3 +169,167 @@ anticipated Circle exists to distribute them to, and two Circles would pay the h
 and its user gate twice. The playmaker's three shaping notes: make the cut that Circle's first
 capability rather than a step inside a larger one, answer the cardinality question before
 fixing the prose defects, and treat the two direction calls as gates rather than work.
+
+## Session summary (Phase 4)
+
+**Status:** Complete. Circle C4 closed Bounded Closure (`_b_`) with the Directive reached.
+
+### Budget
+
+Every record count below is read off the stores at write time, never accumulated
+across Turns. The four that are derived carry the command that took them.
+
+| Metric | Count |
+|--------|-------|
+| Turns | 3 |
+| Tasks resolved | 22 |
+| Tasks skipped/deferred | 0 |
+| Issues created | 33 |
+| Issues resolved | 18 |
+| Decisions answered (`_o_`→`_a_`) | 0 |
+| Decisions implemented (`_a_`→`_i_`) | 1 |
+| Commits | 24 |
+| Agent errors | 0 |
+| Human gates hit | 5 |
+
+Anchor `8119fc2`, session start `260825-2123`, so the figures span the interrupted
+predecessor as well as the resumption. `Issues created` counts every record whose own
+filename stamp is at or after the session start; `Issues resolved` and
+`Decisions implemented` count names that did not exist at the anchor. The counts run
+across both the Circle's store and `shared/`.
+
+### Per-Turn log
+
+**Turn 1** (interrupted session) — P-1, P-2, P-3. Commits `73ca11c`..`b11bec6`. Review
+filed 10 findings. No Coherence verdict: the session was interrupted before its Turn
+boundary.
+
+**Turn 2** (resumed) — R-1, P-4, P-7, P-9, P-5, P-6, R-2, P-8, R-3, A-1, C-1, P-10, P-11.
+Commits `7ae6aae`..`8fb42ce`. Coherence `ok`, with Artifact↔Directive read as partially
+toward on two named counterexamples, both removed in Turn 3.
+
+**Turn 3** — R-7, R-10, R-12, R-14, W-1, Z-1, Z-2, and four review passes. Commits
+`6deeb33`..`3f62a7d`. Coherence `review-needed` at Phase 3, `revise Artifact` taken; then
+`review-needed` again at the confirmation pass, `revise Grounding` taken.
+
+### Review coverage
+
+**Range:** `8119fc2..3f62a7d`, 24 commits, 4 reviews, `unusable=0`.
+
+**Covered by:**
+- `reviews/260826-0141-coderev-…` range `8119fc2..8655ec2`, covers 4
+- `reviews/260826-0910-coderev-…` range `b11bec6..72a9561`, covers 9
+- `reviews/260826-1116-coderev-…` range `8fb42ce..6deeb33`, covers 1, `not-opened=none`
+- `reviews/260826-1330-coderev-…` range `7774d56..e66f7d5`, covers 1
+
+**Not covered:** nine commits, and **every one of them touches only `fusion-workbench/`**,
+verified per commit with `git show --stat --format= --name-only <c> | grep -v '^fusion-workbench/'`
+rather than read off the subjects. They are `b11bec6`, `8fb42ce`, `287f7ff`, `7774d56`,
+`bb5d92f`, `8d06759`, `312b1ff`, `69e7e5a`, `3f62a7d`: four review filings, the plan
+closure, the decision filing, the Circle closure, and two defect filings.
+
+**This claim was false when the closure note made it** and is true now. `e66f7d5` touched
+seven shipped files and no review had opened it; the note was written from a coverage
+reading taken before that commit existed. Recorded at
+`shared/issues/260826-1315_*_the-closure-note-claims-every-code-commit-was-reviewed-and-one-was-not.md`,
+and the gap was then closed by the fourth review rather than left named.
+
+**Carried `**Not-opened:**`:** seven workbench records, no shipped file. The one that
+matters is `history/260826-1132-reconciliation.md`, the source of three numbers the last
+review re-measured against the tree instead of reading.
+
+### What the session leaves open
+
+Seventeen defect records, none falsifying a Directive clause. Five need hook-test lines the
+surface does not have, with the analyst's reserve of cut candidates measured and unspent.
+Two await a user direction call. The rest are review findings, three of them filed after
+the Circle closed.
+
+One open decision is the session's substantive inheritance:
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`.
+Nine instances now stand behind it, three of them written by this orchestrator, two of
+those inside documents arguing that the pattern exists. The ninth is not a cardinality at
+all but a claim about coverage, which none of the record's four options reaches.
+
+## Session Flow
+
+Built from `fusion-workbench/orchestrator-events.jsonl`, filtered to checkout `5e8248d7`
+and sorted by `ts`, not reconstructed from memory. Turn 1 belongs to the interrupted
+predecessor and is drawn from its own emitted lines.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant C as Coder
+    participant A as Analyst
+    participant CR as Coderev
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    Note over O: Turn 1 (interrupted session)
+    O->>A: P-1 can a hook obtain the session identifier
+    A-->>O: positive on all three questions (68038d0)
+    O->>C: P-2 bin/fusion-events
+    C-->>O: done (97407df)
+    O->>C: P-3 every emitted line names its writer
+    C-->>O: done (8655ec2)
+    O->>CR: review 8119fc2..8655ec2
+    CR-->>O: 10 findings, 18 files not opened (b11bec6)
+    Note over O: interrupted mid-Turn 2
+
+    Note over O: Turn 2 (resumed)
+    U-->>O: Continue
+    O->>C: P-6, R-2, P-8 (already in the tree, uncommitted)
+    C-->>O: verified, 760 tests (753932b)
+    O->>C: R-3 three bare-stamp citations
+    C-->>O: done (d751534)
+    O->>U: GATE both surfaces at their bound
+    U-->>O: find the cut first
+    O->>A: A-1 cut candidates, two surfaces
+    A-->>O: 352 test lines, 2148 agents bytes, ranked
+    O->>U: GATE which coverage to give up
+    U-->>O: candidates 1-3 and agents 1
+    O->>C: C-1 the authorised cut
+    C-->>O: -262 lines, -915 bytes, no baseline moved (c649556)
+    O->>C: P-10 tests, hard budget 200 lines
+    C-->>O: 24 cases in 200 lines exactly (46de871)
+    O->>C: P-11 session_id, both branches
+    C-->>O: channel measured end to end (72a9561)
+    O->>CR: review b11bec6..72a9561 + 18 carried files
+    CR-->>O: 2 High: the Circle's own defect survived it (8fb42ce)
+    O->>U: Coherence gate, three edges
+    U-->>O: continue
+
+    Note over O: Turn 3
+    O->>C: R-10, R-12+R-14, R-7 in parallel
+    C-->>O: three shares of the pin measured, 1+3+2
+    O->>C: W-1 fold the pin and the golden once
+    C-->>O: gate agreed 1430 before writing (6deeb33)
+    O->>CR: review the wave
+    CR-->>O: 0 High, counts re-measured and holding (7774d56)
+    O->>C: Z-1 close the plan
+    C-->>O: criteria 5 and 6 corrected, correction recorded (287f7ff)
+    O->>R: final reconciliation
+    R-->>O: review-needed, two more wrong counts
+    O->>U: Rebalance gate
+    U-->>O: fix the counts before closing
+    O->>C: Z-2 four counts, measured not prescribed
+    C-->>O: sixth pass, nothing further, boundary stated (e66f7d5)
+    O->>R: confirmation pass, look once differently
+    R-->>O: a seventh count, inside the sixth pass's own scope
+    O->>U: Rebalance gate again
+    U-->>O: file the Grounding question
+    O->>O: decision 260826-1252 filed, four options, no recommendation (bb5d92f)
+    Note over O: Circle closes _b_ (8d06759)
+    O->>U: GATE Circle stop conditions, ten clauses
+    U-->>O: all ten hold
+    O->>PM: portfolio refresh
+    PM-->>O: an eighth count, in the closure note itself (312b1ff)
+    O->>O: ninth found: the coverage claim is false (69e7e5a)
+    O->>U: close the gap or name it?
+    U-->>O: close it
+    O->>CR: review 7774d56..e66f7d5
+    CR-->>O: suite red at HEAD on one word; repaired (3f62a7d)
+    Note over O: Session complete
+```
