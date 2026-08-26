@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { realpathSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   CASE_TIMEOUT,
@@ -28,8 +27,17 @@ import {
 //     directory, no event row (issues 260707-0750 and 260707-0751);
 //   * a write tool is allowed and RECORDED, which is the whole of what the hook
 //     still produces;
-//   * `git checkout HEAD -- <paths>` runs, which is fusion's own revert
-//     strategy and the one command it cannot afford to lose.
+//   * `git checkout HEAD -- <paths>` runs, in both spellings, which is fusion's
+//     own revert strategy and the one command it cannot afford to lose.
+//
+// The verdict is where that third claim now lives, and only the verdict. A
+// describe that ran the command through a real shell and asserted git had put
+// the file back went on 2026-08-26, to buy head room under the hook-test growth
+// bound: `runBash` was not in its path, so it measured git's own semantics
+// rather than anything fusion can break, and the two shells it ran under exist
+// only for that half — the hook receives a JSON payload and never a shell. What
+// is genuinely given up with it is the case that watched for a revert which
+// "restored" the file by deleting it.
 //
 // Each case is still a fresh subprocess against a temporary project root. That
 // is a requirement of the thing under test rather than a style choice: every
@@ -253,9 +261,11 @@ describe("ordinary work is allowed and writes nothing", () => {
           "rm -rf build",
           "sed -i '' 's/a/b/' notes.txt",
           "cp docs/.keep /tmp/y",
-          // fusion's own revert strategy. If this ever denies, every agent
-          // loses its way to undo a bad edit.
+          // fusion's own revert strategy, in both spellings the orchestrator
+          // uses. If either ever denies, every agent loses its way to undo a
+          // bad edit.
           "git checkout HEAD -- notes.txt",
+          "git checkout HEAD -- .",
           "echo hi 2>&1",
         ];
 
@@ -288,105 +298,6 @@ describe("ordinary work is allowed and writes nothing", () => {
         },
         { files: configFiles("{ not json") },
       );
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-// ---------------------------------------------------------------------------
-// git's revert strategy, end to end.
-//
-// The orchestrator reverts an agent's out-of-scope edit with
-// `git checkout HEAD -- <paths>`, so this command running is a precondition of
-// fusion's own error handling. Two retired policies each had to be argued into
-// letting it through — the mutation classifier because it names a file, the
-// branch policy because it names `HEAD` — and it survived both by a
-// discriminator that could have been got wrong. Nothing inspects it now, which
-// makes this the case that would notice a third policy arriving on this surface
-// and taking it out.
-//
-// Scope: the PreToolUse VERDICT, on ordinary project files. The effect side
-// asserts the command really does revert: the working file is dirtied first, and
-// the command has to put it back. An allow asserted without the effect would
-// pass just as well against a guard that had broken the command some other way.
-// ---------------------------------------------------------------------------
-
-/** The two shells, because Claude Code starts the user's login shell, not bash. */
-const SHELLS = { bash: "/bin/bash", zsh: "/bin/zsh" } as const;
-
-/** The file the revert puts back. Seeded, tracked, and guarded by nothing. */
-const REVERT_TARGET = "notes.txt";
-
-/**
- * Turn a harness project into a git repository with two commits, so `HEAD~1`
- * exists, differs from `HEAD`, and a checkout of either is a real write.
- */
-function initRepo(root: string): void {
-  const git = (...args: string[]): void => {
-    const res = spawnSync("git", args, {
-      cwd: root,
-      stdio: "ignore",
-      env: {
-        ...process.env,
-        GIT_AUTHOR_NAME: "harness",
-        GIT_AUTHOR_EMAIL: "harness@example.invalid",
-        GIT_COMMITTER_NAME: "harness",
-        GIT_COMMITTER_EMAIL: "harness@example.invalid",
-        GIT_CONFIG_GLOBAL: "/dev/null",
-        GIT_CONFIG_SYSTEM: "/dev/null",
-      },
-    });
-    if (res.status !== 0) {
-      throw new Error(`harness git ${args.join(" ")} failed (${String(res.status)})`);
-    }
-  };
-  git("init", "-q", ".");
-  git("add", "-A");
-  git("commit", "-qm", "one");
-  writeFileSync(resolve(root, REVERT_TARGET), "notes, revised\n", "utf-8");
-  writeFileSync(resolve(root, "build/out.js"), "// built, revised\n", "utf-8");
-  git("commit", "-qam", "two");
-}
-
-describe("the revert strategy is allowed, and it reverts", () => {
-  for (const form of [`git checkout HEAD -- ${REVERT_TARGET}`, "git checkout HEAD -- ."]) {
-    for (const shell of ["bash", "zsh"] as const) {
-      it(
-        `allows and reverts (${shell}): ${form}`,
-        () => {
-          withProject(({ root }) => {
-            initRepo(root);
-            const res = runBash(root, form);
-            expect(res.decision ?? "allow").not.toBe("block");
-          });
-
-          withProject(({ root }) => {
-            initRepo(root);
-            const target = resolve(root, REVERT_TARGET);
-            const committed = readFileSync(target, "utf-8");
-            writeFileSync(target, "# an agent's out-of-scope edit\n", "utf-8");
-            spawnSync(SHELLS[shell], ["-c", form], { cwd: root, stdio: "ignore" });
-            expect(readFileSync(target, "utf-8"), shell).toBe(committed);
-          });
-        },
-        CASE_TIMEOUT,
-      );
-    }
-  }
-
-  it(
-    "leaves the file in place — the revert is not a delete",
-    () => {
-      // Guards the assertion above against a git that "reverted" by removing
-      // the file, which would satisfy a content comparison against nothing.
-      withProject(({ root }) => {
-        initRepo(root);
-        spawnSync(SHELLS.bash, ["-c", `git checkout HEAD -- ${REVERT_TARGET}`], {
-          cwd: root,
-          stdio: "ignore",
-        });
-        expect(existsSync(resolve(root, REVERT_TARGET))).toBe(true);
-      });
     },
     CASE_TIMEOUT,
   );

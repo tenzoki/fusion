@@ -21,13 +21,13 @@
   editor.md 13635
   ontocoder.md 13262
   ontorev.md 7098
-  orchestrator.md 162877
+  orchestrator.md 161962
   planner.md 19423
   playmaker.md 38953
   reconciler.md 20691
   shaper.md 28833
   taskplanner.md 14070
-  total 417695
+  total 416780
 
 [skills bytes]
   archive/SKILL.md 25223
@@ -62,8 +62,8 @@
   fusion-prose-metric.test.ts 174
   fusion-session-domain.test.ts 80
   glob-nomatch-lint.test.ts 148
-  guard-bash-integration.test.ts 393
-  guard-project-config-integration.test.ts 423
+  guard-bash-integration.test.ts 304
+  guard-project-config-integration.test.ts 250
   guard-state-shape.test.ts 251
   helpers/citation-scan.ts 947
   helpers/growth-bound.ts 123
@@ -92,4 +92,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 376
-  total 20375
+  total 20113
