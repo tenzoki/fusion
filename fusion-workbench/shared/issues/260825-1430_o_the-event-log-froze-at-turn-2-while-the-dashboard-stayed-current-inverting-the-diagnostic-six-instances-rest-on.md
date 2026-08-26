@@ -106,3 +106,25 @@ premise a future detection would be built on, and it is damaged quietly: the cou
 is one line of absence in a 2327-line file.
 
 **Found by:** reconciler, session-end pass over `a99e680..3d4b181`, HEAD `3d4b181`.
+
+---
+Also seen: 260826-0904 by coder — a second instance in the same Circle: the log's Turn-2 block ends at a `task_start` for P-5 while the commit for that task had already landed, so the resuming session read its own progress from git rather than from the log.
+
+**Second instance, read off the file.** `fusion-workbench/orchestrator-events.jsonl` line 2357 is
+`task_start` turn 2 task P-5 at `2026-08-25T23:58:18`, and the next line is the resuming session's
+`session_start` at `2026-08-26T04:47:27`. Between the two, `dad5042` was committed at
+`2026-08-26T00:11:57Z`. The work was done, the commit was in the tree, and the log said the task had
+started and nothing more. The resuming session had to derive how far Turn 2 got from `git rev-list`
+and the working tree, and the `task_done` line at 04:51:19 says so in its own `detail` field: *state
+write missed by the interrupted session*.
+
+This is the record's own inversion and not a new fault. The durable diagnostic was the stale one, and
+what the instance adds is that it recurred inside the very Circle that repaired the log's other
+reading faults. `bin/monitor` and `bin/fusion-events` both now scope the file by checkout, and
+scoping a file that stopped being written repairs nothing about this.
+
+**Not discharged by `circles/260825-2023-presence-travels-monitor-filters-own-checkout`.** Its
+Directive is per-checkout attribution and reading, which is orthogonal to whether a line is emitted
+at all; nothing in its range makes an emit durable across an interruption, and both items under
+`## What to consider` are untaken, the second of them explicitly a decision for whoever picks up the
+referral. The marker stays `_o_`. This note records a sighting, not a closure.

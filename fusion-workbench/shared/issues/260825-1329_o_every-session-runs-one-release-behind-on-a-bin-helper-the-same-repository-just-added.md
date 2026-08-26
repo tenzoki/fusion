@@ -96,3 +96,22 @@ and the installed copy at `~/.fusion/bin/fusion-identity` carries mtime 2026-08-
 All 31 records in the set are stamped between `260824-1621` and `260824-2155`, inside that
 window without exception, and every in-window record stamped `260825` carries its person
 half.
+
+---
+Also seen: 260826-0904 by coder — the orchestrator's own Setup on 2026-08-26 took the `[ -x ]` miss branch on `bin/fusion-events`, added to this work tree in `97407df` earlier in the same Circle and still absent from `$FUSION_PLUGIN_ROOT`.
+
+**Second instance, verified rather than carried over.** `git log --diff-filter=A -- bin/fusion-events`
+puts the helper in the work tree at `97407df`; `~/.fusion/bin/fusion-events` does not exist. So the
+Setup step that reads the session's Turn count found no helper to run and fell back to a hand-scoped
+read of `fusion-workbench/orchestrator-events.jsonl`, which is exactly the branch the guard is written
+for. Nothing malfunctioned: `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
+requires the guard, and the guard behaved. What the instance adds is that the lag now reaches the
+helper this Circle built to fix a different reading fault, so the Circle could not use its own output
+in the session that produced it.
+
+**Not discharged by `circles/260825-2023-presence-travels-monitor-filters-own-checkout`.** The Circle's
+Directive is presence and per-checkout reading; helper resolution is untouched by every commit in its
+range, each call site is still `"$FUSION_PLUGIN_ROOT/bin/<name>"`, and part (c) of
+`shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` stays
+unanswered, so neither candidate direction in `## Candidate directions, none preferred here` is built.
+The marker stays `_o_`. This note records a sighting, not a closure.
