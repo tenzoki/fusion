@@ -47,10 +47,15 @@ Claude Code
   +-- SessionStart
   |     +-- exports FUSION_PLUGIN_ROOT to $CLAUDE_ENV_FILE
   |     +-- emits the "Fusion loaded" systemMessage banner (static printf)
-  |     \-- session-start.ts
-  |           |   Warns when the workbench root sits ABOVE the working
-  |           |   directory instead of at it. Silent otherwise.
-  |           \-- lib/workbench-root.ts   (the same upward walk every hook uses)
+  |     +-- session-start.ts
+  |     |     |   Warns when the workbench root sits ABOVE the working
+  |     |     |   directory instead of at it. Silent otherwise.
+  |     |     \-- lib/workbench-root.ts   (the same upward walk every hook uses)
+  |     \-- session-id.ts
+  |           Prints "fusion: session_id=<uuid>" on plain stdout, the
+  |           channel that reaches the model -- where the banner above
+  |           uses systemMessage, which reaches only the user. Silent
+  |           when the payload carries no session_id.
   |
   +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
   |     \-- guard.ts
@@ -87,7 +92,8 @@ The effective hook configuration:
         "hooks": [
           { "type": "command", "command": "[ -n \"${CLAUDE_PLUGIN_ROOT}\" ] && echo \"export FUSION_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}\" >> \"$CLAUDE_ENV_FILE\" || true" },
           { "type": "command", "command": "printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"systemMessage\":\"Fusion loaded. Orchestrator sessions: run /fusion:setup before any other work.\"}}'" },
-          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-start.js" }
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-start.js" },
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-id.js" }
         ]
       }
     ],
@@ -175,6 +181,7 @@ last written for.
 | File | Purpose | Committed? |
 |------|---------|------------|
 | `session-start.ts` | SessionStart hook — warns when the session started below the project root. See [Start your session at the project root](#start-your-session-at-the-project-root) | Yes |
+| `session-id.ts` | SessionStart hook — prints `fusion: session_id=<uuid>` on plain stdout, which is the channel that reaches the model; `systemMessage` reaches the user and never it. Both halves were measured against Claude Code 2.1.245 and read from the transcript rather than from the model's testimony about its own context (`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`). It is a fourth SessionStart command rather than a line inside `session-start.ts` because one process writes one stdout and the two need opposite channels: an envelope that carries the warning routes it away from the model and leaves the model's copy empty. A payload with no usable identifier produces no output at all — anything written here becomes model context, so absence is silence rather than a line saying there is nothing to say | Yes |
 | `guard.ts` | PreToolUse hook — allows every call and decides nothing. It writes the `guard_allow` trace row for a write-tool call and the `guard_advisory` rows for whatever the configuration loader could not resolve, and that is the whole of it. Its own header carries the account of each check that used to live here and the measurement that removed it | Yes |
 | `tracker.ts` | PostToolUse hook — runs the staging and review-coverage measurements and hands the model whatever they have to say. Observation only: a PostToolUse hook cannot block, and since 2026-08-12 it raises nothing either. Both measurements fire on a narrow trigger, so since 2026-08-15 an ordinary write at an unremarkable path reaches no measurement here at all — the session-state drift check that held the every-tool-call slot went with the hand-maintained counters it measured | Yes |
 | `turn-budget.ts` | Prints the orchestrator's Phase-2 Turn budget, merged from the project's `fusion.json` (`{"orchestrator": {"maxTurns": <n>}}`) over the built-in defaults — two layers, and the only setting fusion still resolves. For the orchestrator's Setup, through `bin/fusion-turn-budget`. No hook reads the value — it exists so the budget stops being prose: it was written into `agents/orchestrator.md` in seven places and four spellings, one of which already called it a "default" while nothing could override it (issue `260811-1712`). A value that is not a whole number of 1 or more is dropped, named on stderr, and inherits | Yes |

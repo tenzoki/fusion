@@ -1276,7 +1276,7 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
 
 Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`). `session_start` carries one field of its own, `history_file`: the session's identity in a log where a resume appends a second `session_start` (Setup step 8).
 
-**`person`, `checkout` and `session_id` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. Both values come from the guarded `bin/fusion-identity` call at Setup step 2 and are composed nowhere else. **A half that did not resolve makes its field absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line. **`session_id` names the Claude Code process, which `history_file` does not:** a fusion resume is a new process holding the history file fixed, so the two fields partition the log differently, and this one tells apart the processes that share one fusion session.
+**`person`, `checkout` and `session_id` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. `person` and `checkout` come from the guarded `bin/fusion-identity` call at Setup step 2 and `session_id` from the SessionStart line read there; none of the three is composed anywhere else. **A half that did not resolve makes its field absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line. **`session_id` names the Claude Code process, which `history_file` does not:** a fusion resume is a new process holding the history file fixed, so the two fields partition the log differently, and this one tells apart the processes that share one fusion session.
 
 **Event types:**
 
@@ -1319,7 +1319,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 
 **Obtain timestamps** from `date -u +%Y-%m-%dT%H:%M:%S` for each event. Do not estimate or reuse timestamps.
 
-**Emitting events:** Use a single `echo '{"ts":"...","event":"..."<ID>}' >> fusion-workbench/orchestrator-events.jsonl` command per event — `<ID>` is the pair held from Setup step 2. The append operator (`>>`) ensures concurrent reads are safe.
+**Emitting events:** Use a single `echo '{"ts":"...","event":"..."<ID>}' >> fusion-workbench/orchestrator-events.jsonl` command per event — `<ID>` is the identity fragment held from Setup step 2. The append operator (`>>`) ensures concurrent reads are safe.
 
 ### 3. Post-Session Sequence Diagram
 

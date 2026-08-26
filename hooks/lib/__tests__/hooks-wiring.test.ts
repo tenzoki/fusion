@@ -90,9 +90,9 @@ describe("hooks.json wiring — the working-directory warning runs at SessionSta
   });
 
   it("keeps the FUSION_PLUGIN_ROOT export and the loaded banner alongside it", () => {
-    // The three SessionStart commands are independent by design (see the header
-    // of `hooks/session-start.ts`). This pins that adding the third did not
-    // absorb or displace either of the two that were already there.
+    // The four SessionStart commands are independent by design (see the header
+    // of `hooks/session-start.ts`). This pins that the two later arrivals did
+    // not absorb or displace either of the two that were already there.
     const sessionStart = loadHooks().hooks.SessionStart ?? [];
     const commands = sessionStart.flatMap((entry) =>
       entry.hooks.map((h) => h.command),

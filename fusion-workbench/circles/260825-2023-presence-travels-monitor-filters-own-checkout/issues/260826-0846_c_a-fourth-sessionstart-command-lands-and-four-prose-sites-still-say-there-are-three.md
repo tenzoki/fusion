@@ -43,3 +43,27 @@ One pass over the five sites. The count is the only claim that moved; the reason
 carries about why the commands are independent holds unchanged and gains a case, since the new
 command is separate for a sharper reason than the other two — it needs the opposite output
 channel, and one process writes one stdout.
+
+---
+Resolved: all five sites corrected, and the record's list was complete — a search over the
+tree for a sixth (every `SessionStart` and `session-id` mention in `*.md`, `*.ts`, `*.json`
+outside `hooks/dist/` and the workbench) turned up nothing further. `CLAUDE.md:29` now reads
+"four independent commands", names `hooks/session-id.ts` in the enumeration, and carries the
+fourth's purpose and the channel argument as its own sentence at the end of the row, so the
+"that warning" back-reference to `session-start.ts` stays adjacent to the clause it points at.
+`README-hooks.md` `## Architecture` grows a fourth SessionStart branch, `session-start.ts`
+demoted from `\-- ` to `+-- ` to make room; `### 1. Verify hooks are wired` gains the
+`dist/session-id.js` command line, so the snippet is again what `hooks/hooks.json` holds; and
+`## Files` gains a `session-id.ts` row between `session-start.ts` and `guard.ts`, carrying the
+measured-channel citation and the absent-rather-than-empty rule.
+`hooks/lib/__tests__/hooks-wiring.test.ts:93` says four and "the two later arrivals" rather
+than "the third"; the edit is 3 comment lines for 3, so the bounded hook-test surface moves 0
+lines and the golden's `hooks-wiring.test.ts 103` entry is unchanged.
+
+Two things this pass found and did not fix, each smaller than the record and neither in scope:
+the reference-resolution pin moves by 2 paths for this edit (`hooks/session-id.ts` in
+`CLAUDE.md`, and the `${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-id.js` token in the wiring
+snippet, which resolves as a rooted plugin path), re-approved by the orchestrator with the
+wave rather than here; and no test asserts that a SessionStart entry invokes
+`dist/session-id.js`, which is the same regression shape the `dist/session-start.js` case in
+that file exists for.

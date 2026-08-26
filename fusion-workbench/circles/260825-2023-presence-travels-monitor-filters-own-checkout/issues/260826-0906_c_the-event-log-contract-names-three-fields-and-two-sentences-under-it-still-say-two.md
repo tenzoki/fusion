@@ -44,3 +44,10 @@ Two clauses. At `:1279`, name the two sources rather than one: person and checko
 step, and none of the three composed anywhere else. At `:1322`, "the identity fragment held from
 Setup step 2" rather than "the pair", so the sentence stops carrying a count that a fourth field
 would falsify again.
+
+---
+Resolved: both clauses corrected in place, the section otherwise untouched. `agents/orchestrator.md:1279`
+now names the two sources: `person` and `checkout` from the guarded `bin/fusion-identity` call at Setup
+step 2, `session_id` from the SessionStart line read there, and none of the three composed anywhere else.
+`agents/orchestrator.md:1322` reads "the identity fragment held from Setup step 2" instead of "the pair",
+so the sentence carries no field count for a fourth field to falsify.

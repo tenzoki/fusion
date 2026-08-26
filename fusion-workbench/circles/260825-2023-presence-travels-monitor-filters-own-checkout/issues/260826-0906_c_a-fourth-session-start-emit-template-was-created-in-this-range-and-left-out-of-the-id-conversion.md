@@ -66,3 +66,29 @@ does for everything else.
 Second, and separately: the two renderings of one procedure have now diverged twice on the same
 class of edit, each time invisibly. Whether that earns a gate is a question rather than a fix, and
 the record above named it once already without one arriving.
+
+---
+Resolved: `skills/setup/SKILL.md:483` now carries `\"event\":\"session_start\"<ID>,\"history_file\"` and no
+literal `person`/`checkout` field; `grep -n 'checkout\\":\\"' skills/setup/SKILL.md` returns nothing. The
+fragment is defined for the skill body by pointer, not restatement: Step 0i (`:352`) closes with "Hold the
+pair as `<ID>`, the fragment defined at `agents/orchestrator.md` Setup step 2", and Step 5's prose (`:480`)
+already cited `agents/orchestrator.md` `### 2. Structured Event Log` for the contract, the unresolved-half
+rule included — that sentence is unchanged and now shortens to "It carries `<ID>` from Step 0i".
+
+Counted before answering, since the point of the finding is that a count of three was wrong: there is no
+fifth site. Across `agents/`, `skills/`, `rules/`, `bin/`, `docs/`, `templates/`, `README*.md` and
+`CLAUDE.md`, the only lines appending to `orchestrator-events.jsonl` are `agents/orchestrator.md:235`,
+`agents/orchestrator.md:1322` and this one, all three now `<ID>`; `agents/orchestrator.md:953` is the
+prose mention and `:1267` is the `**Event schema:**` specimen, which shows resolved values rather than a
+template and is correctly literal.
+
+The four bytes the fix adds to `skills/` it more than pays back: the file went 48 074 -> 48 065, **-9
+bytes**, so no baseline moves and the `skills` surface gains 9 bytes of head-room rather than spending
+the 7 it had.
+
+`reference-resolution-lint` moves by **+1 path, 0 anchors** for this edit alone, measured by reverting
+this one file against the rest of the dirty tree (reverted: 1424, the committed pin exactly; restored:
+1425). The new token is the `agents/orchestrator.md` citation at `:352`; it is unrooted and names no
+heading, which is why it is a path and not a path-and-anchor. `BASELINE` was **not** re-approved here —
+two siblings were writing to `agents/` in the same wave and the pin is theirs to move once with the
+whole wave's share.

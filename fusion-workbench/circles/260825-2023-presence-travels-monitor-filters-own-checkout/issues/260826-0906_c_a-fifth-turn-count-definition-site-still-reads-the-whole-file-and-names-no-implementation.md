@@ -52,3 +52,15 @@ count is `bin/fusion-events turns`, whose definition is stated at `agents/orches
 step 3. The reconciler does not need the derivation at all — it needs to know that the number is not
 in `agentstate.yaml` and where it is instead, which is what the first half of the sentence already
 says.
+
+---
+Resolved: `agents/reconciler.md:21` no longer derives the count. The bullet now takes it from
+`bin/fusion-events turns` behind `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-events" ]`, states that the helper
+scopes it to this session and this checkout, cites `agents/orchestrator.md` Phase 2 step 3 as the one
+place the definition is stated, and says the figure is `unavailable` when the helper is absent or prints
+no `scope=checkout` line, never `0` and never a `scope=all-checkouts` number. The fifth site is now the
+fifth call site and no new definition was written. The record's `grep -rn turn_start agents/ skills/
+rules/` was re-run over `bin/`, `docs/`, `README-hooks.md`, `CLAUDE.md` and the hook sources as well: no
+sixth site derives the count. `agents/orchestrator.md:237` states a property of the count (a resumed
+session's two `session_start` lines anchor it at the first) without naming the helper, which is a
+description rather than a derivation and was left alone.
