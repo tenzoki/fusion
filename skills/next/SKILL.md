@@ -114,6 +114,8 @@ Present the following, in this order. All four come from the portfolio file. The
 
    **The checkout clause is not decoration.** `portfolio.md` is class L in `rules/workbench-tracking.md` `## The four classes`: regenerated per checkout, never travelling between them. A colleague's closures reach this ranking only after a pull and a fresh playmaker run, and the stamp is what lets a reader notice a ranking made before them.
 
+   **Presence** — the `bin/fusion-events presence` block in `$FUSION_SRC/skills/setup/SKILL.md` `## Step 0c`, rendered by the policy there.
+
 4. **Warnings** — quote (verbatim or summarised) any content in the `## Warnings` section: `dependency-cycle-detected`, `MULTIPLE-ACTIVE`, `STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`, parent-grounding-stale cross-references. If it reads `(none)`, omit this part.
 
 After rendering the briefing, proceed to Step 5b.

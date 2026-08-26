@@ -124,7 +124,7 @@ flowchart TD
    - Surface: `agents/*.md` and `skills/*/SKILL.md`, both expected **negative**: each file loses roughly 700 bytes of shell block and gains roughly 300 bytes of guarded call and explanation. State the measured before-and-after per surface in the commit.
    - Dependencies: step 2, which supplies `turns`.
 
-6. **Presence at the two surfaces where activation is decided**
+6. [DONE] **Presence at the two surfaces where activation is decided**
    - Executor: `coder`
    - Files: `skills/setup/SKILL.md`, `skills/next/SKILL.md`
    - Changes: add a presence report to `/fusion:setup` Step 0c, after the existing marker check and without changing it, and to the `/fusion:next` briefing in Step 5, beside the counts and the generated stamp the briefing already renders. Both call `bin/fusion-events presence` behind `[ -x ]` and render its output in the project's chat language per `rules/user-facing-output.md`. The report is one line in the ordinary case and states four things: the count of other people, the count of further checkouts of the reading person, reported separately in the shape *"1 other person, 1 further checkout of your own"*; the person, the Circle and the time for each, taken from the helper's `party=` lines; the seven-day window; and that the report reflects only what this checkout has pulled, so a session started since the last pull is invisible. **Print nothing at all when the counts are zero**, which keeps the ordinary run quiet, and follow the same reasoning the briefing already applies to an empty backlog. **A read that failed says so and never prints a zero**: exit 3 renders as *"presence could not be read: this checkout has no identifier"*, exit 4 as the counts with the note that the two kinds could not be told apart, and a missing helper as the statement that presence was not read because the installed plugin does not carry it.
@@ -138,7 +138,7 @@ flowchart TD
    - Surface: none bounded.
    - Dependencies: step 3, which fixes the field name the filter reads.
 
-8. **The session-flow diagram draws one checkout**
+8. [DONE] **The session-flow diagram draws one checkout**
    - Executor: `coder`
    - Files: `agents/orchestrator.md`
    - Changes: in the Phase 4 generation step and in Observability section 3, filter to this checkout before the existing sort by `ts`. The record that measured the monitor calls this the smaller instance of the same missing identity: the diagram sorts correctly today and still draws two checkouts' sessions as one interaction.

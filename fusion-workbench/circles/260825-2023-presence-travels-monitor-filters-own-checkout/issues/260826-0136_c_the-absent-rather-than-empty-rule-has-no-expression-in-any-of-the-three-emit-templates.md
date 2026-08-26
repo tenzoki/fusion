@@ -29,3 +29,6 @@ The unresolved half is not hypothetical: it is `bin/fusion-identity` exits 3, 4 
 **Fix direction.** Show the omission in the one template that is executable, `:231`, rather than restating the rule a fourth time: build the two fields into a shell variable that is empty when the value did not resolve, or give the template a second form for the unresolved case. `agents/*.md` has 1 595 bytes of head-room left after this range, so the cheap form is the one to take.
 
 **Scope.** `agents/orchestrator.md`; `skills/setup/SKILL.md` inherits the same template at plan step 4.
+
+---
+Resolved: The pair is now held as one JSON fragment, `<ID>`, defined at `agents/orchestrator.md` Setup step 2 with an unresolved half's key left out and the fragment empty when neither half resolved. All three emit sites carry `<ID>` in place of the two literal fields — the executable `session_start` template, the generic "Emitting events" template, and the `session_end` prose in Cleanup — so the omission is expressed once, where the values are resolved, rather than restated a fourth time. The template that previously read `"person":"<PERSON>","checkout":"<CHECKOUT>"` can no longer emit an empty-string field by being followed literally.

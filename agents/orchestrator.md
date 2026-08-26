@@ -136,7 +136,7 @@ Remaining setup (after step 1 is resolved):
      [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
      ```
 
-     It prints `PERSON=` and `CHECKOUT=`; compose neither value yourself. `rules/fusion-workbench-conventions.md` `### Who filed it` governs the call, including the exit that halts you.
+     It prints `PERSON=` and `CHECKOUT=`; compose neither value yourself. Hold the pair as one JSON fragment, `<ID>` = `,"person":"<PERSON>","checkout":"<CHECKOUT>"`, with an unresolved half's key **left out** and the fragment empty when neither resolved. Every emit template below carries `<ID>` rather than two literal fields, which executes the absent-rather-than-empty rule instead of restating it. `rules/fusion-workbench-conventions.md` `### Who filed it` governs the values. **Its exit-1 halt does not move to Setup:** that halt is about **filing a record**, and this call resolves an event field, which `<ID>` degrades on its own. Report the failed read and halt at the first filing, where the rule puts it.
    - **The Turn budget.** Phase 2 runs a bounded number of Turns. The bound is a per-project setting and this prompt does not carry it: it is declared in the project's `fusion.json` as `{"orchestrator": {"maxTurns": <n>}}`, merged per leaf over fusion's built-in default. Two layers, and it is the only setting fusion resolves. Resolve it once, here, and hold the answer for the whole session — every later step that shows or compares a Turn count means **this** value, written below as `<max-turns>`.
 
      ```bash
@@ -228,10 +228,10 @@ Remaining setup (after step 1 is resolved):
       ```bash
       [ -f fusion-workbench/orchestrator-events.jsonl ] || touch fusion-workbench/orchestrator-events.jsonl
       ```
-    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only). It carries `person` and `checkout` from step 2, as every line does, and `history_file`, the workbench-relative path from step 6:
+    - Emit a `session_start` event by appending one line (per the "Emitting events" rule below — `>>` only). It carries `<ID>` from step 2, as every line does, and `history_file`, the workbench-relative path from step 6:
       ```bash
       TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
-      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\",\"person\":\"<PERSON>\",\"checkout\":\"<CHECKOUT>\",\"history_file\":\"<the step 6 path>\",\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
+      echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"<ID>,\"history_file\":\"<the step 6 path>\",\"detail\":\"<Directive and mode>\"}" >> fusion-workbench/orchestrator-events.jsonl
       ```
       **That field is the session's identity, and it is why a resume can be told from a restart.** A resumed session emits this line too — it is a new process — and puts the *same* path in it, because the history file is one of the fields **What a resumed session inherits** keeps. So the log carries two `session_start` lines naming one file, and a Turn count taken over `turn_start` events runs from the **first** of them, spanning the interruption exactly as `session.git_head_at_start` does. A restarted session creates a new history file at step 6 and therefore names a different one, and its count starts where it should. Nothing else in the log distinguishes those two cases, and since the Turn number is no longer written down anywhere, this log is the only place it can be read.
     - **REFRESH DASHBOARD** — update the dashboard (written in step 0) with session Directive and snapshot counts
@@ -911,7 +911,7 @@ If the helper reports `verdict=unchecked`, write its `why=` line into the sectio
 
 ### Sequence Diagram
 
-Read `fusion-workbench/orchestrator-events.jsonl`, sort the lines by their `ts` field, and generate a Mermaid sequence diagram from the sorted events (see Observability section 3 for format). Append it to the history file as a `## Session Flow` section.
+Read `fusion-workbench/orchestrator-events.jsonl`, drop the lines another checkout wrote, sort what remains by `ts`, and generate a Mermaid sequence diagram from them (see Observability section 3 for the filter and the format). Append it to the history file as a `## Session Flow` section.
 
 ### Phase 4 — Portfolio sync (when active Circle transitions)
 
@@ -949,7 +949,7 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
 
 ### Cleanup
 
-- Emit `session_end` event, carrying `person` and `checkout` as every line does.
+- Emit `session_end` event, carrying `<ID>` as every line does.
 - **Run the staging check one last time** (see **Staging check**), before the report below. This is the last boundary at which a record left out of every staging list can still be committed by this session; after it, the miss belongs to whoever opens the tree next. Name any `record` row to the user and commit it with the housekeeping split.
 - Update live dashboard to show final status with `**Session:** Complete` or `**Session:** Circuit breaker: <reason>`
 - **Delete `fusion-workbench/agentstate.yaml`** — a clean exit means there is nothing to resume. The file's absence signals no interrupted session. **Anything about this session that is not in `orchestrator-events.jsonl`, in git or in a workbench record ceases to exist at this line**, including the whole `work_queue`, which since the persisted task list was removed has no other durable copy. Emit before you delete, not after.
@@ -1317,7 +1317,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 
 **Obtain timestamps** from `date -u +%Y-%m-%dT%H:%M:%S` for each event. Do not estimate or reuse timestamps.
 
-**Emitting events:** Use a single `echo '{"ts":"...","event":"...","person":"...","checkout":"..."}' >> fusion-workbench/orchestrator-events.jsonl` command per event — that one `echo` carries the pair held from Setup step 2. The append operator (`>>`) ensures concurrent reads are safe.
+**Emitting events:** Use a single `echo '{"ts":"...","event":"..."<ID>}' >> fusion-workbench/orchestrator-events.jsonl` command per event — `<ID>` is the pair held from Setup step 2. The append operator (`>>`) ensures concurrent reads are safe.
 
 ### 3. Post-Session Sequence Diagram
 
@@ -1371,7 +1371,8 @@ sequenceDiagram
 ````
 
 **Rules for the diagram:**
-- Sort the events by their `ts` field before reading them in order: after a union merge the log is no longer chronological, so a positional read produces a diagram that is wrong rather than untidy. `ts` is fixed-width `%Y-%m-%dT%H:%M:%S`, so a lexicographic sort of that field is a chronological sort and no date parsing is needed.
+- **Filter to this checkout before you sort.** Drop every line whose `checkout` differs from the one held at Setup step 2; a line carrying none counts as this checkout's own (`### 2. Structured Event Log`). Unfiltered, the diagram draws two checkouts' sessions as one interaction.
+- Sort the remaining events by their `ts` field before reading them in order: after a union merge the log is no longer chronological, so a positional read produces a diagram that is wrong rather than untidy. `ts` is fixed-width `%Y-%m-%dT%H:%M:%S`, so a lexicographic sort of that field is a chronological sort and no date parsing is needed.
 - Include only agents that were actually invoked (omit unused participants)
 - Show every task dispatch, gate interaction, review, and the final reconciliation
 - Use `Note over O: Turn N` to delineate Turns

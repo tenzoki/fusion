@@ -146,6 +146,15 @@ The helper prints `running`, `stale`, or `none` on stdout, and (when running/sta
 
   Do not silently overwrite. The whole point of this step is the warning.
 
+Then, who else has been here:
+
+```bash
+E="$FUSION_PLUGIN_ROOT/bin/fusion-events"
+if [ -x "$E" ]; then "$E" presence; echo "exit=$?"; else echo "presence=unread"; fi
+```
+
+**Both counts `0`: print nothing at all**, as `/fusion:next` does for an empty backlog. Otherwise one line in the project's chat language: `other_people` and `other_checkouts` apart (*"1 other person, 1 further checkout of your own"*), each `party=`'s person, Circle and time, the `window_days` window, and `scope=pulled`: only what this checkout has pulled, so a session started elsewhere since the last fetch is invisible, not absent. **A failed read says so and never prints a zero**: `exit=3` — presence could not be read, this checkout has no identifier; `exit=4` — `other_checkouts`, another person not tellable from a further checkout of your own; `presence=unread` — not read, this install lacks the helper. The rest: that helper's header.
+
 ## Step 0d — Ensure stylometric profiles are present locally
 
 Two profile families seed the project's user-facing voice, both at `./fusion-workbench/stilwerk/` so each project can edit them without affecting other projects or the plugin:
