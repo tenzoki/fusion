@@ -95,7 +95,7 @@
  */
 
 import { basename, resolve, sep } from "node:path";
-import { emitEvent } from "./lib/events.js";
+import { emitEvent, setEventSession } from "./lib/events.js";
 import { bestEffort, failOpen } from "./lib/fail-open.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
@@ -437,6 +437,11 @@ async function main(): Promise<void> {
     respond();
     return;
   }
+
+  // Same seam as `guard.ts`, set at the same point and for the same reason: the
+  // two measurements below each emit a row, and so does the top-level handler,
+  // which has no `input` in scope. See `lib/events.ts`.
+  setEventSession(input.session_id);
 
   // Review coverage, on the narrow trigger of a review file landing. Anchored
   // at the workbench root rather than at cwd, and not stood down in fusion's

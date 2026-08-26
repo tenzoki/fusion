@@ -137,6 +137,7 @@ Remaining setup (after step 1 is resolved):
      ```
 
      It prints `PERSON=` and `CHECKOUT=`; compose neither value yourself. Hold the pair as one JSON fragment, `<ID>` = `,"person":"<PERSON>","checkout":"<CHECKOUT>"`, with an unresolved half's key **left out** and the fragment empty when neither resolved. Every emit template below carries `<ID>` rather than two literal fields, which executes the absent-rather-than-empty rule instead of restating it. `rules/fusion-workbench-conventions.md` `### Who filed it` governs the values. **Its exit-1 halt does not move to Setup:** that halt is about **filing a record**, and this call resolves an event field, which `<ID>` degrades on its own. Report the failed read and halt at the first filing, where the rule puts it.
+   - **Which Claude Code session.** A SessionStart hook prints one line into your context, `fusion: session_id=<uuid>`. Read the value there; no command reproduces it. Extend `<ID>` with `,"session_id":"<uuid>"`. **No line, no key** — the same absent-rather-than-empty rule, and never invent one.
    - **The Turn budget.** Phase 2 runs a bounded number of Turns. The bound is a per-project setting and this prompt does not carry it: it is declared in the project's `fusion.json` as `{"orchestrator": {"maxTurns": <n>}}`, merged per leaf over fusion's built-in default. Two layers, and it is the only setting fusion resolves. Resolve it once, here, and hold the answer for the whole session — every later step that shows or compares a Turn count means **this** value, written below as `<max-turns>`.
 
      ```bash
@@ -1265,6 +1266,7 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
   "event": "<event_type>",
   "person": "Ada Lovelace <ada@example.com>",
   "checkout": "5e8248d7",
+  "session_id": "102df4a8-09be-4019-8a6b-adaec6e95bc5",
   "turn": 2,
   "task": "P:1513-D1",
   "agent": "coder",
@@ -1274,7 +1276,7 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
 
 Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`). `session_start` carries one field of its own, `history_file`: the session's identity in a log where a resume appends a second `session_start` (Setup step 8).
 
-**`person` and `checkout` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. Both values come from the guarded `bin/fusion-identity` call at Setup step 2 and are composed nowhere else. **A half that did not resolve makes its field absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line.
+**`person`, `checkout` and `session_id` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. Both values come from the guarded `bin/fusion-identity` call at Setup step 2 and are composed nowhere else. **A half that did not resolve makes its field absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line. **`session_id` names the Claude Code process, which `history_file` does not:** a fusion resume is a new process holding the history file fixed, so the two fields partition the log differently, and this one tells apart the processes that share one fusion session.
 
 **Event types:**
 

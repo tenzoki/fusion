@@ -76,7 +76,7 @@
  */
 
 import { loadConfig } from "./lib/config.js";
-import { emitEvent } from "./lib/events.js";
+import { emitEvent, setEventSession } from "./lib/events.js";
 import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
 
 /** Hook input from Claude Code (PreToolUse). */
@@ -132,6 +132,16 @@ async function main(): Promise<void> {
     allow(); // Unparseable input — nothing is loaded
     return;
   }
+
+  // Which Claude Code session this row belongs to. Measured non-empty on both
+  // tool hooks and equal to the SessionStart value within one session, so the
+  // field this interface has always declared and never read is populated rather
+  // than vestigial — `circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`
+  // finding (c). Set once here, before the first emit below and before the
+  // top-level handler can reach one; `lib/events.ts` carries why the seam is a
+  // module variable rather than a parameter, and why an unresolved value makes
+  // the key absent instead of empty.
+  setEventSession(input.session_id);
 
   // Tools this hook handles: the four write operations, which it traces, plus
   // Bash, which it allows and records nothing about. Bash is still matched here

@@ -42,10 +42,13 @@ export type GuardEventType = "guard_allow" | "guard_advisory" | "guard_error" | 
 export interface GuardEvent {
     ts: string;
     event: GuardEventType;
+    session_id?: string;
     tool?: string;
     file?: string;
     detail?: string;
 }
+/** Record the session for every event this run goes on to emit. */
+export declare function setEventSession(id: unknown): void;
 /**
  * Append a single event to the JSONL log. No-op if no workbench is found.
  *

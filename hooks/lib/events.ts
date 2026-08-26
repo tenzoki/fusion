@@ -61,9 +61,45 @@ export type GuardEventType =
 export interface GuardEvent {
   ts: string;
   event: GuardEventType;
+  session_id?: string;
   tool?: string;
   file?: string;
   detail?: string;
+}
+
+/**
+ * The Claude Code session this hook run belongs to, or undefined.
+ *
+ * Module state, and safe as module state for one reason: a hook is a fresh node
+ * process per tool call, so there is no second session for this to leak into.
+ *
+ * ## Why it is set here rather than passed at each call
+ *
+ * The alternative was a fifth parameter on `emitEvent`. It fails at the one call
+ * site that matters most: the `guard_error` row both hooks emit from their
+ * top-level `main().catch()` handler, which is outside `main` and has no `input`
+ * in scope. Passing the value there means each hook hoisting a module-level
+ * variable of its own — this variable, twice, with two chances to disagree about
+ * when it is set. One seam, set once after the parse, and every row a run writes
+ * carries the same answer.
+ *
+ * ## Absent, never empty
+ *
+ * A non-string or an empty string reads as unresolved, and an unresolved value
+ * makes the key ABSENT from the row rather than present and empty. That is the
+ * same rule `agents/orchestrator.md` `### 2. Structured Event Log` states for
+ * `person` and `checkout` on the orchestrator's own log, and the reason is the
+ * same: a reader can tell "no session was named" from "the session is the empty
+ * string", and only one of those is a thing that can happen.
+ *
+ * A run that never reaches the parse — unreadable stdin, unparseable JSON —
+ * never calls this, so its rows carry no session and say so by omission.
+ */
+let sessionId: string | undefined;
+
+/** Record the session for every event this run goes on to emit. */
+export function setEventSession(id: unknown): void {
+  sessionId = typeof id === "string" && id !== "" ? id : undefined;
 }
 
 /**
@@ -105,6 +141,7 @@ export function emitEvent(
   const entry: GuardEvent = {
     ts: new Date().toISOString(),
     event,
+    ...(sessionId && { session_id: sessionId }),
     ...(tool && { tool }),
     ...(file && { file }),
     ...(detail && { detail }),

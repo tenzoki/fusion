@@ -90,6 +90,18 @@
  * `systemMessage`, not plain stdout. Plain stdout from a SessionStart hook is
  * `additionalContext` — the model reads it and the user does not (`CLAUDE.md`,
  * Conventions). A warning only the model sees is not a warning.
+ *
+ * That is now measured rather than reasoned, and measured from both ends:
+ * plain stdout reaches the model verbatim, `systemMessage` never reaches it at
+ * all — read out of the transcript's `hook_success` attachments against Claude
+ * Code 2.1.245, in
+ * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`,
+ * finding (b). This file's choice is unchanged by it; what changed is that the
+ * OTHER channel now has a user. `session-id.ts` is the sibling SessionStart
+ * command that puts the Claude Code session identifier in front of the model,
+ * on plain stdout, for exactly the reason this file rejects that channel. The
+ * two are separate commands because one process writes one stdout and the two
+ * concerns need opposite channels; that module's header carries the argument.
  */
 
 import { resolve } from "node:path";
