@@ -104,3 +104,22 @@ that the executor then shipped, and this is the third time in one Circle that a 
 written and wrong one commit later, with no gate able to see any of them. If the user takes only one
 action from this verdict, the durable one is the question of whether a prose count about the tree can
 be gated at all, not the two corrections.
+
+### Confirmation pass — 2026-08-26 12:19, at `e66f7d5`
+
+<!-- RECONCILER-OWNED -->
+
+The section above is the record of what was true at `7774d56`, before the fix, and is left as written.
+This subsection re-issues the verdict over `e66f7d5`. Working notes at
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1219-reconciliation-confirmation.md`.
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: **flagged (Artifact at fault).** All three causes named above are fixed and each was re-measured rather than accepted. `rules/workbench-tracking.md:59` now says four readers and keeps the asymmetry — three drop, one keeps — with the four verified at source (`hooks/lib/events-query.ts:146` `isOurs` under `countTurns:400` and inverted under `otherParties:250`, `bin/monitor:1291-1302`, `agents/orchestrator.md:915` with `:1376`). Both Turn-count quantities are right and stated separately at all five shipped sites, the two `hooks/dist/` copies byte-identical to `hooks/lib/events-query.ts:374`; two literal blocks confirmed at `8119fc2` by `git grep`, five sites confirmed at both revisions, and "four copies" survives nowhere shipped. Criterion 6 reads seven, and seven distinct defect-record paths stand above the `## Reconciliation Log` heading at line 296. The residual note on `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` is present, cites `97407df`, and its claim checks out against `hooks/lib/events-query.ts:392-434`. **One new count is wrong, and it is the seventh of the series:** `agents/orchestrator.md:1279`, the authoring home for the event-line contract, heads a paragraph "`person`, `checkout` and `session_id` stand on every line", says "none of the three is composed anywhere else", and states its rule as "A half that did not resolve makes its field absent rather than empty" — a two-member word over a three-member set, made wrong by this Circle's own `72a9561` and rewritten without being seen by `6deeb33`, the count-correction commit. Two shipped files cite that paragraph as the rule's authority instead of restating it (`hooks/lib/events.ts:90`, `rules/workbench-tracking.md:55`). Filed as `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1219_o_the-event-line-contracts-own-rule-sentence-says-a-half-of-a-set-this-circle-grew-to-three.md`. Sixteen defect records now stand open; none falsifies a Directive clause.
+- Artifact↔Directive: **OK.** Unchanged in substance and re-checked over the one new commit. `e66f7d5` touches `CLAUDE.md`, `bin/fusion-events`, `hooks/lib/events-query.ts` with its two compiled copies, `rules/workbench-tracking.md`, one test constant and the Circle's records — corrections to statements about the Directive's own mechanism, nothing orthogonal and nothing new in scope. The four clauses remain met in the commits the section above names.
+- Grounding↔Directive: **OK.** Unchanged. No decision record was filed, answered or superseded between `7774d56` and `e66f7d5`, so the twenty-four active records and the four bearing closest on the Directive stand exactly as read above.
+
+**Rebalance recommendation:** revise Artifact
+
+**Why this is not `coherent`, stated plainly.** The three named causes hold; a fourth stands in their place, in shipped text, in the same class, introduced by this Circle and missed by the commit that corrected the others. Calling the aggregate `coherent` would assert the pattern stopped, and the seventh instance is the evidence that it did not. The defect itself is one word and costs one small task; what it is worth is the method note in the filed record — the sixth pass's count-word sweep was structurally blind to a cardinality carried by a bare enumeration and by the word *half*, and that blindness, not the word, is the durable finding.
