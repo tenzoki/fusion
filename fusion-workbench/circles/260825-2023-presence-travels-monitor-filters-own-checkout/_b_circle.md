@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260825-2122: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
+**Claim:** Unclaimed
 **Active spec/plan:** circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md
 **Active session history:** circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md
 
@@ -39,6 +39,12 @@ See `**Active spec/plan:**` above. The cited spec or plan states the Directive i
 
 ## Turn log
 
+- Turn 1 (session 260825-2123): commits `73ca11c`..`b11bec6`; Coherence verdict not recorded, the session was interrupted before its Turn boundary; session history: `circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`
+- Turn 2 (session 260825-2123, resumed 260826-0447): commits `7ae6aae`..`8fb42ce`; Coherence verdict `ok`, three edges, Artifact↔Directive read as partially toward on two named counterexamples since removed; session history: same file
+- Turn 3 (same session): commits `6deeb33`..`bb5d92f`; Coherence verdict `review-needed` at Phase 3, `revise Artifact` taken, then `review-needed` again at the confirmation pass with `revise Grounding` taken; session history: same file
+
+**The Turn log was empty until closure and is written here in one act, from `fusion-workbench/orchestrator-events.jsonl` rather than from memory.** That is the failure `shared/issues/260801-2038_*` was filed on, met a seventh time by the Circle that spent three Turns on counts it also failed to keep. Nothing measures a frozen Turn log since the state-file counters were removed on 2026-08-15.
+
 ## Activation proposal (playmaker run 260825-2051)
 
 **Proposed for activation** as the next Circle, at the ranking made 260825-2051. It is the only
@@ -66,3 +72,75 @@ scope and leaves the stranded ones where they are.
 
 **No marker was renamed and `.active-circle` was not written.** The user commits this proposal via
 `/fusion:next`, or the orchestrator does at a Phase 4 activation.
+
+## Closure note
+
+**Bounded Closure (`_b_`), and the Directive was reached.** The two are not in
+tension and the marker needs the sentence: `_b_` is written because the
+three-edge verdict did not pass and a Rebalance ran, not because the Directive
+proved unreachable. All four of its clauses hold, verified at closure. Presence
+is reported at `/fusion:setup` and `/fusion:next` over a seven-day window,
+counting other people and further checkouts separately and stating that the
+report covers only what this checkout has pulled. `bin/monitor` serves
+`/api/dashboard` from this checkout's lines alone, measured against a seeded
+workbench. The Turn count has one definition and one implementation,
+`bin/fusion-events turns`, read by all five sites. And
+`git ls-files fusion-workbench | awk -F/ 'NF==2'` returns the same three entries
+it returned before the Circle, so nothing that stays in the checkout became
+tracked.
+
+All eleven plan steps are `[DONE]` and the plan is closed. All ten clauses of
+`## Where this Circle stops` were put to the user at the Phase-4 gate and all ten
+were answered *holds*. Session history:
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`.
+
+**The Bounded-Closure Artifact is a measurement the Directive did not ask for.**
+Seven counts stated in this Circle's own prose about its own mechanism were false
+at some later HEAD. Each was found by a pass that came after the one that missed
+it; no gate found any. Two of the fixes wrote the next instance, one of them
+being `6deeb33`, whose commit subject is *"the count of emit templates, of
+Turn-count sites and of SessionStart commands is right in every place that states
+it"* and which rewrote the line carrying the seventh without seeing it. One
+instance sat in `rules/workbench-tracking.md`, the file this Circle designated as
+the single authoring home for the repair, put there by step 9 of its own plan
+counting the readers step 8 had just made four.
+
+The seventh instance is what closes the argument. A sixth pass swept every count
+word within 110 characters of the mechanism's vocabulary, 108 candidate lines
+read one at a time, found nothing, and stated its own boundary honestly. The
+seventh pass found an instance *inside* that declared scope: `A half that did not
+resolve` for a set of three, two lines below a heading that states its
+cardinality by naming its three members. A cardinality can be carried by `half`,
+`pair`, `both`, `either` or by a bare enumeration, and a count-word sweep is
+blind to all of it. So the pattern is not carelessness in one Circle and it is
+not fixable by another pass: the eighth would find the eighth.
+
+That is recorded as an open question rather than corrected an eighth time:
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`,
+four options, no recommendation, and the empty recommendation says why. The user
+chose that route at the Rebalance gate over correcting the word.
+
+**The session-identifier measurement, recorded because criterion 7 passes
+vacuously otherwise.** It came back positive on all three questions: the
+SessionStart payload carries a non-empty `session_id`, plain stdout from a
+SessionStart hook reaches the model verbatim, and `session_id` is non-empty on
+PreToolUse and PostToolUse. Both branches of step 11 were therefore taken. One
+negative result stands inside that positive answer and must not be lost in it:
+`hookSpecificOutput.systemMessage` reaches the user and never the model, so a
+delivery built on it would emit correctly, log as a successful hook and put
+nothing in front of the model. `hookSpecificOutput.additionalContext`, the
+obvious clean implementation, was **not** measured and deliberately not used.
+
+**Sixteen defect records stay open and are the follow-on Circle's inheritance.**
+Five need hook-test lines the surface does not have; the growth bound stands at
+20 349 of 20 375 and the analyst's reserve of further cut candidates is unspent.
+Two await a user direction call (`260826-0154`, `260826-0158`). The rest are the
+Turn 3 review's findings, the confirmation pass's seventh count, and the
+resumption-conflation record. None falsifies a Directive clause, which is why
+none blocked closure.
+
+**Review coverage over `73ca11c..bb5d92f`:** 20 commits, 4 reviews. Every commit
+that touched shipped code falls inside a review's declared range. The uncovered
+remainder touches only `fusion-workbench/`, being three review filings, the plan
+closure and this closure's own commits. No release tag was pushed over this
+range, so criterion 10's precondition is discharged rather than deferred.
