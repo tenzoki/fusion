@@ -56,7 +56,7 @@ apply two different rules to one pattern within an hour.
 ## What it adds to the open question
 
 The decision record
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-should-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`
 argues from seven instances that the pattern is a property of stating cardinalities in prose
 rather than carelessness in one Circle. This is the eighth, and it sharpens the argument in
 three ways the seven did not.
