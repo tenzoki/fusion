@@ -1100,3 +1100,37 @@ describe("bin/monitor — the default wildcard bind", () => {
     30000,
   );
 });
+
+// --- The event window at /api/dashboard: this checkout's lines, and only those.
+// The log carries merge=union, so a pull interleaves another checkout's session
+// into it and four readings downstream of this array go false (_read_events in
+// bin/monitor names all four). The repair is identity on the line.
+
+const EVENT_ROWS = [
+  { ts: "2026-08-25T09:00:00", event: "turn_start", detail: "ours-implicit" },
+  { ts: "2026-08-25T09:01:00", event: "turn_start", checkout: "5e8248d7", detail: "ours-named" },
+  { ts: "2026-08-25T09:02:00", event: "session_end", checkout: "4f21ab90", detail: "theirs" },
+];
+function seedEventLog(mine?: string): string {
+  const wb = seedWorkbench([]);
+  const jsonl = EVENT_ROWS.map((r) => JSON.stringify(r)).join("\n") + "\n";
+  writeFileSync(join(wb, "orchestrator-events.jsonl"), jsonl);
+  if (mine !== undefined) writeFileSync(join(wb, ".checkout-id"), `${mine}\n`);
+  return wb;
+}
+
+async function servedEvents(wb: string): Promise<(string | undefined)[]> {
+  const port = await startMonitor(wb);
+  const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
+  return ((await r.json()) as { events: { detail?: string }[] }).events.map((e) => e.detail);
+}
+
+describe("bin/monitor — the event window", () => {
+  it("keeps another checkout's lines out of the served array", async () => {
+    expect(await servedEvents(seedEventLog("5e8248d7"))).toEqual(["ours-implicit", "ours-named"]);
+  });
+
+  it("serves every line when this checkout has no identifier to filter by", async () => {
+    expect(await servedEvents(seedEventLog())).toEqual(["ours-implicit", "ours-named", "theirs"]);
+  });
+});

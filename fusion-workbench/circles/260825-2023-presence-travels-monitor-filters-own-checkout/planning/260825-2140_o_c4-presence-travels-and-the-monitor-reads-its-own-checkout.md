@@ -152,7 +152,7 @@ flowchart TD
    - Surface: none bounded. `bin/fusion-rules` emits this file to no agent, so it falls outside the always-on core that has 14 bytes left.
    - Dependencies: step 3, which is the contract this documents.
 
-10. **The tests, and what they cost**
+10. [DONE] **The tests, and what they cost**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/fusion-events.test.ts` (new), and either a new file or a new block for the monitor's event window
     - Changes: exercise `hooks/lib/events-query.ts` against fixture log text, which needs no git and no workbench because step 2 makes the module a pure function of its inputs. Cover the case split in `## Data Structures` clause by clause: a line with no checkout counted as ours, another person's line, a further checkout of the same person, a line past the window, an empty log, a missing `agentstate.yaml`, a history file with no `session_start`, and `turns=0` as a real figure. For the monitor, extract the event-window read the way `monitor-warnings-panel.test.ts` extracts the warnings read, and assert that another checkout's lines are absent from the served array and that an unreadable identifier serves everything.

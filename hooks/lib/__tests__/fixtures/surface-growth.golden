@@ -57,6 +57,7 @@
   fenced-code-exemption.test.ts 168
   fusion-commit-lock.test.ts 371
   fusion-count-sources.test.ts 442
+  fusion-events.test.ts 166
   fusion-identity.test.ts 200
   fusion-paths.test.ts 878
   fusion-prose-metric.test.ts 174
@@ -73,7 +74,7 @@
   hooks-wiring.test.ts 103
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
-  monitor-warnings-panel.test.ts 1102
+  monitor-warnings-panel.test.ts 1136
   path-literal-lint.test.ts 338
   paths.test.ts 51
   plan-stopping-section-lint.test.ts 284
@@ -92,4 +93,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 376
-  total 20113
+  total 20313
