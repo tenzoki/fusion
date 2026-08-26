@@ -118,3 +118,20 @@ Stated so the next pass does not re-derive it.
 5. **Cleanup, any time:** M-1, M-2, L-2, L-3 and L-4.
 
 None of the ten is a release blocker on its own. H-1 is a blocker on plan step 5.
+
+---
+
+**Reconciliation annotation — 2026-08-26, reconciler, HEAD `7774d56`.** Every finding of this review
+reached a record and every one of those records is closed. The ten `260826-013x` defects plus
+`260825-2140_*_the-two-session-start-emit-sites-disagree-…` all carry `_c_`, and fourteen of the
+sixteen closures in this Circle were re-checked against the tree rather than against their own prose;
+the ones belonging to this review verify at `hooks/lib/events-query.ts:283` (total party sort),
+`:327-335` (`flattenField` on all five fields), `:420-434` (`unstamped`), `hooks/events-query.ts:102-160`
+(`resolveIdentity`, one exit table), `:352`/`:368` (the `scope=` key), and `CLAUDE.md:43` /
+`README-hooks.md:199` (the three bare-stamp citations, now full wildcarded paths).
+
+One closure of this review's findings was overtaken and now carries a `Revised by:` line rather than
+a marker move: `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`
+was closed on "all three emit sites carry `<ID>`" while a fourth existed at
+`skills/setup/SKILL.md:483`. The Turn 2 review caught it; `6deeb33` converted it. The finding was
+right and its closure was one site short.

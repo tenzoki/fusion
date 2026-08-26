@@ -304,3 +304,23 @@ the same terms and its suite spawns too, so this is house style rather than a ne
 
 None of the ten is a release blocker. H-2 is the one that would make a later regression invisible,
 which is the only class here that gets worse with time.
+
+---
+
+**Reconciliation annotation — 2026-08-26, reconciler, HEAD `7774d56`.** Four of this review's findings
+are discharged and their records carry `_c_`: the fourth `session_start` emit template
+(`skills/setup/SKILL.md:483` now carries `<ID>`), the fifth Turn-count definition site
+(`agents/reconciler.md:21` now reads `bin/fusion-events turns` behind `[ -x ]`), the two sentences
+under the event-log contract that still said two fields (`agents/orchestrator.md:1279`, `:1322`), and
+the four prose sites saying three SessionStart commands (`CLAUDE.md:29` now reads four and
+`hooks/hooks.json` holds four). All four verified against the tree.
+
+Five stay open by the user's closure decision and go to a follow-on Circle:
+`260826-0847_*_…state-load-suite`, `260826-0848_*_…asserted-by-nothing`,
+`260826-0906_*_…harness-properties`, `260826-0906_*_…entry-point…exercised-by-nothing` (High) and
+`260826-0906_*_…three-line-fixture`. Four of the five need hook-test lines the surface does not have;
+`260826-0906_*_…unhandled-epipe` is a sixth open one that needs a code fix rather than head-room.
+
+This review's sharpest observation — that a defect of this Circle's own subject survived a Turn — has
+held twice more since. `287f7ff` corrected two acceptance-criterion counts and made a third wrong in
+the same edit, and this pass found two further standing wrong counts, both filed at `260826-1127`.

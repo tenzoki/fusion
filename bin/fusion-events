@@ -199,8 +199,12 @@
 # So membership is read off the line instead of inferred from its neighbours,
 # and this is the two readings that follow.
 #
-# `turns` also replaces four copies of a whole-file `grep -c turn_start`, which
-# counted every checkout's Turns and every previous session's. It reports
+# `turns` also replaces five sites that each derived the figure for themselves, and
+# the two quantities in that are different numbers rather than one. Two were literal
+# whole-file `grep -c turn_start` blocks, which counted every checkout's Turns and
+# every previous session's. Three were prose derivations naming a window after this
+# session's `session_start`, which is positional and does not survive the union
+# merge. All five now read this one implementation. It reports
 # `unavailable` to its callers through exit 3 and 4 rather than through a
 # smaller number, because the defect being repaired is exactly a count that
 # looked like an answer.

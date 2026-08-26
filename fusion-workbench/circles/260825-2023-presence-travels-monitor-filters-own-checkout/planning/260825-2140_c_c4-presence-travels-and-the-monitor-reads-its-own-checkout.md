@@ -199,7 +199,7 @@ One clause per condition, each answerable yes or no. The last clause is a precon
 3. A presence surface that could not read the log, or could not identify this checkout, says so and does not report a count of zero.
 4. `bin/monitor` serves `/api/dashboard` from this checkout's lines alone, and a line carrying no checkout identifier is among them.
 5. The Turn count has one definition and one implementation, and all five sites that print or define it read that one implementation. *This clause was written saying four, and the arithmetic was wrong.* The Turn 2 code review, reading the range that closed the four, found a fifth at `agents/reconciler.md:21`: it derived the count from the whole log, unscoped by checkout, and named no implementation. It was filed as `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md` and converted in `6deeb33`, which also re-ran the record's grep over `bin/`, `docs/`, `README-hooks.md`, `CLAUDE.md` and the hook sources and found no sixth. What the clause requires is unchanged and is met; only its count moved from four to five.
-6. The six defect records referred here carry a closing note citing the commit that discharged them, or state which part was not discharged and why. *This clause was written saying three, and the plan refers six by path;* the miscount is larger than criterion 5's and is corrected the same way, by moving the number and leaving the requirement alone. Four are discharged. `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` and `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` were closed in the Circle that filed them, before this one opened. `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md` and `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md` were closed here. Two are not discharged and keep the `_o_` marker: `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` and `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`. This Circle witnessed a second instance of each and appended the repeat-sighting line plus a paragraph naming what was not discharged and why, which is the second branch of this clause rather than an exemption from it.
+6. The seven defect records this plan refers by path above the `## Reconciliation Log` carry a closing note citing the commit that discharged them, or state which part was not discharged and why. *This clause was written saying three, was corrected to six, and refers seven;* the second miscount was made by the very commit that fixed the first, `287f7ff`, which added the seventh to criterion 5 in the same edit — so the number was true of the file it read and false of the file it wrote. It is corrected the same way again, by moving the number and leaving the requirement alone, and this time the count carries the boundary it is taken over, because the Reconciliation Log below is appended after closure and names further records that are the pass's own findings rather than this Circle's referred work. Five are discharged. `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` and `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` were closed in the Circle that filed them, before this one opened. `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md` and `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md` were closed here. Two are not discharged and keep the `_o_` marker: `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` and `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`. This Circle witnessed a second instance of each and appended the repeat-sighting line plus a paragraph naming what was not discharged and why, which is the second branch of this clause rather than an exemption from it. The seventh is `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`, named in criterion 5 above and discharged in `6deeb33`.
 7. Where the session-identifier measurement came back negative, the closure note says so and names what was therefore not added. Nothing weaker stands in its place.
 8. `cd hooks && npm test` exits 0, and every growth-bound baseline map is byte-identical to its state at the Circle's first commit.
 9. `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns the same three entries it returned before this Circle, so no file that stays in the checkout became tracked.
@@ -292,3 +292,97 @@ Exit 4 on `turns` earns its own code because of `shared/issues/260825-1430_*_the
 
 - [ ] **Where do this Circle's hook-test lines come from?** The surface has 0 lines of head-room, the cut-only Circle's 302 lines are spent, and step 10 needs an estimated 200 to 300. Three options are set out with their costs in `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`. The answer blocks step 10 and nothing else.
 - [ ] **Does the estimate in step 3 hold?** `agents/*.md` has 3 007 bytes and steps 3, 8 and 11 spend against it while step 5 returns to it. Measure the surface after step 5 rather than after step 3, and if the sum comes out over, the material to cut is in the same files the plan is already editing.
+
+## Reconciliation Log
+
+**2026-08-26, reconciler, session-end pass over `8119fc2..7774d56`, HEAD `7774d56`, working tree
+clean apart from `fusion-workbench/orchestrator-events.jsonl`.**
+
+**Status confirmed.** All eleven steps read `[DONE]` and all eleven are done on disk. `**Status:**
+Complete` and the `_c_` marker are correct. Verified per step, not per header:
+
+| Step | Verified at |
+|---|---|
+| 1 | `analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`, findings (a), (b), (c), each with its command and output |
+| 2 | `hooks/lib/events-query.ts`, `hooks/events-query.ts`, `bin/fusion-events`; run from the work tree, `presence` exits 0 and `turns` prints `turns=3 scope=checkout` |
+| 3 | `agents/orchestrator.md:139` (`<ID>` defined), `:235`, `:953`, `:1322` (carried) |
+| 4 | `skills/setup/SKILL.md:480`, `:483` — `<ID>` plus `detail` |
+| 5 | five call sites read `bin/fusion-events turns`: `agents/orchestrator.md:101`, `:558`, `:1122`, `skills/setup/SKILL.md:388`, `agents/reconciler.md:21` |
+| 6 | `skills/setup/SKILL.md:150-156` (Step 0c), cited from `skills/next/SKILL.md:117` |
+| 7 | `bin/monitor:1230-1310`, `_read_checkout_id` and `_read_events` |
+| 8 | `agents/orchestrator.md:915` and `:1376` |
+| 9 | `rules/workbench-tracking.md` `## The event log carries a union merge driver`, last two paragraphs — **with one defect, below** |
+| 10 | `hooks/lib/__tests__/fusion-events.test.ts` (166 lines), `monitor-warnings-panel.test.ts` (+34); the cut in `c649556` |
+| 11 | `agents/orchestrator.md:140`, `:1269`, `:1279`; `hooks/lib/__tests__/guard-state-shape.test.ts`, the session-id row test passes |
+
+**Acceptance criteria, read one by one against the tree.** 1, 2, 3, 4, 5, 8 and 9 are met. Criterion
+8 measured directly: `cd hooks && npm test` exits 0 (44 files, 776 tests), and
+`git diff 73ca11c..HEAD` over `hooks/lib/__tests__/surface-growth-bound.test.ts`,
+`rules-emission-golden.test.ts` and `helpers/growth-bound.ts` is empty, so no baseline map moved.
+Criterion 9 measured directly: `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns the same
+three entries at `8119fc2` and at HEAD. Criterion 10 is a precondition on a release tag and is not
+this Circle's to discharge; `bin/fusion-review-coverage --since 73ca11c` reads
+`commits=17 reviews=3 uncovered=4`, and all four uncovered commits touch only `fusion-workbench/`
+records (three review filings and this plan's closure), so every code-touching commit in the range
+falls inside a review's declared range.
+
+**Criterion 6, one residual.** Six of the seven referred defect records satisfy it. The seventh,
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`,
+carries only `Resolved: referred (C4)`, written before this Circle opened. C4 did discharge its
+direction — `bin/fusion-events turns` opens its window on a timestamp inside one checkout's own
+lines rather than on a position in the merged file (`hooks/lib/events-query.ts:374-434`, commit
+`97407df`), which is the "window that does not depend on file order" the record asked for — and no
+note in that record says so. Its sibling `260823-1302_*_…` did get such a note appended here. The
+record lives in a closed Circle's store, outside this pass's scan set, so it is named rather than
+edited.
+
+**Criterion 6 also undercounts by one, and the correcting commit is what made it wrong.** The clause
+reads "the plan refers **six** by path". At HEAD the plan refers **seven** defect records by path:
+`grep -o` over this file for the record-path shape returns the six the clause enumerates plus
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`,
+which `287f7ff` added to criterion 5 in the same edit that corrected criterion 6 from three to six.
+Six was true of the file the commit read and false of the file it wrote. The requirement is
+unaffected: the seventh is closed and its `Resolved:` note describes the discharging change. Only the
+number is wrong, which is the third time in this Circle that a count was right when written and wrong
+one commit later. Recorded here rather than corrected in the clause, so the reader sees the pattern
+rather than a tidy number.
+
+**Criterion 7 is vacuously satisfied, and that reading is stated rather than assumed.** The clause is
+conditional on the session-identifier measurement coming back negative. It came back positive on all
+three questions (analysis `260825-2214`, findings (a) yes and non-empty, (b) plain stdout yes and
+verbatim, (c) yes on both PreToolUse and PostToolUse), so nothing was withheld and the antecedent
+never fires. Both branches of step 11 were therefore built. One sub-result *was* negative —
+`hookSpecificOutput.systemMessage` does not reach the model — and it changed the shape of the answer
+rather than withholding it: `session-id.ts` is a fourth SessionStart command precisely because one
+process writes one stdout and the two channels are needed in opposite directions
+(`README-hooks.md:184`, `CLAUDE.md:29`). The closure note the orchestrator writes at Phase 4 should
+carry that positive result and that one negative channel, or criterion 7 passes without anyone ever
+reading the measurement. Filed as a fourth sighting on
+`shared/issues/260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`.
+
+**One defect found in step 9's output and filed.** `rules/workbench-tracking.md` says "Three readers
+apply that scoping" and names three; four apply it, the fourth being the Phase-4 session-flow
+diagram that step 8 of this same plan converted. Step 9's own instruction said "three", so the
+executor followed the plan and the plan was wrong. Filed as
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`.
+
+**One further count filed.** Five shipped sites say `turns` replaced "four copies of a whole-file
+`grep -c turn_start`"; there were two at `8119fc2`, and five sites now read the one implementation.
+Filed as
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`.
+
+**One residual this plan already names and still carries.** The exit table in `## API Changes` gives
+one cause for `turns` exit 4, and the authoritative `bin/fusion-events` header now gives two. The
+closure of
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0132_*_the-turns-exit-4-has-two-causes-and-the-authoritative-header-names-one.md`
+named this and left it deliberately, `planning/` being outside that task's file scope. Unchanged
+here, for the same reason.
+
+**Records.** Sixteen defect records in this Circle's store carry `_c_`; thirteen carried `_o_` before
+this pass and fifteen do after it. Fourteen of the sixteen closures were checked against the tree
+rather than against their own prose — every one that makes a claim a `grep` can settle — and all
+fourteen hold; the two not independently re-measured (`260826-0132_*_…exit-4-has-two-causes` and
+`260826-0134_*_other-checkouts-counts-two-different-sets`) changed documentation text only and state
+so. One closed record's reasoning was overtaken and gained a `Revised by:` line without a rename
+(`260826-0136_*_…three-emit-templates`). The Circle's one decision record moved `_a_` → `_i_`, its
+answer realised in `c649556` and `46de871`.

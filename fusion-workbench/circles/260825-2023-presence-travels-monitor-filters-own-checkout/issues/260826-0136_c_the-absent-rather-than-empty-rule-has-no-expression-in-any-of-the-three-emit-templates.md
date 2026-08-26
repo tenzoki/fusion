@@ -32,3 +32,14 @@ The unresolved half is not hypothetical: it is `bin/fusion-identity` exits 3, 4 
 
 ---
 Resolved: The pair is now held as one JSON fragment, `<ID>`, defined at `agents/orchestrator.md` Setup step 2 with an unresolved half's key left out and the fragment empty when neither half resolved. All three emit sites carry `<ID>` in place of the two literal fields — the executable `session_start` template, the generic "Emitting events" template, and the `session_end` prose in Cleanup — so the omission is expressed once, where the values are resolved, rather than restated a fourth time. The template that previously read `"person":"<PERSON>","checkout":"<CHECKOUT>"` can no longer emit an empty-string field by being followed literally.
+
+---
+Revised by: `6deeb33` — the `Resolved:` note above says "All three emit sites carry `<ID>`", and a
+fourth existed at the time it was written: `skills/setup/SKILL.md:483`, which this record's own
+`**Scope.**` line had named as inheriting the same template at plan step 4. It was still carrying the
+two literal fields, was found by the Turn 2 code review, filed as
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`,
+and converted in `6deeb33`. All four now carry `<ID>`; verified at HEAD `7774d56` by
+`grep -rn '<ID>'` over `agents/`, `skills/`, `rules/`, `bin/`, `docs/`, `templates/`, both READMEs
+and `CLAUDE.md`. The defect stays closed and its `Resolved:` note is left unedited: only the count in
+its reasoning moved, from three to four.

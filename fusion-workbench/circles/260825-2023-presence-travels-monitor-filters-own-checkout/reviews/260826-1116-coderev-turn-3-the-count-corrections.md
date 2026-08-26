@@ -176,3 +176,16 @@ does not exist and is not obviously cheap. Naming it here rather than proposing 
 Nothing here blocks the Circle's close or a release. M-1 and M-2 are one sentence and should be fixed
 together, M-1 first, since M-2's cheapest fix is a pointer that only works once M-1's is rooted. L-1 is
 one word. L-2 is one clause and is bounded by the `agents/` budget rather than by difficulty.
+
+---
+
+**Reconciliation annotation — 2026-08-26, reconciler, HEAD `7774d56`.** All four findings of this
+review reached records and all four are open, by the user's closure decision rather than by omission:
+`260826-1112_*_…unrooted-path`, `260826-1113_*_…calls-the-id-fragment-the-pair`,
+`260826-1114_*_…says-a-half`, `260826-1115_*_…turns-zero-is-a-real-figure`. Nothing in this range was
+re-opened or reversed by the reconciliation pass.
+
+This review closes the Circle's own counting theme with the corrections in `6deeb33`, and the pass
+after it found the theme was not finished: `rules/workbench-tracking.md` names three readers where
+four apply the scoping, and five shipped sites say the Turn-count helper replaced four whole-file
+`grep -c` copies where there were two. Both filed at `260826-1127` in this Circle's issue store.

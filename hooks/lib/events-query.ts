@@ -371,9 +371,12 @@ export type TurnsResult = { malformed: number } & (
 /**
  * The Turn count of the session whose history file is `historyFile`.
  *
- * It replaces four copies of `grep -c turn_start` over the whole file, which
- * counted every checkout's Turns and every previous session's, and it replaces
- * the proposed repair of counting after the **last** `session_start`, which is
+ * It replaces five sites that each derived the figure for themselves, and the two
+ * quantities in that are different numbers rather than one: two literal whole-file
+ * `grep -c turn_start` blocks, which counted every checkout's Turns and every
+ * previous session's, and three prose derivations naming a window after this
+ * session's `session_start`. All five now read this one implementation. It also
+ * replaces the proposed repair of counting after the **last** `session_start`, which is
  * positional and does not survive the union merge
  * (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`).
  *

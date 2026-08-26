@@ -49,3 +49,16 @@ rather than fixed.
 in one direction.
 
 **Found by:** reconciler, session-end pass over `a99e680..cfab17e`, HEAD `cfab17e`.
+
+---
+Also seen: 260826-1127 by reconciler — a fourth instance, in a second plan. Clause 7 of
+`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+`## Where this Circle stops` reads "Where the session-identifier measurement came back negative, the
+closure note says so and names what was therefore not added." The measurement
+(`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`,
+findings (a), (b) and (c)) came back positive on every branch, so the antecedent is false and the
+clause can never be ticked. The instance sharpens the record in one way worth carrying: the antecedent
+is false here because the measurement **succeeded**, so the notation the record asks for must
+distinguish "the condition did not arise" from "the condition arose and the work is outstanding", and
+a reader of the clause alone cannot tell which of the two a blank checkbox means. The marker stays
+`_o_`; this note records a sighting, not a closure.
