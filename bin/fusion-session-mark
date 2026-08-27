@@ -2,8 +2,12 @@
 # fusion-session-mark — track active fusion orchestrator sessions per project.
 #
 # Records a presence marker at fusion-workbench/.session-marker for the
-# current orchestrator session, with a heartbeat (file mtime) refreshed at
-# each Turn boundary. Used by /fusion:setup and the orchestrator itself
+# current orchestrator session, with a heartbeat (file mtime). Since v10.8.0
+# the heartbeat is machine-written: the PostToolUse hook refreshes the mtime
+# on every tool call, rate-limited to once per 60s, while both the marker and
+# agentstate.yaml exist (hooks/lib/orchestrator-events.ts carries gate and
+# residual); the `heartbeat` subcommand below stays for manual use and for
+# installed copies predating the hook. Used by /fusion:setup
 # to WARN the user when a second orchestrator is started against the same
 # project — fusion has no concurrency lock and parallel orchestrators can
 # corrupt agentstate.yaml, double-dispatch tasks, and race on workbench

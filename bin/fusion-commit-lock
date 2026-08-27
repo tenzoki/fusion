@@ -60,6 +60,10 @@
 
 set -eu
 
+# Resolved before any `cd`: emit_commit_event runs from the workbench root,
+# where a relative "$0" would no longer point at this script's directory.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 resolve_root() {
   local root
   if ! root="$("$(dirname "$0")/fusion-workbench-root" 2>/dev/null)"; then
@@ -274,6 +278,46 @@ do_release() {
   return 0
 }
 
+# Append the machine-written `commit` event row (v10.8.0). Called from the
+# `with` branch only, after the wrapped command exited 0, with the pre-command
+# HEAD as argument; cwd is the workbench root. The row is written only when a
+# commit actually landed (HEAD read from the repository and compared — never
+# inferred from the command's text) and only while an orchestrator session is
+# in flight (`agentstate.yaml` exists), so the log stays what its name says.
+# Identity is env-first (the SessionStart export), else one run of the sibling
+# `fusion-identity` — the single implementation of the criterion. An
+# unresolved half is an absent key, never an empty one. Schema and reasoning:
+# `rules/commit-lock.md` `## The lock writes the commit event` and
+# `hooks/lib/orchestrator-events.ts`. Best-effort by contract: the caller
+# guards the call, and a failed row may never cost the commit its exit code.
+json_escape() {
+  printf '%s' "$1" | tr -d '\000-\037' | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+emit_commit_event() {
+  local before="$1" head subject person checkout sid id_out line
+  [ -f fusion-workbench/agentstate.yaml ] || return 0
+  head="$(git rev-parse --short HEAD 2>/dev/null || true)"
+  [ -n "$head" ] || return 0
+  [ "$head" = "$before" ] && return 0
+  subject="$(git log -1 --pretty=%s 2>/dev/null || true)"
+  person="${FUSION_PERSON:-}"
+  checkout="${FUSION_CHECKOUT:-}"
+  if [ -z "$person" ] && [ -z "$checkout" ] && [ -x "$SCRIPT_DIR/fusion-identity" ]; then
+    id_out="$("$SCRIPT_DIR/fusion-identity" 2>/dev/null || true)"
+    person="$(printf '%s\n' "$id_out" | sed -n 's/^PERSON=//p' | head -1)"
+    checkout="$(printf '%s\n' "$id_out" | sed -n 's/^CHECKOUT=//p' | head -1)"
+  fi
+  sid="${FUSION_SESSION_ID:-}"
+  line="{\"ts\":\"$(date -u +%Y-%m-%dT%H:%M:%S)\",\"event\":\"commit\""
+  [ -n "$person" ] && line="${line},\"person\":\"$(json_escape "$person")\""
+  [ -n "$checkout" ] && line="${line},\"checkout\":\"$(json_escape "$checkout")\""
+  [ -n "$sid" ] && line="${line},\"session_id\":\"$(json_escape "$sid")\""
+  line="${line},\"detail\":\"$(json_escape "$head $subject")\"}"
+  printf '%s\n' "$line" >> fusion-workbench/orchestrator-events.jsonl
+  return 0
+}
+
 do_check() {
   if [ ! -d "$LOCK_DIR" ]; then
     echo "not held"
@@ -325,8 +369,14 @@ case "$cmd" in
     # Ensure release on any exit path, including SIGINT/SIGTERM.
     trap 'do_release 2>/dev/null || true' EXIT INT TERM
     echo "fusion-commit-lock: acquired commit lock as ${tag}; running: $*" >&2
+    head_before="$(git rev-parse --short HEAD 2>/dev/null || true)"
     rc=0
     "$@" || rc=$?
+    # The machine-written commit row, while the lock is still held — see
+    # emit_commit_event above for every condition it checks before writing.
+    if [ "$rc" -eq 0 ]; then
+      emit_commit_event "$head_before" 2>/dev/null || true
+    fi
     # Release explicitly so we can print the message; the trap will be a
     # no-op since the lock is already gone (do_release returns non-zero
     # silently via `|| true`).

@@ -61,6 +61,10 @@ Mandatory. Used in stale-lock messages. Format: the agent name (`orchestrator`, 
 - **Crash (or long suspension) between `mkdir` and the holder write** → the directory records no PID and no timestamp, so it is aged on its own mtime and force-released after the same 60 seconds. A suspended-not-dead creator that resumes after being reaped loses its acquisition at the noclobber holder write and re-enters the poll loop.
 - **Release-not-held** → non-zero exit. Two messages: `not currently held by anyone` when no lock directory exists, and a refusal (`records no holder; refusing to guess`, the message naming the lock directory's path in full) for a holder-less directory — reaping that state is the next acquire's job, or a manual `rmdir` when no commit is running. Caller should log and proceed (defensive — typically indicates a programming error rather than a race).
 
+### The lock writes the commit event
+
+Since v10.8.0 the `with` form appends the machine-written `commit` row to `fusion-workbench/orchestrator-events.jsonl` after the wrapped command exits 0 — but only when a commit actually landed (HEAD is read from the repository before and after, never inferred from the command's text) and only while an orchestrator session is in flight (`agentstate.yaml` exists). The row carries the short hash and subject as `detail`, plus `person`/`checkout` (env-first from the SessionStart export `FUSION_PERSON`/`FUSION_CHECKOUT`, else one run of `bin/fusion-identity`) and `session_id` (from `FUSION_SESSION_ID`); an unresolved value is an absent key, never an empty one. **No caller emits a `commit` event of its own** — a hand-written row beside this one is a duplicate. The emission is best-effort by construction: a failed row never changes the wrapped command's exit code.
+
 ### Cross-reference
 
 This protocol closed the cross-agent staging-race defect — parallel agents' stage+commit operations interleaving at the git-index level. Its issue record did not survive the workbench reorganisations; the failure modes above carry its substance.

@@ -225,9 +225,24 @@ if [ ! -f "$entry" ]; then
 fi
 
 # --- the identity, obtained in the one place that obtains it ----------------
+#
+# Env first (v10.8.0): the SessionStart hook runs `bin/fusion-identity` once
+# per session and exports the pair as FUSION_PERSON / FUSION_CHECKOUT, so a
+# call inside such a session re-runs nothing. The criterion is still evaluated
+# in the one place — the export IS that helper's output, carried forward. Only
+# a fully resolved pair takes this path: a half-resolved environment (a session
+# started before the workbench existed) falls through to a fresh run, which may
+# now resolve the half the export could not.
 
 id_out=''
 id_exit=127
+
+if [ -n "${FUSION_PERSON:-}" ] && [ -n "${FUSION_CHECKOUT:-}" ]; then
+  export FUSION_EVENTS_PERSON="$FUSION_PERSON"
+  export FUSION_EVENTS_CHECKOUT="$FUSION_CHECKOUT"
+  export FUSION_EVENTS_IDENTITY_EXIT=0
+  exec node "$entry" "$@"
+fi
 
 if [ ! -x "$here/fusion-identity" ]; then
   echo "fusion-events: $here/fusion-identity is missing — this install predates it." >&2
