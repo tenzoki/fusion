@@ -31,3 +31,11 @@ The obligation to write the person half sits under a heading that addresses defe
 ## Recommendation
 
 Option 2. It is the only one under which "every agent that files a record writes the field" (criterion C3.3) is a sentence with a checkable subject.
+
+## Answer
+
+Option 2: the field is owed by every record kind whose template carries it, and those kinds are named in the conventions. Realised by plan step 8.
+
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+
+Implemented: plan step 8 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`, 260827-1845 (the commit is the orchestrator's, after this task) — the reach sentence in `rules/fusion-workbench-conventions.md` `### Who filed it`, the third mandated field in `rules/review-contract.md`, the line on the history entry in `## History Logging`.

@@ -3,7 +3,7 @@
 **Date:** 2026-08-27 18:07
 **Type:** Gap
 **Status:** Complete
-**Requested by:** orchestrator, plan step 6 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md` (record `shared/issues/260825-1250_p_a-bounded-circle-holds-a-draft-spec-with-49-unreconciled-criteria-that-no-scan-reaches.md`)
+**Requested by:** orchestrator, plan step 6 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md` (record `shared/issues/260825-1250_*_a-bounded-circle-holds-a-draft-spec-with-49-unreconciled-criteria-that-no-scan-reaches.md`)
 
 ## Question
 

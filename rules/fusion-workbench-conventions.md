@@ -444,6 +444,8 @@ Two of that helper's exit codes are opposite instructions to you. **Exit 1** is 
 
 **A helper that is not installed is a third branch and neither of those two.** `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is absent there and a bare call is exit 127, which is none of the codes above. When the guard fails, **file with the person half absent as exit 4 does, and report that attribution was dropped because the helper was missing.** The record looks like exit 4's and the reason does not: exit 4 means no identity was owed, this means one was owed and could not be read. Do not halt, or an install one release behind stops every filing in the project.
 
+**Which record kinds owe the field:** every kind whose template carries the line, and those are defects and decisions (the two formats above), review files (`rules/review-contract.md`, where it is a mandated header field) and session histories (`## History Logging`). Binding decision: `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2).
+
 **One precondition, and no code checks it:** a person uses the same git identity on every machine they run fusion from. A machine configured differently reads as somebody else, and `/fusion:next` then refuses that person's own Circle, a false positive it cannot tell from the collision it is built for.
 
 ## Decision Record Template
@@ -506,7 +508,7 @@ agent whose routine work includes writing normative rule text is the `curator`, 
 
 ## History Logging
 
-Every session writes a history entry to `$OUT_HISTORY/YYMMDD-HHMM-<topic>.md` describing what was done. Update the entry's status line to `Complete` as the final step of the session. If interrupted before this, completion state is lost.
+Every session writes a history entry to `$OUT_HISTORY/YYMMDD-HHMM-<topic>.md` describing what was done. Its header carries `**Filed by:**` in the form `### Who filed it` defines. Update the entry's status line to `Complete` as the final step of the session. If interrupted before this, completion state is lost.
 
 The history log is the only durable record of a session. The in-memory task list does not persist. Always update history before finishing.
 

@@ -75,3 +75,7 @@ filed, and the reason no pass will reach them is the open decision this record a
 **Read the title as naming the file, not its header field.** A bounded Circle holds a spec
 with 49 unreconciled criteria that no scan reaches. That sentence is true at HEAD and is the
 work this record tracks.
+
+---
+
+Resolved: 260827-1845 (plan step 6 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`). The 49 criteria were measured once, against HEAD `0fb5085`, in `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/analyses/260827-1807-the-style-rules-spec-measured-against-the-tree.md`: 36 met, 12 not met, 1 not applicable, each row with its evidence. The spec itself is not edited and its boxes stay unticked, by the user's direction under `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` `## Answer` (option 5): `rules/circle-records.md` `## State Markers — circles` now states that a terminal Circle's spec and plan are history, read as evidence and never reconciled in place, reachable only by naming the Circle as `bin/fusion-paths`' second argument. An unticked box there is no longer outstanding work by rule, which is what this record asked for as its second direction.

@@ -43,8 +43,13 @@ Options 3 and 5 compose, and either composes with 1; options 2 and 4 each make 3
 
 None. Both referring records call the choice the framework owner's and name option 2 of the first (option 5 here) defensible without endorsing it.
 
+## Answer
+
+Option 5, the exclusion written down, and in `rules/circle-records.md` rather than the conventions: the user's direction at the orchestrator gate of session `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md`, taken for record 6 of plan `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`. The rule now states, in `## State Markers — circles` beside the terminal-states statement, that a terminal Circle's spec and plan are history: read as evidence, never reconciled in place, and reachable only by naming the Circle as `bin/fusion-paths`' second argument. That file is emitted to the three agents that transition or rank a Circle and is not always-on, which is why the sentence sits there and not in the conventions. Options 1 and 2 (a scan key over archive or every Circle) are not taken; option 3 is not decided here. The `archive/` half is covered by the same reading: an archived record is history at its new path.
+
+Answered: 260827-1845, Kai Stalmann <ks@qantr.com> at the gate named above; realised by plan step 6.
+
 ---
-Answered:
 Implemented:
 Deferred:
 Superseded by:
