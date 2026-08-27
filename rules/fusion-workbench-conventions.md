@@ -4,7 +4,7 @@
 
 Shared conventions for all agents operating on `fusion-workbench/`, and for the rule files those agents load. This file is emitted by `bin/fusion-rules` to every agent at Setup step 2; nothing is auto-loaded. Single source of truth for the workbench layout, the origin rule, the operative half of path resolution, the issue/planning and decision marker vocabularies, marker globs, filename patterns, issue and decision filing, inline tracking, history logging, timestamps, and the project's two language declarations.
 
-**This document is the definition** of everything it still states in full. Five topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to every agent:
+**This document is the definition** of everything it still states in full. Topics that were once defined here now have their own authoring homes, each cited at the point where it left, and each emitted to the audience that actually applies it rather than to every agent:
 
 | Topic | Authoring home | Emitted to |
 |---|---|---|
@@ -13,8 +13,10 @@ Shared conventions for all agents operating on `fusion-workbench/`, and for the 
 | Provenance headers on rule files | `rules/rule-file-provenance.md` | no agent: read when writing a rule file |
 | The commit lock | `rules/commit-lock.md` | `orchestrator` |
 | Which of a tracked workbench's root entries git holds | `rules/workbench-tracking.md` | no agent: read when writing a project's `.gitignore`, and cited by the archive step of `/fusion:cleanup` |
+| The language cascade's reasoning and edge semantics | `rules/project-language.md` | `editor` (its deliverable-language halt lives there); the operative core stays in `## Project language` below |
+| The backlog maintenance mandate | `rules/backlog-entries.md` | `playmaker` (the store's one maintainer); the entry definition and both bounds stay in `## Backlog entries` below |
 
-No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go: they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite whichever of these six files owns the rule.
+No agent prompt and no skill body may carry a competing or supplementary definition of where artifacts go: they resolve their paths at run time (see `## Path Resolution (Pfadauflösung)`) and cite whichever of these files owns the rule.
 
 **Store-directory path literals.** `hooks/lib/__tests__/path-literal-lint.test.ts` forbids one in any `agents/*.md` or `skills/*/SKILL.md` outside `/fusion:setup` and `/fusion:migrate`; every other consumer resolves through `bin/fusion-paths`. The gate reads neither `rules/` nor `bin/`, so the files that *define* the stores are outside its reach rather than exempted by it. They are enumerated there as `DEFINITION_SITES` all the same: an enumeration somebody has to edit is the difference between a fourth definition site being decided and one merely slipping past a gate that never looked.
 
@@ -189,27 +191,11 @@ This three-way distinction is about **what kind of thing** an artifact is. It is
 
 ## Backlog entries
 
-A **backlog entry** is an idea that is not yet a unit of work: worth considering, not yet worth planning. It has no Circle affiliation by construction, so it lives in `shared/backlog/` (`$OUT_BACKLOG`), one file per entry.
+A **backlog entry** is an idea that is not yet a unit of work: worth considering, not yet worth planning. It has no Circle affiliation by construction, so it lives in `shared/backlog/` (`$OUT_BACKLOG`), one file per entry. It carries the issues/planning marker vocabulary, read for this kind as: `_o_` worth considering, `_p_` recommended and not yet acted on, `_c_` no longer live (the body citing the Circle it became or the reason it was dropped), `_d_` pushed out (the body citing the target).
 
-It carries the issues/planning marker vocabulary below, read for this kind as: `_o_` an idea worth considering, `_p_` recommended for promotion and not yet acted on, `_c_` no longer live, with the body citing the Circle it became or the reason it was dropped, `_d_` pushed out, with the body citing the target. `_c_` here is that vocabulary's second reading, "user decided to close", and not "the fix landed".
+**Minimum content is a title and one paragraph**; `**Domain:**`, `**Filed by:**` and `**Related:**` are optional, and there is no Options, Constraints or Recommendation section — an entry more expensive to write than a note is an entry nobody writes.
 
-**Minimum content is a title and one paragraph** saying what the idea is and why it might matter. `**Domain:**`, `**Filed by:**` and `**Related:**` are optional; there is no Options, Constraints or Recommendation section. The cheapness is the design. When the cheapest structured surface on offer was a decision record, the user filed a 12 KB text file instead, and an entry more expensive to write than a note is an entry nobody writes.
-
-Two bounds:
-
-- **No agent files a backlog entry.** Filing is originating an idea; maintenance is reshaping ideas the store already holds. A defect an agent finds is an issue and a choice point is a decision record, exactly as before. The user files, by hand or through `/fusion:memo`; the playmaker maintains; nobody else writes here.
-- **The backlog is not the work queue.** It holds ideas, not tasks. The work queue is not a file at all: `taskplanner` builds it from the records and returns it in its report, for that session only. Option 4 of the backlog decision asked whether `taskplanner` and the queue retire into the backlog; the persisted queue has since retired outright, and whether the agent should is still open.
-
-**Maintenance is four operations and a ranking rename.** Splitting one entry's ideas across several files, merging several statements of one idea into one, closing an entry whose idea is no longer live, and deferring one to a named later moment: **four**, each performed only with a user confirmation the run holds for that operation. Renaming between `_o_` and `_p_` states the playmaker's own ranking of a live idea and is autonomous. None of the five adds an idea to the store, which is why the bound survives them: the text a merge writes consolidates statements already filed.
-
-| Marker | Written by | Gate |
-|---|---|---|
-| `_o_` | the user, filing; the playmaker, on a split's new entries and when it drops a recommendation | filing is the user's alone; `_p_`→`_o_` is autonomous |
-| `_p_` | the playmaker | autonomous: a ranking judgement, not a disposition |
-| `_c_` | the playmaker, closing an entry or retiring a split's original; the shaper, promoting an `_o_` or `_p_` entry to a Circle | confirmed for the playmaker; for the shaper it is part of promotion |
-| `_d_` | the playmaker | confirmed. Two transitions deliberately do not exist: `_d_`→`_p_`, because reviving reverses a disposition the user took and a reversal is not a ranking judgement (revival is `_d_`→`_o_`, by the user, by hand); and `_d_`→`_c_` by the shaper, because its promotion path renames `_o_` or `_p_` and nothing else (`agents/shaper.md:100`). |
-
-Binding decisions: `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md` (the store and its maintainer), `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the Circle-first placement it feeds), `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` (the playmaker's maintenance mandate) and `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` (which of those writes need a confirmation, and on which dispatch path it can exist).
+Two bounds: **no agent files a backlog entry** (the user files, by hand or through `/fusion:memo`; a defect an agent finds is an issue, a choice point a decision record), and **the backlog is not the work queue** (it holds ideas; `taskplanner` builds the queue from the records per session). The maintenance mandate — the playmaker's four confirm-gated operations, the autonomous ranking rename, and the binding decisions — is authored in `rules/backlog-entries.md`, emitted to the `playmaker`.
 
 ## Timestamps
 
@@ -217,54 +203,18 @@ Always obtain `YYMMDD-HHMM` from `date +%y%m%d-%H%M`. LLMs have no clock. Never 
 
 ## Project language
 
-**The surface decides.** Not the length of the text, not who reads it, not which agent wrote it. Every piece of output falls into exactly one of four cases:
+**The surface decides** — every piece of output falls into exactly one of four cases:
 
-- Output the user reads in the terminal (gate prompts, `AskUserQuestion` text, status reports, chat replies) is written in the **chat language**.
-- Output that persists as a file **for the project's own use** (specs and plans, defect and decision records, session histories, reviews, analyses, memos and the portfolio) is written in the **artifact language**.
-- Output that persists as a file **for a reader outside the project** (a customer deliverable: the Markdown documents and branded decks `agents/editor.md` produces, and its translations of them) is written in the language **the dispatching task names**. There is no default and no fallback, and the editor **halts** when the task names none.
-- Text on an exempt surface is **English**, whatever either declaration says: code and operator strings in every project, and whatever a project ships onward to readers of unknown language. The two groups are listed below.
+- Output the user reads in the terminal (gate prompts, `AskUserQuestion` text, status reports, chat replies): the **chat language**.
+- Output that persists as a file **for the project's own use** (specs, plans, records, histories, reviews, analyses, memos, the portfolio — and the profile-exempt persisted surfaces too: dashboard lines, commit messages, monitor strings): the **artifact language**.
+- Output that persists **for a reader outside the project** (a customer deliverable): the language **the dispatching task names** — no default, no fallback; the `editor` halts when the task names none.
+- Text on an **exempt surface is English**, whatever either declaration says. Universal: code, code comments, hook and CLI operator strings. Conditional: **whatever a project ships onward to readers of unknown language** — a rule corpus, a plugin, a library. A project that ships nothing has no surface in this group; fusion's own repository is divided by the criterion rather than exempted whole: what it ships (rules, prompts, skill bodies, READMEs, docs) is English, its workbench follows its declarations.
 
-**The two persisted cases are cut by who the file is for, and that keeps the split disjoint.** A deliverable is a file that persists, so under the earlier three-way split it fell into the artifact-language case by silence. And it fell there wrongly. The artifact language exists for the project's internal record-keeping; a deliverable's language follows its reader, and the two have no reason to agree. Every persisted file is now in exactly one of the two: written for the project, or written for someone outside it. Nothing else moved: the deliverable is the only output whose reader is outside the project, and every other persisted file stays where it always was.
+A project declares its languages in `CLAUDE.md`: `**Language:** <en|de>` (chat) and `**Artifact language:** <en|de>` (artifacts); a project sharing one language declares only the first. **The fallback chain has no special cases:** `**Artifact language:**` absent, unreadable or invalid means not declared, and `**Language:**` then governs both surfaces; `**Language:**` not declared, by the same three-way test, means `en`. Both fallbacks are silent.
 
-**Why the source is the dispatch and not a third declaration.** A deliverable's language is not a per-project constant: the same consultancy writes for a German client one week and an English one the next, so any project-wide default is wrong a large share of the time. A default that is wrong in the common case is a defect that hides until someone forgets. And what it produces is a *finished* document in the wrong language, found by the customer rather than by a stop. So the obligation sits on the dispatch, per deliverable, and the failure is loud by design: `agents/editor.md` `## Deliverable language` halts and names what to pass. That loudness is the substance of the answer, not politeness around it (decision `260807-2131_*_which-language-governs-a-customer-deliverable.md`, option 3).
+Head labels defined in a shipped template (`**Decidability:**`, `**Domain:**`) stay English in every project; the artifact body under them follows the artifact language. Existing artifacts are not translated.
 
-**A single-declaration project is unchanged in every other case, and is not exempt from this one.** Where chat and artifacts share one language, every case except the deliverable one collapses to today's behaviour. The deliverable case does not collapse with them: the project's declaration says nothing about a reader outside the project, so the dispatch still names the language, even there.
-
-A project names its two languages in `CLAUDE.md`, on two lines:
-
-```
-**Language:** de
-**Artifact language:** en
-```
-
-`**Language:**` declares the chat language, `**Artifact language:**` the artifact language. Valid values for both are `en` and `de`. A project whose chat and artifacts share one language declares only the first line.
-
-**The fallback chain is one rule with no special cases.** `**Artifact language:**` absent, unreadable, or carrying anything other than `en` or `de` all mean the same thing: not declared. And then `**Language:**` governs both surfaces. `**Language:**` not declared, by the same three-way test, means `en`. Both fallbacks are silent: no chat warning, no history line. Missing, unreadable and invalid land in the same branch deliberately, so the case split stays disjoint and complete and the second declaration needs no error path of its own.
-
-**The stylometric profiles under `./fusion-workbench/stilwerk/` follow from the boundary above rather than defining it.** Each family governs one of the first two surfaces, so each resolves from that surface's language:
-
-- **`chat-voice-<lang>.yaml`**: the short-form chat profile, resolved from the **chat** language and applied by **every** agent to its short-form user-facing output (gate prompts, `AskUserQuestion` text, status reports, chat replies). See `rules/user-facing-output.md` `## Style anti-patterns apply to everything`.
-- **`default-voice-<lang>.yaml`**: the long-form writing profile, resolved from the **artifact** language and applied by the long-form-prose agents to their narrative outputs (session summary bodies, consultant reports, analysis reports including failure timelines, playmaker briefings, prose sections of specs and plans).
-
-The writing profile follows its surface's language, not the artifact declaration as such, so **a customer deliverable's prose takes the writing profile of the language the dispatch named**: `default-voice-de.yaml` for a German deliverable in a project whose artifact language is `en`, and the target language's profile on a translation. That is the deliverable case above applied to the profile family, not an exception to it: each family resolves from the language of the surface it governs, and for one surface that language comes from the dispatch.
-
-`bin/fusion-rules` emits the chat profile path for every agent and the writing profile path only for long-form-prose agents. The two paths may name different languages; for a project whose chat and artifacts differ that is the intended configuration, not a fault to report or work around.
-
-Each family keeps its own missing-variant fallback, and the fallback is **per family, not shared**: when the resolved language's variant is missing (e.g. the artifact language is `de` but no `default-voice-de.yaml` exists), `bin/fusion-rules` falls back to the `-en.yaml` variant of that same family. Standard output carries the resolved path alone; the fallback names itself on standard error, giving the family, the requested variant and the resolved one. An agent that keeps a session history records that line in it, once. If neither variant of a family exists, the agent emits nothing for that family and follows `rules/user-facing-output.md` alone: that rule always applies, regardless of profile presence.
-
-**Exempt surfaces: English, whatever either line says.** Two groups, cut by who the text reaches. The first holds in every project; the second is a criterion a project evaluates against itself, not a list of paths.
-
-**Universal.** Code and code comments; and hook and CLI operator strings: banners, configuration advisories, measurement notices, helper usage and error text. `hooks/session-start.ts` `## Why the message is English` is the worked case for the second: a hook fires before any agent has read `CLAUDE.md`, and localising one of fusion's operator strings while the rest stay English is the inconsistency, not the fix. The count that stood in that sentence is deliberately not restated: the set has shrunk three times since it was measured, so a number written into prose about it is stale before it is committed.
-
-**Conditional: text a project ships to consumers of unknown language is English.** Those readers are not the project's own and no declaration it makes reaches them, so its declared languages cannot govern that text. A project that ships nothing onward has no surface in this group at all: its declarations govern its whole tree, its own `rules/` and its own `README.md` included. A project that does ship (a rule corpus, a plugin, a library) writes the shipped part in English and nothing else by this rule.
-
-**Fusion's own repository holds both roles at once, and the criterion divides it rather than exempting it whole.** It is the source of the shipped rule text and at the same time a `de` project with its own workbench: the rule files, agent prompts, skill bodies, `README.md` and `docs/` it ships to consuming projects of every language are English, while its workbench artifacts reach nobody outside it and follow its declarations like any other project's. Universalising the first half (offering "these ship to consuming projects" as the reason a project that ships nothing must also write its own README in English) was the defect this replaced (`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, third constraint).
-
-**Persisted surfaces that carry no profile still follow the artifact language.** Dashboard lines (`orchestrator-live.md`), commit messages and monitor strings are exempt from *both* stylometric profiles (`rules/user-facing-output.md` `## Style anti-patterns apply to everything` keeps their terse, parseable shape), but exemption from a style profile is not exemption from the language rule. They persist as files, so they take the artifact language. This reading was **settled by user decision rather than derived**: the dashboard is the one surface where "persists as a file" and "direct user interaction" genuinely overlap, and the user chose the persisted reading, on the ground that commit messages are the same class of persisted-but-user-facing surface and fall on the persisted side of the boundary with it. It is not an oversight and is not to be reopened as one.
-
-**Head labels follow the file that defines them, not the artifact they sit in.** A label defined in a shipped template (the plan head's `**Decidability:**` and a record's `**Domain:**`) is English in every project, because the template lives in an exempt file. The artifact *body* under those labels follows the artifact language. That is what makes `**Decidability:**` the plan-head label everywhere, with no per-language variant.
-
-**Existing artifacts are not translated.** The boundary applies going forward, the same way the filename patterns do. A workbench holding older prose in another language is not evidence against the rule.
+The reasoning, the stylometric-profile resolution (including the per-family missing-variant fallback and the deliverable-profile case) and the settled edge readings are authored in `rules/project-language.md`, emitted to the `editor`; decision `260827-1056` (in `$SCAN_DECISIONS`) fixed this partition and what the core above must carry.
 
 ## Filename Patterns
 

@@ -72,8 +72,7 @@ describe("hooks.json wiring — guard reaches Bash", () => {
     }
   });
 
-  // v10.8.0 machine-row wiring (same shape as the Bash matcher; debt: shared/issues/260827-0410_o_*).
-  it("routes the dispatch tool to both hooks and exports identity at SessionStart", () => {
+  it("routes the dispatch tool to both hooks and exports identity at SessionStart (v10.8.0 machine rows; debt: shared/issues/260827-0410_o_*)", () => {
     const cfg = loadHooks().hooks as Record<string, HookEntry[]>;
     expect((cfg.SubagentStop ?? []).flatMap((e) => e.hooks).some((h) => h.command.includes("subagent-stop.js")), "SubagentStop wiring").toBe(true);
     for (const [phase, script] of [["PreToolUse", "guard.js"], ["PostToolUse", "tracker.js"]] as const) {

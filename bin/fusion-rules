@@ -37,10 +37,10 @@
 #     planner, reconciler) additionally read decision-record-examples.md —
 #     the worked marker transitions; audience decided at 260827-0830, when
 #     the always-on floor could no longer carry the tutorial.
-#   - Every agent also reads user-facing-output.md (shipped by plugin) —
-#     mandates action-first ordering, plain-English option labels, no
-#     undefined jargon, and trailing details/references blocks for any
-#     output the user reads.
+#   - The user-read agents (orchestrator, consultant, playmaker, shaper,
+#     editor, curator) additionally read user-facing-output.md — the full
+#     user-facing style contract (gate 260827-0910); everyone else carries
+#     the chat profile's anti-patterns via agent-setup.md.
 #   - Every agent also reads critical-stance.md (shipped by plugin) —
 #     the epistemic norms governing reasoning substance (not formatting):
 #     own your errors, no premature solutions, calibrated certainty, case
@@ -69,9 +69,9 @@
 #       coder, coderev, bugfixer  → *coding*.md
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
 #       planner                   → *coding*.md, *ontology*.md
-#   - All other agents get workbench-conventions only. The conventions-only
-#     set currently includes: orchestrator, shaper, taskplanner, reconciler,
-#     analyst, consultant, playmaker, editor, curator.
+#   - The editor additionally reads project-language.md and the playmaker
+#     backlog-entries.md (decision 260827-1056); agents matching none of the
+#     conditions above get the always-on core alone.
 #
 # Optional topic-scoped loading (the context manifest):
 #   A consuming project MAY add ./rules/context-manifest.yaml to load large
@@ -549,6 +549,18 @@ fi
 #     block would state the same thing in five lines instead of one.
 if [ "$AGENT" = "orchestrator" ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/commit-lock.md"
+fi
+
+# 1e2. Two partitioned conventions topics go to the one agent each whose act
+#      they govern (decision 260827-1056): the language cascade's full text to
+#      the editor, whose deliverable-language halt lives in it, and the backlog
+#      maintenance mandate to the playmaker, the store's one maintainer. The
+#      operative cores stay always-on in fusion-workbench-conventions.md.
+if [ "$AGENT" = "editor" ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/project-language.md"
+fi
+if [ "$AGENT" = "playmaker" ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/backlog-entries.md"
 fi
 
 # 1f. The two review-writing agents additionally receive the review contract.

@@ -71,7 +71,7 @@
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
-  hooks-wiring.test.ts 121
+  hooks-wiring.test.ts 120
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
   monitor-warnings-panel.test.ts 1136
@@ -85,7 +85,7 @@
   reference-resolution-lint.test.ts 990
   review-coverage-mandate.test.ts 354
   review-coverage.test.ts 818
-  rules-emission-golden.test.ts 1173
+  rules-emission-golden.test.ts 1174
   rules-voice-profile.test.ts 351
   sentence-identifier-containment.test.ts 425
   session-start-subdirectory.test.ts 159

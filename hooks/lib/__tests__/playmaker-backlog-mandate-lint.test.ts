@@ -74,7 +74,7 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");
 
 const PLAYMAKER = "agents/playmaker.md";
-const CONVENTIONS = "rules/fusion-workbench-conventions.md";
+const CONVENTIONS = "rules/backlog-entries.md"; // the marker table moved here at decision 260827-1056
 
 /** Fail with a message that names the parser to update, never with `undefined`. */
 function must<T>(value: T | null, what: string): T {

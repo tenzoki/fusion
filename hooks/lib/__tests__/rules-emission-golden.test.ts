@@ -551,7 +551,7 @@ const ROLES: Record<string, Role> = {
    * naming a Circle-scoped `fusion-paths` key, and a proposal has to be written
    * in the same vocabulary as the transition it proposes.
    */
-  "circle-records.md + decision-record-examples.md + user-facing-output.md": {},
+  "backlog-entries.md + circle-records.md + decision-record-examples.md + user-facing-output.md": {}, // playmaker: + the backlog maintenance mandate (decision 260827-1056)
 
   /**
    * Turns a Directive into a Circle record and draws the design diagram that
@@ -611,7 +611,8 @@ const ROLES: Record<string, Role> = {
    */
   "review-contract.md": {},
 
-  "user-facing-output.md": {}, // consultant, editor, curator: user-read surfaces (gate 260827-0910)
+  "user-facing-output.md": {}, // consultant, curator: user-read surfaces (gate 260827-0910)
+  "project-language.md + user-facing-output.md": {}, // editor: + the language cascade, its deliverable halt (decision 260827-1056)
 
   /** The reconciler: worked transition 1, `_o_ -> _a_`, is its act (gate 260827-0830). */
   "decision-record-examples.md": {},
