@@ -83,3 +83,7 @@ the sentence adds no path or heading token, so the pin does not move.
 
 **Scope.** `hooks/lib/__tests__/reference-resolution-lint.test.ts:479`, comment only. The history
 record above is a session record and is left as written. No behaviour, no number.
+
+---
+
+**Resolved:** 2026-08-27, plan `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md` step 15. The clause on `hooks/lib/__tests__/reference-resolution-lint.test.ts:479` now states the two facts separately: `hooks/dist/` is outside the scanned surface because `surface()`'s hook loops are non-recursive and `isFile()`-filtered, and the rewritten `hooks/lib/events-query.ts` docstring moved no path count because those sources are `recordsOnly`. Same line, line count unchanged, no path or anchor token added, `BASELINE` unmoved. The history record named above is left as written.

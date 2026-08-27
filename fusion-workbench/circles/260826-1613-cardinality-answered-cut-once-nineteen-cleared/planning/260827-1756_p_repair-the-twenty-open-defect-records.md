@@ -207,7 +207,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: none.
     - Acceptance: line count of the file unchanged; `npx vitest run lib/__tests__/reference-resolution-lint.test.ts` green without a re-approval.
 
-16. **Complete the layout tree's consumer column and its row set** (record 16)
+16. **Complete the layout tree's consumer column and its row set** (record 16) [DONE]
     - Executor: `coder` (a rule file describing code consumers).
     - Files: `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`; `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` (re-approval on the same line).
     - Changes: add `bin/fusion-events` (and `hooks/events-query.ts`) to the `orchestrator-events.jsonl` row; extend the `agentstate.yaml` row's parenthetical to name events-query beside review-coverage and staging-drift. Then check the whole column once, by `grep -n 'fusion-workbench/' hooks/*.ts hooks/lib/*.ts bin/*` against the tree: at `0fb5085` the tree lacks a `.cadence-anchors` row although `rules/workbench-tracking.md:24` classifies it as a root-anchored class L entry (v10.8.1); add the row with `bin/fusion-cadence-anchor` as its consumer. Spends always-on bytes (about 250 of 13 213 free). The citation pin moves by the plugin-path tokens added; measure the delta by single-file revert and re-approve on the `BASELINE` line with a note in the established form. Rename to `_c_`.
