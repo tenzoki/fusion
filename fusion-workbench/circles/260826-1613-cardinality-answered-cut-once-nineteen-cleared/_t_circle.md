@@ -4,8 +4,8 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260826-1758: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
-**Active spec/plan:** (none yet)
-**Active session history:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1521-orchestrator-session.md
+**Active spec/plan:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md
+**Active session history:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md
 
 ---
 
@@ -122,8 +122,10 @@ the cut-only precedent at
 and all nineteen inherited defect records. The three surface figures in the Grounding were re-measured
 independently this run against the tree at commit `2ff5030` and reproduce exactly: 26 lines free of
 20 375 on the hook tests, 47 bytes of 417 843 on `agents/`, 16 bytes of 240 439 on `skills/`. And the
-Circle's inheritance is currently stranded, in the sense that closing its parent removed all nineteen
-records from every agent's scan set; activation is what brings them back into scope.
+Circle's inheritance is reachable from here only by citation: records inside a non-active Circle are in
+another Circle's scan set only when a run names that Circle as `fusion-paths`' second argument, so
+closing the parent removed nothing and activating this Circle brings nothing back. Corrected 260827 per
+`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/issues/260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`.
 
 **The one heuristic flag, stated rather than suppressed.** The ranking rule counts a dependency
 closed only when the depended-on record carries the closed-coherent marker.

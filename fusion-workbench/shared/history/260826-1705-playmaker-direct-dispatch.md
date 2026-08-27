@@ -111,3 +111,6 @@ answer at higher resolution.
 
 - Portfolio regenerated: `fusion-workbench/portfolio.md`
 - Circle records written: `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_a_circle.md` (`## Activation proposal` appended)
+
+---
+Correction 260827: the warning name `stranded-records-in-terminal-circles` above encoded a mechanism `bin/fusion-paths` does not have. No `SCAN_*` key ever carried another Circle's store, so closing a Circle removed nothing and activation brought nothing back. The 260827-1637 run (`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1637-playmaker-direct-dispatch.md`) retired the name and stated the true reading under `records-reachable-only-under-their-terminal-circle`. The lines above stay as written. Per `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/issues/260826-1903_*_the-false-scan-set-claim-also-stands-in-the-portfolio-and-in-the-history-log-as-a-warning-name.md`.

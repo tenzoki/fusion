@@ -104,3 +104,9 @@ another client in the same period. Two invented claims from one agent in one day
 question rather than two record questions, and it is filed separately.
 
 **Scope.** One Circle record. No shipped file, unless the prompt review finds one.
+
+---
+Reconciliation 260827-1528: still open. The false clause stands unchanged at `_t_circle.md`, `## Activation proposal`, third paragraph ("closing its parent removed all nineteen records from every agent's scan set"). No commit since filing touched the record's proposal section.
+
+---
+Resolved: the clause at `_t_circle.md` `## Activation proposal`, third paragraph, is replaced by the true statement (records inside a non-active Circle are in another Circle's scan set only when a run names that Circle as `fusion-paths`' second argument; nothing was removed and nothing is brought back), with a `Corrected 260827 per …` citation of this record appended. Edited by coder on the user's approval at the gate of plan `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`, step 1. The prompt review is filed separately (`260826-1901_*`, `260826-1902_*`).

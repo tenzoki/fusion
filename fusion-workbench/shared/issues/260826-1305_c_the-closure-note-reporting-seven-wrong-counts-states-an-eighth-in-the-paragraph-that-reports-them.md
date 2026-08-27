@@ -95,3 +95,6 @@ question of how this project keeps such a number true is open in the decision ci
 This record exists to be the eighth data point when that decision is answered.
 
 **Scope.** No shipped file. One workbench record, unedited by design.
+
+---
+Resolved: no change, as the record's own `## Fix direction` foresaw. The terminal record `circles/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md` stays unedited as the specimen. The decision this record was filed to inform is answered: `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_a_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md` `## Answer`, options 2 and 3, realised as `rules/critical-stance.md` §5 in commit `ae00e84`. Plan `260827-1756_*`, step 14.

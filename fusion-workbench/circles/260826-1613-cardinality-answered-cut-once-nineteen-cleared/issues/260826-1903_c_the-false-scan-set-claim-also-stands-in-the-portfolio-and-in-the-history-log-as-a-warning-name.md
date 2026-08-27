@@ -73,3 +73,9 @@ so the log keeps saying what happened and stops asserting the mechanism.
 
 Three workbench files. No shipped file. The prompt-side causes are filed separately as
 `260826-1901_*` and `260826-1902_*`.
+
+---
+Reconciliation 260827-1528: still open. The claim stands at `portfolio.md:30`, `:43` and `:138` (no playmaker run has regenerated the file since 260826-1705), and the warning name `stranded-records-in-terminal-circles` stands at `shared/history/260826-1705-playmaker-direct-dispatch.md:46`.
+
+---
+Resolved: `shared/history/260826-1705-playmaker-direct-dispatch.md` gained an appended, dated correction line after its warnings, stating that `stranded-records-in-terminal-circles` encoded a mechanism `bin/fusion-paths` does not have and that the 260827-1637 run retired the name under `records-reachable-only-under-their-terminal-circle`; its original lines stand as written. The portfolio needed nothing: `fusion-workbench/portfolio.md` (`**Generated:** 260827-1637`) carries no copy of the claim, and names the old warning only once, as the name it retires. The record instance closed under `260826-1815_*`. Plan `260827-1756_*`, step 4.
