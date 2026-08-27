@@ -13,3 +13,6 @@ The helper-gap line runs fusion-plugin-cwd without the guard every other call si
 ## Acceptance
 
 `grep -c 'fusion-plugin-cwd' skills/setup/SKILL.md` shows the call preceded by its guard.
+
+---
+Resolved: 260827-2103 by coder. The Step 2 helper-gap line is now `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null && for h in bin/*; …`, the guard every other call site carries (decision `260810-0921`). +1 path token on the reference gate, 0 anchors, measured by single-file revert.

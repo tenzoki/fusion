@@ -23,3 +23,6 @@ Use `git check-ignore -v` to learn which file carries the exclusion and append t
 ## Acceptance
 
 Against the scratch shape above, one run leaves the entry un-excluded and a second run prints nothing; a root `.gitignore` never gains a duplicate line.
+
+---
+Resolved: 260827-2103 by coder. Step 0j now skips an entry whose negation line the root `.gitignore` already carries (`grep -qxF`), re-runs `git check-ignore -q` after the append, and reports "still excluded by a nested ignore file, <file>:<line>:<pattern> — not repaired" from `git check-ignore -v` when the root negation loses; the repair line is printed only when the second check exits 1. Verified on a scratch repo with `fusion-workbench/.gitignore` excluding `orchestrator-events.jsonl`: two runs, one negation line, both runs report not repaired; with a root-only exclusion, run 1 repairs and run 2 prints nothing. The negation stays at the root (the dispatch chose report over writing into the nested file).

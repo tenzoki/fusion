@@ -339,7 +339,7 @@ A `_t_` Circle record travels between checkouts and `.active-circle` does not (`
 
 It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
 
-**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`, minting `fusion-workbench/.checkout-id` where none exists. Its header documents the six exit codes and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as `$FUSION_SRC/agents/orchestrator.md` Setup step 2 defines it, both bullets: the second extends it with the `session_id` a SessionStart hook printed into your context, and no line means no key.
+**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`, minting `fusion-workbench/.checkout-id` where none exists. Its header documents the six exit codes and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as `$FUSION_SRC/agents/orchestrator.md` Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
 
 ```bash
 [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
@@ -367,7 +367,9 @@ Name the branch that ran in the Done report.
 ```bash
 if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-files --error-unmatch fusion-workbench >/dev/null 2>&1; then
   for p in orchestrator-events.jsonl .fusion-setup .asset-provenance; do
-    git check-ignore -q "fusion-workbench/$p" && { [ -s ./.gitignore ] && [ -n "$(tail -c1 ./.gitignore)" ] && printf '\n' >> ./.gitignore; printf '!fusion-workbench/%s\n' "$p" >> ./.gitignore; echo "gitignore: $p was excluded — negation appended to $(pwd)/.gitignore"; }
+    git check-ignore -q "fusion-workbench/$p" || continue
+    grep -qxF "!fusion-workbench/$p" ./.gitignore 2>/dev/null || { [ -s ./.gitignore ] && [ -n "$(tail -c1 ./.gitignore)" ] && printf '\n' >> ./.gitignore; printf '!fusion-workbench/%s\n' "$p" >> ./.gitignore; }
+    if git check-ignore -q "fusion-workbench/$p"; then echo "gitignore: $p still excluded by a nested ignore file, $(git check-ignore -v "fusion-workbench/$p" | cut -f1) — not repaired"; else echo "gitignore: $p was excluded — negation appended to $(pwd)/.gitignore"; fi
   done
   if git ls-files --error-unmatch fusion-workbench/.checkout-id >/dev/null 2>&1; then
     git rm -q --cached fusion-workbench/.checkout-id && printf 'fusion-workbench/.checkout-id\n' >> ./.gitignore && echo "gitignore: .checkout-id was tracked — untracked (file kept on disk) and excluded"
@@ -409,7 +411,7 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 **In fusion's own repository, name the helpers the install lacks.** Every helper call site reads `$FUSION_PLUGIN_ROOT/bin/`, pinned for the session, so a helper this work tree just added takes every `[ -x ]` miss branch until the next `fusion --update` (issue `260825-1329`); whether the work-tree preference should reach helper resolution is part (c) of decision `260810-1544` and stays unanswered. This line measures the gap and changes nothing:
 
 ```bash
-"$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null && for h in bin/*; do [ -x "$h" ] && [ ! -x "$FUSION_PLUGIN_ROOT/$h" ] && echo "helper in work tree, not in install: $h"; done
+[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null && for h in bin/*; do [ -x "$h" ] && [ ! -x "$FUSION_PLUGIN_ROOT/$h" ] && echo "helper in work tree, not in install: $h"; done
 ```
 
 Name each line in the Done report.
