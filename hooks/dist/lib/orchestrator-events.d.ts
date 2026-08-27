@@ -94,7 +94,24 @@ export interface DispatchHookInput {
     session_id?: unknown;
     tool_use_id?: unknown;
     tool_input?: Record<string, unknown>;
+    tool_response?: unknown;
 }
+/** The launch verdict off the PostToolUse payload, read and never predicted. */
+export declare function dispatchWasBackgrounded(input: DispatchHookInput): boolean;
+/** Park the pairing for the SubagentStop hook. No-op without an agentId. */
+export declare function recordDispatchLaunch(input: DispatchHookInput): void;
+/** What the SubagentStop hook reads off its payload. */
+export interface SubagentStopInput {
+    session_id?: unknown;
+    agent_id?: unknown;
+    agent_type?: unknown;
+}
+/**
+ * The backgrounded dispatch's real completion. Emits task_done only when the
+ * launch parked a mapping entry — a sync dispatch's SubagentStop fires before
+ * any entry exists and correctly emits nothing (PostToolUse owns that row).
+ */
+export declare function emitSubagentStop(input: SubagentStopInput): void;
 /**
  * Append one machine-written dispatch row. No-op without a workbench or
  * outside an orchestrator session. Never throws past its caller's

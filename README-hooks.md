@@ -85,7 +85,14 @@ Claude Code
               +-- fusion-workbench/.guard-state/{review-coverage,
               |     staging-drift}.json (one throttle record per measurement)
               +-- fusion-workbench/.guard-state/events.jsonl (audit log)
-              \-- fusion-workbench/orchestrator-events.jsonl (task_done)
+              \-- fusion-workbench/orchestrator-events.jsonl (task_done;
+                    a backgrounded dispatch parks .guard-state/dispatch-map.json
+                    instead, resolved at the real stop by:)
+
+  +-- SubagentStop
+        \-- subagent-stop.ts
+              \-- fusion-workbench/orchestrator-events.jsonl (the backgrounded
+                    dispatch's task_done, paired via the parked mapping)
 ```
 
 ## Getting Started
@@ -195,6 +202,7 @@ last written for.
 |------|---------|------------|
 | `session-start.ts` | SessionStart hook — warns when the session started below the project root. See [Start your session at the project root](#start-your-session-at-the-project-root) | Yes |
 | `session-id.ts` | SessionStart hook — prints `fusion: session_id=<uuid>` on plain stdout, which is the channel that reaches the model; `systemMessage` reaches the user and never it. Both halves were measured against Claude Code 2.1.245 and read from the transcript rather than from the model's testimony about its own context (`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`). It is a fourth SessionStart command rather than a line inside `session-start.ts` because one process writes one stdout and the two need opposite channels: an envelope that carries the warning routes it away from the model and leaves the model's copy empty. A payload with no usable identifier produces no output at all — anything written here becomes model context, so absence is silence rather than a line saying there is nothing to say. Since v10.8.0 it also appends `export FUSION_SESSION_ID=<uuid>` to `$CLAUDE_ENV_FILE` (after the stdout line, charset-gated, fail-open), so the model's shell commands can put the identifier on the event rows they still write | Yes |
+| `subagent-stop.ts` | SubagentStop hook (v10.8.1) — the backgrounded dispatch's real completion. A backgrounded dispatch returns at launch, so PostToolUse's `task_done` would record "accepted" and not "finished"; this hook resolves the `agentId → tool_use_id` mapping the tracker parked at launch and emits the row when the sub-agent actually stops. Its payload was measured before it was trusted (`shared/analyses/260827-0740-subagentstop-payload-measurement.md`): it carries `agent_id` and `session_id` and no tool-use id, and a sync dispatch's SubagentStop fires before any mapping entry exists — the ordering, not a heuristic, prevents duplicate rows | Yes |
 | `guard.ts` | PreToolUse hook — allows every call and decides nothing. It writes the `guard_allow` trace row for a write-tool call, the `guard_advisory` rows for whatever the configuration loader could not resolve, and (v10.8.0) the machine-written `task_start` row for a sub-agent dispatch, and that is the whole of it. Its own header carries the account of each check that used to live here and the measurement that removed it | Yes |
 | `tracker.ts` | PostToolUse hook — runs the staging and review-coverage measurements and hands the model whatever they have to say. Observation only: a PostToolUse hook cannot block, and since 2026-08-12 it raises nothing either. Both measurements fire on a narrow trigger, so since 2026-08-15 an ordinary write at an unremarkable path reaches no measurement here at all — the session-state drift check that held the every-tool-call slot went with the hand-maintained counters it measured. Since v10.8.0 it also writes the machine-written `task_done` row for a sub-agent dispatch and refreshes the session-marker heartbeat (rate-limited on the marker's own mtime); neither is a measurement — they record and say nothing | Yes |
 | `turn-budget.ts` | Prints the orchestrator's Phase-2 Turn budget, merged from the project's `fusion.json` (`{"orchestrator": {"maxTurns": <n>}}`) over the built-in defaults — two layers, and the only setting fusion still resolves. For the orchestrator's Setup, through `bin/fusion-turn-budget`. No hook reads the value — it exists so the budget stops being prose: it was written into `agents/orchestrator.md` in seven places and four spellings, one of which already called it a "default" while nothing could override it (issue `260811-1712`). A value that is not a whole number of 1 or more is dropped, named on stderr, and inherits | Yes |

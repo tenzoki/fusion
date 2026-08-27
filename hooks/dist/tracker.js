@@ -96,7 +96,7 @@
 import { basename, resolve, sep } from "node:path";
 import { emitEvent, setEventSession } from "./lib/events.js";
 import { bestEffort, failOpen } from "./lib/fail-open.js";
-import { emitDispatchEvent, heartbeatSessionMarker, isDispatchTool, } from "./lib/orchestrator-events.js";
+import { dispatchWasBackgrounded, emitDispatchEvent, heartbeatSessionMarker, isDispatchTool, recordDispatchLaunch, } from "./lib/orchestrator-events.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
 import { coverageSentence, isMeasuredReview, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
@@ -411,11 +411,21 @@ async function main() {
     // nothing to the model, it records; the trigger question in the family
     // header does not apply to a row with no sentence. `guard.ts` writes the
     // `task_start` half; `lib/orchestrator-events.ts` carries schema and gate.
+    // A BACKGROUNDED dispatch returns at launch (`tool_response.status:
+    // "async_launched"`, measured — see the lib's header block on the two
+    // emitters), so its row would record the launch and not the finish: that
+    // case parks an agentId->tool_use_id mapping instead, which the
+    // SubagentStop hook resolves at the real completion.
     // The two measurements still run after it: a sub-agent may have committed
     // during its run, which is exactly the HEAD-moved trigger staging drift
     // reads.
     if (isDispatchTool(input.tool_name)) {
-        bestEffort("tracker", () => emitDispatchEvent("task_done", input));
+        if (dispatchWasBackgrounded(input)) {
+            bestEffort("tracker", () => recordDispatchLaunch(input));
+        }
+        else {
+            bestEffort("tracker", () => emitDispatchEvent("task_done", input));
+        }
     }
     // The session-marker heartbeat, on every call and self-rate-limited — see
     // `lib/orchestrator-events.ts` for the gate and the residual. Not a

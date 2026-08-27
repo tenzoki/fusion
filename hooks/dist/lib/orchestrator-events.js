@@ -59,7 +59,7 @@
  * format.
  */
 import { execFileSync } from "node:child_process";
-import { appendFileSync, existsSync, statSync, utimesSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, statSync, utimesSync, writeFileSync, } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findWorkbenchRoot } from "./workbench-root.js";
@@ -137,6 +137,108 @@ export function resolveIdentity(root) {
         ...(person && { person }),
         ...(checkout && { checkout }),
     };
+}
+/* ------------------------------------------------------------------ *
+ * The backgrounded dispatch, and why task_done has two emitters
+ *
+ * Measured 2026-08-27 against Claude Code 2.1.x in a throwaway project
+ * (`shared/analyses/260827-0740-subagentstop-payload-measurement.md`):
+ *
+ *   - SYNC dispatch: PreToolUse -> SubagentStop -> PostToolUse, and the
+ *     PostToolUse payload carries `tool_response.status: "completed"` plus
+ *     `duration_ms`. PostToolUse fires AFTER the sub-agent finished, so the
+ *     task_done it emits spans the real duration.
+ *   - BACKGROUND dispatch: PostToolUse fires at launch (`duration_ms` ~4) with
+ *     `tool_response.status: "async_launched"` and the `agentId`; SubagentStop
+ *     fires at the actual completion carrying the SAME id as `agent_id` — but
+ *     NO tool_use_id.
+ *
+ * So the tracker emits task_done only for a completed dispatch; for a launched
+ * one it records agentId -> {task, agent, detail} in
+ * `.guard-state/dispatch-map.json`, and the SubagentStop hook resolves the
+ * pairing back to the tool-use id when the agent really stops. The ordering
+ * removes the need for any dedup heuristic: a sync SubagentStop fires before
+ * PostToolUse ever wrote a mapping entry, finds nothing, and stays silent.
+ * Issue `shared/issues/260827-0716_*_task-done-fires-at-dispatch-launch-when-the-sub-agent-runs-in-the-background.md`.
+ * ------------------------------------------------------------------ */
+const DISPATCH_MAP = ["fusion-workbench", ".guard-state", "dispatch-map.json"];
+/** A mapping entry older than this is a crashed session's leftover. */
+const MAP_ENTRY_TTL_MS = 24 * 60 * 60 * 1000;
+function mapPath(root) {
+    return resolve(root, ...DISPATCH_MAP);
+}
+function readMap(root) {
+    try {
+        return JSON.parse(readFileSync(mapPath(root), "utf-8"));
+    }
+    catch {
+        return {};
+    }
+}
+function writeMap(root, map) {
+    const now = Date.now();
+    for (const [id, entry] of Object.entries(map)) {
+        if (typeof entry?.ts !== "number" || now - entry.ts > MAP_ENTRY_TTL_MS)
+            delete map[id];
+    }
+    mkdirSync(resolve(root, "fusion-workbench", ".guard-state"), { recursive: true });
+    writeFileSync(mapPath(root), JSON.stringify(map), "utf-8");
+}
+/** The launch verdict off the PostToolUse payload, read and never predicted. */
+export function dispatchWasBackgrounded(input) {
+    const resp = input.tool_response;
+    if (typeof resp !== "object" || resp === null)
+        return false;
+    return resp.status === "async_launched";
+}
+/** Park the pairing for the SubagentStop hook. No-op without an agentId. */
+export function recordDispatchLaunch(input) {
+    const root = findWorkbenchRoot();
+    if (root === null || !orchestratorSessionInFlight(root))
+        return;
+    const agentId = input.tool_response?.agentId;
+    if (typeof agentId !== "string" || agentId === "")
+        return;
+    const map = readMap(root);
+    const description = input.tool_input?.description;
+    map[agentId] = {
+        ...(typeof input.tool_use_id === "string" && input.tool_use_id !== "" && { task: input.tool_use_id }),
+        ...(agentName(input.tool_input) && { agent: agentName(input.tool_input) }),
+        ...(typeof description === "string" && description !== "" && { detail: description.slice(0, 200) }),
+        ts: Date.now(),
+    };
+    writeMap(root, map);
+}
+/**
+ * The backgrounded dispatch's real completion. Emits task_done only when the
+ * launch parked a mapping entry — a sync dispatch's SubagentStop fires before
+ * any entry exists and correctly emits nothing (PostToolUse owns that row).
+ */
+export function emitSubagentStop(input) {
+    const root = findWorkbenchRoot();
+    if (root === null || !orchestratorSessionInFlight(root))
+        return;
+    const agentId = typeof input.agent_id === "string" ? input.agent_id : "";
+    if (agentId === "")
+        return;
+    const map = readMap(root);
+    const entry = map[agentId];
+    if (entry === undefined)
+        return;
+    delete map[agentId];
+    writeMap(root, map);
+    const identity = resolveIdentity(root);
+    const sessionId = typeof input.session_id === "string" && input.session_id !== "" ? input.session_id : undefined;
+    const row = {
+        ts: utcStamp(),
+        event: "task_done",
+        ...(entry.task && { task: entry.task }),
+        ...(entry.agent && { agent: entry.agent }),
+        ...identity,
+        ...(sessionId && { session_id: sessionId }),
+        ...(entry.detail && { detail: entry.detail }),
+    };
+    appendFileSync(resolve(root, "fusion-workbench", "orchestrator-events.jsonl"), JSON.stringify(row) + "\n", "utf-8");
 }
 /** `fusion:coder` → `coder`, matching the model-written rows' spelling. */
 function agentName(toolInput) {

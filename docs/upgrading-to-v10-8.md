@@ -1,10 +1,10 @@
-# Upgrading to v10.8.0
+# Upgrading to v10.8 (10.8.0 / 10.8.1)
 
 Nothing in this release can break an existing project, and no file of yours needs editing. What changes is **who writes the mechanical bookkeeping**: three event-row kinds and the session heartbeat move from prompt mandates on the orchestrator to machinery that cannot forget them.
 
 ## What is machine-written now
 
-- **`task_start` / `task_done`** — the PreToolUse/PostToolUse hooks write one pair per sub-agent dispatch into `fusion-workbench/orchestrator-events.jsonl`, with a real timestamp, `person`/`checkout`/`session_id` attached, and the tool-use id as `task`. Only while an orchestrator session is in flight (`agentstate.yaml` exists).
+- **`task_start` / `task_done`** — the PreToolUse/PostToolUse hooks write one pair per sub-agent dispatch into `fusion-workbench/orchestrator-events.jsonl`, with a real timestamp, `person`/`checkout`/`session_id` attached, and the tool-use id as `task`. Only while an orchestrator session is in flight (`agentstate.yaml` exists). Since 10.8.1 a **backgrounded** dispatch gets its `task_done` from the new SubagentStop hook at the sub-agent's real completion, paired through a launch-time mapping under `.guard-state/` — 10.8.0 recorded the launch moment there, which the first live session measured as a same-second pair around an 11-minute agent.
 - **`commit`** — `bin/fusion-commit-lock with` appends the row after the wrapped command exits 0 and HEAD has actually moved (read from the repository, never inferred from the command's text).
 - **The session-marker heartbeat** — the PostToolUse hook refreshes `.session-marker`'s mtime on every tool call, rate-limited to once per 60 s, while both the marker and `agentstate.yaml` exist. The orchestrator no longer runs `fusion-session-mark heartbeat` per Turn.
 - **Identity, resolved once** — SessionStart runs `bin/fusion-identity` a single time and exports `FUSION_PERSON` / `FUSION_CHECKOUT`; `session-id.js` additionally exports `FUSION_SESSION_ID`. `bin/fusion-events` reads the pair from the environment and re-runs nothing.

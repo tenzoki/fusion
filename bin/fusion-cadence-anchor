@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+# fusion-cadence-anchor — the per-checkout high-water marks the cleanup
+# pipeline reads so its passes run over the delta instead of the whole
+# workbench, every time.
+#
+# THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION. The rows in CLAUDE.md and
+# the call sites in skills/cleanup summarise it and deliberately do not
+# restate it.
+#
+# ## What it holds, and where
+#
+# One flat KEY=value file at fusion-workbench/.cadence-anchors, resolved by
+# walking up from pwd (bin/fusion-workbench-root — the same anchor every
+# helper uses). Keys are [a-z_]+ and values are single tokens with no
+# whitespace; one line per key, last write wins, unknown keys are preserved.
+# The file is CLASS L in rules/workbench-tracking.md's split: per-checkout
+# live state, never committed, never travels. Two checkouts each keep their
+# own marks, because "what did MY last cleanup already cover" is a fact about
+# this checkout's runs, not about the project — a pulled mark would claim
+# coverage a checkout never performed, which is exactly the false "already
+# done" this file must never produce.
+#
+# ## The keys the pipeline uses today
+#
+#   last_reconcile_commit   The commit HEAD stood on when the reconciler last
+#                           ran to completion here. /fusion:cleanup Step 3
+#                           skips the dispatch when nothing under
+#                           fusion-workbench/ changed since it — read via
+#                           `changed-since`, written after the reconciler
+#                           returns. An absent or unresolvable mark means
+#                           "no anchor": the full pass runs, which is the
+#                           correct first-run and post-history-rewrite
+#                           behaviour.
+#
+# Keys are not enumerated anywhere else; a future step adds its own key and
+# this list gains a row.
+#
+# ## Subcommands
+#
+#   get <key>               Print the value, or nothing. Exit 0 with a value,
+#                           1 without one (absent file or absent key).
+#   set <key> <value>       Write/replace the key. Creates the file. Exit 0;
+#                           2 on a malformed key/value.
+#   changed-since <key> [<pathspec>]
+#                           The one composed question Step 3 asks. Reads the
+#                           key as a git commit; prints exactly one line:
+#                             changed=yes | changed=no | changed=unknown
+#                           `no` requires ALL of: the mark resolves to a
+#                           commit in this repository, `git diff --name-only
+#                           <mark>..HEAD -- <pathspec>` is empty, AND
+#                           `git status --porcelain -- <pathspec>` is empty —
+#                           committed and uncommitted movement both count.
+#                           `unknown` covers everything that prevents the
+#                           question from being answered: no git work tree,
+#                           no mark, a mark git cannot resolve (rebase,
+#                           clone, gc). Callers treat `unknown` exactly like
+#                           `yes` — run the full pass; a skipped pass may
+#                           only ever rest on a proven `no`.
+#                           <pathspec> defaults to fusion-workbench/.
+#                           Exit 0 in all three cases; the answer is the line.
+#
+# ## Exit codes
+#
+#   0  the printed answer is the answer
+#   1  get: no value held
+#   2  usage error (unknown subcommand, malformed key or value)
+#   3  no fusion workbench above pwd (nothing to anchor against)
+#
+# ## Why a helper and not lines in the skill body
+#
+# The three bounded text surfaces (agents/, skills/, the always-on rules) are
+# effectively full; bin/ is not a bounded surface, and the established
+# pattern (fusion-turn-budget, fusion-session-domain, fusion-events) is that
+# the mechanism and its contract live in the helper's header while the prompt
+# carries one guarded call. The `[ -x ]` guard at every call site is decision
+# `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
+# an installed copy predating this helper simply never skips a pass.
+
+set -eu
+
+resolve_root() {
+  local root
+  if ! root="$("$(dirname "$0")/fusion-workbench-root" 2>/dev/null)"; then
+    echo "fusion-cadence-anchor: no fusion workbench found above $(pwd)." >&2
+    return 1
+  fi
+  printf '%s\n' "$root"
+}
+
+ANCHORS="fusion-workbench/.cadence-anchors"
+
+valid_key() { printf '%s' "$1" | LC_ALL=C grep -Eq '^[a-z_]+$'; }
+valid_value() { printf '%s' "$1" | LC_ALL=C grep -Eq '^[^[:space:]]+$'; }
+
+cmd="${1:-}"
+
+case "$cmd" in
+  get)
+    key="${2:-}"
+    valid_key "$key" || { echo "fusion-cadence-anchor: malformed key '$key'" >&2; exit 2; }
+    root="$(resolve_root)" || exit 3
+    cd "$root"
+    [ -f "$ANCHORS" ] || exit 1
+    value="$(sed -n "s/^${key}=//p" "$ANCHORS" | tail -1)"
+    [ -n "$value" ] || exit 1
+    printf '%s\n' "$value"
+    ;;
+  set)
+    key="${2:-}"; value="${3:-}"
+    valid_key "$key" || { echo "fusion-cadence-anchor: malformed key '$key'" >&2; exit 2; }
+    valid_value "$value" || { echo "fusion-cadence-anchor: malformed value" >&2; exit 2; }
+    root="$(resolve_root)" || exit 3
+    cd "$root"
+    tmp="${ANCHORS}.tmp.$$"
+    { [ -f "$ANCHORS" ] && grep -v "^${key}=" "$ANCHORS" || true; printf '%s=%s\n' "$key" "$value"; } > "$tmp"
+    mv "$tmp" "$ANCHORS"
+    ;;
+  changed-since)
+    key="${2:-}"; pathspec="${3:-fusion-workbench/}"
+    valid_key "$key" || { echo "fusion-cadence-anchor: malformed key '$key'" >&2; exit 2; }
+    root="$(resolve_root)" || exit 3
+    cd "$root"
+    mark=""
+    [ -f "$ANCHORS" ] && mark="$(sed -n "s/^${key}=//p" "$ANCHORS" | tail -1)"
+    if [ -z "$mark" ] \
+      || [ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" != "true" ] \
+      || ! git rev-parse -q --verify "${mark}^{commit}" >/dev/null 2>&1; then
+      echo "changed=unknown"
+      exit 0
+    fi
+    if [ -z "$(git diff --name-only "${mark}..HEAD" -- "$pathspec" 2>/dev/null)" ] \
+      && [ -z "$(git status --porcelain -- "$pathspec" 2>/dev/null)" ]; then
+      echo "changed=no"
+    else
+      echo "changed=yes"
+    fi
+    ;;
+  ""|-h|--help|help)
+    cat >&2 <<'EOF'
+Usage: fusion-cadence-anchor {get <key>|set <key> <value>|changed-since <key> [<pathspec>]}
+The header of this script is the authoritative documentation.
+EOF
+    [ -z "$cmd" ] && exit 2
+    exit 0
+    ;;
+  *)
+    echo "fusion-cadence-anchor: unknown subcommand '$cmd'" >&2
+    exit 2
+    ;;
+esac

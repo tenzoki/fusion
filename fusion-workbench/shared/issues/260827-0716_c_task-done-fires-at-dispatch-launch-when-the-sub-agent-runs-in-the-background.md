@@ -28,3 +28,7 @@ Until then the row is honest about what it records — a reader can pair `task_s
 ## Acceptance
 
 In a session using backgrounded dispatches, `task_start` and `task_done` for one `task` id are separated by the dispatch's real wall-clock, and a synchronous dispatch keeps today's behaviour; no duplicate `task_done` per id.
+
+## Resolution (260827, v10.8.1)
+
+The channel was measured the same day (`shared/analyses/260827-0740-subagentstop-payload-measurement.md`): SubagentStop fires in both modes, carries `agent_id`/`session_id` and no tool-use id, and the backgrounded launch's `tool_response` carries the same `agentId` — the bridge the pairing needed. Built accordingly: the tracker emits `task_done` only for `status: "completed"`; a launched dispatch parks `agentId → {task, agent, detail}` in `.guard-state/dispatch-map.json`, and `hooks/subagent-stop.ts` resolves it at the real stop. The sync-mode event order (SubagentStop before PostToolUse) is what makes duplicates impossible without a heuristic. Proven headlessly on all four cases: launch parks and emits nothing, unknown-agent stop stays silent, mapped stop emits the paired row and clears the entry, a completed sync dispatch keeps today's row.
