@@ -21,13 +21,13 @@
   editor.md 13635
   ontocoder.md 13262
   ontorev.md 7098
-  orchestrator.md 162689
+  orchestrator.md 162735
   planner.md 19423
   playmaker.md 38953
   reconciler.md 20980
   shaper.md 28833
   taskplanner.md 14070
-  total 417796
+  total 417842
 
 [skills bytes]
   archive/SKILL.md 25223
@@ -71,7 +71,7 @@
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
-  hooks-wiring.test.ts 103
+  hooks-wiring.test.ts 125
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
   monitor-warnings-panel.test.ts 1136
@@ -93,4 +93,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 376
-  total 20349
+  total 20371

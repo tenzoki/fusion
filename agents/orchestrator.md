@@ -130,14 +130,7 @@ Remaining setup (after step 1 is resolved):
    - **Sub-agents run their own rules check.** Sub-agents you dispatch run their own rules check for their domain — you only need workbench conventions here.
    - **On exit 4**, beyond what `agent-setup.md` says (an internal `fusion-paths` bug; the user's workbench is fine, so do **not** send them to check `.active-circle`), report it as a fusion bug and file an issue at `$OUT_ISSUE`.
    - **Root-anchored surfaces the resolver does not cover.** `fusion-workbench/agentstate.yaml`, `orchestrator-live.md`, `orchestrator-events.jsonl`, `.guard-state/`, `.commit-lock/` and `.session-marker` stay at the workbench root at fixed paths, because the hooks, the monitor and the `bin/` helpers read them there and none of them has a fallback. Keep naming those literally.
-   - **Who and which checkout.** Every event line you emit names both (**Structured Event Log**). Resolve the pair once, here, and hold it for the session:
-
-     ```bash
-     [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
-     ```
-
-     It prints `PERSON=` and `CHECKOUT=`; compose neither value yourself. Hold the pair as one JSON fragment, `<ID>` = `,"person":"<PERSON>","checkout":"<CHECKOUT>"`, with an unresolved half's key **left out** and the fragment empty when neither resolved. Every emit template below carries `<ID>` rather than two literal fields, which executes the absent-rather-than-empty rule instead of restating it. `rules/fusion-workbench-conventions.md` `### Who filed it` governs the values. **Its exit-1 halt does not move to Setup:** that halt is about **filing a record**, and this call resolves an event field, which `<ID>` degrades on its own. Report the failed read and halt at the first filing, where the rule puts it.
-   - **Which Claude Code session.** A SessionStart hook prints one line into your context, `fusion: session_id=<uuid>`. Read the value there; no command reproduces it. Extend `<ID>` with `,"session_id":"<uuid>"`. **No line, no key** — the same absent-rather-than-empty rule, and never invent one.
+   - **Who, which checkout, which session.** Every event line you emit names all three (**Structured Event Log**). The SessionStart hooks resolve them once and export `$FUSION_PERSON`, `$FUSION_CHECKOUT` (the output of `bin/fusion-identity`, carried forward) and `$FUSION_SESSION_ID` (also printed into your context). Hold the resolved values as one JSON fragment, `<ID>` = `,"person":"<PERSON>","checkout":"<CHECKOUT>","session_id":"<uuid>"`, with an unset value's key **left out** and the fragment empty when none resolved — never invent one. Every emit template below carries `<ID>` rather than literal fields, which executes the absent-rather-than-empty rule instead of restating it. With the pair unset (an install predating the export), fall back to the guarded `[ -x ]` call of `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`; compose neither value yourself. `rules/fusion-workbench-conventions.md` `### Who filed it` governs the values; its exit-1 halt stays at the first **filing**, not here — `<ID>` degrades on its own.
    - **The Turn budget.** Phase 2 runs a bounded number of Turns. The bound is a per-project setting and this prompt does not carry it: it is declared in the project's `fusion.json` as `{"orchestrator": {"maxTurns": <n>}}`, merged per leaf over fusion's built-in default. Two layers, and it is the only setting fusion resolves. Resolve it once, here, and hold the answer for the whole session — every later step that shows or compares a Turn count means **this** value, written below as `<max-turns>`.
 
      ```bash
@@ -574,9 +567,7 @@ Process tasks top-to-bottom from the work queue. For each task:
    - Emit `gate_response` with the user's decision
    - On Skip: emit `task_skipped`. On Defer: emit `task_deferred`.
 3. **Mark tracking files.** Rename the source file's state marker: `_o_` to `_p_` (or mark plan step `[IN PROGRESS]`).
-4. **Dispatch to executor.**
-   - Emit `task_start` event
-   - **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[RUNNING]`, update counters and unblock any tasks whose dependencies just completed
+4. **Dispatch to executor.** (`task_start` and the monitor's `[RUNNING]` view come from the dispatch hook — no emit, no dashboard here.)
    - Invoke the routed agent (`coder`, `ontocoder`, or `analyst` for strategic-deliverable tasks) with a clear, specific prompt:
      - What to do (the task summary + detail from the source file)
      - Which files to touch, and which not. The not-to-touch list covers temporary writes as well as edits: a verification that has to mutate a file runs against a scratch copy of the tree or the file, never against the live one another executor may hold
@@ -594,10 +585,9 @@ Process tasks top-to-bottom from the work queue. For each task:
 6. **Mark complete.** A task the verification line left blocked does not reach this step: leave its source marker at `_p_`, emit `task_error`, **REFRESH DASHBOARD** showing it as `[ERROR]`, and carry the executor's stated reason into the queue entry.
    - Update the source file per `fusion-workbench-conventions.md` (plan step to `[DONE]`, issue: append resolution note and rename marker to `_c_`)
    - Mark the task done in `agentstate.yaml`'s `work_queue`
-   - Emit `task_done` event
-   - **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[DONE]` with commit hash, increment counters, update blocked/unblocked tasks
+   - **REFRESH DASHBOARD** — overwrite `orchestrator-live.md` showing this task as `[DONE]` with commit hash, increment counters, update blocked/unblocked tasks. (`task_done` is machine-written — emit none.)
 
-**IMPORTANT: The dashboard file MUST be overwritten at steps 2, 4, and 6 — not batched, not deferred. Each overwrite is a separate `Write` tool call to `fusion-workbench/orchestrator-live.md` that happens immediately at that point in the flow, before moving to the next step.**
+**Dashboard cadence: one overwrite per task outcome** (step 2's `[GATE]`, step 6's `[DONE]`/`[ERROR]`) **plus one per Turn boundary**; the in-between states come from the machine-written rows, so none happens at dispatch.
 
 ### Step 3b: Commit After Each Task
 
@@ -638,7 +628,7 @@ After each completed task:
    **Which lock form, and why this one.** `with` is canonical in that rule and it releases on **every** exit path — the helper traps `EXIT INT TERM` — so a `git add` that fails (a path the bugfixer reverted, a rejecting pre-commit hook) frees the lock immediately instead of leaving it held for the 60-second stale threshold with every other committer blocked behind it. There is exactly one criterion for departing from `with`, and it is the one the rule file gives: use the explicit `acquire` / `release` pair only when the region that has to stay held contains **internal control-flow** that `with` cannot express. This region has none — it is `add && commit`. The bugfixer retry is control-flow of Step 3b as a whole, not of the held region: it lives at step 2 and has finished before step 5 acquires anything, and holding a commit lock across an agent dispatch would be wrong on its own terms.
 
    **The commit message is not a criterion, because it is not in this command.** Step 3 wrote it to a file and `git commit -F <path>` names that file, so everything inside the `bash -c` string is a path or a flag you authored as a literal. That is precisely what makes the wrapper safe: a single-quoted shell string ends at the first apostrophe, and prose has apostrophes — the defect at step 3. An earlier revision of this step dropped `with` on the reasoning that the message would have to travel inside the `--` argument. It does not, and has not since the message moved into a file; `/fusion:commit` and `/fusion:cleanup` run this same shape for this same reason. One thing to check before you send it: no path in your staging list contains a `'`. fusion's own filenames are slug-cased and never do; a path that did would be a Human Gate matter, not something to quote your way around.
-6. **Emit** a `commit` event with the short hash and message summary.
+6. The `commit` event is machine-written by `fusion-commit-lock with` (`rules/commit-lock.md` `## The lock writes the commit event`) — emit none yourself.
 7. **Write `agentstate.yaml` before you start the next task** — the task's status to `done` with this commit's hash. The Write Points table already required this at "Task completes"; it is named *here*, inside the commit step, because that is the obligation it rides. The instant step 5 lands, the queue entry is wrong, and it is wrong in the direction that breaks resume: a session killed now would replay a task that is already in history. Since the persisted task list was removed, `work_queue` in this file is the queue's **only** durable copy, so the entry you do not update is a task no resume can tell has been done.
 
    **You will be trusted to remember it, and until 2026-08-15 you were not.** A commit count sat beside the queue entry in this file, and `hooks/tracker.ts` compared it against `git rev-list --count` after every tool call — so a skipped write came back as a named divergence on the next tool call. Both are gone: the count, because it was a hand-written copy of a number git already holds, and the measurement with it, because that count was the only thing it ever caught. What is left is this step, riding the commit that made it necessary. Nothing will tell you when you skip it.
@@ -750,7 +740,7 @@ Emit `gate_response` with whichever the user chose. The interval is one Turn, be
 
 If all tasks in the queue are `[x] done` or `_d_ deferred`, the loop converges. Exit to Phase 4.
 
-Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), refresh the active-session marker (`"$FUSION_PLUGIN_ROOT/bin/fusion-session-mark" heartbeat` — keeps a parallel `/fusion:setup` from treating this session as stale), and start the next Turn.
+Otherwise, emit `turn_end` event with Turn stats, refresh the queue (incorporate new issues from reviews, remove completed tasks), and start the next Turn. (The session-marker heartbeat is machine-written by the PostToolUse hook — run none yourself.)
 
 **Run the staging check in the same command as that `turn_end` emission too** (see **Staging check**). This is the Turn boundary the acceptance for issue `260811-0114` names: a Turn that ends with an authored record under `fusion-workbench/` that no commit carries says so before the Turn closes. It rides the emission rather than standing next to it, for the reason that shaped every boundary obligation in this file: a Turn-boundary obligation standing on its own is the one that goes unrun.
 
@@ -1276,7 +1266,9 @@ Append one JSON line per event. Never overwrite — this is an append-only log. 
 
 Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit when not applicable (e.g. `session_start` has no `task`). `session_start` carries one field of its own, `history_file`: the session's identity in a log where a resume appends a second `session_start` (Setup step 8).
 
-**`person`, `checkout` and `session_id` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. `person` and `checkout` come from the guarded `bin/fusion-identity` call at Setup step 2 and `session_id` from the SessionStart line read there; none of the three is composed anywhere else. **A half that did not resolve makes its field absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line. **`session_id` names the Claude Code process, which `history_file` does not:** a fusion resume is a new process holding the history file fixed, so the two fields partition the log differently, and this one tells apart the processes that share one fusion session.
+**`person`, `checkout` and `session_id` stand on every line, not only on the session boundaries.** The union merge driver makes line order unreliable, so a line's session membership cannot be read off its position under a `session_start` — each line names its own writer instead. On your lines they come from `<ID>` (Setup step 2); machine-written lines resolve their own through the same helper. None of the three is composed anywhere else. **A half that did not resolve makes its field absent rather than empty**, the rule the record templates already follow; an absent `checkout` reads as this checkout's own, which leaves the pre-existing log readable without rewriting a line. **`session_id` names the Claude Code process, which `history_file` does not:** a fusion resume is a new process holding the history file fixed, so the two fields partition the log differently, and this one tells apart the processes that share one fusion session.
+
+**Three types are machine-written, and you never emit them.** `task_start`/`task_done` land from the dispatch hooks, one pair per dispatch (reviewer dispatches too, beside the `review_*` rows you still write); `commit` lands from `fusion-commit-lock with` on a moved HEAD. Emitting one yourself duplicates the row.
 
 **Event types:**
 
@@ -1291,8 +1283,8 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `queue_built` | Phase 1 done | Task count, blocked count |
 | `queue_empty` | Phase 1 — taskplanner returned "no routable tasks" (Step 1.5) | Open work item count |
 | `turn_start` | Beginning of each Turn | Turn number, ready task count |
-| `task_start` | Before dispatching executor | Task ID, agent, primary file |
-| `task_done` | Task completed + committed | Commit hash |
+| `task_start` | **Machine-written** (dispatch hook, PreToolUse) | Dispatch description; `task` = tool-use id |
+| `task_done` | **Machine-written** (dispatch hook, PostToolUse) | Dispatch description; `task` = tool-use id |
 | `task_error` | Validation failed or agent error | Error description |
 | `bugfix_start` | Bugfixer dispatched for failed task | Task ID, validation output summary |
 | `bugfix_success` | Bugfixer resolved the validation failure | Root cause summary |
@@ -1302,7 +1294,7 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `task_deferred` | User chose Defer at gate | — |
 | `gate_hit` | Human gate triggered | Gate reason; the Phase-4 stop-conditions gate writes the fixed string `Circle stop conditions` |
 | `gate_response` | User responded to gate | Decision (proceed/skip/defer/modify); the Unresolved-budget check-in writes `Continue`/`Stop here`/`Continue without check-ins`; the Phase-4 stop-conditions gate writes `holds`/`does not hold`, one per clause |
-| `commit` | Successful git commit | Short hash, message summary |
+| `commit` | **Machine-written** (`fusion-commit-lock with`, on a landed HEAD) | Short hash, message summary |
 | `revert` | Files reverted after error | File list, reason |
 | `review_start` | Incremental review begins | Agent (coderev/ontorev), file count |
 | `review_done` | Review complete | Issues filed count |
