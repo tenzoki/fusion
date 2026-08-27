@@ -94,7 +94,7 @@ Fusion is deliberately not autonomous. It stops and hands you the decision at de
 
 At each gate you get plain choices: proceed, skip for later, defer, or modify the instruction.
 
-**The per-Turn Coherence check.** Work runs in **Turns** — one Turn is a batch of tasks plus a review. At the end of each Turn, fusion asks three questions about what just landed:
+**The per-Turn Coherence check.** Work runs in **Turns** — one Turn is a batch of tasks. At the end of each Turn, fusion checks three questions about what just landed — and since v10.16 it *asks* you only when one of them looks off; a clean check is a status line, not a question:
 
 1. **Grounding** — does the work still match the assumptions it was built on?
 2. **Directive** — does it move toward the stated goal?
@@ -135,9 +135,9 @@ Two paths reach the same place and cross different machinery. The first is one c
 3. The request is specific enough, so the **shaper** is skipped. The **planner** produces a plan — a middleware step, a config step, a test step.
 4. **PLAN GATE** — you review the three steps and approve.
 5. **Turn 1 begins.** The **coder** edits the middleware. Each write passes through the **hook layer**, which allows it and records a row naming the tool and the file, so the monitor shows the edit as it happens. The coder edits it twice more while iterating, and nothing stands in the way.
-6. **coderev** reviews the Turn's changes and files any findings as issues.
+6. The coverage read notes what a review will eventually tile — **coderev** itself runs once per Circle, at its close (v10.14), scoped to every commit no review has covered.
 7. The orchestrator **commits** the work (holding the commit lock so parallel agents don't collide on the git index).
-8. **Per-Turn Coherence check** — the three questions pass: the work matches the assumptions, moves toward the goal, and the goal is still reachable. The Turn continues.
+8. **Per-Turn Coherence check** — the three questions pass: the work matches the assumptions, moves toward the goal, and the goal is still reachable. You see one status line; the Turn continues without asking.
 9. Turn 2 handles the tests the same way. The queue is now empty.
 10. **Final reconciliation** — the `reconciler` verifies the tracking files against the actual code and confirms the Circle is coherent.
 11. The Circle closes as **closed-coherent** (`_c_`), the `.active-circle` pointer is removed, and the orchestrator **reports** what landed.

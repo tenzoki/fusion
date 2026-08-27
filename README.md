@@ -82,13 +82,15 @@ Setup is the only thing that creates a workbench. Without it, agents halt with "
 
 ## Your first session
 
+**The daily loop, in five lines:** morning — `/fusion:cadence` shows what you have actually been doing; work — start the orchestrator and say what you want, or ask `/fusion:next` what is worth doing; ideas on the way — `/fusion:memo` files them without breaking stride; done — `/fusion:cleanup`, and you may walk away: one question waits for your return. Everything below is that loop in detail.
+
 Start the orchestrator and give it a task:
 
 ```bash
 fusion                                   # or: claude --agent fusion:orchestrator
 ```
 
-Then, in the chat, state what you want — for example *"implement the plan in planning, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope, builds a work queue, and runs a **Turn loop**: each Turn dispatches executor agents (coder, ontocoder) and then reviewers (coderev, ontorev), commits the work, and ends with a quick **Coherence check** — does the work still match the goal and the assumptions it was built on? If something is off, it opens a **Rebalance gate** and asks you how to proceed. At session end it runs a final reconciliation pass and reports.
+Then, in the chat, state what you want — for example *"implement the plan in planning, then review it"* or *"fix the failing test in the parser."* The orchestrator resolves the scope, builds a work queue, and runs a **Turn loop**: each Turn dispatches executor agents (coder, ontocoder) and commits the work, and ends with a quick **Coherence check** — does the work still match the goal and the assumptions it was built on? When everything is in line you see one status line and the loop just continues; only when something drifts does it stop and ask (the **Rebalance gate**). The reviewers (coderev, ontorev) run **once per Circle, at its close**, scoped by the coverage tiling so nothing slips between sessions. At session end a reconciliation pass checks the tracking files and reports.
 
 You'll hit **gates** — points where the orchestrator stops and asks — before ontology changes, destructive operations, and ambiguous decisions. That's the design; answering them is how you steer.
 

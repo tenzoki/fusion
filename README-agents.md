@@ -123,7 +123,7 @@ reconciler    →  ground-truth pass over all tracking files in fusion-workbench
 
 **Automated outer loop:** The `orchestrator` agent wraps the full pipeline — from shaping through execution, review, and reconciliation — in a managed session. It invokes `shaper` and `planner` (with human gates) when the input needs specification, then dispatches `taskplanner`, executors (`coder`/`ontocoder`), reviewers (`coderev`/`ontorev`), and `reconciler`, committing after each task and feeding review findings back into the next Turn. The orchestrator is the **only** agent that dispatches other agents.
 
-Since v2.9.0, every Turn closes with a **Coherence Review** (per-Turn gate against the Directive); when a Turn's review concludes the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** with four user options (Revise Artifact, Revise Directive, Revise Grounding, Accept Bounded Closure). At session end a **per-Circle three-edge verdict** judges the whole arc. See `docs/working-model.md` (the gates, Coherence Review, and Rebalance model) for the full model.
+Since v2.9.0, every Turn closes with a **Coherence check** against the Directive — silent when its verdict is `ok` (a status line, no question — decision `260827-1310`), asking only on drift; when it concludes the Directive is unreachable as written, the orchestrator opens a **Rebalance gate** with four user options (Revise Artifact, Revise Directive, Revise Grounding, Accept Bounded Closure). At session end a **per-Circle three-edge verdict** judges the whole arc. See `docs/working-model.md` (the gates, Coherence Review, and Rebalance model) for the full model.
 
 ```
                           ┌──────────────────────────────┐
@@ -247,7 +247,7 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 | `/fusion:cleanup` | `skills/cleanup/SKILL.md` | Session wrap-up: files issues for open tasks, commits + pushes the work in meaningful splits, reconciles, archives (tier-1), reconciles `CLAUDE.md` **at a user gate**, logs activity, then commits + pushes the housekeeping artifacts. `--only` / `--skip` select steps |
 | `/fusion:next` | `skills/next/SKILL.md` | Portfolio briefing — dispatches `playmaker`, renders the next-recommended Circle, and offers interactive activation |
 | `/fusion:direct` | `skills/direct/SKILL.md` | Drafts a Directive as an anticipated (`_a_`) Circle — `shaper` refines a one-line draft via clarifying questions and writes the Circle record without starting a Turn loop |
-| `/fusion:curate` | `skills/curate/SKILL.md` | **Cleanup Step 5** (`--only claude-md`), and the only path to `CLAUDE.md`. Reconciles the three normative surfaces — decision records, the project's own `./rules/` and `.claude/rules/` files, and `CLAUDE.md` — against the project's recorded history. Dispatches `curator` to survey, holds the change-ledger gate, dispatches it again to apply only what was approved. Writes nothing itself |
+| `/fusion:curate` | `skills/curate/SKILL.md` | **Cleanup Step 6** (`--only claude-md`), and the only path to `CLAUDE.md`. Reconciles the three normative surfaces — decision records, the project's own `./rules/` and `.claude/rules/` files, and `CLAUDE.md` — against the project's recorded history. Dispatches `curator` to survey, holds the change-ledger gate, dispatches it again to apply only what was approved. Writes nothing itself |
 
 Slash commands are independent of sub-agent routing — invoke them from the parent session when you need to set up, wrap up, or commit.
 
