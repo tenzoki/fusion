@@ -1123,6 +1123,70 @@ HTML_PAGE = r"""<!DOCTYPE html>
 </html>""".replace('MONITOR_NAME_PLACEHOLDER', MONITOR_NAME).replace('INTERVAL_PLACEHOLDER', str(INTERVAL)).replace('MAX_EVENTS_PLACEHOLDER', str(MAX_EVENTS))
 
 
+class _JsonlTail:
+    """Incremental JSONL reader shared across requests (module-level, one per
+    log): parses only the bytes appended since the last poll, and re-parses
+    from zero when the file was REWRITTEN rather than appended to — a changed
+    inode or a size below the held offset, which is what a git pull's union
+    merge, an archive roll, or a truncation looks like from here.
+
+    WHY. Both logs are append-only with no ceiling by design, the poll
+    interval is seconds, and until v10.9.0 every poll re-parsed every line —
+    O(file) work thirty times a minute for a fixed-size window, growing
+    without bound with the log (measured at 2,420 lines / ~377 KB when the
+    cost was audited). The correctness argument that widened the parse to the
+    whole file (a foreign block can stand anywhere — see _read_events) is
+    untouched: the CACHE holds every parsed row, exactly as the full parse
+    did; only the parsing of bytes already parsed is skipped. Filtering,
+    sorting and slicing stay per-request on top of the cached rows, so a
+    checkout-id that appears mid-session changes the served window without
+    any cache concern. A torn final line (a writer mid-append) is left in the
+    file until its newline arrives: the offset only ever advances past a
+    newline. Thread-safe because the server is ThreadingHTTPServer."""
+
+    def __init__(self, path):
+        import threading
+        self.path = path
+        self._lock = threading.Lock()
+        self._key = None
+        self._offset = 0
+        self._rows = []
+
+    def rows(self):
+        with self._lock:
+            try:
+                st = os.stat(self.path)
+            except OSError:
+                self._key, self._offset, self._rows = None, 0, []
+                return self._rows
+            key = (st.st_ino, st.st_dev)
+            if key != self._key or st.st_size < self._offset:
+                self._key, self._offset, self._rows = key, 0, []
+            if st.st_size > self._offset:
+                try:
+                    with open(self.path, "rb") as f:
+                        f.seek(self._offset)
+                        chunk = f.read()
+                except OSError:
+                    return self._rows
+                nl = chunk.rfind(b"\n")
+                if nl >= 0:
+                    for raw in chunk[:nl].split(b"\n"):
+                        raw = raw.strip()
+                        if not raw:
+                            continue
+                        try:
+                            self._rows.append(json.loads(raw.decode("utf-8")))
+                        except (UnicodeDecodeError, json.JSONDecodeError):
+                            continue
+                    self._offset += nl + 1
+            return self._rows
+
+
+_EVENTS_TAIL = _JsonlTail(EVENTS_JSONL)
+_GUARD_TAIL = _JsonlTail(GUARD_EVENTS_JSONL)
+
+
 class Handler(http.server.BaseHTTPRequestHandler):
     # Per-connection socket timeout. Without this, a client that opens a
     # connection and then stalls mid-request (a backgrounded browser tab, a
@@ -1187,18 +1251,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
         plus up to MAX_ADVISORIES_RETURNED advisories plus up to
         MAX_ERRORS_RETURNED fail-opens, newest last. See the comment on those
         constants for why the budgets are separate."""
-        content, exists = self._read_file(GUARD_EVENTS_JSONL)
-        if not exists or not content.strip():
-            return []
+        # Same incremental source as _read_events; the class carving below is
+        # per-request and unchanged.
         warnings = []
         carved = [[] for _ in SUBSET_BUDGETS]
-        for line in content.strip().split("\n"):
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                ev = json.loads(line)
-            except json.JSONDecodeError:
+        for ev in _GUARD_TAIL.rows():
+            if not isinstance(ev, dict):
                 continue
             event = ev.get("event")
             if event not in WARNING_EVENT_TYPES:
@@ -1285,19 +1343,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
         is the point rather than a fallback: the whole pre-existing log carries
         no such field and no record is rewritten, so an absent identifier has
         to read as this checkout's own or the panel would come up empty."""
-        content, exists = self._read_file(EVENTS_JSONL)
-        if not exists or not content.strip():
-            return []
+        # Rows come from the incremental tail cache (class _JsonlTail above):
+        # every line ever parsed, in file order, at O(new bytes) per poll.
+        # The identity filter stays per-request on top of it, so a checkout id
+        # that appears or changes mid-session is honoured on the next poll.
         mine = self._read_checkout_id()
         events = []
-        for line in content.strip().split("\n"):
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                ev = json.loads(line)
-            except json.JSONDecodeError:
-                continue
+        for ev in _EVENTS_TAIL.rows():
             if mine is not None and isinstance(ev, dict):
                 wrote = ev.get("checkout")
                 if wrote and wrote != mine:
