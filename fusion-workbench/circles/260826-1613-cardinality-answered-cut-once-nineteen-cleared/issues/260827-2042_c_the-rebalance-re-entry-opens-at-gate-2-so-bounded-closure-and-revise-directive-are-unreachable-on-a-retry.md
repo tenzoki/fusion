@@ -17,3 +17,5 @@ Either Gate 2 carries a third option that returns to Gate 1 ("Neither: the Direc
 ## Acceptance
 
 From a gate reached after one Revise Artifact retry, the user can select Accept Bounded Closure without waiting for the Turn limit; the sentence "all reachable" is true on every path the bounding section names.
+
+Resolved: 260827-2105, Turn 2 of this Circle, uncommitted at the time of writing (the orchestrator commits). `rules/orchestrator-rebalance.md` `#### Rebalance bounding` now opens every re-entry at Gate 1: the Revise Artifact Turn, the `paused_at_task` resume, the re-run Phase-3 verdict and the Revise Directive re-entry each reach the gate afresh, so Accept Bounded Closure and Revise Directive stay on offer and Gate 2 is reached from Keep it only; the residual sentence now points at "the first sentence" of the paragraph. `agents/orchestrator.md` `### Rebalance Gate` says "every re-entry opens at Gate 1". Fix direction taken: the second (re-entry rule), not a third Gate-2 option.
