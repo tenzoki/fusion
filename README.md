@@ -41,7 +41,7 @@ Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.14.0` to pin a relea
 
 **Upgrading from v8 or earlier?** v9 is a removal release: eight mechanisms, two agents and five skills left the plugin. Nothing breaks and no migration step is required, but a project set up under an older version may still hold configuration and workbench files that nothing reads any more. `docs/upgrading-to-v9.md` is the cleanup checklist, and `docs/upgrading-to-v10.md` above applies as well.
 
-### Alternative — Claude Code marketplace
+### Alternative — Claude Code marketplace (not recommended)
 
 ```bash
 /plugin marketplace add tenzoki/claude-plugins
