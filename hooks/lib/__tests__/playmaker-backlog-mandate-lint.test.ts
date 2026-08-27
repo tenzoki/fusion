@@ -4,38 +4,11 @@ import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
 
 // ---------------------------------------------------------------------------
-// Playmaker backlog-mandate lint (Circle 260813-0858-playmaker-maintains-
-// backlog-store, plan step 7; binding record
+// Playmaker backlog-mandate lint. Binding record
 // `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`,
-// option 3).
-//
-// What the Circle changed: the playmaker gained full maintenance of the shared
-// backlog store — autonomous `_o_`/`_p_` renames, plus splitting, merging,
-// closing and deferring, each on a confirmation the run holds for that
-// operation. The decision took option 3 with its cost stated openly: ONE AGENT
-// NOW CARRIES TWO MANDATES THAT DIFFER BY DISPATCH PATH, and that statement has
-// to stay true in several places at once. A non-interactive Phase 4 dispatch
-// ranks, regenerates the portfolio and renames markers; the four confirm-gated
-// operations belong to the interactive path.
-//
-// This gate is what makes that cost payable. It is not decoration on a finished
-// change: the defect this Circle was filed against is one level down from it —
-// a prompt whose frontmatter description advertised a capability its own body
-// forbade. A reworded description that stops matching the body is the same
-// defect one level up.
-//
-// FIVE CASES, over two surfaces (`agents/playmaker.md`, the conventions file):
-//   1. The prompt names `$OUT_BACKLOG` — the mechanical precondition for
-//      `bin/fusion-paths playmaker` emitting the write key at all, since the key
-//      set is derived by one grep over the consumer's own prompt.
-//   2. The frontmatter description and the body's mandate section state the two
-//      mandates in the SAME WORDS.
-//   3. The retired write prohibition is gone from the prompt, and the detector
-//      that says so still fires on the wording it was written against.
-//   4. `## Backlog entries` names the playmaker as the writer of `_p_`, and
-//      names no other writer for it.
-//   5. Non-vacuity: every parser above located what it reads, and rejects a text
-//      where its surface has moved.
+// option 3: ONE AGENT CARRIES TWO MANDATES THAT DIFFER BY DISPATCH PATH, and
+// that statement has to stay true on two surfaces at once (`agents/playmaker.md`
+// and the marker table). The five cases are the `describe` titles below.
 //
 // WHY CASE 5 EXISTS, and it is the whole design of this file. The failure mode
 // of a lint like this is passing VACUOUSLY: a case greps for a phrase, the
@@ -56,19 +29,12 @@ import { pluginRoot } from "./helpers/citation-scan.js";
 //       same one `derivable-enumerations-lint.test.ts` documents in its header.
 //
 // Case 3 carries its own mutation proof for the same reason: the detector is run
-// over the real pre-change wording before it is run over the shipped prompt, so
-// a stale pattern set cannot show itself green on the current text alone.
+// over the real pre-change wording before it is run over the shipped prompt.
 //
-// NOT IN SCOPE, stated so the omission is a decision rather than an oversight:
-// the dispatch-parameter contract between `skills/next/SKILL.md` and the
-// prompt's `**Confirmed operations:**` block is deliberately unlinted. The
-// plan's `## Testing Strategy` gives the reasoning — a drifted parameter name is
-// a LOUD failure (the second dispatch performs nothing and the user sees the
-// entries unchanged), while a drifted mandate is a SILENT one, and silent is
-// what a lint is for.
-//
-// This is a guard, not a fixer (rules/critical-stance.md §2): it reads and
-// asserts, it never rewrites a prompt or a rule file.
+// NOT IN SCOPE: the dispatch-parameter contract between `skills/next/SKILL.md`
+// and the prompt's `**Confirmed operations:**` block. A drifted parameter name
+// is a LOUD failure; a drifted mandate is a SILENT one, and silent is what a
+// lint is for. This is a guard, not a fixer (rules/critical-stance.md §2).
 // ---------------------------------------------------------------------------
 
 const read = (rel: string) => readFileSync(join(pluginRoot, rel), "utf-8");

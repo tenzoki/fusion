@@ -68,11 +68,11 @@ for v in "PLANS:$SHARED_PLANS" "ISSUES:$SHARED_ISSUES" "DECISIONS:$SHARED_DECISI
 done
 ```
 
-This derives the shared store from the invariant, not from the order the resolver happens to print the two paths in. Do not take "the last field" — that ordering is not part of the contract.
+This derives the shared store from invariant 2, not from the order the resolver prints the two paths in.
 
-**Two kinds need no derivation, and `$SCAN_BACKLOG` is one of them.** `SCAN_BACKLOG` and `SCAN_CONSULT` name a kind that exists only in the shared store, so their value *is* the shared store and invariant 2 collapses to one path (`rules/workbench-path-resolution.md` `### The three unconditionally-shared kinds`). Do not run them through `shared_of` — it would be a no-op that reads as a real derivation and invite the empty-result check below to fire on a kind that never had two halves. Only `$SCAN_BACKLOG` is used by a tier; `$SCAN_CONSULT` is out of tier scope by safety filter 4.
+**`$SCAN_BACKLOG` and `$SCAN_CONSULT` need no derivation**: each exists only in the shared store, so its value *is* the shared store (`rules/workbench-path-resolution.md` `### The three unconditionally-shared kinds`). Do not run them through `shared_of`. Only `$SCAN_BACKLOG` is used by a tier; `$SCAN_CONSULT` is out of tier scope by safety filter 4.
 
-**An empty derivation is an error, never an empty result.** Invariant 2 guarantees every `SCAN_*` value contains the shared store, so `shared_of` coming back empty means the derivation or the workbench state is broken — not that there is nothing to archive. The check above halts on it (`HYG-NO-SILENT-FAIL`); when it trips, report the failing kind to the user and stop. Do not proceed to a survey that would silently skip a whole store and report "nothing to archive".
+**An empty derivation is an error, never an empty result.** Invariant 2 guarantees every `SCAN_*` value contains the shared store, so an empty `shared_of` means the derivation or the workbench state is broken, not that there is nothing to archive. The check above halts on it (`HYG-NO-SILENT-FAIL`); report the failing kind and stop, rather than surveying with a whole store silently skipped.
 
 ## Argument modes
 
@@ -138,19 +138,15 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 ### Rolling the guard event log
 
-`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record across every session, in every Circle: one `guard_allow` row per write-tool call, one `guard_advisory` per configuration problem, one `guard_error` per fail-open, and, in a log written before 2026-08-16, the `guard_block`, `guard_halt` and `halt_cleared` rows nothing writes any more. It is classified as **evidence, not telemetry** (`rules/workbench-tracking.md`, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`), and this roll is the **only** thing that bounds its size.
+`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record across every session, classified as evidence rather than telemetry (`rules/workbench-tracking.md`, read in full at Step 1, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`). This roll is the only thing that bounds its size; no line or byte ceiling may be added anywhere.
 
-**There is no line or byte ceiling anywhere, and none may be added** — not here, not in `hooks/lib/events.ts`. Every ceiling expressible in lines or bytes discards the oldest lines first, and the oldest lines are the `guard_block`, `guard_halt` and `halt_cleared` events: 0.6 % of the file when it was measured, and the only lines that record the guard ever enforcing anything. A guard that forgets it halted is a strange guard.
+**It is the one target that is rolled rather than selected.** It carries no marker and no age, so no tier survey finds it: it is included whenever the live log is non-empty, skipped silently otherwise, and still waits for confirmation where Step 6 asks. Safety filter 1's `.guard-state/` entry covers the state files beside it, not the log.
 
-**It is the one target that is rolled rather than selected.** It carries no state marker, it has no age (its lines do, the file does not), it is never terminal, and no tier survey finds it. So it is not a candidate the marker and age passes produce — it is included whenever the live log exists and is non-empty, and skipped **silently** when it is absent or empty, because there is nothing to preserve and an archived empty log is noise. It is still listed in the proposal and, where Step 6 asks, waits for that confirmation like everything else.
-
-The destination preserves the original path relative to `$WORKBENCH`, and the filename carries the archive folder's stamp so a log lifted out of its folder still says when it was rolled:
+The destination keeps the path relative to `$WORKBENCH`; the filename carries the archive folder's stamp:
 
 ```
 <archive store>/<YYMMDD-HHMM>-<slug>/.guard-state/events-<YYMMDD-HHMM>.jsonl
 ```
-
-The `.guard-state/` entry in safety filter 1 covers the state files beside the log and **not** the log itself. That is the whole distinction: `escalation.json` and the measurement throttle records describe *now* and a past version of them answers nothing; `events.jsonl` is append-only and a past version answers when the guard stopped somebody.
 
 ### Tier 2 — Tier 1 + aged shared reviews
 

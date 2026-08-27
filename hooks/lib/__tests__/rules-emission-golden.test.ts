@@ -1128,30 +1128,6 @@ describe("growth(), on synthetic file sets", () => {
 
   const at = (rels: string[]) => rels.map((rel) => ({ rel, size: RULE_BASELINE[rel] }));
 
-  it("sits at zero growth when every file is at its baseline", () => {
-    const g = ruleGrowth(at(CORE));
-    expect(g.delta).toBe(0);
-    expect(g.over).toBe(false);
-    expect(g.grown).toEqual([]);
-  });
-
-  it("goes over once the set has spent its whole head-room", () => {
-    const files = at(CORE);
-    files[1].size += GROWTH_BUDGET + 1;
-    const g = ruleGrowth(files);
-    expect(g.delta).toBe(GROWTH_BUDGET + 1);
-    expect(g.over).toBe(true);
-  });
-
-  it("never goes over on a shrink, however large — this bounds the rate of addition", () => {
-    const files = at(CORE);
-    files[1].size -= 20_000;
-    const g = ruleGrowth(files);
-    expect(g.delta).toBe(-20_000);
-    expect(g.over).toBe(false);
-    expect(g.grown).toEqual([]);
-  });
-
   it("keeps growth in a role-specific file out of the universal-core measurement", () => {
     // The disjointness the two gates rest on: the same overshoot that fires the
     // report cannot reach the hard bound, because the hard bound is never called

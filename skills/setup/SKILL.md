@@ -25,11 +25,10 @@ echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 
 Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`. Each shell call gets a fresh shell, so every executable check in this file calls the helper again rather than relying on the variable surviving.
 
-**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string, every `$FUSION_SRC/…` citation then resolves from `/`, and the two steps that cite one without an inline fallback — the Turn budget in Step 2 and the domain detection in Step 3 — would find nothing and say nothing about why. Step 0e cites none: it re-resolves the root in each of its own blocks and skips itself when that comes back empty. The check is this print, once, rather than a test at each site. When it prints `UNRESOLVED`, name it in the Setup-complete summary, say that no step citing a plugin file was run and which ones those were, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a section you could not open.
-
+**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable is empty and every `$FUSION_SRC/…` citation resolves from `/`; the check is this print, once (Step 0e re-resolves the root itself). When it prints `UNRESOLVED`, name it in the Setup-complete summary, say which steps citing a plugin file were not run, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a section you could not open.
 **Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header.
 
-**What the root does *not* cover.** A `bin/` helper is always run from `$FUSION_PLUGIN_ROOT`, and so is an asset this skill copies — `bin/monitor`, `stilwerk/`, `templates/`, `.claude-plugin/plugin.json` — Step 0d's first copy of a profile included. **One named exception:** Step 0e reads and refreshes the four stylometric profiles at the source root, because a comparison whose whole purpose is to notice a shipped file that moved cannot read the one copy where it never moves. That exception was decided for that comparison alone. Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` and is **unanswered**; do not assume it. The split is by what you do with the path: read shipped text → `$FUSION_SRC`; run or copy an installed artefact → `$FUSION_PLUGIN_ROOT`.
+**What the root does *not* cover.** Read shipped text → `$FUSION_SRC`; run a `bin/` helper or copy an installed asset (`bin/monitor`, `stilwerk/`, `templates/`, `.claude-plugin/plugin.json`, Step 0d's first profile copy included) → `$FUSION_PLUGIN_ROOT`. **One named exception:** Step 0e reads and refreshes the four stylometric profiles at the source root, decided for that comparison alone (decision `260820-2324`). Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` and is **unanswered**; do not assume it.
 
 ## CRITICAL — Setup is the ONLY place a workbench is created
 
@@ -182,16 +181,17 @@ If `$FUSION_PLUGIN_ROOT` is not set or the copy fails, note it in the history fi
 
 ## Step 0e — Compare the copied assets against the ones this version ships
 
-This step reads the record Step 0d writes, classifies each asset, and asks **at most one question**.
-
-**Every block below resolves the shipped root itself**, into `$SRC`, with the same guarded `bin/fusion-source-root` call and the same `$FUSION_PLUGIN_ROOT` fallback the top of this file uses. No block here reads `$FUSION_SRC`: that variable is assigned in another shell, is empty by the time these run, and an instruction to substitute the printed path is not a guard. **A root that resolves to nothing skips the step**: ask nothing, change nothing, and say in the Done report that the assets were not compared.
-
-Read-only classification:
+This step reads the record Step 0d writes, classifies each asset, and asks **at most one question**. It resolves the shipped root itself, into `$SRC` (`$FUSION_SRC` was assigned in another shell and is empty here); a root that resolves to nothing skips the step: ask nothing, change nothing, and say in the Done report that the assets were not compared. Every block in this step begins with this prelude, pasted in because each Bash call is a fresh shell:
 
 ```bash
 PROV=./fusion-workbench/.asset-provenance
 SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
 [ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }
+```
+
+Read-only classification:
+
+```bash
 for rel in stilwerk/default-voice-en.yaml stilwerk/default-voice-de.yaml stilwerk/chat-voice-en.yaml stilwerk/chat-voice-de.yaml; do
   d="./fusion-workbench/$rel"; g="$SRC/$rel"
   [ -f "$d" ] || { echo "$rel case5-missing-local"; continue; }
@@ -206,49 +206,39 @@ for rel in stilwerk/default-voice-en.yaml stilwerk/default-voice-de.yaml stilwer
 done
 ```
 
-**The eight tokens, and the precedence is the branch order above rather than a preference.** The first is `source-root-unresolved`, the skip above: it ends the block before any file is classified, and it is reported rather than enumerated. Cases 5 and 6 are the two ways a comparison has nothing to compare; they are split because they route to different fixes, and both are reported in branch order, the local one first when both hold, because neither is silent by design.
+**Eight tokens; the precedence is the branch order above.** `source-root-unresolved` ends the block before any file is classified and is reported, not enumerated. The other seven:
 
 1. **`case1-equal`** — the project's copy *is* the shipped copy. Report nothing. Stamp it.
-2. **`case0-unclassifiable`** — the copies differ and no checksum was ever recorded. This is every workbench that existed before this step. Name the file, say plainly that fusion **cannot tell an adaptation from a stale copy** for it, and carry that warning into the offer. Do not guess which it is.
-3. **`case2-stale`** — the project's copy is exactly what it was given, and the shipped file has moved. Offer the replace. This is the case the capability exists for.
-4. **`case3-adapted`** — the project edited its copy and the shipped file did not move. Say nothing about it and do not touch it.
-5. **`case4-conflict`** — both moved. Name it as a conflict and offer no one-click replace. The file is neither changed nor stamped, so it is named again on every run until a human resolves it by hand, and say the two ways out: copy the shipped file over the project's (case 1 next run), or keep the project's and delete its line from `./fusion-workbench/.asset-provenance` (case 0 next run, asked once, then silent). A declined offer lands here the next time the plugin moves; that is the honest reading, and this is its exit.
-6. **`case5-missing-local`** — the project has no copy. Step 0d makes one, so its copy failed or was skipped; until it exists `bin/fusion-rules` emits no path for that profile and every agent runs the session without it. Name it in the Done report with that consequence. This step does not copy it — presence is Step 0d's job, and a second copier is a second place to keep right.
-7. **`case6-missing-shipped`** — the resolved root has no copy. That is a broken install or an unexpected root, not anything about the project. Name it in the Done report as that; the project's file is neither changed nor stamped.
+2. **`case0-unclassifiable`** — the copies differ and no checksum was recorded (every pre-existing workbench). Name the file, say that fusion **cannot tell an adaptation from a stale copy** for it, and carry that warning into the offer. Do not guess.
+3. **`case2-stale`** — the project's copy is what it was given and the shipped file moved. Offer the replace.
+4. **`case3-adapted`** — the project edited its copy and the shipped file did not move. Say nothing; touch nothing.
+5. **`case4-conflict`** — both moved. Name it, offer no replace, neither change nor stamp it (so it is named on every run until resolved by hand), and say the two ways out: copy the shipped file over the project's (case 1 next run), or keep the project's and delete its line from `$PROV` (case 0 next run). A declined offer lands here the next time the plugin moves.
+6. **`case5-missing-local`** — the project has no copy (Step 0d's copy failed or was skipped), so `bin/fusion-rules` emits no path for that profile. Name it in the Done report with that consequence; presence is Step 0d's job.
+7. **`case6-missing-shipped`** — the resolved root has no copy: a broken install or an unexpected root. Name it in the Done report as that; the project's file is neither changed nor stamped.
 
-**One `AskUserQuestion` covers every file in cases 0 and 2 together — never one per file, and none at all when that set is empty.** Setup asks one question on a normal run (Step 0g) and that is the budget. Ask in the project's chat language per `rules/fusion-workbench-conventions.md` `## Project language`, following `rules/user-facing-output.md` and the chat profile. Specified here in English:
+**One `AskUserQuestion` covers every file in cases 0 and 2 together — never one per file, and none when that set is empty.** Setup asks one question on a normal run (Step 0g) and that is the budget. Ask in the project's chat language per `rules/fusion-workbench-conventions.md` `## Project language`, following `rules/user-facing-output.md` and the chat profile. Specified here in English:
 
 > These workbench files differ from the ones this fusion version ships: *&lt;list&gt;*. Replace them with the shipped copies? Any edits you made to those files are lost. For *&lt;the case-0 files&gt;* fusion has no record of what it originally copied, so it cannot tell whether you adapted the file or the plugin moved on.
 
 Two options: **"Replace them"** and **"Keep mine"**.
 
-**Both answers end the same way, and that end state is what stops the question repeating.** On "replace", copy the shipped file over the project's and stamp **the destination**, so a copy that failed is named, left unstamped, and offered again next run rather than recorded as done. On "keep mine", change no file and stamp anyway.
+**Both answers end with a stamp, which is what stops the question repeating.** On "replace", copy the shipped file over the project's and stamp **the destination**, so a failed copy is left unstamped and offered again next run. On "keep mine", change no file and stamp anyway. One block, after the prelude: `MODE=replace` over the files to replace, then `MODE=stamp` over the case-1 files plus every kept file the question covered:
 
 ```bash
-SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
-[ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }
-PROV=./fusion-workbench/.asset-provenance; [ -f "$PROV" ] || : > "$PROV"
-for rel in <the files to replace>; do
-  cp "$SRC/$rel" "./fusion-workbench/$rel" || { echo "$rel replace-failed"; continue; }
-  h="$(shasum -a 256 "./fusion-workbench/$rel" | cut -c1-64)"
-  grep -v "  $rel$" "$PROV" > "$PROV.t"; printf '%s  %s\n' "$h" "$rel" >> "$PROV.t"; mv -f "$PROV.t" "$PROV"
-done
-```
-
-Then stamp the rest, with `<rel...>` the case-1 files plus every file the question covered that was kept:
-
-```bash
-SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$("$FUSION_PLUGIN_ROOT/bin/fusion-source-root")"
-[ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }
-PROV=./fusion-workbench/.asset-provenance; [ -f "$PROV" ] || : > "$PROV"
+[ -f "$PROV" ] || : > "$PROV"
 for rel in <rel...>; do
-  h="$(shasum -a 256 "$SRC/$rel" | cut -c1-64)"
-  grep -q "^$h  $rel$" "$PROV" && continue
+  if [ "$MODE" = replace ]; then
+    cp "$SRC/$rel" "./fusion-workbench/$rel" || { echo "$rel replace-failed"; continue; }
+    h="$(shasum -a 256 "./fusion-workbench/$rel" | cut -c1-64)"
+  else
+    h="$(shasum -a 256 "$SRC/$rel" | cut -c1-64)"
+    grep -q "^$h  $rel$" "$PROV" && continue
+  fi
   grep -v "  $rel$" "$PROV" > "$PROV.t"; printf '%s  %s\n' "$h" "$rel" >> "$PROV.t"; mv -f "$PROV.t" "$PROV"
 done
 ```
 
-Report in the Done report: which files were replaced, which printed `replace-failed`, which were kept, which were named as conflicts, which were missing on either side (cases 5 and 6), and, when the block printed `source-root-unresolved`, that the assets were not compared at all. When every file came back `case1-equal`, say nothing about this step — a run with nothing to report is the normal run.
+Report in the Done report: which files were replaced, printed `replace-failed`, were kept, were conflicts or were missing on either side, and, on `source-root-unresolved`, that the assets were not compared. When every file came back `case1-equal`, say nothing about this step.
 
 ## Step 0f — Ensure the project configuration file is present locally
 
@@ -375,34 +365,7 @@ Name the branch that ran in the Done report.
 Read `./fusion-workbench/agentstate.yaml`.
 
 - **If it does not exist:** fresh session — continue to Step 2.
-- **If it exists:** a prior session was interrupted. You MUST do ALL of:
-  0a. **Schema check (v2.9.0).** If the saved `agentstate.yaml` contains the legacy fields `cycle:` or `goal:` (instead of the current `turn:` / `directive:`), it is a pre-v2.9.0 snapshot that cannot be replayed against v2.9.0 fields. The schema rename is a hard break — there is no soft alias. Tell the user "schema mismatch — please restart", offer **Restart only** (delete `agentstate.yaml` and proceed with fresh setup), and do not attempt to resume. Skip the remaining sub-steps once Restart is chosen.
-  1. Read the file completely.
-  2. **Derive how far the session got before you summarise it, rather than reading it off the file.** The saved state carries no counters. Take the two figures from the records that could not freeze:
-
-     ```bash
-     A=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' ./fusion-workbench/agentstate.yaml 2>/dev/null)
-     C=$([ -n "$A" ] && git rev-list --count "$A"..HEAD 2>/dev/null)
-     echo "commits=${C:-unavailable}"
-     if [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-events" ]; then
-       "$FUSION_PLUGIN_ROOT/bin/fusion-events" turns
-     else
-       echo "turns=unavailable (this install predates bin/fusion-events)"
-     fi
-     ```
-
-     The task tallies come from counting the `work_queue` entries by `status` in the file you just read. Report a figure that could not be taken as `unavailable`, never as `0`: an absent anchor is not a session with no commits. `git rev-list` prints nothing rather than failing when the anchor no longer resolves, so the commit count is read off its variable's emptiness and never off an exit code; the `if`/`else` is deliberate for the same reason, since a `&&`/`||` one-liner prints the fallback word after a helper that ran and reported a real non-zero. **The Turn count is `bin/fusion-events turns` and nothing else.** Its `turns=` line is the figure only when it also prints `scope=checkout`. Every other outcome is `unavailable` with its reason named: `scope=all-checkouts` (the helper could not identify this checkout and counted every checkout in the merged log — report that reason and **never the number**, which is the whole-file count this call exists to abolish), no `turns=` line at all (exit 3 or 4), or an absent helper. `turns=0` is a real figure: the log was read and the session stopped before its first Turn.
-  3. Present a summary to the user:
-     - Session Directive and mode
-     - Progress (the Turn and commit counts derived in sub-step 2, tasks completed vs total from `work_queue`)
-     - The task that was active when the session stopped
-     - Remaining tasks (with their status)
-     - Plan file and user directive, if any
-  4. Use `AskUserQuestion` to offer:
-     - **Continue** — resume from the saved queue, skipping completed tasks
-     - **Restart** — discard state, delete `agentstate.yaml`, fresh setup
-     - **Modify** — user provides updated instructions before resuming
-  5. **STOP. Do not proceed until the user has chosen.** Even if the user's original prompt implied resuming a specific task, the choice must be explicit.
+- **If it exists:** a prior session was interrupted. Run the resume procedure in `$FUSION_SRC/rules/orchestrator-resume.md` (schema check, derived progress summary, the Continue / Restart / Modify question), the way Step 2 runs the Turn-budget block from the orchestrator prompt; nothing of it is restated here. **STOP. Do not proceed until the user has chosen.** Even if the user's original prompt implied resuming a specific task, the choice must be explicit.
 
 ## Step 2 — Rules check
 

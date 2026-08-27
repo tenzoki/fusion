@@ -246,7 +246,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: none (it reads the drafts of the later steps as text estimates; the drafting is the executor's at those steps).
     - Acceptance: the analysis states two totals (bytes on `skills/`, lines on the hook tests) and a ranked list reaching each, with what is lost per candidate.
 
-22. **Perform the cut, under the one user gate** (the Directive's "cut once")
+22. [DONE] **Perform the cut, under the one user gate** (the Directive's "cut once")
     - Executor: `coder`.
     - Files: the candidates the user approved from step 21's list; `hooks/lib/__tests__/fixtures/surface-growth.golden` (regenerated with `UPDATE_SURFACE_GOLDEN=1`, then re-run without); `reference-resolution-lint.test.ts` `BASELINE` only if a cut removes a plugin-path or anchor token.
     - Changes: the approved cuts, and nothing else in the same commit. **No baseline map moves**: `shared/decisions/260822-1154_o_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` is open with option 1 recommended (a cut never re-baselines), and this step follows the recommendation rather than pre-empting the record; the commit message names the cut and the analysis.

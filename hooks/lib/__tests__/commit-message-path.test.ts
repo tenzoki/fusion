@@ -85,37 +85,15 @@ function tmpPaths(text: string): string[] {
  *
  * ## Why it reaches the predicate and not `classify`
  *
- * It reached `classify` until issue `260811-1410`, and thereby inherited the
- * store scoping issue `260811-1141` added — correctly, for `classify`'s
- * question. The two callers do not share a question:
- *
- *   - `classify` asks *"is this file on disk a leftover commit message?"*, and
- *     since `337c01b` answers it by location first: a path a store owns is a
- *     `record` whatever its name.
- *   - this gate asks *"does a shipped prompt PRESCRIBE a message file inside
- *     the workbench?"*, which is a question about an instruction. A line
- *     prescribing `fusion-workbench/shared/consult/commit-message.txt` is
- *     exactly what it exists to catch, and reaching through `classify` let that
- *     line pass silently as a `record`.
- *
- * So the scoping is dropped here and kept there. What is NOT duplicated is the
- * pattern: one regex, one module, two callers composing it with the scoping
- * each needs. Transcribing it into this file would have been the cheaper repair
- * and the `260810-0510` trap — two spellings of one concept, free to drift.
- *
- * ## What dropping the scoping costs, stated rather than glossed
- *
- * A prompt citing a workbench record whose topic slug says "commit message" is
- * flagged by this helper again. Nothing in `agents/` or `skills/` is affected
- * today, and the run-time half is untouched: `classify` still reads such a
- * record as a `record`, so no model is told to delete anything. The load falls
- * on `NAMEABLE_LEFTOVER` below, one literal path allow-listed by name, with
- * every other workbench-internal commit-message path flagged unconditionally.
- * It replaced a keyword exemption read off the surrounding prose (issue
- * `260811-1149`). The positive control at the foot of this file pins both
- * halves of the split, that the name test still reaches a real shipped line and
- * that the allow-list is the only thing sparing it, so neither can move
- * unnoticed.
+ * The two callers do not share a question. `classify` asks whether a file on
+ * disk is a leftover commit message, and answers by location first: a path a
+ * store owns is a `record` whatever its name. This gate asks whether a shipped
+ * prompt PRESCRIBES a message file inside the workbench, which is a question
+ * about an instruction, and reaching through `classify` let a prescribed
+ * store-owned path pass silently (issue `260811-1410`). So the store scoping
+ * is dropped here and kept there; what is NOT duplicated is the pattern. The
+ * cost: a prompt citing a workbench record whose slug says "commit message" is
+ * flagged again, and the load falls on `NAMEABLE_LEFTOVER` below.
  */
 function workbenchMessagePaths(text: string): string[] {
   const out: string[] = [];
@@ -135,33 +113,16 @@ function workbenchMessagePaths(text: string): string[] {
  * same sentence. Every other workbench-internal commit-message path is an
  * offence, with no reading of the prose around it.
  *
- * ## What it replaced, and why a word list could not do this job
+ * ## Why an exact allow-list and not a word list
  *
- * Until issue `260811-1149` the sparing was a keyword exemption over the line:
- * `/Never inside|never inside|leftover|Measured|improvised|fault/`. Three
- * faults, in order of consequence.
- *
- *   1. `fault` is an ordinary word in these prompts — `agents/orchestrator.md`
- *      uses it throughout its Staging check section — so a line that genuinely
- *      PRESCRIBED a workbench message path and also said "fault" was exempt, in
- *      the one prompt this gate exists to watch.
- *   2. Its cases were spelled by hand and inconsistently: `Never inside` twice
- *      over for two capitalisations, `Measured` capital-only, three others
- *      lowercase-only, and no rule saying why they differed.
- *   3. It was a blacklist standing in for an allow-list. The property it aimed
- *      at is "this line names the path as a defect, not as an instruction",
- *      which is prose classification, and not decidable from a keyword set
- *      (`rules/critical-stance.md` §4). One literal path compared exactly is
- *      decidable, and widening it is an edit somebody makes on purpose.
- *
- * ## What the allow-list gives up, stated rather than glossed
- *
- * A prompt that PRESCRIBED writing to this path would now pass the gate. The
- * keyword form did not really cover that case either: whether such a line
- * carried the word "leftover" was the author's whim, not a property of the
- * instruction. And the run-time half does catch the resulting file, by
- * location, whatever a prompt says about it (`lib/staging-drift.ts`,
- * `classify`).
+ * Until issue `260811-1149` the sparing was a keyword exemption over the line,
+ * a blacklist standing in for an allow-list. Whether a line names the path as
+ * a defect or as an instruction is prose classification, not decidable from a
+ * keyword set (`rules/critical-stance.md` §4); one literal path compared
+ * exactly is, and widening it is an edit somebody makes on purpose. A prompt
+ * that PRESCRIBED writing to this path would pass the gate; the run-time half
+ * catches the resulting file by location whatever a prompt says
+ * (`lib/staging-drift.ts`, `classify`).
  */
 const NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp";
 

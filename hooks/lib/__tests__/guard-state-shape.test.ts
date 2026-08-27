@@ -18,50 +18,13 @@
  * every state file on the tracker's path goes through; its header carries the
  * argument.
  *
- * ## Which state file the rows seed, and why it has changed three times
+ * ## Which state file the rows seed
  *
- * The subject of this file is the STATE LOAD, not any one file and not whatever
- * the reply happens to say. Every row needs the tracker to have SOMETHING to
- * report, so that "the reply survived the load" is observable at all.
- *
- * The reply was the protected-path halt sentence until 2026-08-12, then the
- * session-state drift sentence, and is the review-coverage sentence from
- * 2026-08-15. The seeded file was `churn.json` until the churn heatmap went,
- * then `state-drift.json`, and is `review-coverage.json` now. Each move happened
- * because the mechanism the rows had borrowed from was removed, and the third
- * one is the first that had no uncoupled option to move to.
- *
- * `state-drift.json` was the right second choice for a reason that has ceased to
- * hold. It was the throttle `measureStateDriftForModel` read on EVERY guarded
- * tool call, so an ordinary `notes.txt` edit reached the load and no second
- * trigger was involved. Coverage and staging were declined then, on the ground
- * that each would couple these rows to a trigger unrelated to the load —
- * coverage needs the payload to be a `.md` file under a `reviews/` store with a
- * session window, staging needs HEAD to have moved. **After the drift
- * measurement's removal both surviving reports are narrow, so the uncoupled
- * option no longer exists** and the criterion decides between the two coupled
- * ones instead of against them.
- *
- * It decides for coverage, structurally rather than by preference. Staging
- * drift's throttle record holds the HEAD its own trigger compares against, so a
- * row that seeds that record malformed — which is every row in this file —
- * disarms the trigger and observes nothing at all. Coverage's throttle holds
- * only a signature; a malformed one reads as "never reported", which is the
- * safe direction, and the gap still speaks. So the seam under test is reached
- * with the state file in exactly the shapes the defect was measured in.
- *
- * The cost is real and is not hidden: these rows now fail if the coverage
- * trigger breaks, for a reason that is not their subject. That is what a coupled
- * probe buys. It is cheaper than the alternative, which was deleting the only
- * suite in this repository that covers `lib/guard-state-file.ts`'s coercion seam
- * while the seam still ships and still has two callers.
- *
- * The fixture is `openCoverageGap` in helpers/guard-harness.ts, which carries
- * the rest of that reasoning and is shared with the one other suite pointed the
- * same way. It is deliberately MINIMAL rather than the full state file the
- * orchestrator writes: only `session.git_head_at_start` is read, and the three
- * commits past it are what no review's declared range covers.
- *
+ * The subject is the STATE LOAD, not any one file. The seeded file has moved
+ * three times as the mechanism it borrowed from was removed, and is
+ * `review-coverage.json` now; the doc comment on `openCoverageGap` in
+ * helpers/guard-harness.ts carries the three re-pointings and why coverage,
+ * not staging drift, is the one a malformed throttle can be seeded into.
  * ## Why every case here uses a write tool
  *
  * Now it is required rather than chosen: the coverage trigger fires only for a

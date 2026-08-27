@@ -30,7 +30,7 @@
   total 406242
 
 [skills bytes]
-  archive/SKILL.md 25389
+  archive/SKILL.md 23714
   cadence/SKILL.md 17185
   cleanup/SKILL.md 23504
   commit/SKILL.md 6298
@@ -41,11 +41,11 @@
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
   next/SKILL.md 27593
-  setup/SKILL.md 48078
-  total 240351
+  setup/SKILL.md 43140
+  total 233738
 
 [hook-tests lines]
-  commit-message-path.test.ts 354
+  commit-message-path.test.ts 315
   committed-dist.test.ts 332
   config.test.ts 809
   context-manifest.test.ts 472
@@ -59,13 +59,13 @@
   fusion-count-sources.test.ts 442
   fusion-events.test.ts 166
   fusion-identity.test.ts 200
-  fusion-paths.test.ts 878
+  fusion-paths.test.ts 873
   fusion-prose-metric.test.ts 174
   fusion-session-domain.test.ts 80
   glob-nomatch-lint.test.ts 148
   guard-bash-integration.test.ts 304
   guard-project-config-integration.test.ts 250
-  guard-state-shape.test.ts 287
+  guard-state-shape.test.ts 250
   helpers/citation-scan.ts 947
   helpers/growth-bound.ts 123
   helpers/guard-harness.ts 970
@@ -76,21 +76,21 @@
   marker-format-lint.test.ts 171
   monitor-warnings-panel.test.ts 1136
   path-literal-lint.test.ts 338
-  paths.test.ts 51
-  plan-stopping-section-lint.test.ts 284
-  playmaker-backlog-mandate-lint.test.ts 391
+  paths.test.ts 31
+  plan-stopping-section-lint.test.ts 266
+  playmaker-backlog-mandate-lint.test.ts 357
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
-  record-counts-measurement.test.ts 520
+  record-counts-measurement.test.ts 486
   reference-resolution-lint.test.ts 990
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
-  rules-emission-golden.test.ts 1174
-  rules-voice-profile.test.ts 351
+  rules-emission-golden.test.ts 1150
+  rules-voice-profile.test.ts 323
   sentence-identifier-containment.test.ts 425
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 376
-  total 20374
+  total 20135

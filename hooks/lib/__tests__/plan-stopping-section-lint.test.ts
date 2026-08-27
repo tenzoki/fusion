@@ -13,16 +13,9 @@
 // and this file is its fix direction 1, chosen by the user over directions 2
 // (ask at the plan-approval gate) and 3 (stop calling it mandatory).
 //
-// WHY THIS IS NOT THE MISTAKE THIS REPOSITORY MADE TWICE. Two mechanisms were
-// deleted here for asking an undecidable question: the git branch-switch policy
-// (2026-08-09) and the write-path classifier before it both tried to decide,
-// from a shell command's TEXT, what that command WOULD DO. That is a prediction
-// about a future effect, and no reading of the text settles it. "Does this file
-// carry this heading, with something under it" is not of that class. It is a
-// question about a property the file HAS, answered by reading the file, with no
-// step of inference between the reading and the verdict. The distinction is the
-// whole licence for building this, and it is also the exact bound on it.
-//
+// "Does this file carry this heading, with something under it" is a property
+// the file HAS, answered by reading it (`rules/critical-stance.md` §4); that is
+// the whole licence for building this, and the exact bound on it.
 // PRESENCE, NEVER SUBSTANCE — the stated weakness of fix direction 1, accepted
 // here rather than worked around. Nothing below judges whether a clause is
 // good, complete, answerable, or true. A plan satisfies this gate with one
@@ -38,24 +31,13 @@
 // and `placeholder` are three named failures, each with its own remedy in the
 // message. A placeholder PLUS a real clause passes — that is substance.
 //
-// THE CORPUS IS LIVE PLANS, and the number that decides it is reported in this
-// comment rather than left to be rediscovered. Measured at HEAD `8e7cae7`: the
-// planning stores hold 24 files; 20 are plans and 4 are shaper specs (the spec
-// format at `agents/shaper.md:183` has no such section, so judging one against a
-// plan format would be a fabricated defect); of the 20 plans, 1 carries the
-// section and 19 do not. Every one of the 20 is `_c_`. A gate over all plans
-// would therefore open red at 19 failures whose remedy is to invent stopping
-// conditions for finished work, which is worse than the absence it reports.
-// The corpus is `_o_` (open) and `_p_` (in progress) from the issues/planning
-// marker vocabulary in `rules/fusion-workbench-conventions.md`
-// `## State Markers — issues and planning`; `_c_` (closed) and `_d_` (deferred)
-// are out. That is not the count talking: the mandate serves a step that runs
-// BEFORE a Circle closes, so the window in which the section must exist is
-// exactly the window in which the plan is live. Plans are created `_o_`
-// (`agents/planner.md:94`) and stay live for the session that executes them, so
-// a plan written without the section reddens the suite on the day it is written
-// — which is before the work, where the defect says the fix is cheapest.
-//
+// THE CORPUS IS LIVE PLANS: `_o_` (open) and `_p_` (in progress) from the
+// issues/planning marker vocabulary in `rules/fusion-workbench-conventions.md`
+// `## State Markers — issues and planning`; `_c_` and `_d_` are out, and so are
+// shaper specs, whose format has no such section. The mandate serves a step
+// that runs BEFORE a Circle closes, so the window in which the section must
+// exist is exactly the window in which the plan is live, and a plan written
+// without it reddens the suite on the day it is written.
 // WHAT THIS DOES NOT COVER, stated rather than discovered. At HEAD the live
 // corpus is EMPTY: 0 files, and the corpus assertion passes vacuously. It is a
 // trap set for the next plan, not a measurement of the current tree. The

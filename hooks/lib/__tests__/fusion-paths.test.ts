@@ -592,11 +592,6 @@ describe("bin/fusion-paths", () => {
       expect(parse(run(project, "orchestrator").stdout).OUT_MEMO).toBeUndefined();
     });
 
-    it("keeps OUT_MEMO shared even with a Circle active, whoever asks", () => {
-      activate();
-      expect(parse(run(project, "memo").stdout).OUT_MEMO).toBe("shared/memos");
-    });
-
     it("gives reconciler OUT_DECISION — it files decision records (reconciler.md:65)", () => {
       // The specific regression. Absent the key, $OUT_DECISION expanded to the
       // empty string and every decision record the reconciler filed landed at

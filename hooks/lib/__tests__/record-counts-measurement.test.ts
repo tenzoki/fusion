@@ -11,53 +11,19 @@ import { extractBashBlock } from "./helpers/prompt-blocks.js";
 // stores, and this gate runs the measurement rather than reading it
 // (`agents/orchestrator.md` `### The record counts are computed, not tallied`).
 //
-// The block replaced a hand-kept tally that had drifted by two in both
-// directions (`shared/issues/260810-1205_*`). It then shipped with four faults
-// of its own, all four found by extracting it and running it, none of them
-// visible to a reader:
-//
-//   1. Its untracked-workbench probe asked git for `${SCAN_ISSUES%% *}` — the
-//      FIRST store, which `bin/fusion-paths` makes the active Circle's. Git
-//      tracks no empty directory, so every Circle that had filed no committed
-//      record by the session anchor read as an untracked workbench and the whole
-//      measurement reported `unmeasured`, in a workbench that was fully tracked
-//      and perfectly measurable (`shared/issues/260811-1406_*`).
-//   2. It read `$WORKBENCH`, `$SCAN_ISSUES` and `$SCAN_DECISIONS` as live shell
-//      variables. The Bash tool gives every call its own shell, so a verbatim run
-//      aborted on its own assertion and blamed fusion (`shared/issues/260811-1407_*`).
-//   3. It justified its store-list handling with "the Bash tool runs zsh", which
-//      is a property of the author's machine, not of the tool
-//      (`shared/issues/260811-1412_*`, `rules/critical-stance.md` §3).
-//   4. Both of its `unmeasured` branches threw away the `filed` counts along
-//      with the `now_` ones. `filed` compares a filename stamp against
-//      `session.started` and touches no git, so it stayed measurable in exactly
-//      the cases the block declared unmeasurable — every project that does not
-//      track its workbench (`shared/issues/260811-1610_*`). The prose taxonomy of
-//      the two causes had drifted from the branches too: "a project outside git"
-//      was listed under the branch that cannot reach it
-//      (`shared/issues/260811-1616_*`).
-//   5. The fix for 4 was applied in one direction only. A missing
-//      `session.started` still took BOTH halves down, anchor and all, and the
-//      case below asserting that was the untouched leg of the old combined gate
-//      rather than a considered decision (`shared/issues/260811-2149_*`). Each
-//      half is now gated on its own input, which is four cases, not two.
-//
-// So this gate does three things, in the order the faults came:
-//
-//   - It RUNS the block, in both shells, over throwaway workbenches whose record
-//     stores it built — so a count that drifts from the disk fails here.
-//   - It runs it in a shell that was given NOTHING, which is the shell an agent
-//     actually gets.
-//   - It reads the section's prose for the one claim that is about a machine
-//     rather than about the code.
-//
-// The controls run the block AS IT SHIPPED, read out of git rather than
-// transcribed, and show it failing both ways over the same fixtures. A gate
-// whose negative control is invented text proves nothing about what shipped.
+// The block replaced a hand-kept tally (`shared/issues/260810-1205_*`) and then
+// shipped with faults of its own, each found only by extracting and running it:
+// `260811-1406_*`, `260811-1407_*`, `260811-1412_*`, `260811-1610_*`,
+// `260811-1616_*`, `260811-2149_*`. So this gate does three things, in the
+// order the faults came: it RUNS the block, in both shells, over throwaway
+// workbenches whose record stores it built; it runs it in a shell that was
+// given NOTHING, which is the shell an agent actually gets; and it reads the
+// section's prose for the one claim that is about a machine rather than the
+// code. The controls run the block AS IT SHIPPED, read out of git, and show it
+// failing both ways over the same fixtures.
 //
 // What this is not (`rules/critical-stance.md` §3): proof that a session runs
-// the block. Nothing here executes at session time. It proves the block, run as
-// written, counts what is on the disk.
+// the block. It proves the block, run as written, counts what is on the disk.
 // ---------------------------------------------------------------------------
 
 const orchestrator = () => readFileSync(join(pluginRoot, "agents", "orchestrator.md"), "utf-8");

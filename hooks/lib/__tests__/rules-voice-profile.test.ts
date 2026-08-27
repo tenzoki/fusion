@@ -9,15 +9,10 @@ import { dirname, resolve, join } from "node:path";
 // The voice-profile emission — which language variant of each stylometric
 // profile family `bin/fusion-rules` hands an agent at Setup.
 //
-// WHY THIS FILE EXISTS. `CLAUDE.md` used to carry one language declaration, and
-// `bin/fusion-rules` fed it to both profile families. The boundary the project
-// actually draws (see `rules/fusion-workbench-conventions.md` `## Project
-// language`) runs elsewhere: output the user reads in the terminal is the chat
-// language, output that persists as a file is the artifact language. Two
-// declarations name those two languages — `**Language:**` and `**Artifact
-// language:**` — and each profile family resolves from the surface it governs.
-// Nothing executable asserted the old single-line behaviour before this file,
-// so the split had no regression lock to stay green against.
+// Two declarations in `CLAUDE.md` name two languages (`rules/fusion-workbench-
+// conventions.md` `## Project language`): `**Language:**` for what the user
+// reads in the terminal, `**Artifact language:**` for what persists as a file,
+// and each profile family resolves from the surface it governs.
 //
 // THE ORDER THIS FILE WAS BUILT IN IS LOAD-BEARING. The backwards-compatibility
 // case below was written and run GREEN against the unmodified script, before a
@@ -26,43 +21,20 @@ import { dirname, resolve, join } from "node:path";
 // the executable form of the promise "a project that declares only the first
 // line sees byte-identical emission".
 //
-// WHAT IT DRIVES. The real `bin/fusion-rules` through `child_process`, in a temp
-// project directory — the seam `fusion-paths.test.ts` and
-// `rules-emission-golden.test.ts` already established for bash helpers, and the
-// same seam an agent's Setup reads. There is no importable module; the script's
-// stdout is the whole public interface.
+// It drives the real `bin/fusion-rules` through `child_process` in a temp
+// project, the seam the golden suite established, under the same two
+// environment disciplines: `FUSION_PLUGIN_ROOT` forced to THIS repository
+// (`rules-emission-golden.test.ts:52-56`), and every temp cwd asserted to carry
+// no `.claude-plugin/plugin.json` (`rules-emission-golden.test.ts:625-645`).
+// The emitted profile paths are relative (`./fusion-workbench/stilwerk/...`),
+// and that leading `./` is the discriminator that picks them out without
+// filtering by name.
 //
-// TWO ENVIRONMENT DISCIPLINES, both borrowed from the golden suite and both
-// asserted rather than assumed:
-//
-//   1. `FUSION_PLUGIN_ROOT` is forced to THIS repository for every call
-//      (`rules-emission-golden.test.ts:52-56`). A developer almost always has it
-//      pointing at their installed copy (`~/.fusion`), and a test that inherited
-//      it would measure whatever was last installed rather than the source tree.
-//
-//   2. Every temp project directory is asserted to carry no
-//      `.claude-plugin/plugin.json` (`rules-emission-golden.test.ts:625-645`).
-//      That manifest at cwd is what `bin/fusion-plugin-cwd` reads to decide the
-//      work-tree rules preference, so a temp cwd that accidentally carried one
-//      would silently measure the plugin-repo branch instead of the
-//      consuming-project one.
-//
-// THE EMITTED PROFILE PATHS ARE RELATIVE (`./fusion-workbench/stilwerk/...`),
-// unlike the absolute rule paths that come from `$FUSION_PLUGIN_ROOT/rules`.
-// `emit_voice_profile` builds them from a relative `stilwerk_dir`, so a leading
-// `./` is exactly the discriminator these tests use to pick the profile lines
-// out of the emission without filtering by name — a filter by name would drop an
-// unexpected variant silently, which is how a measurement stops measuring.
-//
-// UNTESTABLE BY CONSTRUCTION, and stated here rather than left to be discovered:
-// the language of the prose an agent actually writes. These tests prove which
-// profile path is emitted; they cannot prove an agent obeyed it. That is the
-// same honest limit `rules/critical-stance.md` §4 records for the plan-head
-// line, and the enforcement is the same — a human reading the artifact.
-//
-// NO SOURCE-SHAPE ASSERTION. Nothing here greps `bin/fusion-rules` for two
-// labels. The contract is the emission, and the two opposite-direction cases
-// pin it; a test that reads the source fails for edits that break nothing.
+// Untestable by construction: the language an agent actually writes in. These
+// tests prove which profile path is emitted, not that an agent obeyed it
+// (`rules/critical-stance.md` §4). No source-shape assertion: the contract is
+// the emission, and a test that reads the source fails for edits that break
+// nothing.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));
