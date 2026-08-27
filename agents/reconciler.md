@@ -13,7 +13,7 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
 2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" reconciler` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" reconciler`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load.
 3. Read `CLAUDE.md` for project context, folder structure, architecture invariants
 4. `git log --oneline -40` for recent change context
-5. Inventory tracking files: `ls` every directory named by `$SCAN_PLANS`, `$SCAN_ISSUES` and `$SCAN_REVIEWS`. Each of those may name two — the active Circle's store and the shared one. List both; one alone under-reports.
+5. Inventory tracking files: `ls` every directory named by `$SCAN_PLANS`, `$SCAN_ISSUES` and `$SCAN_REVIEWS` — each may name two stores; list both.
 6. Skim recent entries across `$SCAN_HISTORY`
 7. **Read session anchor.** Read `fusion-workbench/agentstate.yaml` if it exists (the orchestrator deletes it on clean exit, so absence is normal post-session). The fields you need from it for Step 2.5:
    - `session.directive` — the session Directive (canonical source for the Artifact↔Directive and Grounding↔Directive edges).
@@ -23,7 +23,7 @@ You reconcile plans, issues, and reviews against ground truth. The shape of "gro
    If `agentstate.yaml` is absent, fall back to the orchestrator's session history file (next step) for the Directive, and to the first commit at-or-after the session's `**Started:**` time as the `<session-start-HEAD>` anchor (last resort).
 8. **Read the orchestrator's session history file.** Locate the most recent `*-orchestrator-session.md` across `$SCAN_HISTORY` and read its `**Directive:**` line and current `**Status:**`. The Directive is the canonical input for Step 2.5's Artifact↔Directive and Grounding↔Directive edges when `agentstate.yaml` is absent or its `session.directive` field is empty.
 
-**Step 2.5's three-edge verdict computation depends on the Directive and the session-start git anchor obtained in steps 7 and 8.** Skipping these reads forces the reconciler to either improvise (guess a Directive from commit messages, pick an arbitrary git anchor) or stall — both are wrong outcomes. Steps 7 and 8 are mandatory; their reads must happen before Step 2.5 runs.
+**Step 2.5's three-edge verdict depends on the Directive and the session-start git anchor from steps 7 and 8.** They are mandatory and precede Step 2.5: without them the verdict improvises a Directive or stalls, and both are wrong outcomes.
 
 ## Domain Parameter
 
@@ -64,14 +64,9 @@ If reconciliation reveals work that needs to change (code, data, or a decision a
 
 ### Step 1: Inventory
 
-Read every `*.md` under every directory each of these names — and each may name two, the active Circle's store and the shared one:
-- `$SCAN_PLANS` — all plans with their claimed status
-- `$SCAN_ISSUES` — all issues with their claimed status
-- `$SCAN_DECISIONS` — all decisions with their claimed status (`_o_/_a_/_i_/_d_/_s_`)
-- `$SCAN_REVIEWS` — all review findings from `coderev` and `ontorev` (the sender is in the filename)
-- `$SCAN_HISTORY` — completed session logs (skim for what was actually done)
+Read the **live** records under every directory each of these names — and each may name two, the active Circle's store and the shared one: `$SCAN_PLANS` and `$SCAN_ISSUES` (markers `_o_`/`_p_`), `$SCAN_DECISIONS` (`_o_`/`_a_` of `_o_/_a_/_i_/_d_/_s_`), `$SCAN_REVIEWS` (the sender is in the filename) and `$SCAN_HISTORY` skimmed for what was actually done — plus every file that `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-files last_reconcile_commit` names, whatever its marker. On exit 4 or a missing helper, read every `*.md` in all five — a skipped read rests only on a proven bound. A closed record nothing touched re-verifies to the same answer; the mark is written by `/fusion:cleanup` Step 3.
 
-Build a master list of all claimed statuses.
+Build a master list of the claimed statuses read.
 
 ### Step 2: Verify against ground truth
 

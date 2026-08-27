@@ -41,6 +41,20 @@
 #                           1 without one (absent file or absent key).
 #   set <key> <value>       Write/replace the key. Creates the file. Exit 0;
 #                           2 on a malformed key/value.
+#   changed-files <key> [<pathspec>]
+#                           The list behind the verdict: every path under
+#                           <pathspec> that moved since the mark — committed
+#                           (`git diff --name-only <mark>..HEAD`) and
+#                           uncommitted (`git status --porcelain`) alike,
+#                           deduplicated, one per line. An empty list on exit 0
+#                           is a real answer ("nothing moved"). Exit 4 when the
+#                           question cannot be answered (no work tree, no mark,
+#                           a mark git cannot resolve): the caller reads
+#                           everything — a skipped read rests only on a proven
+#                           bound. First consumer: the reconciler's Step 1
+#                           inventory, which reads live-marker records plus
+#                           exactly this list. <pathspec> defaults to the
+#                           tracking corpus (`default_pathspec` below).
 #   changed-since <key> [<pathspec>]
 #                           The one composed question Step 3 asks. Reads the
 #                           key as a git commit; prints exactly one line:
@@ -56,7 +70,8 @@
 #                           clone, gc). Callers treat `unknown` exactly like
 #                           `yes` — run the full pass; a skipped pass may
 #                           only ever rest on a proven `no`.
-#                           <pathspec> defaults to fusion-workbench/.
+#                           <pathspec> defaults to the tracking corpus
+#                           (`default_pathspec` below).
 #                           Exit 0 in all three cases; the answer is the line.
 #
 # ## Exit codes
@@ -65,6 +80,7 @@
 #   1  get: no value held
 #   2  usage error (unknown subcommand, malformed key or value)
 #   3  no fusion workbench above pwd (nothing to anchor against)
+#   4  changed-files: no resolvable mark — the caller reads everything
 #
 # ## Why a helper and not lines in the skill body
 #
@@ -88,6 +104,27 @@ resolve_root() {
 }
 
 ANCHORS="fusion-workbench/.cadence-anchors"
+
+# The default pathspec: the tracking corpus, NOT the live state. Class L
+# (rules/workbench-tracking.md) plus the event log change on every session by
+# construction; counting them would make `changed=no` unreachable and the
+# skip they gate dead code. An explicit <pathspec> argument is taken raw.
+default_pathspec() {
+  printf '%s\n' \
+    'fusion-workbench/' \
+    ':!fusion-workbench/orchestrator-events.jsonl' \
+    ':!fusion-workbench/orchestrator-live.md' \
+    ':!fusion-workbench/agentstate.yaml' \
+    ':!fusion-workbench/portfolio.md' \
+    ':!fusion-workbench/monitor' \
+    ':!fusion-workbench/stilwerk' \
+    ':!fusion-workbench/.guard-state' \
+    ':!fusion-workbench/.session-marker' \
+    ':!fusion-workbench/.cadence-anchors' \
+    ':!fusion-workbench/.checkout-id' \
+    ':!fusion-workbench/.commit-lock' \
+    ':!fusion-workbench/.active-circle'
+}
 
 valid_key() { printf '%s' "$1" | LC_ALL=C grep -Eq '^[a-z_]+$'; }
 valid_value() { printf '%s' "$1" | LC_ALL=C grep -Eq '^[^[:space:]]+$'; }
@@ -115,6 +152,28 @@ case "$cmd" in
     { [ -f "$ANCHORS" ] && grep -v "^${key}=" "$ANCHORS" || true; printf '%s=%s\n' "$key" "$value"; } > "$tmp"
     mv "$tmp" "$ANCHORS"
     ;;
+  changed-files)
+    key="${2:-}"; pathspec="${3:-fusion-workbench/}"
+    valid_key "$key" || { echo "fusion-cadence-anchor: malformed key '$key'" >&2; exit 2; }
+    root="$(resolve_root)" || exit 3
+    cd "$root"
+    mark=""
+    [ -f "$ANCHORS" ] && mark="$(sed -n "s/^${key}=//p" "$ANCHORS" | tail -1)"
+    if [ -z "$mark" ] \
+      || [ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" != "true" ] \
+      || ! git rev-parse -q --verify "${mark}^{commit}" >/dev/null 2>&1; then
+      exit 4
+    fi
+    if [ -n "${3:-}" ]; then
+      { git diff --name-only "${mark}..HEAD" -- "$pathspec" 2>/dev/null || true
+        git status --porcelain -uall -- "$pathspec" 2>/dev/null | cut -c4- | sed 's/.* -> //' || true
+      } | LC_ALL=C sort -u
+    else
+      { git diff --name-only "${mark}..HEAD" -- $(default_pathspec) 2>/dev/null || true
+        git status --porcelain -uall -- $(default_pathspec) 2>/dev/null | cut -c4- | sed 's/.* -> //' || true
+      } | LC_ALL=C sort -u
+    fi
+    ;;
   changed-since)
     key="${2:-}"; pathspec="${3:-fusion-workbench/}"
     valid_key "$key" || { echo "fusion-cadence-anchor: malformed key '$key'" >&2; exit 2; }
@@ -128,8 +187,14 @@ case "$cmd" in
       echo "changed=unknown"
       exit 0
     fi
-    if [ -z "$(git diff --name-only "${mark}..HEAD" -- "$pathspec" 2>/dev/null)" ] \
-      && [ -z "$(git status --porcelain -- "$pathspec" 2>/dev/null)" ]; then
+    if [ -n "${3:-}" ]; then
+      d="$(git diff --name-only "${mark}..HEAD" -- "$pathspec" 2>/dev/null)"
+      s="$(git status --porcelain -uall -- "$pathspec" 2>/dev/null)"
+    else
+      d="$(git diff --name-only "${mark}..HEAD" -- $(default_pathspec) 2>/dev/null)"
+      s="$(git status --porcelain -uall -- $(default_pathspec) 2>/dev/null)"
+    fi
+    if [ -z "$d" ] && [ -z "$s" ]; then
       echo "changed=no"
     else
       echo "changed=yes"
@@ -137,7 +202,7 @@ case "$cmd" in
     ;;
   ""|-h|--help|help)
     cat >&2 <<'EOF'
-Usage: fusion-cadence-anchor {get <key>|set <key> <value>|changed-since <key> [<pathspec>]}
+Usage: fusion-cadence-anchor {get <key>|set <key> <value>|changed-since <key> [<pathspec>]|changed-files <key> [<pathspec>]}
 The header of this script is the authoritative documentation.
 EOF
     [ -z "$cmd" ] && exit 2

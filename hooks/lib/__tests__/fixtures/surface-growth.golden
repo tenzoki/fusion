@@ -24,10 +24,10 @@
   orchestrator.md 162438
   planner.md 19423
   playmaker.md 38953
-  reconciler.md 20980
+  reconciler.md 21036
   shaper.md 28833
   taskplanner.md 14070
-  total 417776
+  total 417832
 
 [skills bytes]
   archive/SKILL.md 25223
@@ -37,12 +37,12 @@
   curate/SKILL.md 12286
   direct/SKILL.md 10613
   help/SKILL.md 17134
-  log-activity/SKILL.md 13564
+  log-activity/SKILL.md 13656
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
   next/SKILL.md 27593
   setup/SKILL.md 48065
-  total 240338
+  total 240430
 
 [hook-tests lines]
   commit-message-path.test.ts 354

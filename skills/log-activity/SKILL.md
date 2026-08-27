@@ -31,15 +31,15 @@ Read the username from the `$USER` environment variable:
 echo "$USER"
 ```
 
-The activity log file is `activity-log-$USER.md` in the project root. For example, if `$USER` is `kai`, the file is `activity-log-kai.md`.
+The activity log file is `activity-log-$USER.md` in the project root.
 
 ### 2. Check for existing log file
 
 - If the file does not exist, create it from scratch — process every date that has activity.
-- If the file exists, read it to determine which dates are already logged. Extract the list of dates that already have entries (look for `## YYYY-MM-DD` headers).
+- If the file exists, the newest logged date is the high-water mark, and one grep is the whole read: `SINCE="$(grep -oE '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' "activity-log-$USER.md" | sort | tail -1 | cut -c4-)"`. Only the newest date decides anything below; do not read the file into context.
 - Determine the set of dates to process:
   - **Every date AFTER the most recently logged date** that has activity — the genuinely new days; AND
-  - **The most recently logged date itself** — re-scan it. A prior run may have logged it mid-day (e.g. the morning of a day still in progress), so it can have gained activity since that run. Skipping it because its header already exists would silently drop the rest of that day's work — this is exactly the bug this rule prevents.
+  - **The most recently logged date itself** — re-scan it: a mid-day run may have logged it incomplete, and skipping it on its existing header silently drops the rest of that day's work.
 - All logged dates **older** than the most recent one are complete and MUST NOT be re-processed (they cannot gain new activity).
 - **Refresh, don't duplicate:** when re-processing the most recently logged date, REPLACE its existing daily entry, its arc bullet, and its per-week row contribution in place — never append a second entry for the same date. See Step 7.
 
@@ -70,17 +70,19 @@ Two codes are **retired but still readable**: `o` (ontology reviews) and `c` (co
 
 a) **Git commits** (`g`):
    ```bash
-   git log --format="%ai|%s" --since="30 days ago"
+   git log --format="%ai|%s" --since="${SINCE:-30 days ago}"
    ```
-   Parse each line for date, time, and commit subject.
+   Parse each line for date, time, and commit subject. `$SINCE` (Step 2) bounds the update read — and covers a log stale for over 30 days, which the fixed window missed.
 
 b) **Workbench files** — one scan of the tree, not a walk of an enumerated list of stores:
 
    ```bash
    # macOS/BSD find+ls; on GNU coreutils replace `ls -l -T` with `ls -l --full-time`
    # (BSD `-T` prints full timestamps; GNU `-T` expects a tabsize argument and errors)
-   find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -not -path '*/.migration-v2-backup/*' -exec ls -l -T {} +
+   find "$WORKBENCH" -type f -name '*.md' -not -path '*/archive/*' -not -path '*/stashes/*' -not -path '*/stilwerk/*' -not -path '*/.migration-v2-backup/*' ${SINCE:+-newermt "$SINCE"} -exec ls -l -T {} +
    ```
+
+   `-newermt` is behaviour-preserving: an older mtime can only feed dates Step 2 already closed.
 
    - **Derive the code from the containing directory's basename**, per the legend above. A file directly in the workbench root is `w`; a `*_circle.md` inside a Circle directory is `k`.
    - Parse filenames for embedded timestamps (e.g. `260408-1523-topic.md` means April 8, 15:23). Fall back to the modification time when the filename carries no stamp.
@@ -95,7 +97,7 @@ b) **Workbench files** — one scan of the tree, not a walk of an enumerated lis
 - For each date, determine:
   - **Start hour:** earliest activity timestamp
   - **End hour:** latest activity timestamp
-  - If end time is after midnight (00:00-05:00), treat it as an extension of the previous day: add hours to 24. Example: activity from 11:00 to 02:30 next day becomes `[11-26.5]` or `[11-26]`
+  - If end time is after midnight (00:00-05:00), treat it as an extension of the previous day: add hours to 24. Example: 11:00 to 02:30 next day → `[11-26.5]`
 - **Inactive days within the project span:** if a date between the earliest logged date and today has **no** activity from any source, still emit a daily header `## YYYY-MM-DD (Day) [—]` with no time table. This preserves continuity for the per-week aggregation in Step 6.
 
 ### 5. Format output
@@ -192,12 +194,12 @@ For each new day added to the Daily Log, locate the ISO week (Mon–Sun) the day
 ```bash
 daily_entries=$(grep -c "^## 2[0-9]\{3\}-" activity-log-$USER.md)
 week_rows=$(grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2} +\|" activity-log-$USER.md)
-distinct_iso_weeks=$(grep -oE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$USER.md | sed 's/^## //' | xargs -I{} date -j -f "%Y-%m-%d" {} +"%Y-W%V" 2>/dev/null | sort -u | wc -l | tr -d ' ')
+distinct_iso_weeks=$(grep -oE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$USER.md | cut -c4- | python3 -c 'import sys,datetime; print(len({datetime.date.fromisoformat(l.strip()).isocalendar()[:2] for l in sys.stdin if l.strip()}))')
 echo "$daily_entries daily entries, $week_rows week rows, $distinct_iso_weeks distinct ISO weeks"
 [ "$distinct_iso_weeks" = "$week_rows" ] || echo "MISMATCH: $distinct_iso_weeks distinct ISO weeks vs $week_rows week rows"
 ```
 
-The `date -j -f` form is macOS-native. On GNU systems (Linux) substitute `date -d "{}" +"%Y-W%V"`. The `2>/dev/null` swallows per-line parse errors so a malformed date doesn't abort the pipeline; the final count is still derivable from the well-formed dates.
+One `python3` process for every header (shell `date` differs between BSD and GNU and used to cost one subprocess per daily entry); the grep already guarantees the date format it feeds in.
 
 If a distinct ISO week is missing from the table — or a table row has no matching daily entry — fix before writing.
 
@@ -239,7 +241,7 @@ Report the three Step 6 numeric counts explicitly: `<N> daily entries`, `<W> per
 
 ## Notes
 
-- Be thorough: scan the whole workbench tree, not just the recently-touched parts
+- Be thorough: every source, the whole tree inside the `$SINCE` bound
 - Timestamps should be extracted from filenames (YYMMDD-HHMM pattern), git log, and file modification times
 - When a day has very few entries, still create the entry — even a single commit is worth logging
 - The arc summary should capture the narrative: what was the focus of the day? (e.g., "ontology refactoring", "bug fixes and reviews", "new agent implementation")
