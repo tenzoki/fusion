@@ -26,3 +26,5 @@ Resolve the root inside the Step 4 block (the guarded `bin/fusion-source-root` c
 ## Acceptance
 
 The Step 4 block run in a fresh shell in this repository greps 21 entries, none of them `/bin`; run with `$FUSION_PLUGIN_ROOT` unset it stops and names the unresolved root instead of surveying.
+
+**Resolved:** 260827, coder (Turn 2). `skills/archive/SKILL.md` Step 4 now resolves the source root inside its own block (`SRC` from the guarded `bin/fusion-source-root` call with the `$FUSION_PLUGIN_ROOT` fallback, the Step 0e form) and reads no variable from another shell; an empty root prints `filter 3 skipped: source root unresolved (FUSION_PLUGIN_ROOT unset)` and adds no entry, so `""/bin` never reaches the corpus. Filter 3 prose names the skip. Measured in a fresh `bash -c` from the repo root: resolved → 21 entries, none `/bin`; `FUSION_PLUGIN_ROOT` unset → the report line and 0 entries. Not done here, under the +300-byte `skills/` cap: the `$SHARED_*` values `open_in()` reads from Step 1 keep the cross-shell pattern the record notes as pre-existing.

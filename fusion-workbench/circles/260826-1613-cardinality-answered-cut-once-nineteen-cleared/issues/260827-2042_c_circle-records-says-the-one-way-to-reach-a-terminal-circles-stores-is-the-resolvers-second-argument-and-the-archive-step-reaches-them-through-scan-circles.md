@@ -13,3 +13,5 @@ Drop "the one way": "they enter a scan set only when a run names the Circle as t
 ## Acceptance
 
 The paragraph makes no claim the archive skill's own block contradicts.
+
+**Resolved:** 260827, coder (Turn 2). `rules/circle-records.md` no longer says "the one way": an agent's scan reaches a terminal Circle's stores only when a run names the Circle as the resolver's second argument, and a skill walking `$SCAN_CIRCLES` directories itself (the archive step's `open_in()`) is named as a different reader, bound by the terminal-states statement.

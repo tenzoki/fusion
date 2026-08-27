@@ -13,3 +13,5 @@ Decide which: a `_d_` record inside a terminal Circle is frozen with the Circle 
 ## Acceptance
 
 `:116` and `open_in()` name the same marker set, and a `_d_` issue inside a `_c_` Circle behaves the way the chosen sentence says.
+
+**Resolved:** 260827, coder (Turn 2). `:116` now reads "holds a live record (an `_o_`/`_p_` issue or plan, an `_o_`/`_a_` decision; a `_d_` one is frozen with the Circle and does not count)", which is the marker set `open_in()` counts. The first reading (a deferred record is frozen with its terminal Circle) was taken by the orchestrator for the user, who approved fixing all findings; `open_in()` is unchanged.

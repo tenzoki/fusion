@@ -36,8 +36,8 @@
   agent-setup.md 3904
   fusion-workbench-conventions.md 50622
   critical-stance.md 10530
-  review-contract.md 6725
-  total 71781
+  review-contract.md 6699
+  total 71755
 
 [consultant]
   agent-setup.md 3904
@@ -71,8 +71,8 @@
   agent-setup.md 3904
   fusion-workbench-conventions.md 50622
   critical-stance.md 10530
-  review-contract.md 6725
-  total 71781
+  review-contract.md 6699
+  total 71755
 
 [orchestrator]
   agent-setup.md 3904
@@ -80,9 +80,9 @@
   critical-stance.md 10530
   user-facing-output.md 9156
   decision-record-examples.md 4527
-  circle-records.md 25373
+  circle-records.md 25544
   commit-lock.md 7020
-  total 111132
+  total 111303
 
 [planner]
   agent-setup.md 3904
@@ -98,9 +98,9 @@
   critical-stance.md 10530
   user-facing-output.md 9156
   decision-record-examples.md 4527
-  circle-records.md 25373
+  circle-records.md 25544
   backlog-entries.md 2812
-  total 106924
+  total 107095
 
 [reconciler]
   agent-setup.md 3904
@@ -116,8 +116,8 @@
   user-facing-output.md 9156
   decision-record-examples.md 4527
   design-diagrams.md 5285
-  circle-records.md 25373
-  total 109397
+  circle-records.md 25544
+  total 109568
 
 [taskplanner]
   agent-setup.md 3904
