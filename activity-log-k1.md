@@ -2,7 +2,7 @@
 
 **Project:** fusion (Claude Code plugin source)
 **Started:** 2026-06-21
-**Generated:** 2026-08-17 19:43 by `/fusion:cleanup` Step 6
+**Generated:** 2026-08-28 00:45 by `/fusion:cleanup` Step 5
 **Scan bound:** git commits from the last 30 days, workbench artifacts from the whole live tree. `archive/`, `stashes/`, `stilwerk/` and `.migration-v2-backup/` are excluded, so the 5 Circles and 178 records archived on 2026-08-17 no longer report their original days.
 
 ## Source Legend
@@ -24,7 +24,9 @@
 
 ## High-level arc
 
-- **08-25 Tue** [7-17] — 26 items; four, attribution, records
+- **08-27 Thu** [4-24.7] — 127 items; twenty records repaired, one cut, circle closed
+- **08-26 Wed** [6-28] — 71 items; presence closes, cardinality, new circle
+- **08-25 Tue** [7-26] — 71 items; attribution, gitignore partition, c4 built
 - **08-24 Mon** [6-22] — 157 items; step, coder, close
 - **08-23 Sun** [6-29] — 101 items; workbench, turn, coder
 - **08-22 Sat** [8-29] — 104 items; workbench, does, coder
@@ -67,7 +69,7 @@
 
 | Week of (Mon) | Days active | Avg active hours/day |
 |---------------|-------------|----------------------|
-| 2026-08-24    | 2           | 13.0                  |
+| 2026-08-24    | 4           | 19.4                 |
 | 2026-08-17    | 7           | 19.9                  |
 | 2026-08-10    | 7           | 19.4                  |
 | 2026-08-03    | 7           | 14.8                  |
@@ -2842,7 +2844,7 @@
 | 22:02 | docs(circles): the reconciliation returns coherent, the plan closes, and the session history carries the verdict | g |
 | 22:10 | coder t3 rules close the step 13 review findings | h |
 
-## 2026-08-25 (Tue) [7-17]
+## 2026-08-25 (Tue) [7-26]
 
 | Time | Topic | Src |
 |------|-------|-----|
@@ -2852,27 +2854,280 @@
 | 07:18 | coder release v10 7 0 edits | h |
 | 08:58 | orchestrator session | h |
 | 10:19 | nothing checks that a tracked workbenchs gitignore matches the four class partition | i |
-| 10:30 | does setup repair a gitignore that departs from the four class partition | d |
 | 10:30 | may a project depart from the four class partition deliberately and say so once | d |
+| 10:30 | does setup repair a gitignore that departs from the four class partition | d |
 | 12:41 | docs(workbench): a consumer's gitignore departure gets its defect record, and two decisions settle that Setup repairs it and how far a project may depart | g |
 | 12:41 | reconciliation | h |
 | 12:50 | a bounded circle holds a draft spec with 49 unreconciled criteria that no scan reaches | i |
-| 12:50 | a conditional acceptance criterion has no notation for a false antecedent so three passes re derived the same explanation | i |
 | 12:50 | a session history section is written in german on a surface the language rule assigns to the artifact language | i |
 | 12:50 | twenty eight records filed since the attribution rule landed carry no person half and no stated reason | i |
+| 12:50 | a conditional acceptance criterion has no notation for a false antecedent so three passes re derived the same explanation | i |
 | 12:59 | the rebalance gate mandates four options and the output rule caps a gate at three | i |
 | 13:29 | every session runs one release behind on a bin helper the same repository just added | i |
 | 13:35 | docs(workbench): the multi-user spec is reconciled against the tree, and the attribution gap turns out to be a 21-hour window in which the installed plugin had no identity helper | g |
 | 13:51 | docs(workbench): thirty-one records filed while the identity helper was unreachable get their attribution backfilled, marked as retrospective rather than passed off as compliance | g |
-| 14:30 | reconciler attribution backfill | h |
 | 14:30 | reconciliation | h |
+| 14:30 | reconciler attribution backfill | h |
 | 14:30 | the event log froze at turn 2 while the dashboard stayed current inverting the diagnostic six instances rest on | i |
 | 14:40 | the archive safety filter checks only claude md while the citation lint guards a corpus thirty one files wider | i |
 | 14:53 | curator run | h |
 | 14:56 | does claude mds register repair reach the curators pass and under what evidence | d |
 | 14:56 | three shipped surfaces say the retired configuration key set is three and the loader holds four | i |
 | 17:01 | reference baseline reapproval | h |
+| 17:05 | docs: the activity log catches up on nine days it had not seen | g |
+| 17:05 | chore(workbench): the cleanup reconciliation lands, and six records this session filed enter the tree | g |
+| 17:05 | docs(claude-md): three claims the tree contradicts come out, and the reference baseline is re-approved with them | g |
+| 18:20 | orchestrator session | h |
+| 18:44 | playmaker user fusion next | h |
+| 20:23 | shaper presence travels monitor filters own checkout | h |
+| 20:51 | playmaker direct dispatch | h |
+| 21:23 | orchestrator session | h |
+| 21:40 | c4 presence travels and the monitor reads its own checkout | p |
+| 21:40 | where do c4s hook test lines come from when the cut only circles room is spent | d |
+| 21:40 | planner c4 presence | h |
+| 21:40 | the turn count defect names three sites and a fourth carries the identical whole file count | i |
+| 21:40 | the two session start emit sites disagree on the detail field and the vocabulary names one | i |
+| 22:14 | coder every emitted event line names its writer | h |
+| 22:14 | can a hook obtain the session identifier | a |
+| 22:31 | coder bin fusion events | h |
+| 22:37 | coder reference baseline and entry point row | h |
+| 22:39 | docs(analyses): a hook does receive the session identifier, and the channel that reaches the model is the one the plugin does not use | g |
+| 22:39 | docs(circles): the last capability of the multi-user specification becomes a Circle, and its plan lands with one question it cannot answer itself | g |
+| 22:40 | docs(orchestrator): every emitted event line names the person and the checkout that wrote it, not only the session boundaries | g |
+| 22:40 | feat(hooks): one reader answers both questions the event log is asked, and it scopes the merged file by checkout before anything else | g |
+| 01:31 | turns returns exit 0 and a whole file count when the checkout is unresolved and stdout says nothing | i |
+| 01:32 | the turns exit 4 has two causes and the authoritative header names one | i |
+| 01:33 | a turn start line with no readable timestamp is dropped from the count and reported nowhere | i |
+| 01:34 | other checkouts counts two different sets depending on the exit code and its comment describes one | i |
+| 01:35 | a tree that owes no git identity is read as one whose identity could not be read | i |
+| 01:36 | the absent rather than empty rule has no expression in any of the three emit templates | i |
+| 01:37 | the party sort is not total and the comment beside it claims it is | i |
+| 01:38 | docs(reviews): the Turn 1 code review lands, and its one High finding says the Turn-count helper widens its own scope without saying so | g |
+| 01:38 | the party line is unescaped tab separated and a tab or newline in a person value breaks it | i |
+| 01:39 | three citations added in this range name a record by its bare stamp a day after the rule forbade it | i |
+| 01:40 | the new setup step 2 identity call moves a halt from first filing to setup and nothing says so | i |
+| 01:41 | coder p4 setup skill session start fields | h |
+| 01:41 | coderev c4 the event log reader and the writer on every line | r |
+| 01:48 | coder p9 readers repair authored once | h |
+| 01:50 | coder c4 turn 1 review closures events query | h |
+| 01:50 | coder p7 monitor reads its own checkout | h |
+| 01:54 | the reference pin shaped a comment away from naming a path and the vagueness is the gates doing | i |
+| 01:55 | coder reference baseline reapproved after wave | h |
+| 01:56 | feat(monitor): the dashboard serves this checkout's lines, and the four false readings it showed after a merge go with one read | g |
+| 01:56 | fix(hooks): the Turn-count reader says on stdout when it counted the whole file, and one table now translates the identity helper's exit codes | g |
+| 01:57 | docs(rules): the reader's repair the tracking rule promised is written down, and setup emits the line the vocabulary always declared | g |
+| 01:58 | a staging list built by a shell pipeline over git status is the directory sweep the rule forbids | i |
+| 02:08 | coder p5 one turn count four sites | h |
+| 02:11 | fix(prompts): the Turn count has one implementation, and the four sites that print or define it read it | g |
+
+## 2026-08-26 (Wed) [6-28]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 06:51 | feat(prompts): presence reaches the two activation surfaces, and the three emit templates carry one identity fragment | g |
+| 07:15 | cut candidates for two growth bounded surfaces | a |
+| 07:48 | coder r3 three bare stamp citations | h |
+| 07:59 | fix(docs): three citations name the record they mean, not a stamp three files share | g |
+| 08:00 | refactor(tests): four cuts buy the head room the last two plan steps need, and each names what it stops checking | g |
+| 08:00 | coder c1 four cuts for two growth bounds | h |
+| 08:05 | the resumption measurement answers for claude codes resume and the plan asked about fusions | i |
+| 08:13 | coder r12 r14 fifth turn count site and two field counts | h |
+| 08:15 | coder p10 tests for events query and the monitor window | h |
+| 08:21 | test(hooks): the event-log reader and the monitor's window get their first coverage, in 200 lines | g |
+| 08:46 | p11 session identifier both branches | h |
+| 08:46 | a fourth sessionstart command lands and four prose sites still say there are three | i |
+| 08:47 | the session id row assertion sits in the state load suite because that was the only permitted file | i |
+| 08:48 | the fourth sessionstart command is asserted by nothing and its own suite warns about exactly that | i |
+| 08:50 | feat(hooks): every emitted line can name the Claude Code session that wrote it, on the one channel that was measured | g |
+| 09:06 | the event query program dies with an unhandled epipe when its reader closes stdout first | i |
+| 09:06 | the event log contract names three fields and two sentences under it still say two | i |
+| 09:06 | a fourth session start emit template was created in this range and left out of the id conversion | i |
+| 09:06 | one of the three harness properties the cut removed does not hold by consequence | i |
+| 09:06 | the monitors whole file parse is the repair and a three line fixture cannot see it | i |
+| 09:06 | the events query entry point carries every turn 1 fix and is exercised by nothing | i |
+| 09:06 | a fifth turn count definition site still reads the whole file and names no implementation | i |
+| 09:10 | coderev c4 turn 2 the session identifier the cut and the four templates | r |
+| 09:14 | docs(reviews): the Turn 2 review lands, and its sharpest finding is that this Circle's own defect survived it | g |
+| 10:13 | coder r10 | h |
+| 10:20 | coder r7 a fourth sessionstart command in the prose | h |
+| 10:24 | coder w1 pin and golden | h |
+| 10:26 | fix(prompts): the count of emit templates, of Turn-count sites and of SessionStart commands is right in every place that states it | g |
+| 11:07 | coder z1 plan closure and two sightings | h |
+| 11:09 | docs(circles): the C4 plan closes, and the two acceptance criteria that miscounted say so instead of being quietly corrected | g |
+| 11:12 | the setup skill points at the orchestrator prompt with an unrooted path the body forbids | i |
+| 11:13 | the setup skill calls the id fragment the pair in the commit that removed that word elsewhere | i |
+| 11:14 | the event log contract says a half in the sentence that now governs three fields | i |
+| 11:15 | the converted reconciler site drops the turns zero is a real figure clause the other four carry | i |
+| 11:16 | docs(reviews): the last uncovered commit in the Circle's range is opened, and two of its four findings sit in one sentence written that day | g |
+| 11:16 | coderev turn 3 the count corrections | r |
+| 11:27 | the repairs authoring home says three readers scope by checkout and this circle built a fourth | i |
+| 11:27 | five shipped sites say the turn count helper replaced four whole file grep copies and there were two | i |
+| 11:32 | reconciliation | h |
+| 12:00 | coder z2 the three remaining counts | h |
+| 12:04 | fix(docs): the five counts this Circle got wrong about its own mechanism are corrected, and the last one is stated with the boundary that keeps it true | g |
+| 12:19 | reconciliation confirmation | h |
+| 12:19 | the event line contracts own rule sentence says a half of a set this circle grew to three | i |
+| 12:52 | how does this project keep a cardinality stated in prose true when seven passes could not | d |
+| 12:53 | docs(decisions): a seventh wrong count closes the case that passes cannot fix this, and the question is filed instead of corrected an eighth time | g |
+| 12:55 | docs(circles): C4 closes bounded, and what it learned is that a count stated in prose is not fixable by another pass | g |
+| 13:01 | playmaker orchestrator phase4 | h |
+| 13:05 | the closure note reporting seven wrong counts states an eighth in the paragraph that reports them | i |
+| 13:06 | docs(circles): the portfolio empties, and the closure note reporting seven wrong counts turns out to state an eighth | g |
+| 13:08 | docs(issues): the closure note's coverage claim is false, and the ninth instance is not a count | g |
+| 13:15 | the closure note claims every code commit was reviewed and one was not | i |
+| 13:30 | coderev the last uncovered commit | r |
+| 13:30 | the citation pin note says hooks dist is scanned records only and it is not scanned at all | i |
+| 13:31 | npm test is red at head on a one word slug drift in the record that reports the eighth count | i |
+| 13:32 | the layout trees consumer column omits the event log reader this circle built | i |
+| 13:36 | docs(reviews): the last uncovered commit is read at last, and the suite was red at HEAD on one word the orchestrator wrote | g |
+| 13:37 | docs(history): the session summary, its derived counts and the flow diagram built from the log | g |
+| 14:45 | the playmakers ranking rewards a stale grounding because no criterion asks whether the directive is still true | i |
+| 16:13 | shaper cardinality answered cut once nineteen cleared | h |
+| 16:17 | docs(circles): the C4 inheritance becomes an anticipated Circle, and four clarification rounds reordered it before a line was written | g |
+| 17:05 | playmaker direct dispatch | h |
+| 17:58 | docs(circles): the cardinality Circle is activated, claimed by this checkout | g |
+| 18:00 | orchestrator session | h |
+| 18:15 | a ranking rationale asserts a resolver behaviour that does not exist and it stands in the active record | i |
+| 18:58 | coderev playmaker prompt and the two fabricated claims | r |
+| 19:01 | the playmakers rationale contract requires a citation and caps the read that would check it | i |
+| 19:02 | the activation proposal section has no content contract on the one surface that is never regenerated | i |
+| 19:03 | the false scan set claim also stands in the portfolio and in the history log as a warning name | i |
+| 22:42 | orchestrator session | h |
+| 03:15 | the guard state rule accounts for one inert leftover and the directory holds three | i |
+| 04:10 | the machine written event rows ship with wiring asserts only because the hook test surface is full | i |
+
+## 2026-08-27 (Thu) [4-24.7]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 04:10 | the machine written event rows ship with wiring asserts only because the hook test surface is full | i |
+| 06:24 | docs(agents): the orchestrator stops hand-writing what the machinery writes | g |
+| 06:24 | docs(refactor): the bookkeeping-cost repair plan, four phases by leverage | g |
+| 06:24 | docs(workbench): the playmaker-ranking issue lands with its citations restated | g |
+| 06:24 | docs: v10.8.0 -- the machine-written bookkeeping, documented on every surface | g |
+| 06:24 | feat(bin): the lock writes the commit row, and identity is read env-first | g |
+| 06:24 | feat(hooks): the mechanical event rows move off the prompt and into the hooks | g |
+| 07:16 | task done fires at dispatch launch when the sub agent runs in the background | i |
+| 07:17 | docs(workbench): task_done records the launch, not the finish, when a dispatch is backgrounded | g |
+| 07:40 | subagentstop payload measurement | a |
+| 07:45 | feat(bin): the cadence anchor, and cleanup's reconciler runs only over a delta | g |
+| 07:45 | feat(hooks): the backgrounded dispatch's task_done moves to its real completion | g |
+| 07:45 | may the curators evidence pass be bounded by its own previous run | d |
+| 07:56 | feat(curator): the evidence pass is bounded by its own previous run | g |
+| 08:12 | feat(reconciler,log-activity): the inventory reads live records, the log reads its delta | g |
+| 08:30 | do the decision record worked examples stay on the always on floor | d |
+| 08:45 | feat(rules): a cardinality is enumerated or derived, never asserted | g |
+| 08:45 | feat(rules): the worked transitions leave the always-on floor (gate 260827-0830) | g |
+| 08:55 | feat(monitor): the poll parses appended bytes, not the whole log | g |
+| 08:55 | feat(skills): the archive gate asks only when the user came to archive | g |
+| 08:55 | fix(hooks): the four reporting CLIs survive a reader that hangs up first | g |
+| 09:10 | does every dispatch carry the full user facing style contract | d |
+| 09:25 | feat(rules): the user-facing style contract goes to the agents the user reads | g |
+| 09:36 | feat(style): every style surface goes on a diet, the hot one hardest | g |
+| 10:56 | which parts of the language and backlog rules does every dispatch still carry | d |
+| 11:03 | feat(rules): the language cascade and the backlog mandate leave the floor | g |
+| 11:20 | how often does the review pass run | d |
+| 11:27 | feat(orchestrator): one review pass per Circle, at its closure | g |
+| 12:10 | do the rare orchestrator flows stay in every sessions context | d |
+| 12:22 | release: v10.14.0 — the bookkeeping-cost releases ship | g |
+| 13:04 | feat(orchestrator): the rare flows leave every session's context | g |
+| 13:05 | does agent frontmatter model reach the dispatch | a |
+| 13:05 | which agents run on a smaller model | d |
+| 13:06 | docs(workbench): model tiering is mechanically proven and filed as the open decision it is | g |
+| 13:10 | does the coherence gate ask when its own verdict is ok | d |
+| 13:11 | where in the cleanup pipeline does the one gate stand | d |
+| 13:23 | feat(ux): the Coherence gate speaks only on drift, and cleanup's gate moves last | g |
+| 13:30 | does the session ask for its directive first and wait silently | d |
+| 13:30 | feat(ux): the Directive comes first, ceremony waits for it, and waits speak | g |
+| 14:39 | feat(ux): resume recommends, cadence measures the flow, setup names the next move | g |
+| 14:39 | the last three ux findings resume default flow metrics quickstart | d |
+| 14:40 | chore(workbench): the UX record's stamp comes from date, not from a guess | g |
+| 14:50 | docs(selfknowledge): the docs tell today's story, and the daily loop fits in five lines | g |
+| 15:17 | docs: the marketplace install path is marked not recommended | g |
+| 15:21 | orchestrator session | h |
+| 15:23 | chore(workbench): record the playmaker review, its four findings, and the 260826 session histories | g |
+| 15:23 | chore(workbench): session bookkeeping — Circle head field, history, event log, setup marker | g |
+| 15:28 | reconciliation | h |
+| 16:37 | playmaker direct dispatch | h |
+| 17:31 | docs: a compact German introduction to fusion, docs/fusion-intro.md | g |
+| 17:49 | orchestrator session | h |
+| 17:56 | does the playmaker rank a circle whose grounding has gone stale and how is stale read | d |
+| 17:56 | how does a checkbox criterion say that its condition never arose | d |
+| 17:56 | how does the rebalance gate present four moves under a three option cap | d |
+| 17:56 | planner twenty open defects | h |
+| 17:56 | repair the twenty open defect records | p |
+| 17:56 | which citation corpus does the archive safety filter protect | d |
+| 17:56 | which record kinds owe the person half of filed by | d |
+| 17:56 | which surface is authoritative when the event log and the dashboard disagree | d |
+| 18:07 | analyst the style rules spec measured against the tree | h |
+| 18:07 | the always on corpus and the four profiles are over the em dash ceiling again six days after they reached it | i |
+| 18:07 | the style rules spec measured against the tree | a |
+| 18:08 | coder bundle a record closures | h |
+| 18:08 | coder bundle b steps 10a 15 18a | h |
+| 18:08 | coder playmaker rationale and activation contract | h |
+| 18:09 | chore(workbench): bundle A closes four defect records and corrects the active Circle's false scan-set clause | g |
+| 18:09 | refactor(agents): the playmaker's rationale names a file it opened, and the appended activation proposal has a content contract | g |
+| 18:11 | coder b16 layout tree consumer column | h |
+| 18:13 | docs: bundle B corrects the citation-pin note, names the three inert guard-state leftovers, completes the layout tree and re-approves the stale pin | g |
+| 18:15 | chore(workbench): the style-rules spec's 49 criteria are measured against the tree, and the em-dash regression is filed | g |
+| 18:36 | coder step 13b fourth retired key | h |
+| 18:36 | ontocoder retired keys four | h |
+| 18:37 | fix(config): the retired key set is four on every surface that names it | g |
+| 18:38 | coder plan step 17 stale grounding warning | h |
+| 18:38 | coder step 7 conditional criterion notation | h |
+| 18:39 | coder rebalance gate split | h |
+| 18:39 | coder steps 6 and 8 | h |
+| 18:39 | feat(agents): a conditional acceptance criterion has a home and a notation for a condition that never arose | g |
+| 18:39 | feat(agents): the playmaker warns when an anticipated Circle's Grounding has gone stale, and reports an archived dependency as archived | g |
+| 18:40 | refactor(rules): the Rebalance gate is two gates inside the three-option cap | g |
+| 18:41 | coder two mandated header fields | h |
+| 18:41 | docs(rules): a terminal Circle's spec is history, and the record kinds that owe the person half are named | g |
+| 18:42 | docs: the reviewer prompts and CLAUDE.md stop counting the review contract's mandated fields | g |
+| 18:43 | cut candidates for skills and the hook tests | a |
+| 18:47 | analyst cut candidates | h |
+| 18:47 | chore(workbench): the cut on skills/ and the hook tests is sized and its candidates ranked | g |
+| 20:15 | coder step 22 the cut | h |
+| 20:17 | refactor: the one measured cut on skills/ and the hook tests | g |
+| 20:20 | coder setup skill steps 5 18b c4 | h |
+| 20:21 | coder six c4 records | h |
+| 20:21 | docs: six C4 records close on the contract wording, the reconciler's turns=0 clause and two direction calls | g |
+| 20:22 | coder session | h |
+| 20:22 | feat(setup): Setup repairs a tracked workbench's .gitignore, offers all three inert leftovers, and names the helpers the install lacks | g |
+| 20:24 | feat(archive): the safety filter guards the citation gate's corpus, and a terminal Circle with open records inside it is never archived | g |
+| 20:28 | coder step 19 split and five c4 records | h |
+| 20:30 | coder step 23 bookkeeping | h |
+| 20:30 | test(hooks): the commit row has its three cases, and five C4 records land inside the room the cut made | g |
+| 20:31 | chore(workbench): the ontocoder's history entry lands where it belongs, with the playmaker briefing's | g |
+| 20:34 | reconciliation | h |
+| 20:36 | chore(workbench): reconciliation after Turn 1 — plan markers, landing hashes on five realised decisions, the Coherence verdict | g |
+| 20:41 | coderev circle closure review 3cbb779 e9dc9b2 | r |
+| 20:42 | circle records says the one way to reach a terminal circles stores is the resolvers second argument and the archive step reaches them through scan circles | i |
+| 20:42 | step 0i points at both bullets of orchestrator setup step 2 and one bullet defines the fragment | i |
+| 20:42 | step 0j appends a negation a nested gitignore overrides and appends it again on every run | i |
+| 20:42 | the archive citation corpus reads a source root set in another shell and collapses silently to claude md rules and the system bin | i |
+| 20:42 | the helper gap line runs fusion plugin cwd without the guard every other call site carries | i |
+| 20:42 | the open record exclusion says any marker above and counts no deferred record | i |
+| 20:42 | the orchestrators rebalance stub cites a decision stamp six records share | i |
+| 20:42 | the rebalance re entry opens at gate 2 so bounded closure and revise directive are unreachable on a retry | i |
+| 20:42 | the review contract counts its mandated fields four times after both reviewer prompts and claude md stopped | i |
+| 20:42 | the stale grounding bullet counts three criteria above it and two stand there and its warning line splits step 4s list | i |
+| 20:42 | the tracking rule says setup offers to delete escalation json and setup now offers three files | i |
+| 20:46 | chore(workbench): the Circle review over 3cbb779..e9dc9b2 and its eleven findings | g |
+| 21:02 | coder turn2 three review findings | h |
+| 21:03 | coder setup skill three findings | h |
+| 21:03 | coder turn2 three archive findings | h |
+| 21:05 | coder turn 2 rebalance re entry and stub citation | h |
+| 21:10 | coder turn 2 bookkeeping | h |
+| 21:10 | docs: the playmaker counts no criteria it does not have, the tracking rule names all three leftovers, the review contract stops counting its fields | g |
+| 21:10 | fix(archive): the citation corpus resolves its source root inside the block and skips loudly when none resolves | g |
+| 21:10 | refactor(rules): every Rebalance re-entry opens at Gate 1, and the orchestrator cites the decision by its own name | g |
+| 21:11 | chore(workbench): the Step 0i finding closes with its sibling batch | g |
+| 21:11 | fix(setup): Step 0j reports a nested ignore file honestly and never appends twice; Step 0i names the one bullet; the helper-gap line is guarded | g |
+| 00:38 | playmaker orchestrator phase4 | h |
+| 00:40 | chore(workbench): the Circle closes coherent, and the session records what it did | g |
+| 00:42 | chore(workbench): archive stale files (tier-1), the 260827-1535 sweep | g |
+| 00:42 | chore(workbench): two pre-session record closures and the 260827-1521 session's tail | g |
 
 ## Total commits
 
-964 git commits since project start (2026-06-21).
+883 git commits since project start (2026-06-21).
