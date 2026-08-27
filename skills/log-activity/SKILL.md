@@ -243,7 +243,7 @@ Report the three Step 6 numeric counts explicitly: `<N> daily entries`, `<W> per
 
 - Be thorough: every source, the whole tree inside the `$SINCE` bound
 - Timestamps should be extracted from filenames (YYMMDD-HHMM pattern), git log, and file modification times
-- When a day has very few entries, still create the entry — even a single commit is worth logging
+- Even a single-commit day gets its entry
 - The arc summary should capture the narrative: what was the focus of the day? (e.g., "ontology refactoring", "bug fixes and reviews", "new agent implementation")
 - Infer the arc from commit messages, file topics, and issue/plan titles
 - The High-level arc lists newest day first; the Daily Log itself is chronological (oldest → newest).

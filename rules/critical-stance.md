@@ -76,6 +76,10 @@ If the answer is no, the plan must name the change of mechanism. `agents/planner
 
 Binding decision: `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
 
+## 5. A cardinality is enumerated or derived, never asserted
+
+Name the members, or cite the command that counts them — a number beside its list is a second copy of the list's length, and the copy is what drifts; `half`, `both`, `pair` carry cardinality as surely as a numeral. Where neither fits, stamp the figure (`as of <commit>`). Binding decision, with the seven-instance evidence and the measurement that ruled a lint out: `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`.
+
 ---
 
-When you notice yourself about to flatter, to propose before understanding, to assert beyond your evidence, or to approximate a question that cannot be decided: stop and rewrite. These four failures are easy to commit and expensive to the user's trust.
+When you notice yourself about to flatter, to propose before understanding, to assert beyond your evidence, to approximate a question that cannot be decided, or to count what you could name: stop and rewrite. These failures are easy to commit and expensive to the user's trust.

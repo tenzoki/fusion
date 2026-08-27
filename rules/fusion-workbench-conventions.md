@@ -324,13 +324,7 @@ Decision records carry a richer state marker that distinguishes "the answer is r
 | `_d_` | Deferred: the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target. |
 | `_s_` | Superseded: a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <path> — <reason>`. |
 
-**Worked transitions:**
-
-1. **`_o_` → `_a_`**: Reconciler (or analyst) finds that an open decision has been answered in a deliverable. Append `Answered: circles/260501-1900-transform-shape/analyses/260501-1915-D04-detailed-architecture.md §4.3 — Shape C selected`. Rename `_o_` → `_a_`.
-2. **`_a_` → `_i_`**: A coder/ontocoder commit lands that realises the decision. Append `Implemented: a3f7c2e — pkg/transform now uses Shape C dispatch`. Rename `_a_` → `_i_`.
-3. **`_o_` → `_d_`**: User says "defer to v1.x". Append `Deferred: v1.x — pending pilot signal`. Rename `_o_` → `_d_`. (Skipping `_a_` is fine when the deferral itself is the answer.)
-4. **`_a_` → `_s_`**: A new decision overrides the answered one. Append `Superseded by: <path>/YYMMDD-HHMM_a_new-decision.md — replaces Shape C with Shape D after expert veto`. Rename to `_s_`. The superseding record may live in another Circle or in `shared/`: cite it where it is; never copy it next to the superseded one.
-5. **`_o_` → `_s_`** (rare): A new decision overrides an open one before it was even answered. Same procedure as above.
+**Worked transitions are authored in `rules/decision-record-examples.md`** (emitted to the transition agents — see `bin/fusion-rules` block 1b2; decision `260827-0830` in the shared store); each rename's annotation form is `### Decision files` below, and a superseding record is cited where it lives, never copied next to the superseded one.
 
 **`_i_` and `_s_` are terminal.** Do not rename them back to `_o_` or `_a_`. If an implemented decision needs revisiting, file a NEW decision, which may then supersede the `_i_` one: append `Superseded by:` and rename `_i_` → `_s_` (the one allowed terminal-to-terminal transition).
 
@@ -472,6 +466,8 @@ This applies to:
 **Before writing, list what is already there.** One `ls` over the open (`_o_`) record names in every `$SCAN_ISSUES` store. Names only, never bodies: a costlier check gets skipped. A hit is a slug naming the same file or the same mechanism as yours. On a hit, append one line at the end of that record: `Also seen: YYMMDD-HHMM by <agent> — <one clause>`. No second file, no marker moves. **In doubt, write the new record**: a duplicate costs one merge, an unfiled defect costs the defect. This step never ends with nothing written.
 
 **NEVER put issues or decisions inside plan documents, review documents, analyses, code comments, chat output, history logs, or any other location.** Embedded items get lost. Each item is a separate file in its own store.
+
+**An issue states the defect, the evidence path, and the acceptance test — then stops.** Later passes re-read every record many times; narrative past the close-condition is recurring cost. Counts in it follow `rules/critical-stance.md` §5.
 
 **Filename:** `YYMMDD-HHMM_o_<topic>.md` (always `_o_` on creation, for either kind).
 

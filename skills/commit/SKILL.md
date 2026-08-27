@@ -62,6 +62,7 @@ When the user invokes `/fusion:commit`, help them commit their changes with a we
    Body:
    - Explain what and why (not how)
    - Wrap at 72 characters
+   - A few sentences at most — the records carry the narrative
 
 5. **Show message and confirm**
    - Display the proposed commit message

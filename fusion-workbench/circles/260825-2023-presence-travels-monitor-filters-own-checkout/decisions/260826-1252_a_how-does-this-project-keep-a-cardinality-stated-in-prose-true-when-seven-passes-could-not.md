@@ -135,3 +135,9 @@ remainder.
 Deciding that needs one measurement nobody has taken: run a candidate detector
 over the corpus and count what it flags against what a human confirms. That is a
 Circle's worth of work and the reason this is filed open rather than answered.
+
+## Answer (260827, user, at the gate — with the measurement this record asked for)
+
+The measurement nobody had taken was taken first. A candidate detector (count words `one`..`twelve`/`both`/`half`/`either`/`pair` on lines also carrying a countable-referent noun — site, reader, emitter, command, source, template, step, field, …) flags **1,197 lines over the shipped text alone** (486 in `agents/`, 243 in `skills/`, 249 in `rules/`, as of `ce4175c`), and a hand-read sample puts true, checkable cardinality claims at roughly one in five flags. A gate at that precision over that volume is the undecidable-question trap §4 of `rules/critical-stance.md` names, and would be routed around as the branch policy was. So option 1 falls on the record's own criterion.
+
+**Chosen: options 2 and 3 together, with 4 named for the residual** — enumerate (name the members), derive (cite the command that counts), and where neither fits, stamp the figure `as of <commit>` so staleness is visible instead of plausible. The norm is authored once, as `rules/critical-stance.md` §5 (always-on, so every agent carries it into every edit), with this record as its binding decision. `CLAUDE.md`'s own summary of the critical-stance norms stopped counting its list in the same change.
