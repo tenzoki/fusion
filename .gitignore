@@ -42,6 +42,7 @@ bin/*
 !bin/fusion-identity
 !bin/fusion-session-domain
 !bin/fusion-events
+!bin/fusion-cadence-anchor
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

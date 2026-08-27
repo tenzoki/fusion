@@ -32,7 +32,7 @@
 [skills bytes]
   archive/SKILL.md 25223
   cadence/SKILL.md 17244
-  cleanup/SKILL.md 23404
+  cleanup/SKILL.md 23408
   commit/SKILL.md 6233
   curate/SKILL.md 12476
   direct/SKILL.md 10613
@@ -42,7 +42,7 @@
   migrate/SKILL.md 26630
   next/SKILL.md 27593
   setup/SKILL.md 48065
-  total 240423
+  total 240427
 
 [hook-tests lines]
   commit-message-path.test.ts 354
@@ -71,7 +71,7 @@
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
-  hooks-wiring.test.ts 125
+  hooks-wiring.test.ts 129
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
   monitor-warnings-panel.test.ts 1136
@@ -93,4 +93,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 376
-  total 20371
+  total 20375

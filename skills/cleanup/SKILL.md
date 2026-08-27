@@ -118,7 +118,7 @@ The goal is that no unfinished work is lost when the session ends.
    for d in $(printf '%s\n' "$SCAN_PLANS"); do find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 \( -name '*_o_*.md' -o -name '*_p_*.md' \) 2>/dev/null | sort; done
    ```
 
-   The underscore marker is inert as a glob: `-name '*_o_*.md'` matches the open plans literally and never collides with `_p_`, `_c_` or `_d_` plans, because slugs are hyphen-separated and never contain an underscore. `find` drives the enumeration so a missing or empty plans dir yields no output and never aborts the shell under zsh (an unmatched `ls` glob does). See `rules/fusion-workbench-conventions.md` `## Marker globs`; the convention applies to every marker in every vocabulary.
+   Marker-glob semantics, and why `find` drives the enumeration (zsh aborts on an unmatched `ls` glob): `rules/fusion-workbench-conventions.md` `## Marker globs` — the convention applies to every marker in every vocabulary.
 3. For each genuinely-unfinished task that is **not already tracked by an open issue**, file an issue per the decision/issue conventions in `rules/fusion-workbench-conventions.md`: `$WORKBENCH/$OUT_ISSUE/YYMMDD-HHMM_o_<slug>.md` (timestamp from `date +%y%m%d-%H%M`, never guessed). Each issue records what the task was, its source file, and why it's still open. Check every path in `$SCAN_ISSUES` — both stores — before filing, so an issue that already exists in the shared store is not duplicated into the Circle.
 
    `$OUT_ISSUE` is the right target for these: an unfinished task from this session arose from the active Directive, which is what the Origin Rule keys on. A defect this session merely *noticed* in unrelated code belongs in the shared store instead — but that is not what this step files.
@@ -159,6 +159,7 @@ Report: the list of commits created (hash + summary) and push result.
 
 Dispatch the reconciler to bring tracking files in line with ground truth.
 
+- **Skip when nothing moved.** `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-since last_reconcile_commit` — only `changed=no` skips (the helper's header carries the contract; `unknown` never does): report the skip and continue to Step 4. Otherwise dispatch, and after the reconciler returns, `set last_reconcile_commit "$(git rev-parse HEAD)"` through the same guarded helper.
 - Use the `$DOMAIN` captured in Step 1. **This skill obtains the domain; it never decides one.** The decision is made in exactly one place — Setup Step 5 of `$FUSION_SRC/agents/orchestrator.md` — and `agentstate.yaml` carries the verdict that run produced. A second statement of that heuristic anywhere else drifts from the first and the two then disagree inside a single session, which is what the plugin's own `domain-cascade.test.ts` now fails on: it scans the file set `REACH.fileSet` names in `hooks/lib/domain-cascade.ts`, whose reach `describeReach()` renders into `README-hooks.md` and the suite compares byte-for-byte, and only the orchestrator's prompt may state the cascade. Read the reach off that rendered block rather than from a copy here, which is how the claim in this file went one file set short of the gate once already.
 - With no `agentstate.yaml` (a cleanup run outside an orchestrator session), `$DOMAIN` is `code` — the same fallback `/fusion:next` and `/fusion:direct` take, and the cascade's own no-evidence exit. Report `$DOMAIN_SOURCE` beside it, never just the value.
 - `Agent(fusion:reconciler)` with the dispatch prompt prefixed by `**Domain:** $DOMAIN` on its own line.
@@ -218,14 +219,9 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 
 **Where the consolidation line comes from.** It is a read-only measurement. It dispatches nothing, writes nothing, and runs under `--dry-run` exactly as it does on a full run. It reports the state of the surfaces; Step 5 is what changes them, and only through the gate.
 
-```bash
-# The most recent curator run file across every directory $SCAN_HISTORY names.
-# Sort on the filename, not the whole path: run files are timestamped
-# YYMMDD-HHMM, and a path sort would order by store directory first.
-LAST_RUN="$(for d in $(printf '%s\n' "$SCAN_HISTORY"); do
-  find "$WORKBENCH/$d" -mindepth 1 -maxdepth 1 -name '*-curator-run.md' 2>/dev/null
-done | awk -F/ '{ print $NF "\t" $0 }' | sort | tail -1 | cut -f2)"
+`$LAST_RUN` is the run-file path Step 5 held; when Step 5 was skipped, take the newest `*-curator-run.md` across `$SCAN_HISTORY` — newest **by filename** (stamped `YYMMDD-HHMM`), never by whole-path sort, which orders by store directory first.
 
+```bash
 # The three surfaces, in bytes. `find -exec cat {} +` runs nothing when nothing
 # matches, so an empty or absent store contributes zero instead of hanging.
 DECISION_BYTES="$(for d in $(printf '%s\n' "$SCAN_DECISIONS"); do
