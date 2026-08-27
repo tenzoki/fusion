@@ -243,4 +243,4 @@ End with anything that needs the user's attention (a rejected push, a flagged re
 - This skill is destructive-adjacent (it commits and pushes). The guardrails in "Autonomy and safety" are not optional.
 - The two commit phases are deliberate: Step 2 captures the *work*, Step 7 captures the *housekeeping the work triggered*. Don't collapse them — a clean tree before reconcile makes the reconciler's diff legible.
 - If the repo is not a git repository, skip Steps 2 and 7's commit/push and say so; still run reconcile, archive, the `CLAUDE.md` gate, and the activity log.
-- Match the user's energy: they asked for a one-shot wrap-up. Ask once, at Step 5's gate, and report once at the end — not after every step (unless a guardrail trips).
+- One-shot wrap-up: ask at Step 5's gate, report once at the end — not after every step (unless a guardrail trips).

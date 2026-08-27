@@ -1,6 +1,6 @@
 {
   "name": "fusion",
-  "version": "10.9.0",
+  "version": "10.10.0",
   "description": "Multi-domain AI agent orchestration framework. 15 project-agnostic specialized agents (three of them parameterised by domain: code or data) with an observation-only PreToolUse hook that decides nothing and writes a trace of every write-tool call plus an advisory when the project's configuration is broken or retired, decision-record tracking, a curator that reconciles decision records, rule files and CLAUDE.md against the project's recorded history, and a real-time browser-based monitor with session-scoped ETA estimation. /fusion:help inside Claude Code for self-explainer.",
   "author": {
     "name": "Kai / qantr GmbH"

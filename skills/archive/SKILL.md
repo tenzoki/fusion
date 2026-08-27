@@ -142,7 +142,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 **There is no line or byte ceiling anywhere, and none may be added** — not here, not in `hooks/lib/events.ts`. Every ceiling expressible in lines or bytes discards the oldest lines first, and the oldest lines are the `guard_block`, `guard_halt` and `halt_cleared` events: 0.6 % of the file when it was measured, and the only lines that record the guard ever enforcing anything. A guard that forgets it halted is a strange guard.
 
-**It is the one target that is rolled rather than selected.** It carries no state marker, it has no age (its lines do, the file does not), it is never terminal, and no tier survey finds it. So it is not a candidate the marker and age passes produce — it is included whenever the live log exists and is non-empty, and skipped **silently** when it is absent or empty, because there is nothing to preserve and an archived empty log is noise. It is still listed in the proposal and still waits for the Step 6 confirmation, like everything else.
+**It is the one target that is rolled rather than selected.** It carries no state marker, it has no age (its lines do, the file does not), it is never terminal, and no tier survey finds it. So it is not a candidate the marker and age passes produce — it is included whenever the live log exists and is non-empty, and skipped **silently** when it is absent or empty, because there is nothing to preserve and an archived empty log is noise. It is still listed in the proposal and, where Step 6 asks, waits for that confirmation like everything else.
 
 The destination preserves the original path relative to `$WORKBENCH`, and the filename carries the archive folder's stamp so a log lifted out of its folder still says when it was rolled:
 
@@ -203,14 +203,13 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    - Anything dropped by the safety filters, with a one-line summary.
    - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly.
 
-6. **Confirm via `AskUserQuestion`.** Write the prompt in the project's language per the `**Language:**` line in `CLAUDE.md` (see `rules/fusion-workbench-conventions.md` `## Project language`), following `rules/user-facing-output.md` and the chat profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Offer:
-   The three option labels are given here in English; render them in that language too.
+6. **Confirm via `AskUserQuestion` — except inside the full cleanup pipeline.** A tier-1 run performed as Step 4 of a full `/fusion:cleanup` skips this step: that pipeline declares tier-1 safe-by-construction and autonomous, and its Step 5 gate is the run's one stop — two prompts for one wrap-up was the two bodies' contradiction. On a targeted run (`--only archive`, or this skill invoked by name) the user came to archive, so ask — in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`), option labels included:
 
    - **Archive** — archive exactly this list
    - **Change scope** — drop or add items, change tier, change threshold
    - **Cancel** — abort, change nothing
 
-   Do not move anything until the user picks the first.
+   Where asked, move nothing until the user picks the first.
 
 7. **Archive on confirmation.**
    - `mkdir -p "$WORKBENCH/archive/<YYMMDD-HHMM>-<slug>/"`

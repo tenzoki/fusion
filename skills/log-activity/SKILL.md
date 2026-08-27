@@ -199,7 +199,7 @@ echo "$daily_entries daily entries, $week_rows week rows, $distinct_iso_weeks di
 [ "$distinct_iso_weeks" = "$week_rows" ] || echo "MISMATCH: $distinct_iso_weeks distinct ISO weeks vs $week_rows week rows"
 ```
 
-One `python3` process for every header (shell `date` differs between BSD and GNU and used to cost one subprocess per daily entry); the grep already guarantees the date format it feeds in.
+One `python3` process for all headers (the BSD/GNU `date` divergence is gone); the grep guarantees the format.
 
 If a distinct ISO week is missing from the table — or a table row has no matching daily entry — fix before writing.
 
@@ -242,7 +242,7 @@ Report the three Step 6 numeric counts explicitly: `<N> daily entries`, `<W> per
 ## Notes
 
 - Be thorough: every source, the whole tree inside the `$SINCE` bound
-- Timestamps should be extracted from filenames (YYMMDD-HHMM pattern), git log, and file modification times
+- Timestamps: filename stamps (YYMMDD-HHMM), git log, mtime fallback
 - Even a single-commit day gets its entry
 - The arc summary should capture the narrative: what was the focus of the day? (e.g., "ontology refactoring", "bug fixes and reviews", "new agent implementation")
 - Infer the arc from commit messages, file topics, and issue/plan titles

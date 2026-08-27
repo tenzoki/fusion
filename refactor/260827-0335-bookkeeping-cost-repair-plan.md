@@ -128,3 +128,13 @@ Standing constraints every phase inherits:
 - It does not touch the guard (observation-only since 260816) or re-introduce anything that reads a Bash command's text.
 - It does not propose raising a growth-bound baseline. Every prompt edit here is net-negative or budget-neutral by construction.
 - It does not decide the open user decisions it names (`260826-1252`, the em-dash ceiling scope, the review-coverage release question). It queues them where a phase depends on one.
+
+---
+
+## Status (260827, end of day one)
+
+Delivered and pushed, each suite-green: **Phase 1** in full (v10.8.0/10.8.1 — machine-written task/commit rows, heartbeat, identity exports, SubagentStop completion for backgrounded dispatches with its payload measured first). **Phase 2** in full but 2.7 (v10.8.1/unreleased — cadence anchor, reconciler skip + live-scope inventory, curator anchored per decision 260827-0745, incremental activity log). **Phase 3** but 3.4 (v10.9.0 — critical-stance §5 per decision 260826-1252 with the 1,197-flag measurement, worked examples off the always-on floor per gate 260827-0830, issue/commit diet, one-question stop gate). **Phase 4** but 4.2 (monitor incremental tail cache with rewrite invalidation, archive-gate contradiction resolved, EPIPE guard across the four reporting CLIs).
+
+Deliberately not done, with reasons: **2.7** (resolve-once across the pipeline — one subprocess per site, not worth its prompt bytes on full surfaces); **3.4** (setup-only sessions without ceremony — entangled with the session-identity contract `history_file`/`session_start`/`turns`, needs its own careful round); **4.2** (combined fusion-events call — two node cold-starts per Setup, minor after the env-first identity landed). The monitor test-fixture gap (`260826-0906`, the *testing* issue, distinct from the closed EPIPE one) stays open for the C5 cut session: the hook-test surface has no room for the fixture that would see a regression to slice-then-parse.
+
+Not yet measured: the no-op `/fusion:cleanup` wall-clock against the <2 min target — that proof belongs to a live session after `fusion --update`.
