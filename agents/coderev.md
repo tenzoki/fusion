@@ -66,7 +66,7 @@ Apply in order:
 
 ## Review Process
 
-The review-file contract — the two mandated header fields, the per-topic working files under `$OUT_REVIEW`, and the shape of the final consolidated review — is authored in `rules/review-contract.md`, which `bin/fusion-rules` emits to you at Setup. Read it there and follow it exactly. Your sender segment is `coderev`.
+The review-file contract — the mandated header fields, the per-topic working files under `$OUT_REVIEW`, and the shape of the final consolidated review — is authored in `rules/review-contract.md`, which `bin/fusion-rules` emits to you at Setup. Read it there and follow it exactly. Your sender segment is `coderev`.
 
 What that file leaves to your prompt is what analysing a topic means here:
 
