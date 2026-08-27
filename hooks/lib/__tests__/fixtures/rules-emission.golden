@@ -43,22 +43,22 @@
   agent-setup.md 3904
   fusion-workbench-conventions.md 59807
   critical-stance.md 10530
-  user-facing-output.md 20535
-  total 94776
+  user-facing-output.md 9156
+  total 83397
 
 [curator]
   agent-setup.md 3904
   fusion-workbench-conventions.md 59807
   critical-stance.md 10530
-  user-facing-output.md 20535
-  total 94776
+  user-facing-output.md 9156
+  total 83397
 
 [editor]
   agent-setup.md 3904
   fusion-workbench-conventions.md 59807
   critical-stance.md 10530
-  user-facing-output.md 20535
-  total 94776
+  user-facing-output.md 9156
+  total 83397
 
 [ontocoder]
   agent-setup.md 3904
@@ -77,11 +77,11 @@
   agent-setup.md 3904
   fusion-workbench-conventions.md 59807
   critical-stance.md 10530
-  user-facing-output.md 20535
+  user-facing-output.md 9156
   decision-record-examples.md 4527
   circle-records.md 24653
   commit-lock.md 7020
-  total 130976
+  total 119597
 
 [planner]
   agent-setup.md 3904
@@ -95,10 +95,10 @@
   agent-setup.md 3904
   fusion-workbench-conventions.md 59807
   critical-stance.md 10530
-  user-facing-output.md 20535
+  user-facing-output.md 9156
   decision-record-examples.md 4527
   circle-records.md 24653
-  total 123956
+  total 112577
 
 [reconciler]
   agent-setup.md 3904
@@ -111,11 +111,11 @@
   agent-setup.md 3904
   fusion-workbench-conventions.md 59807
   critical-stance.md 10530
-  user-facing-output.md 20535
+  user-facing-output.md 9156
   decision-record-examples.md 4527
   design-diagrams.md 5285
   circle-records.md 24653
-  total 129241
+  total 117862
 
 [taskplanner]
   agent-setup.md 3904
