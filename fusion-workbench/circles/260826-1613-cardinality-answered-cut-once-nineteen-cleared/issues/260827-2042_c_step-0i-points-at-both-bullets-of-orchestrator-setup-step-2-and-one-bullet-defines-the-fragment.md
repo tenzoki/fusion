@@ -17,3 +17,6 @@ Step 0i points at "both bullets" of orchestrator Setup step 2, and one bullet de
 ## Acceptance
 
 `grep -c "both bullets" skills/setup/SKILL.md` is 0, and the sentence names the one bullet by its lead phrase.
+
+---
+Resolved: 260827-2103 by coder. Step 0i now reads "as `$FUSION_SRC/agents/orchestrator.md` Setup step 2 defines it (the bullet \"Who, which checkout, which session\"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key". `grep -c "both bullets"` is 0. C4 record `260826-1113` carries one appended dated line correcting its Resolved note.
