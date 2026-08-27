@@ -39,3 +39,5 @@ Option 1: the filter's corpus is a positive enumeration in the skill body, the t
 Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
 
 Implemented: `skills/archive/SKILL.md:118` (filter 3) and `skills/archive/SKILL.md:193` (Step 4's grep), commit pending (the orchestrator commits plan step 12 after this task) — the filter's corpus is the positive enumeration; `hooks/lib/__tests__/workbench-citation-lint.test.ts` names the filter as its twin at the `inCorpus` comment. 260827-2022, coder, Kai Stalmann <ks@qantr.com>.
+
+Reconciled 260827-2034: the `Implemented:` line above was written before the commit; it landed in `d1489cc1` (this file and the shipped edit in the same commit).

@@ -93,3 +93,5 @@ Reconciliation 260827-1528: still open. `agents/playmaker.md:177` still specifie
 
 ---
 Resolved: 260827-1808, plan `260827-1756_*_repair-the-twenty-open-defect-records.md` Bundle C step 2, uncommitted at the time of writing (the orchestrator commits). `agents/playmaker.md` `## Activation proposals` now bounds the appended block to the Step 3 one-paragraph rationale, the proposed timestamp and the run id, and states that a clause asserting a mechanism or the content of a named file is written as a quotation with its path or not at all. The Step 2b traceability sentence's subject is widened to every sentence written into a Circle record, the portfolio or the log; the `## Scope` write line for the Circle record states that an append is permanent and the checking budget goes there first. Bytes paid by deleting the top-of-prompt consultant paragraph; net +316 on `agents/`.
+
+Reconciled 260827-2034: the `Resolved:` note above says uncommitted; the edit landed in `3cb2cba1`.

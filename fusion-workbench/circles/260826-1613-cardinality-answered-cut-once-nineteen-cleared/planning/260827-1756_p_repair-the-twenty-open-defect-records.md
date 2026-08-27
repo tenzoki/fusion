@@ -1,7 +1,7 @@
 # Implementation Plan: repair the twenty open defect records
 
 **Date:** 2026-08-27
-**Status:** Draft
+**Status:** Partially Complete
 **Spec:** none: planned from the dispatch directive; the Circle record `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_t_circle.md` carries the Directive
 **Decidability:** Two questions carry this plan. First, for each of the twenty records, does it resolve to a fix, to a recorded no-change, or to a direction the user gives at the gate? That is decidable from the records themselves: every one names its site and its close condition, and the split below is complete over the twenty by enumeration. Second, for every step that adds bytes to a growth-bounded surface, is there a named source for those bytes? That is decidable from the four bounds' own instruments, measured at `0fb5085` in `## Current State`, and the answer is that two surfaces need no cut and two need one, so the plan carries one measured cut under one gate. What is not decidable from the plan's inputs is the right answer to the six choice points planning surfaced; those are filed as decision records in this Circle's store and are answered by the user at the gate, not approximated here.
 
@@ -179,7 +179,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 ### Bundle B: small shipped fixes that need no cut
 
-10a. **Extend the two-session paragraph to helpers** (record 10, option 3)
+10a. [DONE] **Extend the two-session paragraph to helpers** (record 10, option 3)
     - Executor: `coder` (documentation describing the release mechanism).
     - Files: `CLAUDE.md` `## Release process`, the paragraph beginning "The same pin makes any Circle that builds an agent…".
     - Changes: one added sentence: a `bin/` helper added in a session is absent from `$FUSION_PLUGIN_ROOT` until `fusion --update`, so every `[ -x ]` call site takes its miss branch for the rest of that session; cite the issue. Not bounded.
@@ -200,7 +200,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: same commit as 13a.
     - Acceptance: `grep -c churn agents/orchestrator.md` rises by one at line 114.
 
-15. **Correct the reason in the citation pin's re-approval note** (record 15)
+15. [DONE] **Correct the reason in the citation pin's re-approval note** (record 15)
     - Executor: `coder`.
     - Files: `hooks/lib/__tests__/reference-resolution-lint.test.ts:479` (the single comment line carrying the `2026-08-26 (C4 Turn 3 task Z-2)` entry).
     - Changes: replace the clause "`hooks/**.ts` is scanned for class (c) record citations only, and that docstring's one record citation was left untouched" with the two separate facts: `hooks/dist/` contributes nothing because `surface()`'s two hook loops are non-recursive and `isFile()`-filtered, so no compiled artifact is read; `hooks/lib/*.ts` contributes no paths because those files are `recordsOnly`. Same line, so the line count is unchanged; no path or anchor token is added, so `BASELINE` does not move.
@@ -214,7 +214,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: none.
     - Acceptance: the two rows name `bin/fusion-events`; a `.cadence-anchors` row exists; `npx vitest run lib/__tests__/reference-resolution-lint.test.ts lib/__tests__/rules-emission-golden.test.ts` green after the re-approval.
 
-18a. **Account for all three inert leftovers in the guard-state paragraph** (record 18, rule half)
+18a. [DONE] **Account for all three inert leftovers in the guard-state paragraph** (record 18, rule half)
     - Executor: `coder`.
     - Files: `rules/workbench-tracking.md` `## The four classes`, the paragraph beginning "`.guard-state/` is not one thing".
     - Changes: the sentence "and they are the whole of it" becomes an enumeration of the live set (the two throttle records, `dispatch-map.json`, `events.jsonl`) followed by the three leftovers a workbench set up under an older fusion may hold, each with the commit that retired its writer: `escalation.json` (260816), `churn.json` (`a69d56e`), `state-drift.json` (`f45f76a`). Not bounded (emitted to no agent).
@@ -239,7 +239,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 ### Bundle D: the one measured cut, and the steps it pays for
 
-21. **Size the need and rank the cut candidates on `skills/` and the hook tests** (the Directive's "measure once")
+21. [DONE] **Size the need and rank the cut candidates on `skills/` and the hook tests** (the Directive's "measure once")
     - Executor: `analyst`.
     - Files: reads `skills/*/SKILL.md`, `hooks/lib/__tests__/**`, `hooks/lib/__tests__/helpers/growth-bound.ts`, the C4 analysis `circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260826-0715-cut-candidates-for-two-growth-bounded-surfaces.md`, this plan's steps 5, 12, 18b/10b, 19, 20; writes `$OUT_ANALYSIS/YYMMDD-HHMM-cut-candidates-for-skills-and-the-hook-tests.md`.
     - Changes: (a) state the byte need of steps 5, 12, 18b/10b and 20 as drafted text sizes, and the line need of step 19 (285 by its record, re-measured); (b) rank `skills/` candidates by what the project loses, each with a verified byte span. Seeds measured for this plan, unranked: `skills/archive/SKILL.md:137-153` `### Rolling the guard event log`, 2 452 bytes, which restates `rules/workbench-tracking.md` and decision `260811-1534_*` and could shrink to a citation; `skills/setup/SKILL.md:183-252` Step 0e, 6 762 bytes; `skills/setup/SKILL.md:346-372` Step 0i, 2 828 bytes; `skills/setup/SKILL.md` grew 12 693 bytes over its baseline and is where the head room went. (c) rank hook-test candidates: the 78 lines of the C4 reserve's candidates 5 to 8 that still stand, plus new ones; respect the arithmetic the C4 analysis states (shrinking in place frees one for one; deleting a baselined file frees only size minus baseline) and its list of large candidates that must not be cut. (d) If the user has said at the gate that the C4's five hook-test-needing records join this Circle, add their line need to (a) so the cut is sized once.
@@ -317,7 +317,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Executor: `coder`, inside steps 16 and 22 (and 12 if the corpus enumeration adds path tokens); no separate commit. Listed so the obligation has a number.
     - Acceptance: every `BASELINE` change carries a note in the established form on the same line.
 
-24. **Close every record in the same commit as its fix**, `Resolved:` line then rename, per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`; a record closed by a decision cites the record's `## Answer` as the resolution. Where a record's closure renames a file that shipped text cites with a spelled marker (`hooks-wiring.test.ts:75` is the one instance found), the citation is starred in that commit.
+24. [DONE] **Close every record in the same commit as its fix**, `Resolved:` line then rename, per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`; a record closed by a decision cites the record's `## Answer` as the resolution. Where a record's closure renames a file that shipped text cites with a spelled marker (`hooks-wiring.test.ts:75` is the one instance found), the citation is starred in that commit.
 
 ## Where this Circle stops
 
@@ -357,8 +357,18 @@ None. `bin/` helpers keep their signatures; `skills/setup` gains a step, `skills
 
 ## Open Questions
 
-- [ ] **Do the thirteen open C4 records join this Circle's scope?** The Circle record's Grounding says nineteen inherited records; the dispatch names twenty current ones, and the two sets overlap in five. Five of the thirteen need hook-test lines (`260826-0847`, `-0848`, the three `-0906` `_o_`), and two are direction calls (`260826-0154`, `-0158`). If they join, step 21 sizes the cut for them too; if not, the closure note says so. Answer before step 21.
-- [ ] **R1 to R6** (`## Current State` → *Decision records this planning filed*): each carries a recommendation; steps 7, 8, 9, 12 and 17 wait on one, step 11 on none.
+- [x] **Do the thirteen open C4 records join this Circle's scope?** (answered 260827 at the gate: yes; all thirteen closed, commits `fe8a23c`, `90c309c`) The Circle record's Grounding says nineteen inherited records; the dispatch names twenty current ones, and the two sets overlap in five. Five of the thirteen need hook-test lines (`260826-0847`, `-0848`, the three `-0906` `_o_`), and two are direction calls (`260826-0154`, `-0158`). If they join, step 21 sizes the cut for them too; if not, the closure note says so. Answer before step 21.
+- [x] **R1 to R6** (answered 260827-1830 at the gate, all recommendations adopted; R3 stays `_a_`, the other five `_i_`) (`## Current State` → *Decision records this planning filed*): each carries a recommendation; steps 7, 8, 9, 12 and 17 wait on one, step 11 on none.
 - [x] **Record 6's direction** (answered 260827: option 5, in `rules/circle-records.md`), under `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`: reconcile the bounded Circle's spec in place after step 6's measurement, or state once in `rules/circle-records.md` that a terminal Circle's spec is history. That record is `_o_` and can be answered where it lives.
-- [ ] **Step 1's executor.** The plan assigns `coder` on gate approval; the user may prefer to make the one-clause edit by hand, in which case step 1 is the user's and the record closes on it.
+- [x] **Step 1's executor.** (coder, commit `cb7fa7b`) The plan assigns `coder` on gate approval; the user may prefer to make the one-clause edit by hand, in which case step 1 is the user's and the record closes on it.
 - [ ] Part (c) of `shared/decisions/260810-1544_a_*` (does the work-tree preference reach helper resolution) stays deliberately unanswered; record 10 closes on options 2 and 3 and cites it as the remainder.
+
+## Reconciliation Log
+
+**260827-2034** (reconciler, Phase 3 of session `260827-1749`; HEAD `8fe6c71`, anchor `3cbb779`).
+
+- 24 steps: 23 `[DONE]`, step 19 `[IN PROGRESS]` by the user's split at the gate (commit-lock cases landed in `90c309c`, `hooks/lib/__tests__/fusion-commit-lock.test.ts:398`; seven dispatch cases deferred, `shared/issues/260827-0410_o_*` stays open naming the split). Status moved Draft → Partially Complete.
+- Five steps were done on disk and unmarked; marked this pass: 10a (`CLAUDE.md:106`, commit `3fda829`), 15 (`reference-resolution-lint.test.ts:479`, `3fda829`), 18a (`rules/workbench-tracking.md` names `churn.json`, `3fda829`), 21 (`analyses/260827-1843-cut-candidates-for-skills-and-the-hook-tests.md`, `5e08bd7`), 24 (every closure landed in the fixing commit; `hooks-wiring.test.ts:76` cites `260827-0410_*` starred).
+- Step evidence verified against the tree: S1 `grep -c "removed all nineteen records" _t_circle.md` = 0, correction present (`cb7fa7b`); S4 correction line at the foot of `shared/history/260826-1705-playmaker-direct-dispatch.md`, `portfolio.md` carries no `stranded-records` (`cb7fa7b`); S13 `agents/orchestrator.md:114` and both `_retired` strings name four keys (`d49e258`); S16 `rules/fusion-workbench-conventions.md:63,66` (`3fda829`); S2/S17 `agents/playmaker.md:102` read cap, `stale-grounding` present (`3cb2cba`, `e7c0440`); S5/S18b `skills/setup/SKILL.md:363` Step 0j, `:429` three leftovers (`abb0238`); S12/S20 `skills/archive/SKILL.md:116,118,186` (`d1489cc`); S7 `agents/shaper.md:215` (`ea4be34`); S8 conventions `### Who filed it` reach sentence (`38dc63e`); S9 `rules/orchestrator-rebalance.md:7-24` two gates (`799ea34`); S6 `rules/circle-records.md:65` (`38dc63e`), analysis `analyses/260827-1807-*`.
+- Bounds at HEAD: `skills/` 239 605 of 240 439 bytes (834 free); hook tests 20 313 of 20 375 lines (62 free); `agents/` 406 510 of 417 843. `npm test`: 44 files, 785 tests green.
+- Drift noted, not a fault: the step-to-commit map in `agentstate.yaml` names `abb0238f` for S12 and `c599bf0` for S13; on disk S12 landed in `d1489cc` and S13 in `d49e258`. The plan's per-step evidence above is the corrected map.

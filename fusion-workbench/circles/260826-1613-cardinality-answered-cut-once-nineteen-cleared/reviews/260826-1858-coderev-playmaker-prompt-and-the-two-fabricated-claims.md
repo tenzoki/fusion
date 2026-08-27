@@ -296,3 +296,6 @@ report and less than a broken mechanism.
    file or skill body supplements it (A2).
 4. **Where else can the shape reach?** Every surface, and the prompt draws no line between the
    portfolio, which regenerates, and the Circle record and history log, which do not (B1, B2).
+
+---
+Reconciled 260827-2034: the two records this review filed (`issues/260826-1901_*`, `issues/260826-1902_*`) closed in `3cb2cba` (Theme A read cap and rationale binding, Theme B content contract on `## Activation proposal`); the stale-Grounding criterion of Theme C landed in `e7c0440` (`shared/issues/260826-1445_*` closed). Findings left as written.

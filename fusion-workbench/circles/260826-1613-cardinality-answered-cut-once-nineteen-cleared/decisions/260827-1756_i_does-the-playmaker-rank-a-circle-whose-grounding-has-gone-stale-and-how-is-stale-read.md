@@ -40,3 +40,5 @@ Option 1: a `stale-grounding` warning, never a demotion. Threshold: half or more
 Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
 
 Implemented: pending the orchestrator's commit of plan step 17 (edited at HEAD d49e258) — `agents/playmaker.md` Step 3 stale-Grounding count, Step 4 `stale-grounding` warning line, `## Warnings` roster, archive-resolving dependency reported as `archived`, Step 2 read-cap carve-out.
+
+Reconciled 260827-2034: the `Implemented:` line above was written before the commit; it landed in `e7c0440` (this file and the shipped edit in the same commit).

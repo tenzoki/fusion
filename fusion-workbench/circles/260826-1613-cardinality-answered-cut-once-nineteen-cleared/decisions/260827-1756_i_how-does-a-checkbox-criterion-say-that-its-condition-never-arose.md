@@ -37,3 +37,5 @@ Option 2, with the inline clause `(condition did not arise: <one clause>)` on th
 Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
 
 Implemented: plan step 7 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md` (uncommitted at the time of writing; the orchestrator commits after the step) — `## Stops when` in the shaper spec template, one sentence in the planner placeholder, the inline clause on both existing instances, record closed as `_c_`.
+
+Reconciled 260827-2034: the `Implemented:` line above was written before the commit; it landed in `ea4be341` (this file and the shipped edit in the same commit).

@@ -39,3 +39,5 @@ Option 2: the field is owed by every record kind whose template carries it, and 
 Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
 
 Implemented: plan step 8 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`, 260827-1845 (the commit is the orchestrator's, after this task) — the reach sentence in `rules/fusion-workbench-conventions.md` `### Who filed it`, the third mandated field in `rules/review-contract.md`, the line on the history entry in `## History Logging`.
+
+Reconciled 260827-2034: the `Implemented:` line above was written before the commit; it landed in `38dc63e1` (this file and the shipped edit in the same commit).
