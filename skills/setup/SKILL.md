@@ -339,7 +339,7 @@ A `_t_` Circle record travels between checkouts and `.active-circle` does not (`
 
 It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
 
-**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`, minting `fusion-workbench/.checkout-id` where none exists. Its header documents the six exit codes and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the pair as `<ID>`, the fragment defined at `agents/orchestrator.md` Setup step 2.
+**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`, minting `fusion-workbench/.checkout-id` where none exists. Its header documents the six exit codes and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as `$FUSION_SRC/agents/orchestrator.md` Setup step 2 defines it, both bullets: the second extends it with the `session_id` a SessionStart hook printed into your context, and no line means no key.
 
 ```bash
 [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
@@ -359,6 +359,26 @@ The count is taken unconditionally; the pointer gates the offer, not the detecti
 - **More than one path, pointer or not** — `MULTIPLE-ACTIVE`, the condition `agents/playmaker.md` names beside `MISSING-POINTER`. Name every Circle found and say the project holds more than one active record. **Offer nothing and write nothing**: which of several to run here is a portfolio judgement, and `/fusion:next` is where the project makes it. Point the user there.
 
 Name the branch that ran in the Done report.
+
+## Step 0j — Bring a tracked workbench's `.gitignore` into line with the partition
+
+`rules/workbench-tracking.md` `## The four classes` says which root entries travel and which stay; decisions `260825-1030` (both) say what Setup does when a tracked workbench's `.gitignore` departs from it: repair an excluded R2/R3 entry with a negation line, report a tracked class L entry, repair `.checkout-id` alone (the one whose tracking gives a wrong answer, not noise), never touch an R1 exclusion, ask nothing. Only in a git work tree that already tracks `fusion-workbench/`; the choice not to track is the project's. The question is `git check-ignore -q`, never a text read of `.gitignore`, for the reason the rule gives for `git check-attr`.
+
+```bash
+if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-files --error-unmatch fusion-workbench >/dev/null 2>&1; then
+  for p in orchestrator-events.jsonl .fusion-setup .asset-provenance; do
+    git check-ignore -q "fusion-workbench/$p" && { [ -s ./.gitignore ] && [ -n "$(tail -c1 ./.gitignore)" ] && printf '\n' >> ./.gitignore; printf '!fusion-workbench/%s\n' "$p" >> ./.gitignore; echo "gitignore: $p was excluded — negation appended to $(pwd)/.gitignore"; }
+  done
+  if git ls-files --error-unmatch fusion-workbench/.checkout-id >/dev/null 2>&1; then
+    git rm -q --cached fusion-workbench/.checkout-id && printf 'fusion-workbench/.checkout-id\n' >> ./.gitignore && echo "gitignore: .checkout-id was tracked — untracked (file kept on disk) and excluded"
+  fi
+  for p in agentstate.yaml orchestrator-live.md .session-marker .active-circle .cadence-anchors .commit-lock monitor portfolio.md .guard-state; do
+    git ls-files --error-unmatch "fusion-workbench/$p" >/dev/null 2>&1 && echo "gitignore: class L entry $p is tracked — not repaired, report it"
+  done
+fi
+```
+
+Every line printed goes into the Done report verbatim; nothing printed means nothing to report.
 
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
@@ -386,6 +406,14 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 **The Turn budget is resolved here too.** Run the `bin/fusion-turn-budget` block from `$FUSION_SRC/agents/orchestrator.md` Setup Step 2 — the `[ -x ]` guard is part of it — and hold the answer for the session the same way the `fusion-paths` values are held. That section is the canonical implementation and carries the unresolved branch and its four consequences; do not restate them here, and do not substitute a number for a budget that did not resolve. Report the value, or the fact that it did not resolve and why, in the Setup-complete summary — and with it every diagnostic line the helper put on stderr, which that section requires and which arrives even when the budget resolves.
 
+**In fusion's own repository, name the helpers the install lacks.** Every helper call site reads `$FUSION_PLUGIN_ROOT/bin/`, pinned for the session, so a helper this work tree just added takes every `[ -x ]` miss branch until the next `fusion --update` (issue `260825-1329`); whether the work-tree preference should reach helper resolution is part (c) of decision `260810-1544` and stays unanswered. This line measures the gap and changes nothing:
+
+```bash
+"$FUSION_PLUGIN_ROOT/bin/fusion-plugin-cwd" 2>/dev/null && for h in bin/*; do [ -x "$h" ] && [ ! -x "$FUSION_PLUGIN_ROOT/$h" ] && echo "helper in work tree, not in install: $h"; done
+```
+
+Name each line in the Done report.
+
 ## Step 3 — Context
 
 - Read `CLAUDE.md` for project context, folder structure, architecture.
@@ -394,27 +422,28 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
   - Open issues: for each path in `$SCAN_ISSUES`, count `*_o_*` and `*_p_*` files.
   - Open plan steps: for each path in `$SCAN_PLANS`, skim `*_o_*.md` and `*_p_*.md`.
   - Current git HEAD (if git repo)
-- **Legacy halt flag (migration offer).** Probe for the flag first; this is read-only:
+- **Legacy leftovers (migration offer).** Probe for the halt flag and for the three inert files `rules/workbench-tracking.md` `## The four classes` names as written by nothing at this version; this is read-only:
 
   ```bash
   [ -f ./fusion-workbench/.guard-state/escalation.json ] && grep -q '"haltActive"[[:space:]]*:[[:space:]]*true' ./fusion-workbench/.guard-state/escalation.json && echo "legacy halt flag present" || echo "no legacy halt flag"
+  for f in escalation.json churn.json state-drift.json; do [ -f "./fusion-workbench/.guard-state/$f" ] && echo "leftover: $f"; done
   ```
 
-  **`no legacy halt flag` — say nothing at all.** An absent file, an unreadable one and `haltActive: false` are the ordinary case, and none of them gets a line in the Setup report.
+  **`no legacy halt flag` and no `leftover:` line — say nothing at all.** An absent file, an unreadable one and `haltActive: false` are the ordinary case, and none of them gets a line in the Setup report.
 
-  **`legacy halt flag present`** — this project is carrying state written by a mechanism fusion no longer ships. **No check fusion still ships can raise a halt**, and no code at this version reads the flag: nothing is blocked by it, and no tool behaves differently whether the file stays or goes. Do not attribute the flag to a particular check — two of them could set it, and which one this project met is not readable from the file. Offer to delete it with one `AskUserQuestion`, in the project's chat language, the same way Step 0g asks its question:
+  **Any `leftover:` line** — this project is carrying state written by a mechanism fusion no longer ships. **No check fusion still ships can raise a halt**, and no code at this version reads the flag or the files: nothing is blocked by any of them, and no tool behaves differently whether they stay or go. Do not attribute the flag to a particular check — two of them could set it, and which one this project met is not readable from the file. Offer to delete them with one `AskUserQuestion`, in the project's chat language, the same way Step 0g asks its question, listing the files found and saying `halt flag present` where it is:
 
-  > This project still carries a halt flag in `fusion-workbench/.guard-state/escalation.json`. The check that set it is no longer part of fusion and no current version reads the flag, so nothing is being blocked. Delete the leftover file?
+  > This project still carries leftover files in `fusion-workbench/.guard-state/` (`escalation.json`, halt flag present; `churn.json`). The mechanisms that wrote them are no longer part of fusion and no current version reads them, so nothing is being blocked. Delete the leftover files?
 
-  Two options. **"Delete it" is the default and the recommended choice:**
+  Two options. **"Delete them" is the default and the recommended choice:**
 
   ```bash
-  rm -f ./fusion-workbench/.guard-state/escalation.json
+  rm -f ./fusion-workbench/.guard-state/escalation.json ./fusion-workbench/.guard-state/churn.json ./fusion-workbench/.guard-state/state-drift.json
   ```
 
-  "Keep it" is the other: nothing is written, Setup continues, and the offer comes back on the next run.
+  "Keep them" is the other: nothing is written, Setup continues, and the offer comes back on the next run.
 
-  **Name the effect exactly, and claim nothing beyond it.** Deleting the file removes a leftover flag. It does not clear a halt, unblock writes or restore write access, because at this version nothing is blocked and nothing was taken away. Report it in the Setup-complete summary in those terms: the flag was deleted and nothing about what is allowed changed, or the flag was left in place.
+  **Name the effect exactly, and claim nothing beyond it.** Deleting the files removes leftovers. It does not clear a halt, unblock writes or restore write access, because at this version nothing is blocked and nothing was taken away. Report it in the Setup-complete summary in those terms: which files were deleted and nothing about what is allowed changed, or the files were left in place.
 - Workbench-domain detection: run the heuristic in `$FUSION_SRC/agents/orchestrator.md` Setup Step 5. Report the detected domain in the Setup-complete summary. The orchestrator passes this domain as the default `domain` parameter to `taskplanner`, `reconciler` and `playmaker` dispatches; the user may override at any individual dispatch.
 - **Circle-count snapshot and hint:** count Circles under `$SCAN_CIRCLES` by the marker on their record, not on the directory. Enumerate the records and read the marker from the name — one pass, no bracket expression, no glob per state:
 
@@ -440,7 +469,7 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
   ```bash
   [ -f ./fusion-workbench/orchestrator-events.jsonl ] || touch ./fusion-workbench/orchestrator-events.jsonl
   ```
-- Append a `session_start` event (one line, appended — never overwrite the file). It carries `<ID>` from Step 0i; `history_file`, the path from Step 4; and `detail`, the session Directive and mode. Their contract, the unresolved-half rule included, is authored in `agents/orchestrator.md` `### 2. Structured Event Log` and not restated here.
+- Append a `session_start` event (one line, appended — never overwrite the file). It carries `<ID>` from Step 0i; `history_file`, the path from Step 4; and `detail`, the session Directive and mode. Their contract, the unresolved-half rule included, is authored in `$FUSION_SRC/agents/orchestrator.md` `### 2. Structured Event Log` and not restated here.
   ```bash
   TS="$(date -u +%Y-%m-%dT%H:%M:%S)"
   echo "{\"ts\":\"${TS}\",\"event\":\"session_start\"<ID>,\"history_file\":\"<the Step 4 path>\",\"detail\":\"<Directive and mode>\"}" >> ./fusion-workbench/orchestrator-events.jsonl
@@ -450,4 +479,4 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0's marker write had to report, whatever Step 0e had to report about the copied assets, the permission line Step 0g produced (written and effective next session, declined, or already in place), which of Step 0h's four outcomes occurred (rule written, naming the `.gitattributes` path; a union driver already applying; another value left alone, named; or no git work tree), and which Step 0i branch ran (nothing to report; one active Circle with no pointer, named, with whether the user activated it here; or `MULTIPLE-ACTIVE`, every record named). (Pre-v4 workbenches are refused at Step 0 toward `/fusion:migrate`.) End with the three usual next moves: name a task, "run the active Circle", or `/fusion:next` for a recommendation.
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0's marker write had to report, whatever Step 0e had to report about the copied assets, the permission line Step 0g produced (written and effective next session, declined, or already in place), which of Step 0h's four outcomes occurred (rule written, naming the `.gitattributes` path; a union driver already applying; another value left alone, named; or no git work tree), and which Step 0i branch ran (nothing to report; one active Circle with no pointer, named, with whether the user activated it here; or `MULTIPLE-ACTIVE`, every record named), every line Step 0j printed, and every helper Step 2 found in the work tree and not in the install. (Pre-v4 workbenches are refused at Step 0 toward `/fusion:migrate`.) End with the three usual next moves: name a task, "run the active Circle", or `/fusion:next` for a recommendation.

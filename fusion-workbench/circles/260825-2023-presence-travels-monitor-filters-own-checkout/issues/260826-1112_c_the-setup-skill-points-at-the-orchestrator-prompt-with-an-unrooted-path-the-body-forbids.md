@@ -53,3 +53,6 @@ Root both citations: `$FUSION_SRC/agents/orchestrator.md` at `:352` and at `:480
 resolution already runs at the top of the body, so nothing else is needed. The reference pin should
 not move: `scanPluginPaths` and `scanHeadingAnchors` both strip a `ROOT_VARS` prefix, so a rooted
 token registers exactly as its bare form does. Measure it rather than assume it.
+
+---
+Resolved: 260827-2020 by coder. Both citations in `skills/setup/SKILL.md` (Step 0i and Step 5) now read `$FUSION_SRC/agents/orchestrator.md`. Measured by single-file revert: the reference pin moves by +4 paths and +2 anchors across the whole edit set landing in this commit (Steps 0j, 2 and 3 added citations); the two rootings themselves register as their bare forms did.

@@ -253,7 +253,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: step 21; the user's approval of its list.
     - Acceptance: `npm test` green; `skills/` free bytes and hook-test free lines each at or above the need step 21 stated; the commit message cites the analysis by path.
 
-5. **Setup repairs a tracked workbench's `.gitignore` and reports the rest** (record 5)
+5. [DONE] **Setup repairs a tracked workbench's `.gitignore` and reports the rest** (record 5)
    - Executor: `coder`.
    - Files: `skills/setup/SKILL.md`, a new Step 0j after 0i (or folded into 0h, which already asks git the neighbouring question).
    - Changes: per the two answered decisions `shared/decisions/260825-1030_a_*`: in a git work tree where `fusion-workbench/` is tracked, ask `git check-ignore -q` per root entry; an excluded class R2 or R3 entry (`orchestrator-events.jsonl`, `.fusion-setup`, and the other R2/R3 entries `rules/workbench-tracking.md` lists) is repaired by a negation line appended to `.gitignore`; a tracked class L entry is reported in the Done report, except `.checkout-id`, which is handled as the second decision's `## Answer` states; an R1 exclusion is never touched. The step asks nothing (Step 0g stays the one question). The reasoning is cited from `rules/workbench-tracking.md`, not restated. Close with `Resolved:`; rename to `_c_`.
@@ -274,7 +274,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: step 22.
     - Acceptance: the record's three criteria: a `_c_` Circle with one `_o_` issue inside is listed as excluded with the count and not moved; a `_c_` Circle with only terminal records inside is selected as before; the cleanup summary names what was left behind. Run against a scratch workbench.
 
-18b. **Setup's leftover offer covers all three inert files, and Step 2 names the helpers the install lacks** (records 18 and 10, options 2)
+18b. [DONE] **Setup's leftover offer covers all three inert files, and Step 2 names the helpers the install lacks** (records 18 and 10, options 2)
     - Executor: `coder`.
     - Files: `skills/setup/SKILL.md` Step 3 (the `escalation.json` offer) and Step 2 (Rules check).
     - Changes: Step 3 probes the three leftovers `rules/workbench-tracking.md` now names and offers them in the one existing question, listing what was found; the `legacy-halt-clearing.test.ts` promise (the offer exists for the halt flag) is unchanged. Step 2 adds one line: in this repository (`bin/fusion-plugin-cwd` exit 0), list `bin/` executables present in the work tree and absent from `$FUSION_PLUGIN_ROOT/bin/`, and name them in the Done report; nothing changes behaviour. Close records 18 and 10 with `Resolved:` (record 10's note cites part (c) of `260810-1544_*` as the deliberately unanswered remainder); rename both to `_c_`.

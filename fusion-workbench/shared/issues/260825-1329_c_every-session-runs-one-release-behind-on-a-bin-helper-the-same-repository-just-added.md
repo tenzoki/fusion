@@ -115,3 +115,6 @@ range, each call site is still `"$FUSION_PLUGIN_ROOT/bin/<name>"`, and part (c) 
 `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` stays
 unanswered, so neither candidate direction in `## Candidate directions, none preferred here` is built.
 The marker stays `_o_`. This note records a sighting, not a closure.
+
+---
+Resolved: 260827-2020 by coder (plan `260827-1756` step 18b, candidate direction 2). `skills/setup/SKILL.md` Step 2 now, when `bin/fusion-plugin-cwd` exits 0, lists every `bin/` executable present in the work tree and absent from `$FUSION_PLUGIN_ROOT/bin/`, and the Done report names each. It measures the window and changes no resolution: whether the work-tree preference reaches helper resolution is part (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` and stays deliberately unanswered.

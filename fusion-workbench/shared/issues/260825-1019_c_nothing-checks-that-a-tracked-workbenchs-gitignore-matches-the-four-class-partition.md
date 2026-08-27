@@ -115,3 +115,6 @@ its own Circle rather than a sixth capability on this spec: the spec is agreed, 
 capability is C4, and this work has a Directive of its own, two decisions already answered for it, and
 no dependency on C4. Adding it here reopens an agreed document to carry work that shares nothing with
 it but a rule file. That is a judgement about where the work goes, not a finding — the user decides.
+
+---
+Resolved: 260827-2020 by coder (plan `260827-1756` step 5). `skills/setup/SKILL.md` gained Step 0j: in a git work tree that tracks `fusion-workbench/`, `git check-ignore -q` per R2/R3 root entry (`orchestrator-events.jsonl`, `.fusion-setup`, `.asset-provenance`) and a negation line appended to the root `.gitignore` for an excluded one; `git ls-files --error-unmatch` per class L entry, reported in the Done report, except `.checkout-id`, which is `git rm --cached` and excluded per `shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`; an R1 exclusion is never touched and the step asks nothing. The rule is cited, not restated.

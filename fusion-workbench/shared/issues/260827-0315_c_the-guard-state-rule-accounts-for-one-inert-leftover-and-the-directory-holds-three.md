@@ -36,3 +36,6 @@ Not in the active Circle's Directive. It surfaced while answering a user questio
 - `rules/workbench-tracking.md` `## The four classes`, the paragraph beginning "`.guard-state/` is not one thing".
 - `shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`, which the same paragraph cites.
 - The wider pattern this belongs to: `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`. This is another count stated in prose that a later HEAD falsified.
+
+---
+Resolved: 260827-2020 by coder (plan `260827-1756` step 18b). `skills/setup/SKILL.md` Step 3 now probes `escalation.json`, `churn.json` and `state-drift.json`, the three `rules/workbench-tracking.md` `## The four classes` names as written by nothing at this version, and offers all found in the one existing question; the halt-flag probe and the three phrases `hooks/lib/__tests__/legacy-halt-clearing.test.ts` pins are unchanged. The rule itself already names all three (step 18a).

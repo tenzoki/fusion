@@ -56,3 +56,6 @@ carrying the one instruction the skill needs ("a SessionStart hook prints `fusio
 into your context; extend `<ID>` with `,"session_id":"<uuid>"`, and no line means no key"). The
 second costs bytes on a bounded surface; the first does not, but only works once the pointer is
 rooted (see the cross-referenced record).
+
+---
+Resolved: 260827-2020 by coder. `skills/setup/SKILL.md` Step 0i says "the identity fragment `<ID>`", states no count, points at both bullets of the rooted `$FUSION_SRC/agents/orchestrator.md` Setup step 2, and carries the one instruction the skill needed: the second bullet extends `<ID>` with the `session_id` a SessionStart hook printed, and no line means no key.
