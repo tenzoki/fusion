@@ -1,6 +1,6 @@
 # Compliance Guard — Claude Code Hook System
 
-The Compliance Guard is fusion's hook layer around Claude Code's tool calls. **It decides nothing.** It sees every write-tool call and every `Bash` call, allows all of them, and exists for two products: a trace of what the write surface did, and a diagnostic when a project's configuration file is broken or names something fusion has retired. The name is historical and kept, because the event vocabulary, the state directory and the monitor's panel all carry it.
+The Compliance Guard is fusion's hook layer around Claude Code's tool calls. **It decides nothing.** It sees every write-tool call, every `Bash` call and every sub-agent dispatch, allows all of them, and exists for three products: a trace of what the write surface did, a diagnostic when a project's configuration file is broken or names something fusion has retired, and — since v10.8.0 — the machine-written rows of the orchestrator's event log (`task_start`/`task_done` per dispatch, the session-marker heartbeat; `bin/fusion-commit-lock with` writes the `commit` row on the same footing). The name is historical and kept, because the event vocabulary, the state directory and the monitor's panel all carry it.
 
 ## Concept
 
@@ -10,6 +10,8 @@ When Claude Code executes a Write, Edit, MultiEdit, or NotebookEdit tool call, t
 2. **The configuration diagnostic** — one `guard_advisory` per problem the configuration loader hands back, on every guarded call, `Bash` included, for as long as the project's file is unreadable or names a retired file or key.
 
 `Bash` calls reach the hook for the diagnostic alone. Nothing about a shell command is inspected, and an innocuous `Bash` call in a correctly configured project writes no guard state at all — no event row, nothing under `.guard-state/`.
+
+A sub-agent dispatch (`Task`/`Agent`) reaches both hooks for one purpose: the machine-written `task_start`/`task_done` pair in `fusion-workbench/orchestrator-events.jsonl`, written only while an orchestrator session is in flight (`agentstate.yaml` exists) and carrying `person`/`checkout`/`session_id` resolved by the hook itself. A dispatch is not a "guarded call": it sees no configuration diagnostic and writes nothing under `.guard-state/`. `hooks/lib/orchestrator-events.ts` carries the schema, the gate and the measured compliance gap that moved these rows off the prompt.
 
 **Nothing here blocks a tool call, and nothing can.** Everything that once did is gone, each on its own measurement, and each is written up below rather than deleted, because a reader arriving from an older tree or from an `events.jsonl` full of `guard_block` rows needs somewhere to land: the [protected-path half](#the-protected-path-half-and-why-it-was-removed) (2026-08-12), the [decision-governed deny and the halt](#the-decision-governed-deny-the-escalation-counter-and-the-halt-were-removed-on-2026-08-16) (2026-08-16), and two policies before those that read the *text* of a shell command — one predicting which files it would write, one predicting whether it would move HEAD — gone with the shell lexer they shared.
 
@@ -51,29 +53,39 @@ Claude Code
   |     |     |   Warns when the workbench root sits ABOVE the working
   |     |     |   directory instead of at it. Silent otherwise.
   |     |     \-- lib/workbench-root.ts   (the same upward walk every hook uses)
-  |     \-- session-id.ts
-  |           Prints "fusion: session_id=<uuid>" on plain stdout, the
-  |           channel that reaches the model -- where the banner above
-  |           uses systemMessage, which reaches only the user. Silent
-  |           when the payload carries no session_id.
+  |     +-- session-id.ts
+  |     |     Prints "fusion: session_id=<uuid>" on plain stdout, the
+  |     |     channel that reaches the model -- where the banner above
+  |     |     uses systemMessage, which reaches only the user. Silent
+  |     |     when the payload carries no session_id. Also exports
+  |     |     FUSION_SESSION_ID to $CLAUDE_ENV_FILE (v10.8.0).
+  |     \-- exports FUSION_PERSON / FUSION_CHECKOUT to $CLAUDE_ENV_FILE
+  |           (one bin/fusion-identity run per session, v10.8.0)
   |
-  +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
+  +-- PreToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash/Task/Agent)
   |     \-- guard.ts
   |           |   Decides NOTHING. Every call is allowed. Bash is
   |           |   inspected for nothing and, in a correctly configured
-  |           |   project, writes no guard state at all.
+  |           |   project, writes no guard state at all. A sub-agent
+  |           |   dispatch (Task/Agent) writes the machine-written
+  |           |   task_start row and nothing else.
   |           +-- <project-root>/fusion.json (the Turn budget; read for
   |           |     the diagnostic, not for a verdict)
-  |           \-- fusion-workbench/.guard-state/events.jsonl (the write
-  |                 trace and the configuration advisories)
+  |           +-- fusion-workbench/.guard-state/events.jsonl (the write
+  |           |     trace and the configuration advisories)
+  |           \-- fusion-workbench/orchestrator-events.jsonl (task_start,
+  |                 via lib/orchestrator-events.ts, orchestrator sessions only)
   |
-  +-- PostToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash)
+  +-- PostToolUse (Write/Edit/MultiEdit/NotebookEdit/Bash/Task/Agent)
         \-- tracker.ts
               |   Measures. Observation only: it cannot block, and it no
-              |   longer raises or counts anything either.
+              |   longer raises or counts anything either. A dispatch
+              |   additionally writes the task_done row, and every call
+              |   refreshes the session-marker heartbeat (rate-limited).
               +-- fusion-workbench/.guard-state/{review-coverage,
               |     staging-drift}.json (one throttle record per measurement)
-              \-- fusion-workbench/.guard-state/events.jsonl (audit log)
+              +-- fusion-workbench/.guard-state/events.jsonl (audit log)
+              \-- fusion-workbench/orchestrator-events.jsonl (task_done)
 ```
 
 ## Getting Started
@@ -93,13 +105,14 @@ The effective hook configuration:
           { "type": "command", "command": "[ -n \"${CLAUDE_PLUGIN_ROOT}\" ] && echo \"export FUSION_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}\" >> \"$CLAUDE_ENV_FILE\" || true" },
           { "type": "command", "command": "printf '%s\\n' '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"systemMessage\":\"Fusion loaded. Orchestrator sessions: run /fusion:setup before any other work.\"}}'" },
           { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-start.js" },
-          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-id.js" }
+          { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-id.js" },
+          { "type": "command", "command": "<the FUSION_PERSON/FUSION_CHECKOUT export — one bin/fusion-identity run, appended to $CLAUDE_ENV_FILE; hooks.json carries the exact command>" }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|Task|Agent",
         "hooks": [
           { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/guard.js" }
         ]
@@ -107,7 +120,7 @@ The effective hook configuration:
     ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|Task|Agent",
         "hooks": [
           { "type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/tracker.js" }
         ]
@@ -181,15 +194,16 @@ last written for.
 | File | Purpose | Committed? |
 |------|---------|------------|
 | `session-start.ts` | SessionStart hook — warns when the session started below the project root. See [Start your session at the project root](#start-your-session-at-the-project-root) | Yes |
-| `session-id.ts` | SessionStart hook — prints `fusion: session_id=<uuid>` on plain stdout, which is the channel that reaches the model; `systemMessage` reaches the user and never it. Both halves were measured against Claude Code 2.1.245 and read from the transcript rather than from the model's testimony about its own context (`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`). It is a fourth SessionStart command rather than a line inside `session-start.ts` because one process writes one stdout and the two need opposite channels: an envelope that carries the warning routes it away from the model and leaves the model's copy empty. A payload with no usable identifier produces no output at all — anything written here becomes model context, so absence is silence rather than a line saying there is nothing to say | Yes |
-| `guard.ts` | PreToolUse hook — allows every call and decides nothing. It writes the `guard_allow` trace row for a write-tool call and the `guard_advisory` rows for whatever the configuration loader could not resolve, and that is the whole of it. Its own header carries the account of each check that used to live here and the measurement that removed it | Yes |
-| `tracker.ts` | PostToolUse hook — runs the staging and review-coverage measurements and hands the model whatever they have to say. Observation only: a PostToolUse hook cannot block, and since 2026-08-12 it raises nothing either. Both measurements fire on a narrow trigger, so since 2026-08-15 an ordinary write at an unremarkable path reaches no measurement here at all — the session-state drift check that held the every-tool-call slot went with the hand-maintained counters it measured | Yes |
+| `session-id.ts` | SessionStart hook — prints `fusion: session_id=<uuid>` on plain stdout, which is the channel that reaches the model; `systemMessage` reaches the user and never it. Both halves were measured against Claude Code 2.1.245 and read from the transcript rather than from the model's testimony about its own context (`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`). It is a fourth SessionStart command rather than a line inside `session-start.ts` because one process writes one stdout and the two need opposite channels: an envelope that carries the warning routes it away from the model and leaves the model's copy empty. A payload with no usable identifier produces no output at all — anything written here becomes model context, so absence is silence rather than a line saying there is nothing to say. Since v10.8.0 it also appends `export FUSION_SESSION_ID=<uuid>` to `$CLAUDE_ENV_FILE` (after the stdout line, charset-gated, fail-open), so the model's shell commands can put the identifier on the event rows they still write | Yes |
+| `guard.ts` | PreToolUse hook — allows every call and decides nothing. It writes the `guard_allow` trace row for a write-tool call, the `guard_advisory` rows for whatever the configuration loader could not resolve, and (v10.8.0) the machine-written `task_start` row for a sub-agent dispatch, and that is the whole of it. Its own header carries the account of each check that used to live here and the measurement that removed it | Yes |
+| `tracker.ts` | PostToolUse hook — runs the staging and review-coverage measurements and hands the model whatever they have to say. Observation only: a PostToolUse hook cannot block, and since 2026-08-12 it raises nothing either. Both measurements fire on a narrow trigger, so since 2026-08-15 an ordinary write at an unremarkable path reaches no measurement here at all — the session-state drift check that held the every-tool-call slot went with the hand-maintained counters it measured. Since v10.8.0 it also writes the machine-written `task_done` row for a sub-agent dispatch and refreshes the session-marker heartbeat (rate-limited on the marker's own mtime); neither is a measurement — they record and say nothing | Yes |
 | `turn-budget.ts` | Prints the orchestrator's Phase-2 Turn budget, merged from the project's `fusion.json` (`{"orchestrator": {"maxTurns": <n>}}`) over the built-in defaults — two layers, and the only setting fusion still resolves. For the orchestrator's Setup, through `bin/fusion-turn-budget`. No hook reads the value — it exists so the budget stops being prose: it was written into `agents/orchestrator.md` in seven places and four spellings, one of which already called it a "default" while nothing could override it (issue `260811-1712`). A value that is not a whole number of 1 or more is dropped, named on stderr, and inherits | Yes |
 | `review-coverage.ts` | Prints the review-coverage tiling for `agents/orchestrator.md` Step 3c and Phase 4. Run through `bin/fusion-review-coverage`. Finding an uncovered range is `verdict=uncovered` on stdout, never a non-zero exit and never a release gate — whether a release may go out over an unreviewed range is an unfiled decision this program does not pre-empt | Yes |
 | `events-query.ts` | Prints the two identity-scoped readings of the orchestrator event log, `presence` and `turns`. Run through `bin/fusion-events`, which hands it the identity; `lib/events-query.ts` is the computation, and this file is what opens the log and reads `session.history_file`. A figure that could not be taken is absent from stdout, named on stderr and reported by the exit code, never rendered as a zero | Yes |
 | `lib/paths.ts` | Case folding for a path comparison — one function, `foldCase`, and one caller, `tracker.ts`, which folds both sides of a containment test so a case-insensitive file system does not decide whether the review-coverage measurement fires. It carried the glob-to-regex compiler and the lexical normalisation under it until 2026-08-16; both existed to answer whether a path falls inside a configured SET of paths, and the guard has no such set left | Yes |
 | `lib/config.ts` | JSON config loader. One setting (`orchestrator.maxTurns`), two layers (the project's `fusion.json`, then `DEFAULTS`), and a diagnostics list that is now its main product: an unreadable file, a wrongly typed value, a retired file at the project root and a retired top-level key inside the one that is read are each named rather than dropped in silence | Yes |
 | `lib/events.ts` | Append-only event logger | Yes |
+| `lib/orchestrator-events.ts` | The machine-written rows of `fusion-workbench/orchestrator-events.jsonl` (v10.8.0): `task_start`/`task_done` per sub-agent dispatch and the session-marker heartbeat, written only while an orchestrator session is in flight (`agentstate.yaml` exists). Identity is env-first (`FUSION_PERSON`/`FUSION_CHECKOUT` from the SessionStart export), else one run of `bin/fusion-identity` resolved relative to this file — never a second implementation of the criterion; an unresolved half is an absent key. Timestamps follow the log's standing convention (UTC, second resolution, no `Z`). Its header carries the measured compliance gap that moved these rows off the prompt (87 % batch-written timestamps, identity on 2.6 % of lines) and the stated residual of the `agentstate.yaml` gate | Yes |
 | `lib/fail-open.ts` | The ordering rule both hooks run on: the verdict goes to stdout first and unguarded, every record of it after, each in its own `try`, so a failed report cannot withdraw the answer it reports. `failOpen` is the error tail of each entry point; `answer` and `bestEffort` carry the same rule to every site inside `main` where an escalation save, an event append or the churn heatmap once stood ahead of the verdict. The heatmap went on 2026-08-15 and the escalation save on 2026-08-16; the rule is what the surviving sites keep, and it is why a report that throws can no longer cost a hook its stdout. The reports append under `.guard-state/`, the likeliest thing to have failed, which is how reporting first turned a deny into `{}` and swallowed the halt sentence | Yes |
 | `lib/guard-state-file.ts` | The read-coerce-write seam under `fusion-workbench/.guard-state/`: resolves one state file, reads it, hands whatever it holds to the caller's coercion, and writes it back atomically. The coercion is a parameter, so absence, unparseable text and a valid JSON value of the wrong shape are one answer and no state module has anywhere to put an `as` cast — the defect that let a `{}` state file throw on the next field access and discard the halt message the same tool call had already produced. The two measurement throttle stores use it and are now the only callers: `protected-snapshot.ts`, the one module that never fitted the seam, went with the protected-path half, `churn.ts` with the heatmap, `state-drift.ts` with the session counters, and `escalation.ts` with the halt on 2026-08-16, taking its own merge with it. Nothing had to come out of this module when any of them went, which is what the seam being a parameter buys | Yes |
 | `lib/git.ts` | The one `git` the measurements run: `execFileSync` in a named root, stderr discarded, every failure — not a repository, an unresolvable ref, a non-zero exit, the timeout — collapsed to `null`, because no caller distinguishes them and each turns "git would not say" into a report that claims nothing rather than into a fault. It existed verbatim in `review-coverage.ts` and `staging-drift.ts`, and inline in the removed `state-drift.ts`, until decision `260811-1146`. The default timeout is a ref read's; `staging-drift.ts` passes a larger one at its `git status` call, which is the only call in the family that walks a working tree | Yes |
