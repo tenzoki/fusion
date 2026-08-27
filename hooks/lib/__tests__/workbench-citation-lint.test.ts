@@ -164,7 +164,7 @@ const LIVE_PLAN_RE = /(?:^|\/)planning\/[0-9]{6}-[0-9]{4}_[op]_[^/]+\.md$/;
  * cases below can put a path to it that this tree does not carry. Two of the
  * three frozen stores are such paths, and so is every live plan — which is the
  * shape of both defects this clause answered: nothing in this repository's tree
- * would have shown either of them.
+ * would have shown either of them. Twin: `skills/archive/SKILL.md` filter 3 enumerates the shipped files whose citations an archive move must keep resolvable (decision 260827-1756).
  */
 export function inCorpus(rel: string): boolean {
   if (FROZEN_PREFIXES.some((p) => rel.startsWith(p))) return false;

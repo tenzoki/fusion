@@ -113,8 +113,9 @@ These are non-negotiable defaults. The user can override them at the `refine` st
    - `_o_` (open) and `_p_` (in-progress) defects, plans and backlog entries — live work. A `_p_` backlog entry is an idea the playmaker has recommended for promotion and the user has not yet acted on, which is as live as an idea gets.
    - `_d_` defects, plans and backlog entries — same reasoning as `_d_` Circles. A deferred backlog entry is the one record in the workbench that can come back: `_d_ → _o_` is a permitted transition for this kind, because a deferred idea is not a recorded commitment. Archiving one would take away the thing the user deferred rather than dropped.
    - `_a_` decisions — answer recorded but not yet realised in code/data. Archiving breaks decision↔implementation traceability. Promote to `_i_` when implementation lands; do not bulk-archive `_a_`.
+   - A terminal Circle whose own issue, plan or decision store holds any marker above (`_o_`/`_p_` issue or plan, `_o_`/`_a_` decision): moving the directory would take those records out of every store their consumers scan. Excluded from every tier, listed with its open count, left in place until the records close or move (Step 3 counts them).
 
-3. **CLAUDE.md citation check:** if a file is referenced from `CLAUDE.md` (by relative path or filename), exclude it from the proposal regardless of tier or marker. CLAUDE.md is auto-loaded into every Claude session — its references must remain resolvable. For a Circle directory, check its directory name and its record.
+3. **Citation check:** a candidate referenced (by relative path or filename) from the citing corpus is excluded regardless of tier or marker, and the report names the citing file. The corpus is the shipped text (`CLAUDE.md`, `README*.md`, `rules/`, `agents/`, `skills/`, `hooks/lib/`, `hooks/*.ts`, `bin/`, `docs/`) plus the project's own `CLAUDE.md`, `rules/` and `.claude/rules/`: every one of them is loaded into sessions or held by a lint, so its references must stay resolvable. A positive enumeration, each entry skipped when absent, so a consuming project collapses to `CLAUDE.md` and its own rules; `hooks/lib/__tests__/workbench-citation-lint.test.ts` names this filter as its twin (decision `260827-1756_*_which-citation-corpus-does-the-archive-safety-filter-protect.md`). For a Circle directory, check its directory name and its record.
 
 4. **Out of tier scope by construction.** The tiers below enumerate what they include; anything they do not name is unreachable from a tier. That covers investigations, consultations, memos and analyses in the shared store — they hold strategic deliverables, briefings and source artefacts, and they are archive-class only with the user's explicit natural-language ask.
 
@@ -128,7 +129,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 | Target | Selection | Reason |
 |---|---|---|
-| `$SCAN_CIRCLES/<dirname>/` | record marker is `_c_`, `_b_` or `_s_` | closed, bounded or superseded Circle — terminal; moves as one directory |
+| `$SCAN_CIRCLES/<dirname>/` | record marker is `_c_`, `_b_` or `_s_`, and `open_in` (Step 3) is 0 | closed, bounded or superseded Circle carrying no open record — terminal; moves as one directory |
 | `$SHARED_ISSUES` | `*_c_*.md` | closed defect, terminal |
 | `$SHARED_PLANS` | `*_c_*.md` | closed plan, terminal |
 | `$SHARED_DECISIONS` | `*_i_*.md` | implemented decision, terminal |
@@ -179,16 +180,23 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
 
    A Circle directory holding no record, or more than one, is a workbench-state fault: report it, exclude it, do not guess which record is real.
 
+   **Count the open records inside each terminal Circle** (filter 2 applied to the directory about to move; the store names are the shared stores' basenames, derived in Step 1). A non-zero count excludes the Circle in every tier mode; keep the count for Step 5. Natural-language mode flags it `[ACTIVE]` instead, so the user can override at `refine`:
+
+   ```bash
+   open_in() { d="$WORKBENCH/$SCAN_CIRCLES/$1"; { find "$d/$(basename "$SHARED_ISSUES")" "$d/$(basename "$SHARED_PLANS")" -maxdepth 1 -name '*_[op]_*.md'; find "$d/$(basename "$SHARED_DECISIONS")" -maxdepth 1 -name '*_[oa]_*.md'; } 2>/dev/null | wc -l | tr -d ' '; }
+   ```
+
    **Shared files (per tier).** Mechanically expand the tier's globs against the `$SHARED_*` values derived in Step 1. For aged buckets, parse the `YYMMDD` (or legacy `MMDD`) date prefix and compare to `today - threshold`.
 
    **Natural-language mode.** Survey what the description suggests; apply safety filters as defaults but flag any active-marker hits with `[ACTIVE]` rather than silently dropping them — the user may want them at `refine`.
 
-4. **CLAUDE.md citation check.**
+4. **Citation check** (filter 3). The corpus is built first, existence-guarded, into the positional parameters; the two globbed kinds come through `find`, so a zsh `nomatch` cannot abort the loop (Step 1's split rule):
    ```bash
-   KEEP=""; for f in <candidates>; do bn="$(basename "$f")"; rel="${f#"$WORKBENCH"/}"; if grep -q -F -e "$bn" -e "$rel" CLAUDE.md 2>/dev/null; then echo "  kept (cited in CLAUDE.md): $rel"; else KEEP="$KEEP$f
+   set --; for c in CLAUDE.md rules .claude/rules "$FUSION_SRC"/CLAUDE.md "$FUSION_SRC"/rules "$FUSION_SRC"/agents "$FUSION_SRC"/skills "$FUSION_SRC"/hooks/lib "$FUSION_SRC"/bin "$FUSION_SRC"/docs $(find "$FUSION_SRC" -maxdepth 1 -name 'README*.md' 2>/dev/null; find "$FUSION_SRC/hooks" -maxdepth 1 -name '*.ts' 2>/dev/null); do [ -e "$c" ] && set -- "$@" "$c"; done
+   KEEP=""; for f in <candidates>; do bn="$(basename "$f")"; rel="${f#"$WORKBENCH"/}"; hit="$(grep -r -l -F -e "$bn" -e "$rel" "$@" 2>/dev/null | head -1)"; if [ -n "$hit" ]; then echo "  kept (cited in $hit): $rel"; else KEEP="$KEEP$f
    "; fi; done
    ```
-   `$KEEP` is the surviving candidate list; a cited file is dropped from the proposal and reported as kept, never silently.
+   `$KEEP` is the surviving candidate list; a cited file is dropped from the proposal and reported as kept, naming the citing file, never silently.
 
 5. **Propose.** Print to the user:
    - Mode (tier-N + threshold, or the natural-language description verbatim).
@@ -196,7 +204,7 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    - Per-bucket counts. Name the Circles individually — a Circle is a large, meaningful unit and the user should see which ones by name, with their Directive line, not just a count. Files may be counted in bulk.
    - Total file count and total bytes.
    - **The guard event log**, on its own line: whether it will be rolled, and its current line count and size. Say nothing when the live log is absent or empty — a skipped roll is not news.
-   - Anything dropped by the safety filters, with a one-line summary.
+   - Anything dropped by the safety filters, with a one-line summary; terminal Circles excluded for open records are named individually with their `open_in` count.
    - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly.
 
 6. **Confirm via `AskUserQuestion` — except inside the full cleanup pipeline.** A tier-1 run performed as Step 4 of a full `/fusion:cleanup` skips this step: that pipeline declares tier-1 safe-by-construction and autonomous, and its Step 6 gate is the run's one stop — two prompts for one wrap-up was the two bodies' contradiction. On a targeted run (`--only archive`, or this skill invoked by name) the user came to archive, so ask — in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`), option labels included:
@@ -279,4 +287,4 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
 - **Never modify content of what's being archived.** Move only; do not rewrite, reformat, or "tidy".
 - **Never truncate the guard event log without archiving it first**, and never add a line or byte ceiling to it — not here, and not in `emitEvent` (`hooks/lib/events.ts`). The roll above is the only sanctioned way the file gets shorter. Any ceiling drops the oldest lines, which are the guard's block, halt and clear events (decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…` under `$SCAN_DECISIONS`).
 - **If the survey returns zero matches:** report that and stop. Do not invent candidates. Do not broaden the search without re-asking.
-- **The CLAUDE.md citation check is a hard exclusion** — do not surface cited files even with `[ACTIVE]` flags. To archive something cited from CLAUDE.md, the user updates CLAUDE.md first.
+- **The citation check is a hard exclusion** — do not surface cited files even with `[ACTIVE]` flags. To archive something the corpus cites, the user updates the citing file first.

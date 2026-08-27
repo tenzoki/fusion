@@ -174,6 +174,8 @@ Read `$FUSION_SRC/skills/archive/SKILL.md` and execute its **tier-1** procedure 
 
 If `--dry-run`, report the tier-1 survey (what would move) without moving anything.
 
+Either way the step's summary names what it left behind: each terminal Circle excluded for open records, with its count, and each candidate kept for a citation, with the citing file. An unattended run says so or nobody learns it.
+
 ## Step 6 — Reconcile CLAUDE.md (the one gate, now last before housekeeping)
 
 Read `$FUSION_SRC/skills/curate/SKILL.md` and execute its procedure inline, end to end: resolve paths with `fusion-paths curate`, dispatch `fusion:curator` with `**Mode:** survey`, read the run file it wrote, run the blast-radius confirmation when that stop fired, **put the gate to the user**, then dispatch the curator a second time with `**Mode:** apply` plus the ledger path and the approved ids. Report as that body's last step says.

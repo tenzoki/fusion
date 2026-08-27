@@ -32,3 +32,9 @@
 ## Recommendation
 
 Option 1, and it is compatible with option 2 as the derivation a reader falls back to. The record family's diagnostic ("the log always keeps up") is restated as an observed frequency in the issue's closure note, not in any shipped text, because no shipped text states it.
+
+## Answer
+
+Option 1, with option 2 as the derivation a reader falls back to. The diagnostic is restated as an observed frequency in the closure note of record 260825-1430 only. No shipped text changes; realised by that closure (plan step 11, commit cb7fa7b).
+
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.

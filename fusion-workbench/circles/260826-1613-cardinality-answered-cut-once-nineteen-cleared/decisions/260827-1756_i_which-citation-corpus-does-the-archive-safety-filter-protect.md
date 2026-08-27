@@ -31,3 +31,11 @@ Filter 3 keeps a candidate when `CLAUDE.md` cites it, on the ground that a loade
 ## Recommendation
 
 Option 1, with the corpus written as a positive enumeration in the skill body and the test's `inCorpus` comment naming the skill as its twin, so a change to either is a change to both by citation. Option 2 is the safer fallback if the enumeration proves too costly on `skills/`.
+
+## Answer
+
+Option 1: the filter's corpus is a positive enumeration in the skill body, the test's `inCorpus` comment names the skill as its twin. Option 2 remains the fallback if the enumeration proves too costly on `skills/`. Realised by plan step 12.
+
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+
+Implemented: `skills/archive/SKILL.md:118` (filter 3) and `skills/archive/SKILL.md:193` (Step 4's grep), commit pending (the orchestrator commits plan step 12 after this task) — the filter's corpus is the positive enumeration; `hooks/lib/__tests__/workbench-citation-lint.test.ts` names the filter as its twin at the `inCorpus` comment. 260827-2022, coder, Kai Stalmann <ks@qantr.com>.

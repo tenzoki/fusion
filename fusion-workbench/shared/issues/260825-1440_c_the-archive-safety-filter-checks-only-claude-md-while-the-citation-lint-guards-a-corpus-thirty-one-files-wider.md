@@ -69,3 +69,5 @@ Skipped the archive step and reported why. `/fusion:cleanup` Step 4 performed no
 
 **Severity:** High. The step runs unattended, its own documentation calls it safe, and the
 damage is 31 broken citations plus a red suite in a repository that had touched none of it.
+
+Resolved: 260827-2022, coder, Kai Stalmann <ks@qantr.com>. Option 1 of decision `260827-1756_*_which-citation-corpus-does-the-archive-safety-filter-protect.md` realised in plan step 12: `skills/archive/SKILL.md:118` (filter 3) and `skills/archive/SKILL.md:193` (the Step 4 grep) run over a positive, existence-guarded enumeration of the shipped corpus plus the project's `CLAUDE.md`, `rules/` and `.claude/rules/`, and the kept-line names the citing file; `hooks/lib/__tests__/workbench-citation-lint.test.ts` names the filter as its twin in the `inCorpus` comment. Checked in this repository: the survey now keeps 18 of 19 terminal Circles, every Circle the table above names among them, each with its citing file; the one uncited Circle (`260822-1921`) is the whole tier-1 selection.

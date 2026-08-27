@@ -260,14 +260,14 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
    - Dependencies: step 22.
    - Acceptance: against a scratch consuming root whose `.gitignore` excludes `orchestrator-events.jsonl`, Setup appends the negation and reports it; against one tracking `portfolio.md`, Setup reports and does not edit; `npx vitest run lib/__tests__/surface-growth-bound.test.ts lib/__tests__/path-literal-lint.test.ts` green.
 
-12. **Widen the archive safety filter to the corpus the citation gate guards** (record 12)
+12. [DONE] **Widen the archive safety filter to the corpus the citation gate guards** (record 12)
     - Executor: `coder`.
     - Files: `skills/archive/SKILL.md` filter 3 and Step 4's grep; one comment line in `hooks/lib/__tests__/workbench-citation-lint.test.ts` naming the skill as the filter's twin (same line count).
     - Changes: per R5's answer. Under the recommendation, filter 3's grep runs over a positive enumeration of the shipped corpus (`CLAUDE.md`, `README*.md`, `rules/`, `agents/`, `skills/`, `hooks/lib/`, `hooks/*.ts`, `bin/`, `docs/`) plus the project's `rules/` and `.claude/rules/`, each guarded by existence so a consuming project without them collapses to `CLAUDE.md` and its own rules. The filter's report line names the citing file. Close with `Resolved:`; rename to `_c_`.
     - Dependencies: step 22; R5 answered.
     - Acceptance: in this repository, `/fusion:cleanup --only archive --dry-run` (tier-1 survey) keeps every Circle the record's table names as cited from outside the workbench, and names the citing file; `npm test` stays green after a real tier-1 run.
 
-20. **Exclude a terminal Circle that carries open records from every tier** (record 20)
+20. [DONE] **Exclude a terminal Circle that carries open records from every tier** (record 20)
     - Executor: `coder`.
     - Files: `skills/archive/SKILL.md` (Tier 1 first row, filter 2, the survey in Step 3, the report in Step 5); `skills/cleanup/SKILL.md` Step 4.
     - Changes: the record's proposed line, verbatim in substance: a terminal Circle is archivable when its own directory holds no `_o_`/`_p_` issue or plan and no `_o_`/`_a_` decision; one that fails is excluded from every tier mode, listed in the survey with its open count, and left in place; natural-language mode may override at `refine`. Cleanup Step 4's summary names the excluded Circles and their counts. Close with `Resolved:`; rename to `_c_`.
