@@ -218,3 +218,16 @@ sequenceDiagram
 ## Portfolio update
 
 Playmaker dispatched after the `_t_`→`_c_` transition: `shared/history/260828-0038-playmaker-orchestrator-phase4.md`. No active, no anticipated Circle; backlog ranking unchanged (recommended to shape: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`). No parent-Grounding-stale note.
+
+## Coherence
+<!-- RECONCILER-OWNED -->
+<!-- second pass: /fusion:cleanup Step 3 after closure, HEAD 36cd574, range e9dc9b2..36cd574; the Phase-3 verdict above stands -->
+
+**Verdict:** coherent
+
+**Edges:**
+- Artifact↔Grounding: 11 claims verified (the `260827-2042_c_*` Resolved lines, each opened at its site) / 0 drift items / 0 open coderev+ontorev issues (`issues/260827-1807_o_*` is analyst-filed and outside the plan's scope, as the closure note says)
+- Artifact↔Directive: commits move toward the stated Directive — `e36a718`, `737cf19`, `e71d03f`, `04847e5`, `6c9d714` close the review's eleven findings, `938b168`, `08cc42a`, `36cd574` are closure and record bookkeeping; none orthogonal
+- Grounding↔Directive: 1 active decision in the Circle (`decisions/260827-1756_a_which-surface-is-authoritative-*`) and 30 `_a_` + 5 `_o_` in `shared/decisions` consistent / 0 potentially conflicting
+
+**Rebalance recommendation:** none

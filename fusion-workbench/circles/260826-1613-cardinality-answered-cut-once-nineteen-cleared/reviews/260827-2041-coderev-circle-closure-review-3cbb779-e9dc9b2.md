@@ -79,3 +79,6 @@ The cut (`440cad5`) removed comment prose and four duplicated cases. The three `
 2. The Rebalance re-entry gap and Step 0j (Medium): before the next release tag; both are shipped behaviour a consuming project meets.
 3. The playmaker cardinality, the Step 0i "both bullets" sentence, the tracking-rule sentence, the review-contract count, the circle-records clause, the stamp citation, the unguarded call (Medium/Low text): one small commit, no bound at risk (`agents/` 11 333 free, `skills/` 834 free, rule core 12 963 free per the 260827-2034 reconciliation; the fixes are net-negative or under 100 bytes each).
 4. The `_d_`-inside-a-terminal-Circle question (Low): the user answers at the closure gate; the text fix follows the answer.
+
+---
+Reconciled 260828-0044: all eleven findings carry `_c_` in this Circle's issue store (`issues/260827-2042_c_*`), each with a `Resolved:` line re-verified against the tree at `36cd574`; the fixes landed in `e36a718`, `737cf19`, `e71d03f`, `04847e5` and `6c9d714`.
