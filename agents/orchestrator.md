@@ -567,14 +567,11 @@ If the count is `0`, **skip the gate cleanly**: emit a single `coherence_review`
 - **Artifact↔Directive** — resolve the Directive source from the first non-empty of: the active plan's `## Directive` section (if a plan is active for this session); else the active spec's `## Directive` section (if shaping was done but no plan); else the orchestrator's session history file's `**Directive:**` line. Whichever source is non-empty first wins. If none is available (defensive — should not happen after Setup writes the history file), emit a `coherence_review` event with `verdict: "skipped-no-directive"` and skip the gate cleanly (proceed to Step 3d). Otherwise read the resolved Directive plus the commit-message summaries from this Turn and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`.
 - **Grounding↔Directive** — glob `*_a_*.md` across **every** path in `$SCAN_DECISIONS` (the underscore marker is inert, so `*_a_*.md` matches the answered decisions literally), filtered to files last-modified within this Turn. One line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. If the stores are absent or no answered decisions changed, emit `0 active decisions touched this Turn`.
 
-**Put it to the user in chat.** Show the three-edge summary first (three lines, one per edge), then ask a single binary question with two numbered options:
+**Classify yourself; speak only on drift (decision `260827-1310` in `$SCAN_DECISIONS`).** From the three edges, set the verdict: `ok` when every edge is unremarkable — reviews none-yet-or-clean, commits moving toward or partially toward the Directive, no conflicting answered decision. Anything else is drift, and **in doubt it is drift**: one question costs a word, a Turn built on a wrong ground costs the Turn.
 
-- **Continue this Turn** (default) — accept the summary and proceed.
-- **Open Rebalance gate** — the user wants to review the drift via the four-option Rebalance gate (see Human Gate Rules).
+**On `ok`: no question.** Show the three edge lines as a status line, emit `coherence_review` with `verdict: "ok"` and the three edge-summary fields, and proceed to Step 3d. A user who says "ask every Turn" gets asked every Turn for the rest of the session; record the request in the history file.
 
-Do NOT split into three questions. The default is Continue — users in flow answer in one word and move on.
-
-**On Continue.** Emit `coherence_review` with `verdict: "ok"` and the three edge-summary fields. Proceed to Step 3d (Circuit Breaker Check).
+**On drift:** show the three lines, then one binary question — **Continue this Turn** (default) or **Open Rebalance gate**. Never three questions. On Continue, emit `verdict: "ok"` with the edge fields (they carry what was shown) and proceed to Step 3d.
 
 **On Rebalance.** Emit `coherence_review` with `verdict: "review-needed"` and the three edge-summary fields. Dispatch the **Rebalance Gate** (see Human Gate Rules below). The Turn exits without emitting `turn_end`. For three of the four choices (Revise Grounding, Revise Directive, Accept Bounded Closure) the loop ends and Phase 3 picks up. **Revise Artifact** is the exception — it re-enters Phase 2 with a new Turn (counter increments), which means it runs Phase 2's Turn-start sequence from step 1, Unresolved-budget check-in included. The per-option mechanics and their bounds: `$FUSION_PLUGIN_ROOT/rules/orchestrator-rebalance.md`, read at the gate.
 

@@ -203,7 +203,7 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    - Anything dropped by the safety filters, with a one-line summary.
    - In natural-language mode, list `[ACTIVE]`-flagged hits explicitly.
 
-6. **Confirm via `AskUserQuestion` — except inside the full cleanup pipeline.** A tier-1 run performed as Step 4 of a full `/fusion:cleanup` skips this step: that pipeline declares tier-1 safe-by-construction and autonomous, and its Step 5 gate is the run's one stop — two prompts for one wrap-up was the two bodies' contradiction. On a targeted run (`--only archive`, or this skill invoked by name) the user came to archive, so ask — in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`), option labels included:
+6. **Confirm via `AskUserQuestion` — except inside the full cleanup pipeline.** A tier-1 run performed as Step 4 of a full `/fusion:cleanup` skips this step: that pipeline declares tier-1 safe-by-construction and autonomous, and its Step 6 gate is the run's one stop — two prompts for one wrap-up was the two bodies' contradiction. On a targeted run (`--only archive`, or this skill invoked by name) the user came to archive, so ask — in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`), option labels included:
 
    - **Archive** — archive exactly this list
    - **Change scope** — drop or add items, change tier, change threshold

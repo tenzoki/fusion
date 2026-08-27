@@ -5,7 +5,7 @@ allowed-tools: [Bash, Read, AskUserQuestion, Agent(fusion:curator)]
 
 # Fusion — curate (reconcile the normative surfaces)
 
-This is the `CLAUDE.md` step of `/fusion:cleanup` (its Step 5), and the procedure below is what that step reads and performs inline. It is not one of fusion's three commands; the caller that runs it holds the gate. Whatever runs it, this body is the user-facing surface for the `curator` agent. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **gate** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
+This is the `CLAUDE.md` step of `/fusion:cleanup` (its Step 6, the pipeline's last before housekeeping), and the procedure below is what that step reads and performs inline. It is not one of fusion's three commands; the caller that runs it holds the gate. Whatever runs it, this body is the user-facing surface for the `curator` agent. It dispatches the agent to **survey**, reads the run file the agent wrote, holds the **gate** itself, and dispatches the agent a second time to **apply** only the entries the user approved.
 
 **This skill writes nothing.** The two dispatches are the only writes in the whole operation, and only the second one reaches a normative surface. Rejecting everything at the gate leaves all three surfaces byte-identical and still leaves the run file on disk.
 
@@ -114,7 +114,7 @@ If an approved entry has no outcome line at all, say which one plainly. That, an
 - The skill **dispatches only `fusion:curator`**, twice at most.
 - The skill **commits nothing**, and neither does the agent. The working-tree edits are left for the user or the orchestrator to commit.
 - Safe to invoke during an active orchestrator session in the sense that it starts nothing: it runs no Turn, activates no Circle and touches no session state. The apply pass does edit files an active session may also be editing, so it is worth running at a quiet point rather than mid-Turn.
-- The caller holds the gate, and there is no path where nothing does. `/fusion:cleanup` Step 5 runs this procedure and puts the ledger to the user itself; an orchestrator that dispatches the curator mid-session proxies the same question (`agents/orchestrator.md`). A caller that cannot ask the user runs the survey pass and stops.
+- The caller holds the gate, and there is no path where nothing does. `/fusion:cleanup` Step 6 runs this procedure and puts the ledger to the user itself; an orchestrator that dispatches the curator mid-session proxies the same question (`agents/orchestrator.md`). A caller that cannot ask the user runs the survey pass and stops.
 
 ## Tone
 

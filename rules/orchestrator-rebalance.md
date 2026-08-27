@@ -6,14 +6,14 @@ Read on the trigger the orchestrator's stub names, never speculatively. Each sec
 
 ### Rebalance Gate
 
-When a Coherence-related condition triggers (the two Coherence rows of the gate-rules table above — per-Turn user opt-in; per-Circle verdict other than `coherent`, or `coherent` with recommendation `state Directive`), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
+When a Coherence-related condition triggers (the two Coherence rows of the gate-rules table above — per-Turn drift finding, decision `260827-1310`; per-Circle verdict other than `coherent`, or `coherent` with recommendation `state Directive`), the gate presents **four explicit options** instead of the standard Proceed/Skip/Defer/Modify:
 
 - **Revise Artifact** — the Artifact is not where it should be; the next move is another execution pass. The orchestrator dispatches `taskplanner` with the Coherence-gate's three-edge summary (or the reconciler's verdict at Phase 3) as the drift context, so taskplanner can return a refreshed queue with a new entry that addresses the drift. Re-enters Phase 2 with the rebuilt queue. Emits `rebalance_artifact` event. (Bounding: see Rebalance bounding below.)
 - **Revise Grounding** — file a new `_o_` decision record, or supersede an existing `_i_` decision (rename `_i_`→`_s_` and create a new `_o_`, per `fusion-workbench-conventions.md`). The basis we built on was wrong; the next move is to record a new question. Emits `rebalance_grounding` event. (Resume mechanics: see Rebalance bounding below.)
 - **Revise Directive** — re-shape: dispatch `shaper` with the current spec + the drift evidence. The destination we set was wrong; the next move is to re-state what we want. Under `state Directive` there is no spec and nothing to drift from: this is the option that states one, and `shaper` is dispatched in user-direct mode with the session's evidence. Emits `rebalance_directive` event. Re-enters Step 0b.1 (Shape). The record stops contradicting its spec without anything being added here: the re-entry runs Step 0b.2, and the field write there carries the pointer literal (**Circle head fields**). **No new mechanism sits at this bullet.** (Bounding: once-per-session — see Rebalance bounding below.)
 - **Accept Bounded Closure** — the Directive is not reachable as stated; what was learned along the way is the Artifact, and the session ends acknowledging that. Emits `bounded_closure_proposed` event. Marks the session for closure with `Status: Bounded Closure: <reason>` in the history file. Terminal — see Rebalance bounding below.
 
-The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn user opt-in) and from Phase 3 (per-Circle reconciler verdict).
+The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn drift finding, decision `260827-1310`) and from Phase 3 (per-Circle reconciler verdict).
 
 #### Rebalance bounding
 
