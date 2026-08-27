@@ -119,7 +119,7 @@ Read `fusion-workbench/agentstate.yaml`. This is the FIRST thing you do after th
 
 **What a resumed session inherits.** On **Continue** this is the *same session*, and every field that says so stays as it is: `session.history_file`, `session.git_head_at_start` and `session.started` are read, not rewritten. Do not create a second history file — a session keeps one for its whole life. Nothing checks that any more: the row that caught a re-pointed `session.history_file` went with the drift check on 2026-08-15, so a dangling anchor is now yours to not create rather than yours to be told about.
 
-It follows that the Turn the step-3 count lands on was **started by the session that is gone**. You re-enter it mid-flight, at the dashboard refresh (Phase 2 step 4), so no second `turn_start` is emitted for it: the one that session emitted is that Turn's only start, and a second would count the Turn twice in the log that is now the only record of the Turn number at all. The check-in (Phase 2 step 1) resumes its ordinary rhythm at the **next** Turn. Before choosing where to re-enter, take the coverage read Step 3c takes, in its `[ -x ]`-guarded form: an `uncovered` count above zero over the interrupted Turn's commits means that Turn's review never ran. Three cases, disjoint and complete, decide where a **Continue** re-enters: the interrupted Turn's `work_queue` still holds an unfinished task → Phase 2 step 4, whatever the count says (Step 3c runs at that Turn's end as usual); no task is unfinished and `uncovered` is 0 → Phase 3; no task is unfinished and `uncovered` is above 0 → Step 3c, then Phase 3.
+It follows that the Turn the step-3 count lands on was **started by the session that is gone**. You re-enter it mid-flight, at the dashboard refresh (Phase 2 step 4), so no second `turn_start` is emitted for it: the one that session emitted is that Turn's only start, and a second would count the Turn twice in the log that is now the only record of the Turn number at all. The check-in (Phase 2 step 1) resumes its ordinary rhythm at the **next** Turn. Two cases, disjoint and complete, decide where a **Continue** re-enters: the interrupted Turn's `work_queue` still holds an unfinished task → Phase 2 step 4; no task is unfinished → Phase 3. An uncovered review range needs no branch of its own here: the Circle's one review pass runs at its closure (Phase 4 step 2a, decision `260827-1120`), whichever session reaches it.
 
 Remaining setup (after step 1 is resolved):
 
@@ -633,9 +633,9 @@ After each completed task:
 
    **You will be trusted to remember it:** the commit count and the per-call measurement that used to catch a skipped write went on 2026-08-15 with the hand-maintained counters. What is left is this step, riding the commit that made it necessary. Nothing will tell you when you skip it.
 
-### Step 3c: Incremental Review
+### Step 3c: Review Coverage Read (per Turn)
 
-After all tasks in the Turn are processed:
+**The review pass runs once per Circle, at its closure — Phase 4 step 2a (decision `260827-1120` in `$SCAN_DECISIONS`); nothing is dispatched here.** Per Turn, only the cheap read that shows where the tiling stands. After all tasks in the Turn are processed:
 
 1. **Determine what changed this Turn.** Use `git diff <turn-start-HEAD>..HEAD --name-only` to list changed files.
 2. **Ask what the previous pass left behind, before you write the dispatch prompt.** Run:
@@ -648,18 +648,12 @@ After all tasks in the Turn are processed:
    fi
    ```
 
-   Two of its lines change what you dispatch, and neither is advisory:
+   Two of its lines decide the eventual Circle review's scope, and neither is advisory when that dispatch is written (Phase 4 step 2a):
 
-   - **`carried=`** — the files the last review declared, in its own `**Not-opened:**` field, that it did not open. **Add every one of them to this dispatch's scope**, on top of the Turn's own changed files. This is an obligation, not a footnote: the review that produced issue `260810-1205` named three files it had not opened because concurrent tasks held them, those were exactly the files two of the seven unreviewed commits changed, and nothing downstream re-queued them. If a file on that list has since been reviewed, the reviewer will say so cheaply; skipping it is what has already cost a release. `carried=(not recorded)` means no review carried the field — say so in the dispatch rather than reading it as `none`.
-   - **`uncovered N`** followed by one `uncovered <hash> <subject>` line per commit — commits in this session's range that no review's declared range contains. **Name those commits in the dispatch prompt.** A commit from an earlier Turn appearing here is a hole in the tiling, not old news.
+   - **`carried=`** — the files the last review declared, in its own `**Not-opened:**` field, that it did not open. Every one of them joins the Circle review's scope; the review that produced issue `260810-1205` named three unopened files, those were exactly the files two of the seven unreviewed commits changed, and nothing downstream re-queued them. `carried=(not recorded)` means no review carried the field — say so in the dispatch rather than reading it as `none`.
+   - **`uncovered N`** followed by one `uncovered <hash> <subject>` line per commit — commits no review's declared range contains. They are the Circle review's commit list. Mid-Circle, a non-zero count is the normal state, not a fault: note it on the dashboard and move on.
 
    The `[ -x ]` guard is the one Setup Step 5's source count carries, for the same reason: `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the whole session, so a helper added between releases is simply absent there and a bare call is exit 127. **`verdict=uncovered` is a line of output, never an exit code and never a blocker** — a Circle may close over an uncovered range; coverage is advisory and the closure note names the gap (decision `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` under `$SCAN_DECISIONS`, option 1).
-
-3. **Route reviews:**
-   - Code files changed (`.go`, `.ts`, `.tsx`, `.py`, `.js`, `.rs`, `.java`, build files) → emit `review_start` event, invoke `coderev` scoped to the changed files **plus the carried `**Not-opened:**` list from step 2**, emit `review_done`
-   - Ontology/data files changed (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → emit `review_start` event, invoke `ontorev` scoped to the changed files **plus the carried list**, emit `review_done`
-   - No changes **and** an empty carried list → skip review. A Turn that changed nothing but inherited unopened files from the previous pass is **not** a skip: dispatch on the carried list alone.
-4. **Collect review findings.** New issues filed by reviewers enter the next Turn's work queue. Update the live dashboard with review results.
 
 **What runs whether or not you read this step.** `hooks/tracker.ts` runs the same measurement when a review file lands under a reviews store, and names the uncovered commits and the carried list back to you in the tool result. It is on that one trigger and not on every tool call, because an uncovered range *mid-Turn* is the normal state and a check that fires on its commonest path is one you learn to read past (issue `260810-0710`). So the reminder arrives at the moment the next dispatch's scope is being decided — but it reports, and only you can widen the scope.
 
@@ -679,7 +673,7 @@ If the count is `0`, **skip the gate cleanly**: emit a single `coherence_review`
 
 **Build the three-edge summary.** Compute these three lines inline; do NOT dispatch another agent.
 
-- **Artifact↔Grounding** — derive from the `coderev` / `ontorev` outputs already on disk for this Turn (Step 3c just wrote them; they are the review files under `$SCAN_REVIEWS`, named `YYMMDD-HHMM-<sender>-<topic>.md`). One line: `OK` or `<N> issues filed`.
+- **Artifact↔Grounding** — derive from the review files this Circle has produced so far (under `$SCAN_REVIEWS`, named `YYMMDD-HHMM-<sender>-<topic>.md`). Before the Circle review has run that is usually none: report `no review yet this Circle`, the normal mid-Circle state, not a fault. One line otherwise: `OK` or `<N> issues filed`.
 - **Artifact↔Directive** — resolve the Directive source from the first non-empty of: the active plan's `## Directive` section (if a plan is active for this session); else the active spec's `## Directive` section (if shaping was done but no plan); else the orchestrator's session history file's `**Directive:**` line. Whichever source is non-empty first wins. If none is available (defensive — should not happen after Setup writes the history file), emit a `coherence_review` event with `verdict: "skipped-no-directive"` and skip the gate cleanly (proceed to Step 3d). Otherwise read the resolved Directive plus the commit-message summaries from this Turn and produce one prose line: `commits move toward / partially toward / orthogonal to / away from the stated Directive`.
 - **Grounding↔Directive** — glob `*_a_*.md` across **every** path in `$SCAN_DECISIONS` (the underscore marker is inert, so `*_a_*.md` matches the answered decisions literally), filtered to files last-modified within this Turn. One line: `<N> active decisions consistent / <M> potentially conflicting (cited)`. If the stores are absent or no answered decisions changed, emit `0 active decisions touched this Turn`.
 
@@ -915,6 +909,13 @@ After reconciler returns and any Rebalance gate is resolved, run this step if a 
    - User chose **Accept Bounded Closure** at the Rebalance gate, OR Bounded Closure was forced by Rebalance bounding (Turn limit reached, Directive-revisions cap exceeded, max-Turns exceeded for Phase-3 Revise-Artifact) → marker becomes `_b_` (Bounded Closure).
    - User chose **Revise Directive** that re-entered Step 0b.1 — this Circle is being re-shaped, NOT closed. Do NOT touch the marker. Skip this Phase-4 sub-step (the existing Rebalance bounding governs).
    - User chose **Revise Grounding** or **Revise Artifact** — these continue the Circle, no marker change. Skip this sub-step.
+
+2a. **Circle review — the one pass this Circle gets (decision `260827-1120`).** Closure paths only (step 2's marker is `_c_` or `_b_`); a continued Circle waits. Take the Step 3c coverage read once more, then route by what the uncovered commits changed, scoped to their files **plus the carried `**Not-opened:**` list**:
+   - Code files → emit `review_start`, invoke `coderev`, emit `review_done`.
+   - Ontology/data files (`.yaml`, `.json`, `.toml`, `.csv` in `ontology/` or `manifests/`) → the same with `ontorev`.
+   - `uncovered 0` **and** an empty carried list → skip cleanly; an uncovered list that is empty only because nothing was committed is the same skip.
+
+   Findings land as issues (the reviewers file them) for the follow-on Circle; the `## Closure note` at step 3 names them and any remaining gap, per `260815-2109` — coverage is advisory and never blocks the closure.
 
 2b. **Read the plan's `## Where this Circle stops` back to the user, before the rename.** Resolve the plan in scope: the Circle record's `**Active spec/plan:**` field, else the plan file this session ran on. Skip any clause that sits wholly inside angle brackets — that is the template's placeholder, whether it stands alone or beside a real clause. If no plan is in scope, if the plan carries no such section, or if no clause is left, do nothing and go to step 3 — no question is put to the user. Otherwise put **all** remaining clauses to the user as **one** question — a numbered list, multi-select for the clauses that do **not** hold (unmarked = holds). One stop, never one per clause.
 
@@ -1296,8 +1297,8 @@ Fields `turn`, `task`, `agent`, and `detail` are included when relevant — omit
 | `gate_response` | User responded to gate | Decision (proceed/skip/defer/modify); the Unresolved-budget check-in writes `Continue`/`Stop here`/`Continue without check-ins`; the Phase-4 stop-conditions gate writes `holds`/`does not hold`, one per clause |
 | `commit` | **Machine-written** (`fusion-commit-lock with`, on a landed HEAD) | Short hash, message summary |
 | `revert` | Files reverted after error | File list, reason |
-| `review_start` | Incremental review begins | Agent (coderev/ontorev), file count |
-| `review_done` | Review complete | Issues filed count |
+| `review_start` | Phase 4 step 2a — the Circle review begins | Agent (coderev/ontorev), file count |
+| `review_done` | The Circle review returned | Issues filed count |
 | `circuit_breaker` | Circuit breaker tripped | Condition name |
 | `turn_end` | End of Turn | Tasks resolved, issues created |
 | `coherence_review` | Phase 2 step 3c-bis (per-Turn Coherence gate fired); also Phase 3 step 3 defensive fallback when the reconciler's `## Coherence` section is malformed | `verdict` (ok \| review-needed \| skipped-no-commits \| skipped-no-directive \| skipped-no-anchor) + three-edge summary lines (Artifact↔Grounding, Artifact↔Directive, Grounding↔Directive). The `bounded-closure-proposed` verdict is NOT emitted here — that case has its own dedicated `bounded_closure_proposed` event row below, fired by the per-Circle reconciler verdict, not by this per-Turn gate. |

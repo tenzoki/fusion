@@ -312,14 +312,13 @@ describe("review-coverage mandate: the consumer", () => {
     ).toEqual([]);
   });
 
-  it("Step 3c widens the dispatch scope rather than merely reporting the gap", () => {
-    const step = orchestrator().split("### Step 3c: Incremental Review")[1]?.split("### Step 3c-bis")[0] ?? "";
+  it("the Circle review widens the dispatch scope rather than merely reporting the gap", () => {
+    const step = orchestrator().split("### Step 3c: Review Coverage Read")[1]?.split("### Step 3c-bis")[0] ?? "";
     expect(step, "the Step 3c section is gone or was renamed").not.toBe("");
     expect(step).toContain("bin/fusion-review-coverage");
     expect(
-      /plus the carried/i.test(step),
-      "Step 3c reads the carried out-of-scope list but never adds it to what it " +
-        "dispatches. A footnote is what the mechanism already had.",
+      /2a\. \*\*Circle review[\s\S]*?plus the carried[\s\S]*?2b\. \*\*Read the plan/.test(orchestrator()),
+      "the one dispatch left (Phase 4 step 2a, decision 260827-1120) never adds the carried out-of-scope list to its scope.",
     ).toBe(true);
   });
 
