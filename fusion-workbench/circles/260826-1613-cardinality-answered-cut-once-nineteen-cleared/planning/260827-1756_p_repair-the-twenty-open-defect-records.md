@@ -186,14 +186,14 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: none. Record 10 closes at step 10b.
     - Acceptance: the paragraph names helpers beside agents and cites the record by starred path.
 
-13a. **Name the fourth retired key in both configuration files** (record 13)
+13a. [DONE] **Name the fourth retired key in both configuration files** (record 13)
     - Executor: `ontocoder`.
     - Files: `fusion.json` `_retired`, `templates/fusion.json` `_retired`, edited identically in one commit.
     - Changes: "the three top-level keys that held it — guard, decisions, escalation" becomes the four, `churn` last, with its retirement date; the source of truth is `RETIRED_TOP_LEVEL_KEYS` in `hooks/lib/config.ts:349`.
     - Dependencies: none; 13b lands in the same commit.
     - Acceptance: `npx vitest run lib/__tests__/config.test.ts` green (the two files stay byte-identical outside `PROJECT_SET_KEYS`); both `_retired` strings name four keys.
 
-13b. **Name the fourth retired key in the orchestrator's Setup Step 2 parenthesis** (record 13)
+13b. [DONE] **Name the fourth retired key in the orchestrator's Setup Step 2 parenthesis** (record 13)
     - Executor: `coder`.
     - Files: `agents/orchestrator.md:114`.
     - Changes: the parenthesis `(guard, decisions, escalation)` gains `churn`. About 8 bytes on `agents/`. The record's "worth considering" pin between the JSON prose and the loader is declined: the hook-test surface has 1 line free, and `shared/decisions/260811-1522_a_*` is the same question, answered and unrealised; say so in the `Resolved:` note. Rename to `_c_`.
@@ -290,7 +290,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 ### Bundle E: decisions realised after the gate
 
-7. **Give a conditional criterion a home and a notation** (record 7)
+7. **Give a conditional criterion a home and a notation** (record 7) [DONE]
    - Executor: `coder`.
    - Files: per R2's answer. Under the recommendation: `agents/shaper.md` spec template (a `## Stops when` section beside the criteria) and `agents/planner.md` (one sentence at `## Where this Circle stops`); the two existing instances, `shared/planning/260822-1136_*` C1 criterion 7 and the C4 plan's clause 7, each gain the inline clause `(condition did not arise: <one clause>)`.
    - Changes: about 400 bytes on `agents/` (14 204 free). Close with `Resolved:`; rename to `_c_`.
