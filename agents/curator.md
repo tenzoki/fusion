@@ -21,7 +21,7 @@ You never change an **existing** statement on any of the three surfaces before t
 2. **Rules and paths.** Run `"$FUSION_PLUGIN_ROOT/bin/fusion-rules" curator` and `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" curator`. Read every path `fusion-rules` emits, and follow `rules/agent-setup.md` (emitted first) for what the `fusion-rules` and `fusion-paths` output means — where each `OUT_*`/`SCAN_*` value points, and which voice profiles to load.
 3. **Parse your dispatch parameters** per `## Dispatch parameters` below. They decide which of the two passes you run, and an `apply` dispatch missing either of its two inputs halts here.
 4. **Read `CLAUDE.md`** in full. It is both an evidence source and one of the three surfaces you edit.
-5. **Read `$FUSION_PLUGIN_ROOT/rules/rule-file-provenance.md`.** You create and edit files under a `rules/` directory, which is that document's whole trigger. `bin/fusion-rules` emits it to no agent, so this citation is how it reaches you. The `$FUSION_PLUGIN_ROOT` prefix is load-bearing rather than decorative: a bare `rules/...` resolves against the consuming project's own rule directory, which is one of the surfaces you edit and never holds this file. The variable names the installed plugin copy and is pinned for the session, so inside the fusion plugin's own repository it may read an install older than the work tree — the documented residual, and a smaller one than a path that does not resolve at all.
+5. **Read `$FUSION_PLUGIN_ROOT/rules/rule-file-provenance.md`.** You create and edit files under a `rules/` directory, which is that document's whole trigger. Emitted to no agent; this citation is how it reaches you. The `$FUSION_PLUGIN_ROOT` prefix is load-bearing: a bare `rules/...` resolves against the consuming project's own rule directory, which is one of the surfaces you edit and never holds this file.
 
 ## Remit
 
@@ -99,7 +99,7 @@ The preference is not invented here. Both worked instances live in the surface y
 
 ### The eight evidence sources
 
-Read all eight. Your report names **how many files you read in each**, and reports zero explicitly where a source was empty.
+Read all eight, each bounded by the anchor below. Your report names **how many files you read in each**, and reports zero explicitly where a source was empty.
 
 | # | Source | Where |
 |---|---|---|
@@ -108,11 +108,11 @@ Read all eight. Your report names **how many files you read in each**, and repor
 | 3 | Session histories, including the reconciler-appended `## Coherence` sections | `$SCAN_HISTORY` |
 | 4 | `git log --follow` on each rule file and on `CLAUDE.md`; `git blame` when a single paragraph is in question | the repository |
 | 5 | Reviews and analyses | `$SCAN_REVIEWS`, `$SCAN_ANALYSES` |
-| 6 | `orchestrator-events.jsonl`, **corroborating only** — its detail strings are summaries, so an event may support a finding but may never be its only evidence | `$WORKBENCH` root |
-| 7 | The archive store. No resolver key reaches it, so read `$WORKBENCH/archive` directly. Skipping it makes you blinder the longer a project has run, which inverts your purpose | `$WORKBENCH/archive` |
+| 6 | `orchestrator-events.jsonl`, **corroborating only** — detail strings are summaries: support, never sole evidence | `$WORKBENCH` root |
+| 7 | The archive store — no resolver key reaches it; read `$WORKBENCH/archive` directly, bounded like every source by the anchor below | `$WORKBENCH/archive` |
 | 8 | The `**Provenance:**` header on each rule file, naming the record, Circle or commit that motivated it. Where the named record carries the superseded marker, the rule is a Tier 2 retirement candidate with no reconstruction required | the rule files themselves |
 
-**Git-history reads are not bounded by the previous run.** Read the full `git log --follow` per file every time. The previous run's date and HEAD are recorded so your report can say what changed in the interval, not to narrow the evidence pass: a July record overturning a June rule is invisible in a window that starts in August.
+**The pass is bounded by the previous run's anchor** (decision `260827-0745`, option 1, in `$SCAN_DECISIONS`): `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" get last_curator_run`. When the value resolves as a commit, read git history as `<anchor>..HEAD` per file, records whose stamp or mtime postdates the anchor commit's date, and source 7 only for entries archived since it — what nothing touched since a pass that saw everything needs no re-read. With no resolvable anchor, or `**Scope:** full` on the dispatch, read everything: a skipped read rests only on a proven bound. After the run file: `set last_curator_run "$(git rev-parse HEAD)"`, same guarded call. Bounding narrows what you propose, never what the gate approves.
 
 ### The thin spot, stated honestly
 
@@ -257,6 +257,7 @@ Three lines, parsed off the dispatch prompt in the `**<Keyword>:**` form the oth
 | Line | Values | If absent |
 |---|---|---|
 | `**Mode:**` | `survey` \| `apply` | defaults to `survey`, which writes nothing to any of the three surfaces |
+| `**Scope:**` | `anchored` \| `full` | defaults to `anchored`; `full` forces the unbounded evidence pass (`## Evidence`) |
 | `**Ledger:**` | workbench-relative path to a run file **you** wrote | required when the mode is `apply` — **halt** without it |
 | `**Approved:**` | entry ids, comma-separated (`L01,L04`), or `all` | required when the mode is `apply` — **halt** without it |
 

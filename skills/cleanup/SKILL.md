@@ -39,6 +39,7 @@ echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 - `--no-push` — run the full pipeline and commit, but never `git push`. Leave the commits local.
 - `--only <steps>` — run only the named steps, in pipeline order. Comma-separated, no spaces.
 - `--skip <steps>` — run the full pipeline except the named steps. Same spelling.
+- `--full` — Step 5 only: the curator's unbounded evidence pass (dispatched as `**Scope:** full`).
 
 The step names, in pipeline order, are the selector's whole vocabulary:
 

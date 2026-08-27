@@ -631,7 +631,7 @@ After each completed task:
 6. The `commit` event is machine-written by `fusion-commit-lock with` (`rules/commit-lock.md` `## The lock writes the commit event`) — emit none yourself.
 7. **Write `agentstate.yaml` before you start the next task** — the task's status to `done` with this commit's hash. The Write Points table already required this at "Task completes"; it is named *here*, inside the commit step, because that is the obligation it rides. The instant step 5 lands, the queue entry is wrong, and it is wrong in the direction that breaks resume: a session killed now would replay a task that is already in history. Since the persisted task list was removed, `work_queue` in this file is the queue's **only** durable copy, so the entry you do not update is a task no resume can tell has been done.
 
-   **You will be trusted to remember it, and until 2026-08-15 you were not.** A commit count sat beside the queue entry in this file, and `hooks/tracker.ts` compared it against `git rev-list --count` after every tool call — so a skipped write came back as a named divergence on the next tool call. Both are gone: the count, because it was a hand-written copy of a number git already holds, and the measurement with it, because that count was the only thing it ever caught. What is left is this step, riding the commit that made it necessary. Nothing will tell you when you skip it.
+   **You will be trusted to remember it:** the commit count and the per-call measurement that used to catch a skipped write went on 2026-08-15 with the hand-maintained counters. What is left is this step, riding the commit that made it necessary. Nothing will tell you when you skip it.
 
 ### Step 3c: Incremental Review
 

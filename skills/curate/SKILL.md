@@ -21,7 +21,7 @@ This is the `CLAUDE.md` step of `/fusion:cleanup` (its Step 5), and the procedur
 
 Hold the emitted values (`WORKBENCH`, `OUT_HISTORY`). `$WORKBENCH` is absolute; every other value is workbench-relative. Never guess a path when the resolver fails — read the exit code, it says whose fault it is (full table in `rules/fusion-workbench-conventions.md` `## Path Resolution` → Exit codes):
 
-- **Exit 1** — no workbench above `pwd`. Halt, telling the user that no fusion workbench was found above the current directory and that `/fusion:setup` has to run once at the project root. Exit cleanly. Do NOT bootstrap a workbench from here — `/fusion:setup` is the single point of workbench creation.
+- **Exit 1** — no workbench above `pwd`. Halt: `/fusion:setup` must run once at the project root. Do NOT bootstrap a workbench from here — setup is the single point of workbench creation.
 
 `CIRCLE` is emitted only when a Circle is active. Nothing in this skill branches on it: the curator resolves its own write targets at its own Setup, and the run file lands in the Circle's store or in the shared one exactly as that resolution decides. Both cases are ordinary.
 
@@ -35,9 +35,7 @@ Prompt body:
 **Mode:** survey
 ```
 
-No other parameter. `survey` is also the agent's default, and passing it anyway is deliberate: the dispatch then says which pass it wants instead of relying on an absence. The agent resolves its own paths at its Setup, reads its eight evidence sources, and writes the run file. It writes to no normative surface in this pass.
-
-The survey may take a while — it reads the whole workbench and the full `git log` per surface file. Wait for it.
+Add `**Scope:** full` on its own line only when the caller passed `--full` — the unbounded evidence pass (decision `260827-0745`). `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
 
 ## Step 3 — Read what the survey returned
 
@@ -120,7 +118,7 @@ If an approved entry has no outcome line at all, say which one plainly. That, an
 
 ## Tone
 
-User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's chat language, resolved per `rules/fusion-workbench-conventions.md` `## Project language` — the `**Language:**` line in `CLAUDE.md`, with the profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Write every prompt and every report in that language. This file is English because a skill body ships to projects of every language; what it tells you to render is not.
+User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's chat language, resolved per `rules/fusion-workbench-conventions.md` `## Project language` — the `**Language:**` line in `CLAUDE.md`, with the profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Write every prompt and every report in that language. This file is English; what it tells you to render is not.
 
 For this skill specifically:
 
