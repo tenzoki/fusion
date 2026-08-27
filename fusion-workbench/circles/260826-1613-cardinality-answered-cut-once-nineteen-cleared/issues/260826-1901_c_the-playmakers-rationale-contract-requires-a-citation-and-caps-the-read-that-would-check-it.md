@@ -93,3 +93,9 @@ repair filed alongside it.
 ## Scope
 
 One shipped file, `agents/playmaker.md`. No other agent carries the read cap.
+
+---
+Reconciliation 260827-1528: still open. `agents/playmaker.md:104` (read cap), `:129` (citation mandate) and `:270` stand as filed; `git log --since="2026-08-26 14:00" -- agents/playmaker.md` returns no commit.
+
+---
+Resolved: 260827-1808, plan `260827-1756_*_repair-the-twenty-open-defect-records.md` Bundle C step 2, uncommitted at the time of writing (the orchestrator commits). `agents/playmaker.md` Step 2 cap now reads "enough to rank, and enough to check what you state" and names the verifying read as inside scope; Step 3's rationale sentence and the `## Output Style` citation bullet each bind a cited path to a file this run opened or to an `inference:` marker per `rules/critical-stance.md` §3. The consultant boundary paragraph at the top of the prompt was deleted and the `## Boundary notes` entry reworded to stand alone. Net +316 bytes on `agents/` (38 953 to 39 269), inside the bound; `hooks/lib/__tests__/fixtures/surface-growth.golden` regenerated.
