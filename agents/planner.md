@@ -130,7 +130,7 @@ You may receive work in two forms:
 
 ## Where this Circle stops
 
-<The conditions under which this Circle is finished, and any precondition a later act — a release, a tag, a closure — must satisfy first. One clause per condition, each answerable yes or no.>
+<The conditions under which this Circle is finished, and any precondition a later act — a release, a tag, a closure — must satisfy first. One clause per condition, each answerable yes or no. A conditional whose antecedent is a measurement this Circle performs is a clause here, never an acceptance criterion; one whose condition never arose is annotated inline, `(condition did not arise: one clause)`.>
 
 ## Data Structures
 

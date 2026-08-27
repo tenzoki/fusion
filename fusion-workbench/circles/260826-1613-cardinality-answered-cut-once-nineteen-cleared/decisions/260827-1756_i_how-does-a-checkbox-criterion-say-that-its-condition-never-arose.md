@@ -29,3 +29,11 @@ A criterion of the form "if the measurement shows X, the Circle stops" cannot be
 ## Recommendation
 
 Option 2, with the inline clause for the two existing instances. The rule goes in the shaper's spec template and the planner's plan template rather than the conventions, because it governs where a conditional is written and both templates are where a conditional gets written.
+
+## Answer
+
+Option 2, with the inline clause `(condition did not arise: <one clause>)` on the two existing instances. The rule goes into the shaper's spec template and the planner's plan template. Realised by plan step 7.
+
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+
+Implemented: plan step 7 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md` (uncommitted at the time of writing; the orchestrator commits after the step) — `## Stops when` in the shaper spec template, one sentence in the planner placeholder, the inline clause on both existing instances, record closed as `_c_`.

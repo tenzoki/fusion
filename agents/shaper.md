@@ -210,6 +210,10 @@ Write to `$OUT_PLAN/YYMMDD-HHMM_o_spec-<topic>.md`:
 
 ### C2: ...
 
+## Stops when
+
+- <A conditional whose antecedent is a measurement this work performs goes here, never in a checkbox list: "if the measurement shows X, the work stops and ...">
+
 ## Constraints
 
 - <Hard constraints from the user, the codebase, or project rules>
