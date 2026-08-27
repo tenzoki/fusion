@@ -72,9 +72,7 @@ describe("hooks.json wiring — guard reaches Bash", () => {
     }
   });
 
-  // v10.8.0: the machine rows exist only if the dispatch tool reaches both
-  // hooks, SubagentStop runs subagent-stop.js, and SessionStart exports the
-  // identity (same shape as the Bash matcher; debt: shared/issues/260827-0410_o_*).
+  // v10.8.0 machine-row wiring (same shape as the Bash matcher; debt: shared/issues/260827-0410_o_*).
   it("routes the dispatch tool to both hooks and exports identity at SessionStart", () => {
     const cfg = loadHooks().hooks as Record<string, HookEntry[]>;
     expect((cfg.SubagentStop ?? []).flatMap((e) => e.hooks).some((h) => h.command.includes("subagent-stop.js")), "SubagentStop wiring").toBe(true);

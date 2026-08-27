@@ -409,12 +409,12 @@ describe("emit_if_exists: a missing always-on rule file is skipped silently (set
     for (const f of [
       "agent-setup.md",
       "fusion-workbench-conventions.md",
-      "user-facing-output.md",
       "critical-stance.md",
     ]) {
       expect(out.some((l) => l.endsWith(`/rules/${f}`)), `emits ${f}`).toBe(true);
     }
     expect(out.some((l) => l.endsWith("/rules/decision-record-examples.md"))).toBe(false);
+    expect(out.some((l) => l.endsWith("/rules/user-facing-output.md"))).toBe(false);
   });
 
   it("holds for a conventions-only agent too", () => {

@@ -4,7 +4,7 @@
 
 Every piece of output the user reads (status reports, gate prompts, `AskUserQuestion` text, session summaries, error messages, skill confirmations, activation banners) must be **self-contained, plain-English, and action-first**. The user should never have to decode jargon, hunt for what they need to do, or scroll back to understand a question.
 
-This rule is loaded for every agent. If you find yourself writing output that violates it, rewrite before sending. The user reads everything you produce. Make it worth reading.
+This rule is emitted to the agents whose output the user reads directly — orchestrator, consultant, playmaker, shaper, editor, curator (gate `260827-0910`; the others carry the chat profile's anti-patterns via `agent-setup.md` `## Voice profiles`). If you are reading this, you hold a user-facing surface: rewrite before sending anything that violates it.
 
 This rule governs short-form output: status reports, gate prompts, `AskUserQuestion` text, session summary headers, dashboard lines, chat replies. Two stylometric profiles layer on top of it, each resolved from its own declaration line in `CLAUDE.md` (the chat profile from `**Language:**`, the writing profile from `**Artifact language:**`; see `rules/fusion-workbench-conventions.md` `## Project language`):
 

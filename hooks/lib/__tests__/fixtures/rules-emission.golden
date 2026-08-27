@@ -14,121 +14,112 @@
 # profiles are out of scope — they vary per consuming project.
 
 [analyst]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
   design-diagrams.md 5285
-  total 99431
+  total 79526
 
 [bugfixer]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
-  total 94146
+  total 74241
 
 [coder]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
-  total 94146
+  total 74241
 
 [coderev]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
   review-contract.md 6364
-  total 100510
+  total 80605
 
 [consultant]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
-  total 94146
+  user-facing-output.md 20535
+  total 94776
 
 [curator]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
-  total 94146
+  user-facing-output.md 20535
+  total 94776
 
 [editor]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
-  total 94146
+  user-facing-output.md 20535
+  total 94776
 
 [ontocoder]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
-  total 94146
+  total 74241
 
 [ontorev]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
   review-contract.md 6364
-  total 100510
+  total 80605
 
 [orchestrator]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
+  user-facing-output.md 20535
   decision-record-examples.md 4527
   circle-records.md 24653
   commit-lock.md 7020
-  total 130346
+  total 130976
 
 [planner]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
   decision-record-examples.md 4527
   design-diagrams.md 5285
-  total 103958
+  total 84053
 
 [playmaker]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
+  user-facing-output.md 20535
   decision-record-examples.md 4527
   circle-records.md 24653
-  total 123326
+  total 123956
 
 [reconciler]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
   decision-record-examples.md 4527
-  total 98673
+  total 78768
 
 [shaper]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
+  user-facing-output.md 20535
   decision-record-examples.md 4527
   design-diagrams.md 5285
   circle-records.md 24653
-  total 128611
+  total 129241
 
 [taskplanner]
-  agent-setup.md 3455
+  agent-setup.md 3904
   fusion-workbench-conventions.md 59807
-  user-facing-output.md 20354
   critical-stance.md 10530
   design-diagrams.md 5285
-  total 99431
+  total 79526

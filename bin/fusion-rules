@@ -251,6 +251,21 @@ case "$AGENT" in
   *)                                                IS_DECISION_TRANSITION_AGENT=0 ;;
 esac
 
+# User-facing-agent flag — the agents whose output the user reads DIRECTLY:
+# the orchestrator (gates, status, chat), consultant (replies), playmaker
+# (briefings), shaper (clarification rounds), editor (deliverable chat) and
+# curator (the gate ledger reports). They carry the full user-facing style
+# contract. The nine that report to the orchestrator do not: measured before
+# the 260827-0910 user gate, they took ~95 % of all dispatches and carried
+# 20 KB of gate-prompt and chat-format doctrine per dispatch without ever
+# holding a gate or a chat. Their replacement is two sentences in
+# agent-setup.md: the chat profile's anti-patterns still bind every line a
+# human may read, and a report's audience is the dispatcher.
+case "$AGENT" in
+  orchestrator|consultant|playmaker|shaper|editor|curator) IS_USER_FACING_AGENT=1 ;;
+  *)                                                       IS_USER_FACING_AGENT=0 ;;
+esac
+
 emit_if_exists() {
   # Explicit return 0 on a missing file: the documented contract is "missing
   # files are skipped silently" (rules/agent-setup.md), and under `set -eu` a
@@ -451,8 +466,15 @@ ARTIFACT_LANG="$(declared_lang 'Artifact language')"
 #    an agent reads "how Setup works" before the detailed conventions.
 emit_if_exists "$PLUGIN_RULES_DIR/agent-setup.md"
 emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
-emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
 emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
+
+# 1b3. The full user-facing style contract goes to the agents the user reads
+#      directly (the IS_USER_FACING_AGENT case above; gate 260827-0910). For
+#      everyone else, agent-setup.md `## Voice profiles` carries the two
+#      sentences that still bind them.
+if [ "$IS_USER_FACING_AGENT" -eq 1 ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
+fi
 
 # 1b2. The decision-marker WORKED EXAMPLES go to the agents that transition or
 #      plan decision transitions: orchestrator, shaper, playmaker, planner,

@@ -179,7 +179,7 @@ describe("enumeration lint: the always-on rule list", () => {
   const list = alwaysOnList();
 
   it("the parser sees the block, agent-setup.md first, every file existing", () => {
-    expect(list.length, "no unindented emit_if_exists lines found — bin/fusion-rules was reshaped; update the parser").toBeGreaterThan(3);
+    expect(list.length, "no unindented emit_if_exists lines found — bin/fusion-rules was reshaped; update the parser").toBeGreaterThanOrEqual(3);
     expect(list[0], "agent-setup.md must be emitted first (the Setup contract is read before the conventions)").toBe("agent-setup.md");
     const missing = list.filter((f) => !existsSync(join(pluginRoot, "rules", f)));
     expect(missing, "always-on rules that do not exist in rules/").toEqual([]);

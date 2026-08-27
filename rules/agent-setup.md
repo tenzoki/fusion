@@ -44,10 +44,17 @@ workbench is fine and must not be sent to check the pointer.
 ## Voice profiles
 
 If `fusion-rules` emitted a `chat-voice-*.yaml` path (it does for every agent), read it and
-apply it to your short-form output (gate prompts, status reports, chat replies) per
-`user-facing-output.md`. If it also emitted a `default-voice-*.yaml` path (prose agents
-only), read it as your long-form writing profile for narrative output. If a profile you
-expect is absent, note the absence (in your history file if you keep one) and proceed.
+**apply its anti-patterns and its terse-and-direct whitelist to every line a human may
+read** — your report to the dispatcher included. If it also emitted a `default-voice-*.yaml`
+path (prose agents only), read it as your long-form writing profile for narrative output.
+If a profile you expect is absent, note the absence (in your history file if you keep one)
+and proceed.
+
+The full user-facing style contract, `user-facing-output.md`, is emitted only to the agents
+whose output the user reads directly (gate 260827-0910). If you did not receive it, your
+report's audience is the orchestrator that dispatched you: lead with the outcome, keep the
+`Verification:` line where your prompt mandates one, and skip decorative structure — a
+report is data for a dispatcher, not a page for a reader.
 
 The two paths may name **different languages**: the chat profile resolves from the
 project's chat language, the writing profile from its artifact language. For a project
