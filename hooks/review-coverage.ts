@@ -57,6 +57,10 @@ import {
   renderUncovered,
 } from "./lib/review-coverage.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
+import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
+
+// The reader may close stdout first; see exitZeroOnStdoutEpipe.
+exitZeroOnStdoutEpipe();
 
 const USAGE = "usage: fusion-review-coverage [--since <ref>] [--head <ref>]";
 

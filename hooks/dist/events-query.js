@@ -40,6 +40,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { countTurns, measurePresence, renderParty, } from "./lib/events-query.js";
 import { readStateFile, stateField } from "./lib/state-file.js";
+import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
+// The reader may close stdout first; see exitZeroOnStdoutEpipe.
+exitZeroOnStdoutEpipe();
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 const USAGE = "usage: fusion-events presence [--days N]\n" + //
     "       fusion-events turns";

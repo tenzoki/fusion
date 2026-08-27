@@ -55,3 +55,6 @@ Whether the family adopts it is worth deciding once, for `bin/fusion-review-cove
 that was measured leaves the other three, which is the shape
 `shared/issues/260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-and-is-not-in-the-open-records-scope.md` was filed about in
 `hooks/lib/fail-open.ts`'s own header: four sites are not four defects, they are one shape.
+
+---
+Resolved: one shape across the four reporting CLIs — `exitZeroOnStdoutEpipe()` in `hooks/lib/fail-open.ts`, registered before the first write in events-query, review-coverage, staging-drift and turn-budget. A reader that closed the pipe gets exit 0 and silence; every other stream error still throws. Re-measured with the record's own repro (`| cat -A`): node exit 0, empty stderr.

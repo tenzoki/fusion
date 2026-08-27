@@ -135,3 +135,17 @@ export declare function answer(tag: string, verdict: () => void, ...reports: Arr
  * @param emit   Optional event-log write. Best effort.
  */
 export declare function failOpen(tag: string, err: unknown, verdict: () => void, emit?: () => void): void;
+/**
+ * Exit 0, silently, when the program's reader closed stdout before a write
+ * landed. One shape across the four reporting CLIs (events-query,
+ * review-coverage, staging-drift, turn-budget): each writes its figures with a
+ * bare `process.stdout.write` and registered no error handler, so a reader
+ * that failed or exited first turned the write into an unhandled `'error'`
+ * event — a node stack trace from a helper whose contract is that stderr
+ * carries reasons and the exit code says which figure was missing (measured:
+ * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_the-event-query-program-dies-with-an-unhandled-epipe-when-its-reader-closes-stdout-first.md`).
+ * A reader that stops listening is not the program's fault and carries no
+ * information the program should re-raise; every other stream error still
+ * throws. Register once, before the first write.
+ */
+export declare function exitZeroOnStdoutEpipe(): void;

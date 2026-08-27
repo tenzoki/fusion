@@ -52,6 +52,10 @@ import {
   renderStagingRow,
 } from "./lib/staging-drift.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
+import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
+
+// The reader may close stdout first; see exitZeroOnStdoutEpipe.
+exitZeroOnStdoutEpipe();
 
 const USAGE = "usage: fusion-staging-drift";
 

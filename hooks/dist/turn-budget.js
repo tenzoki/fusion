@@ -70,6 +70,9 @@
  * unresolved branch handles it.
  */
 import { loadConfig } from "./lib/config.js";
+import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
+// The reader may close stdout first; see exitZeroOnStdoutEpipe.
+exitZeroOnStdoutEpipe();
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 const USAGE = "usage: fusion-turn-budget";
 function main(argv) {

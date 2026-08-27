@@ -46,6 +46,10 @@ import {
   type ReadingIdentity,
 } from "./lib/events-query.js";
 import { readStateFile, stateField } from "./lib/state-file.js";
+import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
+
+// The reader may close stdout first; see exitZeroOnStdoutEpipe.
+exitZeroOnStdoutEpipe();
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 
 const USAGE =
