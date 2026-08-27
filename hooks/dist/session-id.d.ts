@@ -64,5 +64,16 @@
  * Every string fusion's hooks emit is English — see `session-start.ts`
  * `## Why the message is English` for the argument, which is not restated here.
  */
+/** The usable identifier from the payload, or null. */
+export declare function sessionIdValue(payload: unknown): string | null;
 /** The one line this hook may print, or null when there is nothing to say. */
 export declare function sessionIdLine(payload: unknown): string | null;
+/**
+ * Export the identifier into the session's environment (v10.8.0), so the
+ * model's shell commands can put it on the event rows they still write —
+ * `$FUSION_SESSION_ID` beside the `$FUSION_PERSON`/`$FUSION_CHECKOUT` pair the
+ * SessionStart identity command exports. Charset-gated before it touches a
+ * file that is later sourced: an identifier is a UUID, and anything outside
+ * `[A-Za-z0-9_-]` is not one and is not written.
+ */
+export declare function exportSessionId(payload: unknown, envFile: string | undefined): void;

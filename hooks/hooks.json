@@ -18,13 +18,17 @@
           {
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/dist/session-id.js"
+          },
+          {
+            "type": "command",
+            "command": "[ -n \"${CLAUDE_ENV_FILE:-}\" ] && [ -x \"${CLAUDE_PLUGIN_ROOT:-}/bin/fusion-identity\" ] && { id_out=\"$(\"${CLAUDE_PLUGIN_ROOT}/bin/fusion-identity\" 2>/dev/null)\" || true; p=\"$(printf '%s\\n' \"$id_out\" | sed -n 's/^PERSON=//p' | head -1)\"; c=\"$(printf '%s\\n' \"$id_out\" | sed -n 's/^CHECKOUT=//p' | head -1)\"; [ -n \"$p\" ] && printf 'export FUSION_PERSON=%q\\n' \"$p\" >> \"$CLAUDE_ENV_FILE\"; [ -n \"$c\" ] && printf 'export FUSION_CHECKOUT=%q\\n' \"$c\" >> \"$CLAUDE_ENV_FILE\"; } || true"
           }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|Task|Agent",
         "hooks": [
           {
             "type": "command",
@@ -35,7 +39,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash",
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|Task|Agent",
         "hooks": [
           {
             "type": "command",

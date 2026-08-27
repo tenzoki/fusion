@@ -96,6 +96,7 @@
 import { basename, resolve, sep } from "node:path";
 import { emitEvent, setEventSession } from "./lib/events.js";
 import { bestEffort, failOpen } from "./lib/fail-open.js";
+import { emitDispatchEvent, heartbeatSessionMarker, isDispatchTool, } from "./lib/orchestrator-events.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { foldCase } from "./lib/paths.js";
 import { coverageSentence, isMeasuredReview, lastReportedCoverage, measureReviewCoverage, recordReportedCoverage, } from "./lib/review-coverage.js";
@@ -404,6 +405,26 @@ async function main() {
     // two measurements below each emit a row, and so does the top-level handler,
     // which has no `input` in scope. See `lib/events.ts`.
     setEventSession(input.session_id);
+    // The dispatch trace's second half: a machine-written `task_done` row per
+    // completed sub-agent dispatch, while an orchestrator session is in flight.
+    // Not a measurement and not a sibling of the family below — it reports
+    // nothing to the model, it records; the trigger question in the family
+    // header does not apply to a row with no sentence. `guard.ts` writes the
+    // `task_start` half; `lib/orchestrator-events.ts` carries schema and gate.
+    // The two measurements still run after it: a sub-agent may have committed
+    // during its run, which is exactly the HEAD-moved trigger staging drift
+    // reads.
+    if (isDispatchTool(input.tool_name)) {
+        bestEffort("tracker", () => emitDispatchEvent("task_done", input));
+    }
+    // The session-marker heartbeat, on every call and self-rate-limited — see
+    // `lib/orchestrator-events.ts` for the gate and the residual. Not a
+    // measurement either: it says nothing and records only an mtime.
+    bestEffort("tracker", () => {
+        const root = findWorkbenchRoot();
+        if (root !== null)
+            heartbeatSessionMarker(root);
+    });
     // Review coverage, on the narrow trigger of a review file landing. Anchored
     // at the workbench root rather than at cwd, and not stood down in fusion's
     // own repository: that repository is a fusion consumer, and issue

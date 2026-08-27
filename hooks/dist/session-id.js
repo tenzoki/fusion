@@ -64,15 +64,37 @@
  * Every string fusion's hooks emit is English — see `session-start.ts`
  * `## Why the message is English` for the argument, which is not restated here.
  */
+import { appendFileSync } from "node:fs";
 import { failOpen } from "./lib/fail-open.js";
-/** The one line this hook may print, or null when there is nothing to say. */
-export function sessionIdLine(payload) {
+/** The usable identifier from the payload, or null. */
+export function sessionIdValue(payload) {
     if (typeof payload !== "object" || payload === null)
         return null;
     const id = payload.session_id;
     if (typeof id !== "string" || id === "")
         return null;
-    return `fusion: session_id=${id}`;
+    return id;
+}
+/** The one line this hook may print, or null when there is nothing to say. */
+export function sessionIdLine(payload) {
+    const id = sessionIdValue(payload);
+    return id === null ? null : `fusion: session_id=${id}`;
+}
+/**
+ * Export the identifier into the session's environment (v10.8.0), so the
+ * model's shell commands can put it on the event rows they still write —
+ * `$FUSION_SESSION_ID` beside the `$FUSION_PERSON`/`$FUSION_CHECKOUT` pair the
+ * SessionStart identity command exports. Charset-gated before it touches a
+ * file that is later sourced: an identifier is a UUID, and anything outside
+ * `[A-Za-z0-9_-]` is not one and is not written.
+ */
+export function exportSessionId(payload, envFile) {
+    if (!envFile)
+        return;
+    const id = sessionIdValue(payload);
+    if (id === null || !/^[A-Za-z0-9_-]+$/.test(id))
+        return;
+    appendFileSync(envFile, `export FUSION_SESSION_ID=${id}\n`, "utf-8");
 }
 async function main() {
     const chunks = [];
@@ -81,15 +103,25 @@ async function main() {
     const raw = Buffer.concat(chunks).toString("utf-8").trim();
     if (!raw)
         return;
-    let line;
+    let payload;
     try {
-        line = sessionIdLine(JSON.parse(raw));
+        payload = JSON.parse(raw);
     }
     catch {
         return; // Unparseable payload — nothing is known, so nothing is said.
     }
+    const line = sessionIdLine(payload);
     if (line !== null)
         process.stdout.write(line + "\n");
+    // After the stdout line, so an env-file failure can never cost the model
+    // its copy of the identifier.
+    try {
+        exportSessionId(payload, process.env.CLAUDE_ENV_FILE);
+    }
+    catch {
+        // Fail open: an identifier that reached the model but not the env file is
+        // a degraded state the emit templates already tolerate (absent key).
+    }
 }
 main().catch((err) => {
     // Fail open, as the other three hooks do. The verdict here is silence: this

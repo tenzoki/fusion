@@ -71,6 +71,28 @@ describe("hooks.json wiring — guard reaches Bash", () => {
       expect(tools).toContain(tool);
     }
   });
+
+  // v10.8.0: the machine-written task_start/task_done pair exists only if the
+  // dispatch tool reaches both hooks (both names the client has carried), and
+  // the identity export only if SessionStart runs bin/fusion-identity into
+  // $CLAUDE_ENV_FILE. Same regression shape as the Bash matcher above: correct
+  // emission code, unreachable, green suite — unless the wiring is asserted.
+  // The emission's own coverage debt: shared/issues/260827-0410_o_*.
+  it("routes the dispatch tool to both hooks and exports identity at SessionStart", () => {
+    const cfg = loadHooks().hooks;
+    for (const [phase, script] of [["PreToolUse", "guard.js"], ["PostToolUse", "tracker.js"]] as const) {
+      const entry = (cfg[phase] ?? []).find((e) => e.hooks.some((h) => h.command.includes(script)));
+      const tools = (entry?.matcher ?? "").split("|").map((t) => t.trim());
+      expect(tools, `${phase} matcher`).toContain("Task");
+      expect(tools, `${phase} matcher`).toContain("Agent");
+    }
+    const exportCmd = (cfg.SessionStart ?? [])
+      .flatMap((e) => e.hooks.map((h) => h.command))
+      .find((c) => c.includes("fusion-identity"));
+    for (const token of ["FUSION_PERSON", "FUSION_CHECKOUT", "CLAUDE_ENV_FILE"]) {
+      expect(exportCmd, "SessionStart identity export").toContain(token);
+    }
+  });
 });
 
 describe("hooks.json wiring — the working-directory warning runs at SessionStart", () => {

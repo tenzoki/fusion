@@ -2,8 +2,8 @@
  * Compliance Guard — PreToolUse hook for Claude Code.
  *
  * The hook decides nothing. It receives the four write tools
- * (Write/Edit/MultiEdit/NotebookEdit) and Bash, allows every one of them, and
- * exists for two products:
+ * (Write/Edit/MultiEdit/NotebookEdit), Bash, and the sub-agent dispatch tool
+ * (Task/Agent), allows every one of them, and exists for three products:
  *
  *   1. The write trace — one `guard_allow` row per write-tool call in
  *      `.guard-state/events.jsonl`. That log is what the monitor's panel
@@ -12,6 +12,13 @@
  *      config loader hands back, on every guarded call, Bash included, for as
  *      long as the project's configuration file is broken or names a retired
  *      key.
+ *   3. The dispatch trace (v10.8.0) — one machine-written `task_start` row in
+ *      `fusion-workbench/orchestrator-events.jsonl` per sub-agent dispatch,
+ *      while an orchestrator session is in flight. `lib/orchestrator-events.ts`
+ *      carries the schema, the identity resolution and the gate, and why the
+ *      row moved from a prompt mandate to a writer that cannot forget.
+ *      Dispatch calls take this branch alone: they are not "guarded calls", so
+ *      they see no configuration diagnostic and write no guard state.
  *
  * The name is historical and is kept because the event vocabulary, the state
  * directory and the monitor panel all carry it. Nothing here guards anything.
@@ -78,6 +85,7 @@
 import { loadConfig } from "./lib/config.js";
 import { emitEvent, setEventSession } from "./lib/events.js";
 import { answer, bestEffort, failOpen } from "./lib/fail-open.js";
+import { emitDispatchEvent, isDispatchTool } from "./lib/orchestrator-events.js";
 
 /** Hook input from Claude Code (PreToolUse). */
 interface HookInput {
@@ -85,6 +93,10 @@ interface HookInput {
   hook_event_name: string;
   tool_name: string;
   tool_input: Record<string, unknown>;
+  /** Present on tool events in current Claude Code; pairs a dispatch's
+   *  `task_start` with its `task_done` as the row's `task` field. Optional
+   *  because the emission degrades to a task-less row rather than failing. */
+  tool_use_id?: string;
 }
 
 /**
@@ -142,6 +154,15 @@ async function main(): Promise<void> {
   // module variable rather than a parameter, and why an unresolved value makes
   // the key absent instead of empty.
   setEventSession(input.session_id);
+
+  // The dispatch trace: a machine-written `task_start` row per sub-agent
+  // dispatch. Before the config load on purpose — a dispatch is not a "guarded
+  // call", so it sees no advisory and writes no guard state. The verdict goes
+  // first, the row after it, same order as the write trace below.
+  if (isDispatchTool(input.tool_name)) {
+    answer("guard", allow, () => emitDispatchEvent("task_start", input));
+    return;
+  }
 
   // Tools this hook handles: the four write operations, which it traces, plus
   // Bash, which it allows and records nothing about. Bash is still matched here

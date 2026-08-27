@@ -2,8 +2,8 @@
  * Compliance Guard — PreToolUse hook for Claude Code.
  *
  * The hook decides nothing. It receives the four write tools
- * (Write/Edit/MultiEdit/NotebookEdit) and Bash, allows every one of them, and
- * exists for two products:
+ * (Write/Edit/MultiEdit/NotebookEdit), Bash, and the sub-agent dispatch tool
+ * (Task/Agent), allows every one of them, and exists for three products:
  *
  *   1. The write trace — one `guard_allow` row per write-tool call in
  *      `.guard-state/events.jsonl`. That log is what the monitor's panel
@@ -12,6 +12,13 @@
  *      config loader hands back, on every guarded call, Bash included, for as
  *      long as the project's configuration file is broken or names a retired
  *      key.
+ *   3. The dispatch trace (v10.8.0) — one machine-written `task_start` row in
+ *      `fusion-workbench/orchestrator-events.jsonl` per sub-agent dispatch,
+ *      while an orchestrator session is in flight. `lib/orchestrator-events.ts`
+ *      carries the schema, the identity resolution and the gate, and why the
+ *      row moved from a prompt mandate to a writer that cannot forget.
+ *      Dispatch calls take this branch alone: they are not "guarded calls", so
+ *      they see no configuration diagnostic and write no guard state.
  *
  * The name is historical and is kept because the event vocabulary, the state
  * directory and the monitor panel all carry it. Nothing here guards anything.
