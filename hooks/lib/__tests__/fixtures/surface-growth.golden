@@ -21,28 +21,28 @@
   editor.md 13635
   ontocoder.md 13262
   ontorev.md 7098
-  orchestrator.md 162438
+  orchestrator.md 162440
   planner.md 19423
   playmaker.md 38953
   reconciler.md 21036
   shaper.md 28833
   taskplanner.md 14070
-  total 417832
+  total 417834
 
 [skills bytes]
   archive/SKILL.md 25223
   cadence/SKILL.md 17244
   cleanup/SKILL.md 23509
-  commit/SKILL.md 6233
+  commit/SKILL.md 6298
   curate/SKILL.md 12286
   direct/SKILL.md 10613
   help/SKILL.md 17134
-  log-activity/SKILL.md 13656
+  log-activity/SKILL.md 13598
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
   next/SKILL.md 27593
   setup/SKILL.md 48065
-  total 240430
+  total 240437
 
 [hook-tests lines]
   commit-message-path.test.ts 354
@@ -71,7 +71,7 @@
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
-  hooks-wiring.test.ts 129
+  hooks-wiring.test.ts 123
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
   monitor-warnings-panel.test.ts 1136
@@ -85,7 +85,7 @@
   reference-resolution-lint.test.ts 990
   review-coverage-mandate.test.ts 354
   review-coverage.test.ts 818
-  rules-emission-golden.test.ts 1165
+  rules-emission-golden.test.ts 1171
   rules-voice-profile.test.ts 351
   sentence-identifier-containment.test.ts 425
   session-start-subdirectory.test.ts 159

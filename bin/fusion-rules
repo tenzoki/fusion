@@ -33,17 +33,18 @@
 #     instruction. Emitted before fusion-workbench-conventions.md so an agent
 #     reads "how Setup works" before the detailed conventions.
 #   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
-#   - Every agent also reads decision-record-examples.md (shipped by plugin) —
-#     the worked examples of _o_→_a_→_i_, _a_→_s_, _o_→_d_ transitions are
-#     small and useful for any agent that touches decision records.
+#   - The decision-transition agents (orchestrator, shaper, playmaker,
+#     planner, reconciler) additionally read decision-record-examples.md —
+#     the worked marker transitions; audience decided at 260827-0830, when
+#     the always-on floor could no longer carry the tutorial.
 #   - Every agent also reads user-facing-output.md (shipped by plugin) —
 #     mandates action-first ordering, plain-English option labels, no
 #     undefined jargon, and trailing details/references blocks for any
 #     output the user reads.
 #   - Every agent also reads critical-stance.md (shipped by plugin) —
-#     three epistemic norms governing reasoning substance (not formatting):
-#     own your errors instead of praising the user, no premature/half-baked
-#     solutions, and calibrated certainty (verified vs inference vs speculation).
+#     the epistemic norms governing reasoning substance (not formatting):
+#     own your errors, no premature solutions, calibrated certainty, case
+#     splits disjoint-and-complete, cardinalities enumerated or derived.
 #   - Circle-transitioning agents (orchestrator, playmaker, shaper) additionally
 #     read circle-records.md (shipped by plugin) — the Circle state vocabulary,
 #     its worked transitions, the Circle record template and the portfolio
@@ -240,6 +241,14 @@ esac
 case "$AGENT" in
   coderev|ontorev)                IS_REVIEWER_AGENT=1 ;;
   *)                              IS_REVIEWER_AGENT=0 ;;
+esac
+
+# Decision-transition-agent flag — the agents that perform or plan decision
+# marker transitions and therefore read the worked examples (audience decided
+# at the 260827-0830 user gate; the vocabulary itself stays always-on).
+case "$AGENT" in
+  orchestrator|shaper|playmaker|planner|reconciler) IS_DECISION_TRANSITION_AGENT=1 ;;
+  *)                                                IS_DECISION_TRANSITION_AGENT=0 ;;
 esac
 
 emit_if_exists() {
@@ -442,9 +451,22 @@ ARTIFACT_LANG="$(declared_lang 'Artifact language')"
 #    an agent reads "how Setup works" before the detailed conventions.
 emit_if_exists "$PLUGIN_RULES_DIR/agent-setup.md"
 emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
-emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
 emit_if_exists "$PLUGIN_RULES_DIR/user-facing-output.md"
 emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
+
+# 1b2. The decision-marker WORKED EXAMPLES go to the agents that transition or
+#      plan decision transitions: orchestrator, shaper, playmaker, planner,
+#      reconciler (worked transition 1, the _o_ -> _a_ rename, is its act).
+#      Every agent still files records and still carries the marker VOCABULARY
+#      (fusion-workbench-conventions.md, always-on); what leaves the always-on
+#      floor is the tutorial. Audience change decided at the user gate,
+#      `shared/decisions/260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md`,
+#      when critical-stance §5 (decision 260826-1252) had to land on a floor
+#      872 bytes past its hard budget. The pointer at the template site in
+#      fusion-workbench-conventions.md is how every other agent reaches it.
+if [ "$IS_DECISION_TRANSITION_AGENT" -eq 1 ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/decision-record-examples.md"
+fi
 
 # 1a. Every agent receives the project's chat voice profile (short-form output
 #     style: gate prompts, AskUserQuestion text, status reports, chat replies).

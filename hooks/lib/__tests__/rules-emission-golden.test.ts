@@ -536,6 +536,9 @@ const ROLES: Record<string, Role> = {
    */
   "design-diagrams.md": {},
 
+  /** The planner: diagrams plus the worked transitions (gate 260827-0830). */
+  "decision-record-examples.md + design-diagrams.md": {},
+
   /**
    * Ranks Circles without producing design diagrams. Pays 9 302 for the Circle
    * state vocabulary, which it needs because it reads and orders every Circle
@@ -548,7 +551,7 @@ const ROLES: Record<string, Role> = {
    * naming a Circle-scoped `fusion-paths` key, and a proposal has to be written
    * in the same vocabulary as the transition it proposes.
    */
-  "circle-records.md": {},
+  "circle-records.md + decision-record-examples.md": {},
 
   /**
    * Turns a Directive into a Circle record and draws the design diagram that
@@ -558,7 +561,7 @@ const ROLES: Record<string, Role> = {
    * role that would cross the cap first is no longer this one but the
    * orchestrator's, below.
    */
-  "circle-records.md + design-diagrams.md": {},
+  "circle-records.md + decision-record-examples.md + design-diagrams.md": {},
 
   /**
    * NOT OVER THE RELEASE CAP, and the role that would cross it first. It was
@@ -608,13 +611,16 @@ const ROLES: Record<string, Role> = {
    */
   "review-contract.md": {},
 
-  "circle-records.md + commit-lock.md": {
+  /** The reconciler: worked transition 1, `_o_ -> _a_`, is its act (gate 260827-0830). */
+  "decision-record-examples.md": {},
+
+  "circle-records.md + commit-lock.md + decision-record-examples.md": {
     overRelease:
       "circle-records.md (9 302) carries the Circle state vocabulary and the record " +
       "template, and this role is the one that writes the `_a_ -> _t_` and `_t_ -> _c_` " +
       "transitions. commit-lock.md (9 250 at baseline) carries the commit lock this " +
-      "role takes before every commit, which bin/fusion-rules cannot deliver to the " +
-      "two committing skills directly.",
+      "role takes before every commit, which bin/fusion-rules cannot deliver to the two " +
+      "committing skills. decision-record-examples.md (4 291) joined at gate 260827-0830.",
   },
 
 };

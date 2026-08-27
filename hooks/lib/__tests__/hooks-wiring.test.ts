@@ -72,18 +72,12 @@ describe("hooks.json wiring — guard reaches Bash", () => {
     }
   });
 
-  // v10.8.0: the machine-written task_start/task_done pair exists only if the
-  // dispatch tool reaches both hooks (both names the client has carried), the
-  // backgrounded completion only if SubagentStop runs subagent-stop.js, and
-  // the identity export only if SessionStart runs bin/fusion-identity into
-  // $CLAUDE_ENV_FILE. Same regression shape as the Bash matcher above.
-  // The emission's own coverage debt: shared/issues/260827-0410_o_*.
+  // v10.8.0: the machine rows exist only if the dispatch tool reaches both
+  // hooks, SubagentStop runs subagent-stop.js, and SessionStart exports the
+  // identity (same shape as the Bash matcher; debt: shared/issues/260827-0410_o_*).
   it("routes the dispatch tool to both hooks and exports identity at SessionStart", () => {
     const cfg = loadHooks().hooks as Record<string, HookEntry[]>;
-    expect(
-      (cfg.SubagentStop ?? []).flatMap((e) => e.hooks).some((h) => h.command.includes("subagent-stop.js")),
-      "a SubagentStop entry must invoke subagent-stop.js",
-    ).toBe(true);
+    expect((cfg.SubagentStop ?? []).flatMap((e) => e.hooks).some((h) => h.command.includes("subagent-stop.js")), "SubagentStop wiring").toBe(true);
     for (const [phase, script] of [["PreToolUse", "guard.js"], ["PostToolUse", "tracker.js"]] as const) {
       const entry = (cfg[phase] ?? []).find((e) => e.hooks.some((h) => h.command.includes(script)));
       const tools = (entry?.matcher ?? "").split("|").map((t) => t.trim());
