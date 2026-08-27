@@ -1133,4 +1133,21 @@ describe("bin/monitor — the event window", () => {
   it("serves every line when this checkout has no identifier to filter by", async () => {
     expect(await servedEvents(seedEventLog())).toEqual(["ours-implicit", "ours-named", "theirs"]);
   });
+
+  it("parses the whole file, drops a foreign HEAD block, sorts, then takes the newest MAX_EVENTS", async () => {
+    // Three properties a three-line fixture cannot see (issue 260826-0906): the
+    // pre-repair `lines[-MAX_EVENTS:]`-then-parse form, a dropped sort, and a
+    // window taken before the sort each fail here. 5 foreign lines lead, 105 of
+    // ours follow with o50 stamped latest of all; MAX_EVENTS is the default 100.
+    const stamp = (s: number) => `2026-08-25T10:${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    const rows = [
+      ...Array.from({ length: 5 }, (_, i) => ({ ts: `2026-08-25T09:00:0${i}`, event: "turn_start", checkout: "4f21ab90", detail: `theirs-${i}` })),
+      ...Array.from({ length: 105 }, (_, j) => ({ ts: stamp(j === 50 ? 3599 : j), event: "turn_start", checkout: "5e8248d7", detail: `o${j}` })),
+    ];
+    const wb = seedWorkbench([]);
+    writeFileSync(join(wb, "orchestrator-events.jsonl"), rows.map((r) => JSON.stringify(r)).join("\n") + "\n");
+    writeFileSync(join(wb, ".checkout-id"), "5e8248d7\n");
+    const own = (from: number, to: number) => Array.from({ length: to - from + 1 }, (_, k) => `o${from + k}`);
+    expect(await servedEvents(wb)).toEqual([...own(5, 49), ...own(51, 104), "o50"]);
+  });
 });

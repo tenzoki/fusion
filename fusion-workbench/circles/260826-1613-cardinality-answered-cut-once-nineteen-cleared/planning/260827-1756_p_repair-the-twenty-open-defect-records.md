@@ -281,7 +281,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
     - Dependencies: step 22; step 18a.
     - Acceptance: with a `churn.json` in a scratch workbench's `.guard-state/`, Setup's question lists it; in this repository with a helper missing from the install, the Done report names it; `npx vitest run lib/__tests__/legacy-halt-clearing.test.ts` green.
 
-19. **Restore the ten integration cases for the machine-written rows** (record 19)
+19. [IN PROGRESS] (split: commit-lock cases landed; dispatch cases deferred) **Restore the ten integration cases for the machine-written rows** (record 19)
     - Executor: `coder`.
     - Files: a new `hooks/lib/__tests__/orchestrator-events-integration.test.ts` (or the cases folded into `hooks-wiring.test.ts`); `hooks/lib/__tests__/surface-growth-bound.test.ts` gains no baseline entry for the new file (it counts as growth in full, which is the instrument working).
     - Changes: the seven dispatch cases (one row per hook with identity, `task`, `session_id`; the `agentstate.yaml` gate; absent-key-never-empty; heartbeat refresh and its negative) and the three `fusion-commit-lock` cases (row on landed HEAD; no row without HEAD movement; no row outside a session), as the record's `## Acceptance` lists them, against a scratch consuming root. Also star the citation at `hooks-wiring.test.ts:75` (`260827-0410_o_*` → `260827-0410_*_`), same line, so the record's rename does not redden `workbench-citation-lint`. Close with `Resolved:`; rename to `_c_`.
@@ -313,7 +313,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
 
 ### Bookkeeping steps
 
-23. **Re-approve the citation pin once per bundle that moves it**
+23. **Re-approve the citation pin once per bundle that moves it** [DONE]
     - Executor: `coder`, inside steps 16 and 22 (and 12 if the corpus enumeration adds path tokens); no separate commit. Listed so the obligation has a number.
     - Acceptance: every `BASELINE` change carries a note in the established form on the same line.
 

@@ -47,3 +47,5 @@ gaps at once, and it is the shape the issue it repairs was measured in.
 harness. The hook-test surface is at its bound, so this addition falls under
 `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`
 option 2 like the last one: an equal cut in the same Turn, no baseline moved.
+
+Resolved: 2026-08-27 — one generated fixture in `hooks/lib/__tests__/monitor-warnings-panel.test.ts` ("the event window"): five foreign lines at the head, 105 of ours behind them with o50 stamped latest, default MAX_EVENTS 100. The served array is asserted as o5..o49, o51..o104, o50 — the whole-file parse, the sort, and the window-after-sort each fail it separately. +17 lines.

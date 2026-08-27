@@ -1,14 +1,17 @@
 import { describe, it, expect } from "vitest";
-import { realpathSync } from "node:fs";
-import { resolve } from "node:path";
+import { mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import {
   CASE_TIMEOUT,
+  REVIEW_PAYLOAD,
   configFiles,
+  openCoverageGap,
   guardEntry,
   guardStateWritten,
   readEvents,
   runBash,
   runGuard,
+  runToolCall,
   runWrite,
   withProject,
 } from "./helpers/guard-harness.js";
@@ -53,6 +56,10 @@ describe("integration harness — preconditions", () => {
     // step exists to prevent.
     const entry = guardEntry();
     expect(entry.bin.length).toBeGreaterThan(0);
+  });
+
+  it("lets a case's `files` REPLACE a seeded path, not only add beside the seed (issue 260826-0906)", () => {
+    withProject(({ root }) => expect(readFileSync(resolve(root, "notes.txt"), "utf-8")).toBe("mine\n"), { files: { "notes.txt": "mine\n" } });
   });
 
   it("builds a project root that is its own realpath", () => {
@@ -297,6 +304,33 @@ describe("ordinary work is allowed and writes nothing", () => {
           expect(readEvents(root).map((e) => e.event)).toEqual(["guard_advisory"]);
         },
         { files: configFiles("{ not json") },
+      );
+    },
+    CASE_TIMEOUT,
+  );
+});
+
+describe("every guard-log row names the Claude Code session that wrote it", () => {
+  it(
+    "carries the payload's session_id on the guard's row and on the tracker's",
+    () => {
+      // One review landing writes one row from each hook — `guard_allow` from
+      // PreToolUse, `review_coverage` from PostToolUse — through the one seam in
+      // `lib/events.ts`. Asserting both stops a fix that wires only the hook
+      // somebody happened to be reading. The value is the harness's own id.
+      withProject(
+        ({ root }) => {
+          openCoverageGap(root);
+          const abs = resolve(root, REVIEW_PAYLOAD);
+          runToolCall(root, "Write", { file_path: abs }, () => {
+            mkdirSync(dirname(abs), { recursive: true });
+            writeFileSync(abs, "# review\n", "utf-8");
+          });
+          const rows = readEvents(root) as { event: string; session_id?: string }[];
+          expect(rows.map((r) => r.event)).toEqual(["guard_allow", "review_coverage"]);
+          for (const row of rows) expect(row.session_id).toBe("guard-harness");
+        },
+        { git: true },
       );
     },
     CASE_TIMEOUT,

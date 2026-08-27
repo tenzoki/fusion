@@ -57,3 +57,5 @@ Either restore one clause — a `files` entry keyed on a seeded path, asserted t
 which is three lines rather than the 62 the whole block cost — or record in the harness beside
 `:353` that the spread order is load-bearing and unasserted. The second is honest and free; the
 first is cheap and closes it.
+
+Resolved: 2026-08-27 — the replace half is one case in `hooks/lib/__tests__/guard-bash-integration.test.ts` ("integration harness — preconditions"): a `files` entry keyed on the seeded `notes.txt` is read back as the case's content. The header note in `guard-project-config-integration.test.ts` now says add and merge hold by consequence and points at that case for replace. +4 lines.

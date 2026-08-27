@@ -43,7 +43,8 @@
  * `guard_advisory` from a real process — the two groups above still make twice.
  * "Harness capabilities the project-configuration cases depend on" asserted
  * `withProject`'s `files` merge and that the harness never seeds the retired
- * filename; both hold by consequence now. A dropped `files` option would leave
+ * filename; add and merge hold by consequence, and the replace half is one
+ * case in `guard-bash-integration.test.ts`. A dropped `files` option would leave
  * every case below with no configuration and an empty advisory list where each
  * asserts an exact one, and a seeded retired name would add one advisory to
  * every project in the suite, which `guard-bash-integration.test.ts` asserts

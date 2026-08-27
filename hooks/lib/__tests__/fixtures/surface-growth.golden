@@ -21,18 +21,18 @@
   editor.md 13635
   ontocoder.md 13262
   ontorev.md 7094
-  orchestrator.md 148386
+  orchestrator.md 148559
   planner.md 19635
   playmaker.md 41034
-  reconciler.md 21036
+  reconciler.md 21131
   shaper.md 29010
   taskplanner.md 14070
-  total 406242
+  total 406510
 
 [skills bytes]
-  archive/SKILL.md 23714
+  archive/SKILL.md 25965
   cadence/SKILL.md 17185
-  cleanup/SKILL.md 23504
+  cleanup/SKILL.md 23735
   commit/SKILL.md 6298
   curate/SKILL.md 12327
   direct/SKILL.md 10613
@@ -41,8 +41,8 @@
   memo/SKILL.md 12244
   migrate/SKILL.md 26630
   next/SKILL.md 27593
-  setup/SKILL.md 43140
-  total 233738
+  setup/SKILL.md 46525
+  total 239605
 
 [hook-tests lines]
   commit-message-path.test.ts 315
@@ -55,26 +55,26 @@
   domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 168
-  fusion-commit-lock.test.ts 371
+  fusion-commit-lock.test.ts 424
   fusion-count-sources.test.ts 442
-  fusion-events.test.ts 166
+  fusion-events.test.ts 251
   fusion-identity.test.ts 200
   fusion-paths.test.ts 873
   fusion-prose-metric.test.ts 174
   fusion-session-domain.test.ts 80
   glob-nomatch-lint.test.ts 148
-  guard-bash-integration.test.ts 304
-  guard-project-config-integration.test.ts 250
-  guard-state-shape.test.ts 250
+  guard-bash-integration.test.ts 338
+  guard-project-config-integration.test.ts 251
+  guard-state-shape.test.ts 215
   helpers/citation-scan.ts 947
   helpers/growth-bound.ts 123
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
-  hooks-wiring.test.ts 120
+  hooks-wiring.test.ts 143
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
-  monitor-warnings-panel.test.ts 1136
+  monitor-warnings-panel.test.ts 1153
   path-literal-lint.test.ts 338
   paths.test.ts 31
   plan-stopping-section-lint.test.ts 266
@@ -93,4 +93,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 376
-  total 20135
+  total 20313

@@ -19,3 +19,9 @@ Same precedent as C4's closure: five of its fixes shipped needing hook-test line
 ## Acceptance
 
 The suite holds integration cases for: one dispatch row per hook with identity fields, the in-flight gate, the absent-key rule, the heartbeat's refresh and both negatives, and the three `fusion-commit-lock` behaviours — inside the growth bound after a cut.
+
+## 2026-08-27 — split at the gate
+
+Landed: the three `fusion-commit-lock` cases, in `hooks/lib/__tests__/fusion-commit-lock.test.ts` (the describe "the machine-written commit row"): a row on landed HEAD carrying hash, subject, identity and session id; no row when the wrapped command left HEAD where it was; no row outside an orchestrator session. 53 lines against a git fixture in the existing throwaway workbench.
+
+Deferred: the seven dispatch cases (one row per hook with identity, `task`, `session_id`; the `agentstate.yaml` gate; absent-key-never-empty; heartbeat refresh and its negative). Reason: the user split step 19 at the gate — the cut freed 240 hook-test lines and the five C4 records took 130 of them, so the dispatch cases wait for the next cut. The marker stays `_o_` for them.

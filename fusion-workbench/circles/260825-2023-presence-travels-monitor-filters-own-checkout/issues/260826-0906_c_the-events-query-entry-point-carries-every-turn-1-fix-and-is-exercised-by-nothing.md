@@ -81,3 +81,5 @@ runs `main()` at module load and `main()` awaits `process.stdin`, so an importin
 The export buys nothing and is not worth removing — `session-start.ts` exports `subdirectoryWarning`
 on the same terms and its suite spawns too — but the fix direction in that record should not be read
 as having an in-process alternative.
+
+Resolved: 2026-08-27 — five subprocess cases at the foot of `hooks/lib/__tests__/fusion-events.test.ts` drive `hooks/dist/events-query.js` against a throwaway workbench: `turns` at `scope=checkout` (this checkout's turns alone) and at `scope=all-checkouts` (every line, said on stderr); `presence` at identity exit 3 and exit 4, both exit 4 with `other_people` absent and differing stderr; `turns` exit 3 with empty stdout for a missing `agentstate.yaml` and for one without `history_file`; and one run through `bin/fusion-events` pinning the SessionStart-export hand-off. The header's exclusion note now names what is still out: the wrapper running `bin/fusion-identity` itself, and the two-checkout merge. +85 lines.

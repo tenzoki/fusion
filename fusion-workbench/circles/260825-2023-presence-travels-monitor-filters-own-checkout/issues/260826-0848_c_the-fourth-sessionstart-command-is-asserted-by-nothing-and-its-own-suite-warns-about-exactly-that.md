@@ -56,3 +56,5 @@ module with a payload carrying a `session_id` and asserting stdout is the bare l
 as JSON in NO reading — that is the assertion that pins the channel, and it costs one spawn.
 A payload with no `session_id`, and one with an empty one, should both produce empty stdout:
 absent, never empty.
+
+Resolved: 2026-08-27 — two cases in `hooks/lib/__tests__/hooks-wiring.test.ts` (the describe "the session identifier reaches the model at SessionStart"): one `.some()` wiring assertion on `dist/session-id.js`, and one spawn of the built module with three payloads — a session_id gives the bare line (asserted to parse as JSON in no reading), an absent one and an empty one give empty stdout. +23 lines.

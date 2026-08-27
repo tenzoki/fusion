@@ -39,3 +39,5 @@ seam in `hooks/lib/events.ts`, and a case that asserts only the hook somebody ha
 reading is what the block exists to prevent. The move needs the coverage fixture the current
 home supplies (`withGap`, `reviewLands`), so it is a move of the fixture too, or a narrower
 assertion on the guard row alone plus a tracker row asserted where a tracker row already is.
+
+Resolved: 2026-08-27 — the block moved to `hooks/lib/__tests__/guard-bash-integration.test.ts` (the describe "every guard-log row names the Claude Code session that wrote it"), asserting BOTH rows: it builds the coverage gap in place with `openCoverageGap` under `{ git: true }` and lands the review through `runToolCall`, so no fixture moved. The apologising header section and the block left `guard-state-shape.test.ts` (-35 lines); net +1 line on the surface.

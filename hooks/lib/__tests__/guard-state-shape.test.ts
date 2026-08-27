@@ -43,14 +43,6 @@
  * resets repeats its sentence on every tool call, which is the failure the
  * throttle exists to prevent.
  *
- * ## A second subject, and it is here by dispatch rather than by fit
- *
- * The last block asserts that every row landing in `.guard-state/events.jsonl`
- * names the Claude Code session that produced it. That is the shape of the log
- * rather than the shape of a state load, and its natural home is
- * `guard-bash-integration.test.ts`, beside the `tool` and `file` assertions on
- * the same row. It sits here because step 11 of the C4 plan named this file as
- * the one test file it may touch. The move is filed as its own defect.
  */
 
 import { describe, expect, it } from "vitest";
@@ -216,33 +208,6 @@ describe("a well-formed state file is carried forward, not emptied", () => {
         // review landing is the failure the throttle exists to prevent.
         expect(reviewLands(root)).toBe("");
         expect(readState(root, THROTTLE_FILE)?.reported).toBe(first);
-      });
-    },
-    CASE_TIMEOUT,
-  );
-});
-
-/* ------------------------------------------------------------------ *
- * The session identifier on the rows themselves
- * ------------------------------------------------------------------ */
-
-describe("every guard-log row names the Claude Code session that wrote it", () => {
-  it(
-    "carries the payload's session_id on the guard's row and on the tracker's",
-    () => {
-      // One tool call writes one row from each hook — `guard_allow` from the
-      // PreToolUse side, `review_coverage` from the PostToolUse side — and the
-      // two go through one seam in `lib/events.ts`. Asserting both is what stops
-      // a fix that wires only the hook somebody happened to be reading.
-      //
-      // The value is the harness's own `session_id`; Claude Code sends a UUID,
-      // measured non-empty on both hooks in the analysis this step acted on.
-      withGap("{}", ({ root }) => {
-        expectTheCoverageSentence(reviewLands(root));
-
-        const rows = readEvents(root) as { event: string; session_id?: string }[];
-        expect(rows.map((r) => r.event)).toEqual(["guard_allow", "review_coverage"]);
-        for (const row of rows) expect(row.session_id).toBe("guard-harness");
       });
     },
     CASE_TIMEOUT,

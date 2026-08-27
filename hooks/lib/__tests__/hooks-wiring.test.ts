@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -72,7 +73,7 @@ describe("hooks.json wiring — guard reaches Bash", () => {
     }
   });
 
-  it("routes the dispatch tool to both hooks and exports identity at SessionStart (v10.8.0 machine rows; debt: shared/issues/260827-0410_o_*)", () => {
+  it("routes the dispatch tool to both hooks and exports identity at SessionStart (v10.8.0 machine rows; debt: shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md)", () => {
     const cfg = loadHooks().hooks as Record<string, HookEntry[]>;
     expect((cfg.SubagentStop ?? []).flatMap((e) => e.hooks).some((h) => h.command.includes("subagent-stop.js")), "SubagentStop wiring").toBe(true);
     for (const [phase, script] of [["PreToolUse", "guard.js"], ["PostToolUse", "tracker.js"]] as const) {
@@ -116,5 +117,27 @@ describe("hooks.json wiring — the working-directory warning runs at SessionSta
     );
     expect(commands.some((c) => c.includes("FUSION_PLUGIN_ROOT"))).toBe(true);
     expect(commands.some((c) => c.includes("Fusion loaded"))).toBe(true);
+  });
+});
+
+describe("hooks.json wiring — the session identifier reaches the model at SessionStart", () => {
+  // `session-id.ts` runs `main()` at load and awaits stdin, so there is no
+  // in-process form: the channel is asserted by spawning the built module.
+  // The line must be BARE stdout — a `hookSpecificOutput` envelope would exit 0,
+  // log as a successful hook and put nothing in front of the model.
+  it("invokes dist/session-id.js from a SessionStart entry", () => {
+    const commands = (loadHooks().hooks.SessionStart ?? []).flatMap((e) => e.hooks.map((h) => h.command));
+    expect(commands.some((c) => c.includes("dist/session-id.js")), "SessionStart must run session-id.js").toBe(true);
+  });
+
+  it("prints the bare line for a session_id and nothing when it is absent or empty", () => {
+    const entry = resolve(dirname(fileURLToPath(import.meta.url)), "../../dist/session-id.js");
+    const out = (payload: object) =>
+      spawnSync(process.execPath, [entry], { input: JSON.stringify(payload), encoding: "utf-8" }).stdout;
+    const line = out({ session_id: "102df4a8-09be-4019-8a6b-adaec6e95bc5" });
+    expect(line).toBe("fusion: session_id=102df4a8-09be-4019-8a6b-adaec6e95bc5\n");
+    expect(() => JSON.parse(line)).toThrow();
+    expect(out({})).toBe("");
+    expect(out({ session_id: "" })).toBe("");
   });
 });

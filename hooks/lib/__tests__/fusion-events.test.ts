@@ -1,4 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterAll } from "vitest";
+import { spawnSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pluginRoot } from "./helpers/citation-scan.js";
 import { measurePresence, countTurns } from "../events-query.js";
 import type { Party, PresenceResult, ReadingIdentity } from "../events-query.js";
 
@@ -10,10 +15,11 @@ import type { Party, PresenceResult, ReadingIdentity } from "../events-query.js"
 // plan's `## Data Structures` table is a string and an expectation: no git, no
 // temporary workbench, no subprocess, no clock.
 //
-// NOT COVERED HERE, deliberately: the wrapper `bin/fusion-events` mapping
-// `bin/fusion-identity`'s exits onto its own 3 and 4, which needs a subprocess;
-// and two real checkouts merging end to end, a manual pass per the plan's
-// `## Testing Strategy`.
+// THE ENTRY POINT `hooks/events-query.ts` is exercised at the foot of this file
+// by subprocess (issue 260826-0906): the `scope=` key, the identity vocabulary's
+// exit-3/exit-4 split, the missing-state exits, and the wrapper's env hand-off.
+// NOT COVERED, deliberately: the wrapper running `bin/fusion-identity` itself,
+// and two real checkouts merging end to end (a manual pass per the plan).
 // ---------------------------------------------------------------------------
 
 const ME = "5e8248d7";
@@ -162,5 +168,84 @@ describe("countTurns scopes the count to one session inside this checkout", () =
   it("says the anchor carried no timestamp rather than counting from a moment it does not know", () => {
     const r = countTurns(log(S({}), T({ ts: "2026-08-25T09:10:00" })), HF, ME);
     expect(r).toMatchObject({ ok: false, why: "anchor-without-timestamp" });
+  });
+});
+
+/* --- The entry point, as `bin/fusion-events` runs it ----------------------- */
+
+const entry = join(pluginRoot, "hooks", "dist", "events-query.js");
+const wrapper = join(pluginRoot, "bin", "fusion-events");
+const tmpRoots: string[] = [];
+afterAll(() => { for (const d of tmpRoots) rmSync(d, { recursive: true, force: true }); });
+
+/** One turn of ours and one of another checkout's, after our session_start. */
+const LOG = log(
+  start({ person: KAI, checkout: ME, history_file: "h.md" }),
+  { event: "turn_start", ts: "2026-08-25T10:00:00", checkout: ME },
+  { event: "turn_start", ts: "2026-08-25T10:30:00", checkout: "4f21ab90" },
+);
+const STATE = "session:\n  history_file: h.md\n";
+
+function workbench(state: string | null = STATE): string {
+  const dir = mkdtempSync(join(tmpdir(), "fusion-events-"));
+  tmpRoots.push(dir);
+  mkdirSync(join(dir, "fusion-workbench"));
+  writeFileSync(join(dir, "fusion-workbench", ".fusion-setup"), "{}\n");
+  writeFileSync(join(dir, "fusion-workbench", "orchestrator-events.jsonl"), LOG);
+  if (state !== null) writeFileSync(join(dir, "fusion-workbench", "agentstate.yaml"), state);
+  return dir;
+}
+
+/** Identity as the wrapper hands it over; an omitted half is an unset variable. */
+const ident = (exit: number, o: { person?: string; checkout?: string } = {}) => ({
+  FUSION_EVENTS_IDENTITY_EXIT: String(exit),
+  FUSION_EVENTS_PERSON: o.person ?? "",
+  FUSION_EVENTS_CHECKOUT: o.checkout ?? "",
+});
+
+function cli(dir: string, env: Record<string, string>, bin = process.execPath, ...args: string[]) {
+  const argv = bin === process.execPath ? [entry, ...args] : args;
+  const r = spawnSync(bin, argv, { cwd: dir, encoding: "utf-8", env: { ...process.env, FUSION_PERSON: "", FUSION_CHECKOUT: "", ...env } });
+  return { status: r.status, stdout: r.stdout, stderr: r.stderr };
+}
+
+describe("the entry point: scope=, the identity split, and the missing-state exits", () => {
+  it("turns prints scope=checkout and counts this checkout's turns alone", () => {
+    const r = cli(workbench(), ident(0, { person: KAI, checkout: ME }), process.execPath, "turns");
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.stdout).toBe("turns=1\nhistory_file=h.md\nscope=checkout\n");
+  });
+
+  it("turns with no checkout counts every line, says so on stderr, and stdout carries scope=all-checkouts", () => {
+    const r = cli(workbench(), ident(3), process.execPath, "turns");
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.stdout).toBe("turns=2\nhistory_file=h.md\nscope=all-checkouts\n");
+    expect(r.stderr).toContain("scope=all-checkouts");
+  });
+
+  it("presence at identity exit 3 and exit 4 both exit 4 with other_people absent, and their stderr differs", () => {
+    const unread = cli(workbench(), ident(3, { checkout: ME }), process.execPath, "presence");
+    const unowed = cli(workbench(), ident(4, { checkout: ME }), process.execPath, "presence");
+    for (const r of [unread, unowed]) {
+      expect(r.status).toBe(4);
+      expect(r.stdout).not.toContain("other_people=");
+    }
+    expect(unread.stderr).toContain("could not be read");
+    expect(unowed.stderr).toContain("not a git work tree");
+    expect(unread.stderr).not.toBe(unowed.stderr);
+  });
+
+  it("turns exits 3 with empty stdout when agentstate.yaml is missing or names no history_file", () => {
+    for (const state of [null, "session:\n"]) {
+      const r = cli(workbench(state), ident(0, { person: KAI, checkout: ME }), process.execPath, "turns");
+      expect(r.status).toBe(3);
+      expect(r.stdout).toBe("");
+    }
+  });
+
+  it("bin/fusion-events hands the SessionStart identity export through untouched", () => {
+    const r = cli(workbench(), { FUSION_PERSON: KAI, FUSION_CHECKOUT: ME }, wrapper, "turns");
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.stdout).toBe("turns=1\nhistory_file=h.md\nscope=checkout\n");
   });
 });

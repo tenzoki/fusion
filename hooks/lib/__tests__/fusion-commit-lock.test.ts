@@ -42,11 +42,12 @@ interface RunResult {
  *  run that then exits 0. A blocking `acquire` never goes through here: it uses
  *  `spawnAcquire` and `until` below, which watch what the script says instead
  *  of how long it has been saying nothing. */
-function run(args: string[]): RunResult {
+function run(args: string[], env: Record<string, string> = {}): RunResult {
   const r = spawnSync(script, args, {
     cwd: projectRoot,
     encoding: "utf-8",
     stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, ...env },
   });
   return {
     status: r.status ?? -1,
@@ -367,5 +368,57 @@ describe("fusion-commit-lock: stale holder file (the pre-existing reap path)", (
     } finally {
       blocked.proc.kill("SIGTERM");
     }
+  });
+});
+
+/* ------------------------------------------------------------------ *
+ * The machine-written `commit` row (v10.8.0; `rules/commit-lock.md`
+ * `## The lock writes the commit event`). Three behaviours, one each: a row
+ * lands only when HEAD moved under `with` AND an orchestrator session is in
+ * flight (`agentstate.yaml`); identity and session id come from the
+ * SessionStart exports. The dispatch-side rows (`task_start`/`task_done`)
+ * are still owed — `shared/issues/260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md`.
+ * ------------------------------------------------------------------ */
+
+const EVENT_LOG = "fusion-workbench/orchestrator-events.jsonl";
+/** Global and system git config cut off, so a signing hook here never runs. */
+const GIT_ENV = { GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null", GIT_CONFIG_NOSYSTEM: "1" };
+const IDENTITY_ENV = { ...GIT_ENV, FUSION_PERSON: "Test Person <t@example.com>", FUSION_CHECKOUT: "5e8248d7", FUSION_SESSION_ID: "sid-1" };
+
+function gitRepo(): void {
+  const env = { ...process.env, ...GIT_ENV };
+  spawnSync("git", ["init", "-q"], { cwd: projectRoot, env });
+  spawnSync("git", ["config", "user.name", "Test Person"], { cwd: projectRoot, env });
+  spawnSync("git", ["config", "user.email", "t@example.com"], { cwd: projectRoot, env });
+  spawnSync("git", ["commit", "-q", "--allow-empty", "-m", "root"], { cwd: projectRoot, env });
+}
+const inFlight = () => writeFileSync(join(projectRoot, "fusion-workbench", "agentstate.yaml"), "session:\n");
+const commitUnderLock = () => run(["with", "coder", "--", "git", "commit", "-q", "--allow-empty", "-m", "landed"], IDENTITY_ENV);
+
+describe("fusion-commit-lock: the machine-written commit row", () => {
+  it("appends one commit row carrying hash, subject, identity and session id when HEAD moved in a session", () => {
+    gitRepo();
+    inFlight();
+    const r = commitUnderLock();
+    expect(r.status, r.stderr).toBe(0);
+    const rows = readFileSync(join(projectRoot, EVENT_LOG), "utf-8").trim().split("\n").map((l) => JSON.parse(l));
+    expect(rows).toHaveLength(1);
+    const head = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: projectRoot, encoding: "utf-8" }).stdout.trim();
+    expect(rows[0]).toMatchObject({ event: "commit", person: IDENTITY_ENV.FUSION_PERSON, checkout: "5e8248d7", session_id: "sid-1", detail: `${head} landed` });
+    expect(rows[0].ts).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/);
+  });
+
+  it("writes no row when the wrapped command left HEAD where it was", () => {
+    gitRepo();
+    inFlight();
+    expect(run(["with", "coder", "--", "git", "status", "--short"], IDENTITY_ENV).status).toBe(0);
+    expect(existsSync(join(projectRoot, EVENT_LOG))).toBe(false);
+  });
+
+  it("writes no row outside an orchestrator session, even though a commit landed", () => {
+    gitRepo();
+    const r = commitUnderLock();
+    expect(r.status, r.stderr).toBe(0);
+    expect(existsSync(join(projectRoot, EVENT_LOG))).toBe(false);
   });
 });
