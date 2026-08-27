@@ -13,3 +13,5 @@ Commit `b8796a4` removed the count from `agents/coderev.md`, `agents/ontorev.md`
 ## Acceptance
 
 `grep -c "three mandated" rules/review-contract.md` is 0.
+
+**Resolved:** 260827-2102, coder. `rules/review-contract.md`: the count dropped at all four sites (`:5`, `:18` heading, `:63`, `:75`) plus the "these three lines" lead at `:20`; the list under the heading stays the source. `grep -c 'three mandated'` is 0. 6725 -> 6699 bytes, conditional emission; citation-token count 3 -> 3.

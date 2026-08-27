@@ -13,3 +13,5 @@ The stale-Grounding bullet counts "the three criteria above" and two stand there
 ## Acceptance
 
 `grep -c "three criteria above" agents/playmaker.md` is 0; Step 4's cycle bullets are adjacent.
+
+**Resolved:** 260827-2102, coder. `agents/playmaker.md`: the stale-Grounding bullet now names the two criteria it means (Unresolved-decision count, Dependencies-closed flag); the stale-grounding warning paragraph moved below the two contiguous "For each cycle found" bullets under its own lead-in. `grep -c 'three criteria above'` is 0. `wc -c` 41034 -> 41168 (+134 bytes on `agents/`); citation-token count 9 -> 9 by single-file revert.

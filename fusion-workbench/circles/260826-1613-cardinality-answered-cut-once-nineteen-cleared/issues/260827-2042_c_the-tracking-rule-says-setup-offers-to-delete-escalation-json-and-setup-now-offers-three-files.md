@@ -13,3 +13,5 @@ The tracking rule says Setup offers to delete escalation.json, and Setup now off
 ## Acceptance
 
 The rule names the same set the skill's `rm -f` line removes.
+
+**Resolved:** 260827-2102, coder. `rules/workbench-tracking.md`: the sentence now says Setup offers to delete all three leftovers in one question, citing the setup skill's probe and commit `abb0238`; the set matches the skill's `rm -f` line. Emitted to no agent, unbounded; citation-token count 5 -> 5.

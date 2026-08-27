@@ -2,7 +2,7 @@
 
 **Provenance:** shared/decisions/260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md
 
-**This document is the single authoring home** of what a review file contains: the three mandated
+**This document is the single authoring home** of what a review file contains: the mandated
 header fields, the per-topic working files, and the final consolidated review. `bin/fusion-rules`
 emits it to `coderev` and `ontorev`, the two agents that write review files, and to no other agent.
 Neither prompt carries a competing definition. Each names its own domain-specific analysis steps and
@@ -15,9 +15,9 @@ into the same one, which is why the sender segment is mandatory in every filenam
 You write no separate session-history entry. Your review file under `$OUT_REVIEW` is the session's
 durable record, and a history log would only duplicate it.
 
-## The review file's header — three mandated fields
+## The review file's header — the mandated fields
 
-**Every review file you write carries these three lines in the header block — anywhere above the first `##` heading, which is where the reader stops looking.** They are not decoration and they are not optional on a pass that found nothing:
+**Every review file you write carries these lines in the header block — anywhere above the first `##` heading, which is where the reader stops looking.** They are not decoration and they are not optional on a pass that found nothing:
 
 ```
 **Filed by:** <sender>, <person>
@@ -60,7 +60,7 @@ For each topic the user raises or each module you scope, write one working file.
 
 1. Save it directly to `$OUT_REVIEW/YYMMDD-HHMM-<sender>-<topic>.md`: the one review pattern of `rules/fusion-workbench-conventions.md` `## Filename Patterns`, which is the shape `bin/fusion-review-coverage` parses a sender out of. A two-digit counter in the stamp position parses as no sender at all.
 2. The `<sender>` segment is mandatory, because the review kinds share one store.
-3. Each file carries the three mandated header fields above, then one self-contained finding, its evidence as file:line citations, a recommendation, and the scope it affects.
+3. Each file carries the mandated header fields above, then one self-contained finding, its evidence as file:line citations, a recommendation, and the scope it affects.
 
 ## The final consolidated review
 
@@ -72,7 +72,7 @@ When the user asks for the final review:
 4. Flag conflicts, duplicates, and patterns that only become visible when the findings are read together.
 5. Write it into `$OUT_REVIEW` under the review filename pattern in `rules/fusion-workbench-conventions.md` `## Filename Patterns`, with your own sender segment.
 6. Include:
-   - **The three mandated header fields**, exactly as specified above. On a consolidated review the range is the whole span you covered across the session's per-topic passes, and the not-opened list is the union of what those passes left unopened and still stands.
+   - **The mandated header fields**, exactly as specified above. On a consolidated review the range is the whole span you covered across the session's per-topic passes, and the not-opened list is the union of what those passes left unopened and still stands.
    - **Summary** — two or three sentences.
    - **Totals** — counts per severity (Critical / High / Medium / Low).
    - **Findings by theme** — each finding cites file:line, shows its evidence, notes severity and the scope it affects, and proposes a concrete fix or a clarifying question.
