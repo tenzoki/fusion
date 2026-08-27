@@ -53,3 +53,6 @@ wildcarded, the store prefix is right, and the gate is a pointer check with no c
 
 **Scope.** `fusion-workbench/shared/issues/260826-1305_o_…md:59`. Workbench record only, no shipped
 text, no behaviour.
+
+---
+Resolved: commit `3f62a7d` corrected line 59 of `shared/issues/260826-1305_o_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md` from `how-should` to `how-does`; both citations in that file now carry the resolving slug (its lines 15 and 59). Re-measured 260827-1528 in the working tree: `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` passes, 10 of 10. This retakes the measurement the active Circle's Grounding said to retake at activation.

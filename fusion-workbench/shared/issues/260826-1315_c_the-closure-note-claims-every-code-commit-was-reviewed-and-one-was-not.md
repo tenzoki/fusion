@@ -109,3 +109,6 @@ the note is the specimen.
 
 **Scope.** No shipped file. One review pass, if the user wants the gap closed rather than
 named.
+
+---
+Resolved: the review pass this record's close condition names has run. `circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-1330-coderev-the-last-uncovered-commit.md:3` declares `**Reviewed-range:** 7774d56..e66f7d5`, covering the one uncovered commit with all seven shipped files opened (commit `3f62a7d`). The closure note's false sentence stands unedited in the terminal `_b_` record, as the constraint in the active Circle's Grounding requires: the note is the specimen, the review is the repair. Verified by reconciler 260827-1528.
