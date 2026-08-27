@@ -577,7 +577,7 @@ If the count is `0`, **skip the gate cleanly**: emit a single `coherence_review`
 
 **On drift:** show the three lines, then one binary question — **Continue this Turn** (default) or **Open Rebalance gate**. Never three questions. On Continue, emit `verdict: "ok"` with the edge fields (they carry what was shown) and proceed to Step 3d.
 
-**On Rebalance.** Emit `coherence_review` with `verdict: "review-needed"` and the three edge-summary fields. Dispatch the **Rebalance Gate** (see Human Gate Rules below). The Turn exits without emitting `turn_end`. For three of the four choices (Revise Grounding, Revise Directive, Accept Bounded Closure) the loop ends and Phase 3 picks up. **Revise Artifact** is the exception — it re-enters Phase 2 with a new Turn (counter increments), which means it runs Phase 2's Turn-start sequence from step 1, Unresolved-budget check-in included. The per-option mechanics and their bounds: `$FUSION_PLUGIN_ROOT/rules/orchestrator-rebalance.md`, read at the gate.
+**On Rebalance.** Emit `coherence_review` with `verdict: "review-needed"` and the three edge-summary fields. Dispatch the **Rebalance Gate** (see Human Gate Rules below). The Turn exits without emitting `turn_end`. For three of the four moves (Revise Grounding, Revise Directive, Accept Bounded Closure) the loop ends and Phase 3 picks up. **Revise Artifact** is the exception — it re-enters Phase 2 with a new Turn (counter increments), which means it runs Phase 2's Turn-start sequence from step 1, Unresolved-budget check-in included. The per-option mechanics and their bounds: `$FUSION_PLUGIN_ROOT/rules/orchestrator-rebalance.md`, read at the gate.
 
 ### Step 3d: Circuit Breaker Check
 
@@ -882,7 +882,7 @@ If the user chooses Modify, update the task description and re-route. If Skip, m
 
 ### Rebalance Gate
 
-Four options, always all four, in plain language per `rules/user-facing-output.md`: **Revise Artifact** (try again with a refined task list), **Revise Grounding** (record a decision that changes the ground), **Revise Directive** (re-shape what this Circle is for), **Accept Bounded Closure** (end with what was learned, marker `_b_`). **The per-option mechanics and every bound on them are deliberately not in your context.** Before acting on ANY choice, read `$FUSION_PLUGIN_ROOT/rules/orchestrator-rebalance.md` in full — it holds the gate's presentation contract, the post-action mechanics, and **Rebalance bounding**, without which the loop's caps do not exist. Do not act from memory. If the file is absent (older install), halt and tell the user to run `fusion --update` and restart.
+Two gates in sequence, each inside the three-option cap of `rules/user-facing-output.md` (decision `260827-1756`). Gate 1, does the Directive stand: **Revise Directive** (re-shape what this Circle is for), **Accept Bounded Closure** (end with what was learned, marker `_b_`), **Keep it**. Gate 2, on Keep it only: **Revise Artifact** (try again with a refined task list), **Revise Grounding** (record a decision that changes the ground). All four moves stay reachable. **The per-option mechanics and every bound on them are deliberately not in your context.** Before acting on ANY choice, read `$FUSION_PLUGIN_ROOT/rules/orchestrator-rebalance.md` in full — it holds the gate's presentation contract, the post-action mechanics, and **Rebalance bounding**, without which the loop's caps do not exist. Do not act from memory. If the file is absent (older install), halt and tell the user to run `fusion --update` and restart.
 
 ## Error Handling
 

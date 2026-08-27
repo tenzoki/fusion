@@ -304,7 +304,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
    - Dependencies: R6 answered.
    - Acceptance: `grep -n 'Filed by' rules/review-contract.md` returns a mandated-field line; the conventions sentence names the kinds; `npx vitest run lib/__tests__/rules-emission-golden.test.ts lib/__tests__/review-coverage-mandate.test.ts` green.
 
-9. **Reshape the Rebalance gate to fit the caps** (record 9)
+9. **Reshape the Rebalance gate to fit the caps** (record 9) [DONE]
    - Executor: `coder`.
    - Files: `rules/orchestrator-rebalance.md` `### Rebalance Gate` and `#### Rebalance bounding`; `agents/orchestrator.md` only where it names the four options by count (grep `four explicit`); `rules/user-facing-output.md` only under R1 option 1.
    - Changes: per R1's answer. Under the recommendation, the gate becomes two: first whether the Directive stands (Revise Directive, Accept Bounded Closure, Keep it), then, on Keep it, what to revise (Artifact, Grounding); every option keeps its foreclosure line; the bounding section names the second gate as the re-entry point. `rules/orchestrator-rebalance.md` is unbounded; the orchestrator edit is a few bytes on `agents/`. Close with `Resolved:`; rename to `_c_`.

@@ -55,3 +55,7 @@ here:
 Presented three options, chosen by which ones the verdict made live, and said so. That is
 candidate 3 applied without authority, and it is recorded here rather than left as an
 undocumented habit.
+
+## Resolved
+
+Resolved: 260827, coder, plan step 9 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md`, per decision `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md` `## Answer` (option 2, candidate 2 above). `rules/orchestrator-rebalance.md` `### Rebalance Gate` is now two gates: Gate 1 asks whether the Directive stands (Revise Directive, Accept Bounded Closure, Keep it); Gate 2, on Keep it, asks what to revise (Artifact, Grounding). Every option carries a foreclosure line, and `#### Rebalance bounding` names Gate 2 as the re-entry point. `agents/orchestrator.md` `### Rebalance Gate` and the Phase-2 Rebalance paragraph no longer count four options. `rules/user-facing-output.md` is unchanged; candidate 1 was not chosen.

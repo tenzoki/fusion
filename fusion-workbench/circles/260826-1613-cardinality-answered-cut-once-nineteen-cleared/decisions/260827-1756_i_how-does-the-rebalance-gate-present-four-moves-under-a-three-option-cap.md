@@ -32,3 +32,11 @@ The Rebalance gate offers the three edges of the Coherence model plus its termin
 ## Recommendation
 
 Option 2. It keeps every move, keeps the caps derived, and costs a second prompt only in the branch where the user has already said the Directive stands. Option 3 is the cheapest and is the one that hides a move; if the user prefers it, the rule must say which move is hidden and why, so the omission is a stated policy rather than each session's improvisation.
+
+## Answer
+
+Option 2: the gate splits in two. First, does the Directive stand (Revise Directive, Accept Bounded Closure, Keep it); second, on Keep it, what to revise (Artifact, Grounding). Every move stays reachable and every gate is inside the cap. Realised by plan step 9.
+
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+
+Implemented: uncommitted at filing (the orchestrator commits after this dispatch) — plan step 9 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md`: `rules/orchestrator-rebalance.md` `### Rebalance Gate` split into Gate 1 (Directive stands?) and Gate 2 (Artifact or Grounding); `agents/orchestrator.md` stub updated; record `shared/issues/260825-1259_*` closed.
