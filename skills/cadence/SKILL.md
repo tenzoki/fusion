@@ -158,15 +158,19 @@ Build two lists the same way, differing only by their window. For each: filter t
 - **Yesterday list** — window `[yday_start, today]`. The most recent, finest-grained view: what was touched since yesterday — or, when today is Monday, since Friday — right up to now. A topic worked on today belongs here too.
 - **Last-7-days list** — window `[week_start, today]`. The broader recent view.
 
-The yesterday window is a subset of the 7-day window, so topics overlap between the two lists. That is expected and correct: the yesterday list simply zooms in on the latest stretch.
+The yesterday window is a subset of the 7-day one; overlapping topics are expected — the first list zooms in.
 
 ### 7. Build the third list — recurring themes by churn
 
-Across **all** log units (full history, not just the window), count each theme's **churn = the number of distinct sessions it appears in**. A "session" is one **log unit** exactly as step 4 defines it, git included: one session-history file, one activity-log day-section, or one git-commit day. Ten commits in one afternoon are one session, not ten. Step 4 is the only place that unit is defined; count each session once per theme even if the theme is mentioned several times inside it.
+Across **all** log units (full history, not just the window), count each theme's **churn = the number of distinct sessions it appears in**. A "session" is one **log unit** exactly as step 4 defines it (ten commits in one afternoon are one unit, not ten); count each unit once per theme.
 
 - Rank themes by churn, descending.
 - Include only themes with churn **≥ 2** (a theme seen in a single session is not recurring — leave those for the recent lists, not here).
 - For each theme record its **span**: earliest → latest date it appears. Span separates a long-running thread from a short burst of equal count.
+
+### 7b. Session-flow metrics — how the sessions felt, measured
+
+From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per Turn** (`gate_response`/`turn_start`), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0.
 
 ### 8. Write the report
 
@@ -177,13 +181,9 @@ The report goes to `$WORKBENCH/$OUT_MEMO/cadence-$USER.md`.
 mkdir -p "$WORKBENCH/$OUT_MEMO"
 ```
 
-The check repeats step 3's assertion because it has to: the Bash tool gives every call its own
-shell, so nothing step 3 established survives to here. Without it an empty pair makes
-`mkdir -p "$WORKBENCH/$OUT_MEMO"` read as `mkdir -p "/"`, which succeeds, and the digest lands at
-`/cadence-$USER.md` instead of the memo store. As in step 3, a non-zero exit stops the skill and
-is reported as a fusion bug.
+Step 3's assertion repeats because each Bash call is its own shell; without it an empty pair turns the `mkdir` into `mkdir -p "/"` and the digest lands at `/cadence-$USER.md`. A non-zero exit stops the skill, reported as a fusion bug.
 
-**Overwrite the file each run — it is a fresh snapshot, not an append log.** This differs from the other files in that store: `memos-$USER.md` and `tasks-$USER.md` written by `/fusion:memo` *are* append logs, so a reader who assumes the same convention here would be wrong. Cadence keeps no history of its own runs; each run replaces the previous snapshot outright.
+**Overwrite each run — a fresh snapshot, not an append log** (unlike `/fusion:memo`'s files in the same store). Cadence keeps no history of its own runs.
 
 Structure:
 
@@ -194,6 +194,7 @@ Structure:
 **Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" when today is Monday -->
 **Recent window:** <week_start> → <today> (7 days)
 **Sources scanned:** <e.g. session histories (14 files across 2 stores), git (37 commits on 12 days = 12 units), activity log: none>
+**Session flow (7d):** <e.g. 1.1 gate answers/Turn · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
 
 ## Topics — yesterday
 

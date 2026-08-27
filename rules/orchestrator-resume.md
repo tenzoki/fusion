@@ -33,7 +33,9 @@ Read when Setup STEP 1 finds `fusion-workbench/agentstate.yaml`. The invariants 
      - Which tasks remain (with their status)
      - The plan file and user directive, if any
   5. Ask the user what to do, in chat — do NOT skip this:
-     - **Continue** — resume from where the prior session left off. Use the saved work queue, skip already-completed tasks, pick up from the next unfinished task. **What a resumed session inherits** below says what that means for the Turn it re-enters.
+     Lead the presentation with one line of the state — "Interrupted <when>: Turn <N>, <X> of <Y> tasks done, last commit <subject>" — and put the derived detail under a trailing Details block, after the question, not before it.
+
+     - **Continue (recommended)** — resume from where the prior session left off. Use the saved work queue, skip already-completed tasks, pick up from the next unfinished task. **What a resumed session inherits** below says what that means for the Turn it re-enters.
      - **Restart** — discard prior state and start fresh. Delete `agentstate.yaml` and proceed with normal setup.
      - **Modify** — the user provides updated instructions or changes scope before resuming.
   6. **STOP and WAIT for the user's response. Do not proceed until the user has answered.**
