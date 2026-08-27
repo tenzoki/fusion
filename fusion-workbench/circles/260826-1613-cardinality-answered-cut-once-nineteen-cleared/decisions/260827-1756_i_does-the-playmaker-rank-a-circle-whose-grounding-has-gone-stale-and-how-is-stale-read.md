@@ -32,3 +32,11 @@ The three ranking criteria (open decisions cited, dependencies closed, domain si
 ## Recommendation
 
 Option 1. Threshold: half or more of the cited records terminal or archived. The distance HEAD has moved since the snapshot's recorded commit is reported beside the warning as a count, with no threshold of its own. The archive-resolving dependency report is taken under every option.
+
+## Answer
+
+Option 1: a `stale-grounding` warning, never a demotion. Threshold: half or more of the cited records terminal or archived; HEAD distance reported as a count beside it. A dependency resolving under `archive/` is reported as `archived`, not counted as closed. Realised by plan step 17.
+
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+
+Implemented: pending the orchestrator's commit of plan step 17 (edited at HEAD d49e258) — `agents/playmaker.md` Step 3 stale-Grounding count, Step 4 `stale-grounding` warning line, `## Warnings` roster, archive-resolving dependency reported as `archived`, Step 2 read-cap carve-out.

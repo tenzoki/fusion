@@ -156,7 +156,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
    - Dependencies: none.
    - Acceptance: the history file ends with the correction line naming the issue; `grep -c stranded-records portfolio.md` returns 0.
 
-6. **Measure the 49 criteria of the bounded Circle's spec, once** (record 6)
+6. [DONE] **Measure the 49 criteria of the bounded Circle's spec, once** (record 6)
    - Executor: `analyst`.
    - Files: reads `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md` and the tree; writes `$OUT_ANALYSIS/YYMMDD-HHMM-the-style-rules-spec-measured-against-the-tree.md`.
    - Changes: for each of the 49 criteria, state met / not met / not applicable with a `path:line` or command; no edit to the spec. The spec's disposition (ticked in place by a reconciler dispatch outside this plan, or declared history by rule text) is the user's direction under `260824-2013_*`, taken at the gate; the record closes with `Resolved:` citing the analysis and the direction.
@@ -230,7 +230,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
    - Dependencies: none. Step 17 edits the same `:104` sentence and follows this one.
    - Acceptance: `grep -niE "read enough|no more" agents/playmaker.md` shows the amended cap; `grep -c "Activation proposal" agents/playmaker.md` unchanged or higher with the block bounded at `:177`; `npx vitest run lib/__tests__/surface-growth-bound.test.ts lib/__tests__/playmaker-backlog-mandate-lint.test.ts` green.
 
-17. **Add the stale-Grounding warning and the archive-resolving dependency report** (record 17)
+17. [DONE] **Add the stale-Grounding warning and the archive-resolving dependency report** (record 17)
     - Executor: `coder`.
     - Files: `agents/playmaker.md` Step 3 (criteria and dependencies-closed flag), Step 4/5 warnings list at `:158`, and the `:104` cap carve-out from step 2.
     - Changes: per R4's answer. Under the recommendation: for each `_a_` Circle, count the records its `## Grounding snapshot` cites that carry a terminal marker or resolve under the archive store (filename markers and `find`, no bodies); at half or more, append `stale-grounding: <circle-dir>: <n> of <m> cited records terminal or archived; HEAD <k> commits past the snapshot's recorded commit` to `## Warnings` with a recommendation to re-sharpen via the shaper's portfolio-activation mode; rank unchanged. A dependency resolving under `archive/` is reported as `archived`, never counted as closed. Close with `Resolved:`; rename to `_c_`.
@@ -297,7 +297,7 @@ Numbering follows the record table, so step *n* closes record *n*; steps 21 to 2
    - Dependencies: R2 answered.
    - Acceptance: both instances carry the clause; the templates state where a conditional goes; `npx vitest run lib/__tests__/plan-stopping-section-lint.test.ts lib/__tests__/surface-growth-bound.test.ts` green.
 
-8. **Write the reach of the person-half obligation** (record 8)
+8. [DONE] **Write the reach of the person-half obligation** (record 8)
    - Executor: `coder`.
    - Files: per R6's answer. Under the recommendation: `rules/fusion-workbench-conventions.md` `### Who filed it` (one sentence: the field is owed by every record kind whose template carries it, and those kinds are named), `rules/review-contract.md` (the line joins its mandated fields), `## History Logging` (the line joins the history entry).
    - Changes: about 300 always-on bytes (13 213 free); `rules/review-contract.md` is conditional and reported, not bounded. No gate is added, and the `Resolved:` note says why (1 line free; the miss branch closed by the v10.8.0 identity export in `hooks/session-start.ts`). Rename to `_c_`.
@@ -359,6 +359,6 @@ None. `bin/` helpers keep their signatures; `skills/setup` gains a step, `skills
 
 - [ ] **Do the thirteen open C4 records join this Circle's scope?** The Circle record's Grounding says nineteen inherited records; the dispatch names twenty current ones, and the two sets overlap in five. Five of the thirteen need hook-test lines (`260826-0847`, `-0848`, the three `-0906` `_o_`), and two are direction calls (`260826-0154`, `-0158`). If they join, step 21 sizes the cut for them too; if not, the closure note says so. Answer before step 21.
 - [ ] **R1 to R6** (`## Current State` → *Decision records this planning filed*): each carries a recommendation; steps 7, 8, 9, 12 and 17 wait on one, step 11 on none.
-- [ ] **Record 6's direction**, under `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`: reconcile the bounded Circle's spec in place after step 6's measurement, or state once in `rules/circle-records.md` that a terminal Circle's spec is history. That record is `_o_` and can be answered where it lives.
+- [x] **Record 6's direction** (answered 260827: option 5, in `rules/circle-records.md`), under `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`: reconcile the bounded Circle's spec in place after step 6's measurement, or state once in `rules/circle-records.md` that a terminal Circle's spec is history. That record is `_o_` and can be answered where it lives.
 - [ ] **Step 1's executor.** The plan assigns `coder` on gate approval; the user may prefer to make the one-clause edit by hand, in which case step 1 is the user's and the record closes on it.
 - [ ] Part (c) of `shared/decisions/260810-1544_a_*` (does the work-tree preference reach helper resolution) stays deliberately unanswered; record 10 closes on options 2 and 3 and cites it as the remainder.
