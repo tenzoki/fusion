@@ -34,3 +34,5 @@ just enumerated.
 One word: "A field that did not resolve makes itself absent rather than empty", or "Any of the three
 that did not resolve". Either keeps the rule and drops the count, which is what R-14 did to the two
 sentences around it.
+
+Resolved: `agents/orchestrator.md` `### 2. Structured Event Log`: "A half that did not resolve makes its field absent rather than empty" is now "Any of the three that did not resolve is absent rather than empty". Same edit closes `260826-1219`.

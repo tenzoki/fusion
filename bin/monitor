@@ -1289,9 +1289,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         """This checkout's identifier, read from BASE_DIR/.checkout-id.
 
         A plain file read, and never a mint. Minting belongs to the
-        fusion-identity helper alone: a dashboard process that creates
-        workbench state is a defect of its own, and this file is class L in the
-        workbench-tracking rule, so it stays in the checkout it was minted in
+        bin/fusion-identity helper alone: a dashboard process that creates
+        workbench state is a defect of its own, and this file is class L in
+        rules/workbench-tracking.md, so it stays in the checkout it was minted in
         and never travels with a pull.
 
         Returns None when the file is absent, unreadable or empty, which the

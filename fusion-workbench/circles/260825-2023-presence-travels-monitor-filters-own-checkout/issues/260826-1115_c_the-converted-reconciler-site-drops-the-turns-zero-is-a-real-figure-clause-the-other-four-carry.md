@@ -39,3 +39,5 @@ a session that has emitted no `turn_start`, and exits 0.
 Add the clause, or reword so the prohibition cannot detach from its condition — "any other outcome is
 `unavailable`; a `turns=0` printed with `scope=checkout` is a real figure". The `agents/` growth bound
 is the constraint on which form fits.
+
+Resolved: `agents/reconciler.md` now states the rule in the order that cannot detach: a `turns=0` printed with `scope=checkout` is a real figure, every other outcome is `unavailable`, and the `scope=all-checkouts` number is never reported. The count of sites is one fewer than this record says: `440cad5` removed the `skills/setup/SKILL.md` site (it points at `rules/orchestrator-resume.md`, where the orchestrator's Setup-step-1 text also moved), so the sites reading `bin/fusion-events turns` are four: `rules/orchestrator-resume.md` Step 1, `agents/orchestrator.md` Phase 2 step 3 and its `progress.turn` table row, and the reconciler. Of those, the rule file and the reconciler carry the degradation rule with both halves; the two orchestrator sites state the definition and no degradation rule, which is not a defect since the rule file is what a resume reads.

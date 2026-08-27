@@ -62,3 +62,5 @@ is one orchestrator improvising under a wave of eight renames. One instance, thi
 3. Let `bin/fusion-staging-drift` fail a commit that stages a deletion whose successor is
    untracked. It already detects the untracked successor after the fact, one commit too late;
    whether it can be consulted before the commit rather than after is unmeasured.
+
+Resolved: direction 1. `agents/orchestrator.md` Step 3b step 4 now names a command-produced list beside the four prohibitions, with the substitution form and `7ae6aae` as the measured instance. Direction 2 is not taken: the executor report shape already requires every modified file by absolute path, and a rename is two such paths, so the knowledge is in the report when the executor follows its contract; a pair line would restate that. Direction 3 stays unmeasured, and `bin/fusion-staging-drift` reports and never gates by its own contract, so wiring it before a commit would be a new decision rather than a fix.

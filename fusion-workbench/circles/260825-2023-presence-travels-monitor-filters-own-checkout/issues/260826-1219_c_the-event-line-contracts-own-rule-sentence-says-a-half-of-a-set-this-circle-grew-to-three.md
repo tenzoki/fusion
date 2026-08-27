@@ -83,3 +83,5 @@ existed on the date the sentence counts three. The sentence is not clearly wrong
 wrappers" may scope to the drift-and-coverage report family, which is three and has one other
 survivor. It is recorded because this Circle added a member to the class under the broad reading and
 did not look at the sentence, and because the antecedent is now ambiguous where it was not.
+
+Resolved: the three-field reading is the contract, and the sentence now says so ("Any of the three that did not resolve is absent rather than empty", `agents/orchestrator.md` `### 2. Structured Event Log`). The pair-only reading was rejected because both citing files (`hooks/lib/events.ts`, `rules/workbench-tracking.md`) already apply the rule to `session_id`, and Setup step 2's "No line, no key" states the same rule for it, so the generalisation was always meant to cover three. The companion observation on `CLAUDE.md`'s "three thin wrappers" sentence is not addressed here: `CLAUDE.md` is outside this task's scope, and the sentence is ambiguous rather than wrong.

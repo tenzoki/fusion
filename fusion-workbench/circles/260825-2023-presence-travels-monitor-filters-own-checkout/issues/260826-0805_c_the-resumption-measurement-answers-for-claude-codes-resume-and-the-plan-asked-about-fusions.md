@@ -111,3 +111,5 @@ place a later reader meets both documents at once. If the note ends up asserting
 sentence unqualified, this record is the thing it has to cite instead.
 
 **Scope.** The Circle's closure note. No shipped file.
+
+Resolved: the closure note in `_b_circle.md` (the session-identifier measurement paragraph) now states which resume the analysis measured, which one step 11's note meant, and that read for fusion's resume the finding strengthens the first branch, citing this record. The shipped contract already carries the correct reading since `72a9561` (`agents/orchestrator.md` `### 2. Structured Event Log`, the `session_id` names the Claude Code process sentence). The analysis is untouched as an evidence capture.
