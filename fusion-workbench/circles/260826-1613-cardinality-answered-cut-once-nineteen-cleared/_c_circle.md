@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260826-1758: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
+**Claim:** Unclaimed
 **Active spec/plan:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md
 **Active session history:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md
 
@@ -144,3 +144,17 @@ it is the Circle's first capacity: answering it is the work, not a precondition 
 **What activation should expect, and it is in the Grounding rather than added here.** The Circle is
 sequential by construction, since its second capacity cannot be sized until its first has landed, and
 the user accepted that when choosing the order. Nothing in this proposal argues against it.
+
+## Closure note
+
+Closed coherent on 260828 by the orchestrator session `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md` (Phase-3 verdict `coherent`, Rebalance recommendation `none`; reconciliation `history/260827-2034-reconciliation.md`).
+
+**What landed.** The first capacity was already realised before this session (`260826-1252_a_*` answered, `rules/critical-stance.md` §5 at `ae00e84`); this note states it and does not re-derive it. The one measured cut landed as `440cad5` (skills/ −6 613 bytes, hook tests −239 lines), sized by `analyses/260827-1843-cut-candidates-for-skills-and-the-hook-tests.md` under one user gate, no baseline map moved. Of the twenty records the plan `planning/260827-1756_p_repair-the-twenty-open-defect-records.md` took on, nineteen are `_c_`; the thirteen open C4 records joined the scope at the gate and are all `_c_`; the Circle review `reviews/260827-2041-coderev-circle-closure-review-3cbb779-e9dc9b2.md` filed eleven findings and all eleven are `_c_` (Turn 2). Six decisions `260827-1756_*` were answered, five realised (`_i_`), one (`which-surface-is-authoritative`) stands `_a_` with no realising step. `260824-2013_*` in Circle `260824-1853` was answered (option 5, realised in `rules/circle-records.md`).
+
+**Stop conditions the user marked as not holding (Phase 4 step 2b):**
+- Clause 1: `shared/issues/260827-0410_o_*` stays open by the user's split at the cut gate; three `fusion-commit-lock` cases landed (`90c309c`), the seven dispatch cases wait for the next cut. `skills/` stands at 93 bytes free and the hook tests at 433 lines, so that cut is the next Circle's first measurement.
+- Clause 7: no release tag was made in this Circle. `bin/fusion-review-coverage` at closure: 25 commits since `3cbb779`, 19 covered by the Circle review, **6 uncovered** (Turn 2's fixes of the review's own findings: `e36a718`, `737cf19`, `e71d03f`, `04847e5`, `6c9d714`, and the review-and-findings commit `5e0c382`). Per `260815-2109` the Circle closes over the gap and names it here; the pre-tag coverage run is the release's obligation.
+
+**Open inside this Circle's own stores at closure:** `issues/260827-1807_o_*` (the always-on corpus and the four profiles are over the em-dash ceiling again; filed by the analyst at step 6, not in the plan's scope). Under the archive rule this Circle wrote (`skills/archive/SKILL.md`, filter 2), a terminal Circle holding a live record is excluded from every tier until it is resolved.
+
+**Incidents recorded in the session history:** one revert (a coder's sentence in the terminal record `260825-2023/_b_circle.md`), one misfiled history entry (`circles/` at the repository root, moved), one erroneous `git checkout --` on three files by the bookkeeping coder, replayed and verified.
