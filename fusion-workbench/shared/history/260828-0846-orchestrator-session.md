@@ -35,3 +35,17 @@
 
 **Rebalance recommendation:** revise Grounding
 - Phase 3 verdict review-needed (count twelve vs sixteen). Rebalance gate: user chose Keep it, then Revise Grounding. The Grounding change is the reconciler's issue 260828-0907 plus its annotations; no new decision question arose, so no record was filed. Reconciler re-run follows.
+
+## Coherence
+<!-- RECONCILER-OWNED -->
+Re-run 260828-1001, after the Rebalance gate (Keep it, then Revise Grounding); range `65cf23be..7bc0e78e`.
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: 3 claims verified (`7bc0e78e` lands issue `260828-0907_*` and the notes on the seven records; `.gitignore:91` and the two skill lines unchanged) / 1 drift item, the same one, still open: the corrected sixteen is itself low; the widened grep `260828-0907_*` prescribes matches twenty-one lines at HEAD, the further five at `agents/orchestrator.md:33,148,398,709,1008`, all pre-session (Grounding at fault; the 0907 pass never ran its own grep, corrected by appended notes on `260828-0907_*` and `260828-0900_*`) / 6 open coderev+ontorev issues, none from this session's code (`260827-0410_o_`, `260828-0044_o_`, `260828-0853_o_`, `260828-0900_o_`, `260828-0901_o_`, `260828-0907_o_`).
+- Artifact↔Directive: commits move toward the stated Directive; `19b58eef` (clause 1 and 2), `ffc6ae88` (clause 2), `7bc0e78e` (bookkeeping on clause 2's records, no code).
+- Grounding↔Directive: 40 active decisions consistent / 0 potentially conflicting; unchanged from the 0907 verdict, no decision record moved in `7bc0e78e`.
+
+**Rebalance recommendation:** revise Grounding
+- Reconciler re-run (260828-1001): review-needed again; the widened grep gives 21 lines at 7bc0e78e, annotated on 260828-0907. Gate re-entry: Keep it, Revise Grounding: the figure is now command- and commit-stamped rather than asserted (critical-stance §5). Third reconciler run to confirm, then Phase 4.
