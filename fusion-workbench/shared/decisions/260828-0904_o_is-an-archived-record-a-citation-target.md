@@ -20,3 +20,6 @@ The citation gate (shape 1, 260819) lets a citation of `shared/issues/X` resolve
 ## Constraints
 
 Any answer must keep `hooks/lib/__tests__/workbench-citation-lint.test.ts` decidable over the tree at HEAD, and must not reopen the deletion annotation rule in `rules/circle-records.md`.
+
+---
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).

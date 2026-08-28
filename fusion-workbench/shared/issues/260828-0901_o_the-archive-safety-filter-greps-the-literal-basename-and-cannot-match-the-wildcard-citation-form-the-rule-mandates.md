@@ -11,3 +11,6 @@ Measured 2026-08-28 at HEAD `19b58eef` by simulation over the 863 live marked re
 Fix shape: build the key from the basename with the marker position generalised (`grep -E "<stamp>_[a-z*]_<slug-escaped>"`), or search for the stamp and the slug as two fixed strings on one line. Add a probe to the skill that a scratch record cited in `_*_` form from a scratch corpus is reported as kept.
 
 Acceptance: the simulation above finds 0 records cited only in wildcard form that the filter would not keep; the skill's own probe passes.
+
+---
+Reconciled 260828-0907 (session 260828-0846, HEAD ffc6ae88): still open. `skills/archive/SKILL.md:199` builds `bn` from the live basename and runs `grep -r -l -F -e "$bn" -e "$rel"`; no marker generalisation. Simulation figures (75 / 863) not re-run this pass.

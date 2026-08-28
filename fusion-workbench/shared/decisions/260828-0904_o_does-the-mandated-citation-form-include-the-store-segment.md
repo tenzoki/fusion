@@ -20,3 +20,6 @@
 ## Constraints
 
 Whatever form is chosen, the three citation gates and the archive skill's safety filter (`shared/issues/260828-0901_*`) must recognise it; a form the gate cannot read decays at the rate the method is used.
+
+---
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).

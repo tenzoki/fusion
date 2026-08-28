@@ -24,3 +24,6 @@ The always-on rule set and `agents/` carry failing growth bounds; option 2 and 3
 ## Recommendation
 
 Option 1, with the analysis's prior verdict (260818-0715) as precedent that fusion-internal identifiers should not reach a consumer as instructions.
+
+---
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).

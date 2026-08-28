@@ -20,3 +20,6 @@
 ## Recommendation
 
 Option 1 if the storeless form is chosen; the form's correctness is exactly this property.
+
+---
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).

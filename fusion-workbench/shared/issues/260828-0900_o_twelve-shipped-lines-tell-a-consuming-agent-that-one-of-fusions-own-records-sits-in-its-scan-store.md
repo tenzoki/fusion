@@ -13,3 +13,6 @@ No gate sees this: the reference-resolution lint reads the stamp beside the key 
 The fix waits on one answer (Q2 of the analysis): whether shipped record citations are provenance or pointers. If provenance, each line drops the key and says the record is fusion's own; if pointers, they cannot be followed from any consuming project and the substance must be pulled into the text.
 
 Acceptance: `grep -nE '[0-9]{6}-[0-9]{4}.{0,80}(in|under) .\$SCAN_' rules/*.md agents/*.md skills/*/SKILL.md README*.md CLAUDE.md` returns nothing, and the reference-resolution baseline is re-approved if it moves.
+
+---
+Reconciled 260828-0907 (session 260828-0846, HEAD ffc6ae88): still open, and the count is low. All twelve listed lines verified on disk. Four more lines of the same shape stand in `agents/orchestrator.md:435,511,516,550` (decisions `260807-2131`, issue `260810-1535`, decisions `260824-2013`, `260815-2109`, each "in/under `$SCAN_*`"), so the defect is sixteen lines in seven files at HEAD. The acceptance grep matches fourteen of them: it finds the four unlisted lines and misses two listed ones (`skills/archive/SKILL.md:142`, `skills/next/SKILL.md:167`), whose slugs exceed its 80-character window; widen `.{0,80}` to `.{0,160}` before reading its empty result as done. Filed as `shared/issues/260828-0907_*`.

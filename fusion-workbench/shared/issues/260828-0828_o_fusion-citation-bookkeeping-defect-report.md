@@ -116,3 +116,6 @@ The names below are records of the consumer project that wrote this report. They
 - `260826-1103_*_every-marker-move-dangles-the-citations-that-name-the-record-and-the-projects-own-mitigation-covers-one-record-class.md`
 - `260827-1749_*_what-citation-form-survives-an-archive-move-so-a-terminal-circle-can-leave-the-live-tree.md` — the decision this project took, with its measurement
 ```
+
+---
+Reconciled 260828-0907 (session 260828-0846, HEAD ffc6ae88): taken in, not closed. The `_o_` marker and the fenced consumer-record list (lines 112-118) landed in `19b58eef`; the measurement against this corpus is `shared/analyses/260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md` (`ffc6ae88`); its confirmed instances are issues `260828-0900_*` and `260828-0901_*`, its open questions the five decisions `260828-0904_*`. Closes when those are answered and the two issues are fixed.
