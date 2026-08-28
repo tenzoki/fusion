@@ -86,6 +86,9 @@ fusion-workbench/.active-circle
 # reason the field exists: a checkout that pulled another checkout's copy would
 # be indistinguishable from it, which is the collision the identifier prevents.
 fusion-workbench/.checkout-id
+# High-water marks of this checkout's cleanup passes (bin/fusion-cadence-anchor); a pulled
+# mark would claim coverage this checkout never performed.
+fusion-workbench/.cadence-anchors
 fusion-workbench/.guard-state/*
 fusion-workbench/.commit-lock/*
 # Verbatim copy of the tracked bin/monitor, re-created by /fusion:setup.
