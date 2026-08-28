@@ -23,3 +23,6 @@ Must not decide per-line what a citation *means* (pointer versus statement), whi
 
 ---
 Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+
+---
+Answered: shared/decisions/260828-0904_*_does-fusion-ship-a-citation-checker-to-consuming-projects.md — option 1, user 2026-08-28: a bin/ helper `fusion-citation-check` wrapping the citation-scan grammar, stdout verdict, never a gate.

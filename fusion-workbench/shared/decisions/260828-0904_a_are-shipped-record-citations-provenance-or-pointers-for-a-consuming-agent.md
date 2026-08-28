@@ -27,3 +27,6 @@ Option 1, with the analysis's prior verdict (260818-0715) as precedent that fusi
 
 ---
 Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+
+---
+Answered: shared/decisions/260828-0904_a_are-shipped-record-citations-provenance-or-pointers-for-a-consuming-agent.md — option 1, user 2026-08-28: shipped record citations are provenance for fusion's maintainers; they name fusion's own workbench and never a consumer resolver key, and a lint forbids `$SCAN_*` beside a record stamp in shipped text.

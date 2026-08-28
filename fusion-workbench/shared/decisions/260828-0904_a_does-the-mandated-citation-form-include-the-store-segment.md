@@ -23,3 +23,6 @@ Whatever form is chosen, the three citation gates and the archive skill's safety
 
 ---
 Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+
+---
+Answered: shared/decisions/260828-0904_a_does-the-mandated-citation-form-include-the-store-segment.md — option 1, user 2026-08-28: the citation form is the storeless basename with the marker wildcarded, `YYMMDD-HHMM_*_<topic>.md`; the store segment is dropped, the wildcard stays.

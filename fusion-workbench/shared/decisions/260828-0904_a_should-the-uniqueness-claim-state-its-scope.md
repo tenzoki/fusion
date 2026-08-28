@@ -23,3 +23,6 @@ Option 1 if the storeless form is chosen; the form's correctness is exactly this
 
 ---
 Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+
+---
+Answered: shared/decisions/260828-0904_a_should-the-uniqueness-claim-state-its-scope.md — option 1, user 2026-08-28: the sentence names its scope (live tree and archive) and the commit it was measured at, and a test pins (stamp, slug) uniqueness so a collision reddens npm test.
