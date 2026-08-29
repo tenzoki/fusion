@@ -23,7 +23,7 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.19.1` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.19.2` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
 **Upgrading from v10.7?** v10.8 through v10.14 are the bookkeeping-cost releases. The mechanical event rows (`task_start`/`task_done`/`commit`) are machine-written by the hooks and the commit lock, with identity and `session_id` on every line; `/fusion:cleanup` runs incrementally off per-checkout anchors (the curator's full pass stays reachable with `--full`); the review cadence is one pass per Circle, at its closure, scoped by the coverage tiling; and dispatches carry roughly a third less conditioning after the style diet and the rule-audience moves. Setup offers a one-time stilwerk refresh. Nothing is rewritten and there is nothing to migrate. `docs/upgrading-to-v10-14.md` is the note (`docs/upgrading-to-v10-8.md` has the event-row detail).
 
