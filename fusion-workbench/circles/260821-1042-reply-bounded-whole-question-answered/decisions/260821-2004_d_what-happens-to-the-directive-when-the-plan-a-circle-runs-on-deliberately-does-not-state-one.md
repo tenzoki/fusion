@@ -123,3 +123,6 @@ is consistent, because the record's `## Directive` holds prose if and only if th
 literal `(none yet)`. The mitigation is that the closure note names the plan, and the closure note
 is unwritten at this pass. **If Phase 4 does not name it, the cost is not discharged and this
 record's third option has been taken by default rather than by choice.**
+
+---
+Deferred: a later Circle that meets the question again — user 2026-08-29, triage of open decisions left in terminal Circles; no scan reaches this store any more, so the deferral is recorded by hand.

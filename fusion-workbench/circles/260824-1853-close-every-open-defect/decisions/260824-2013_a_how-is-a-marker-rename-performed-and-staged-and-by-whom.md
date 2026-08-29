@@ -67,3 +67,6 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+Answered: circles/260824-1853-close-every-open-defect/decisions/260824-2013_a_how-is-a-marker-rename-performed-and-staged-and-by-whom.md — user 2026-08-29: (a) option 5, marker renames are `mv` and only the orchestrator stages, enforced by the orchestrator emptying and checking the index before its commit (Step 3b `git reset -q` plus the staging list); (b) option 7, both parties may rename, never through a glob, always by explicit filename; (c) option 8, append-and-rename is one act per record.

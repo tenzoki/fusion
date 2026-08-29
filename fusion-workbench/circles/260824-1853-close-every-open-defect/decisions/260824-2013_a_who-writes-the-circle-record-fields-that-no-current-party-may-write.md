@@ -75,3 +75,7 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+Answered (parts a and b): user 2026-08-29 — (a) reverse `## Dependencies` edge: option 1, the orchestrator's Circle-record write list gains `## Dependencies`; (b) `**Active spec/plan:**` on activation: option 5, `/fusion:next` writes it too, deriving the path from the record's Grounding citation.
+Answered (part c): option 8, a third scope value `grounding-only` for shaper mode 3. Full answer recorded in this file (circles/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md).

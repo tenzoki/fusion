@@ -44,3 +44,6 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+Answered: circles/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md — option 1, user 2026-08-29: the dispatch prompt gains an advisory `**Origin:**` line; the resolver stays the single resolution point and the agent applies the Origin Rule to its own history write.

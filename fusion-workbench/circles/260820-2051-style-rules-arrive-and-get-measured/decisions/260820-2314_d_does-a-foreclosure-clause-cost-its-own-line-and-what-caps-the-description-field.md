@@ -45,3 +45,6 @@ The user asked for an unattended run and left for two to three hours. A dispatch
 orchestrator answered. This is not the user's answer and must not be read as one. The record is filed
 open (`_o_`) rather than answered so that the user meets it as a live question and can overrule it
 without unpicking the work that assumed it.
+
+---
+Deferred: the next style-rules Circle — user 2026-08-29, triage of open decisions left in terminal Circles; no scan reaches this store any more, so the deferral is recorded by hand.

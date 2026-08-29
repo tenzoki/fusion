@@ -97,3 +97,6 @@ Implemented:
 Deferred:
 Superseded by:
 Retired:
+
+---
+Deferred: the next style-rules Circle — user 2026-08-29, triage of open decisions left in terminal Circles; no scan reaches this store any more, so the deferral is recorded by hand.

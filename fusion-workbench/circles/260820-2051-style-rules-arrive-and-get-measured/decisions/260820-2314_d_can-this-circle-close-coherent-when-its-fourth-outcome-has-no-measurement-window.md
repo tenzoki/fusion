@@ -62,3 +62,6 @@ Answered by the orchestrator during an unattended run, with the user away and no
 This is not the user's answer. The user asked for a successful close and this record says that a
 coherent close is not available; that is exactly the kind of finding they should see rather than have
 smoothed over. The record stays open (`_o_`) so they meet it as a live question.
+
+---
+Deferred: the next style-rules Circle — user 2026-08-29, triage of open decisions left in terminal Circles; no scan reaches this store any more, so the deferral is recorded by hand.

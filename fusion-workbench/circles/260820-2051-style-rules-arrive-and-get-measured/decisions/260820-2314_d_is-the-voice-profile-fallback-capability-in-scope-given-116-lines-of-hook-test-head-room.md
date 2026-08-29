@@ -38,3 +38,6 @@ Nothing. Dropping it later still requires the decision the underlying record nam
 
 Answered by the orchestrator during an unattended run, with the user away and no channel to ask them.
 This is not the user's answer. The record stays open (`_o_`) so the user meets it as a live question.
+
+---
+Deferred: the next style-rules Circle — user 2026-08-29, triage of open decisions left in terminal Circles; no scan reaches this store any more, so the deferral is recorded by hand.
