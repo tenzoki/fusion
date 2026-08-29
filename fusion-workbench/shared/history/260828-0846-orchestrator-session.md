@@ -138,3 +138,16 @@ sequenceDiagram
     O->>R: third pass (bfa25f11)
     R-->>O: coherent
 ```
+
+## Coherence
+<!-- RECONCILER-OWNED -->
+Post-session cleanup pass 260829-1109 (`/fusion:cleanup` Step 3, no session in flight); range `001e63aa..7a2361aa`, HEAD `7a2361aa`.
+
+**Verdict:** coherent
+
+**Edges:**
+- Artifact↔Grounding: 8 claims verified (five `260828-0904_a_*` `Answered:` lines in `b6f5630a`; the anticipated Circle record and its shaper history in `fe036e41`; the 18 triage lines in `05ad24bf`; the two release entries against `73aa93f1` and `7a2361aa`) / 0 drift items / 8 open issues, all tracked defects carried from the 1020 verdict plus `260828-1041_o_*`, none new drift.
+- Artifact↔Directive: the session's own commits (`65cf23be..001e63aa`) were judged at 1020 and stand; the post-session commits move toward clause 2 where they touch it (`b6f5630a` answers its five questions, `fe036e41` anticipates their implementation) and the remainder (`73aa93f1`, `7a2361aa` releases; `4b7faf22`, `05ad24bf` bookkeeping) is outside the Directive after the session closed, not drift from it.
+- Grounding↔Directive: 40 active decisions consistent (35 `_a_`, 5 `_o_` in `shared/decisions/`) / 0 potentially conflicting; the five `260828-0904_a_*` answers are clause 2's resolution and the `_a_` Circle implements them.
+
+**Rebalance recommendation:** none
