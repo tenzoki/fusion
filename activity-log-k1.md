@@ -24,6 +24,8 @@
 
 ## High-level arc
 
+- **08-29 Sat** [9-11.2] — 4 items; eighteen orphaned decisions triaged, v10.19.2, cleanup
+- **08-28 Fri** [7-23.7] — 30 items; citation defect report taken in, five decisions answered, v10.19.1, new circle
 - **08-27 Thu** [4-24.7] — 127 items; twenty records repaired, one cut, circle closed
 - **08-26 Wed** [6-28] — 71 items; presence closes, cardinality, new circle
 - **08-25 Tue** [7-26] — 71 items; attribution, gitignore partition, c4 built
@@ -69,7 +71,7 @@
 
 | Week of (Mon) | Days active | Avg active hours/day |
 |---------------|-------------|----------------------|
-| 2026-08-24    | 4           | 19.4                 |
+| 2026-08-24    | 6           | 16.1                 |
 | 2026-08-17    | 7           | 19.9                  |
 | 2026-08-10    | 7           | 19.4                  |
 | 2026-08-03    | 7           | 14.8                  |
@@ -3127,7 +3129,61 @@
 | 00:40 | chore(workbench): the Circle closes coherent, and the session records what it did | g |
 | 00:42 | chore(workbench): archive stale files (tier-1), the 260827-1535 sweep | g |
 | 00:42 | chore(workbench): two pre-session record closures and the 260827-1521 session's tail | g |
+| 24:38 | playmaker orchestrator phase4 | h |
+| 24:40 | chore(workbench): the Circle closes coherent, and the session records what it did | g |
+| 24:42 | chore(workbench): archive stale files (tier-1), the 260827-1535 sweep | g |
+| 24:42 | chore(workbench): two pre-session record closures and the 260827-1521 session's tail | g |
+| 24:44 | reconciliation | h |
+| 24:44 | thirty four of sixty two records filed on 260827 carry no person half after the reach was settled | i |
+| 24:47 | chore(workbench): archive stale files (tier-1) | g |
+| 24:47 | chore(workbench): reconcile tracking files after the Circle closure | g |
+| 24:47 | docs: update activity log | g |
+| 24:49 | curator run | h |
+
+## 2026-08-28 (Fri) [7-23.7]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 07:00 | coder reference resolution reapproval | h |
+| 07:01 | docs: apply the approved normative-surface changes (curator run 260828-0049) | g |
+| 08:28 | fusion citation bookkeeping defect report | i |
+| 08:46 | orchestrator session | h |
+| 08:53 | setup step 0j misses a class l entry that is untracked but not ignored | i |
+| 08:54 | chore(workbench): take in the citation-bookkeeping defect report and close the .cadence-anchors ignore gap | g |
+| 08:59 | analyst citation defect report measured | h |
+| 08:59 | citation bookkeeping defect report measured against fusions own corpus | a |
+| 09:00 | twelve shipped lines tell a consuming agent that one of fusions own records sits in its scan store | i |
+| 09:01 | the archive safety filter greps the literal basename and cannot match the wildcard citation form the rule mandates | i |
+| 09:04 | are shipped record citations provenance or pointers for a consuming agent | d |
+| 09:04 | docs(workbench): measure the citation defect report against fusion's own corpus and file its five open questions | g |
+| 09:04 | does fusion ship a citation checker to consuming projects | d |
+| 09:04 | does the mandated citation form include the store segment | d |
+| 09:04 | is an archived record a citation target | d |
+| 09:04 | should the uniqueness claim state its scope | d |
+| 09:07 | reconciliation | h |
+| 09:07 | the scan store self citation count is sixteen at head and the acceptance grep matches neither the list nor the tree | i |
+| 10:01 | chore(workbench): reconcile the session's records; the self-citation count is sixteen, not twelve | g |
+| 10:01 | reconciliation | h |
+| 10:19 | chore(workbench): the self-citation count is stamped, not asserted; second reconciliation | g |
+| 10:20 | reconciliation | h |
+| 10:21 | chore(workbench): close the 260828-0846 session coherent on the third reconciliation | g |
+| 10:39 | coder release bump v10 19 1 | h |
+| 10:40 | chore(release): v10.19.1 | g |
+| 10:41 | a coder dispatch wrote its history entry to shared history at the project root | i |
+| 10:41 | chore(workbench): file the misplaced coder history entry as an issue | g |
+| 11:05 | docs(workbench): the five citation-convention decisions are answered | g |
+| 23:42 | shaper citation form drops store segment | h |
+| 23:43 | chore(workbench): anticipate the Circle "citation form drops the store segment" | g |
+
+## 2026-08-29 (Sat) [9-11.2]
+
+| Time | Topic | Src |
+|------|-------|-----|
+| 09:06 | coder release bump v10 19 2 | h |
+| 10:54 | docs(workbench): triage the eighteen open decisions left in terminal Circles | g |
+| 11:07 | chore(release): v10.19.2 | g |
+| 11:09 | reconciliation | h |
 
 ## Total commits
 
-883 git commits since project start (2026-06-21).
+898 git commits since project start (2026-06-21).
