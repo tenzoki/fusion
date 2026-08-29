@@ -4,14 +4,14 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260829-1132: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
-**Active spec/plan:** (none yet)
+**Active spec/plan:** circles/260828-2342-citation-form-drops-store-segment/planning/260829-1226_*_citation-form-drops-store-segment.md
 **Active session history:** circles/260828-2342-citation-form-drops-store-segment/history/260829-1133-orchestrator-session.md
 
 ---
 
 ## Directive
 
-When this Circle closes, a record is cited by its storeless basename with the marker wildcarded, `YYMMDD-HHMM_*_<topic>.md`, and nothing in the shipped text or in fusion's own workbench cites one any other way. `rules/fusion-workbench-conventions.md` `## Filename Patterns` states that form, states that a citation carrying a store segment is a violation, and states the uniqueness of (stamp, slug) with its scope named as live tree plus archive and the commit it was measured at; a test pins that uniqueness over both so a collision reddens `npm test`. The twenty-one shipped lines that place one of fusion's own records "in `$SCAN_*`" say instead that the record is fusion's own, and a lint keeps `$SCAN_*` from standing beside a record stamp in shipped text again; bare stamps in the shipped text have been rewritten to the full form so the reference-resolution gate judges what it used to skip as `stamp-bare`. The three citation gates and the archive step's safety filter recognise the storeless form, and the gates report a store-prefixed citation as an error rather than resolving it through `archive/`. A new helper, `bin/fusion-citation-check`, wraps the citation-scan grammar and reports a stdout verdict, never a gate, over a consuming project's workbench and its own `CLAUDE.md`, `rules/`, `.claude/rules/` and `docs/`; `/fusion:cleanup` prints that verdict line in its report. The old store-prefixed form has been swept from the whole workbench, `archive/` included.
+See `**Active spec/plan:**` above. The cited spec or plan states the Directive in force.
 
 ## Grounding snapshot
 
