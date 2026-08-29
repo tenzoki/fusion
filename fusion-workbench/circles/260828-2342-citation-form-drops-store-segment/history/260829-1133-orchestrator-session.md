@@ -3,7 +3,7 @@
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 **Directive:** See `**Active spec/plan:**` of the Circle record once a plan exists; until then the record's `## Directive` prose: citation form drops the store segment (260828-2342-citation-form-drops-store-segment).
 **Mode:** custom (Circle run: shape done, plan next)
-**Status:** In progress
+**Status:** Complete
 
 ## Snapshot at start
 
@@ -45,3 +45,102 @@
 - Artifact↔Directive: commits move toward the stated Directive: `3276b1e1` repairs what the Turn-1 sweep damaged and fixes the grammar's marker slot, `a60d1fea` ships the sweep behind the three guards decision `260829-1623` chose; none orthogonal. Clause 12 (the `v10.20.0` tag) is outside the Directive and still unmet: no tag at HEAD, `bin/fusion-review-coverage --since 66b486e0^` `uncovered=3`.
 - Grounding↔Directive: 7 active decisions consistent / 0 conflicting (`260829-1225_*` and `260829-1623_*` `_i_`, the five `260828-0904_*` `_i_`; `260815-2109_*` leaves the uncovered-range choice to the user, as before).
 **Rebalance recommendation:** none
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 3 (`bin/fusion-events turns`) |
+| Tasks resolved | 14 (12 plan steps, R1, G1) |
+| Tasks skipped/deferred | 0 |
+| Issues created | 10 (`filed issue`, Circle and shared stores) |
+| Issues resolved | 8 (`now_c issue`) |
+| Decisions answered (`_o_`→`_a_`) | 2 filed this session, both since implemented |
+| Decisions implemented (`_a_`→`_i_`) | 7 (`now_i decision`) |
+| Commits | 9 (`git rev-list --count f659b04b..HEAD`) |
+| Agent errors | 0 |
+| Human gates hit | 5 (plan gate, repair Turn, sweep-shipping decision, stop conditions, plus the decision at the plan gate) |
+
+## Per-Turn Log
+
+### Turn 1
+- Tasks: S1-S12, all done; commits 4b8f769d (A), f1099c5f (B), e9f2ed0b (C)
+- Review findings: Circle review 260829-1345 filed 3 (1 High, 1 Medium, 1 Low)
+- Circuit breaker: OK; Coherence: ok
+
+### Turn 2
+- Task R1 (repair the sweep damage and the grammar boundary); commit 3276b1e1; 4 issues closed, 1 filed; Coherence: ok
+
+### Turn 3
+- Task G1 (bin/fusion-citation-sweep with three guards, idempotency test); commit a60d1fea; decision 260829-1623 implemented; supplementary review 260829-1813 filed 3 (1 Medium, 2 Low); Coherence: ok
+
+## Review coverage
+
+**Range:** `f659b04b..HEAD` — 9 commits
+**Covered by:** 260829-1345-coderev-circle-closure-storeless-citation-form.md (66b486e0..e9f2ed0b), 260829-1813-coderev-supplementary-repair-turns-sweep-ships.md (e9f2ed0b..a60d1fea)
+**Not covered:** dfd567c4, 66b486e0, 60592fa3, 89f67d66 (workbench bookkeeping only)
+**Carried out-of-scope files:** none
+
+## Remaining Work
+
+Open in the closed Circle, for a follow-on: 260829-1348_*_ (playmaker head-field rule text, Low); 260829-1623_*_ (starred shell illustration in a terminal record); 260829-1810_*_ (--repair rewrites two unfenced exhibits, Medium); 260829-1811_*_ (stack trace on a nonexistent extra path, Low); 260829-1812_*_ (three head-field counts in one file, Low); the marker-plus-wildcard double-star defect filed at closure. Shared store: 260827-0410, 260828-0044, 260828-0853, 260828-1041 unchanged.
+
+## Commits
+
+| Hash | Message | Task |
+|------|---------|------|
+| dfd567c4 | activate the Circle | activation |
+| 66b486e0 | plan lands, record cites it, reach decision answered | plan |
+| 4b8f769d | grammar moves to hooks/lib | S1 |
+| f1099c5f | citation form drops the store segment | S2-S8, S10 |
+| e9f2ed0b | v10.20.0, cleanup verdict line, records realised | S9, S11, S12 |
+| 3276b1e1 | the sweep repairs what it broke | R1 |
+| a60d1fea | the sweep ships behind three guards | G1 |
+| 60592fa3, 89f67d66 | Circle closes coherent; closure note | closure |
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant P as Planner
+    participant C as Coder
+    participant CR as Coderev
+    participant R as Reconciler
+    participant PM as Playmaker
+
+    O->>P: plan the Circle
+    P-->>O: 12 steps + decision 260829-1225
+    O->>U: plan gate + decision
+    U-->>O: option 1, approve
+    Note over O: Turn 1
+    O->>C: S1 (4b8f769d)
+    O->>C: S2-S4, S5-S8, S10 (f1099c5f)
+    O->>C: S9, S11, S12 (e9f2ed0b)
+    Note over O: Converged
+    O->>R: reconciliation
+    R-->>O: coherent
+    O->>CR: Circle review
+    CR-->>O: 1 High, 1 Medium, 1 Low
+    O->>U: repair Turn?
+    U-->>O: yes
+    Note over O: Turn 2
+    O->>C: R1 (3276b1e1)
+    O->>U: ship the sweep? (decision 260829-1623)
+    U-->>O: option 2
+    Note over O: Turn 3
+    O->>C: G1 (a60d1fea)
+    O->>R: reconciliation, second pass
+    R-->>O: coherent
+    O->>CR: supplementary review
+    CR-->>O: 1 Medium, 2 Low
+    O->>U: stop conditions (12 clauses)
+    U-->>O: all hold except 12
+    Note over O: Circle closed _c_, tag v10.20.0
+    O->>PM: portfolio refresh
+```
+
+## Portfolio update
+
+Playmaker run 260829-1840-playmaker-orchestrator-phase4.md regenerated the portfolio after the closure: 0 anticipated, 0 active, 16 closed, 3 bounded, 1 superseded; recommendation is to shape the backlog entry 260814-1733_*_bounded-executor-dispatches.md; warnings name the six open defects left in this Circle and the checker's dangling=245.
