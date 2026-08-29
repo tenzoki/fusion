@@ -215,7 +215,7 @@ A project declares its languages in `CLAUDE.md`: `**Language:** <en|de>` (chat) 
 
 Head labels defined in a shipped template (`**Decidability:**`, `**Domain:**`) stay English in every project; the artifact body under them follows the artifact language. Existing artifacts are not translated.
 
-The reasoning, the stylometric-profile resolution (including the per-family missing-variant fallback and the deliverable-profile case) and the settled edge readings are authored in `rules/project-language.md`, emitted to the `editor`; decision `260827-1056` (in `$SCAN_DECISIONS`) fixed this partition and what the core above must carry.
+The reasoning, the stylometric-profile resolution (including the per-family missing-variant fallback and the deliverable-profile case) and the settled edge readings are authored in `rules/project-language.md`, emitted to the `editor`; decision `260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md`, a record in fusion's own workbench, fixed this partition and what the core above must carry.
 
 ## Filename Patterns
 
