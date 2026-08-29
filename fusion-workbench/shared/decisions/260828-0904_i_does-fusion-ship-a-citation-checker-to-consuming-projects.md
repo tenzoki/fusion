@@ -26,3 +26,5 @@ Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`
 
 ---
 Answered: 260828-0904_*_does-fusion-ship-a-citation-checker-to-consuming-projects.md — option 1, user 2026-08-28: a bin/ helper `fusion-citation-check` wrapping the citation-scan grammar, stdout verdict, never a gate.
+
+Implemented: f1099c5f — `bin/fusion-citation-check` over `hooks/citation-check.ts` and the grammar in `hooks/lib/citation-scan.ts` (moved there in `4b8f769d`); stdout `verdict=`, exit 0 on any completed check; `/fusion:cleanup` Step 8 prints the line (plan step 9, commit C).

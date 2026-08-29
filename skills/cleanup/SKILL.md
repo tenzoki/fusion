@@ -161,7 +161,7 @@ Report: the list of commits created (hash + summary) and push result.
 Dispatch the reconciler to bring tracking files in line with ground truth.
 
 - **Skip when nothing moved.** `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-cadence-anchor" changed-since last_reconcile_commit` — only `changed=no` skips (the helper's header carries the contract; `unknown` never does): report the skip and continue to Step 4. Otherwise dispatch, and after the reconciler returns, `set last_reconcile_commit "$(git rev-parse HEAD)"` through the same guarded helper.
-- Use the `$DOMAIN` captured in Step 1. **This skill obtains the domain; it never decides one.** The decision is made in exactly one place — Setup Step 5 of `$FUSION_SRC/agents/orchestrator.md` — and `agentstate.yaml` carries the verdict that run produced. A second statement of that heuristic anywhere else drifts from the first and the two then disagree inside a single session, which is what the plugin's own `domain-cascade.test.ts` now fails on: it scans the file set `REACH.fileSet` names in `hooks/lib/domain-cascade.ts`, whose reach `describeReach()` renders into `README-hooks.md` and the suite compares byte-for-byte, and only the orchestrator's prompt may state the cascade. Read the reach off that rendered block rather than from a copy here, which is how the claim in this file went one file set short of the gate once already.
+- Use the `$DOMAIN` captured in Step 1. **This skill obtains the domain; it never decides one.** The decision is made in exactly one place, Setup Step 5 of `$FUSION_SRC/agents/orchestrator.md`, and `agentstate.yaml` carries the verdict that run produced.
 - With no `agentstate.yaml` (a cleanup run outside an orchestrator session), `$DOMAIN` is `code` — the same fallback `/fusion:next` and `/fusion:direct` take, and the cascade's own no-evidence exit. Report `$DOMAIN_SOURCE` beside it, never just the value.
 - `Agent(fusion:reconciler)` with the dispatch prompt prefixed by `**Domain:** $DOMAIN` on its own line.
 - Read the reconciler's returned summary; note any discrepancies it fixed or flagged.
@@ -218,6 +218,7 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 - Archive: files moved (count) into `<archive folder>` / nothing to archive
 - Normative surfaces changed: entries approved and applied, per surface; every entry that came back `stale` or `failed`, by id and reason; or that the ledger was rejected, or that the survey proposed nothing
 - Activity log: updated
+- Citations: the `verdict=`, `store-prefixed=` and `dangling=` lines of `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-citation-check" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-citation-check" | grep -E '^(verdict|store-prefixed|dangling)='`, else `citations: helper-missing`
 - Normative surfaces, current state: the date of the last consolidation run, or that none has run, followed by the current size in bytes of the decision records, the project's own rule files, and `CLAUDE.md`
 
 **Where the consolidation line comes from.** It is a read-only measurement. It dispatches nothing, writes nothing, and runs under `--dry-run` exactly as it does on a full run. It reports the state of the surfaces; Step 6 is what changes them, and only through the gate.

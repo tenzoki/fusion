@@ -26,3 +26,5 @@ Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`
 
 ---
 Answered: 260828-0904_*_does-the-mandated-citation-form-include-the-store-segment.md — option 1, user 2026-08-28: the citation form is the storeless basename with the marker wildcarded, `YYMMDD-HHMM_*_<topic>.md`; the store segment is dropped, the wildcard stays.
+
+Implemented: f1099c5f — `rules/fusion-workbench-conventions.md` `## Filename Patterns` mandates `YYMMDD-HHMM_*_<topic>.md`; `hooks/lib/citation-scan.ts` reports a store segment as `store-prefixed` and the three gates count it as a violation; `hooks/scripts/citation-sweep.mjs` rewrote the workbench and the shipped surface to the form.

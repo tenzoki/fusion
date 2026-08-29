@@ -26,3 +26,5 @@ Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`
 
 ---
 Answered: 260828-0904_*_does-the-mandated-citation-form-include-the-store-segment.md — option 3, user 2026-08-28: moot under the storeless form; a citation carries no store, so an archive move breaks nothing and the gate needs no archive lookup.
+
+Implemented: f1099c5f — `findRecord` in `hooks/lib/citation-scan.ts` matches a storeless basename over the whole index, `archive/` included, with no path arithmetic; `anchoredUnder`, `unsweep`, `anchoredAt` and `ARCHIVE_SWEEP_RE` are deleted.

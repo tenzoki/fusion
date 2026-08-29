@@ -14,3 +14,5 @@ Acceptance: the simulation above finds 0 records cited only in wildcard form tha
 
 ---
 Reconciled 260828-0907 (session 260828-0846-orchestrator-session.md, HEAD ffc6ae88): still open. `skills/archive/SKILL.md:199` builds `bn` from the live basename and runs `grep -r -l -F -e "$bn" -e "$rel"`; no marker generalisation. Simulation figures (75 / 863) not re-run this pass.
+
+Resolved: f1099c5f — `skills/archive/SKILL.md` filter 3 derives one `grep -E` key from the basename with the marker generalised to `_[a-z*]_`; `hooks/lib/__tests__/archive-filter-key.test.ts` runs the skill's own `key=` derivation and asserts it matches `_*_` and `_c_` spellings and not a neighbouring stamp.

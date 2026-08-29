@@ -26,3 +26,5 @@ Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`
 
 ---
 Answered: 260828-0904_*_should-the-uniqueness-claim-state-its-scope.md — option 1, user 2026-08-28: the sentence names its scope (live tree and archive) and the commit it was measured at, and a test pins (stamp, slug) uniqueness so a collision reddens npm test.
+
+Implemented: f1099c5f — the sentence in `## Filename Patterns` names the scope (live tree and `archive/`) and the commit (`4b8f769d`, 2 235 basenames, 0 collisions); `hooks/lib/__tests__/workbench-citation-lint.test.ts` pins marker-normalised basename uniqueness and asserts the walk saw `archive/`.

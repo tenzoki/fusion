@@ -30,3 +30,5 @@ Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`
 
 ---
 Answered: 260828-0904_*_are-shipped-record-citations-provenance-or-pointers-for-a-consuming-agent.md — option 1, user 2026-08-28: shipped record citations are provenance for fusion's maintainers; they name fusion's own workbench and never a consumer resolver key, and a lint forbids `$SCAN_*` beside a record stamp in shipped text.
+
+Implemented: f1099c5f — the 19 `$SCAN_*` self-citations in `agents/orchestrator.md`, `agents/curator.md`, `agents/planner.md`, `skills/archive/SKILL.md` and `skills/next/SKILL.md` now say the record is fusion's own in the storeless form; `hooks/lib/__tests__/reference-resolution-lint.test.ts` fails when a stamp and a `$SCAN_` token share a line outside a fence.

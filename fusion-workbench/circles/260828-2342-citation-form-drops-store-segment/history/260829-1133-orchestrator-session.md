@@ -18,3 +18,4 @@
 - S1 done, commit 4b8f769d (895 hook-test lines freed). S2-S4 dispatched as one coder bundle.
 - S2-S4 done, uncommitted (commit B pending the sweep): 821 store-prefixed live citations and 112 shipped ones red as planned; sweep dry-run 16283 rewrites in 2115 files. S5-S8 dispatched.
 - S5-S8 done, uncommitted: 20 $SCAN_* lines rewritten (plan said 19), lint, uniqueness test, archive filter probe, bin/fusion-citation-check (8227 store-prefixed on this repo before the sweep). S10 dispatched.
+- S10 done; commit B f1099c5f: 2240 files, 794 tests green. Sweep not idempotent, filed as an issue in this Circle. S9, S11, S12 dispatched (commit C).

@@ -33,3 +33,5 @@ Option 1. The plan proceeds on it; if the user picks option 2 instead, plan step
 
 ---
 Answered: 260829-1225_*_which-path-shaped-tokens-does-the-storeless-form-reach-beyond-a-record-citation.md — option 1, user 2026-08-29 at the plan gate: one form everywhere; a Circle is cited by its bare directory name, the two head fields carry the storeless basename, consumers resolve by a workbench-wide index.
+
+Implemented: f1099c5f — option 1: `circle-record` and `circle-dir` tokens are `store-prefixed` like a record; `rules/circle-records.md` and `agents/orchestrator.md` `## Circle head fields` carry the storeless basename in both head fields; no line-shape exemption exists in `hooks/lib/citation-scan.ts`.
