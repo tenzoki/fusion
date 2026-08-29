@@ -66,3 +66,6 @@ Filed: `260829-1348_*_circle-records-names-playmaker-as-a-resolver-of-the-head-f
 3. Finding 3 and the two notes at any cleanup.
 
 Release note: none of the three blocks `v10.20.0` as tagged; the checker and the gates are correct. The damage is in workbench records, not shipped code.
+
+---
+Reconciler annotation, 260829-1805 (HEAD a60d1fea): finding 1 resolved at `3276b1e1` (issue `260829-1346` `_c_`; 42 head fields, 239 tails, 9 filenames repaired; dry-run `rewrites=0`); finding 2 resolved at `3276b1e1` (issue `260829-1347` `_c_`; `MARKER_SLOT` in `hooks/lib/citation-scan.ts`); finding 3 still open (issue `260829-1348` `_o_`). Section 4's `citation-sweep.mjs` line references are historical: the script was retired at `a60d1fea` into `hooks/citation-sweep.ts`.

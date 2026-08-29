@@ -35,3 +35,13 @@
 - Phase 3 coherent; Circle review (260829-1345) found 1 High, 1 Medium, 1 Low. User chose a repair Turn (Revise Artifact). Turn 2: R1 dispatched.
 - R1 done, commit D 3276b1e1 (42 head fields, 239 tails, 9 filenames repaired; dry-run rewrites=0; 797 tests). Issue filed for the starred shell illustration; decision filed on shipping the sweep. Turn 2 ends.
 - Decision 260829-1450 answered option 2. Turn 3: G1 dispatched.
+- G1 done, commit E a60d1fea; decision 260829-1623 implemented (_i_). Turn 3 ends; queue converged; Phase 3 re-run.
+## Coherence
+<!-- RECONCILER-OWNED -->
+**Reconciled:** 260829-1805, second pass, HEAD a60d1fea
+**Verdict:** coherent
+**Edges:**
+- Artifact↔Grounding: 14 claims verified (12 plan steps + R1 + G1) / 0 drift items / 1 open coderev issue (`260829-1348_*`, Low, rule text on playmaker; the High and Medium findings closed at `3276b1e1`). Sweep dry-run `rewrites=0`, `bin/fusion-citation-check` `store-prefixed=0`, `npm test` 805 green. Residual: `260829-1623_*_the-sweep-starred-both-markers-of-a-shell-illustration-in-a-terminal-circle-record.md` still open (line 104 of the `260805-2005` record unchanged).
+- Artifact↔Directive: commits move toward the stated Directive: `3276b1e1` repairs what the Turn-1 sweep damaged and fixes the grammar's marker slot, `a60d1fea` ships the sweep behind the three guards decision `260829-1623` chose; none orthogonal. Clause 12 (the `v10.20.0` tag) is outside the Directive and still unmet: no tag at HEAD, `bin/fusion-review-coverage --since 66b486e0^` `uncovered=3`.
+- Grounding↔Directive: 7 active decisions consistent / 0 conflicting (`260829-1225_*` and `260829-1623_*` `_i_`, the five `260828-0904_*` `_i_`; `260815-2109_*` leaves the uncovered-range choice to the user, as before).
+**Rebalance recommendation:** none

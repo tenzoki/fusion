@@ -15,3 +15,5 @@ The same sentence's second consumer claim was already present before the sweep; 
 ## Acceptance
 
 - Either `agents/playmaker.md` reads `**Active spec/plan:**` and says how it resolves the basename, or `rules/circle-records.md:240` names the orchestrator's resume alone.
+
+Reconciled: 260829-1805, reconciler. Still open at `a60d1fea`: `rules/circle-records.md:240` still names playmaker among the resolvers of the head field; `grep -c "Active spec/plan" agents/playmaker.md` is 0. No commit since `e9f2ed0b` touches either file for this.

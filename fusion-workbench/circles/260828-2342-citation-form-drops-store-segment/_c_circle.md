@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260829-1132: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
+**Claim:** Unclaimed
 **Active spec/plan:** 260829-1226_*_citation-form-drops-store-segment.md
 **Active session history:** 260829-1133-orchestrator-session.md
 
@@ -64,6 +64,8 @@ Binding artifacts cited, not copied: the five `shared/decisions/260828-0904_*` r
 ## Turn log
 
 - Turn 1 (session 260829-1133): commits 4b8f769d..e9f2ed0b; Coherence verdict coherent; session history: 260829-1133-orchestrator-session.md
+- Turn 2 (session 260829-1133): commit 3276b1e1; Coherence verdict ok; session history: 260829-1133-orchestrator-session.md
+- Turn 3 (session 260829-1133): commit a60d1fea; Coherence verdict ok; session history: 260829-1133-orchestrator-session.md
 
 ## Activation proposal
 

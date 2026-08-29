@@ -27,3 +27,4 @@ Option 2. The guards are mechanical, the test is what fusion's own run lacked, a
 
 ---
 Answered: 260829-1623_*_does-fusion-ship-the-citation-sweep-or-only-the-checker-and-under-which-guards.md — option 2, user 2026-08-29: the sweep ships as `bin/fusion-citation-sweep` with three guards (clean tracked tree for --write, census before write with --yes, no bare-stamp resolution) and a shipped idempotency test that blocks a release; no pipeline runs it.
+Implemented: a60d1fea — bin/fusion-citation-sweep with the three guards and the idempotency test.

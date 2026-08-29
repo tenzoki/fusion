@@ -11,3 +11,5 @@ Reconciled 260829-1343: still open. `node hooks/scripts/citation-sweep.mjs --dry
 
 ---
 Resolved: 260829-1420, coder (Turn 2 task R1). A truncated citation (`<stamp>_o_`, `<stamp>_*_`, `<stamp>_d`, `<stamp>_…`) is one `bare-record` token now and is rewritten whole (literal marker to `_*_`) or left whole; the `stamp-bare` rewrite that chained the tails is removed from `citation-sweep.mjs`. `citation-sweep.test.ts` carries the three truncated shapes and a second dry run over the fixture as the idempotency check. Over this repository, after `--repair --write` and one `--write` (119 literal markers on truncated citations the first sweep could not see), `node hooks/scripts/citation-sweep.mjs --dry-run` reports `files=0 rewrites=0`.
+
+Reconciled: 260829-1805, reconciler. Closure verified at `3276b1e1` and re-verified at `a60d1fea`: `bin/fusion-citation-sweep` dry-run over the tree prints `rewrites=0`, `bin/fusion-citation-check` prints `store-prefixed=0`, `npm test` 805 green.
