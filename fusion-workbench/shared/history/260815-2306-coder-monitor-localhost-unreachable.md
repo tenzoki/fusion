@@ -1,6 +1,6 @@
 # Coder — the monitor's printed address becomes an address it answers at
 
-**Stamp:** 260815-2306-coder-monitor-localhost-unreachable.md
+**Stamp:** 260815-2306
 **Agent:** coder
 **Status:** Complete
 **Source record:** `260812-0253_*_the-monitor-is-no-longer-reachable-on-localhost.md`

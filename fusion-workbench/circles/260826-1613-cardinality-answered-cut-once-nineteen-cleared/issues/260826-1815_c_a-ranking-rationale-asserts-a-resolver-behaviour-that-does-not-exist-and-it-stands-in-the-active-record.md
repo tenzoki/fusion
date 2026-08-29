@@ -48,7 +48,7 @@ The fourteen open records in `circles/260825-2023-presence-travels-monitor-filte
 are in neither. The new Circle's own issue store held nothing at activation.
 
 The same holds for the decision this Circle's first capability is built to answer:
-`260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md_*` lives in the closed Circle's `decisions/` store and is not in `SCAN_DECISIONS`
+`260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md` lives in the closed Circle's `decisions/` store and is not in `SCAN_DECISIONS`
 either.
 
 ## The precedent, which shows this is a property and not a fault
@@ -75,7 +75,7 @@ as cited steps rather than leave a scan to find them.
 And it **invents a mechanism rather than misreporting a number.** The nine instances the parent
 Circle closed on were counts that went stale. This is a claimed behaviour of `bin/fusion-paths`
 that the program does not have and never had, which is the class the orchestrator's own fabricated
-line range belongs to and which the four options of `260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md_*` do not reach.
+line range belongs to and which the four options of `260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md` do not reach.
 
 ## What is not claimed
 
@@ -109,4 +109,4 @@ question rather than two record questions, and it is filed separately.
 Reconciliation 260827-1528-reconciliation.md: still open. The false clause stands unchanged at `_t_circle.md`, `## Activation proposal`, third paragraph ("closing its parent removed all nineteen records from every agent's scan set"). No commit since filing touched the record's proposal section.
 
 ---
-Resolved: the clause at `_t_circle.md` `## Activation proposal`, third paragraph, is replaced by the true statement (records inside a non-active Circle are in another Circle's scan set only when a run names that Circle as `fusion-paths`' second argument; nothing was removed and nothing is brought back), with a `Corrected 260827 per …` citation of this record appended. Edited by coder on the user's approval at the gate of plan `260827-1756_*_repair-the-twenty-open-defect-records.md`, step 1. The prompt review is filed separately (`260826-1901_*_the-playmakers-rationale-contract-requires-a-citation-and-caps-the-read-that-would-check-it.md_*`, `260826-1902_*_the-activation-proposal-section-has-no-content-contract-on-the-one-surface-that-is-never-regenerated.md_*`).
+Resolved: the clause at `_t_circle.md` `## Activation proposal`, third paragraph, is replaced by the true statement (records inside a non-active Circle are in another Circle's scan set only when a run names that Circle as `fusion-paths`' second argument; nothing was removed and nothing is brought back), with a `Corrected 260827 per …` citation of this record appended. Edited by coder on the user's approval at the gate of plan `260827-1756_*_repair-the-twenty-open-defect-records.md`, step 1. The prompt review is filed separately (`260826-1901_*_the-playmakers-rationale-contract-requires-a-citation-and-caps-the-read-that-would-check-it.md`, `260826-1902_*_the-activation-proposal-section-has-no-content-contract-on-the-one-surface-that-is-never-regenerated.md`).

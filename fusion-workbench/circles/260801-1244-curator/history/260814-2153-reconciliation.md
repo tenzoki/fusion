@@ -133,7 +133,7 @@ record; see below. The `unusable=1` is the conceptrev plan evaluation, tracked i
 
 Every Turn's fix commits were opened by the *next* Turn's review. Turn 6 is the last Turn, so its fix
 commit reaches closure unopened, and the coverage helper says so. The record separates this from
-`260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md_o`, which names a path where a review never ran: here the review ran, on the correct
+`260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, which names a path where a review never ran: here the review ran, on the correct
 range, reported `not-opened=none`, and the uncovered commit exists *because* it had findings and they
 were fixed. Three candidate answers are named and none is chosen, because the third of them changes
 what a `**Reviewed-range:**` field asserts and would be a decision rather than a repair.
@@ -167,13 +167,13 @@ Plus the one defect record named above.
 `260801-1244-curator`, `fusion-workbench/agentstate.yaml` and the session
 history's non-Coherence sections are outside the reconciler's write set. Four findings land on them
 and stay as records for the orchestrator's Phase-4 write: the Circle record's title and
-`## Dependencies` (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o`), its `## Grounding snapshot` lag on the answered growth-bound
-decision (`260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o`), the missing Turn entries (`260814-2017_o`), and the empty transition
+`## Dependencies` (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`), its `## Grounding snapshot` lag on the answered growth-bound
+decision (`260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`), the missing Turn entries (`260814-2017_o`), and the empty transition
 block on the newest decision record (`260814-2017_o`).
 
 **No marker was moved to `_c_` for a record whose remedy is a choice.** The one candidate in the
 Circle, `260814-1850_*_the-halt-that-guards-the-audit-trail-…`, is correctly filed as a defect and
-cites its closing decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md_o`, which is still open and still carries no footer block.
+cites its closing decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`, which is still open and still carries no footer block.
 
 ---
 

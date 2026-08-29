@@ -112,11 +112,11 @@ than twice: `260815-1206_*_three-churn-references-…` (item 2) and
 edit — the `churn detection` clause and the four-value domain list left together. The version was
 **not** bumped; step 15 owns that.
 
-**`260815-1206_o_` does not close, and that was checked rather than assumed.** Item 1,
+**`260815-1206_*_` does not close, and that was checked rather than assumed.** Item 1,
 `.gitignore:39`'s `!bin/fusion-churn-rank`, is still live. It stays out of step 9's scope on
 purpose: that block now carries two stale re-inclusion exceptions and step 11 adds a third, so it is
 one sweep rather than three edits in three steps. The record was appended to and keeps `_o_`.
-`260815-1251_o_` **did** close (`git mv` to `_c_`) — its whole ask was the append, and the append is
+`260815-1251_*_` **did** close (`git mv` to `_c_`) — its whole ask was the append, and the append is
 made.
 
 ## Judgements — where a statement my change made false had no gate to catch it

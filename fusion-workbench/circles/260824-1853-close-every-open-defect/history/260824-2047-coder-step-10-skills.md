@@ -1,6 +1,6 @@
 # Step 10 — `skills/*/SKILL.md`: thirteen defect records closed on the skill bodies
 
-**Date:** 260824-2047-coder-step-10-skills.md
+**Date:** 260824-2047
 **Agent:** coder
 **Plan:** `260824-1905_*_plan-close-every-open-defect.md`, step 10
 **Status:** Complete

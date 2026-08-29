@@ -110,18 +110,18 @@ Each was checked against the mechanism it names, not against its own text:
 
 | Record | Still open because |
 |---|---|
-| `260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md_*` gitignore partition | No step of `/fusion:setup` reads a project's `.gitignore` for anything but `.claude/settings.local.json`. The repair the answered decision commits to is unbuilt. |
+| `260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md` gitignore partition | No step of `/fusion:setup` reads a project's `.gitignore` for anything but `.claude/settings.local.json`. The repair the answered decision commits to is unbuilt. |
 | `260825-1250_*` bounded-Circle spec | `grep -c '^- \[x\]'` returns 0 and `'^- \[ \]'` returns 49. The Circle is still `_b_` and no `SCAN_*` reaches it. |
 | `260825-1250_*` conditional criterion | C1's seventh is still `- [ ]` with no third notation anywhere. |
 | `260825-1250_*` attribution | The criterion is a claim about agent behaviour; a retrospective correction is not agent behaviour. Reach and gate both undecided. |
-| `260825-1259_*_the-rebalance-gate-mandates-four-options-and-the-output-rule-caps-a-gate-at-three.md_*` Rebalance gate | `agents/orchestrator.md:992` still says four options; `rules/user-facing-output.md` `## Questions and gates` still caps a gate at three. |
-| `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md_*` helper lag | Every call site is still `"$FUSION_PLUGIN_ROOT/bin/<name>"`, and part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` is still unanswered. |
+| `260825-1259_*_the-rebalance-gate-mandates-four-options-and-the-output-rule-caps-a-gate-at-three.md` Rebalance gate | `agents/orchestrator.md:992` still says four options; `rules/user-facing-output.md` `## Questions and gates` still caps a gate at three. |
+| `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` helper lag | Every call site is still `"$FUSION_PLUGIN_ROOT/bin/<name>"`, and part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` is still unanswered. |
 
 **Nothing was closed in substance by the backfill without its marker moving.** The backfill
 added annotation lines and corrected one measurement; it resolved no defect.
 
 **Two records opened on statements their own commit had already falsified**, both annotated
-rather than edited. `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md_*` quotes the superseded counts. `260825-1250_*` on the
+rather than edited. `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` quotes the superseded counts. `260825-1250_*` on the
 bounded Circle opens by saying the spec `carries **Status:** Draft`, when `53d656f`, the commit
 that filed it, had set that header to `Partially Complete`. In both the substance is intact and
 the opening line describes a tree that had already moved.
@@ -140,7 +140,7 @@ and the dashboard among the frozen. This session reverses the pairing, which is 
 record rather than a seventh instance: it falsifies the diagnostic the family reasons from.
 
 It also falsifies a premise of the referral that closed the class.
-`260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md_*`'s `Resolved:` note refers the work to the backlog as a freeze detection over
+`260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`'s `Resolved:` note refers the work to the backlog as a freeze detection over
 the surviving surfaces, naming `turn_end` events among them. Here `turn_end` is precisely what
 did not fire, and the other two surfaces it names are unavailable in a session with no Circle
 and a deleted state file. A detection built to that description would report no freeze on this

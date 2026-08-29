@@ -40,7 +40,7 @@ Nothing below was read off a marker or a footer.
 | Cap head-room | always-on set vs `RULE_BASELINE` (86 573) | 88 679, delta 2 106, **9 894 left** of 12 000, exact |
 | `Retired:` defined at three places | `grep -n "Retired" rules/fusion-workbench-conventions.md` | `:328` marker row, `:432` annotation form, `:520` template footer |
 | 25 records annotated | `grep -rl "^Retired:" --include="*_i_*.md"` | **25**, exact |
-| No stray annotation | the 26th grep hit | the new `260815-2056_o_` decision's own empty template footer — correct, not a false positive |
+| No stray annotation | the 26th grep hit | the new `260815-2056_*_` decision's own empty template footer — correct, not a false positive |
 | `260814-1332` transitioned | filename + header + body | `_i_`, `**Status:** implemented`, `Answered:` cites the gate, `Implemented:` cites `c8eac96` |
 | `_i_` population | `find … -name "*_i_*.md" -path "*decisions*"` | **64** = the 63 enumerated + this record |
 | Turn-4 entry carries its range | `_t_circle.md:218` | `commits 9955e8f..9306f0a` |

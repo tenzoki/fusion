@@ -3,7 +3,7 @@
 **Sender:** coderev
 **Reviewed-range:** `e3da397..a6b4928`
 **Not-opened:** none
-**Date:** 260811-2309-coderev-turn-5-orchestrator-loop-and-bookkeeping-machinery.md
+**Date:** 260811-2309
 **Scope as dispatched:** the whole of Turn 5, four commits, with six named checks
 
 ---

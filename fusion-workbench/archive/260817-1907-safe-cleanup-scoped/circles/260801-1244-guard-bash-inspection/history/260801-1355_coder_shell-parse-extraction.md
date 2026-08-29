@@ -1,6 +1,6 @@
 # Coder — plan step 1: extract the shell parser, add quoted-word capture
 
-**Date:** 260801-1355_coder_shell-parse-extraction.md
+**Date:** 260801-1355
 **Agent:** coder
 **Circle:** `260801-1244-guard-bash-inspection`
 **Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 1 only

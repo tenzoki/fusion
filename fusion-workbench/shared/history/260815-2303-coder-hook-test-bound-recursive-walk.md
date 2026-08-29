@@ -1,6 +1,6 @@
 # Coder — the hook-test bound walks its own tree
 
-**Stamp:** 260815-2303-coder-hook-test-bound-recursive-walk.md
+**Stamp:** 260815-2303
 **Agent:** coder
 **Status:** Complete
 **Source record:** `260815-1935_*_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md`

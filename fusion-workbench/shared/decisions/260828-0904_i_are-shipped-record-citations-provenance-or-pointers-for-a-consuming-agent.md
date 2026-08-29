@@ -26,7 +26,7 @@ The always-on rule set and `agents/` carry failing growth bounds; option 2 and 3
 Option 1, with the analysis's prior verdict (260818-0715) as precedent that fusion-internal identifiers should not reach a consumer as instructions.
 
 ---
-Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, reconciliation note).
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md`, reconciliation note).
 
 ---
 Answered: 260828-0904_*_are-shipped-record-citations-provenance-or-pointers-for-a-consuming-agent.md — option 1, user 2026-08-28: shipped record citations are provenance for fusion's maintainers; they name fusion's own workbench and never a consumer resolver key, and a lint forbids `$SCAN_*` beside a record stamp in shipped text.

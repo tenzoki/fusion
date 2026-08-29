@@ -41,7 +41,7 @@ result is consumed only by the emit loop at `hooks/tracker.ts:432-448`, and
 `block`, `recordBlock`, `raiseHalt` or the hook response.
 
 Two consequences beyond log size. The dashboard's warnings panel holds thirty
-rows (`260802-2232_*_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md_c`), so a permanently-firing critical pushes real
+rows (`260802-2232_*_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md`), so a permanently-firing critical pushes real
 `guard_block` and `guard_halt` rows off it. And the warning loses its meaning as
 a signal: a level that is always on reports nothing about the current session,
 which is the question `agents/orchestrator.md:113` asks the churn file at Setup.

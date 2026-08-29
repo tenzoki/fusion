@@ -120,7 +120,7 @@ The record proposes **no change to the four profiles**, only an appended note. R
 
 ## Recommended sequencing
 
-1. `260822-0251_o_` first, and its part 2 before this Circle closes: `260822-0115_*_`
+1. `260822-0251_*_` first, and its part 2 before this Circle closes: `260822-0115_*_`
    is next to be worked and its whole argument is anchored to two lines that moved.
 2. `260822-0252_*_the-c04-c05-anchor-split-is-verified-in-english-and-asserted-for-german-where-its-premise-is-false.md` is an appended paragraph on a closed record and can go with any later pass.
 

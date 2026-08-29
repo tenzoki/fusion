@@ -287,8 +287,8 @@ The user is right that adding a length rule is refuted. The length rule exists a
 ## Recommendation for this week
 
 Answer decision `260810-0710`, which asks exactly this question and is deferred pending three
-lint-quality issues. **Two of the three are already closed** (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md_c`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md_c`);
-only `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md_o` remains. Close it, then take option 1 with the record's own bound: a rule that
+lint-quality issues. **Two of the three are already closed** (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`);
+only `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` remains. Close it, then take option 1 with the record's own bound: a rule that
 constrains a mechanical, syntactic property lands with an executable check or it does not land.
 
 Apply it first to `task_start`, because that one instance fixes the ETA (section 4), costs one
@@ -420,7 +420,7 @@ recommendation in section 3 belongs as the answer to the existing deferred decis
 - `agents/orchestrator.md:14, 19, 465, 1291`; the 16 agent prompts sized at HEAD.
 - `260801-2038_*_session-bookkeeping-froze-at-turn-1-…`;
   `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`;
-  `260810-0502_c`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md_c`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md_o`.
+  `260810-0502_c`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`.
 - `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`, cited throughout.
 - `git log`, 299 commits since 2026-08-01, classified by surface touched.
 

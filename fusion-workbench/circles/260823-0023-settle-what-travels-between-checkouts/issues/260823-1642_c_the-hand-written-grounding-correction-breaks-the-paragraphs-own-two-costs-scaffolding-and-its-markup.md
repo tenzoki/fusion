@@ -48,7 +48,7 @@ Read `_t_circle.md:26-32` byte-for-byte, including trailing whitespace (`grep -n
 
 ## Direction, not a prescription
 
-If `:30` is opened for the count correction that `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*` asks for, take these in the same edit — they are the same three lines and the same deadline, and a second pass over a frozen Grounding is not available.
+If `:30` is opened for the count correction that `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md` asks for, take these in the same edit — they are the same three lines and the same deadline, and a second pass over a frozen Grounding is not available.
 
 Recast `:29`'s promise to match what the paragraph now says: one accepted cost, plus the correction. Backtick the four literals and drop the trailing space. Either scope the convention list the way `skills/setup/SKILL.md` scopes it, or shorten it to the parts that hold unconditionally — read first, write only in the directory Setup ran in, report either way — and let the reader open Step 0g for the rest, which is what a worked convention is for.
 

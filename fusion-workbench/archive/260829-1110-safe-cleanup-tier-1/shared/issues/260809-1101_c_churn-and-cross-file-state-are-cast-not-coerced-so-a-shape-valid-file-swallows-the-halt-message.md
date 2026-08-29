@@ -9,7 +9,7 @@ next field access. The throw escapes to `hooks/tracker.ts:532`, which calls
 `respond()` with no argument, discarding the protected-path halt message the
 same tool call had already produced.
 
-This is the identical defect that `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md_c` closed for `escalation.json`.
+This is the identical defect that `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` closed for `escalation.json`.
 The fix was applied to one of the three state modules.
 
 ---
@@ -61,7 +61,7 @@ Two amplifiers. The state file is never repaired, because `saveChurn` at
 `hooks/tracker.ts:480` sits after the throw, so every subsequent tool call in
 the project takes the same path until a human deletes the file. And the one
 event that is emitted, `guard_error` at `hooks/tracker.ts:534`, is not rendered
-by the dashboard (`260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md_c`), so the condition is invisible there too.
+by the dashboard (`260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`), so the condition is invisible there too.
 
 ---
 

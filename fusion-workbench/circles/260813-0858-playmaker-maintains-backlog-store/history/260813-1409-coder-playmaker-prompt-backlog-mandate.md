@@ -1,6 +1,6 @@
 # Coder — step 2: the playmaker gains the backlog write, the mandate and the gate
 
-**Date:** 260813-1409-coder-playmaker-prompt-backlog-mandate.md
+**Date:** 260813-1409
 **Status:** Complete
 **Agent:** coder
 **Circle:** 260813-0858-playmaker-maintains-backlog-store

@@ -17,12 +17,12 @@ staged, the old one was not. HEAD therefore carries six records under two names 
 
 | Record | `_c_` twin added by |
 |---|---|
-| `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md_…fusion-plane-dry-run-rewrites-the-map…` | `c923935` |
-| `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md_…rebuild-map-drops-a-colliding-plane-uuid…` | `c923935` |
-| `260810-0500_*_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md_…the-queue-retirement-writes-through-unchecked-resolver-values…` | `3df0c17` |
-| `260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md_…map-put-reports-success-on-a-failed-write…` | `dd50efd` |
-| `260810-0744_*_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md_…map-view-s-cache-and-cleanup-die-in-the-subshell…` | `dd50efd` |
-| `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md_…an-unreadable-record-yields-an-empty-plane-comment…` | `dd50efd` |
+| `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md` | `c923935` |
+| `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md` | `c923935` |
+| `260810-0500_*_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md` | `3df0c17` |
+| `260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md` | `dd50efd` |
+| `260810-0744_*_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md` | `dd50efd` |
+| `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md` | `dd50efd` |
 
 Measured at HEAD `dd50efd`:
 
@@ -34,7 +34,7 @@ current marker; the six `_o_` deletions sit unstaged in the working tree.
 
 ## Why this is not simply a repeat
 
-`260807-1941_c_` closed the identical shape for three records on 260807, and its own "The fix"
+`260807-1941_*_` closed the identical shape for three records on 260807, and its own "The fix"
 section is explicit that it was closing the *instance* and not the *class*:
 
 > Worth considering separately, and deliberately not proposed here as a solution: whether a marker
@@ -46,7 +46,7 @@ contains nothing on marker-rename staging — so the class was left with neither
 question tracking it. Three days later it recurred at twice the volume, in three separate commits,
 in a session that never noticed.
 
-The general lesson `260807-1941_c_` recorded ("stage the containing directory with `-A`, or name
+The general lesson `260807-1941_*_` recorded ("stage the containing directory with `-A`, or name
 both the old and the new path") lives only in a closed defect record. Nothing an agent loads at
 Setup carries it.
 
@@ -66,10 +66,10 @@ The first command prints the six duplicated stems; the second shows six unstaged
 - [ ] The six deletions are staged and land, so `git ls-tree -r HEAD` returns each record exactly
       once under its current marker only.
 - [ ] The class is addressed rather than the instance: either a decision record is filed on the
-      staging convention for marker renames (the question `260807-1941_c_` deferred and nobody
+      staging convention for marker renames (the question `260807-1941_*_` deferred and nobody
       raised), or the convention is written where an agent reads it — `rules/fusion-workbench-conventions.md`
       `## State Markers` is the authoring home — and given a gate.
-- [ ] Whichever route is taken, `260807-1941_c_`'s deferral is answered explicitly rather than
+- [ ] Whichever route is taken, `260807-1941_*_`'s deferral is answered explicitly rather than
       left standing for a third recurrence.
 
 ---

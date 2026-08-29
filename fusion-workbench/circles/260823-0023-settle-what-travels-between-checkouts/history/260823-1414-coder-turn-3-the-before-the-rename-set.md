@@ -82,8 +82,8 @@ added words alone, and it stands over the ceiling either way, as it did before.
 ## Records closed
 
 Four, each with a `Resolved:` note and `_o_` -> `_c_`, all under
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/`: `260823-1402_*_four-hard-marker-citations-of-the-c1-circle-record-dangle-in-the-same-files-this-turn-repaired.md_*`, `260823-1404_*_a-question-the-closing-pass-left-to-the-user-has-no-open-record-anywhere-only-a-closed-defects-prose.md_*`,
-`260823-1407_*_the-live-plan-clauses-own-comment-still-says-the-tree-has-no-live-plan-and-two-stand-in-it.md_*`, `260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md_*`.
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/`: `260823-1402_*_four-hard-marker-citations-of-the-c1-circle-record-dangle-in-the-same-files-this-turn-repaired.md`, `260823-1404_*_a-question-the-closing-pass-left-to-the-user-has-no-open-record-anywhere-only-a-closed-defects-prose.md`,
+`260823-1407_*_the-live-plan-clauses-own-comment-still-says-the-tree-has-no-live-plan-and-two-stand-in-it.md`, `260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`.
 
 **The renames were checked for what they break**, that being the fault three of the four items descend
 from. A tree-wide search for `260823-14NN_<letter>_` outside the wildcard form returns nothing: the

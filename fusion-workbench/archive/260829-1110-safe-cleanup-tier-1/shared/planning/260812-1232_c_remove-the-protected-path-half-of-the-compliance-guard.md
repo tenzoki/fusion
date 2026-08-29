@@ -333,7 +333,7 @@ Two defect records and two decision records. None of them is a step in this plan
 |---|---|---|
 | `260812-1232_*_the-four-mechanisms-analysis-says-escalation-has-one-input-and-the-code-has-two.md` | defect | a load-bearing sentence in an analysis is inexact about the escalation counter's inputs |
 | `260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` | defect | found while reading the decision store for this plan; not caused by it |
-| `260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md` | decision | the successor to `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md_d`, carrying the measurement its deferral trigger asked for |
+| `260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md` | decision | the successor to `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`, carrying the measurement its deferral trigger asked for |
 | `260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md` | decision | whether `isFusionPluginCwd()` should keep standing the guard down here once the protected paths are gone |
 
 Two questions this plan raised turned out to be already on record and were **not** re-filed: `260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md` and `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`. Both are cited from the Open Questions above with what this plan changes about them.

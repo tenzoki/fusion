@@ -1,6 +1,6 @@
 # Coder — a backslash line continuation is spliced, closing the operand-hiding bypass
 
-**Date:** 260801-1535_coder_backslash-continuation-splice.md
+**Date:** 260801-1535
 **Agent:** coder
 **Circle:** `260801-1244-guard-bash-inspection`
 **Issue:** `260801-1513_*_backslash-line-continuation-splits-a-command-and-hides-its-operands.md`

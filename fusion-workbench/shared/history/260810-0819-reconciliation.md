@@ -70,20 +70,20 @@ defects found, none of which affects a verdict:
 
 | Record | Citation defect |
 |---|---|
-| `260805-0629_c_` executor verification | `agents/orchestrator.md:361` says `bugfixer` reports "the exact command run and the exit code"; `agents/bugfixer.md:101` still says only "Verification result (pass/fail)". The prompt over-states its own reach. |
-| `260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` depth bound | Cites the decision as `260809-1731_*_…`; the file is now `_i_`. Dead as a literal path — the instance `260808-0030_o_` predicts. |
+| `260805-0629_*_` executor verification | `agents/orchestrator.md:361` says `bugfixer` reports "the exact command run and the exit code"; `agents/bugfixer.md:101` still says only "Verification result (pass/fail)". The prompt over-states its own reach. |
+| `260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` depth bound | Cites the decision as `260809-1731_*_…`; the file is now `_i_`. Dead as a literal path — the instance `260808-0030_*_` predicts. |
 | `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md` rebuild collision | Cites the corrected header at `bin/fusion-plane:99-104`; it now sits at `:113-122`. |
 | `260810-0745_*_the-golden-approval-names-the-wrong-cohorts-and-absorbs-1749-bytes-on-the-largest-agent.md` golden cohorts | The correction table is right on every row; the prose sentence below it swaps shaper's and playmaker's totals (shaper is 101 624, playmaker 95 951). A correction that mis-states the thing it corrects. |
 
 ---
 
-## 3. Six records exist twice at HEAD — filed as `260810-0819_o_`
+## 3. Six records exist twice at HEAD — filed as `260810-0819_*_`
 
 `git ls-tree HEAD` returns **52** open records; disk holds **46**. The six-record gap is three
 add-only marker renames in `c923935`, `3df0c17` and `dd50efd`: the `_c_` name was staged, the `_o_`
 name was not. The six deletions sit unstaged in the working tree right now.
 
-This is the exact defect `260807-1941_c_` closed three days ago for three records. That record was
+This is the exact defect `260807-1941_*_` closed three days ago for three records. That record was
 honest — it said it was closing the instance and that the class fix ("whether a marker rename should
 go through `git mv` as a convention") was "a decision, not a fix". **No decision record was ever
 filed for it.** The class was left with neither a fix nor an open question, and recurred at twice
@@ -115,7 +115,7 @@ locking — but the consequence is that the queue is now a worse record of the s
 
 One thing the queue got right and should be credited: its header **does** carry
 `**Git HEAD at build time:** 8960e1a`, which is the ground `ff70d3a` added. It is missing only the
-`**Active Circle:**` line — which is exactly the residual `260810-0431_o_` was split out to carry.
+`**Active Circle:**` line — which is exactly the residual `260810-0431_*_` was split out to carry.
 
 ---
 
@@ -124,7 +124,7 @@ One thing the queue got right and should be credited: its header **does** carry
 Checked claim by claim: what each note says was done, was done; what each says is missing, is
 missing.
 
-### `260801-2038_o_` session bookkeeping — **HONEST**, one residual understated
+### `260801-2038_*_` session bookkeeping — **HONEST**, one residual understated
 
 Stayed `_o_`. `9bad4d6` added detection only (prompt section + 228-line lint), and the note's
 "Candidate 1 (prevention) is not built" is exact. The three "missing" claims (`skills/setup/SKILL.md`,
@@ -145,7 +145,7 @@ writes it.** A prompt-only fix has zero effect on its own session, by constructi
 distinct failure mode, it is not overridable, and it is what produced this instance. Appended to the
 record.
 
-### `260731-2246_c_` cadence empty key — **HONEST on its own criteria, OPTIMISTIC on the class**
+### `260731-2246_*_` cadence empty key — **HONEST on its own criteria, OPTIMISTIC on the class**
 
 Both commits are real and the docs half is acceptance-bearing, not padding: `e99f0ef` adds exactly
 the 670 bytes the note claims, and it is item 2 of the record's own "Recommended fix", so the record
@@ -160,7 +160,7 @@ nothing.** All seven cited siblings carry zero emptiness assertions today, and t
 concedes "This is the fix for one site, not for the pattern." No open record tracks the seven
 sites.
 
-### `260807-1515_c_` / `260810-0431_o_` queue outliving its Circle — **HONEST**
+### `260807-1515_*_` / `260810-0431_*_` queue outliving its Circle — **HONEST**
 
 The split is clean. Every claim in the Abschlussnotiz checks out: the single `### The queue's ground`
 definition keyed on `.active-circle`, the retirement riding the pointer clear, `mv` never `rm`, the
@@ -216,7 +216,7 @@ text in memory (no file mutated on disk):
 point they claim to enforce.** The one that holds is `queue-ground-lint`'s *positive* half, which runs
 against the live files. The reviewer's "two were decorative" understated its own sharpest finding.
 
-Evidence appended to all three records. **Decision `260810-0710_o_` is not answered here — it is the
+Evidence appended to all three records. **Decision `260810-0710_*_` is not answered here — it is the
 user's**, and this section is deliberately written as input to it rather than as an argument for
 either side.
 
@@ -307,7 +307,7 @@ cannot see it. `260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump
 
 - `260810-0819_*_head-carries-six-records-twice-and-the-class-fix-was-deferred-to-a-decision-never-filed.md` (new)
 - `260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md` (new)
-- Reconciliation evidence appended to `260801-2038_o_`, `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
+- Reconciliation evidence appended to `260801-2038_*_`, `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 - `## Coherence` appended to `260810-0241-orchestrator-session.md`
 - This file
 

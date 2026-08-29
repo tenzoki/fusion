@@ -202,21 +202,21 @@ that arrives 24 times; and four `jq` passes over the whole map per lookup where 
 one per run. `map_view`'s own header names this hazard at `:682-684` — for the return-value case
 only.
 
-**F4 · Low · `push --plan --rebuild-map --fixture` writes the map.** `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md_…`
+**F4 · Low · `push --plan --rebuild-map --fixture` writes the map.** `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md`
 Reproduced. Contradicts `bin/fusion-plane:104-107`, `:1371-1375`, `map_report_fold`'s stderr line
 and `docs/plane-setup.md:187-192`, all four of which state the property unqualified. The `reads
 never write` describe covers four spellings and not this one.
 
-**F5 · Low · `push --plan --rebuild-map` without a fixture drops the flag silently.** `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md_…`
+**F5 · Low · `push --plan --rebuild-map` without a fixture drops the flag silently.** `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md`
 Exit 0, map unchanged, nothing on either stream. `map_forget`'s own header, in the same file,
 states the opposite doctrine: *"an absent key is a reported failure … never a silent no-op,
 because the caller asked for a mutation that did not happen."*
 
-**F6 · Low · the rebuild collision report names a dropped UUID that was kept.** `260810-0748_*_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md_…`
+**F6 · Low · the rebuild collision report names a dropped UUID that was kept.** `260810-0748_*_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md`
 When one issue appears twice in the response: *"kept UUID-SAME, DROPPED UUID-SAME … close it by
 hand."* An operator who follows it closes the live issue. The ordering is fine; the report is not.
 
-**F7 · Low · an unreadable record yields an empty Plane comment.** `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md_…`
+**F7 · Low · an unreadable record yields an empty Plane comment.** `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md`
 `bin/fusion-plane:961`, a masked pipe with no `pipefail`, bypassing the `comment_skip` that exists
 for this outcome. `ea492e6` named this site in its own message and closed with *"The first has no
 record yet."* It still had none at the end of the Turn, which is the one case
@@ -225,11 +225,11 @@ exception. Reporting it in a commit message is better than swallowing it and is 
 
 ### Theme C — Records about counting
 
-**F8 · Low · the extension parse guards against nothing, not against less.** `260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md_…`
+**F8 · Low · the extension parse guards against nothing, not against less.** `260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md`
 Claim 5's residual, measured above.
 
 **F9 · Low · the record about counting instances of a shape gives three different counts.**
-`260810-0751_*_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md_…`
+`260810-0751_*_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md`
 `260810-0710` opens *"It is the third instance of one shape tonight … read the three together"*,
 lists two, and then says *"Both arrived in Turn 1"*. `8d66265`'s message says "second". The count
 is the argument, and this session already produced `05c013d`, whose subject is a list that called

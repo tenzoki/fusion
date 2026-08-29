@@ -39,7 +39,7 @@ $ find . -maxdepth 2 -type f \( -name '*.go' -o -name '*.ts' -o -name '*.tsx' \
 Die Zählung bleibt bei null, obwohl `.rs` mitzählt. Die gemeldete Ursache erklärt den Ausgang
 also nicht einmal dann, wenn man sie unterstellt. Zwei andere Defekte erklären ihn, und beide
 sind hier gemessen: dieser hier, und die Tiefenschranke in der Schwesterakte
-`260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md_*`. Dieser Defekt allein hätte gereicht, denn `code_files`
+`260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md`. Dieser Defekt allein hätte gereicht, denn `code_files`
 wird gar nicht abgefragt, bevor `strategic` feststeht.
 
 ## Der Defekt

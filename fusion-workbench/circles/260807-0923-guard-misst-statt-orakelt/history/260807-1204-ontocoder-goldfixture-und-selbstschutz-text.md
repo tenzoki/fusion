@@ -1,7 +1,7 @@
 # Goldfixture nachgezogen, Selbstschutz-Text auf die Messung umgestellt
 
 **Agent:** ontocoder
-**Datum:** 260807-1204-ontocoder-goldfixture-und-selbstschutz-text.md
+**Datum:** 260807-1204
 **Status:** Complete
 **Circle:** `260807-0923-guard-misst-statt-orakelt`
 **Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 7

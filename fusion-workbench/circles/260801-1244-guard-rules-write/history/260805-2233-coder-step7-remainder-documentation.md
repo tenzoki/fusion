@@ -1,6 +1,6 @@
 # coder — Step 7 remainder: the three-file documentation pass (narrow scope)
 
-**Date:** 260805-2233-coder-step7-remainder-documentation.md
+**Date:** 260805-2233
 **Status:** Complete
 **Task:** T2 — plan `260804-1633` Step 7, reduced to what was still open: obligation 10
 (close `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`), the one-pass consistency re-read against the landed Step 6

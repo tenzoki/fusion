@@ -20,4 +20,4 @@
 
 ## Not done here
 
-- Two further literal citations of the same class were seen and left, because they are outside row 131's enumeration: `260801-1020_*_provenance-header-on-rule-files.md:62` (`260801-1122_o_`) and `260807-0158_*_how-is-a-unique-record-filename-obtained.md:176` (`260808-0030_o_`). Both are the same one-character repair.
+- Two further literal citations of the same class were seen and left, because they are outside row 131's enumeration: `260801-1020_*_provenance-header-on-rule-files.md:62` (`260801-1122_*_`) and `260807-0158_*_how-is-a-unique-record-filename-obtained.md:176` (`260808-0030_*_`). Both are the same one-character repair.

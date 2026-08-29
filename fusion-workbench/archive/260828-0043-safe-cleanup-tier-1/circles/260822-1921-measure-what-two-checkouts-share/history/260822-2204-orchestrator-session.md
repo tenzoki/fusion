@@ -115,7 +115,7 @@ session ran on the spec's `### C1` criteria rather than on a plan, and a spec ca
 - **Grounding↔Directive:** 25 active decisions in scope across both stores, 24 in `shared/` and 1 in the
   Circle. **0 conflicting.** The multi-user cluster is mutually consistent and consistent with the
   Directive: `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` now carries the measurement it asked for and correctly stays answered
-  rather than implemented; `260719-2141_s_` is terminal and its binding sentence, that nothing may
+  rather than implemented; `260719-2141_*_` is terminal and its binding sentence, that nothing may
   assume two orchestrators run safely against one workbench, is satisfied by measurement rather than
   overturned; the three open C2/C3-scoped records (`260822-1136` ×2, `260822-1556`) are untouched by
   this Circle and blocked on nothing it produced. The record filed this session,

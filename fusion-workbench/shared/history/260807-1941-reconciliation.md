@@ -44,8 +44,8 @@ Against `rules/fusion-workbench-conventions.md` `## Inline State Tracking`:
   `Resolved:` footer. That is the honest form: the residual is named and handed to the answered
   decision rather than being dropped at closure.
 
-**One cosmetic asymmetry, left alone.** `260807-1515_a_` blanked its unused `Implemented:` /
-`Deferred:` / `Superseded by:` footer fields; `260807-0158_a_` left the `<set when …>` template
+**One cosmetic asymmetry, left alone.** `260807-1515_*_` blanked its unused `Implemented:` /
+`Deferred:` / `Superseded by:` footer fields; `260807-0158_*_` left the `<set when …>` template
 placeholders in place. Both are legible and neither breaks a marker glob. Rule 6 of the reconciler's
 own contract says preserve content; this is not worth an edit.
 
@@ -105,7 +105,7 @@ the session's own commands:
 
 | Claim | Source | Re-measured 260807-1941 |
 |---|---|---|
-| 579 record files with a `YYMMDD-HHMM` basename | decision `260807-0158_a_`, defect correction, history | 579 |
+| 579 record files with a `YYMMDD-HHMM` basename | decision `260807-0158_*_`, defect correction, history | 579 |
 | 0 files sharing a full basename, marker normalised | same | 0 |
 | 0 files sharing a full basename within one directory | same | 0 |
 | 84 `YYMMDD-HHMM` stamps carried by two or more files | same | 84 |

@@ -16,7 +16,7 @@
 
 ## The measurement the predecessor deferral asked for, taken
 
-`260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md_d` was deferred by the user on 2026-08-11 with an explicit re-open trigger, quoted in full:
+`260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md` was deferred by the user on 2026-08-11 with an explicit re-open trigger, quoted in full:
 
 > Re-open when a measurement exists over the consuming projects this developer can reach: does any of them populate `decisions` or the rest of CHECK 3's configuration? A non-zero answer settles it as live (option 2, keep it and give it tests that fire it); a zero answer settles it as retired (option 1, remove the check and its configuration surface).
 
@@ -63,7 +63,7 @@ That is the question, and it has to be answered deliberately rather than arrived
 
 ## Recommendation
 
-Answer the predecessor first, and separately. `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md_d` has a measurement, a trigger that the measurement meets, and a settled reading under its own terms. Re-opening it, recording the zero, and taking option 1 there is a small, self-contained act that unblocks C5 and costs one decision.
+Answer the predecessor first, and separately. `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md` has a measurement, a trigger that the measurement meets, and a settled reading under its own terms. Re-opening it, recording the zero, and taking option 1 there is a small, self-contained act that unblocks C5 and costs one decision.
 
 Then answer this one, and the recommendation here is option 3 — but not now, and not in the same Circle as the protected-path removal. Enlarging an approved, measured, bounded removal while it is being executed is precisely the pattern `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` names as the reason removal has never bought more than four days.
 

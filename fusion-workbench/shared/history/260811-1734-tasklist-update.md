@@ -69,7 +69,7 @@ A second, smaller drift in the same commit, recorded here rather than filed: its
 | Record | State |
 |---|---|
 | `260810-1632_*_the-churn-stand-down-still-asks-cwd…` | **Fully resolved** by commit `1d5eed6`. `hooks/tracker.ts:1079` now reads `isFusionPluginRoot(workbenchRoot)`, and the comment at `:1043-1077` was rewritten — it names the record, cites `25c5454` as what falsified the old premise, and covers the null-root case. |
-| `260810-0819_*_head-carries-six-records-twice…` | **Criterion 1 met, measured now:** git and disk both count 62 `_o_` records and the duplicate-stem probe returns nothing. **Criterion 2 met by a different mechanism** than the record asked for — a measurement (`hooks/lib/staging-drift.ts`) plus a staging-shape rule and gate, rather than the convention-plus-decision it specified. **Criterion 3 unmet:** `260807-1941_c_`'s deferral is still unanswered. Queued as task 34. |
+| `260810-0819_*_head-carries-six-records-twice…` | **Criterion 1 met, measured now:** git and disk both count 62 `_o_` records and the duplicate-stem probe returns nothing. **Criterion 2 met by a different mechanism** than the record asked for — a measurement (`hooks/lib/staging-drift.ts`) plus a staging-shape rule and gate, rather than the convention-plus-decision it specified. **Criterion 3 unmet:** `260807-1941_*_`'s deferral is still unanswered. Queued as task 34. |
 | `260809-2255_*_the-branch-policy-verification-left-an-active-halt…` | **Criterion 1 met:** `escalation.json` reads `haltActive: false, consecutiveBlocks: 0` and the human clearing is recorded. **Criterion 2 arguably moot** — it asks for a rule naming the branch policy, and that policy was deleted in `7598073`. Queued as task 47 for the user's call. |
 
 ## What the decision sweep changed
@@ -85,7 +85,7 @@ the queue separates the two cases rather than carrying the old classification fo
 - The duplicate-filing check (`circles/…/260805-1548_o_`) was held open by the rule-text ratchet
   question. That decision is now `_i_` — commit `3163281` set 12 000 bytes of headroom over the role
   floor — and the ~430-byte paragraph the record already drafted fits. Queued as task 27.
-- The domain-capture record (`260810-2110_o_`) was waiting on a `bin/` helper decision that is now
+- The domain-capture record (`260810-2110_*_`) was waiting on a `bin/` helper decision that is now
   answered. Queued as task 41, behind task 4.
 - The five realisation records `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md` … `260811-1734` exist because their decisions were
   answered today.
@@ -95,9 +95,9 @@ the queue separates the two cases rather than carrying the old classification fo
 - `260810-0710_d` re-opens when the lint cohort's fate is settled — records `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`,
   `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` and `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`. **The first two are now `_c_`; only `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` is left, and it
   is task 30.** Landing task 30 fires this trigger, and the answer then governs tasks 46 and 47.
-- `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md_d` re-opens at the first real `push --rebuild-map` recovery against a workbench that
+- `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md` re-opens at the first real `push --rebuild-map` recovery against a workbench that
   has seeded from Plane.
-- `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md_d` re-opens when someone measures whether any reachable consuming project populates
+- `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md` re-opens when someone measures whether any reachable consuming project populates
   CHECK 3's configuration surface — machine-bound, `unite` first.
 
 ## How the five realisation records were handled

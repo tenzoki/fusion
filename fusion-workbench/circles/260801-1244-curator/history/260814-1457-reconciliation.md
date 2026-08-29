@@ -96,11 +96,11 @@ Of the 13 open, three were annotated with reconciliation evidence and three are 
 
 **Annotated, all three still open:**
 
-- `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o` — the Circle record's title and `## Dependencies` still name the conventions file
+- `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md` — the Circle record's title and `## Dependencies` still name the conventions file
   as the validation case. Unchanged, and now sharper: the validation case has since actually run
   against the decision corpus.
-- `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o` — half-resolved, as above.
-- `260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md_o` — the instance is cleared (`~/.fusion` holds 17 prompts including `curator.md`,
+- `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md` — half-resolved, as above.
+- `260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md` — the instance is cleared (`~/.fusion` holds 17 prompts including `curator.md`,
   both manifests read `8.2.0`, and T7 completed), the structural gap is not. Any Circle whose
   Directive is "build an agent and prove it by running it" still cannot finish in one session.
 
@@ -189,7 +189,7 @@ can see them.
    (`**Active spec/plan:**`) still spell `260814-0845_*_plan-curator.md`. Phase 4 already writes
    both surfaces.
 2. **The Circle record's title, `## Dependencies` and `## Grounding snapshot`** carry the three
-   contradictions named in `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o`, `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o` and the `260814-1210` stamp error.
+   contradictions named in `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`, `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md` and the `260814-1210` stamp error.
 
 `260801-1122_*_spec-normative-consolidation.md`, the earlier four-Circle spec, is a
 candidate for closure once this Circle closes — three of its four Circles were already closed and

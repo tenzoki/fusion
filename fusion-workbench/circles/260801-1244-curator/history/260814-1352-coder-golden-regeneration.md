@@ -1,7 +1,7 @@
 # Golden fixture regenerated after the curator's rule-file corrections
 
 **Agent:** coder
-**Date:** 260814-1352-coder-golden-regeneration.md
+**Date:** 260814-1352
 **Circle:** 260801-1244-curator
 **Status:** Complete
 

@@ -1,6 +1,6 @@
 # coder — Circle activation sets the record's head fields
 
-**Session:** 260811-2115-coder-circle-head-fields-at-activation.md
+**Session:** 260811-2115
 **Agent:** coder
 **Status:** Complete
 **Task:** One transferred defect — `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`

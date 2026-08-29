@@ -1,7 +1,7 @@
 # Coder — CLAUDE.md: the `bin/` inventory, the deleted count, the playmaker clause, the byte claim
 
 **Status:** Complete
-**Date:** 260813-1915-coder-claude-md-inventory-count-playmaker-byte-claim.md
+**Date:** 260813-1915
 **Agent:** coder
 **Circle:** `260813-0910-documentation-matches-shipped-plugin`
 **Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, step 2 (now `[DONE]`)

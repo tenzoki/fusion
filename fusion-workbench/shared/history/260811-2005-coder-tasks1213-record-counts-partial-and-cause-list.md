@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Started:** 260811-2005-coder-tasks1213-record-counts-partial-and-cause-list.md
+**Started:** 260811-2005
 **Task:** `fusion-workbench/tasklist.md` tasks 12 (`I:260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`) and 13 (`I:260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`)
 **Records:** `260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`, `260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
 **Active Circle:** none (`.active-circle` absent; every `OUT_*` resolved into `shared/`)

@@ -12,7 +12,7 @@ The wildcard record's claim that every other Circle record spells a hard marker 
 
 ## What is wrong
 
-`260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md_*` argues for the new rule partly from this:
+`260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md` argues for the new rule partly from this:
 
 > Every other Circle record in the live tree spells a hard marker in that field, so the next writer follows the template and re-creates the fault
 

@@ -8,7 +8,7 @@
 
 Everything else in the range was opened in full, including all eight files carried forward as
 not-opened by the Turn-3 review. Three of the eight are cleared with nothing to add: the three
-`260814-1128_c_` records are complete and their `Resolved:` footers match the tree.
+`260814-1128_*_` records are complete and their `Resolved:` footers match the tree.
 
 ---
 
@@ -181,7 +181,7 @@ further out. Constraint 2 said two surfaces state the prohibition; three do.
 
 **A citation form that no gate reads.** F1's second half — six stale line numbers from a two-line
 insertion — is the third distinct citation-staleness class this Circle has met, after literal state
-markers (`260814-1419_o_`, `260814-1450_o_`) and dead record stamps. Markers and paths have gates
+markers (`260814-1419_*_`, `260814-1450_*_`) and dead record stamps. Markers and paths have gates
 (`reference-resolution-lint.test.ts`, `portfolio-citation-form-lint.test.ts`); `file.md:LINE` has
 none, in shipped text or in the workbench. Whether that is worth a gate is a design question this
 review does not answer, but the corpus now uses that form heavily — the `## Dispatch parameters`

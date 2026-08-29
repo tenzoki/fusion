@@ -56,7 +56,7 @@ entry already names.
 What is wrong is the shape of the record, not the shape of the text. One argument was verified
 against one file and applied to four, and a reason the same Circle's own review had endorsed was
 reversed in silence. That is the same defect class as the `Revised by:` line this commit
-correctly added to `260821-2204_c_`, one file over.
+correctly added to `260821-2204_*_`, one file over.
 
 ## What to do
 
@@ -96,5 +96,5 @@ That record keeps its `_c_` marker and its original `Resolved:` note, per
 touched: no route was open to choose between, only a reason that had never been written, which is
 why this record proposed no change and none was made. Its second-named target, the same claim in
 `260822-0200-ontocoder-c04s-fourth-sentence-moves-and-its-section-pointer-returns.md:38-39`,
-is left as written for the same reason the parallel gap in `260822-0251_c_` is: the dispatch scoped
+is left as written for the same reason the parallel gap in `260822-0251_*_` is: the dispatch scoped
 the annotation to the issue record.

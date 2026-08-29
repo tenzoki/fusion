@@ -104,7 +104,7 @@ four lifecycle skills touch it in one bounded way each. This plan adds no writer
 the design below is shaped by that constraint rather than around it.
 
 **The backlog store half-exists already.** `fusion-workbench/shared/backlogs/` holds one file,
-`260811-0826_*_observations.md_observations.txt`, hand-written by the user on 260811. It is a 12 KB unstructured
+`260811-0826_observations.txt`, hand-written by the user on 260811. It is a 12 KB unstructured
 dump of observations about fusion itself. It is not a declared store: `bin/fusion-paths` has no
 key for it, `/fusion:setup` does not create it, and `hooks/lib/staging-drift.ts` classifies it as
 `unclassified` with an explicit note that it "must appear in a complete reading and must not

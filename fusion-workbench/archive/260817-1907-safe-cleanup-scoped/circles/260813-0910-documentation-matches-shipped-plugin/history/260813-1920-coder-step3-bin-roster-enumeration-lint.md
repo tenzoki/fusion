@@ -1,7 +1,7 @@
 # Coder — the `bin/` roster joins the derivable-enumerations lint
 
 **Status:** Complete
-**Date:** 260813-1920-coder-step3-bin-roster-enumeration-lint.md
+**Date:** 260813-1920
 **Agent:** coder
 **Circle:** `260813-0910-documentation-matches-shipped-plugin`
 **Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, step 3 (now `[DONE]`)

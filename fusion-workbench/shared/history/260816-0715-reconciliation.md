@@ -99,7 +99,7 @@ tracked, so the behaviour is right and the comment is wrong.
 
 **No decision marker moved.** Three were candidates and each was checked and left:
 `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (its realisation target was deleted; the residual is already filed as
-`260815-2056_o_`), `260811-1522_a_` (the README-hooks table is still hand-written; nothing generates
+`260815-2056_*_`), `260811-1522_*_` (the README-hooks table is still hand-written; nothing generates
 it), and the three decisions this session filed, all of which are genuinely unanswered.
 
 ## The record that was routed here — `260815-1633_*_eight-shipped-surfaces…`

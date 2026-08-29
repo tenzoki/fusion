@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Date:** 260808-0139-clear-halt-distinguishes-no-workbench-from-not-halted.md
+**Date:** 260808-0139
 **Record:** `260805-1134_*_clear-halt-meldet-erfolg-wenn-es-die-workbench-nicht-findet.md`
 **Scope constraint:** only `hooks/clear-halt.ts`, its compiled output, and the files carrying the
 halt message text (a parallel coder dispatch held `.gitignore` and `agents/orchestrator.md`)

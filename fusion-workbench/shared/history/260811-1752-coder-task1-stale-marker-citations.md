@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Started:** 260811-1752-coder-task1-stale-marker-citations.md
+**Started:** 260811-1752
 **Task:** `fusion-workbench/tasklist.md` task 1 (`T1`), the queue's gate
 **Active Circle:** none (`.active-circle` absent; every `OUT_*` resolved into `shared/`)
 

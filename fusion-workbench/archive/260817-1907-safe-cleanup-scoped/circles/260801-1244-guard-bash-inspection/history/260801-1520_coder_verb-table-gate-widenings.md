@@ -1,6 +1,6 @@
 # Coder — the three widenings approved at the verb-table (Q3) gate
 
-**Date:** 260801-1520_coder_verb-table-gate-widenings.md
+**Date:** 260801-1520
 **Agent:** coder
 **Circle:** `260801-1244-guard-bash-inspection`
 **Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — amendment to step 2, ahead of steps 3 and 5

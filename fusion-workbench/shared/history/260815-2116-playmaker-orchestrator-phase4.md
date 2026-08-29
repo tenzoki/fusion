@@ -1,7 +1,7 @@
 # playmaker — Phase-4 portfolio refresh after a closure
 
 **Status:** Complete
-**Run:** 260815-2116-playmaker-orchestrator-phase4.md
+**Run:** 260815-2116
 **Trigger:** orchestrator-phase4 (non-interactive; no user confirmation held)
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:**` line)
 **git HEAD at run:** `c2b7fe2`
@@ -78,7 +78,7 @@ The dispatch asked whether this Circle's output raises the rank of
 best-supported idea in the store: a plan corrected twice still carried the same false premise in 8
 of 11 remaining steps (Turn 2 of the closed Circle's Turn log), and executor steps 3, 7, 9, 11 and 14
 each found citations their own file lists missed, filed as separate records in that Circle's issue
-store. On shapeability, no: the deferred decision `260810-0710_*` and the open issue `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md_*`
+store. On shapeability, no: the deferred decision `260810-0710_*` and the open issue `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 were both re-verified on disk this run and both still stand, and the entry's own text says the
 revival must precede shaping. Ranked second on shapeability with the merit case and the one-act
 lever stated in the portfolio. The judgement itself is the user's.

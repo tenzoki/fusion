@@ -101,8 +101,8 @@ annotated by the reconciler with this session as its second instance.
 
 **Edges:**
 - Artifact↔Grounding: 20 claims verified against code (5 plan steps done, 5 unstarted, 10 issue closures traced to their commits, 1080 tests green at `npx vitest run`) / 8 drift items, all corrected or reported / 5 open issues in this Circle, 2 of them High — `260803-1431` filed by `coderev` against this Turn's own work and `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` predating it, both live at `fa81589`.
-- Artifact↔Directive: the seven commits `c9bf59e..fa81589` move toward the Directive and it was met — ten of eleven issues closed (`3b0f9e7`, `245b8b7`, `d77eda8`, `aff7486`, `ce7a125`), the eleventh answered by decision `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md_a` at `242b723` and deliberately left open, and the Turn 3 review filed at `fa81589`. No commit is orthogonal to "close the eleven issues before adding new surface", and no plan step was drifted into.
-- Grounding↔Directive: 7 active decisions (4 in this Circle, 3 shared), all 7 consistent with the Directive / 0 conflicting. Two carry defects of their own rather than conflicts: `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md_a`'s `Answered:` line cites this file, which does not record the answer, and `260801-1020_*_may-any-fusion-writer-touch-rules.md` is now half-realised with a documentation surface that still denies the flag exists.
+- Artifact↔Directive: the seven commits `c9bf59e..fa81589` move toward the Directive and it was met — ten of eleven issues closed (`3b0f9e7`, `245b8b7`, `d77eda8`, `aff7486`, `ce7a125`), the eleventh answered by decision `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` at `242b723` and deliberately left open, and the Turn 3 review filed at `fa81589`. No commit is orthogonal to "close the eleven issues before adding new surface", and no plan step was drifted into.
+- Grounding↔Directive: 7 active decisions (4 in this Circle, 3 shared), all 7 consistent with the Directive / 0 conflicting. Two carry defects of their own rather than conflicts: `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`'s `Answered:` line cites this file, which does not record the answer, and `260801-1020_*_may-any-fusion-writer-touch-rules.md` is now half-realised with a documentation surface that still denies the flag exists.
 
 **Rebalance recommendation:** revise Artifact
 
@@ -122,7 +122,7 @@ Five issues open in this Circle, ranked as the reconciliation log ranks them
 | Issue | Severity | State |
 |---|---|---|
 | `260803-1431` gate 0 misses a `..` arriving through `cd -P` | High | live at HEAD; fix shape named in the review, three docstrings false alongside it |
-| `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` case folding bypasses the whole protected list | High | live at HEAD; direction decided (`260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md_a`), code unchanged |
+| `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` case folding bypasses the whole protected list | High | live at HEAD; direction decided (`260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`), code unchanged |
 | `260803-1251` `fs-locator` collapses `..` one call above the audited resolver | — | unreachable today, reachable if gate 0 is ever relaxed |
 | `260803-1352` two advisory details skip the 200-char clamp | — | renders one row at nine times normal height |
 | `260803-1402` Step 9 must also document the hard-link non-exemption | — | belongs to plan Step 9 |

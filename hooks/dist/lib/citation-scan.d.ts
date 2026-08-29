@@ -8,6 +8,16 @@ export interface Violation {
 export declare function report(violations: Violation[]): string;
 /** Placeholder syntax — template tokens are never references. */
 export declare function isPlaceholder(token: string): boolean;
+/**
+ * The words the marker slot may carry besides one letter: the agent names the
+ * pre-Circle history files were stamped with. Enumerated from the tree on
+ * 2026-08-29 (`find fusion-workbench -name '*.md' | grep -oE
+ * '/[0-9]{6}-[0-9]{4}_[a-zA-Z]{2,}_'`), not guessed; a fourth word needs a line
+ * here or its file is invisible to the grammar while present in the index.
+ */
+export declare const MARKER_WORDS: readonly ["coder", "ontocoder", "planner"];
+/** The marker slot, `_x_` or `_<word>_`, as a regex source with no capture. */
+export declare const MARKER_SLOT: string;
 /** Files exempt from class (c) wholesale, with the reason. */
 export declare const RECORD_EXAMPLE_FILES: Record<string, string>;
 /**

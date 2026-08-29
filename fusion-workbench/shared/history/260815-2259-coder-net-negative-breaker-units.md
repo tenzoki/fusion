@@ -1,6 +1,6 @@
 # Coder — the net-negative breaker compares like with like
 
-**Stamp:** 260815-2259-coder-net-negative-breaker-units.md
+**Stamp:** 260815-2259
 **Agent:** coder
 **Status:** Complete
 **Source record:** `260814-1430_*_the-net-negative-breaker-compares-a-per-finding-count-against-a-per-batch-count.md`

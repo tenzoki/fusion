@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Circle:** `260801-1244-rule-provenance-header`
-**Timestamp:** 260802-1408-coder-turn3-review-followups.md
+**Timestamp:** 260802-1408
 
 ## What was done
 

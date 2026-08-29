@@ -54,4 +54,4 @@ by steps the third, and the number carried no information while having been wron
 Verified at HEAD against `skills/setup/SKILL.md:245-268` and `:270-313`, and by grepping every write in
 the skill body for a project-root target: the corrected sentence is complete as well as true. The
 closure stands; only the account of it needed repair. The undercount was filed and closed separately as
-`260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*`.
+`260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md`.

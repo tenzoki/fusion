@@ -57,7 +57,7 @@ re-measuring.
 **So the fault is not a wrong measurement. It is a measurement whose referent moved between
 the taking and the writing** — the same shape as the eight wrong counts this Circle closed
 on, applied to a claim rather than to a number, and by the same party in the same document.
-`260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md_*` records the eighth; this is the ninth and the first that is not a cardinality.
+`260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md` records the eighth; this is the ninth and the first that is not a cardinality.
 
 That widens the open question at
 `260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`

@@ -67,7 +67,7 @@ Filed as `issues/260817-1502_*`, annotated there in full. The short form:
 **Six renames, not four.** `git show --name-status --find-renames dbbad70` returns seven paths:
 `_t_circle.md` modified, the two `260816-1917_*` records renamed *with* content (`R065`, `R052`),
 and four pure renames at 100 % similarity that the message never names — `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`,
-`260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`, `260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md` and the plan `260816-1915_p_` → `_c_`.
+`260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`, `260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md` and the plan `260816-1915_*_` → `_c_`.
 
 **The absorption is one step wider than "four staged renames".** The two named records' similarity
 indices are below 100 because each also carries the reconciler's unstaged

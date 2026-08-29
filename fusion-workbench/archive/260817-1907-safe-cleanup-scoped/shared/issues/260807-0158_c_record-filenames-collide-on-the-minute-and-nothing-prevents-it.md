@@ -71,9 +71,9 @@ The report came from a consuming project. It reproduces here, and more severely.
 The next three worst are `260805-1840` (15), `260805-1839` (14) and `260805-1841` (12).
 
 The state marker does not disambiguate. All 15 files at `260805-1842` are closed defects,
-so they share the identifier *and* the marker: `260805-1842_c_` names 15 files, and only
-the slug tells them apart. Same for `260805-1840_c_` (13), `260805-1841_c_` (12) and
-`260805-1839_c_` (12).
+so they share the identifier *and* the marker: `260805-1842_*_` names 15 files, and only
+the slug tells them apart. Same for `260805-1840_*_` (13), `260805-1841_*_` (12) and
+`260805-1839_*_` (12).
 
 ## Two causes, and the bigger one has nothing to do with concurrency
 

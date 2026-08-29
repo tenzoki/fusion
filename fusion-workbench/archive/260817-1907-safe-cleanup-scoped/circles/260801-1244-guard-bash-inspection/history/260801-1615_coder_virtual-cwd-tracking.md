@@ -1,6 +1,6 @@
 # Coder — virtual working directory tracking (plan step 4)
 
-**Date:** 260801-1615_coder_virtual-cwd-tracking.md
+**Date:** 260801-1615
 **Agent:** coder
 **Circle:** `260801-1244-guard-bash-inspection`
 **Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 4

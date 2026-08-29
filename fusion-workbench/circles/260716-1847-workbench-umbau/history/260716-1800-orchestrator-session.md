@@ -200,7 +200,7 @@ sequenceDiagram
 
 | Surface | Count | Detail |
 |---|---|---|
-| Open issues (`[o]`/`[p]`) | 1 | `260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md.md` |
+| Open issues (`[o]`/`[p]`) | 1 | `260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md` |
 | Open plan steps | 0 | — |
 | Open decisions (`[o]`) | 0 | one `[i]` decision on file: `260706-1902[i]-consultant-chat-longform-boundary.md` |
 | Analyses | 1 | `260706-1902-user-facing-agents-garbled-language-rootcause.md` |

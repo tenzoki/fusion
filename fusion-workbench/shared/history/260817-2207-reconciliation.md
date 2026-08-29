@@ -92,7 +92,7 @@ discharges that.
 
 Filed as `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
 
-`260817-2130_c_`'s `Resolved:` note ends "The quoted git pathspec glob is not named separately: it
+`260817-2130_*_`'s `Resolved:` note ends "The quoted git pathspec glob is not named separately: it
 behaves as the directory argument does and is already routed there". `307a696` reversed that on the
 reviewer's counter-argument, and the record carries no pointer to the reversal.
 `260817-2138-coder-staging-sentence-per-shape-justification.md` §1 carries the same

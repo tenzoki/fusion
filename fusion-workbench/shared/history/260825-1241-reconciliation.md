@@ -74,10 +74,10 @@ question: `workbench-citation-lint.test.ts` carries `OPEN_ISSUE_RE`, `LIVE_DECIS
 **The 21 open decisions inside terminal Circles split three ways, and the pattern is the finding.**
 
 - **Nine are open by construction and must not be moved.** Eight `260820-2314_*` records and one
-  `260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md_*` each carry a closing paragraph stating in terms that the answer above it was written
+  `260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md` each carry a closing paragraph stating in terms that the answer above it was written
   by an orchestrator during an unattended run, is not the user's, and that the record is filed `_o_`
   so the user meets it live. One of them records exactly this class being overturned by the user on
-  2026-08-21. `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md_*` in the reply-bounded Circle carries a prior reconciliation verdict
+  2026-08-21. `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md` in the reply-bounded Circle carries a prior reconciliation verdict
   reaching the same conclusion in its own words.
 - **Two were stale and are transitioned.** Both `260820-2324_*` records had option 1 on disk with
   empty annotation stubs: `bin/fusion-source-root` in all three of Step 0e's bash blocks, and

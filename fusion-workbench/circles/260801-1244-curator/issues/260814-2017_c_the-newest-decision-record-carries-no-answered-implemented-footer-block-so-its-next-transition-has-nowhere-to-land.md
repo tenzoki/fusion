@@ -9,7 +9,7 @@ decision records in this Circle all carry it.
 ---
 **Verified, not reported.** `grep -n '^Answered:\|^Implemented:\|^Superseded'` over the four files
 in `circles/260801-1244-curator/decisions/` returns hits for `260814-0738_i`, `260814-0845_i` and
-`260814-1332_o`, and nothing for `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md_o`. `tail -20` on that file ends mid-`## Recommendation`
+`260814-1332_o`, and nothing for `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`. `tail -20` on that file ends mid-`## Recommendation`
 with no separator and no footer. `rules/fusion-workbench-conventions.md` `## Decision Record
 Template` shows the block as the closing element of the body.
 

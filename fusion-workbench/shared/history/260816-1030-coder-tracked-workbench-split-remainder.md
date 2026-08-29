@@ -30,7 +30,7 @@ objection appended to the source record on 260816-0713-coderev-turn-5-6-range-3a
 non-artifact root entries with no overlap and no remainder, against both the tree at `:26-61` and the
 sentence. `+80` bytes.
 
-**4.** One paragraph appended to the `260815-1633_o_` record recording that its `.gitignore` half is
+**4.** One paragraph appended to the `260815-1633_*_` record recording that its `.gitignore` half is
 discharged and that the two code-comment sources it names still stand. Marker left `_o_`.
 
 ## Verification

@@ -38,8 +38,8 @@ The two open items are **the pre-live-Plane gap, not implementation debt** — d
 
 ## Decision transitions
 
-- `260719-2223_a_→_i_ plane-datamodel-subissue-vs-flat-links` — implemented by `982336f` (single swappable `attach_child`, child sub-issue default + links fallback).
-- `260719-2223_a_→_i_ seeded-circle-anticipated-vs-active` — implemented by `bd62bf1` (skill routes to `/fusion:direct` anticipated `_a_` path).
+- `260719-2223_*_→_i_ plane-datamodel-subissue-vs-flat-links` — implemented by `982336f` (single swappable `attach_child`, child sub-issue default + links fallback).
+- `260719-2223_*_→_i_ seeded-circle-anticipated-vs-active` — implemented by `bd62bf1` (skill routes to `/fusion:direct` anticipated `_a_` path).
 
 ## Coherence verdict
 

@@ -124,7 +124,7 @@ under `fusion-workbench/`. Zero shipped files changed. Two records were filed in
 correctly `_o_` and both correctly Circle-scoped: the defect arose from the Directive's own measurement
 and the decision from its own finding. One addendum was appended in `shared/`, to
 `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`, which correctly
-stays `_a_`: no commit realises the answer, and the addendum says so itself. `260719-2141_s_` is
+stays `_a_`: no commit realises the answer, and the addendum says so itself. `260719-2141_*_` is
 terminal and carries its `Superseded by:` line. `cd hooks && npm test` exits 0 (41 files, 724 tests),
 which is what carries `workbench-citation-lint.test.ts` over every citation added this session.
 

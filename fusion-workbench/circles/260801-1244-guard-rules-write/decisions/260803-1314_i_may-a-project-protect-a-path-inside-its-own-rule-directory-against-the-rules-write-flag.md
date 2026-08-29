@@ -86,7 +86,7 @@ That is what the constraint about a precise precedence rule is for.
 
 **Two obligations follow, both binding on the implementation.**
 
-- **"Explicitly declared" must mean declared, not inherited.** After `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md_a`, an
+- **"Explicitly declared" must mean declared, not inherited.** After `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, an
   omitted `protectedPaths` inherits the plugin's list — and subtracting an *inherited* entry
   would silently end the exemption for every project, since the plugin's own list contains
   `rules/**`. The subtraction applies only to entries the project layer actually supplied,

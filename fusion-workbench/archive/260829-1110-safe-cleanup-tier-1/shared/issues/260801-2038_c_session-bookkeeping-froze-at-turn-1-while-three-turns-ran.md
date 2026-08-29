@@ -148,7 +148,7 @@ prompt-only fix has zero effect on its own session, by construction. That is a d
 from task pressure, it is not overridable, and it is what produced this instance.
 
 **3. Three defects are already filed against what `9bad4d6` shipped**, none cross-referenced from
-here: `260810-0710_o_` (the check's last line makes the whole block exit non-zero when no Circle is
+here: `260810-0710_*_` (the check's last line makes the whole block exit non-zero when no Circle is
 active — and `.active-circle` is absent right now, so that is this workbench's ordinary state),
 `260810-0509_*_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md` (the prompt text `9bad4d6` wrote contradicts Phase 2), and `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md` (the
 lint that guards it is defeatable at all four call points — see the reconciliation note on that

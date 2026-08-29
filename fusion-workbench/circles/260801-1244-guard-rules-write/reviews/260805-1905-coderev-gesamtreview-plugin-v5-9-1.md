@@ -1,7 +1,7 @@
 # Gesamtreview fusion-Plugin v5.9.1
 
 **Absender:** coderev
-**Datum:** 260805-1905-coderev-gesamtreview-plugin-v5-9-1.md
+**Datum:** 260805-1905
 **Circle:** `260801-1244-guard-rules-write`
 **Umfang:** ganzes Plugin, kein Diff — 16 Agenten, 16 Skills, 15 Regeldateien, 7 bin-Helfer, 15 TypeScript-Module plus Hooks, Monitor, Installer
 **Grundlage:** 1551 Tests in 27 Dateien grün (`npx vitest run`, 169 s); `hooks/dist` byte-identisch zu einem frischen `tsc`-Lauf; vier parallele Lese-Workstreams (Verweis-Integrität, Werkzeug-gegen-Prompt, Skills, Agenten-Kohärenz), deren Kernbefunde coderev selbst nachgemessen hat

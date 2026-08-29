@@ -3,7 +3,7 @@
 **Date:** 2026-08-13 12:00
 **Status:** Complete
 **Agent:** coder
-**Trigger:** User dispatch — the three `260813-1051_p_` issues filed by coderev against `7342fdd`
+**Trigger:** User dispatch — the three `260813-1051_*_` issues filed by coderev against `7342fdd`
 
 ## Records addressed
 

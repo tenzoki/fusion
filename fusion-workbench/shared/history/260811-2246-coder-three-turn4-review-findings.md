@@ -1,7 +1,7 @@
 # coder — content-named citations, a two-input gate split four ways, and one missing Layout row
 
 **Status:** Complete
-**Date:** 260811-2246-coder-three-turn4-review-findings.md
+**Date:** 260811-2246
 **Agent:** coder
 **Records:** `260811-2145_*_…`, `260811-2149_*_…`, `260811-2151_*_…`
 **Filed:** `260811-2239_*_…`, `260811-2245_*_…`

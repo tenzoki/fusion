@@ -200,8 +200,8 @@ known and neither bears on this session's Directive.
   coherent at `6.1.0`; 2 marker renames both staged with their deletions and no path duplicated at
   HEAD; 3 of 7 reviewer findings open, all three re-verified as accurately stated and all three
   open by deliberate choice. Drift: 3 stale line citations inside otherwise-accurate records
-  (`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` ×2, `260807-0158_a_` ×1) and 1 range-notation defect in the `Implemented:` line
-  of `260807-1515_i_`. All four are citation precision inside tracking records, repaired or
+  (`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` ×2, `260807-0158_*_` ×1) and 1 range-notation defect in the `Implemented:` line
+  of `260807-1515_*_`. All four are citation precision inside tracking records, repaired or
   annotated in this pass; none contradicts an artifact.
 - **Artifact↔Directive:** all 14 commits in `b246996..c54ead9` move toward the stated Directive,
   none orthogonal, none away. Turn 1 (`c1b72fc..0e9e39f`) establishes the split — the rule text
@@ -215,7 +215,7 @@ known and neither bears on this session's Directive.
 - **Grounding↔Directive:** 5 active decisions across `shared/decisions/` (2 `_o_`, 3 `_a_`), 5
   consistent with the Directive, 0 conflicting. `260807-2131_*_which-language-governs-a-customer-deliverable.md` is a gap the Directive opened and
   deliberately left open rather than a contradiction of it; the other four are unrelated to the
-  language boundary. `260807-1515_i_`, the decision the Directive existed to realise, is now
+  language boundary. `260807-1515_*_`, the decision the Directive existed to realise, is now
   implemented and its own stated condition is met.
 
 **Rebalance recommendation:** none

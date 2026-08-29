@@ -1,7 +1,7 @@
 # Schritt 10 (Vorprüfung im Fremdprojekt) und der Nachzug der kompilierten Waisen
 
 **Agent:** coder
-**Datum:** 260807-1220-coder-schritt10-vorpruefung-und-kompilierte-waisen.md
+**Datum:** 260807-1220
 **Status:** Complete
 **Circle:** `260807-0923-guard-misst-statt-orakelt`
 **Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 10

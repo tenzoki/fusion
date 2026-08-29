@@ -55,8 +55,8 @@ To activate: `fusion --update`, then start a fresh `fusion` session. Cross-check
 - **Git HEAD:** dbf98f6 — `fix(hooks): wire branch/worktree guard to Bash + launcher exports FUSION_PLUGIN_ROOT`
 - **Working tree (uncommitted):** `hooks/dist/guard.js`, `hooks/guard.ts` (modified — likely WIP from prior interrupted session)
 - **Open issues:** 2
-  - `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md.md`
-  - `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md.md`
+  - `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md`
+  - `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md`
 - **Open decisions:** 0 (`260706-1902[i]` is implemented/terminal)
 - **Open plans:** 0
 - **Circles:** 0 anticipated, 0 active → no portfolio hint printed

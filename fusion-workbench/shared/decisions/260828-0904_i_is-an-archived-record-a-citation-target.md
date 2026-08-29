@@ -22,7 +22,7 @@ The citation gate (shape 1, 260819) lets a citation of `shared/issues/X` resolve
 Any answer must keep `hooks/lib/__tests__/workbench-citation-lint.test.ts` decidable over the tree at HEAD, and must not reopen the deletion annotation rule in `rules/circle-records.md`.
 
 ---
-Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, reconciliation note).
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md`, reconciliation note).
 
 ---
 Answered: 260828-0904_*_does-the-mandated-citation-form-include-the-store-segment.md — option 3, user 2026-08-28: moot under the storeless form; a citation carries no store, so an archive move breaks nothing and the gate needs no archive lookup.

@@ -41,7 +41,7 @@ Resolved: the correction landed inside the window. `2ec2bc2` made a first attemp
 `a40b330` completed it, both while the record still carries `_t_`, so the first of the two shapes this
 record named was taken — not the closure-note fallback. `## Grounding snapshot` now states the fact
 truly, verified at `skills/setup/SKILL.md` Steps 0f and 0g rather than taken from either commit
-message (see `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*` for that verification).
+message (see `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md` for that verification).
 
 The deferral this record was filed against is therefore discharged by outcome rather than by anyone
 writing the deadline down. That distinction is deliberate and is why this note says so: nothing in
@@ -50,7 +50,7 @@ becomes unwritable at the rename. It took a human edit and an explicit user over
 correction made, which is the evidence that the deadline is still undocumented rather than the
 evidence that it does not need to be.
 
-**The window is still open and still has an occupant.** `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md_*` names two residuals in the
+**The window is still open and still has an occupant.** `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md` names two residuals in the
 same three lines — the paragraph's "two costs" scaffolding and a convention list that states
 unscoped what `skills/setup/SKILL.md` scopes — and both freeze at the same rename. Closing this
 record does not close that one.

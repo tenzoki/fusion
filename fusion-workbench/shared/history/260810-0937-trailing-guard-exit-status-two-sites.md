@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Started:** 260810-0937-trailing-guard-exit-status-two-sites.md
+**Started:** 260810-0937
 **Base commit:** `a7c2b03`
 
 ---

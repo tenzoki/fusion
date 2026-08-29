@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Date:** 260808-0016-coder-r1-declared-lang-exact-match.md
+**Date:** 260808-0016
 **Closes:** `260807-2152_*_declared-lang-prefix-matches-so-deutsch-resolves-to-de.md` (record left open; the dispatcher closes and commits)
 
 ## What changed

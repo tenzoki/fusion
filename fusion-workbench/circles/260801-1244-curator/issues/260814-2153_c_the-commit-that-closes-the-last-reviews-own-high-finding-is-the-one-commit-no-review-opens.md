@@ -41,7 +41,7 @@ Turn 6 is the last Turn, so nothing stands after it but closure.
 
 ## Why it is not the resume record's shape
 
-`260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md_o` names a path where a review *never ran*. Here the review ran, on the correct range,
+`260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md` names a path where a review *never ran*. Here the review ran, on the correct range,
 and reported `not-opened=none`. The uncovered commit exists because the review had findings and the
 findings were fixed — which is the cadence working, not failing. The two records share an instrument
 and not a cause, which is why this is filed rather than annotated onto that one.

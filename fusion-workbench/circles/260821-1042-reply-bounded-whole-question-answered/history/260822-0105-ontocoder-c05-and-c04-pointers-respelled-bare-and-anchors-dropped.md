@@ -1,7 +1,7 @@
 # ontocoder — C05 and C04 pointers respelled bare, heading anchors dropped
 
 **Status:** Complete
-**Stamp:** 260822-0105-ontocoder-c05-and-c04-pointers-respelled-bare-and-anchors-dropped.md
+**Stamp:** 260822-0105
 **Circle:** 260821-1042-reply-bounded-whole-question-answered
 **Domain:** data
 **Task source:** issue `260821-2204` (now `_c_`)

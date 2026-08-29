@@ -1,7 +1,7 @@
 # coder — Net-negative breaker: aligned populations, stated residual, repaired worked example
 
 **Status:** Complete
-**Date:** 260816-0050-coder-net-negative-breaker-populations.md
+**Date:** 260816-0050
 **Agent:** coder
 **Source record:** `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`
 **Files changed:** `agents/orchestrator.md` (+544 B)

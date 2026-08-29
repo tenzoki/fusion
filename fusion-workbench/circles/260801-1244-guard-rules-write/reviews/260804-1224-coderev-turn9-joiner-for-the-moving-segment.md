@@ -253,7 +253,7 @@ What the list omits, in the order I would work it:
    makes `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`'s over-deny live, holding leaves the no-flag write routes open in the
    field. Reconciliation `260804-1021-reconciliation.md` recommends shipping after items 1 and 2 of its own
    list.
-4. **Plan Step 9, rescoped — `260803-1402_o_`, Low.** Three files still carry the false
+4. **Plan Step 9, rescoped — `260803-1402_*_`, Low.** Three files still carry the false
    sentence "There is no override for a protected-path shell write", including `CLAUDE.md`.
    `rules/protected-path-discipline.md` now both names `FUSION_ALLOW_RULES_WRITE` and denies
    it exists, 372 lines apart.
@@ -262,10 +262,10 @@ What the list omits, in the order I would work it:
    this module, including this one, and this Turn is the third to lean on it.
 6. **`260804-1027_*_the-replacement-audit-recipe-went-stale-in-the-turn-after-it-was-written-and-omits-moved.md`, Low** — the replacement audit recipe. Now with a sibling in
    `260804-1221_*_the-one-fact-about-a-joiner-guarantee-is-asserted-over-one-file-and-a-second-file-already-holds-the-same-fact.md`.
-7. **`260803-1352_o_`, Low** — two guard-advisory details skip the 200-char clamp
+7. **`260803-1352_*_`, Low** — two guard-advisory details skip the 200-char clamp
    (`hooks/guard.ts:532`, `:560`).
 8. **The four findings this review filed** — `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md`, `1221`, `1222`, `1223`.
-9. **The three open decision records** — `260803-1314_o_`, `260803-1402_o_`, `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`.
+9. **The three open decision records** — `260803-1314_*_`, `260803-1402_*_`, `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`.
    None blocking; all three wait on Step 6, which is item 2.
 
 **`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` is correctly *not* on the list.** It moved to

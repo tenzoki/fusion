@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Date:** 260808-0136-gitignore-fu-exception-and-orchestrator-rs-java.md
+**Date:** 260808-0136
 **Scope constraint:** only `.gitignore` and `agents/orchestrator.md` (a parallel coder dispatch held `hooks/`)
 
 ---

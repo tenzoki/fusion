@@ -128,7 +128,7 @@ Eight open decisions. All eight are user-input gates: none has an executor-actio
 
 | Record | Question | Why it blocks |
 |---|---|---|
-| `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` | What is a churn key anchored to, and what happens to the entries already recorded? | `260809-2023_o_` is an open defect that states in its own body that a decision precedes the fix. No code moves until this is answered. **The number in its title has moved:** `.guard-state/churn.json` now holds **588** entries under `files`, against the 535 the title names — measured at `ed87d87`. The answer must name a rule, not a count. Evidence appended. |
+| `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` | What is a churn key anchored to, and what happens to the entries already recorded? | `260809-2023_*_` is an open defect that states in its own body that a decision precedes the fix. No code moves until this is answered. **The number in its title has moved:** `.guard-state/churn.json` now holds **588** entries under `files`, against the 535 the title names — measured at `ed87d87`. The answer must name a rule, not a count. Evidence appended. |
 | `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` | How does a prompt call a `bin/` helper the installed copy may not have? | `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` is blocked on it, and the class reproduces on every new helper added between releases. The record carries a recommendation for question 1 (report the absence in the cascade's own `counted_by=none` vocabulary rather than emitting a shell 127) that has not been taken. Evidence appended. |
 | `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md` | Does a test learn a script's extension set by reading its text, or by asking bash? | Two rounds of fix have already landed on this surface (`38fe341`, then `c546ef0`), each closing the previous round's shape. `rules/critical-stance.md` §4 is cited in the record: this is the "the question is cut wrong" signal, and a third patch without the decision is the predictable next round. |
 
@@ -136,7 +136,7 @@ Eight open decisions. All eight are user-input gates: none has an executor-actio
 
 | Record | Question |
 |---|---|
-| `260810-0710_o_` | Should a rule be allowed to land without the check that enforces it? Carries counter-evidence in both directions — one instance where a missing lint cost a defect, three lints of doubtful value from the same Turn. The review-coverage defect filed by this pass lands beside it as a fourth instance. |
+| `260810-0710_*_` | Should a rule be allowed to land without the check that enforces it? Carries counter-evidence in both directions — one instance where a missing lint cost a defect, three lints of doubtful value from the same Turn. The review-coverage defect filed by this pass lands beside it as a fourth instance. |
 | `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md` | Should `push --rebuild-map` merge with the existing map, or replace it? The surface moved this session — `98c8b3f` made `map --rebuild` a command of its own and `df75004` fixed its failure handling — so the question is now asked of a different implementation than the one it was filed against. Worth re-reading before answering. |
 | `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md` | Is the decision-governed escalation (CHECK 3) a live feature, or a retired one still carrying its configuration surface? |
 
@@ -144,16 +144,16 @@ Eight open decisions. All eight are user-input gates: none has an executor-actio
 
 | Record | Question |
 |---|---|
-| `260806-1152_o_` | Do `original_circle_dirname` and `active_circle_content` both need to exist in the stash manifest? |
+| `260806-1152_*_` | Do `original_circle_dirname` and `active_circle_content` both need to exist in the stash manifest? |
 | `260807-2131_*_which-language-governs-a-customer-deliverable.md` | Which language governs a customer deliverable, when chat and artifacts declare different ones? |
 
 ### Answered decisions awaiting realisation
 
 Three `_a_` remain after this pass moved `260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md` to `_i_`. All three were re-checked and all three correctly stay `_a_`:
 
-- `260719-2141_a_` — the answer is the *absence* of a concurrency mechanism; there is no commit that implements a non-feature. A prior reconciliation left this as a deliberate judgement call for the user, and that reasoning still holds.
-- `260801-1020_a_` — realisation belongs to `260801-1244-curator`, which is `_a_` and unstarted. `agents/` still holds sixteen prompts, no `curator.md`.
-- `260807-0158_a_` — its own line citation went stale, which is filed separately as `260808-0030_o_`.
+- `260719-2141_*_` — the answer is the *absence* of a concurrency mechanism; there is no commit that implements a non-feature. A prior reconciliation left this as a deliberate judgement call for the user, and that reasoning still holds.
+- `260801-1020_*_` — realisation belongs to `260801-1244-curator`, which is `_a_` and unstarted. `agents/` still holds sixteen prompts, no `curator.md`.
+- `260807-0158_*_` — its own line citation went stale, which is filed separately as `260808-0030_*_`.
 
 ---
 

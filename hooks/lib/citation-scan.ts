@@ -43,14 +43,51 @@
 //   of silently resolving it through `archive/`, which is what they did until
 //   the 2026-08-19 archive tolerance was deleted with this rewrite.
 //
+//   THE MARKER SLOT IS ONE LETTER OR ONE OF THREE LEGACY WORDS. Every record
+//   filed since the underscore form carries `_x_`; 24 pre-Circle history files
+//   (measured 2026-08-29) carry `_coder_`, `_ontocoder_` or `_planner_` there,
+//   and `workbenchIndex()` holds them like any other file. Until 2026-08-29 the
+//   slot read `_[a-zA-Z*]_` alone, so a citation of one of those 24 was no
+//   `bare-record`, fell through to `STAMP_RE`, and the sweep chained the
+//   basename onto the stamp it had already spelled (issue
+//   260829-1347_*_the-grammars-marker-slot-is-one-letter-while-24-indexed-artifacts-carry-a-word-there-and-the-stamp-bare-rewrite-checks-no-boundary.md).
+//   `MARKER_SLOT` is the one spelling of the slot; the uniqueness test reads it
+//   from here, so the set it measures is the set the resolver looks up.
+//
+//   A TRUNCATED CITATION IS A `bare-record`. `<stamp>_*_`, `<stamp>_o_`,
+//   `<stamp>_d` and `<stamp>_…` each carry a `_` right after the stamp, which
+//   nothing but a record citation does; each is read as a prefix and resolves,
+//   is ambiguous, or dangles on its own merits. Until 2026-08-29 `BARE_RE`
+//   demanded a full marker and a slug, so these fell to `STAMP_RE` as a bare
+//   stamp with the tail invisible, and the sweep rewrote the stamp under the
+//   tail: `<basename>.md_o_` (issue
+//   260829-1333_*_the-citation-sweep-is-not-idempotent-a-truncated-citation-gains-a-marker-tail-on-rewrite.md).
+//   For the same reason `STAMP_RE` now stops at a `_`, a `[` or a letter: a
+//   stamp followed by one of those is the head of a longer token, never a bare
+//   stamp.
+//
+//   A HEAD FIELD WHOSE WHOLE VALUE IS A BARE STAMP IS NOT A CITATION. A legacy
+//   history record's `**Date:** 260801-1355` names the minute the record was
+//   written; the sweep read it as a bare stamp, found the record itself by
+//   prefix, and rewrote 42 such lines (seven labels, `**Date:**` the most
+//   frequent) into self-citations (issue
+//   260829-1346_*_the-committed-sweep-rewrote-29-date-head-fields-into-filenames-and-left-181-chained-tails-in-the-tree.md).
+//   Such a token is reported `exempt` with the reason `head-field`. The
+//   exemption is exactly that narrow: a head field whose value carries a marker
+//   or a name (`**Active spec/plan:** <stamp>_*_<slug>.md`) is a citation the
+//   orchestrator resolves, and stays one.
+//
 //   NOT READ, ON PURPOSE: the pre-v4 bracket marker (`260717-1918[o]_slug`).
 //   It is retired syntax that `/fusion:migrate` rewrites; a grammar that
 //   accepted it would remove the only pressure to rewrite it (issue
 //   260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md, the second half).
+//   Since the `STAMP_RE` boundary above, a bracket-marked token is no token at
+//   all rather than a bare stamp with an invisible tail.
 //
 // The residual token class, the **bare timestamp** (`stamp-bare`).
 // `260722-1943` in running prose carries no store, kind or slug, so the gate
-// cannot judge it (`BARE_RE` requires a marker). A measurement must still count
+// cannot judge it (`BARE_RE` requires the `_` a record citation carries). A
+// measurement must still count
 // them, because "how many citations cannot be resolved by any mechanism" is a
 // different question from "how many are wrong". Bare timestamps are never
 // violations and never counted as resolved.
@@ -100,13 +137,25 @@ export function isPlaceholder(token: string): boolean {
 const STORES =
   "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos|backlog";
 
+/**
+ * The words the marker slot may carry besides one letter: the agent names the
+ * pre-Circle history files were stamped with. Enumerated from the tree on
+ * 2026-08-29 (`find fusion-workbench -name '*.md' | grep -oE
+ * '/[0-9]{6}-[0-9]{4}_[a-zA-Z]{2,}_'`), not guessed; a fourth word needs a line
+ * here or its file is invisible to the grammar while present in the index.
+ */
+export const MARKER_WORDS = ["coder", "ontocoder", "planner"] as const;
+
+/** The marker slot, `_x_` or `_<word>_`, as a regex source with no capture. */
+export const MARKER_SLOT = `_(?:[a-zA-Z*]|${MARKER_WORDS.join("|")})_`;
+
 // Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
 // A DETECTOR since 2026-08-29: every match is reported `store-prefixed`.
 const REC_RE = new RegExp(
   "(?:fusion-workbench\\/)?" +
     "(?:(circles\\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/|(shared)\\/)?" +
     `(${STORES})\\/` +
-    "([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)?[A-Za-z0-9._…*-]*)",  // `.` admits ASCII `...`
+    `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?[A-Za-z0-9._…*-]*)`, // `.` admits ASCII `...`
   "g",
 );
 
@@ -129,9 +178,15 @@ const CIRCLE_REC_RE = new RegExp(
   "g",
 );
 
-// Bare record citation — a marker is required, or every plain timestamp and
-// Circle-directory name would fire.
-const BARE_RE = /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)[A-Za-z0-9._…*-]+)/g;
+// Bare record citation — the `_` right after the stamp is required, or every
+// plain timestamp and Circle-directory name would fire. What follows the `_` is
+// a marker slot and a slug when the citation is whole, and any prefix of that
+// when it is truncated (`<stamp>_*_`, `<stamp>_d`, `<stamp>_…`);
+// `basenameMatcher` reads a token not ending in `.md` as a prefix either way.
+const BARE_RE = new RegExp(
+  `(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|_)[A-Za-z0-9._…*-]*)`,
+  "g",
+);
 
 // Bare Circle-directory citation. A trailing `/` is allowed when nothing
 // path-like follows (the conventions file's layout tree).
@@ -142,7 +197,16 @@ const CIRCLE_RE = /circles\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)(?:\/(?![A-Za-z0-9_.*<
 // not the same question: `260812-2116-coder-<slug>` carries a name and is
 // decidable by prefix (exactly, when it ends in `.md` — that is the storeless
 // citation of a markerless artifact), while `260812-2116` alone is the residual.
-const STAMP_RE = /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:-[a-z0-9]+)*)(\.md)?(?![0-9])/g;
+//
+// The trailing boundary is the one `BARE_RE` has in front: a stamp followed by
+// `_`, `[` or a letter is the head of a longer token (a truncated citation, a
+// pre-v4 bracket marker, a name under a different case), and the last two
+// lookaheads refuse the backtracks that would otherwise read
+// `<stamp>-<slug>.md_o` as `<stamp>-<slug>`, or as `<stamp>` with the name
+// invisible. A stamp followed by `-…` is still a bare stamp: an elided name is
+// an illustration, not a longer token.
+const STAMP_RE =
+  /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:-[a-z0-9]+)*)(\.md)?(?![0-9A-Za-z_\[])(?!-[a-z0-9])(?!\.md)/g;
 
 /** Files exempt from class (c) wholesale, with the reason. */
 export const RECORD_EXAMPLE_FILES: Record<string, string> = {
@@ -173,6 +237,15 @@ function inFooterTemplateSpan(before: string): boolean {
  * `(e.g. \`en\`)` passed silently (issue 260806-1031_*_referenz-lint-die-eg-ausnahme-ist-breiter-als-ihr-eigener-kommentar-behauptet.md, the swallow-a-real-defect
  * shape the gate's exemption-design note warns against).
  */
+/**
+ * A `**<Field>:** <value>` head line whose value is exactly the token: `before`
+ * is the label and `after` is blank. Read for `stamp-bare` alone (the caller
+ * checks the kind), so a head field carrying a real citation keeps it.
+ */
+function isHeadFieldValue(before: string, after: string): boolean {
+  return /^\*\*[^*\n]+:\*\*\s+$/.test(before) && after.trim() === "";
+}
+
 function inAnnouncedIllustration(before: string): boolean {
   const at = before.lastIndexOf("e.g.");
   if (at === -1) return false;
@@ -308,7 +381,7 @@ const SWEEP_DIR_RE = /^[0-9]{6}-[0-9]{4}-[a-z0-9-]+$/;
 
 /** The storeless spelling of a store-prefixed record token's basename. */
 function storelessBase(stamp: string, rest: string): string {
-  return stamp + rest.replace(/^_[a-z]_/, "_*_");
+  return stamp + rest.replace(/^_[a-z](?:_|$)/, "_*_");
 }
 
 // --- the per-token walk -----------------------------------------------------
@@ -511,14 +584,21 @@ export function createScanner(workbenchRoot: string): Scanner {
                 ? "announced-illustration"
                 : inFooterTemplateSpan(before)
                   ? "footer-template"
-                  : isPlaceholder(token)
+                  : // a token cut at a `$`, `<` or `{` is the head of a template
+                    // (`<stamp>_*_$f.md` in a shell illustration)
+                    isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
                     ? "placeholder"
                     : token.includes("foo")
                       ? "fabricated-name"
                       : // a `*` anywhere but the marker position is a glob, not a citation
                         /\*/.test(token.replace(/_\*_/g, ""))
                         ? "glob"
-                        : null;
+                        : // a bare stamp that is the whole value of a `**Field:**`
+                          // head line is the minute the record was written, not a
+                          // pointer (the `**Date:**` case in the header)
+                          kind === "stamp-bare" && isHeadFieldValue(before, text.slice(idx + token.length))
+                          ? "head-field"
+                          : null;
         if (reason) {
           hits.push({ file: rel, line, col: idx, token, kind, status: "exempt", matches: [], reason });
           return;
@@ -566,7 +646,8 @@ export function createScanner(workbenchRoot: string): Scanner {
         consider(idx, full, "bare-record", () => {
           const hit = findRecord(stamp + rest);
           if (hit.length > 0) return found(hit);
-          const markerM = rest.match(/^_([a-z])_/);
+          // `_o_` on a whole or truncated citation, `_o` on one cut inside the slot
+          const markerM = rest.match(/^_([a-z])(?:_|$)/);
           if (markerM) {
             const wild = findRecord(storelessBase(stamp, rest));
             if (wild.length > 0) {

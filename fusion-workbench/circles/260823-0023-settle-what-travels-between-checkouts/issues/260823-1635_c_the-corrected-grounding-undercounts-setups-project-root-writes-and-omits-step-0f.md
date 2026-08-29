@@ -51,7 +51,7 @@ This is not one sentence. It originates in the planner's `## Current State` and 
 
 Not because anything is broken. Nothing was built on either the false claim or the corrected one, and the merge-driver step is correct.
 
-Because the window closes. `## Grounding snapshot` is Grounding-Stand only while the record carries `_a_` or `_t_` (`rules/circle-records.md:65`), `agents/shaper.md:28` makes mode 3 its only writer, and `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md_*` records that mode 3 halts on exactly this case. The rename to `_c_` makes the sentence permanent, which is the argument `2ec2bc2`'s own commit message makes for having done the correction by hand at all. A correction that arrives one commit before the deadline and is wrong by one is the same deadline, unmet.
+Because the window closes. `## Grounding snapshot` is Grounding-Stand only while the record carries `_a_` or `_t_` (`rules/circle-records.md:65`), `agents/shaper.md:28` makes mode 3 its only writer, and `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md` records that mode 3 halts on exactly this case. The rename to `_c_` makes the sentence permanent, which is the argument `2ec2bc2`'s own commit message makes for having done the correction by hand at all. A correction that arrives one commit before the deadline and is wrong by one is the same deadline, unmet.
 
 ## Verified
 

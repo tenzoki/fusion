@@ -1,6 +1,6 @@
 # Reconciliation — session `260810-1646-orchestrator-session.md`, final pass
 
-**Date:** 260811-0108-reconciliation.md
+**Date:** 260811-0108
 **Domain:** code
 **Range verified:** `5ef92eb..e2a34f0` (18 commits)
 **Active Circle:** none — everything resolved to `shared/`

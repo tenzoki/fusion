@@ -45,18 +45,18 @@ explicit sentence that the false claim does not flag it; what diverged was the *
 pattern the Turn 4 review named — a summary restating a measurement and losing it — and it appeared in
 the dispatch that asked about that pattern.
 
-**3. Six records were resolved on disk and still carried `_o_`.** `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md_*`, `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*`,
-`260823-1636_*_all-three-turn-log-ranges-drop-their-own-first-commit-the-fault-this-circle-already-fixed-once.md_*`, `260823-1637_*_turn-log-entry-3-books-a-per-circle-reconciler-verdict-against-a-turn-that-had-no-coherence-gate.md_*`, `260823-1638_*_three-figures-in-the-reconcilers-coherence-section-are-wrong-and-one-contradicts-its-own-detail-file.md_*`, `260823-1639_*_the-reconcilers-review-annotation-wrote-two-hard-marker-citations-and-one-died-one-commit-later.md_*`. All six closed this pass with the
+**3. Six records were resolved on disk and still carried `_o_`.** `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`, `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md`,
+`260823-1636_*_all-three-turn-log-ranges-drop-their-own-first-commit-the-fault-this-circle-already-fixed-once.md`, `260823-1637_*_turn-log-entry-3-books-a-per-circle-reconciler-verdict-against-a-turn-that-had-no-coherence-gate.md`, `260823-1638_*_three-figures-in-the-reconcilers-coherence-section-are-wrong-and-one-contradicts-its-own-detail-file.md`, `260823-1639_*_the-reconcilers-review-annotation-wrote-two-hard-marker-citations-and-one-died-one-commit-later.md`. All six closed this pass with the
 evidence cited. Open records in the Circle fall from 15 to 9.
 
-**4. One finding flags the edge, and it is one clause.** `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md_*`. `_t_circle.md:30` offers Step
+**4. One finding flags the edge, and it is one clause.** `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md`. `_t_circle.md:30` offers Step
 0g as a six-clause convention; five hold verbatim, and the sixth states unscoped what
 `skills/setup/SKILL.md:270-313` explicitly bounds ("that guarantee is about the `allow` list and
 reaches no other field") before replacing `defaultMode` as a scalar. Same paragraph, same frozen
 window, same class as the original flag, materially smaller.
 
 **5. The reconciler committed the Circle's own defect class inside the Circle, and it is now fixed.**
-`260823-1639_*_the-reconcilers-review-annotation-wrote-two-hard-marker-citations-and-one-died-one-commit-later.md_*`: my Turn 3 review annotation wrote two hard-marker record citations and `2ec2bc2`
+`260823-1639_*_the-reconcilers-review-annotation-wrote-two-hard-marker-citations-and-one-died-one-commit-later.md`: my Turn 3 review annotation wrote two hard-marker record citations and `2ec2bc2`
 killed one a single commit later. Both starred. A scan of every review file in the only non-terminal
 Circle now returns zero such tokens, which restores option 3 of `shared/decisions/260823-1414_*` to
 the zero repair debt it was costed on. No gate saw it: review files sit outside `inCorpus`, which is
@@ -65,7 +65,7 @@ that decision's whole subject.
 **6. The event log's own `turn_end turn=3` detail says "4 commits" where the range holds 3.** `5fc3201`
 landed inside Turn 2, at Turn 2's own Coherence gate, and Turn 2's `turn_end` already counts it. The
 event detail over-counts in the same direction the Turn log used to. It is a machine-written string in
-an append-only log that nothing reads for a total — recorded in `260823-1636_*_all-three-turn-log-ranges-drop-their-own-first-commit-the-fault-this-circle-already-fixed-once.md_*`, not filed.
+an append-only log that nothing reads for a total — recorded in `260823-1636_*_all-three-turn-log-ranges-drop-their-own-first-commit-the-fault-this-circle-already-fixed-once.md`, not filed.
 
 **7. The seventh instance of the frozen-bookkeeping defect.** The history file's `**Directive:**` line
 still reads "(not yet stated)". The Artifact↔Directive edge is evaluable only because
@@ -91,7 +91,7 @@ the sixth instance from this session with the same evidence.
 
 None. Every defect this pass met was already filed, and the two questions the dispatch asked — the
 stranded records and the scope override — are answered in the `## Coherence` section rather than
-turned into records, because both already have one (`260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md_*`, `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md_*`).
+turned into records, because both already have one (`260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`, `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`).
 
 ## Misfiled — should be a decision
 

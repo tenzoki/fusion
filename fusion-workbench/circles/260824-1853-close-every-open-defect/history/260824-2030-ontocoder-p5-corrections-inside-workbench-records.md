@@ -29,8 +29,8 @@ Two literal citations noted outside step 4's list were starred:
 
 The 28 renames broke eight hard-marker citations in four live files, which the mover owes
 (`260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`);
-all eight were starred: the style spec `260820-2249_o_` (`:285`, `:500`, `:503`, `:508`), the prose
-register decision `260816-0740_a_` (`:7`), and the two `_o_` records `260816-1330_*_the-repunctuation-replaced-…`
+all eight were starred: the style spec `260820-2249_*_` (`:285`, `:500`, `:503`, `:508`), the prose
+register decision `260816-0740_*_` (`:7`), and the two `_o_` records `260816-1330_*_the-repunctuation-replaced-…`
 (`:6`, `:13`) and `260816-1330_*_two-of-the-twenty-nine-…` (`:15`).
 
 ## Verification

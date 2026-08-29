@@ -27,4 +27,4 @@
 
 **Rebalance recommendation:** revise Grounding
 
-The one flagged edge faults the Grounding: the active Circle record carries a playmaker-appended claim disk contradicts (filed as `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`, scope widened by `260826-1903_*_the-false-scan-set-claim-also-stands-in-the-portfolio-and-in-the-history-log-as-a-warning-name.md_*`). The drift is known, filed, and inside the Circle's own repair scope; the recommendation is advisory.
+The one flagged edge faults the Grounding: the active Circle record carries a playmaker-appended claim disk contradicts (filed as `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`, scope widened by `260826-1903_*_the-false-scan-set-claim-also-stands-in-the-portfolio-and-in-the-history-log-as-a-warning-name.md`). The drift is known, filed, and inside the Circle's own repair scope; the recommendation is advisory.

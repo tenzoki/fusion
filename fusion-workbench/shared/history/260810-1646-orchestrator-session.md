@@ -147,7 +147,7 @@ works; the bookkeeping beneath it remains exactly as dependable as the intention
 
 - **Artifact↔Grounding:** 26 of 26 closures verified against the working tree and all hold; suite
   green at 41 files / 1142 tests, matching this file's Turn-3 claim exactly; 3 drift items inside
-  otherwise-correct closures (stale same-session line anchors in `260810-2029_c_`; a closed record
+  otherwise-correct closures (stale same-session line anchors in `260810-2029_*_`; a closed record
   whose last paragraph still says "Half 2 (not done)"; a decision note overtaken by `63deec1` four
   commits later); 3 new defects filed; **22 open `coderev`-filed records** in `shared/issues/`. The
   flag is not the closures — it is that two Grounding artefacts never reached the Artifact:
@@ -168,7 +168,7 @@ works; the bookkeeping beneath it remains exactly as dependable as the intention
   **0 conflicting**. The one that could have conflicted does not: `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` sequences its own
   implementation behind the still-open `260801-2038`, and the session honoured that — no pin exists
   in `state-drift-detection-lint.test.ts`, whose header at `:92-104` records the sequencing as the
-  reason. `260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md` is realised on disk as cited. `260810-2030_o_` and `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` are
+  reason. `260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md` is realised on disk as cited. `260810-2030_*_` and `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` are
   consistent but understated: both count two call sites where `260811-0109` measures four.
 
 **Rebalance recommendation:** revise Artifact

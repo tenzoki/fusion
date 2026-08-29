@@ -1,6 +1,6 @@
 # coder — session-state drift: the enforcement half
 
-**Date:** 260811-1010-coder-state-drift-enforcement.md
+**Date:** 260811-1010
 **Agent:** coder
 **Task:** `I:260801-2038-frozen-state` (task 2 of `fusion-workbench/tasklist.md`)
 **Source record:** `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`

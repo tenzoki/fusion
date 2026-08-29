@@ -74,7 +74,7 @@ Two parts, and the first is the substance.
    a finished analysis is not retro-edited freely.
 
 **Not in scope for this record:** whether the profiles should come inside a citation gate at all.
-That is `260821-0146_*_the-four-voice-profiles-are-shipped-text-every-agent-loads-and-no-lint-gate-reads-them.md` and route 2 of `260821-2204_c_`, both already open, and neither would
+That is `260821-0146_*_the-four-voice-profiles-are-shipped-text-every-agent-loads-and-no-lint-gate-reads-them.md` and route 2 of `260821-2204_*_`, both already open, and neither would
 have caught a line number even if taken.
 
 ---

@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete — edits landed; **result reported `blocked`**, because the project's test command exited non-zero (unrelated flakes, evidenced below).
-**Started:** 260811-1936-coder-two-claude-md-corrections.md
+**Started:** 260811-1936
 **Finished:** 260811-2008
 **Git HEAD at start:** `9f84254`
 **Verification:** `cd hooks && npm test` — exit 1, twice, on flakes that differ per run and never read `CLAUDE.md` (detail below). The seven test files that do read `CLAUDE.md` — `npx vitest run` over them, 100 tests — exit 0.

@@ -13,7 +13,7 @@
 | Domain | `code` |
 | Active Circle | `260801-1244-guard-rules-write` |
 | Open issues in the Circle | 10, three of them High and live at HEAD |
-| Open decisions | `260803-1314_o`, `260803-1402_o` (both awaiting plan steps), `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md_o` (this session answers it) |
+| Open decisions | `260803-1314_o`, `260803-1402_o` (both awaiting plan steps), `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` (this session answers it) |
 | Guard | not halted; 0 consecutive blocks |
 | Tests at start | 1241 across 24 files |
 

@@ -46,7 +46,7 @@
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
-  citation-sweep.test.ts 45
+  citation-sweep.test.ts 128
   commit-message-path.test.ts 315
   committed-dist.test.ts 332
   config.test.ts 809
@@ -69,7 +69,7 @@
   guard-bash-integration.test.ts 338
   guard-project-config-integration.test.ts 251
   guard-state-shape.test.ts 215
-  helpers/citation-scan.ts 52
+  helpers/citation-scan.ts 54
   helpers/growth-bound.ts 123
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
@@ -85,7 +85,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 486
-  reference-resolution-lint.test.ts 995
+  reference-resolution-lint.test.ts 996
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
   rules-emission-golden.test.ts 1150
@@ -95,5 +95,5 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
-  workbench-citation-lint.test.ts 405
-  total 19607
+  workbench-citation-lint.test.ts 425
+  total 19713

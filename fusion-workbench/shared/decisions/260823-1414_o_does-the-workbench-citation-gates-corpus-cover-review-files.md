@@ -88,7 +88,7 @@ answer grows with every review file written: 90 exist today.
   `260819-1645` imposed on its own 245-citation repair. An armed clause over unrepaired text is a
   red suite that invites the number nobody may write.
 - Reviews, history files and analyses share one gap. An answer that covers reviews alone should say
-  so deliberately rather than by omission; `260823-1402_*_four-hard-marker-citations-of-the-c1-circle-record-dangle-in-the-same-files-this-turn-repaired.md_*` measured the same class in an analysis
+  so deliberately rather than by omission; `260823-1402_*_four-hard-marker-citations-of-the-c1-circle-record-dangle-in-the-same-files-this-turn-repaired.md` measured the same class in an analysis
   and two history files, four files away from the review repair that was looking for it.
 
 ## Recommendation

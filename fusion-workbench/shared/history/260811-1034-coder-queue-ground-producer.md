@@ -1,7 +1,7 @@
 # Coder — the work queue records the ground it was built on
 
 **Agent:** coder
-**Started:** 260811-1034-coder-queue-ground-producer.md
+**Started:** 260811-1034
 **Task:** `I:260810-0431-queue-ground` (task 3 of `fusion-workbench/tasklist.md`)
 **Source record:** `260810-0431_*_the-work-queue-does-not-record-the-ground-it-was-built-on.md`
 **Active Circle:** none — every store resolved into `shared/`

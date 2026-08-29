@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Started:** 260811-1806-coder-task2-throttle-seam-and-git-wrapper.md
+**Started:** 260811-1806
 **Task:** `fusion-workbench/tasklist.md` task 2 (`I:260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`)
 **Record:** `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`
 **Realises:** `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`, option 2

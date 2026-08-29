@@ -22,7 +22,7 @@ guard does not stand down and every denial assertion can actually fail.
   override-specific cases stay where they are; only the duplicated plumbing was removed.
 
 Consolidation was the point: two prior coders built throwaway-project harnesses ad hoc
-(`260801-1530_coder_wire-classifier-into-guard.md_coder_wire-classifier-into-guard.md`,
+(`260801-1530_coder_wire-classifier-into-guard.md`,
 `260801-1745_coder_override-waives-only-what-it-names.md`). There is now one shape with two
 callers.
 

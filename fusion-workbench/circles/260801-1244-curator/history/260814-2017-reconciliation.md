@@ -104,7 +104,7 @@ worth naming because each was verified by a command, not by reading the record:
 - `260814-1419_o` (three Plane files entered the layout tree and the two per-surface arguments were
   not extended) — `rules/fusion-workbench-conventions.md:64-66` carries the three files;
   line 71's justification paragraph names none of them, and the tracked-versus-live split at `:75`
-  contains zero occurrences of "plane". Stands, and its shared sibling `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md_o` stands with it.
+  contains zero occurrences of "plane". Stands, and its shared sibling `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` stands with it.
 - `260814-1419_o` (the golden-regeneration history says eighteen agent blocks) —
   `260814-1352-coder-golden-regeneration.md:23` still reads "all
   eighteen agent blocks". Stands.
@@ -195,7 +195,7 @@ delivered, and pointing at the decision.
 None found this pass. Every open record in the Circle store resolves to "go fix it" and belongs where
 it is. The one item in the Circle whose remedy is a choice —
 `260814-1850_*_the-halt-that-guards-the-audit-trail-…` — is correctly filed as a defect *and* cites
-its closing decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md_o`, which is the right shape: the defect is real, and answering the
+its closing decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`, which is the right shape: the defect is real, and answering the
 decision is what closes it.
 
 ---
@@ -236,8 +236,8 @@ Plus the four defect records and the one decision record named above.
 `260801-1244-curator`, `fusion-workbench/agentstate.yaml` and the session
 history's non-Coherence sections are outside the reconciler's write set. Three findings above land
 on them and stay as records for the orchestrator's Phase-4 write: the Circle record's title and
-`## Dependencies` (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o`), its `## Grounding snapshot` lag on the answered growth-bound
-decision (`260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o`), and the missing Turn-5 entry (`260814-2017_o`).
+`## Dependencies` (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`), its `## Grounding snapshot` lag on the answered growth-bound
+decision (`260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`), and the missing Turn-5 entry (`260814-2017_o`).
 
 ---
 

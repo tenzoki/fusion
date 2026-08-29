@@ -5,7 +5,7 @@
 
 ## Changed
 - `skills/setup/SKILL.md` 46525 -> 46881 bytes (+356; cap +400). Step 0j: dedupe via `grep -qxF`, re-check after append, honest "still excluded by a nested ignore file, <file>:<line>:<pattern>" report. Step 0i: one bullet named by its lead phrase. Step 2: `[ -x ]` guard on `fusion-plugin-cwd`.
-- Three records `260827-2042_p_` -> `_c_` with Resolved notes; C4 record `260826-1113_*_the-setup-skill-calls-the-id-fragment-the-pair-in-the-commit-that-removed-that-word-elsewhere.md` +1 dated Revised line.
+- Three records `260827-2042_*_` -> `_c_` with Resolved notes; C4 record `260826-1113_*_the-setup-skill-calls-the-id-fragment-the-pair-in-the-commit-that-removed-that-word-elsewhere.md` +1 dated Revised line.
 
 ## Measured
 - Scratch repo (nested `fusion-workbench/.gitignore`): two runs, one negation line, both report not repaired. Root-only exclusion: run 1 repairs, run 2 silent.

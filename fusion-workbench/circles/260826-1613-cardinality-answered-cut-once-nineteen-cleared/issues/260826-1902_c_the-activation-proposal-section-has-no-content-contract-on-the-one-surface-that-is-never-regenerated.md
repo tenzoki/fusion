@@ -86,7 +86,7 @@ The bytes come out of this same file.
 ## Scope
 
 One shipped file, `agents/playmaker.md`. Correcting the sentence already in
-`_t_circle.md:125-126` is the separate act tracked by `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md_*`.
+`_t_circle.md:125-126` is the separate act tracked by `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`.
 
 ---
 Reconciliation 260827-1528-reconciliation.md: still open. `agents/playmaker.md:177` still specifies the appended block as "the rationale" with no content contract; no commit has touched the file since filing.

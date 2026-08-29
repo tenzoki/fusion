@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (conditioning-load work, round 1 of the conventions partition), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `rules/fusion-workbench-conventions.md` `## Project language` and `## Backlog entries` (the two sections partitioned) · `rules/project-language.md` and `rules/backlog-entries.md` (the authoring homes they become) · `bin/fusion-rules` (the emissions) · `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md` and `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md_*` (the criterion's two precedents)
+**Cross-references:** `rules/fusion-workbench-conventions.md` `## Project language` and `## Backlog entries` (the two sections partitioned) · `rules/project-language.md` and `rules/backlog-entries.md` (the authoring homes they become) · `bin/fusion-rules` (the emissions) · `260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md` and `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md` (the criterion's two precedents)
 
 ---
 

@@ -1,6 +1,6 @@
 # Coder session — Step 7 obligation 5: the release-checklist line in CLAUDE.md
 
-**Date:** 260805-2236-coder-step7-obligation5-release-checklist.md
+**Date:** 260805-2236
 **Agent:** coder
 **Status:** Complete
 **Task:** Follow-up to the Step 7 remainder (session `260805-2233-coder-step7-remainder-documentation.md`). Obligation 5 — the release-checklist line in `CLAUDE.md` — was explicitly brought into scope and taken.

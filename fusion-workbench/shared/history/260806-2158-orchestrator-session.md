@@ -219,8 +219,8 @@ verdict lands here.
   contradiction of it; the user confirmed the waiver at plan approval. The binding decision
   `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`
   stands `_i_` with both of its own side conditions verified. The five shared records
-  (`260719-2141_a_`, `260801-1020_a_`, `260806-1152_o_`, `260807-0158_o_`, and the new
-  `260807-1515_o_` on the reach of the project-language declaration) are unrelated to this
+  (`260719-2141_*_`, `260801-1020_*_`, `260806-1152_*_`, `260807-0158_*_`, and the new
+  `260807-1515_*_` on the reach of the project-language declaration) are unrelated to this
   Directive.
 
 **Rebalance recommendation:** revise Artifact

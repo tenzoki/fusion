@@ -6,7 +6,7 @@ krks `.guard-state/events.jsonl` (14 599 Events, 02.–05.08.) hält genau 17 `g
 
 ---
 
-Der bitterste Fall ist `mv "260803-1536_o_$f.md" "260803-1536_c_$f.md"` (Eskalations-Record 260803-1831): die Marker-Umbenennung, die `rules/fusion-workbench-conventions.md` (`## State Markers`) selbst als den Weg vorschreibt, Issues zu schließen, in ihrer natürlichen Schleifenform über mehrere Dateien. Der Guard verweigert die eigene Konvention des Rahmens, sobald ein Agent sie idiomatisch ausführt. Ein zweiter wiederkehrender Fall sind `~`-Pfade in den Nutzerdaten der gebauten App (`rm -f ~/Library/Application\ Support/KRK/session.toml`).
+Der bitterste Fall ist `mv "260803-1536_*_$f.md" "260803-1536_*_$f.md"` (Eskalations-Record 260803-1831): die Marker-Umbenennung, die `rules/fusion-workbench-conventions.md` (`## State Markers`) selbst als den Weg vorschreibt, Issues zu schließen, in ihrer natürlichen Schleifenform über mehrere Dateien. Der Guard verweigert die eigene Konvention des Rahmens, sobald ein Agent sie idiomatisch ausführt. Ein zweiter wiederkehrender Fall sind `~`-Pfade in den Nutzerdaten der gebauten App (`rm -f ~/Library/Application\ Support/KRK/session.toml`).
 
 Einordnung: kein Block führte zu einem Halt, die Deny-Botschaft nennt den Ausweg, und die Agenten erholten sich jeweils. Die Reibung ist begrenzt, aber ihr gemessener Nutzen war null. Der abgespaltene Circle `260804-1205-shell-reachability-model` adressiert nur die Joiner-Fälle; `mv "$f"` bleibt auch unter einem Reachability-Modell unauflösbar.
 

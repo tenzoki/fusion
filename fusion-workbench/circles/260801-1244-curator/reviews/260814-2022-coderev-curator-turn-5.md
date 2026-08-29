@@ -82,7 +82,7 @@ Filed: `260814-2022_*_initiated-by-carries-quoted-user-dialogue-and-no-surface-b
 
 Sixteen open defect records now stand in the Circle and its shared reach after this pass; four are added here.
 
-**The three closures in `41c224c` are correct and were re-verified rather than accepted.** `260814-1419_c_` (the consumer column), `260814-1850_c_` (the roster) and `260814-1850_*_` (Phase 0b.1) each state a `Resolved:` footer whose claims hold at HEAD. Each is also narrower than the job a reader would infer from its title, which is why F1 and F3 exist rather than reopening any of them: the records named specific rows and specific cells, and those rows and cells are fixed.
+**The three closures in `41c224c` are correct and were re-verified rather than accepted.** `260814-1419_*_` (the consumer column), `260814-1850_*_` (the roster) and `260814-1850_*_` (Phase 0b.1) each state a `Resolved:` footer whose claims hold at HEAD. Each is also narrower than the job a reader would infer from its title, which is why F1 and F3 exist rather than reopening any of them: the records named specific rows and specific cells, and those rows and cells are fixed.
 
 **`260814-1850_*_the-halt-that-guards-the-audit-trail-…` correctly stays open**, with a `Half established` annotation that is a model of the form — it names what the probes settled, names what they did not reach, and says why the two inheritance sentences were left alone. Its remedy is the open decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`, and answering that decision is what closes it.
 

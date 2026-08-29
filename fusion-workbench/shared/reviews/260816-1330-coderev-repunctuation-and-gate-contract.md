@@ -113,7 +113,7 @@ The nine records land correctly. Two checks are worth recording.
 
 ## Cross-cutting observations
 
-**The register defect and the citation-staleness defect are the same defect seen twice.** `52b8665` shifted every line below `:87` by two, and three citations went stale in one session, two of them inside one file. `260816-1251-curator-run.md:288` records the curator noticing that an analysis cited the gate cap as `:101` when "it is at `:99` at this HEAD", and the commit that same run produced moved it back to `:101`. A correction made obsolete by its own change is the cleanest demonstration `260808-0030_o_` will ever get.
+**The register defect and the citation-staleness defect are the same defect seen twice.** `52b8665` shifted every line below `:87` by two, and three citations went stale in one session, two of them inside one file. `260816-1251-curator-run.md:288` records the curator noticing that an analysis cited the gate cap as `:101` when "it is at `:99` at this HEAD", and the commit that same run produced moved it back to `:101`. A correction made obsolete by its own change is the cleanest demonstration `260808-0030_*_` will ever get.
 
 **Three of the five findings are about a record's account of itself, not about the code.** The token count nobody can reproduce, the inverted capitalisation claim, the wrong cap named as in force. Each is small; together they are the pattern `rules/critical-stance.md` §3 names, an unchecked claim carried in the position a checked one would occupy. Every one of them appears in a durable record rather than only in a commit message, which is where it costs something, because a commit message is read once and an open issue is read as a starting state.
 

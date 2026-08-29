@@ -38,6 +38,8 @@ export {
   RECORD_EXAMPLE_FILES,
   fencedContentLines,
   GATE_KINDS,
+  MARKER_SLOT,
+  MARKER_WORDS,
   markdownFilesUnder,
   partition,
 } from "../../citation-scan.js";

@@ -6,6 +6,8 @@ import {
   workbenchRoot,
   WORKBENCH_PRESENT,
   markdownFilesUnder,
+  MARKER_SLOT,
+  MARKER_WORDS,
   report,
   scanRecordCitations,
   type Violation,
@@ -381,7 +383,12 @@ describe("workbench citation lint: the storeless form rests on basename uniquene
   // The rule states the scope as the live tree AND `archive/`, so this walk
   // takes the whole workbench with no frozen-store exclusion (decision
   // `260828-0904_*_should-the-uniqueness-claim-state-its-scope.md`).
-  const STAMPED_RE = /^[0-9]{6}-[0-9]{4}(?:_[a-z]_|-).+\.md$/;
+  // The marker slot is the grammar's own (`MARKER_SLOT`), so the set this walk
+  // measures is the set `workbenchIndex()` resolves against: with a literal
+  // `_[a-z]_` here the 24 `_coder_`/`_ontocoder_`/`_planner_` history files
+  // were outside the claim while inside the index (issue
+  // `260829-1347_*_the-grammars-marker-slot-is-one-letter-while-24-indexed-artifacts-carry-a-word-there-and-the-stamp-bare-rewrite-checks-no-boundary.md`).
+  const STAMPED_RE = new RegExp(`^[0-9]{6}-[0-9]{4}(?:${MARKER_SLOT}|-).+\\.md$`);
   const all = markdownFilesUnder(workbenchRoot).map((f) => f.rel);
 
   it("no two stamped artifacts share a marker-normalised basename, archive/ included", () => {
@@ -401,5 +408,18 @@ describe("workbench citation lint: the storeless form rests on basename uniquene
 
   it("the walk saw archive/, so the scope the rule states is the scope measured", () => {
     expect(all.some((r) => r.startsWith("archive/"))).toBe(true);
+  });
+
+  it("every word the tree carries in the marker slot is one the grammar enumerates", () => {
+    // `MARKER_WORDS` was read off the tree, not guessed; a fourth word arriving
+    // in a filename would sit in the index and outside the grammar until it is
+    // added there, so this is the check that notices it.
+    const words = new Set<string>();
+    for (const rel of all) {
+      const m = /^[0-9]{6}-[0-9]{4}_([a-zA-Z]{2,})_/.exec(rel.slice(rel.lastIndexOf("/") + 1));
+      if (m) words.add(m[1]);
+    }
+    expect([...words].sort()).toEqual([...MARKER_WORDS].sort().filter((w) => words.has(w)));
+    expect(words.size, "the tree still carries word-marked files; drop this case with them").toBeGreaterThan(0);
   });
 });

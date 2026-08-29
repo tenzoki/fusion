@@ -29,13 +29,13 @@
 
 ## Warnings emitted to the portfolio
 
-- `active-record-carries-a-false-claim`: the `## Activation proposal` on the active record (written by playmaker 260826-1705-playmaker-direct-dispatch.md) asserts a scan-set behaviour the resolver does not have; filed as `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md_*` and `260826-1903_*_the-false-scan-set-claim-also-stands-in-the-portfolio-and-in-the-history-log-as-a-warning-name.md_*` in the active Circle. This run does not append to that record and repeats the claim nowhere.
+- `active-record-carries-a-false-claim`: the `## Activation proposal` on the active record (written by playmaker 260826-1705-playmaker-direct-dispatch.md) asserts a scan-set behaviour the resolver does not have; filed as `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md` and `260826-1903_*_the-false-scan-set-claim-also-stands-in-the-portfolio-and-in-the-history-log-as-a-warning-name.md` in the active Circle. This run does not append to that record and repeats the claim nowhere.
 - `parent-spec-stale-after-last-capability`: `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` still open and partially complete while all five capability Circles are terminal.
 - `records-reachable-only-under-their-terminal-circle`: open decision records inside five terminal Circles are in a scan set only when a run names that Circle as its scope argument. The previous run's name for this, `stranded-records-in-terminal-circles`, stated it wrongly and is retired.
 - `open-defects-in-shared-store`: 15 open, 9 of them deliberately outside the active Circle's scope.
 - `backlog-referrals-unfiled`: seven ideas named by the `260824-1853` closure note, none filed.
 - `deferred-decision-condition-fully-met`: `260810-0710_*` still deferred while all three named records are closed.
-- `stale-blocker-statement-in-live-entry`: `attach-the-rule-to-the-act` says `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md_*` is still open; it carries the closed marker.
+- `stale-blocker-statement-in-live-entry`: `attach-the-rule-to-the-act` says `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` is still open; it carries the closed marker.
 - `dead-citation-in-closed-entry`: `260811-0826_*_observations.md` names an entry now under the archive store.
 - `growth-bounds-pass-margins-not-measured`: `surface-growth-bound.test.ts` run this session, 12 of 12 pass; margins not re-derived.
 - `always-on-rule-set-measured`: the always-on set emitted to playmaker (without the two voice profiles) is 105 433 bytes at this tree.

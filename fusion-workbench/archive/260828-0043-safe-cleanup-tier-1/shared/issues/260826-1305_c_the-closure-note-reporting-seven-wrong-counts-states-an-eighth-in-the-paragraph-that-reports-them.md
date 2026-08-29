@@ -30,7 +30,7 @@ $ ls .../issues/*_c_*.md | wc -l        →  18
 $ git ls-tree --name-only 8d06759 .../issues/ | grep -c '_o_'  →  14
 ```
 
-The two it is over by are `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md_*` and `260826-0140_*_the-new-setup-step-2-identity-call-moves-a-halt-from-first-filing-to-setup-and-nothing-says-so.md_*`, closed at `753932b`, eight
+The two it is over by are `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md` and `260826-0140_*_the-new-setup-step-2-identity-call-moves-a-halt-from-first-filing-to-setup-and-nothing-says-so.md`, closed at `753932b`, eight
 commits before the note was written.
 
 **The note's own three-way split is arithmetically consistent with fourteen and not with

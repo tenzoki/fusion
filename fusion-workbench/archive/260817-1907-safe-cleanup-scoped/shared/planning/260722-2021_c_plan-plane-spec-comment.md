@@ -172,7 +172,7 @@ flowchart TD
   still returns before the tail; verify `existing_id` correctness across create/update/noop).
 
 ### Step 3 — [DONE] vitest coverage + fixtures
-<!-- DONE: hooks/lib/__tests__/fusion-plane.test.ts + 2 fixtures; npm test 315 passed (309 + 6 new); plan-test-6 INCLUDED; fixtures use {results:[…]} envelope not bare array — see history 260722-2225_coder_plane-spec-comment-step3.md_coder_plane-spec-comment-step3.md -->
+<!-- DONE: hooks/lib/__tests__/fusion-plane.test.ts + 2 fixtures; npm test 315 passed (309 + 6 new); plan-test-6 INCLUDED; fixtures use {results:[…]} envelope not bare array — see history 260722-2225_coder_plane-spec-comment-step3.md -->
 
 - **Executor:** coder
 - **Files:** `hooks/lib/__tests__/fusion-plane.test.ts`,
