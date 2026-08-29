@@ -2,10 +2,10 @@
 
 ---
 **Domain:** code
-**Status:** active (parked mid-Turn-1 pending decision `260807-0825`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825, which is the defect filed at `shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`)
+**Status:** active (parked mid-Turn-1 pending decision `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`; the record was activated `_a_`→`_t_` on 260806-2313 and this field was corrected by hand on 260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md, which is the defect filed at `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`)
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260804-1205-shell-reachability-model/planning/260806-2353_*_plan-shell-reachability-model.md
-**Active session history:** shared/history/260806-2158-orchestrator-session.md
+**Active spec/plan:** 260806-2353_*_plan-shell-reachability-model.md
+**Active session history:** 260806-2158-orchestrator-session.md
 
 ---
 
@@ -13,13 +13,13 @@
 
 The guard's mutation classifier decides, for every segment of a shell command, whether the shell guarantees that the segment runs once the command has started. The flat joiner model, in which a segment carries only the operator immediately before it, gives way to a reachability model built on the shell's own grammar: and-or lists, pipelines, and the compound commands `if`, `while`, `until` and brace groups become structure the segmenter produces rather than separators it flattens. The directory model then asks the reachability question of the segment that moves and of the segment that writes, instead of inspecting one adjacent operator at a time. The 84 measured commands in the family `if cd X; then W; fi`, `while cd X; do W; done`, `{ cd X; } && W` and `cd X && Y | tee W` allow, where today they deny although the shell guarantees the `cd`. The 12 measured `until cd X; do W; done` commands keep denying, because an `until` body runs when the `cd` failed. A pipeline stage needs no special case, because it is a subshell in the model, as `(…)` and `$(…)` already are. No command that denies today newly allows. The success half of the question stays out of reach and stays a stated residual: `[ -d nope ] || cd build && rm rules/x.md` denies before and after, since reachability is a static property and an exit status is not.
 
-**The argument is already written and is not restated here.** It is option 2 of `circles/260801-1244-guard-rules-write/decisions/260804-0947_i_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`, and option 4 of that record, chosen by the user on 2026-08-04, is the decision to give option 2 its own unit of work rather than make it the eighth Turn of the Circle that raised it. The live cost it removes is `circles/260801-1244-guard-rules-write/issues/260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`.
+**The argument is already written and is not restated here.** It is option 2 of `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`, and option 4 of that record, chosen by the user on 2026-08-04, is the decision to give option 2 its own unit of work rather than make it the eighth Turn of the Circle that raised it. The live cost it removes is `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`.
 
 ## Grounding snapshot
 
-**The prize is measured, and it is the reason this is worth a Circle of its own.** Option 2 is the only option of `260804-0947` that closes `260804-0839`, the over-deny an agent meets on ordinary work. `cd hooks && npx tsc | tee typecheck.log` and `if cd hooks; then rm -rf dist; fi` are commands a coder writes without thinking, and both deny at HEAD `cc012fc`. All 84 generated rows of that family were measured denying; all 84 should allow under a reachability model. The pipeline half of the problem stops being a special case and becomes a scope fact, which is the structural argument for the model over another give-up.
+**The prize is measured, and it is the reason this is worth a Circle of its own.** Option 2 is the only option of `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` that closes `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`, the over-deny an agent meets on ordinary work. `cd hooks && npx tsc | tee typecheck.log` and `if cd hooks; then rm -rf dist; fi` are commands a coder writes without thinking, and both deny at HEAD `cc012fc`. All 84 generated rows of that family were measured denying; all 84 should allow under a reachability model. The pipeline half of the problem stops being a special case and becomes a scope fact, which is the structural argument for the model over another give-up.
 
-**The cost is honestly unmeasured, and it must stay that way until someone implements it.** Two ends are known. The model's deny set on the `||` and `|` rows must equal what `4f1007f` already ships, because a correct reachability model says the same thing about a `cd` the shell may have skipped. Its allow set gains the 84-row family above. Between those two ends the cost cannot be measured without building it, and `260804-0947` deliberately declines to state a number. Stating one here would repeat the exact failure the parent Circle spent its last two Turns correcting: an inference laid over correct data, one command away from being checked. This Circle starts with no estimate, and the first honest number will come out of a generated cross-product run against a real implementation.
+**The cost is honestly unmeasured, and it must stay that way until someone implements it.** Two ends are known. The model's deny set on the `||` and `|` rows must equal what `4f1007f` already ships, because a correct reachability model says the same thing about a `cd` the shell may have skipped. Its allow set gains the 84-row family above. Between those two ends the cost cannot be measured without building it, and `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` deliberately declines to state a number. Stating one here would repeat the exact failure the parent Circle spent its last two Turns correcting: an inference laid over correct data, one command away from being checked. This Circle starts with no estimate, and the first honest number will come out of a generated cross-product run against a real implementation.
 
 **`until` is the counter-example that keeps an implementation honest.** `until cd X; do W; done` runs its body when the `cd` **failed**, so today's degrade is correct for it and must survive. Twelve of twelve generated `until` rows deny today and every one must keep denying. The compound-command family is not uniform. An implementation that treats it as uniform re-opens the class in a new place, which is what happened in Turns 5 and 7 of the parent Circle, and `until` is the cheapest available check that the work modelled reachability rather than pattern-matched `if`.
 
@@ -29,33 +29,33 @@ The guard's mutation classifier decides, for every segment of a shell command, w
 
 **Measure with a generated cross-product, never with a harvest of the suite's own strings.** Two enumerations shipped in the parent Circle and both were falsified within a day. A corpus harvested from the tests measures reproduction, not cost: 4,203 strings from 24 test files contained no `if cd`, no `&&`-newline chain and no `cd X; prog > log`, so none of them could move. The cross-product generator that found all three families took twenty lines. Both shells belong in the method, and a row must be measured in the shell that performs its write, because bash and zsh disagree about the last element of a pipeline.
 
-**Where the boundary stands, so this Circle knows what it inherits.** The `### The boundary, by coverage` section of `circles/260801-1244-guard-rules-write/reviews/260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md` is the authoritative statement of what is closed, what is open, and what is out of reach of a textual classifier by nature. The last group (a string the shell re-parses, an alias or function named `cd`, an operand computed at run time, an operand arriving on stdin, a second unprotected name for a protected file, a `trap` body) is closed by no enumeration and by no parser, and no Turn of this Circle should be spent on it.
+**Where the boundary stands, so this Circle knows what it inherits.** The `### The boundary, by coverage` section of `260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md` is the authoritative statement of what is closed, what is open, and what is out of reach of a textual classifier by nature. The last group (a string the shell re-parses, an alias or function named `cd`, an operand computed at run time, an operand arriving on stdin, a second unprotected name for a protected file, a `trap` body) is closed by no enumeration and by no parser, and no Turn of this Circle should be spent on it.
 
 **Nothing from either Circle is live for a consuming project yet.** `hooks/dist/` at the parent Circle's HEAD carries none of the work, `origin/main` is 36 commits behind, and the installed copy of `rules/protected-path-discipline.md` is the 275-line pre-Circle version. Plan Step 10 of the parent Circle (rebuild `dist`, bump `plugin.json`, push) is what makes any of it real. This Circle's own change needs the same step for itself, whether or not the parent has taken it first.
 
 **Cited, not copied** (per the Origin Rule):
 
-- **The decision this Circle is** — `circles/260801-1244-guard-rules-write/decisions/260804-0947_i_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`. Option 2 is the content; option 4 is the reason this is a separate Circle. Its five constraints bind this work, and its `## Recommendation` explains why the model deserves planning rather than bolting on.
-- **The live over-deny this Circle closes** — `circles/260801-1244-guard-rules-write/issues/260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`. Carries the four shapes, the anti-vacuity pins, and the reconciliation confirming all four still deny at HEAD.
-- **The boundary statement** — `circles/260801-1244-guard-rules-write/reviews/260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md`, section `### The boundary, by coverage`.
-- **What the parent Circle still owes** — `circles/260801-1244-guard-rules-write/history/260804-1021-reconciliation.md`, section `## I. What the next session inherits`.
-- **The decision that introduced the joiner model this Circle replaces** — `circles/260801-1244-guard-rules-write/decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`.
+- **The decision this Circle is** — `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`. Option 2 is the content; option 4 is the reason this is a separate Circle. Its five constraints bind this work, and its `## Recommendation` explains why the model deserves planning rather than bolting on.
+- **The live over-deny this Circle closes** — `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`. Carries the four shapes, the anti-vacuity pins, and the reconciliation confirming all four still deny at HEAD.
+- **The boundary statement** — `260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md`, section `### The boundary, by coverage`.
+- **What the parent Circle still owes** — `260804-1021-reconciliation.md`, section `## I. What the next session inherits`.
+- **The decision that introduced the joiner model this Circle replaces** — `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`.
 
 ## Dependencies
 
 **`260801-1244-guard-rules-write` — this Circle starts after that one closes, and the dependency is real rather than procedural.**
 
-Three things make it real. First, the two Circles edit the same two files. `260804-1024` (`git -C rules rm x.md` allows and deletes the file, because `resolveGit` at `hooks/lib/bash-mutation-guard.ts:1084-1087` skips `-C` and its value to find the subcommand and never applies the directory) lands in the module this Circle restructures. Running both at once means two writers in `bash-mutation-guard.ts`. Second, the parent Circle's remaining documentation item, `260804-1025` (`rules/protected-path-discipline.md:172` tells an agent the model stays exact for the two commands that delete a rule file), describes the joiner model in the text this Circle's work will have to rewrite again; correcting it once in the parent and once here is cheaper than correcting it once against a moving model. Third, fusion runs one active Circle at a time, so activation is blocked mechanically while the parent record carries the active marker.
+Three things make it real. First, the two Circles edit the same two files. `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` (`git -C rules rm x.md` allows and deletes the file, because `resolveGit` at `hooks/lib/bash-mutation-guard.ts:1084-1087` skips `-C` and its value to find the subcommand and never applies the directory) lands in the module this Circle restructures. Running both at once means two writers in `bash-mutation-guard.ts`. Second, the parent Circle's remaining documentation item, `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` (`rules/protected-path-discipline.md:172` tells an agent the model stays exact for the two commands that delete a rule file), describes the joiner model in the text this Circle's work will have to rewrite again; correcting it once in the parent and once here is cheaper than correcting it once against a moving model. Third, fusion runs one active Circle at a time, so activation is blocked mechanically while the parent record carries the active marker.
 
-The parent Circle's open ledger at reconciliation `260804-1021`: the `git -C` route (`260804-1024`), the false clause at `rules/protected-path-discipline.md:172` (`260804-1025`), a review of commits `048f3db` and `cc012fc` which no review covers, plus plan steps 6 through 10 unstarted. Step 10 is the ship.
+The parent Circle's open ledger at reconciliation `260804-1021-reconciliation.md`: the `git -C` route (`260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md`), the false clause at `rules/protected-path-discipline.md:172` (`260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`), a review of commits `048f3db` and `cc012fc` which no review covers, plus plan steps 6 through 10 unstarted. Step 10 is the ship.
 
-**One sequencing choice is open and belongs to the parent Circle rather than to this one.** Shipping Step 10 before this Circle runs makes the over-deny `260804-0839` live for consuming projects, at the benefit of shipping the security fixes that are done and sitting unshipped. Holding Step 10 until the reachability model lands avoids ever shipping the over-deny, at the cost of delaying fixes for live no-flag writes into `rules/**`, `agents/**` and `skills/**`. Reconciliation `260804-1021` recommends shipping first (its items 3 and 6). Either answer leaves this Circle's content unchanged; it changes only whether this Circle's own `dist` rebuild is the first ship or the second. Whoever activates this Circle should confirm which happened rather than assume.
+**One sequencing choice is open and belongs to the parent Circle rather than to this one.** Shipping Step 10 before this Circle runs makes the over-deny `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` live for consuming projects, at the benefit of shipping the security fixes that are done and sitting unshipped. Holding Step 10 until the reachability model lands avoids ever shipping the over-deny, at the cost of delaying fixes for live no-flag writes into `rules/**`, `agents/**` and `skills/**`. Reconciliation `260804-1021-reconciliation.md` recommends shipping first (its items 3 and 6). Either answer leaves this Circle's content unchanged; it changes only whether this Circle's own `dist` rebuild is the first ship or the second. Whoever activates this Circle should confirm which happened rather than assume.
 
 **Depended on by nothing yet.** `260801-1244-curator` is the other anticipated Circle in the portfolio and is unrelated to the guard's classifier.
 
 ## Turn log
 
-- **Turn 1 (session 260806-2158) — parked by the user, not closed.** Commits `ac1399e`
+- **Turn 1 (session 260806-2158-orchestrator-session.md) — parked by the user, not closed.** Commits `ac1399e`
   (activation and planning), `3dc5014` (plan step 1, the measurement instrument), `02745fe`
   (plan repair after the first diagram evaluation), `9a24c9b` (plan step 2, the reach layer).
   Plan steps 1 and 2 are `[DONE]`; steps 3 through 11 are unstarted. No Coherence verdict was
@@ -71,45 +71,45 @@ The parent Circle's open ledger at reconciliation `260804-1021`: the `git -C` ro
   approved design that would have let a command delete a protected rule file, of which the
   worst is `{ cd rules; } | cat && rm x.md`, verified to remove the file in both `bash` and
   `zsh`. All five are closed in `hooks/lib/shell-reach.ts`. The sub-question they raised is
-  answered by measurement in `decisions/260807-0250_i_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md`.
+  answered by measurement in `260807-0250_*_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md`.
 
   **Why it stopped.** The user asked whether the Circle is still trying to decide an
   undecidable question. It is, and the session's own evidence supports the challenge: the
   approximation keeps producing holes as it grows, the instrument cannot yet express the shape
   where the worst ones lived, and the only friction anyone has measured in a live consuming
   project is untouched by this Directive. The question is filed as an open decision at
-  `decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` and the
+  `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` and the
   Circle is parked pending its answer.
 
   **Do not start plan step 3 before that decision is answered.** Step 3 is where the
   classifier's verdicts first move, and the corpus gap at
-  `issues/260807-0251_*_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
+  `260807-0251_*_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
   is still open.
 
-  Session history: `shared/history/260806-2158-orchestrator-session.md`.
+  Session history: `260806-2158-orchestrator-session.md`.
 
 ## Activation proposal
 
-**Recommended as the next Circle — playmaker run 260805-2342 (trigger: orchestrator-phase4, domain bias `code`).**
+**Recommended as the next Circle — playmaker run 260805-2342-playmaker-orchestrator-phase4.md (trigger: orchestrator-phase4, domain bias `code`).**
 
-This Circle's one hard dependency, `260801-1244-guard-rules-write`, closed coherent on 260805 and its closure note answers the sequencing question this record left open: plan Step 10 shipped (v5.9.0–v5.9.2, tags pushed), so the flat-joiner over-deny this Circle exists to close (`circles/260801-1244-guard-rules-write/issues/260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`) is now live for consuming projects, which raises rather than lowers the urgency. Under the code-domain heuristic this Circle and `260801-1244-curator` tie at zero open decision records cited (the workbench holds none anywhere), and both now pass the dependencies-closed check; the tie breaks here because this Circle is activation-ready as written, while the curator needs a shaper re-shape before activation (its closing work C9 was partly done by hand, recorded in `circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` `## Dependencies`) and benefits from the now-active text-layer Circle running first. Two things belong to activation, not to this proposal: absorb the measured 17-false-alarm balance from `circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md` §3 into this Grounding, and note that the shipped-first path was the one taken. Proposed activation: after the active Circle `260805-2005-textschicht-gegen-code-nachziehen` reaches closure, via `/fusion:next`.
+This Circle's one hard dependency, `260801-1244-guard-rules-write`, closed coherent on 260805 and its closure note answers the sequencing question this record left open: plan Step 10 shipped (v5.9.0–v5.9.2, tags pushed), so the flat-joiner over-deny this Circle exists to close (`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`) is now live for consuming projects, which raises rather than lowers the urgency. Under the code-domain heuristic this Circle and `260801-1244-curator` tie at zero open decision records cited (the workbench holds none anywhere), and both now pass the dependencies-closed check; the tie breaks here because this Circle is activation-ready as written, while the curator needs a shaper re-shape before activation (its closing work C9 was partly done by hand, recorded in `260805-2005-textschicht-gegen-code-nachziehen` `## Dependencies`) and benefits from the now-active text-layer Circle running first. Two things belong to activation, not to this proposal: absorb the measured 17-false-alarm balance from `260805-1830-zweck-nutzung-und-stand-des-plugins.md` §3 into this Grounding, and note that the shipped-first path was the one taken. Proposed activation: after the active Circle `260805-2005-textschicht-gegen-code-nachziehen` reaches closure, via `/fusion:next`.
 
-**Re-confirmed as the next Circle — playmaker run 260806-1103 (trigger: orchestrator-phase4, domain bias `code`).**
+**Re-confirmed as the next Circle — playmaker run 260806-1103-playmaker-orchestrator-phase4.md (trigger: orchestrator-phase4, domain bias `code`).**
 
-The condition the 260805-2342 proposal named is now met: `260805-2005-textschicht-gegen-code-nachziehen` closed coherent on 260806 (its closure note cites session `history/260805-2350-orchestrator-session.md`, 13 commits, suite at 1611 tests) and no Circle is active. This Circle stays ranked first over `260801-1244-curator`, which still needs a shaper re-shape before activation. Two items belong to activation and are restated here so they are not lost:
+The condition the 260805-2342-playmaker-orchestrator-phase4.md proposal named is now met: `260805-2005-textschicht-gegen-code-nachziehen` closed coherent on 260806 (its closure note cites session `260805-2350-orchestrator-session.md`, 13 commits, suite at 1611 tests) and no Circle is active. This Circle stays ranked first over `260801-1244-curator`, which still needs a shaper re-shape before activation. Two items belong to activation and are restated here so they are not lost:
 
-1. **Absorb the measured false-alarm balance into this Grounding.** In four days of the observed consuming project the guard produced 17 fail-closed blocks and zero real hits, all 17 on operands carrying a variable, a tilde, or a glob. Source: `circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md` §3, finding `circles/260801-1244-guard-rules-write/issues/260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`. The balance shifts this Circle's burden of proof and bounds its claim: a reachability model resolves the joiner families but not the unresolvable-operand class (`mv "$f"` stays denied), so the Grounding must state which share of observed friction the Directive can and cannot reach.
-2. **Note that the shipped-first path was taken.** The parent Circle's plan Step 10 shipped as v5.9.0–v5.9.2 with tags pushed, so the flat-joiner over-deny `260804-0839` is live for consuming projects; the sequencing question this record's `## Dependencies` left open is answered.
+1. **Absorb the measured false-alarm balance into this Grounding.** In four days of the observed consuming project the guard produced 17 fail-closed blocks and zero real hits, all 17 on operands carrying a variable, a tilde, or a glob. Source: `260805-1830-zweck-nutzung-und-stand-des-plugins.md` §3, finding `260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`. The balance shifts this Circle's burden of proof and bounds its claim: a reachability model resolves the joiner families but not the unresolvable-operand class (`mv "$f"` stays denied), so the Grounding must state which share of observed friction the Directive can and cannot reach.
+2. **Note that the shipped-first path was taken.** The parent Circle's plan Step 10 shipped as v5.9.0–v5.9.2 with tags pushed, so the flat-joiner over-deny `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` is live for consuming projects; the sequencing question this record's `## Dependencies` left open is answered.
 
-**Re-confirmed as the next Circle — playmaker run 260806-2259 (trigger: user-fusion-next, domain bias `code`).**
+**Re-confirmed as the next Circle — playmaker run 260806-2259-playmaker-user-fusion-next.md (trigger: user-fusion-next, domain bias `code`).**
 
-The ranking is unchanged and one input is new. Between the 260806-1103 proposal and this run, a workbench-wide reconciliation (`shared/history/260806-1152-reconciliation.md`) returned a coherent verdict and filed one open decision record, `shared/decisions/260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`. That record asks whether the stash manifest needs two fields holding the same value. Neither anticipated Circle cites it, so it does not move the code-domain ranking. It does retire a claim both earlier proposals made: the workbench is no longer free of open decision records, and the next ranking should count them rather than carry the zero forward.
+The ranking is unchanged and one input is new. Between the 260806-1103-playmaker-orchestrator-phase4.md proposal and this run, a workbench-wide reconciliation (`260806-1152-reconciliation.md`) returned a coherent verdict and filed one open decision record, `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`. That record asks whether the stash manifest needs two fields holding the same value. Neither anticipated Circle cites it, so it does not move the code-domain ranking. It does retire a claim both earlier proposals made: the workbench is no longer free of open decision records, and the next ranking should count them rather than carry the zero forward.
 
-The two activation items above stand unchanged, and both were re-verified against disk on this run. The false-alarm balance finding is still open at `circles/260801-1244-guard-rules-write/issues/260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`, and the over-deny this Circle exists to close is still open at `circles/260801-1244-guard-rules-write/issues/260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`, measured against HEAD `38c5123` (v5.10.0). No Circle carries the active marker and `.active-circle` is absent, so activation is unblocked. Proposed activation: now, via `/fusion:next`.
+The two activation items above stand unchanged, and both were re-verified against disk on this run. The false-alarm balance finding is still open at `260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`, and the over-deny this Circle exists to close is still open at `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`, measured against HEAD `38c5123` (v5.10.0). No Circle carries the active marker and `.active-circle` is absent, so activation is unblocked. Proposed activation: now, via `/fusion:next`.
 
 ## Closure note
 
-**Abgelöst (`_t_` → `_s_`) am 260807-0923 durch `circles/260807-0923-guard-misst-statt-orakelt/`.**
+**Abgelöst (`_t_` → `_s_`) am 260807-0923-guard-misst-statt-orakelt durch `260807-0923-guard-misst-statt-orakelt`.**
 
 Der Circle wird nicht abgeschlossen, weil seine Directive erreicht wäre, und nicht wegen Bounded
 Closure, weil sie unerreichbar gewesen wäre. Er wird abgelöst, weil der Nutzer den Mechanismus
@@ -124,15 +124,15 @@ Nachfolge-Circle baut den Klassifizierer ab, den dieser Circle verfeinern wollte
    Das schwerste, `{ cd rules; } | cat && rm x.md`, wurde in `bash` und `zsh` ausgeführt und
    entfernt die Datei in beiden. Zwei unabhängige Entwurfsprüfungen fanden davon je einen Teil,
    und die zweite benannte den Fehler ein Segment zu früh. Diese Kette ist das Belegmaterial für
-   die Entscheidung `decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
+   die Entscheidung `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
 2. **Die Erkenntnis, warum es keine Frage der Sorgfalt war.** Die Fallunterscheidungen des
    Klassifizierers waren weder disjunkt noch vollständig, und sie ließen sich auch nicht dazu
    machen, weil die zugrundeliegende Frage aus dem Befehlstext heraus unentscheidbar ist. Daraus
    wird ein invariantes Prinzip in `rules/critical-stance.md`, siehe den Nachfolge-Circle.
 3. **Zwei offene Befunde, die den Mechanismuswechsel nicht überleben.** Der Korpus-Befund
-   `issues/260807-0251_*_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
+   `260807-0251_*_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
    erlischt mit dem Korpus. Der Befund
-   `issues/260807-0252_*_joinerfacts-claims-a-pessimism-for-the-pipe-row-that-the-row-itself-does-not-carry.md`
+   `260807-0252_*_joinerfacts-claims-a-pessimism-for-the-pipe-row-that-the-row-itself-does-not-carry.md`
    beschreibt eine Aussage in Code, den der Rückbau ohnehin entfernt. Beide gehen mit dem
    Klassifizierer und werden im Nachfolge-Circle geschlossen, nicht separat abgearbeitet.
 
@@ -140,4 +140,4 @@ Nachfolge-Circle baut den Klassifizierer ab, den dieser Circle verfeinern wollte
 (Messinstrument) und `9a24c9b` (Erreichbarkeits-Schicht). Beide sind verhaltensneutral, gemessen
 als null bewegte Urteile über 93.744 erzeugte Befehle, also eilt der Rückbau nicht.
 
-Sitzungsprotokoll: `shared/history/260806-2158-orchestrator-session.md`.
+Sitzungsprotokoll: `260806-2158-orchestrator-session.md`.

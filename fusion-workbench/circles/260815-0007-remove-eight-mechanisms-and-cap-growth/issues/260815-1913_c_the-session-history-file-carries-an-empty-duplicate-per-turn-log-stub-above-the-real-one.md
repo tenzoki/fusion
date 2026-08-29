@@ -3,9 +3,9 @@
 ---
 **Severity:** Low
 **Domain:** data
-**Filed by:** reconciler, Phase-3 pass `history/260815-1913-reconciliation.md`, HEAD `9306f0a`
+**Filed by:** reconciler, Phase-3 pass `260815-1913-reconciliation.md`, HEAD `9306f0a`
 **Owner:** `orchestrator`
-**Affects:** `shared/history/260814-2306-orchestrator-session.md:26-28` and `:178`
+**Affects:** `260814-2306-orchestrator-session.md:26-28` and `:178`
 **Cross-references:** `rules/fusion-workbench-conventions.md` `## History Logging`
 
 ---
@@ -40,7 +40,7 @@ grep -n '^## Per-Turn Log' shared/history/260814-2306-orchestrator-session.md
 
 `:26` is still the `(none yet)` stub sitting above the real Turn sections at `:178`. A reader who stops at the first heading concludes the session logged no Turns.
 
-The file is in `shared/history/`, outside this Circle-store pass's write scope, so it is annotated here and not repaired. It is the same frozen-surface class as `shared/issues/260801-2038`, which the bounded Circle's Turn log cites for the same failure on a different file.
+The file is in `shared/history/`, outside this Circle-store pass's write scope, so it is annotated here and not repaired. It is the same frozen-surface class as `260801-2038`, which the bounded Circle's Turn log cites for the same failure on a different file.
 
 ---
-Resolved: fixed — the empty stub is removed and the removal is recorded in a dated note; shared/history/260814-2306-orchestrator-session.md:576
+Resolved: fixed — the empty stub is removed and the removal is recorded in a dated note; 260814-2306-orchestrator-session.md:576

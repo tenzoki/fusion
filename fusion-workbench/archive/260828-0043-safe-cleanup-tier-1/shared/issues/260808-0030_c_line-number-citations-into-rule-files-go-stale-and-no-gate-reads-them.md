@@ -4,12 +4,12 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** reconciler, Phase 3 pass of session `260807-2020` (the two-language-declaration split)
+**Filed by:** reconciler, Phase 3 pass of session `260807-2020-orchestrator-session.md` (the two-language-declaration split)
 **Affects:** every record that cites a rule file by `file.md:NNN` or "lines N-M"; `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that could catch it and does not)
 **Cross-references:**
-`fusion-workbench/shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md:7` (the first measured instance, staled by this session),
-`fusion-workbench/shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (two citations staled by this session's own second Turn),
-`fusion-workbench/circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the ratified citation form for the *record* class, which solved the analogous problem there)
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md:7` (the first measured instance, staled by this session),
+`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (two citations staled by this session's own second Turn),
+`260806-0015_*_zitierform-fuer-workbench-records.md` (the ratified citation form for the *record* class, which solved the analogous problem there)
 
 ---
 
@@ -24,7 +24,7 @@ Measured in this session, on records that are live rather than historical:
 
 | Citation | Where it points today | What moved it |
 |---|---|---|
-| `260807-0158_*_how-is-a-unique-record-filename-obtained.md:7` — `## Filename Patterns` "(lines 185-208)" | the section now runs 221-245 | S1 of `archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` grew `## Project language` by ~36 lines |
+| `260807-0158_*_how-is-a-unique-record-filename-obtained.md:7` — `## Filename Patterns` "(lines 185-208)" | the section now runs 221-245 | S1 of `archive/260817-1907-safe-cleanup-scoped/260807-2024_*_two-language-declarations.md` grew `## Project language` by ~36 lines |
 | `260807-2153_*_…:` — `bin/fusion-rules:387` (the unconditional emission) | now `:404`; line 387 is `PROJECT_CLAUDE_RULES_DIR=".claude/rules"` | commit `4992ffb` added a 17-line block to `declared_lang()` |
 | `260807-2153_*_…:` — `bin/fusion-rules:464` (the project-rules search layer) | now `:481`; line 464 is a bare comment marker | the same commit |
 
@@ -81,7 +81,7 @@ also the records agents write.
 Nothing is broken at runtime. The cost is a reader sent to the wrong line, and reconciliation time
 spent re-deriving citations that were correct when filed.
 
-Also seen: 260816-1330 by coderev — commit `52b8665` inserted two bullets into `rules/user-facing-output.md` at `:87` and `:95` and shifted every citation below them by two. Three instances in the same session, two of them inside the same file: `shared/history/260816-1251-curator-run.md:288` records that the analysis cited the gate cap as `:101` and "it is at `:99` at this HEAD", and the commit the same run produced moved it back to `:101`, so the correction was made obsolete by its own change; the same run file then cites `:99` at `:99`, `:181` and `:332`. Commit `6049d3e`'s message cites the ceiling clause as `:128` in one sentence and `:130` two sentences later, for the same line, at a HEAD where `:130` is correct.
+Also seen: 260816-1330 by coderev — commit `52b8665` inserted two bullets into `rules/user-facing-output.md` at `:87` and `:95` and shifted every citation below them by two. Three instances in the same session, two of them inside the same file: `260816-1251-curator-run.md:288` records that the analysis cited the gate cap as `:101` and "it is at `:99` at this HEAD", and the commit the same run produced moved it back to `:101`, so the correction was made obsolete by its own change; the same run file then cites `:99` at `:99`, `:181` and `:332`. Commit `6049d3e`'s message cites the ceiling clause as `:128` in one sentence and `:130` two sentences later, for the same line, at a HEAD where `:130` is correct.
 
 Also seen: 260816-1345 by reconciler, third-pass verification at HEAD `dd560ab`. The annotation
 appended one commit earlier is itself an instance. It states that `52b8665` inserted its two bullets
@@ -96,7 +96,7 @@ Nine wrong and five right inside one review pass, on the file the pass was revie
 strongest evidence this record has that the fault is not carelessness but the absence of any gate.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` still resolves paths, heading anchors and record wildcards, and never bounds a line number. Two further instances have accumulated on the record since filing, which is evidence the class is still producing. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` still resolves paths, heading anchors and record wildcards, and never bounds a line number. Two further instances have accumulated on the record since filing, which is evidence the class is still producing. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — option 1: one clause under `## Filename Patterns` says cite a rule file by heading anchor, never by line number, and that no gate resolves path:N; rules/fusion-workbench-conventions.md:291

@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** shared/decisions/260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md (the answer that raises this); shared/issues/260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md; rules/workbench-tracking.md `## The four classes`
+**Cross-references:** 260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md (the answer that raises this); 260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md; rules/workbench-tracking.md `## The four classes`
 
 ---
 
@@ -133,4 +133,4 @@ appended here would be the rim `rules/critical-stance.md` §2 names. Whether Set
 this record was answered and deliberately not decided with it.
 
 ---
-Answered: this record `## Answer` — option 1, with direction A repaired for classes R2 and R3 only and direction B reported except for `.checkout-id`. No opt-out mechanism is built, because nothing repairable is left for a project to opt out of. Stated by the user 2026-08-25 in session `shared/history/260825-0858-orchestrator-session.md`.
+Answered: this record `## Answer` — option 1, with direction A repaired for classes R2 and R3 only and direction B reported except for `.checkout-id`. No opt-out mechanism is built, because nothing repairable is left for a project to opt out of. Stated by the user 2026-08-25 in session `260825-0858-orchestrator-session.md`.

@@ -3,7 +3,7 @@
 **Agent:** coder
 **Status:** Complete
 **Task:** `I:260810-1205-review-coverage` (task 4 of `fusion-workbench/tasklist.md`)
-**Source:** `fusion-workbench/shared/issues/260810-1205_o_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`
+**Source:** `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`
 **Rides:** task 2 (`8a49fd5`) — `hooks/lib/state-drift.ts`, the read-only-measurement-with-callers shape
 
 ---
@@ -79,7 +79,7 @@ opened, and the sentence went into a file nobody reopened.
 
 The release gate. Whether a release may go out over an uncovered range is a decision, it is
 not filed, and it belongs beside
-`shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
 Nothing in this change blocks anything, and both the CLI and the prompt say so.
 
 ## Verification

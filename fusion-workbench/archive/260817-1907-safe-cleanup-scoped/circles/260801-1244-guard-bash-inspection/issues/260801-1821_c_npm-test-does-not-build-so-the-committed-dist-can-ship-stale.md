@@ -22,7 +22,7 @@ The same file against the source is 25/25 green.
 
 **Context**
 
-Plan `planning/260801-1253_o_plan-guard-bash-inspection.md` step 6 named
+Plan `260801-1253_*_plan-guard-bash-inspection.md` step 6 named
 `hooks/package.json` in its Files list and asked for the test script to become
 `tsc && vitest run` for exactly this reason (see its `## Risks & Mitigations`, last row).
 The step-6 coder did not make that change: the dispatch constraints for that task forbade

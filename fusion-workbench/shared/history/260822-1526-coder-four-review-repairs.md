@@ -3,7 +3,7 @@
 **Status:** Complete
 **Dispatched by:** orchestrator
 **Circle:** none active (shared store)
-**Source:** `shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`
+**Source:** `260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`
 
 ## What was verified before anything was changed
 
@@ -31,8 +31,8 @@ Each of the four findings was checked against the tree.
 | `skills/help/SKILL.md` | `:107` rewritten once, for both help findings |
 | `hooks/lib/__tests__/fixtures/surface-growth.golden` | regenerated; diff is exactly the three skill bodies |
 | four issue records | `Resolved:` note appended, `_o_` renamed to `_c_` |
-| `260822-1421_c_…` | `Revised by:` appended, `Resolved:` note left unedited |
-| `260822-1506_o_the-v9-upgrade-notes-preamble…` | one citation's marker rewritten to `_*_`, because this run's rename would have left it stale in a corpus the gate reads |
+| `260822-1421_*_…` | `Revised by:` appended, `Resolved:` note left unedited |
+| `260822-1506_*_the-v9-upgrade-notes-preamble…` | one citation's marker rewritten to `_*_`, because this run's rename would have left it stale in a corpus the gate reads |
 
 ## Measurements
 

@@ -75,7 +75,7 @@ Per-store file counts under `shared/`:
   pre-migration; the merge target and the sender-in-filename convention are correctly
   applied.
 - **Circle became a directory — confirmed.**
-  `circles/260717-1638-marker-format-ohne-glob-metazeichen/` contains `[a]-circle.md`
+  `260717-1638-marker-format-ohne-glob-metazeichen` contains `[a]-circle.md`
   (record carries the state marker; directory name is marker-free and stable) plus
   exactly 6 subdirs: `analyses/`, `decisions/`, `history/`, `issues/`, `planning/`,
   `reviews/`. The record's front matter reads `Status: anticipated`, matching the
@@ -125,7 +125,7 @@ None — no actionable defects found.
 ## Sources
 
 - `fusion-workbench/` root listing; `circles/`; `shared/` and all nine type stores.
-- `circles/260717-1638-marker-format-ohne-glob-metazeichen/[a]-circle.md` (head).
+- `260717-1638-marker-format-ohne-glob-metazeichen[a]-circle.md` (head).
 - `shared/reviews/` (two conceptrev files, sender-in-filename).
 - `bin/fusion-paths analyst` and `bin/fusion-paths reconciler` (both exit 0).
 - `.fusion-setup` (`plugin_version: 4.0.0`); absence of `.active-circle`.

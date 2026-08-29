@@ -19,7 +19,7 @@ Two conditions carried into the Directive without a question: a closing review r
 
 ## Result
 
-Circle directory `circles/260824-1853-close-every-open-defect/`, record `_a_circle.md`, six artifact subdirectories. No spec written (anticipated-circle mode). No backlog entry was the source, so none was promoted.
+Circle directory `260824-1853-close-every-open-defect`, record `_a_circle.md`, six artifact subdirectories. No spec written (anticipated-circle mode). No backlog entry was the source, so none was promoted.
 
 ## Notes
 

@@ -3,8 +3,8 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
-**Plan step:** 1 of `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Plan step:** 1 of `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`
 **Dispatched by:** orchestrator
 
 ---
@@ -151,7 +151,7 @@ and every line of its output is recorded above.
 
 ## Files written
 
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0729-coder-before-measurement.md` (this entry)
+- `260815-0729-coder-before-measurement.md` (this entry)
 
 No shipped file was touched. Nothing under `agents/`, `skills/`, `rules/`, `hooks/`, `bin/`,
 `docs/` or `templates/` was read for edit or written.

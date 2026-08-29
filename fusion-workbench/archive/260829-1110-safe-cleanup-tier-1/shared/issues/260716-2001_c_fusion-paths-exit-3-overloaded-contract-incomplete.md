@@ -1,6 +1,6 @@
 # fusion-paths overloads exit 3 for two unrelated faults; the conventions Contract omits exit 3 entirely
 
-**Filed:** 260716-2001
+**Filed:** 260716-2001_*_fusion-paths-exit-3-overloaded-contract-incomplete.md
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev
@@ -59,7 +59,7 @@ Low. Both faults are cosmetic today: exit 3's second meaning is unreachable unti
 edits a key set, and the exit-code table is a doc gap, not a behaviour gap. Filed because
 the resolver is about to become the dependency of all 15 agents and 11 skills, and because
 the internal-error branch stops being hypothetical the moment issue
-`260716-1957[o]-fusion-paths-key-sets-miss-reads-agents-perform` is fixed — that fix is
+`260716-1957_*_fusion-paths-key-sets-miss-reads-agents-perform.md` is fixed — that fix is
 precisely "add keys to `KEYS` sets".
 
 ## Recommendation
@@ -82,7 +82,7 @@ precisely "add keys to `KEYS` sets".
 - `rules/fusion-workbench-conventions.md` `## Path Resolution (Pfadauflösung)` → Contract / Failure behaviour
 - `skills/setup/SKILL.md` Step 2
 - `hooks/lib/__tests__/fusion-paths.test.ts` → `emits no key it cannot resolve`
-- Related: `fusion-workbench/issues/260716-1957[o]-fusion-paths-key-sets-miss-reads-agents-perform.md`
+- Related: `260716-1957[o]-fusion-paths-key-sets-miss-reads-agents-perform.md`
 
 ---
 Resolved: commit 6228391 (task T2-A). Verified by the orchestrator against the running system, not by reading.

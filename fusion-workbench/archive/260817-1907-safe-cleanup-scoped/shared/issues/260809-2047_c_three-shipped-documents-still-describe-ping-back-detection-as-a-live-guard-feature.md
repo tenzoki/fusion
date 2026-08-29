@@ -8,7 +8,7 @@
 **Affects:**
 `docs/philosophy.md:17`, `docs/working-model.md:81`, `skills/help/SKILL.md:84`
 **Cross-references:**
-`c353196` (the removal), decision `260809-2004`, `README-hooks.md:25` (the accurate statement these three should agree with)
+`c353196` (the removal), decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`, `README-hooks.md:25` (the accurate statement these three should agree with)
 
 ---
 
@@ -52,7 +52,7 @@ None of the three is a rule file, so no provenance header is involved.
 ## Acceptance criteria
 
 - [ ] `grep -ri "ping-back\|pingback" docs/ skills/ agents/ README*.md` returns
-      only retrospective mentions that name decision `260809-2004`.
+      only retrospective mentions that name decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`.
 - [ ] `docs/philosophy.md` no longer attributes a halt to churn.
 
 ---
@@ -63,7 +63,7 @@ message.
 
 Criterion 1 — CONFIRMED. `grep -rin "ping-back\|pingback" docs/ skills/ agents/ rules/
 README*.md CLAUDE.md bin/monitor` returns exactly one hit, `README-hooks.md:25`, and it is
-retrospective and names decision `260809-2004` ("The same decision removed the cross-file
+retrospective and names decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` ("The same decision removed the cross-file
 ping-back tracker outright").
 
 Criterion 2 — CONFIRMED. `docs/philosophy.md:17` now reads "Per-file churn is counted beside

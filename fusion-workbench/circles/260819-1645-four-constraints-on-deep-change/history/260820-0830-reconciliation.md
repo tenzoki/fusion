@@ -29,22 +29,22 @@ slightly from what the tree holds, so both are given.
 
 **Four decisions `_a_` → `_i_`**, all with resolving `Implemented:` citations, all verified on disk:
 
-- `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
+- `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
   → `hooks/lib/__tests__/committed-dist.test.ts` exists, 3 cases, green in 3.7 s. The footer's
   correction to the plan's premise (the lockfile is gitignored, the committed literal carries the
   pin) is accurate and is the sharper reading of the two.
-- `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+- `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
   → `rules/circle-records.md:67` carries the section; the cited line number is exact.
-- `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+- `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
   → `hooks/lib/__tests__/workbench-citation-lint.test.ts`, corpus written as a marker predicate,
   no baseline and no count of any kind. Option 1 as answered.
-- `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+- `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
   → `GATE_KINDS` at `hooks/lib/__tests__/helpers/citation-scan.ts:443-449` carries five kinds
   including `stamp-name`. The consequence the record predicted between the two answers — the sibling
   lint's pins moving — is visible in that file's re-approval notes.
 
-**Ten defects closed.** Five renamed `_o_` → `_c_` (`260819-2213`, `260819-2321`, `260820-0530` in
-this Circle; `260816-2320` in the observation-only Circle; `260819-0001` in `shared/`), and five born
+**Ten defects closed.** Five renamed `_o_` → `_c_` (`260819-2213`, `260819-2321_*_a-citation-of-a-circle-record-produces-no-token-so-the-gate-cannot-see-the-form-the-repair-adopted.md`, `260820-0530` in
+this Circle; `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md` in the observation-only Circle; `260819-0001_*_an-executor-reached-for-git-stash-while-two-were-dispatched-in-parallel.md` in `shared/`), and five born
 `_c_` in `04db0b0` because the orchestrator filed and fixed them in one commit. All ten carry a
 `Resolved:` footer and all ten fixes are on disk.
 
@@ -59,12 +59,12 @@ eleven — eight filed by the review and two filed during the work.
 ## 2. The eleven — actually ten — open defects
 
 Every one of them reproduces at HEAD. Each carries its evidence in its own file under a
-`Reconciliation 260820-0830` block; the table is the index.
+`Reconciliation 260820-0830-reconciliation.md` block; the table is the index.
 
 | Record | Reproduces? | Checked by |
 |---|---|---|
-| `260819-2250` a cross-reference names a record never filed | yes | the repaired line at `:7` and the untouched copy at `shared/analyses/260813-0831-…:234` |
-| `260819-2300` `circleDirs()` has no archive prefix | yes | `citation-scan.ts:286-294` against `anchoredUnder` at `:367` |
+| `260819-2250` a cross-reference names a record never filed | yes | the repaired line at `:7` and the untouched copy at `260813-0831-…:234` |
+| `260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md` `circleDirs()` has no archive prefix | yes | `citation-scan.ts:286-294` against `anchoredUnder` at `:367` |
 | `260820-0805` artifact case has no toolchain guard | yes | three `it()` cases at `:177`, `:209`, `:217`; compile in `beforeAll` at `:100` |
 | `260820-0805` corpus excludes only `archive/` | yes, latent | `markdownFilesUnder:752-761` walks everything; neither frozen tree exists here today |
 | `260820-0805` "re-approved four times" | yes | 14 such notes in the sibling file |
@@ -75,7 +75,7 @@ Every one of them reproduces at HEAD. Each carries its evidence in its own file 
 | `260820-0805` neither gate named on a shipped surface | yes | grep over `README*.md`, `CLAUDE.md`, `docs/` returns nothing |
 
 **The one the dispatch singled out.** `260819-2250` names a target in
-`shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234` that no
+`260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234` that no
 repair corpus covers, and the reading is confirmed twice over: the citation gate's corpus has no
 `analyses/` clause, and the token there is spelled with a `fusion-workbench/` prefix that no scanner
 reads as a record citation. It is unreachable by mechanism and closable only by somebody who knows

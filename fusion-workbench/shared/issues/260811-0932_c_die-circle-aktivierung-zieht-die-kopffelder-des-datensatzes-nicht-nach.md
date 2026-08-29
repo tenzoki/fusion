@@ -8,7 +8,7 @@ niemandes Prompt beauftragt sie:** `**Status:**` behält `anticipated`, `**Activ
 und `**Active session history:**` behalten `(none yet)`.
 
 Gemessen am 260811 beim Aktivieren von
-`circles/260809-2040-tastenbelegung-als-markdown-in-downloads`: der Datensatz trug den Marker
+`260809-2040-tastenbelegung-als-markdown-in-downloads`: der Datensatz trug den Marker
 `_t_` und im Kopf `**Status:** anticipated`. Marker und Feld widersprachen sich, und zwei
 Verweisfelder zeigten ins Leere, obwohl Spec, Plan und Sitzung längst existierten.
 
@@ -66,7 +66,7 @@ Stelle, dass der Marker die Wahrheit trägt.
 ## Was daran allgemein ist
 
 Es ist dieselbe Form wie bei den zwei Befunden über die eigene Buchführung vom 260810
-(`shared/issues/260810-1945_*_der-orchestrator-hat-in-drei-turns-keine-aufgabenereignisse-emittiert.md`):
+(`260810-1945_*_der-orchestrator-hat-in-drei-turns-keine-aufgabenereignisse-emittiert.md`):
 eine Pflege, die neben der eigentlichen Handlung steht statt an ihr zu hängen, wird
 übersprungen. Hier ist sie nicht einmal übersprungen worden, sondern nie jemandem zugeteilt.
 
@@ -86,7 +86,7 @@ is the age of the finding.
 
 ---
 
-## Resolved (260811-2115) — option 1, the orchestrator owns the head fields
+## Resolved (260811-2115-coder-circle-head-fields-at-activation.md) — option 1, the orchestrator owns the head fields
 
 Decided by the user at a gate on 260811-2050: option 1 of **Denkbare Wege**. Options 2 and 3
 were not implemented and the shaper's `portfolio-activation` mode stays unreachable by an
@@ -119,4 +119,4 @@ this change from producing the inverse contradiction the entry already measured 
 reading `active` under a `_c_` marker). The live specimens were not hand-corrected.
 
 Marker `_o_` → `_c_`. Verification: `cd hooks && npm test` — exit 0, 52 files, 1335 tests.
-History: `shared/history/260811-2115-coder-circle-head-fields-at-activation.md`.
+History: `260811-2115-coder-circle-head-fields-at-activation.md`.

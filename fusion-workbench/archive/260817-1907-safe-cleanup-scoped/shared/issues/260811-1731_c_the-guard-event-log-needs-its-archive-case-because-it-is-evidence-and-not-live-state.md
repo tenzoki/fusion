@@ -3,9 +3,9 @@
 ---
 **Severity:** Medium
 **Domain:** code
-**Filed by:** orchestrator, session 260811-0752, realising an answered decision
+**Filed by:** orchestrator, session 260811-0752-orchestrator-session.md, realising an answered decision
 **Affects:** `skills/archive/SKILL.md` (the never-touch list, which follows `.guard-state/` to the live-state side); `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks` (the records-versus-live-state split)
-**Cross-references:** `shared/decisions/260811-1534_a_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` — the answer this realises; `shared/issues/260805-1859_c_das-guard-event-log-waechst-unbegrenzt...` (the record whose cheap half already landed)
+**Cross-references:** `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` — the answer this realises; `260805-1859_*_das-guard-event-log-waechst-unbegrenzt...` (the record whose cheap half already landed)
 
 ---
 

@@ -7,7 +7,7 @@ outstanding work, and three consecutive reconciliation passes have each written 
 saying it is not.
 ---
 **Filed by:** reconciler, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` (the criterion) and its `## Reconciliation Log` (the three passes); `rules/critical-stance.md` §4 (a case split is disjoint and complete)
+**Cross-references:** `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` (the criterion) and its `## Reconciliation Log` (the three passes); `rules/critical-stance.md` §4 (a case split is disjoint and complete)
 
 ## What it is
 
@@ -20,7 +20,7 @@ which is also false. Both readings are wrong and the notation offers no third.
 
 ## The cost, which is what makes this a defect rather than a quibble
 
-Three passes have paid it. The `260822-2236` entry wrote *"Criterion 7 is deliberately not ticked. It
+Three passes have paid it. The `260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md` entry wrote *"Criterion 7 is deliberately not ticked. It
 is a conditional whose antecedent is false"*; the `260823-1446` entry wrote *"C1's seventh criterion
 is a conditional whose antecedent is false: the measurement showed the isolation holds, so the branch
 that would stop the sequence never opened"*; this pass wrote it a third time. Each pass had to open
@@ -52,10 +52,10 @@ in one direction.
 
 ---
 Also seen: 260826-1127 by reconciler — a fourth instance, in a second plan. Clause 7 of
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
 `## Where this Circle stops` reads "Where the session-identifier measurement came back negative, the
 closure note says so and names what was therefore not added." The measurement
-(`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`,
+(`260825-2214-can-a-hook-obtain-the-session-identifier.md`,
 findings (a), (b) and (c)) came back positive on every branch, so the antecedent is false and the
 clause can never be ticked. The instance sharpens the record in one way worth carrying: the antecedent
 is false here because the measurement **succeeded**, so the notation the record asks for must
@@ -64,4 +64,4 @@ a reader of the clause alone cannot tell which of the two a blank checkbox means
 `_o_`; this note records a sighting, not a closure.
 
 ---
-Resolved: 260827-1838 by coder, Kai Stalmann <kai@qantr.com> — decision `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_how-does-a-checkbox-criterion-say-that-its-condition-never-arose.md` answered option 2 (a shaping rule, no third box state). `agents/shaper.md` spec template gains a `## Stops when` section beside the criteria; `agents/planner.md` `## Where this Circle stops` placeholder states that a measurement-conditional is a clause there, never a checkbox, and names the inline annotation. Both existing instances carry `(condition did not arise: <one clause>)` inline: C1 criterion 7 of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` and clause 7 of `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`. Plan step 7 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`; +389 bytes on `agents/`, golden regenerated. Commit: the orchestrator's, after this step.
+Resolved: 260827-1838 by coder, Kai Stalmann <kai@qantr.com> — decision `260827-1756_*_how-does-a-checkbox-criterion-say-that-its-condition-never-arose.md` answered option 2 (a shaping rule, no third box state). `agents/shaper.md` spec template gains a `## Stops when` section beside the criteria; `agents/planner.md` `## Where this Circle stops` placeholder states that a measurement-conditional is a clause there, never a checkbox, and names the inline annotation. Both existing instances carry `(condition did not arise: <one clause>)` inline: C1 criterion 7 of `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` and clause 7 of `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`. Plan step 7 of `260827-1756_*_repair-the-twenty-open-defect-records.md`; +389 bytes on `agents/`, golden regenerated. Commit: the orchestrator's, after this step.

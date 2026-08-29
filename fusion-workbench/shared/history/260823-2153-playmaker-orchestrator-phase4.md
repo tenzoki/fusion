@@ -1,8 +1,8 @@
-# Playmaker run 260823-2153: Phase 4 portfolio sync after C2 closed
+# Playmaker run 260823-2153-playmaker-orchestrator-phase4.md: Phase 4 portfolio sync after C2 closed
 
 **Status:** Complete
 **Trigger:** `orchestrator-phase4`
-**Dispatched after:** `circles/260823-0023-settle-what-travels-between-checkouts/` was renamed to
+**Dispatched after:** `260823-0023-settle-what-travels-between-checkouts` was renamed to
 closed-coherent and `fusion-workbench/.active-circle` was deleted.
 **Domain bias:** `code`, parsed from the dispatch prompt's `**Domain:** code` line.
 **git HEAD at run:** `dd1356d`
@@ -36,7 +36,7 @@ normal post-closure state.
 **Top-ranked `_a_` Circle: none exists.** The ranking heuristic had no input. The portfolio's
 `## Anticipated` section therefore states the absence and names the next act rather than rendering an
 empty list: capabilities C3 and C4 of
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` exist as prose and as no
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` exist as prose and as no
 Circle, C0 through C2 are done, and `/fusion:direct` on C3 is what fills this section.
 
 ## Circle-record writes
@@ -56,31 +56,31 @@ thirteen-idea dump), one `_p_`, one `_o_`.
 **Distinct ideas found inside the two live entries: 2, one per entry.** No entry carries more than one
 live idea, so no split is proposed.
 `260814-1733_*_bounded-executor-dispatches.md` states two halves of a filed wording, but
-`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` adopts one and refutes the
+`260812-0303-simplify-speed-and-why-rules-do-not-hold.md` adopts one and refutes the
 other, which is a disposition rather than a second live idea.
 
 **Duplicate groups found: 0.** No merge is proposed.
 
 **Handed to `## Warnings` as defect- or decision-shaped: 0.** Both live entries are ideas.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`. Its analysis is
+**Top-ranked entry:** `260814-1733_*_bounded-executor-dispatches.md`. Its analysis is
 already on disk, so it can be shaped today; the second entry cannot, on an obstruction only the user
 can clear.
 
 ### Backlog writes performed
 
 **None.** The ranking is identical to the previous refresh
-(`shared/history/260823-0423-playmaker-direct-dispatch.md`), so `_p_` stays on the recommended entry
+(`260823-0423-playmaker-direct-dispatch.md`), so `_p_` stays on the recommended entry
 and `_o_` on the second. Renaming both to say the same thing again would be churn, not a ranking
 statement.
 
 ### Confirmed operations proposed and not performed
 
-- `defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
+- `defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
   (no confirmation held, and none is obtainable on this dispatch path). Carried forward verbatim from
   the previous three runs. Verified at HEAD that the obstruction still stands: the decision carries
   `_d_` and the issue it waits on,
-  `shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
+  `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
   carries `_o_`.
 
 ## Warnings emitted to the portfolio
@@ -125,12 +125,12 @@ both remaining instances are template literals.** They are the `## Anticipated (
 removed; the file went from 17 to 2. The residual is not correctable by the generator, because
 correcting it means editing the template, and the open question of whether the ceiling is read per
 file or across the corpus
-(`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`)
+(`260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`)
 is the user's to meet.
 
 ## Read scope
 
 `circles/` (all sixteen records plus their issue and decision stores, for the stranding count),
-`shared/backlog/`, `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`,
+`shared/backlog/`, `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`,
 `shared/issues/`, `shared/decisions/`, the five most recent playmaker and orchestrator session
 histories, and the three defect records the dispatch named. No frozen store was read.

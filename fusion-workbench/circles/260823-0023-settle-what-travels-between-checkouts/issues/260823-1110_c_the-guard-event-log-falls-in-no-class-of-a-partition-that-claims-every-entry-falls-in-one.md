@@ -6,7 +6,7 @@ The guard event log falls in no class of a partition that claims every entry fal
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `rules/workbench-tracking.md:17`, `:24`, `:32`
-**Cross-references:** plan step 1 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `.gitignore:70`
+**Cross-references:** plan step 1 in `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `.gitignore:70`
 
 ---
 

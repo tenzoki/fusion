@@ -24,7 +24,7 @@ The block above it (`portfolio.md`, `monitor`, `archive/`, `stilwerk/`) is also 
 Fix direction: pad the `.checkout-id` row to column 46; delete the whitespace on `skills/setup/SKILL.md:467`. Both files are byte-measured by growth bounds, so re-run `surface-growth-bound.test.ts` and `rules-emission-golden.test.ts` afterwards — the tree fix adds three bytes to an always-on file whose head-room stood at 1 181 after this Circle.
 
 ---
-**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** Both halves re-measured at HEAD and both stand. In `rules/fusion-workbench-conventions.md` the `.checkout-id` row at `:55` opens its comment at column 43 while its six neighbours at `:50` through `:54` all open at column 46. `skills/setup/SKILL.md:467` is one byte long and that byte is a space.
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `260824-1637-reconciliation.md`) — **STAYS `_o_`.** Both halves re-measured at HEAD and both stand. In `rules/fusion-workbench-conventions.md` the `.checkout-id` row at `:55` opens its comment at column 43 while its six neighbours at `:50` through `:54` all open at column 46. `skills/setup/SKILL.md:467` is one byte long and that byte is a space.
 
 ---
 Resolved: fixed — the .checkout-id row is padded to column 46 (rules/fusion-workbench-conventions.md:55); the skills/setup/SKILL.md whitespace line was already gone at HEAD (step 10)

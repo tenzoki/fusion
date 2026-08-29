@@ -43,7 +43,7 @@ views stay independent for the token-for-token comparison, which is what the com
 and the list itself stops being a copy nobody compares.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
 reproduces; the two are in agreement today and nothing holds them there.**
 `hooks/lib/__tests__/reference-resolution-lint.test.ts:1203-1210` declares a five-element literal,
 and `GATE_KINDS` at `hooks/lib/__tests__/helpers/citation-scan.ts:443-449` carries the same five in

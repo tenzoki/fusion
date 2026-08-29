@@ -9,7 +9,7 @@ The two stale strings:
 
 Both were correct before `cc004fc` and are now contradicted inside the same file. Verified against the code at `:105-118`: `gatedFilesUnder` calls `readdirSync(dir, { recursive: true, withFileTypes: true })` and `gatedFiles()` is a one-line wrapper over it.
 
-Why it is worth fixing rather than tolerating: the recursion exists specifically so the `circles/260801-1244-curator` shards are gated whether they land as `rules/<name>.md` or `rules/<subdir>/<name>.md`. When a nested shard is the file that fails, the runner line a contributor reads will name a glob that does not include it. Low severity, but this is the same defect class as `260802-1253` (a claim that was true when written and was invalidated by the corpus moving), here invalidated by the code moving under it.
+Why it is worth fixing rather than tolerating: the recursion exists specifically so the `260801-1244-curator` shards are gated whether they land as `rules/<name>.md` or `rules/<subdir>/<name>.md`. When a nested shard is the file that fails, the runner line a contributor reads will name a glob that does not include it. Low severity, but this is the same defect class as `260802-1253_*_the-line-8-blockquote-rationale-is-false-in-the-commit-that-states-it.md` (a claim that was true when written and was invalidated by the corpus moving), here invalidated by the code moving under it.
 
 Scope: one test file. No behavioural effect — the assertions are correct, only the two human-readable strings are stale.
 

@@ -3,7 +3,7 @@
 **Date:** 2026-08-16
 **Agent:** coder
 **Status:** Complete — step 3 half-landed and half blocked
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 3
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 3
 **Predecessor commit:** `2f624ca` (step 2)
 
 ## What the step asked for
@@ -64,7 +64,7 @@ work, and the choice is the orchestrator's rather than this agent's.
   not a real one — `clear-halt.ts` can be deleted while `escalation.ts` is still
   present, since nothing else imports the module.
 
-Filed as `260816-2032_o_step-3-deletes-a-module-step-6s-file-still-imports.md` in this
+Filed as `260816-2032_*_step-3-deletes-a-module-step-6s-file-still-imports.md` in this
 Circle's issue store.
 
 ## Verification

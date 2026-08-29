@@ -1,7 +1,7 @@
 # Concept Evaluation: Plan — Circle D, Agent-prompt revision (fusion v5.x)
 
 **Date:** 2026-07-18 21:54
-**Target:** `fusion-workbench/circles/260718-1924-v5x-overhaul/planning/260718-2150_o_plan-circle-d-agent-prompt-revision.md`
+**Target:** `260718-2150_*_plan-circle-d-agent-prompt-revision.md`
 **Verdict:** clean
 **Diagrams evaluated:** 1  |  **Validation:** by-tool (mmdc — SVG generated, no parse errors)
 

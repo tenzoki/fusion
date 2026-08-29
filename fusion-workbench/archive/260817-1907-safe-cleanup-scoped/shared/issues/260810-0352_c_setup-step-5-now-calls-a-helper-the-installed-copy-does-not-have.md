@@ -25,7 +25,7 @@ This is a different shape. The helper does not exist in the installed copy at al
 **Workaround that works today:** `fusion --update` and restart the session.
 
 ---
-Decision filed: `shared/decisions/260810-0921_o_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` — the three questions this record names are on the record with options. The decision recommends taking the immediate case now (report the absence in the cascade's own `counted_by=none` vocabulary rather than emitting a shell 127) and leaving the class questions open.
+Decision filed: `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` — the three questions this record names are on the record with options. The decision recommends taking the immediate case now (report the absence in the cascade's own `counted_by=none` vocabulary rather than emitting a shell 127) and leaving the class questions open.
 
 ---
 Reconciliation 260810-1205 (reconciler, domain `code`) — **stays `_o_`; the instance no longer reproduces, the class does.**
@@ -36,14 +36,14 @@ Measured at `ed87d87`:
 - `2910cf6` is **not** an ancestor of `v7.0.0` — confirming this record's premise rather than the guess that 7.0.0 had already shipped it.
 - The local installed copy `~/.fusion` still reports `"version": "7.0.0"` and yet already holds `bin/fusion-count-sources`, mtime `Aug 10 08:43` — one minute before this session's Setup at `08:44`. So the workaround this record names was taken by hand before the session began, which is why Setup Step 5 did not fail here.
 
-**Why it does not close.** The record's three named questions are all about the mechanism, not the instance, and all three are on the record as `shared/decisions/260810-0921_o_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`. Question 1 — does Setup Step 5 tolerate a missing helper or halt? — is unchanged in code: `agents/orchestrator.md` still names the helper through `$FUSION_PLUGIN_ROOT` with no absence branch, so the next helper added between releases reproduces this exactly. The release removed today's instance and left the shape that produced it.
+**Why it does not close.** The record's three named questions are all about the mechanism, not the instance, and all three are on the record as `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`. Question 1 — does Setup Step 5 tolerate a missing helper or halt? — is unchanged in code: `agents/orchestrator.md` still names the helper through `$FUSION_PLUGIN_ROOT` with no absence branch, so the next helper added between releases reproduces this exactly. The release removed today's instance and left the shape that produced it.
 
 Closing this would also orphan the decision, which cites this record as *the instance*.
 
 ---
-Resolved 260810-1511 (coder, task `I:260810-0352-helper-absence`, session `260810-1402`) — **question 1 answered in code; the marker is the orchestrator's to move after the commit lands.**
+Resolved 260810-1511-setup-step-5-guarded-helper-call.md (coder, task `I:260810-0352-helper-absence`, session `260810-1402`) — **question 1 answered in code; the marker is the orchestrator's to move after the commit lands.**
 
-`agents/orchestrator.md` Setup Step 5 no longer calls the helper bare. The invocation is now an `[ -x ]` test whose else branch prints the helper's own absent-count shape (`code_files=unavailable`, `data_files=unavailable`, `counted_by=none`) plus one stderr line naming the reason, and exits 0. That is decision `260810-0921` option **(a1) tolerate and report**, taken as the user answered it: the absence is reported in the vocabulary the cascade already has instead of as the shell's 127.
+`agents/orchestrator.md` Setup Step 5 no longer calls the helper bare. The invocation is now an `[ -x ]` test whose else branch prints the helper's own absent-count shape (`code_files=unavailable`, `data_files=unavailable`, `counted_by=none`) plus one stderr line naming the reason, and exits 0. That is decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` option **(a1) tolerate and report**, taken as the user answered it: the absence is reported in the vocabulary the cascade already has instead of as the shell's 127.
 
 `-x` rather than `-f` deliberately: a present-but-non-executable helper is exit 126, the same class of failure with a different number, and the same guard should catch it.
 
@@ -53,6 +53,6 @@ Resolved 260810-1511 (coder, task `I:260810-0352-helper-absence`, session `26081
 
 Verified: the guard run against a scratch plugin root with an empty `bin/` exits 0 and emits the three lines plus the reason; against a mode-644 helper it also exits 0; against this repository's own `bin/` it returns the real count unchanged (`code_files=95 data_files=21 counted_by=git-ls-files`). `cd hooks && npm test` — exit 0, 39 files, 1040 tests, including `domain-cascade-order-lint.test.ts`, which parses this exact fenced block.
 
-**What this does not close.** Questions 2 and 3 of this record — the general case for any future prompt-called helper, and whether the work-tree preference should extend to helper resolution — are parts (b) and (c) of `shared/decisions/260810-0921_*_...`, both still open by the user's own answer. The `CLAUDE.md` line that the hooks do not get the work-tree treatment stands untouched. The class is narrowed to one instance handled, not closed.
+**What this does not close.** Questions 2 and 3 of this record — the general case for any future prompt-called helper, and whether the work-tree preference should extend to helper resolution — are parts (b) and (c) of `260810-0921_*_...`, both still open by the user's own answer. The `CLAUDE.md` line that the hooks do not get the work-tree treatment stands untouched. The class is narrowed to one instance handled, not closed.
 
-History: `shared/history/260810-1511-setup-step-5-guarded-helper-call.md`
+History: `260810-1511-setup-step-5-guarded-helper-call.md`

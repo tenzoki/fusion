@@ -4,7 +4,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** T8 — `I:260805-0629-verify-field`
-**Source:** `fusion-workbench/shared/issues/260805-0629_o_an-executor-may-report-done-while-its-own-verification-run-is-still-in-flight.md`
+**Source:** `260805-0629_*_an-executor-may-report-done-while-its-own-verification-run-is-still-in-flight.md`
 
 ## What was wrong
 

@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260825-1259_*_the-rebalance-gate-mandates-four-options-and-the-output-rule-caps-a-gate-at-three.md` (the defect this settles); `rules/orchestrator-rebalance.md` `### Rebalance Gate` (the four options, since the 260827-1210 partition); `rules/user-facing-output.md` `## Questions and gates` (the cap and the line budget it is derived from); `rules/critical-stance.md` §4
+**Cross-references:** `260825-1259_*_the-rebalance-gate-mandates-four-options-and-the-output-rule-caps-a-gate-at-three.md` (the defect this settles); `rules/orchestrator-rebalance.md` `### Rebalance Gate` (the four options, since the 260827-1210_*_do-the-rare-orchestrator-flows-stay-in-every-sessions-context.md partition); `rules/user-facing-output.md` `## Questions and gates` (the cap and the line budget it is derived from); `rules/critical-stance.md` §4
 
 ---
 
@@ -37,8 +37,8 @@ Option 2. It keeps every move, keeps the caps derived, and costs a second prompt
 
 Option 2: the gate splits in two. First, does the Directive stand (Revise Directive, Accept Bounded Closure, Keep it); second, on Keep it, what to revise (Artifact, Grounding). Every move stays reachable and every gate is inside the cap. Realised by plan step 9.
 
-Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session 260827-1749-orchestrator-session.md; the recommendation is adopted as written.
 
-Implemented: uncommitted at filing (the orchestrator commits after this dispatch) — plan step 9 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md`: `rules/orchestrator-rebalance.md` `### Rebalance Gate` split into Gate 1 (Directive stands?) and Gate 2 (Artifact or Grounding); `agents/orchestrator.md` stub updated; record `shared/issues/260825-1259_*` closed.
+Implemented: uncommitted at filing (the orchestrator commits after this dispatch) — plan step 9 of `260827-1756_*_repair-the-twenty-open-defect-records.md`: `rules/orchestrator-rebalance.md` `### Rebalance Gate` split into Gate 1 (Directive stands?) and Gate 2 (Artifact or Grounding); `agents/orchestrator.md` stub updated; record `shared/issues/260825-1259_*` closed.
 
-Reconciled 260827-2034: the `Implemented:` line above was written before the commit; it landed in `799ea348` (this file and the shipped edit in the same commit).
+Reconciled 260827-2034-reconciliation.md: the `Implemented:` line above was written before the commit; it landed in `799ea348` (this file and the shipped edit in the same commit).

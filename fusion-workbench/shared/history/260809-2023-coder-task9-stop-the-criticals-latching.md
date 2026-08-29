@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-09 20:23
 **Task:** `I:260809-1101-latching` (queue task 9)
-**Source:** `shared/issues/260809-1101_c_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`
-**Decision:** `shared/decisions/260809-2004_a_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`
+**Source:** `260809-1101_*_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`
+**Decision:** `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`
 **Status:** Complete
 
 ## What was done
@@ -112,14 +112,14 @@ to, what happens to the 535 existing entries, and whether an entry should be dro
 its file disappears at all), which is not an executor's call.
 
 Filed as
-`shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
+`260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
 
 ## Handoff
 
 Not committed — the orchestrator commits under the commit lock. Two records are waiting on
 that commit:
 
-- The decision `260809-2004_a_…` still needs its `Implemented: <hash>` footer and the
+- The decision `260809-2004_*_…` still needs its `Implemented: <hash>` footer and the
   `_a_` → `_i_` rename. It was left rather than filled in with a path citation, because the
   hash is the better citation and it exists one step later.
 - The source issue is already annotated and renamed to `_c_`; the queue entry for task 9 is

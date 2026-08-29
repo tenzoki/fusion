@@ -112,7 +112,7 @@ The four flagged nodes are the ones that carry findings. Three of them meet at o
 
 ### The spec's C5b criteria, walked
 
-Six criteria at `shared/planning/260801-1122_o_spec-normative-consolidation.md:327-332` are
+Six criteria at `260801-1122_*_spec-normative-consolidation.md:327-332` are
 C5b's. I checked each by measurement rather than by reading a test name.
 
 | Spec line | Criterion | Verdict | How I checked it |
@@ -211,7 +211,7 @@ allows. And an **already active halt** is bypassed: a project with `haltActive: 
 this file allows both `Edit agents/coder.md` and `rm -rf rules`, where the same project
 without the file blocks both.
 
-Issue `260804-1427_o_` records the accepted floor residual and bounds it with "an agent
+Issue `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md` records the accepted floor residual and bounds it with "an agent
 cannot narrow its way out of a halt it is already in". That bound is correct for
 `protectedPaths` and false for `guard.enabled`, with one saving detail I measured: while
 halted, an agent cannot *create* the file either, because the halt blocks `Write
@@ -234,7 +234,7 @@ The last row is the quiet one and the most likely typo. `guard_error` at least r
 fail-open guard shows nothing on the dashboard either.
 
 This Circle already established this exact lesson. Issue
-`260802-2334_c_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`
+`260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`
 found it for `escalation.json` and its own words are "every row that fails open is
 well-formed JSON". C5b then created a second, larger, project-writable, git-tracked, actively
 seeded file on the same code path with the same absence of validation. Nobody carried the
@@ -328,7 +328,7 @@ could not.
 What the spec did not ask, and what nobody in eleven sessions asked either, is what the
 configuration file's *failure modes* are. The whole Circle's attention went to the question
 "can an agent narrow `protectedPaths`", which is the adversarial framing, and the answer to
-that is well understood and honestly bounded in issue `260804-1427_o_`. The three High
+that is well understood and honestly bounded in issue `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`. The three High
 findings here are not adversarial. They are a project owner editing a JSON file the way
 people edit JSON files. The guard's response to all three is to keep running and say nothing.
 
@@ -365,24 +365,24 @@ None of them is a redesign. The merge rule can stay exactly as it is.
 
 ## Filed Issues
 
-- `circles/260801-1244-guard-rules-write/issues/260804-1601_o_a-partial-guard-object-silently-removes-every-protected-path.md` — High
-- `circles/260801-1244-guard-rules-write/issues/260804-1602_o_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md` — High
-- `circles/260801-1244-guard-rules-write/issues/260804-1603_o_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` — High
-- `circles/260801-1244-guard-rules-write/issues/260804-1604_o_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` — Medium
-- `circles/260801-1244-guard-rules-write/issues/260804-1605_o_the-seeded-template-states-two-properties-the-loader-does-not-have.md` — Medium
-- `circles/260801-1244-guard-rules-write/issues/260804-1606_o_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md` — Low
-- `circles/260801-1244-guard-rules-write/issues/260804-1607_o_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md` — Low
-- `circles/260801-1244-guard-rules-write/issues/260804-1608_o_plan-step-7-is-unmarked-and-the-plan-header-contradicts-its-own-step-markers.md` — Low
+- `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md` — High
+- `260804-1602_*_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md` — High
+- `260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` — High
+- `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` — Medium
+- `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md` — Medium
+- `260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md` — Low
+- `260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md` — Low
+- `260804-1608_*_plan-step-7-is-unmarked-and-the-plan-header-contradicts-its-own-step-markers.md` — Low
 
 ## Sources
 
-- `shared/planning/260801-1122_o_spec-normative-consolidation.md:241-343` — capability C5 and the eleven criteria
-- `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md` — Steps 6, 7, 8, and `## The four open questions, answered`
-- `circles/260801-1244-guard-rules-write/history/260804-1435-coder-step6-c5b-config-loader.md`
-- `circles/260801-1244-guard-rules-write/history/260804-1502-ontocoder-step7-guard-config-template.md`
-- `circles/260801-1244-guard-rules-write/history/260804-1511-coder-step8-setup-seeds-guard-config.md`
-- `circles/260801-1244-guard-rules-write/issues/260804-1427_o_...md` and `260804-1432_o_...md` — the two issues Step 6 filed
-- `circles/260801-1244-guard-rules-write/issues/260802-2334_c_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` — the prior instance of the validation lesson
+- `260801-1122_*_spec-normative-consolidation.md:241-343` — capability C5 and the eleven criteria
+- `260802-1856_*_plan-guard-rules-write.md` — Steps 6, 7, 8, and `## The four open questions, answered`
+- `260804-1435-coder-step6-c5b-config-loader.md`
+- `260804-1502-ontocoder-step7-guard-config-template.md`
+- `260804-1511-coder-step8-setup-seeds-guard-config.md`
+- `260804-1427_*_...md` and `260804-1432_*_...md` — the two issues Step 6 filed
+- `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` — the prior instance of the validation lesson
 - `hooks/lib/config.ts:145-168` (DEFAULTS), `:216-241` (readLayer), `:250-332` (loadConfig, merge and floor)
 - `hooks/guard.ts:624-680` (diagnostics, the enabled short-circuit, the Bash dispatch, the self-detect gate), `:900-905` (fail-open)
 - `hooks/lib/paths.ts:143-151` (matchesAnyFolded), `hooks/lib/workbench-root.ts:17-28`

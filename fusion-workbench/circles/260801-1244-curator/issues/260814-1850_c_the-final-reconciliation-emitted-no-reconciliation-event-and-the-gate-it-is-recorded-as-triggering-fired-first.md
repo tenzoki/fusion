@@ -1,7 +1,7 @@
 The final reconciliation emitted no reconciliation event, and the gate it is recorded as triggering fired first
 
 ---
-`circles/260801-1244-curator/history/260814-1457-reconciliation.md` is a full Phase-3 pass: 47
+`260814-1457-reconciliation.md` is a full Phase-3 pass: 47
 decision records, 308 defect records, ten files changed, the `## Coherence` section appended to the
 session history. `orchestrator-events.jsonl` carries no `reconciliation` event for it, and none for
 any run this session. The event is a defined type in the orchestrator's own table
@@ -42,7 +42,7 @@ visible while it was happening. A `reconciliation` event at 14:57, sitting after
 at 13:13, is exactly the shape `bin/fusion-state-drift` and the monitor exist to surface.
 
 **What this is not.** It is not the defect already filed as
-`circles/260801-1244-curator/issues/260814-1450_o_the-turn-3-bookkeeping-says-no-review-ran-in-the-commit-that-landed-the-review.md`,
+`260814-1450_*_the-turn-3-bookkeeping-says-no-review-ran-in-the-commit-that-landed-the-review.md`,
 which concerns the session history's and the Circle Turn log's *prose* freezing behind the work. This
 one is about the event log, which that record names as the surface that stays honest ("the pattern is
 the one this session already recorded twice as a `state_drift` event") — and here it did not.
@@ -68,14 +68,14 @@ know to open.
 **Scope.** `fusion-workbench/orchestrator-events.jsonl` and, if the second point is taken,
 `agents/orchestrator.md` Phase 3 step 3. Executor: orchestrator for the log, `coder` for the prompt.
 
-**Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+**Filed by:** coderev, review `260814-1850-coderev-curator-turn-4.md`.
 
 
 ---
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Unchanged, and the proposed substitute was never written either.**
 
-`grep -c '2026-08-14T14' orchestrator-events.jsonl` → **0**. No event of any kind was emitted in the 14:00 hour, while `history/260814-1457-reconciliation.md` shows the pass demonstrably ran. The only `reconciliation` event in that session is at 18:29:22, for the second Phase-3 pass. The `state_drift` note the record proposed in place of the missing event was not added either — the only such entry in the log is from 2026-08-13.
+`grep -c '2026-08-14T14' orchestrator-events.jsonl` → **0**. No event of any kind was emitted in the 14:00 hour, while `260814-1457-reconciliation.md` shows the pass demonstrably ran. The only `reconciliation` event in that session is at 18:29:22, for the second Phase-3 pass. The `state_drift` note the record proposed in place of the missing event was not added either — the only such entry in the log is from 2026-08-13.
 
 The event log is at the workbench root and outside this pass's write scope; nothing here is corrected.
 

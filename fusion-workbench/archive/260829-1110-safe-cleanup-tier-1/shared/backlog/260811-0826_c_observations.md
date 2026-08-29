@@ -1,6 +1,6 @@
 # Raw observations, hand-written by the user: about a dozen distinct ideas in one dump, awaiting consolidation by the playmaker
 
- fusion-workbench/circles/260801-1244-curator/_a_circle.md
+ 260801-1244-curator
 
 
 Die drei am häufigsten geänderten Dateien laut Churn-Ranking: hooks/lib/__tests__/rules-emission-golden.test.ts, hooks/lib/domain-cascade.ts, hooks/lib/__tests__/domain-cascade.test.ts.
@@ -121,7 +121,7 @@ Details: Spec planning/260811-0753_o_spec-*.md, Kriterien unter ### C1 bis ### C
 ```
 
 Die richtige und angemessene Antwort hätte etwa so ausgesehen:
-"fusion-workbench/circles/260809-2040-tastenbelegung-als-markdown-in-downloads/planning/260811-0753_o_spec-tastenbelegung-als-markdown-in-downloads.md
+"260811-0753_*_spec-tastenbelegung-als-markdown-in-downloads.md
 Abschnitte ### C1 bis ### C4."
 
 
@@ -132,4 +132,4 @@ Ist Fusion ein token- und zeitfressendes Monster geworden, das sich nur noch um 
 Wie können wir fusion radikal vereinfachen?
 Wie können wir sicher stellen, dass die innerhalb der Modelle laufenden loops kürzer werden, so dass die Agenten durch immer wieder neu injizierte Regeln und Ziele nicht entgleisen?
 
-Split: became `260814-1733_o_radical-simplification.md`, `260814-1733_o_bounded-executor-dispatches.md` and `260814-1733_o_attach-the-rule-to-the-act.md` (playmaker 260814-1733); its remaining ideas were already carried by filed issue and decision records, were duplicates of these three, or were not ideas.
+Split: became `260814-1733_*_radical-simplification.md`, `260814-1733_*_bounded-executor-dispatches.md` and `260814-1733_*_attach-the-rule-to-the-act.md` (playmaker 260814-1733); its remaining ideas were already carried by filed issue and decision records, were duplicates of these three, or were not ideas.

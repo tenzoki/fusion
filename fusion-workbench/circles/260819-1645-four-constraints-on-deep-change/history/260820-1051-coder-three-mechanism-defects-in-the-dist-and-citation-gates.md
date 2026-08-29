@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260819-1645-four-constraints-on-deep-change`
+**Circle:** `260819-1645-four-constraints-on-deep-change`
 **Task:** Turn 2, task F1 — the three real mechanism defects the review found
 **HEAD at start:** `8e7cae7`
 **Files changed:**
@@ -14,7 +14,7 @@
 
 ## 1. `circleDirs()` learns the archive prefix
 
-Record: `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`.
+Record: `260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`.
 
 `circleDirs()` now indexes `circles/<dir>` and `archive/<sweep>/circles/<dir>`, through
 `ARCHIVE_SWEEP_RE` — the same one-sweep bound `anchoredUnder()` holds, asked of a directory name
@@ -46,14 +46,14 @@ and the tree does not move under a run.
 archive tree, most of them a record citing its own Circle's directory name. The blocking gate's
 verdict does not move, because `workbench-citation-lint.test.ts` excludes `archive/` from its corpus
 — the fix closes a latency, exactly as the record said it would. Three `circle-dir` tokens still
-dangle after it, and they are genuine: `circles/260809-2040-tastenbelegung-als-markdown-in-downloads`
-and `circles/260814-1228-one-flow-mandate-to-process-control` name directories that exist neither
+dangle after it, and they are genuine: `260809-2040-tastenbelegung-als-markdown-in-downloads`
+and `260814-1228-one-flow-mandate-to-process-control` name directories that exist neither
 live nor archived. Both sit in closed (`_c_`) shared issues, outside this task's file set and outside
 the gate's corpus; they are not filed here because nothing new was learned about them.
 
 ## 2. The dist gate's artifact case gets its toolchain guard
 
-Record: `…/issues/260820-0805_*_the-artifact-case-of-the-dist-gate-carries-no-toolchain-guard-so-a-mismatch-reddens-it-with-the-wrong-remedy.md`.
+Record: `…/260820-0805_*_the-artifact-case-of-the-dist-gate-carries-no-toolchain-guard-so-a-mismatch-reddens-it-with-the-wrong-remedy.md`.
 
 The toolchain read moved out of the first case into `readToolchain()` /
 `toolchainDisagreement()`, computed as the first statement of `beforeAll` (before any early return,
@@ -74,7 +74,7 @@ preconditions under which their own subject is evaluable.
 
 ## 3. The kind list is derived where deriving is possible, and pinned where it is not
 
-Record: `…/issues/260820-0805_*_the-token-for-token-case-restates-gate-kinds-as-a-literal-and-nothing-catches-the-next-drift.md`.
+Record: `…/260820-0805_*_the-token-for-token-case-restates-gate-kinds-as-a-literal-and-nothing-catches-the-next-drift.md`.
 
 **Deriving the list is not available here, and the reason is the case's own subject.** The
 token-for-token case exists to check that two independently-built views agree about which kinds the
@@ -127,8 +127,8 @@ again, the new case reddens:
 > [ [ 'circle-dir', 'resolved', 'archive/260817-1907-safe-cleanup-scoped/circles/…' ] ]
 
 The pre-fix status was also read directly off the parser before any edit: a citation of
-`circles/260801-1244-guard-bash-inspection` returned `dangling` with "no such Circle directory under
-fusion-workbench/circles/", while the live sibling `circles/260801-1244-guard-rules-write` resolved.
+`260801-1244-guard-bash-inspection` returned `dangling` with "no such Circle directory under
+fusion-workbench/circles/", while the live sibling `260801-1244-guard-rules-write` resolved.
 
 **Item 3.** With `circle-record` removed from the helper's `GATE_KINDS`, the new case reddens and
 **the token-for-token case stays green** — which is the whole point of the record, reproduced:

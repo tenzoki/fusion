@@ -1,7 +1,7 @@
 # The remaining text defects, the orphaned reference, and the Turn's consolidation
 
 **Agent:** coder
-**Circle:** `circles/260819-1645-four-constraints-on-deep-change`
+**Circle:** `260819-1645-four-constraints-on-deep-change`
 **Task:** Turn 2, F4 — seven defect records, one sentence made false by a sibling task, and the
 consolidation of three concurrent tasks into one settled tree
 **HEAD at start:** `8e7cae7`, with F1, F2 and F3 landed uncommitted
@@ -68,7 +68,7 @@ budget" was qualified to the file it was measured against.
 
 **The deletion annotation was not applied to its own worked subject** (`260820-0906`) — **item 1
 done, item 2 open**. The bare token on line 14 of
-`circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+`260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
 now carries the form from `rules/circle-records.md`, in the literal English opening the rule makes
 the recognition test, inside German prose — the form is template text and an exempt surface. Re-
 scanned after the edit: that file yields **two** gate violations where it yielded three, and the
@@ -79,7 +79,7 @@ fencing them would settle by a silent edit a convention this repository has not 
 itself calls that item arguably a decision rather than a defect.
 
 **A cross-reference names a record that was never filed** (`260819-2250`) — **repaired in the second
-place, and it stays open.** `shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`
+place, and it stays open.** `260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`
 carried the same dead path in its `## Sources` list, outside every repair corpus. It now carries the
 treatment step 7 gave the decision record: the path dropped, the substance kept. The bullet names
 the stamp, states that no file with that slug has ever existed, and gives the measurement — commit

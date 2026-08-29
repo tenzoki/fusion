@@ -1,7 +1,7 @@
 The four-mechanisms analysis says escalation has one input and the code has two
 
 ---
-`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md:190` states: "Escalation is
+`260812-0251-four-mechanisms-purpose-bindingness-and-cost.md:190` states: "Escalation is
 driven only by the protected-path machinery: three consecutive blocks raise a halt
 (`hooks/config.json:27`), and only a human clears it."
 
@@ -14,11 +14,11 @@ reaches a halt without a protected path being involved.
 ---
 **Witness:** planner, reading `hooks/guard.ts` while planning the protected-path removal
 **Severity:** medium — the claim is load-bearing for a decision now being taken
-**Affected:** `shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md:190`
+**Affected:** `260812-0251-four-mechanisms-purpose-bindingness-and-cost.md:190`
 **Cross-references:**
-`shared/planning/260812-1232_o_remove-the-protected-path-half-of-the-compliance-guard.md` (its
+`260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (its
 `**Decidability:**` line and its "Current State" section carry the corrected statement),
-`shared/decisions/260812-1232_o_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
+`260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
 
 ## Why it matters here rather than as a note
 

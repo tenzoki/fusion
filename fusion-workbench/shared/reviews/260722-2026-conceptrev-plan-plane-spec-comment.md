@@ -1,13 +1,13 @@
 # Concept Evaluation: Plan — Plane bridge spec-comment (opt-in)
 
 **Date:** 2026-07-22 20:26
-**Target:** `fusion-workbench/shared/planning/260722-2021_o_plan-plane-spec-comment.md`
+**Target:** `260722-2021_*_plan-plane-spec-comment.md`
 **Verdict:** clean
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mmdc)
 
 ## Verdict
 
-Both diagrams are coherent, and the document is clean. The live control-flow graph (13 nodes, 14 edges) is a strict acyclic flowchart that reads straight down: the DRYRUN split forks first, the state write is wrapped so noop and create/update both converge on a single `state_ok`-gated comment tail, and every failure path returns before that tail. The step DAG (5 nodes, 4 edges) is a small acyclic ordering with one fork at Step 2 and no back-edge. No cycle, no god-node, no orphan in either; both parse under `mmdc`; both types fit their content. This plan's control-flow graph is the implementation-level refinement of the clean spec graph reviewed at `260722-1947` and preserves its C4 property — a failed comment self-heals on the next push, never by looping inside this one.
+Both diagrams are coherent, and the document is clean. The live control-flow graph (13 nodes, 14 edges) is a strict acyclic flowchart that reads straight down: the DRYRUN split forks first, the state write is wrapped so noop and create/update both converge on a single `state_ok`-gated comment tail, and every failure path returns before that tail. The step DAG (5 nodes, 4 edges) is a small acyclic ordering with one fork at Step 2 and no back-edge. No cycle, no god-node, no orphan in either; both parse under `mmdc`; both types fit their content. This plan's control-flow graph is the implementation-level refinement of the clean spec graph reviewed at `260722-1947-conceptrev-spec-plane-spec-comment.md` and preserves its C4 property — a failed comment self-heals on the next push, never by looping inside this one.
 
 ## Per-diagram measurements
 
@@ -38,7 +38,7 @@ No substantive findings. Detail per axis:
 
 **Reconciliation annotation — 260817-1836, reconciler, domain `code`.** The subject of this review
 no longer exists. The Plane mirror was removed on 2026-08-15 in Circle
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
+`260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
 `bin/` (`ls bin/` at HEAD `2552586` lists twelve helpers and none of them is it), the
 `plane.config.yaml` template left `templates/`, and the only surviving mention of the bridge in
 shipped text is the migration note `docs/upgrading-to-v9.md`. The findings below are preserved as

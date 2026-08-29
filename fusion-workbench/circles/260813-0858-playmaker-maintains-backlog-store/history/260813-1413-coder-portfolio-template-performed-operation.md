@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Date:** 2026-08-13 14:13
-**Plan:** `circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_p_the-playmaker-maintains-the-backlog-store.md` step 3 (marked `[DONE]`)
+**Plan:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` step 3 (marked `[DONE]`)
 
 ## What changed
 

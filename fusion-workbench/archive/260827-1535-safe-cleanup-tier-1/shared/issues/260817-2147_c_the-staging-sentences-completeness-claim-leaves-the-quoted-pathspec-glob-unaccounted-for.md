@@ -103,7 +103,7 @@ mechanism claim, so it has nothing to under-cover.
 
 **Severity:** Low
 **Filed by:** coderev, review of `bd2db5c..6b6436d`
-**Cross-references:** `shared/issues/260817-2130_c_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` (the defect this residual is left over from; its resolution note states the deliberate decision not to name the quoted glob separately, which is the judgement this record disagrees with), `shared/issues/260817-2131_o_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the same emitted sentence, no gate)
+**Cross-references:** `260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` (the defect this residual is left over from; its resolution note states the deliberate decision not to name the quoted glob separately, which is the judgement this record disagrees with), `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the same emitted sentence, no gate)
 
 ---
 Resolved: The over-staging clause in `hooks/lib/staging-drift.ts` `stagingSentence()` now

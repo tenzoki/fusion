@@ -40,7 +40,7 @@ on `status === 2`, assert instead that `countsFromHelperOutput` yields `counted_
 pair and is exactly the branch the module's header calls load-bearing. Only on `status === 0` assert
 the counted path. That covers both of the helper's documented outcomes rather than one of them.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 Resolved: `hooks/lib/__tests__/domain-cascade.test.ts` now asserts the helper returned one of its two

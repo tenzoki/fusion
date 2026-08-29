@@ -4,8 +4,8 @@ A citation path carrying a state marker dies on ordinary progress
 
 **Domain:** code
 **Filed by:** orchestrator, from a playmaker finding at portfolio refresh
-**Cross-references:** `shared/issues/260801-1215_o_conventions-file-cites-three-records-that-do-not-resolve.md`,
-`circles/260801-1244-rule-provenance-header/issues/260802-1252_o_binding-decision-formalised-while-both-existing-instances-are-dead.md`,
+**Cross-references:** `260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`,
+`260802-1252_*_binding-decision-formalised-while-both-existing-instances-are-dead.md`,
 `rules/fusion-workbench-conventions.md` `## State Markers — decisions`
 
 ---
@@ -13,12 +13,12 @@ A citation path carrying a state marker dies on ordinary progress
 ## What happened
 
 The `Binding decision:` line at `rules/fusion-workbench-conventions.md:592` was written during
-`circles/260801-1244-rule-provenance-header` (commit `c2c2a04`) and cites
-`shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`.
+`260801-1244-rule-provenance-header` (commit `c2c2a04`) and cites
+`260801-1020_*_provenance-header-on-rule-files.md`.
 
 That path stopped resolving the same day. At Phase 3 of the same session the reconciler correctly
 transitioned the record from answered to implemented, renaming it to
-`260801-1020_i_provenance-header-on-rule-files.md`. The citation now points at nothing.
+`260801-1020_*_provenance-header-on-rule-files.md`. The citation now points at nothing.
 
 Nobody made a mistake. The citation was correct when written, and the rename was correct when
 performed. The two are incompatible by construction.
@@ -57,10 +57,10 @@ Direction 1 or 2 is a decision rather than a defect fix and wants a decision rec
 
 ## Why this is filed in the shared store
 
-It arose inside `circles/260801-1244-rule-provenance-header`, but it is not that Circle's defect:
+It arose inside `260801-1244-rule-provenance-header`, but it is not that Circle's defect:
 the citation form predates it, the sibling issue for the two older dead links is already in the
 shared store, and the problem reaches every artifact kind that cites a decision. Filing it beside
 its sibling is what makes both findable together.
 
 ---
-Resolved: 2026-08-06 (reconciler, workbench-wide pass) — the decision this issue asked for was taken and implemented. Candidate direction 1 became D1 `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_i_zitierform-fuer-workbench-records.md` (wildcard form `YYMMDD-HHMM_*_<slug>`, user gate 260806-0027); direction 3's link checker landed as `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`a1b7872`), which resolves citations across all shipped text surfaces; existing shipped citations were converted (`9a96466`, `fae818b`). Workbench-internal records follow the same form by reconciliation practice — this pass converted the remaining marker-decayed citations in the Circle records. Stated bound: the lint reaches only the plugin repo's shipped surfaces; consuming projects rely on the convention.
+Resolved: 2026-08-06 (reconciler, workbench-wide pass) — the decision this issue asked for was taken and implemented. Candidate direction 1 became D1 `260806-0015_*_zitierform-fuer-workbench-records.md` (wildcard form `YYMMDD-HHMM_*_<slug>`, user gate 260806-0027); direction 3's link checker landed as `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`a1b7872`), which resolves citations across all shipped text surfaces; existing shipped citations were converted (`9a96466`, `fae818b`). Workbench-internal records follow the same form by reconciliation practice — this pass converted the remaining marker-decayed citations in the Circle records. Stated bound: the lint reaches only the plugin repo's shipped surfaces; consuming projects rely on the convention.

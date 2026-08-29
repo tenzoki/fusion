@@ -39,7 +39,7 @@ line, and that line is usually still plausible prose from the same document. The
 wrong answer that looks like a right one, which is the silent-wrong failure `HYG-NO-SILENT-FAIL`
 is written against, arriving through a citation form rather than through a code path.
 
-The obligation is also unowned. `shared/decisions/260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`
+The obligation is also unowned. `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`
 answers the general question for behaviour changes; a line-number citation drifts on edits that
 change no behaviour at all, so nothing brings the obligation into view.
 
@@ -64,13 +64,13 @@ the design question.
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** planner, while planning `shared/planning/260818-1512_o_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`
-**Cross-references:** `README-agents.md` `## Dispatch parameters` (rows for `shaper` / `**Circle file:**` and `shaper` / `**Initiated by:**`), `CLAUDE.md:58` (the single-authoring-home rule that makes this table load-bearing), `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that does not reach it), `shared/issues/260818-0715_*_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md` (same direction: a citation form the lint is satisfied by for the wrong reason)
+**Filed by:** planner, while planning `260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`
+**Cross-references:** `README-agents.md` `## Dispatch parameters` (rows for `shaper` / `**Circle file:**` and `shaper` / `**Initiated by:**`), `CLAUDE.md:58` (the single-authoring-home rule that makes this table load-bearing), `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that does not reach it), `260818-0715_*_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md` (same direction: a citation form the lint is satisfied by for the wrong reason)
 
 ---
 Resolved: 2026-08-18, **the measured drift only** — closed on the user's instruction at the plan
 gate, which named this record as step 5 of
-`shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`.
+`260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`.
 The two rows in the table above were wrong and are now right: `**Circle file:**` and
 `**Initiated by:**` cite `agents/orchestrator.md:343` and `:345`, which are the parameter lines
 themselves inside the fenced block, not the paragraph ten lines above it. Every other citation the

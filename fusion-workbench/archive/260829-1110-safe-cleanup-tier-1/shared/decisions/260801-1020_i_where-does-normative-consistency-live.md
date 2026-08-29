@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (the gap analysis that raised this); `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md` (the permission question this one depends on); `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md` (the evidence question, independent); `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` (constrains any history-grounded option)
+**Cross-references:** `260801-1020-normative-surface-drift-gap-analysis.md` (the gap analysis that raised this); `260801-1020_*_may-any-fusion-writer-touch-rules.md` (the permission question this one depends on); `260801-1020_*_provenance-header-on-rule-files.md` (the evidence question, independent); `260801-1020_*_scan-keys-never-reach-the-archive-store.md` (constrains any history-grounded option)
 
 ---
 
@@ -52,17 +52,17 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
-Answered: shared/history/260801-0936-orchestrator-session.md '## Design decisions (session, 260801)' D1 — Option 3 selected: a writing consolidation agent that reads and edits all three normative surfaces. User chose against the recommended Option 2 (report-only detector); the permission objection that motivated Option 2 is resolved separately in decision 260801-1020_a_may-any-fusion-writer-touch-rules.md.
+Answered: 260801-0936-orchestrator-session.md '## Design decisions (session, 260801)' D1 — Option 3 selected: a writing consolidation agent that reads and edits all three normative surfaces. User chose against the recommended Option 2 (report-only detector); the permission objection that motivated Option 2 is resolved separately in decision 260801-1020_*_may-any-fusion-writer-touch-rules.md.
 
 **Reconciliation 260801-2029 (reconciler) — NOT promoted to `_i_`. Marker stays `_a_`.**
 
-`agents/curator.md` does not exist at HEAD `9ab5a2a`; `agents/` holds the same sixteen prompts as at session start. Nothing in `circles/260801-1244-guard-bash-inspection` builds any part of the answer — the Circle removes a permission obstacle that stood in front of it, which is a different thing.
+`agents/curator.md` does not exist at HEAD `9ab5a2a`; `agents/` holds the same sixteen prompts as at session start. Nothing in `260801-1244-guard-bash-inspection` builds any part of the answer — the Circle removes a permission obstacle that stood in front of it, which is a different thing.
 
-Realisation belongs to `circles/260801-1244-curator` (`_a_`), which is the last of the four in dependency order.
+Realisation belongs to `260801-1244-curator` (`_a_`), which is the last of the four in dependency order.
 
 ---
 
-**Reconciliation 260802-1413 (reconciler, domain `code`) — re-checked, stays `_a_`.**
+**Reconciliation 260802-1413-reconciliation.md (reconciler, domain `code`) — re-checked, stays `_a_`.**
 
-`agents/curator.md` still does not exist at `b568ad9`; `agents/` holds the same sixteen prompts. Realisation still belongs to `circles/260801-1244-curator` (`_a_`), whose one hard prerequisite — the provenance gate — is now built, so the Circle is activatable. What this session added toward the answer is an input rather than a part of it: every rule file the curator will read now states what caused it to exist, which is the evidence source this decision's chosen agent was specified to work from.
-Implemented: `6ba9d77` (the agent) and `1a36fe4` (its first real run) — `agents/curator.md` is the writing consolidation agent option 3 named. It reads and edits all three normative surfaces behind a user gate: its first run against this repository proposed 28 corrections across `CLAUDE.md`, nineteen shared decision records and three project rule files, the user approved all 28, and the apply pass landed all 28 with nothing stale or failed. Delivered by Circle `260801-1244-curator`; run file `circles/260801-1244-curator/history/260814-1332-curator-run.md`. The manual-application step the recommended option 2 would have required does not exist — the agent applies what it is approved to apply, which is the substance of the choice the user made against the recommendation.
+`agents/curator.md` still does not exist at `b568ad9`; `agents/` holds the same sixteen prompts. Realisation still belongs to `260801-1244-curator` (`_a_`), whose one hard prerequisite — the provenance gate — is now built, so the Circle is activatable. What this session added toward the answer is an input rather than a part of it: every rule file the curator will read now states what caused it to exist, which is the evidence source this decision's chosen agent was specified to work from.
+Implemented: `6ba9d77` (the agent) and `1a36fe4` (its first real run) — `agents/curator.md` is the writing consolidation agent option 3 named. It reads and edits all three normative surfaces behind a user gate: its first run against this repository proposed 28 corrections across `CLAUDE.md`, nineteen shared decision records and three project rule files, the user approved all 28, and the apply pass landed all 28 with nothing stale or failed. Delivered by Circle `260801-1244-curator`; run file `260814-1332-curator-run.md`. The manual-application step the recommended option 2 would have required does not exist — the agent applies what it is approved to apply, which is the substance of the choice the user made against the recommendation.

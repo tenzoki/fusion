@@ -3,14 +3,14 @@
 **Agent:** coder
 **Date:** 2026-08-16
 **Circle:** 260816-1741-guard-becomes-observation-only
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 9
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 9
 **Status:** Complete
 
 ## What was asked
 
 Bring the hook test surface into line with a guard that decides nothing, working
 from step 9 plus the four records that amend it: `260816-2021`
-(`guard-bash-integration.test.ts` is in no step's list), `260816-2122` (the
+(`guard-bash-integration.test.ts` is in no step's list), `260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md` (the
 harness reduction deletes fixtures that file imports), `260816-2108`'s second
 finding (`paths.test.ts` loses its subject) and `260816-1917` (the Grounding names
 a test whose subject survives). Read together, in one pass — which was the right
@@ -116,7 +116,7 @@ for whoever next edits it.
 ## Records
 
 - `260816-2021` → `_c_`, with the departures this step made from its proposed fix.
-- `260816-2122` → `_c_`, with the third finding it did not carry (the seeded retired filename) and one correction to its consumer list.
+- `260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md` → `_c_`, with the third finding it did not carry (the seeded retired filename) and one correction to its consumer list.
 - `260816-1917` → left `_o_`. Its test-file half is discharged; correcting the Grounding means editing `_t_circle.md`, which no remaining step owns.
 
 Nothing was committed.

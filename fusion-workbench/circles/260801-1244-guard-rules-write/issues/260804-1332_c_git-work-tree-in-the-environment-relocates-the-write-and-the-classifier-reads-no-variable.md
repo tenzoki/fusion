@@ -4,13 +4,13 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coder, Turn 10 task T10-1, while closing `260804-1024`
+**Filed by:** coder, Turn 10 task T10-1, while closing `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md`
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (`verbOperands` / `resolveGit`); `hooks/lib/command-word.ts` (`resolveInvocation`, which drops the assignments); the residual lists in `rules/protected-path-discipline.md` and `README-hooks.md`, which now name it
 **Kind:** PRE-EXISTING. The environment has never been read for anything but `CDPATH`. Not caused by any commit in this Circle.
 **Cross-references:**
-`260804-1024_c_…` (the command-line spelling of the same fact, closed in T10-1),
-`decisions/260804-1323_i_…` (`## Answer`, where `--work-tree` is recorded and this is not),
-`decisions/260803-1803_i_…` (the `CDPATH` decision — the only variable the classifier reads, and why).
+`260804-1024_*_…` (the command-line spelling of the same fact, closed in T10-1),
+`260804-1323_*_…` (`## Answer`, where `--work-tree` is recorded and this is not),
+`260803-1803_*_…` (the `CDPATH` decision — the only variable the classifier reads, and why).
 
 ---
 
@@ -53,14 +53,14 @@ Three reasons, and the third is the one that decided it:
 
 1. It is a different mechanism. The classifier resolves no variable, ever — `resolveWord`
    is the single authority on what a word denotes, and `CDPATH` is a deliberate,
-   argued exception (`decisions/260803-1803_i_…`). Reading a second variable is a change
+   argued exception (`260803-1803_*_…`). Reading a second variable is a change
    to that boundary, not an extension of the `-C` fix.
 2. The direct spelling could be closed in ten lines by scanning the leading assignment run
    in `classifyWords`. The WRAPPER-hopped spelling could not: `skipWrapper` consumes
    `env FOO=1 git …`'s assignment inside `command-word.ts`, which the git BRANCH classifier
    shares, and T10-1's scope excludes moving anything the branch policy reads.
 3. Closing one spelling and leaving the other recreates exactly the asymmetry
-   `260804-1026` was filed about — same operation, different spelling, opposite verdict —
+   `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md` was filed about — same operation, different spelling, opposite verdict —
    at the same moment that finding is being closed.
 
 So it is filed rather than half-closed, and it is on both residual lists at HEAD.
@@ -110,7 +110,7 @@ Not fixed, deliberately. Reading a second environment variable reopens the bound
 question this issue's own § "Why it was not closed with its command-line sibling" names,
 and that is the course the user stopped. The honest treatment of a real bypass is the
 residual plus an open marker, which is what the plan
-(`planning/260804-2356_o_…ausstieg…`, step 3, branch B) prescribes for exactly this
+(`260804-2356_*_…ausstieg…`, step 3, branch B) prescribes for exactly this
 finding, High severity included.
 
 **What landed instead, and the check that makes it more than a claim.** The plan's second
@@ -140,7 +140,7 @@ coverage.
 route exists without opening a catalogue nothing loads.
 
 **Where it goes is not decided here.** The plan's own open question asks whether this
-belongs in `circles/260804-1205-shell-reachability-model` or in a Circle of its own and
+belongs in `260804-1205-shell-reachability-model` or in a Circle of its own and
 answers *probably its own* — it is an environment-variable problem, not a reachability
 problem. That is a user decision. Meanwhile the residual is citable from both rule layers
 and from the forensics analysis, which is the bound the plan's risk table relies on: a

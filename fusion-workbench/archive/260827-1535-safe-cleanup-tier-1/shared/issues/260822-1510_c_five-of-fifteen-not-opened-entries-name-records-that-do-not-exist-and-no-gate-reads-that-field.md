@@ -5,8 +5,8 @@ Five of fifteen `**Not-opened:**` entries name records that do not exist, and no
 **Severity:** High. The field's only purpose is to be inherited as the next review's scope, so an entry that resolves to nothing is a file that silently never gets reviewed — which is the failure `260810-1205` built this mechanism to close.
 **Domain:** code
 **Filed by:** orchestrator, reading `bin/fusion-review-coverage` output at the Turn-5 boundary
-**Affects:** `fusion-workbench/shared/reviews/260822-1421-coderev-c0-cut-only-circle.md`, its `**Not-opened:**` field; `agents/coderev.md` and `rules/review-contract.md`, which mandate the field; `hooks/lib/review-coverage.ts`, which reports it verbatim
-**Cross-references:** `shared/issues/260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md` (the record that mandated the field); `agents/orchestrator.md` Step 3c, which obliges the next dispatch to carry the list
+**Affects:** `260822-1421-coderev-c0-cut-only-circle.md`, its `**Not-opened:**` field; `agents/coderev.md` and `rules/review-contract.md`, which mandate the field; `hooks/lib/review-coverage.ts`, which reports it verbatim
+**Cross-references:** `260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md` (the record that mandated the field); `agents/orchestrator.md` Step 3c, which obliges the next dispatch to carry the list
 
 ---
 
@@ -74,4 +74,4 @@ The immediate repair is to correct the five entries in the review file, which do
 class.
 
 ---
-Resolved: fixed — the five entries are corrected to the real records in wildcard form and the class is `shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`; shared/reviews/260822-1421-coderev-c0-cut-only-circle.md:4 and shared/reviews/260822-1421-coderev-c0-cut-only-circle.md:235
+Resolved: fixed — the five entries are corrected to the real records in wildcard form and the class is `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`; 260822-1421-coderev-c0-cut-only-circle.md:4 and 260822-1421-coderev-c0-cut-only-circle.md:235

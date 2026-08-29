@@ -10,9 +10,9 @@ what one shipped file now does.
 **Owner:** `curator` — `CLAUDE.md` is a normative surface and its edits go through a user gate
 (`/fusion:cleanup --only claude-md`), not through the executor that caused the drift.
 **Cross-references:**
-`shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`
+`260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`
 (the defect whose fix caused this);
-`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 6
+`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 6
 
 ---
 

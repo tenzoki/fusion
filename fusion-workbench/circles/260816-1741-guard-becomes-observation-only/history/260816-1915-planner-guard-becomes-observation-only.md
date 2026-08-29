@@ -13,7 +13,7 @@ Write the first implementation plan for the active Circle. The specification is 
 ## What was read
 
 - The Circle record in full, including the playmaker's appended activation proposal.
-- Four decision records: the three in `shared/decisions/` that the Circle executes, and `260816-1742_a_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` in the Circle's own store. The dispatch was right that the Grounding's `### Open decision this Circle carries` is stale; the record is answered.
+- Four decision records: the three in `shared/decisions/` that the Circle executes, and `260816-1742_*_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` in the Circle's own store. The dispatch was right that the Grounding's `### Open decision this Circle carries` is stale; the record is answered.
 - The code: `hooks/guard.ts`, `hooks/lib/escalation.ts`, `hooks/lib/config.ts`, `hooks/lib/self-detect.ts`, `hooks/clear-halt.ts`, `hooks/tracker.ts`, `hooks/lib/events.ts`, `hooks/turn-budget.ts`, `hooks/hooks.json`, `bin/fusion-turn-budget`, `bin/fusion-plugin-cwd`, and the four configuration files.
 - The test surface: every file the Grounding names, plus the four lint gates that would fail on a deletion (`derivable-enumerations-lint`, `reference-resolution-lint`, `turn-budget-lint`, `hooks-wiring`) and `helpers/growth-bound.ts` for the re-baselining rule.
 - The shipped text: `README.md`, `README-hooks.md`, `README-agents.md`, `docs/philosophy.md`, `docs/working-model.md`, `docs/upgrading-to-v9.md`, `agents/orchestrator.md`, `skills/setup/SKILL.md`, `skills/help/SKILL.md`, `skills/archive/SKILL.md`.
@@ -22,18 +22,18 @@ Write the first implementation plan for the active Circle. The specification is 
 
 | Artifact | Path |
 |---|---|
-| Plan | `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_o_the-compliance-guard-becomes-observation-only.md` |
-| Decision | `circles/260816-1741-guard-becomes-observation-only/decisions/260816-1915_o_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md` |
-| Decision | `circles/260816-1741-guard-becomes-observation-only/decisions/260816-1916_o_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md` |
-| Defect | `circles/260816-1741-guard-becomes-observation-only/issues/260816-1917_o_the-groundings-test-list-names-a-test-whose-subject-survives-the-removal.md` |
-| Defect | `circles/260816-1741-guard-becomes-observation-only/issues/260816-1917_o_the-groundings-text-surface-list-omits-three-surfaces-that-state-the-halt-as-live.md` |
-| Defect | `shared/issues/260816-1918_o_the-orchestrators-setup-names-planner-among-the-domain-parameterised-dispatches.md` |
+| Plan | `260816-1915_*_the-compliance-guard-becomes-observation-only.md` |
+| Decision | `260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md` |
+| Decision | `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md` |
+| Defect | `260816-1917_*_the-groundings-test-list-names-a-test-whose-subject-survives-the-removal.md` |
+| Defect | `260816-1917_*_the-groundings-text-surface-list-omits-three-surfaces-that-state-the-halt-as-live.md` |
+| Defect | `260816-1918_*_the-orchestrators-setup-names-planner-among-the-domain-parameterised-dispatches.md` |
 
 ## What the plan decides
 
 **Fifteen steps in four phases**, ordered on one observation: after CHECK 3 goes, every other piece of the machinery loses its last caller, so the correct order is to stop deciding first and delete what nothing calls second. Twelve steps go to `coder`, two to `ontocoder`, none to `analyst`. The plan states why no step needs `analyst` rather than leaving the absence unexplained, because that judgement is the plan's to make.
 
-**The Circle ends at the work tree, not at a release.** Step 14 bumps the version and the two pin examples in this repository; the tag, the marketplace bump, the push and the cache pull sit behind a user gate after the off-repository verification and after the review pass. The first reason is measured rather than argued: `shared/issues/260810-1618` records a release tagged while its own review pass was still running.
+**The Circle ends at the work tree, not at a release.** Step 14 bumps the version and the two pin examples in this repository; the tag, the marketplace bump, the push and the cache pull sit behind a user gate after the off-repository verification and after the review pass. The first reason is measured rather than argued: `260810-1618` records a release tagged while its own review pass was still running.
 
 **The migration note is a step.** `docs/upgrading-to-v10.md`, on the `docs/upgrading-to-v9.md` precedent, because this release removes a file every consuming project has at its root.
 

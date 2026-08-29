@@ -4,14 +4,14 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coderev, Turn 7 review of `circles/260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
+**Filed by:** coderev, Turn 7 review of `260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only); `rules/protected-path-discipline.md` and `README-hooks.md`, which now state the leaking premise as a guarantee
 **Kind:** PRE-EXISTING — identical verdicts at `048f3db` and at HEAD. It is not a regression of this Turn. It is the class this Turn was written to close, surviving in a shape the new condition does not reach.
 **Cross-references:**
 `hooks/lib/bash-mutation-guard.ts:2465` (the degrade condition), `:1990` (`state.moved`),
-`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`,
-`issues/260803-2238_c_…` (the closed sibling: a `cd` that FAILS),
-`260804-0837_o_…pipeline…` (the same root cause through `|`).
+`260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`,
+`260803-2238_*_…` (the closed sibling: a `cd` that FAILS),
+`260804-0837_*_…pipeline…` (the same root cause through `|`).
 
 ---
 
@@ -102,29 +102,29 @@ succeeding-left-operand rows would not distinguish a fix from a coincidence.
 **Design record filed (T8-1, 2026-08-04), not implemented.** This finding and its sibling
 are one fact — the joiner is consulted for the segment that writes and never for the one
 that moves — and one decision closes both:
-`decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
+`260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
 It costs three options by measurement (option 1: 0 rows on the suite corpus, 0 on the
 30-row ordinary corpus, 940 on a 25,200-row generated cross-product, all carrying the `||`
-or `|` it targets, 0 newly allowing; option 2 also closes `260804-0839`), reproduces the
+or `|` it targets, 0 newly allowing; option 2 also closes `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`), reproduces the
 leak in both shells, and recommends taking the ten-line give-up now and the reachability
 model as its own Circle. Both leaks are also stated as live residuals in
 `rules/protected-path-discipline.md` so nothing ships claiming the model is exact.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Reproduced independently at HEAD; the decision it waits on is filed and unanswered.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Reproduced independently at HEAD; the decision it waits on is filed and unanswered.**
 
-Re-measured through `classifyBashMutation` at HEAD `cc012fc` with the shipped protected list, rather than read off the review: `true || cd build && rm rules/x.md` **allows**. So does `echo hi | cd build && rm rules/x.md` (the sibling, `260804-0837`). The discriminating control the review names, `false && cd build && rm rules/x.md`, also allows — correctly, because bash short-circuits the whole and-or list and the `rm` never runs, so it is not an escape and must not be pinned as one.
+Re-measured through `classifyBashMutation` at HEAD `cc012fc` with the shipped protected list, rather than read off the review: `true || cd build && rm rules/x.md` **allows**. So does `echo hi | cd build && rm rules/x.md` (the sibling, `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`). The discriminating control the review names, `false && cd build && rm rules/x.md`, also allows — correctly, because bash short-circuits the whole and-or list and the `rm` never runs, so it is not an escape and must not be pinned as one.
 
-`decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` is filed, carries three costed options, and is **unanswered**. Nothing in the workbench answers it: searched both planning stores, both decision stores, both analysis stores and the Circle's `history/`.
+`260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` is filed, carries three costed options, and is **unanswered**. Nothing in the workbench answers it: searched both planning stores, both decision stores, both analysis stores and the Circle's `history/`.
 
-**One correction to the release-blocker framing, which matters for what the next session scopes.** The Turn 7 review calls this pair "the release blocker for any claim about the boundary", and the Turn 8 handover repeats it. Answering `260804-0947` in any of its three options leaves `260804-1024_o_` (`git -C rules rm x.md` allows and deletes the file) open, because that defect has no joiner in it — the directory is in the command text and the model never reads it. This pair is necessary for that claim and is not sufficient for it.
+**One correction to the release-blocker framing, which matters for what the next session scopes.** The Turn 7 review calls this pair "the release blocker for any claim about the boundary", and the Turn 8 handover repeats it. Answering `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` in any of its three options leaves `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` (`git -C rules rm x.md` allows and deletes the file) open, because that defect has no joiner in it — the directory is in the command text and the model never reads it. This pair is necessary for that claim and is not sufficient for it.
 
 ---
 
-**Resolved (T9-1, Turn 9, 2026-08-04) — closed together with its sibling `260804-0837`, which is the same fact met through `|`.**
+**Resolved (T9-1, Turn 9, 2026-08-04) — closed together with its sibling `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`, which is the same fact met through `|`.**
 
-`decisions/260804-0947…` was answered option 4: the joiner is now consulted for the segment that MOVES as well as for the one that writes. All eight rows of the table above deny through the real guard subprocess, one fresh throwaway project per row, with the real-shell effect re-measured in both bash and zsh. No deny read `[HALTED]`.
+`260804-0947…` was answered option 4: the joiner is now consulted for the segment that MOVES as well as for the one that writes. All eight rows of the table above deny through the real guard subprocess, one fresh throwaway project per row, with the real-shell effect re-measured in both bash and zsh. No deny read `[HALTED]`.
 
 The discriminating control the `## Anti-vacuity` section asks for is pinned as a deny: `[ -d nope ] || cd build && rm rules/x.md` denies although its `cd` genuinely runs and the file survives in both shells. That over-deny is the accepted cost and it is stated in `rules/protected-path-discipline.md` and `README-hooks.md`, where both leaks have come off the residual lists.
 
@@ -132,4 +132,4 @@ The implementation departs from the recommended fix in one way, and it is a stre
 
 Measured cost, both directions: 0 newly allowing on all three corpora plus a 41,656-row generated cross-product; 1,420 newly denying there, every one carrying a `||` or `|` in front of the directory builtin; 0 newly denying on the 30-row ordinary-agent corpus and 0 on the suite's own HEAD harvest.
 
-Not committed by the implementing agent — the orchestrator commits after validation, so no hash is cited here rather than a guessed one. See `history/260804-1200-turn9-t9-1-the-joiner-for-the-segment-that-moves.md`.
+Not committed by the implementing agent — the orchestrator commits after validation, so no hash is cited here rather than a guessed one. See `260804-1200-turn9-t9-1-the-joiner-for-the-segment-that-moves.md`.

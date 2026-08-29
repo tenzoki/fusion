@@ -3,7 +3,7 @@
 **Date:** 2026-08-16 20:06
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 1 (close-out)
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 1 (close-out)
 **Files changed:** `hooks/lib/__tests__/fixtures/surface-growth.golden`
 
 ## What was done

@@ -8,8 +8,8 @@
 **Affects:** `rules/fusion-workbench-conventions.md:430-475` (the decision-record template), `fusion-workbench/shared/decisions/**`, `fusion-workbench/circles/*/decisions/**`
 **Cross-references:**
 `agents/orchestrator.md:254-292` (`## Circle head fields` — the fix `282ef42` gave the *Circle* record for exactly this defect);
-`shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md` (the open question of whether the field should exist at all);
-`shared/decisions/260807-2131_i_which-language-governs-a-customer-deliverable.md` and `shared/decisions/260811-1534_i_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` (two instances created in this range)
+`260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md` (the open question of whether the field should exist at all);
+`260807-2131_*_which-language-governs-a-customer-deliverable.md` and `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` (two instances created in this range)
 
 ---
 
@@ -27,12 +27,12 @@ total=67  mismatched=34  non-open-records-still-carrying-the-unfilled-stub=12
 
 | Marker | `**Status:**` says | Record |
 |---|---|---|
-| `_i_` | `open` | `260807-2131_i_which-language-governs-a-customer-deliverable.md` |
-| `_i_` | `open` | `260811-1534_i_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` |
-| `_i_` | `open` | `260806-0015_i_zitierform-fuer-workbench-records.md` |
-| `_i_` | `answered` | `260810-0920_i_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` |
-| `_a_` | `open` | `260810-2145_a_should-a-repeated-skill-body-snippet-become-a-bin-helper….md` |
-| `_d_` | `open` | `260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` |
+| `_i_` | `open` | `260807-2131_*_which-language-governs-a-customer-deliverable.md` |
+| `_i_` | `open` | `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` |
+| `_i_` | `open` | `260806-0015_*_zitierform-fuer-workbench-records.md` |
+| `_i_` | `answered` | `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` |
+| `_a_` | `open` | `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper….md` |
+| `_d_` | `open` | `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` |
 
 The first two were transitioned `_a_`→`_i_` **inside this range**, in `9f84254`. The third is the decision that `b53c7dd`'s new citation-form lint enforces.
 
@@ -48,7 +48,7 @@ Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 ```
 
-Twelve non-open records keep it verbatim and append the real annotation *below* it as a new block, so the record states both. `260811-1534_i_…:127-143`:
+Twelve non-open records keep it verbatim and append the real annotation *below* it as a new block, so the record states both. `260811-1534_*_…:127-143`:
 
 ```
 Answered: <set when status moves to _a_>
@@ -67,7 +67,7 @@ A `grep '^Answered:'` over that file returns "not yet answered" first and the an
 `rules/circle-records.md` and `agents/orchestrator.md:286` both say the filename wins where the two disagree, and that is right. But three things follow that a "the marker is the truth" shrug does not cover:
 
 1. **The head is what a reader meets first**, and it is what `agents/orchestrator.md:270` names as the reason the Circle version was worth fixing.
-2. **`260802-0920` is open on whether the Status field should exist at all**, and `agents/orchestrator.md:288` explicitly says the disagreeing records are the evidence that question will be decided against. At 51 % the evidence is now overwhelming, and it is worth putting the number in front of the person who will decide.
+2. **`260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md` is open on whether the Status field should exist at all**, and `agents/orchestrator.md:288` explicitly says the disagreeing records are the evidence that question will be decided against. At 51 % the evidence is now overwhelming, and it is worth putting the number in front of the person who will decide.
 3. **The unfilled stub is not a stale value, it is a false statement** placed above the true one, in the same file. That has no "the marker wins" defence — the marker says nothing about which of two `Answered:` lines to read.
 
 ## Fix direction
@@ -75,7 +75,7 @@ A `grep '^Answered:'` over that file returns "not yet answered" first and the an
 This is a decision to put to the user, not a repair to start. The two coherent answers:
 
 - **Own it.** Give the decision record's `**Status:**` a writer and a write moment, the way `282ef42` did for the Circle record: whoever renames the marker sets the field in the same command, and the template's stub block is replaced in place rather than appended below. Then a one-time sweep of the 34, and a lint that reads marker-vs-field over every record under a `decisions/` store.
-- **Drop it.** Delete `**Status:**` from the decision template and from the 67 records, on the reasoning that the marker already carries the state and a duplicated field is a second thing to keep in step. That answers `260802-0920` for decisions and leaves the Circle record's field (which has three mechanical readers) untouched.
+- **Drop it.** Delete `**Status:**` from the decision template and from the 67 records, on the reasoning that the marker already carries the state and a duplicated field is a second thing to keep in step. That answers `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md` for decisions and leaves the Circle record's field (which has three mechanical readers) untouched.
 
 Do **not** hand-correct the 34 without answering the question first — `agents/orchestrator.md:288` says so for the Circle record and the reason transfers: the disagreements are the measurement.
 
@@ -111,11 +111,11 @@ correct and carries a trailing parenthetical about a past correction:
 
 | Record | `**Status:**` |
 |---|---|
-| `circles/260718-1924-v5x-overhaul/decisions/260718-2150_*_reviewers-history-log-step.md` | `_i_ (implemented — reviewer edits realising the ruling landed in Circle D…)` |
-| `circles/260801-1244-guard-rules-write/decisions/260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` | `implemented (corrected from `answered` by reconciliation 260804-1021…)` |
-| `circles/260801-1244-guard-rules-write/decisions/260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set…md` | `implemented (corrected from `open`…)` |
-| `circles/260801-1244-guard-rules-write/decisions/260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` | `implemented (corrected from `open`…)` |
-| `shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` | `implemented (marker `_i_`; header corrected by the reconciler 260809-2252…)` |
+| `260718-2150_*_reviewers-history-log-step.md` | `_i_ (implemented — reviewer edits realising the ruling landed in Circle D…)` |
+| `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` | `implemented (corrected from `answered` by reconciliation 260804-1021-reconciliation.md…)` |
+| `260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set…md` | `implemented (corrected from `open`…)` |
+| `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` | `implemented (corrected from `open`…)` |
+| `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` | `implemented (marker `_i_`; header corrected by the reconciler 260809-2252…)` |
 
 **The substantive disagreement is 29 of 67, not 34 of 67.** This matters for the acceptance
 criterion, not for the decision: a lint written to the exact-equality reading fails these five,
@@ -125,7 +125,7 @@ the right state and then explains itself, or the sweep it demands will delete fi
 notes.
 
 **The 29 were not hand-corrected**, per this record's own instruction and
-`agents/orchestrator.md:288`: the disagreements are the measurement for `260802-0920`.
+`agents/orchestrator.md:288`: the disagreements are the measurement for `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`.
 
 ### The stub half is done — acceptance criterion 2 is met
 
@@ -135,27 +135,27 @@ Thirteen unfilled placeholder lines stood above a filled annotation of the same 
 
 | Record | Removed |
 |---|---|
-| `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md` | whole block (4) |
-| `circles/260801-1244-guard-rules-write/decisions/260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` | 3 lines |
-| `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen.md` | whole block (4) |
-| `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_wem-gehoert-die-circle-aktivierung.md` | whole block (4) |
-| `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` | whole block (4) |
-| `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` | whole block (4) |
-| `shared/decisions/260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md` | whole block (4) |
-| `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md` | 1 line |
-| `shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` | whole block (4) |
+| `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md` | whole block (4) |
+| `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` | 3 lines |
+| `260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen.md` | whole block (4) |
+| `260806-0015_*_wem-gehoert-die-circle-aktivierung.md` | whole block (4) |
+| `260806-0015_*_zitierform-fuer-workbench-records.md` | whole block (4) |
+| `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` | whole block (4) |
+| `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md` | whole block (4) |
+| `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md` | 1 line |
+| `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` | whole block (4) |
 
 No record now carries an unfilled `<set when status moves to _X_>` line beside a filled `X:`
 annotation of the same kind. **Three records still carry a placeholder and were left alone on
-purpose** — `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md`,
-`shared/decisions/260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
-and `shared/decisions/260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md`.
+purpose** — `260807-0158_*_how-is-a-unique-record-filename-obtained.md`,
+`260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
+and `260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md`.
 Their leftovers are `Deferred:` and `Superseded by:` lines on records that were never deferred or
 superseded, so they state nothing false; the criterion is about a placeholder contradicted by an
 answer beside it, and these are not contradicted.
 
 **The same defect had exactly one instance on the issues side**, and it is fixed with them:
-`shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-…md`
+`260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-…md`
 carried an empty `Resolved:` at line 112 and the real one at 155.
 
 ### What is left for the user
@@ -164,15 +164,15 @@ Only the first half: whether the decision record's `**Status:**` field is **owne
 write moment, a one-time sweep of the 29, a lint) or **dropped** (deleted from the template and
 the 67). Nothing this pass did constrains that choice.
 
-Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+Reconciled by `reconciler`, `260811-2330-reconciliation.md`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Re-measured rather than re-asserted. Over the 56 records in `shared/decisions/` at HEAD, 18 carry a `**Status:**` header that disagrees with their filename marker and 5 still carry an unfilled template stub of the form `Implemented: <set when status moves to _i_>`. The stub half is close to repaired and the disagreement half is not: the offenders include `260811-1534_i_` and `260807-2131_i_`, both headed `open` while the marker reads implemented. One was corrected in this pass as a side effect of a marker walk (`260814-2017`, header moved to `implemented` with the marker). No decision answers whether the decision record-s own Status field should be owned or dropped; the adjacent record `260815-2312` is scoped to the Circle record-s field, which is a different question.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). Re-measured rather than re-asserted. Over the 56 records in `shared/decisions/` at HEAD, 18 carry a `**Status:**` header that disagrees with their filename marker and 5 still carry an unfilled template stub of the form `Implemented: <set when status moves to _i_>`. The stub half is close to repaired and the disagreement half is not: the offenders include `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` and `260807-2131_*_which-language-governs-a-customer-deliverable.md`, both headed `open` while the marker reads implemented. One was corrected in this pass as a side effect of a marker walk (`260814-2017`, header moved to `implemented` with the marker). No decision answers whether the decision record-s own Status field should be owned or dropped; the adjacent record `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` is scoped to the Circle record-s field, which is a different question.
 
 
 ---
 Resolved: the field itself was removed, so no record filed from now on can carry a state its marker
-contradicts. `shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
+contradicts. `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
 put the question to the user and was answered option 1 on 2026-08-18; the removal landed in the same
 session, taking the `**Status:**` line out of `rules/fusion-workbench-conventions.md`
 `## Decision Record Template` and out of the worked example in `rules/decision-record-examples.md`,
@@ -181,7 +181,7 @@ with the reason and the measurement stated in the conventions file.
 The existing drift is **not** corrected, and that is the answer rather than an omission. A record
 written before the removal keeps the field exactly as it stands; hand-correcting one destroys the
 evidence the removal was decided on, which is the position the Circle precedent
-`260815-2312` took and the constraint the user chose this option under. This defect therefore closes
+`260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` took and the constraint the user chose this option under. This defect therefore closes
 on the cause being gone, not on the population being cleaned.
 
 ---

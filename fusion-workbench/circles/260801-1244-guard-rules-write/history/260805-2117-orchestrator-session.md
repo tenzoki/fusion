@@ -1,4 +1,4 @@
-# Orchestrator Session — 260805-2117
+# Orchestrator Session — 260805-2117-orchestrator-session.md
 
 **Directive:** Get the monitor LAN-bind fix actually deployed — diagnose why the dashboard still bound localhost after update, then release v5.9.2
 **Mode:** custom
@@ -7,10 +7,10 @@
 ## Snapshot (Setup Step 3)
 
 - Workspace: `/Users/k1/Projects/productive/fusion` (plugin source repo, v5.9.1)
-- Active Circle: `circles/260801-1244-guard-rules-write`
+- Active Circle: `260801-1244-guard-rules-write`
 - Git HEAD: `8586ba3` (fix(monitor): bind 0.0.0.0 so the dashboard is reachable on the LAN)
 - Open issues: 82 in the active Circle + 25 in the shared store = 107
-- Open plan files: 3 in the active Circle (`260802-1856_o_plan-guard-rules-write.md`, `260804-1633_o_plan-c5b-remediation-and-ship.md`, `260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`) + 1 shared spec (`260801-1122_o_spec-normative-consolidation.md`)
+- Open plan files: 3 in the active Circle (`260802-1856_*_plan-guard-rules-write.md`, `260804-1633_*_plan-c5b-remediation-and-ship.md`, `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`) + 1 shared spec (`260801-1122_*_spec-normative-consolidation.md`)
 - Open decisions: 0 (circle and shared)
 - Guard: haltActive=false, 0 consecutive blocks. Recent history shows repeated fail-closed protected-path denies on variable operands (last 2026-08-05T15:43 UTC); one halt earlier today, cleared by human at 09:33 UTC. No high-thrash files.
 - Circles: 3 anticipated (`_a_`), 1 active (`_t_`), 7 closed (`_c_`). Portfolio hint printed to user (pointing at /fusion:next).
@@ -47,9 +47,9 @@ Rules walked: decisions ≥ issues? no. analyses>0 ∧ commits=0? no. analyses>0
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: 12 spec acceptance criteria verified with per-criterion test citations, 3 plans verified complete and closed, suite run twice at HEAD `def351e` (source and committed `dist` artifact) — 1550/1551 in both; **1 drift item open**: the emission golden is stale against this session's own commit `373f5ed` (+982 bytes on `rules/protected-path-discipline.md`), suite red by exactly one test (filed: `issues/260805-2323_o_emissions-golden-veraltet…`). 79 open issues remain, 75 of them other-Circle scope by explicit citation (64 Textschicht, 8 shell-reachability, 2 plane/framework, 1 deferral); no open coderev finding names this Circle's guard behaviour.
-- Artifact↔Directive: commits move **toward** the stated Directive ("finish plan-B steps 6+7, verify issue 260804-1606, reconcile stale tracking, then close"): `21a72b7` (step 6), `373f5ed` (step 7 remainder + release-checklist line), `b9b350f` (issue 260804-1606 closed), `def351e` (review finding 260805-2248), `4a8fea0` (v5.9.2 pin — the release half this session's history header carries); the reconcile-stale-tracking clause is completed by this pass.
-- Grounding↔Directive: 0 open decision records across both stores; 5 answered records walked to implemented this pass against the commits (`260803-1402`, `260804-1630`, `260804-1631`, `260804-1815`, shared D2 `260801-1020_i_may-any-fusion-writer-touch-rules`); the remaining answered records (`260805-1548` circle-deletion policy, shared D1 and the concurrency record) are consistent with closing this Circle — 0 conflicting.
+- Artifact↔Grounding: 12 spec acceptance criteria verified with per-criterion test citations, 3 plans verified complete and closed, suite run twice at HEAD `def351e` (source and committed `dist` artifact) — 1550/1551 in both; **1 drift item open**: the emission golden is stale against this session's own commit `373f5ed` (+982 bytes on `rules/protected-path-discipline.md`), suite red by exactly one test (filed: `260805-2323_*_emissions-golden-veraltet…`). 79 open issues remain, 75 of them other-Circle scope by explicit citation (64 Textschicht, 8 shell-reachability, 2 plane/framework, 1 deferral); no open coderev finding names this Circle's guard behaviour.
+- Artifact↔Directive: commits move **toward** the stated Directive ("finish plan-B steps 6+7, verify issue 260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md, reconcile stale tracking, then close"): `21a72b7` (step 6), `373f5ed` (step 7 remainder + release-checklist line), `b9b350f` (issue 260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md closed), `def351e` (review finding 260805-2248_*_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md), `4a8fea0` (v5.9.2 pin — the release half this session's history header carries); the reconcile-stale-tracking clause is completed by this pass.
+- Grounding↔Directive: 0 open decision records across both stores; 5 answered records walked to implemented this pass against the commits (`260803-1402`, `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md`, `260804-1815`, shared D2 `260801-1020_*_may-any-fusion-writer-touch-rules`); the remaining answered records (`260805-1548` circle-deletion policy, shared D1 and the concurrency record) are consistent with closing this Circle — 0 conflicting.
 
 **Rebalance recommendation:** revise Artifact — one mechanical coder task: regenerate `hooks/lib/__tests__/fixtures/rules-emission.golden` deliberately per the test header's procedure, verify, commit. It is the only flagged item; once it lands, all three edges are clean and nothing stands between the Circle and closure (`_t_` → `_c_`) and the activation of `260805-2005-textschicht-gegen-code-nachziehen`.
 
@@ -60,10 +60,10 @@ Rules walked: decisions ≥ issues? no. analyses>0 ∧ commits=0? no. analyses>0
 | Turns | 3 |
 | Tasks resolved | 5 (T1–T5) |
 | Tasks skipped/deferred | 0 |
-| Issues created (by reviewers) | 2 (260805-2248, 260805-2323 — both resolved in-session) |
-| Issues resolved | 7 (260804-1605, -1606, -1427, 260805-1830, -1840 template, -2248, -2323) |
+| Issues created (by reviewers) | 2 (260805-2248_*_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md, 260805-2323 — both resolved in-session) |
+| Issues resolved | 7 (260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md, -1606, -1427, 260805-1830, -1840 template, -2248, -2323) |
 | Decisions answered (`_o_`→`_a_`) | 0 |
-| Decisions implemented (`_a_`→`_i_`) | 5 (260803-1402, 260804-1630, -1631, -1815, shared 260801-1020) |
+| Decisions implemented (`_a_`→`_i_`) | 5 (260803-1402, 260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md, -1631, -1815, shared 260801-1020) |
 | Commits | 9 (2 release + 4 task + 1 review-fix + 1 fixture + 1 reconciliation; closure batch follows) |
 | Agent errors | 0 |
 | Human gates hit | 4 (queue approval, Turn-1 coherence, closure approval, Rebalance) |
@@ -136,8 +136,8 @@ sequenceDiagram
 
 Circle `260801-1244-guard-rules-write` closed coherent; Circle
 `260805-2005-textschicht-gegen-code-nachziehen` activated (`.active-circle` re-pointed).
-Playmaker log: `circles/260805-2005-textschicht-gegen-code-nachziehen/history/260805-2342-playmaker-orchestrator-phase4.md`.
+Playmaker log: `260805-2342-playmaker-orchestrator-phase4.md`.
 Known lag flagged in portfolio Warnings: the activated record's body Status field still reads
-"anticipated" (shared issue `260802-0920`).
+"anticipated" (shared issue `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`).
 
 Plane mirror: config present but still the unfilled template — no pushes this session.

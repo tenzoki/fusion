@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 260818
-**Source record:** `shared/issues/260818-1452_c_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md`
+**Source record:** `260818-1452_*_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md`
 
 ## What was implemented
 

@@ -5,7 +5,7 @@ The `$FUSION_SRC` rooting reached two skills, and two more still cite plugin sou
 `63deec1` gave `skills/setup/SKILL.md` and `skills/next/SKILL.md` a resolved source root — the work
 tree when `bin/fusion-plugin-cwd` says cwd is the plugin's own repository, `$FUSION_PLUGIN_ROOT`
 otherwise — and moved all eight of their citations of `agents/orchestrator.md` onto it. That closed
-`260810-1918_c_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`.
+`260810-1918_*_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`.
 
 Two other skill bodies carry citations of the same class and were not moved:
 
@@ -47,20 +47,20 @@ also why this is invisible without looking.
 
 **Fix direction, not prescribed.** Either extend the two-line branch to the other two bodies (which
 makes it four statements of one criterion and worsens
-`260810-2030_o_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
-and `260810-2145_o_should-a-repeated-skill-body-snippet-become-a-bin-helper…`), or resolve `2030`
+`260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
+and `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper…`), or resolve `2030`
 first with a `bin/` helper and root all four bodies through it in one change. The second order is the
 cheaper one, and this record exists partly to give `2030` its real call-site count: it is four
 consumers, not two.
 
 **Cross-references.**
-`shared/issues/260810-1918_c_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`;
-`shared/issues/260810-1918_c_the-citation-rooting-reached-two-of-three-skills-and-its-own-example-is-unrooted.md`;
-`shared/issues/260810-2030_o_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`;
-`shared/decisions/260810-2145_o_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`;
+`260810-1918_*_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`;
+`260810-1918_*_the-citation-rooting-reached-two-of-three-skills-and-its-own-example-is-unrooted.md`;
+`260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`;
+`260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`;
 `CLAUDE.md` `## Conventions` → *Rules loading* (the work-tree preference and its exact bound).
 
-**Filed by:** reconciler, final reconciliation of session `260810-1646`, at HEAD `e2a34f0`.
+**Filed by:** reconciler, final reconciliation of session `260810-1646-orchestrator-session.md`, at HEAD `e2a34f0`.
 
 ---
 Resolved: the record's own preferred order was taken — `260810-2030` was resolved first with a
@@ -71,7 +71,7 @@ branch being copied into two more files.
 cascade at `:125` (the behavioural one, which now reads Setup Step 5 from the copy the session is
 actually editing), and the three inline-procedure reads at `:134`, `:140`, `:146` are all on
 `$FUSION_SRC`. Its four `bin/` invocations deliberately stay on `$FUSION_PLUGIN_ROOT`: an
-executable is run, not read, and part (c) of `260810-1544` is unanswered.
+executable is run, not read, and part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` is unanswered.
 `skills/help/SKILL.md` — the five doc citations plus `README-hooks.md`,
 `hooks/config.example.json` and the `bin/fusion-rules` header-as-spec read moved with them;
 `bin/fusion-paths` (run) and `templates/investigator-capture-layout.md` (copied) stay on the

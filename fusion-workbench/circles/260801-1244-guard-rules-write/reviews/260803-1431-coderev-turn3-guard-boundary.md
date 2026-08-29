@@ -1,7 +1,7 @@
 # Code review — Turn 3, guard rules-write boundary
 
 **Sender:** coderev
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Scope:** `c9bf59e..242b723`, excluding `fusion-workbench/` — 13 files, 5 commits
 **Method:** every claim below was run against the compiled guard as a subprocess through
 `hooks/lib/__tests__/helpers/guard-harness.ts`, one throwaway project per row. Suite
@@ -52,7 +52,7 @@ Measured, `rules/L -> ../agents` planted, flag set:
 
 Reach is the whole protected list (`agents/**`, `skills/**`, `rules/**` all measured).
 Filed as
-`issues/260803-1431_o_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`,
+`260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`,
 severity High, with the reasoning for High rather than Critical written into the record:
 the exploit needs the flag twice, and the no-flag planted-alias residual this Turn
 documented already reaches the same files. What it breaks is the invariant, not the
@@ -156,12 +156,12 @@ re-run rather than read. All hold:
 I read the whole file rather than the diff. It is accurate apart from the two "there is no
 override for a protected-path shell write" sentences, which are false at HEAD and are
 already tracked — plan Step 9 plus the open
-`issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md`.
+`260803-1402_*_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md`.
 Not refiled. Note that the new `cd -P` finding is not covered by the residual list either;
 the nearest entry, "the classifier cannot walk out and back by name", is a different
 mechanism.
 
-**Known open, deliberately not refiled.** `260802-2320` (case folding), `260803-1251`
+**Known open, deliberately not refiled.** `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (case folding), `260803-1251`
 (`fs-locator.absolute()`'s lexical collapse), `260803-1352` (two unclamped advisory
 details — confirmed still present at `guard.ts:519` and `guard.ts:548`), `260803-1402`
 (Step 9 documentation). The stale committed `hooks/dist/` is Step 10's and is named in the
@@ -194,8 +194,8 @@ Every code citation in this review was re-read at HEAD `fa81589` and every one r
 
 The suite figure was reproduced independently rather than taken on trust: `cd hooks && npx vitest run` → **1080 passed, 23 files**, exit 0, `hooks/dist/` untouched. Same method the review used, same result.
 
-The two line numbers this review reports for the unclamped advisory details (`guard.ts:519`, `guard.ts:548`) are correct, and they disagree with the issue that filed the defect. `issues/260803-1352_o_…` has been annotated with the correction.
+The two line numbers this review reports for the unclamped advisory details (`guard.ts:519`, `guard.ts:548`) are correct, and they disagree with the issue that filed the defect. `260803-1352_*_…` has been annotated with the correction.
 
-**Status of the four items listed under "Known open, deliberately not refiled":** all four are still open, and each now carries reconciliation evidence — `260802-2320` (case folding, direction now decided, bypass still live), `260803-1251` (`fs-locator.absolute()`, confirmed still unreachable), `260803-1352` (unclamped advisory details), `260803-1402` (Step 9 documentation). Nothing was closed by accident and nothing was duplicated.
+**Status of the four items listed under "Known open, deliberately not refiled":** all four are still open, and each now carries reconciliation evidence — `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (case folding, direction now decided, bypass still live), `260803-1251` (`fs-locator.absolute()`, confirmed still unreachable), `260803-1352` (unclamped advisory details), `260803-1402` (Step 9 documentation). Nothing was closed by accident and nothing was duplicated.
 
 The High finding `260803-1431` is open and unaddressed. The recommended sequencing — land it before plan Step 9 writes the flag into shipped documents — has been recorded on the plan's Step 9 as part of a `[SCOPE CHANGED]` note.

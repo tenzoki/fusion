@@ -44,7 +44,7 @@ patched:
 **Cross-references.** `CLAUDE.md` `## Conventions` → *Rules loading*, and the `bin/fusion-plugin-cwd`
 row in `## Layout`. Decision `260806-0015_*` behaviour rule (a).
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 Resolved: fix direction (a). `skills/setup/SKILL.md` and `skills/next/SKILL.md` now resolve a source

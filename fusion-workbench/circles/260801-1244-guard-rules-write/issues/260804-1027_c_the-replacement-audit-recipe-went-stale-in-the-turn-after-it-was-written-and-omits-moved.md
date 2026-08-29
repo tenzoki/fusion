@@ -4,18 +4,18 @@
 
 **Severity:** Low
 **Domain:** code (record integrity of a security control)
-**Filed by:** reconciler, closing pass of session `history/260803-1737-orchestrator-session.md`
+**Filed by:** reconciler, closing pass of session `260803-1737-orchestrator-session.md`
 **Affects:** `hooks/lib/bash-mutation-guard.ts:1960` and `:1963` (the `unmodelled` docstring), contradicted by `:1521-1522` (the `ShellState` docstring)
 **Kind:** NEW in `c9c44a3`, which added the sixth field without updating the enumeration written one Turn earlier in `048f3db`.
 **Cross-references:**
-`260803-2237_c_unmodelled-zeroes-the-stack-values-but-not-its-depth-…` (the issue whose closure replaced the recipe with this enumeration, on the argument that a type-level statement cannot go stale the way a hand-written recipe did),
+`260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-…` (the issue whose closure replaced the recipe with this enumeration, on the argument that a type-level statement cannot go stale the way a hand-written recipe did),
 `hooks/lib/bash-mutation-guard.ts:1596` (`moved: boolean`, the field added by `c9c44a3`).
 
 ---
 
 ## What is wrong
 
-`260803-2237` closed on the observation that the `applyDirEffect` audit recipe had been wrong **twice**, both times because it enumerated writes to fields while the invariant is a property of the state. The closure replaced it with a statement about the types:
+`260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md` closed on the observation that the `applyDirEffect` audit recipe had been wrong **twice**, both times because it enumerated writes to fields while the invariant is a property of the state. The closure replaced it with a statement about the types:
 
 > Each field of `ShellState` has an "I don't know" value that covers the whole field rather
 > than its contents, so a give-up is a total assignment and cannot leave a residue
@@ -74,7 +74,7 @@ Reported to the orchestrator as a gap in the plan's three-branch rule rather tha
 special case for this issue: **six of the eighteen findings have this shape**, and the rule
 as written has no branch whose remedy reaches them.
 
-**Where it is answered.** `circles/260804-1205-shell-reachability-model` restructures the
+**Where it is answered.** `260804-1205-shell-reachability-model` restructures the
 directory model by its own Directive, and this enumeration is that model's. This issue's
 § Recommended fix already names the option that removes the defect class rather than its
 third instance — delete the enumeration and point at `:1516-1525`, which carries the

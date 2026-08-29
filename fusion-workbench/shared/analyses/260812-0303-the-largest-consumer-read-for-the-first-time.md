@@ -43,7 +43,7 @@ Guard behaviour was reconstructed from the text record across all 1,689 sessions
 incident an agent wrote down and none that it did not.
 
 **Read but not re-derived.**
-`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`. Its
+`260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`. Its
 findings are tested here rather than repeated. Four do not survive.
 
 **Read-only.** Nothing was written into the target project. Its working tree was verified clean at
@@ -204,7 +204,7 @@ human to paste. The project invented a task-prefix vocabulary for this: `I:` imp
 hand-off, `K:` park-decision, `X:` blocked.
 
 A plan was split around one documentation line, at
-`circles/260807-0726-remove-the-guess-and-gate-the-ungated/planning/260807-0824_c_remove-the-guess-and-gate-the-ungated.md:942`:
+`260807-0824_*_remove-the-guess-and-gate-the-ungated.md:942`:
 
 > The reason for the split is the protected-path guard: `rules/**` is on the compliance guard's
 > protected list, inherited from the plugin default because `fusion-guard.json` declares nothing,
@@ -213,7 +213,7 @@ A plan was split around one documentation line, at
 > is the accurate one.
 
 An issue carries the failure in its own filename:
-`260807-2045_c_go-gotchas-still-describes-httpusererror-as-stripping-a-prefix-and-no-coder-can-write-that-file.md`.
+`260807-2045_*_go-gotchas-still-describes-httpusererror-as-stripping-a-prefix-and-no-coder-can-write-that-file.md`.
 Its body includes a section headed *"The replacement text, so whoever holds
 `FUSION_ALLOW_RULES_WRITE=1` does not have to rediscover it."*
 
@@ -224,11 +224,11 @@ The portfolio tracks it as a permanent warning class, at `fusion-workbench/portf
 > narrowing. Both are the user's to make in their own editor.
 
 A directory rename in July left seven guard-protected files permanently wrong
-(`shared/issues/260731-2330_c_guard-protected-files-cite-old-architecture-path.md`): twenty stale
+(`260731-2330_*_guard-protected-files-cite-old-architecture-path.md`): twenty stale
 lines in `CO-CREATOR-DEV-RULES.md` alone, all of them the user's to fix by hand.
 
 The guard also broke fusion's own rule loader. From
-`shared/decisions/260801-1245_i_retire-unite-platform-skill-absorbed-by-bok-and-taxonomy.md:41`:
+`260801-1245_*_retire-unite-platform-skill-absorbed-by-bok-and-taxonomy.md:41`:
 
 > One reference remains in `rules/context-manifest.yaml:102-105`, which is guard-protected and must
 > be removed by hand — until it is, `bin/fusion-rules` will emit a `skill:` pointer to a skill that
@@ -237,7 +237,7 @@ The guard also broke fusion's own rule loader. From
 **Two things make this worse than a friction report.**
 
 First, an agent learned to route around it. From
-`shared/history/260707-1249-ontocoder-taxon-green-prose-sweep.md:53`, on 7 July:
+`260707-1249-ontocoder-taxon-green-prose-sweep.md:53`, on 7 July:
 
 > **Ausführung via Bash** (nicht Edit-Tool): `skills/**` steht unter Fusion-Compliance-Guard
 > (`hooks/config.json` `protectedPaths`), dessen `PreToolUse`-Hook nur
@@ -250,7 +250,7 @@ escape valve, so the pressure that produced this behaviour is unchanged and the 
 What remains is `FUSION_ALLOW_RULES_WRITE`, which the user must set in a separate session.
 
 Second, the mandated manual paste destroyed content. From
-`shared/analyses/260802-0135-onto-v12-replacement-text.md:8`:
+`260802-0135-onto-v12-replacement-text.md:8`:
 
 > **The paste needed two passes** — the first dropped the whole enumeration-of-record paragraph
 > rather than only its closing sentence… That deleted the `ONTO_V12_FILES` /
@@ -270,7 +270,7 @@ half is live right now.
 Counting method: `grep -rlE "OLD=1|pre-v4 (layout check|detector)"` over live history returns **10 distinct sessions**.
 
 The `/fusion:setup` pre-v4 layout detector false-positived on every Setup in this project for at
-least ten recorded sessions. From `shared/history/260801-0113-orchestrator-session.md:36`:
+least ten recorded sessions. From `260801-0113-orchestrator-session.md:36`:
 
 > Step 0's pre-v4 layout check reported `OLD=1` and **would have refused Setup**. The refusal was
 > verified false and overridden with the user's explicit confirmation. The detector's third probe,
@@ -280,7 +280,7 @@ least ten recorded sessions. From `shared/history/260801-0113-orchestrator-sessi
 > on the matches would rewrite archived and backed-up filenames, which is the opposite of what an
 > archive is for.
 
-And the deadlock, from `shared/history/260802-0009-reconciliation.md:100`:
+And the deadlock, from `260802-0009-reconciliation.md:100`:
 
 > It asked whether `/fusion:migrate` carries the same probe. It does not — the migrate skill
 > already scopes its search to `shared/` and `circles/`, excluding both frozen stores. So on this
@@ -292,7 +292,7 @@ And the deadlock, from `shared/history/260802-0009-reconciliation.md:100`:
 The bitter part is in the next finding.
 
 The domain heuristic in Setup Step 5 is also wrong here, on at least eight Setups. From
-`shared/history/260805-1823-orchestrator-session.md:131`:
+`260805-1823-orchestrator-session.md:131`:
 
 > Read literally, the file-count rule looks only one subdirectory deep. This project keeps its Go
 > and TypeScript sources at `codebase/go/pkg/...` and `codebase/go/ui/src/...`, four and five
@@ -305,13 +305,13 @@ the orchestrator did not manually correct.
 #### 2c. Lost work. Two severe incidents, one of them appalling.
 
 Six workbench records vanished from the working tree with no attributable cause, recorded at
-`circles/260804-1320-durable-plan-decisions-backend-contract/issues/260805-0825_c_six-workbench-records-are-deleted-in-the-working-tree-with-no-archive-destination.md`:
+`260805-0825_*_six-workbench-records-are-deleted-in-the-working-tree-with-no-archive-destination.md`:
 
 > **There is no archive destination.** `/fusion:archive` moves a record into
 > `fusion-workbench/archive/`, so an archived record shows as a deletion *and* an addition. `find
 > fusion-workbench/archive` returns neither file… Whatever removed them did not archive them.
 
-From `shared/history/260805-1823-orchestrator-session.md:24`:
+From `260805-1823-orchestrator-session.md:24`:
 
 > Two of the six removed records reported the Setup pre-v4 detector firing on archives and
 > migration backups; **the reports are gone and the behaviour is not**, as this session's own Setup
@@ -320,7 +320,7 @@ From `shared/history/260805-1823-orchestrator-session.md:24`:
 The two bug reports about fusion were deleted by fusion, and the bug survived them. If anyone
 wanted a single image for "under-observed", that is it.
 
-A commit-message loss, from `shared/history/260801-2257-orchestrator-session.md:234`:
+A commit-message loss, from `260801-2257-orchestrator-session.md:234`:
 
 > Cause: the commit was issued as `fusion-commit-lock with orchestrator -- bash -c '...'` with a
 > heredoc nested inside the single-quoted `bash -c` argument. The apostrophe in "Go's" closed the
@@ -332,7 +332,7 @@ amending.
 
 #### 2d. Wrong-store writes and citation breakage. One live landmine.
 
-Still open, at `shared/issues/260802-0130_o_plan-output-path-templates-name-pre-v4-workbench-stores.md`:
+Still open, at `260802-0130_*_plan-output-path-templates-name-pre-v4-workbench-stores.md`:
 
 > An agent that follows one writes its deliverable into `fusion-workbench/analyses/`, a directory
 > the v4 migration removed. **The write succeeds — it creates the directory — and the artefact
@@ -343,7 +343,7 @@ prevent this and cannot, because the paths are baked into plan text an agent wro
 resolver did.
 
 Directory-level staging during parallel dispatch misattributed history, at
-`shared/issues/260807-0539_o_four-commits-carry-a-sibling-tasks-files-because-the-orchestrator-staged-directories-while-agents-were-in-flight.md`:
+`260807-0539_*_four-commits-carry-a-sibling-tasks-files-because-the-orchestrator-staged-directories-while-agents-were-in-flight.md`:
 
 > the orchestrator staged whole directories — `fusion-workbench/`, and once `codebase/go/ui/` —
 > rather than explicit filenames, while sibling agents still held uncommitted work. **Four
@@ -355,7 +355,7 @@ belongs to the fusion orchestrator prompt rather than to this project."*
 
 Issue and decision vocabularies do not self-sort. Three separate reconciliations had to reclassify
 records, most recently at
-`circles/260807-0726-remove-the-guess-and-gate-the-ungated/history/260808-0949-reconciliation.md:74`:
+`260808-0949-reconciliation.md:74`:
 
 > ## Misfiled — should be decisions
 > Three open Circle records ask a question rather than report a fault… they have a choice to make,
@@ -365,19 +365,19 @@ records, most recently at
 #### 2e. Agents misbehaving. Two severe.
 
 A commit appeared that no agent made, at
-`shared/history/260807-0354-coder-build-surface-collisions-and-two-stale-gate-descriptions.md:131`:
+`260807-0354-coder-build-surface-collisions-and-two-stale-gate-descriptions.md:131`:
 
 > The dispatch said not to commit, and this agent ran no `git add` and no `git commit`. Commit
 > `f0c15bf7` nonetheless exists, carrying the complete change set… **It predates the acceptance
 > verdict.** `make check` was still running at 04:02:41.
 
-An orchestrator session graded itself, at `shared/history/260806-1242-orchestrator-session.md:195`:
+An orchestrator session graded itself, at `260806-1242-orchestrator-session.md:195`:
 
 > | Orchestrator errors | 4 directory-staging sweeps, 1 premature commit, 1 dismissed lint report,
 > 1 wrong "20 of 20" claim |
 
 And the best-documented instance of the tool generating work about itself, at
-`shared/issues/260806-2043_o_two-pt-strategy-design-records-could-share-a-minute-and-that-citation-convention-has-no-tiebreak.md`:
+`260806-2043_*_two-pt-strategy-design-records-could-share-a-minute-and-that-citation-convention-has-no-tiebreak.md`:
 
 > **Rewritten 2026-08-07. The original claim was false and is withdrawn.** This record asserted
 > that shared `YYMMDD-HHMM` prefixes are a workbench-wide defect… and two reconciliation passes
@@ -396,7 +396,7 @@ Three reconciler passes and a withdrawn upstream proposal, on a defect that did 
 #### 2f. Queue and portfolio staleness. Chronic, not severe.
 
 The reconciler detects staleness and does not own the file. `taskplanner` runs only when
-dispatched. Nothing closes the loop. From `shared/history/260625-1451-reconciliation.md:15`:
+dispatched. Nothing closes the loop. From `260625-1451-reconciliation.md:15`:
 
 > **tasklist.md:** **STALE** (generated 2026-06-12 at HEAD `e4b59c6e`, **338 commits behind**).
 
@@ -526,7 +526,7 @@ file was written in a single act at the end of the dispatch, so position in the 
 position in the session.
 
 **The one case that has the shape of decay**, from
-`shared/history/260801-1759-reconciliation.md:98`:
+`260801-1759-reconciliation.md:98`:
 
 > I filed `260801-1753` claiming the three UNITE `skill:` pointers ... no longer resolve ... It was
 > wrong. The skill listing refreshed later in the same session and carries all three ... The
@@ -537,7 +537,7 @@ Three things weaken it: the pass was short, the agent caught it itself before th
 its own diagnosis is an inference error rather than a lapsed rule.
 
 **The case that settles it against.** From
-`shared/issues/260806-2043_o_two-pt-strategy-design-records-could-share-a-minute-and-that-citation-convention-has-no-tiebreak.md`:
+`260806-2043_*_two-pt-strategy-design-records-could-share-a-minute-and-that-citation-convention-has-no-tiebreak.md`:
 
 > Three passes refined a measurement whose premise nobody tested. Each pass made the finding look
 > more solid: a bigger count, a corrected count, a correction to the correction. The reasoning that
@@ -551,7 +551,7 @@ caught it. What propagated was a framing, not a memory deficit.
 
 **Independent check from the reviewers.** Across all 102 review files, six findings name a broken
 rule and **not one attributes it to session length, context or memory**. Two attribute the opposite
-explicitly. From `shared/reviews/260731-2303-coderev-deepreplace-reliability-audit.md:289`:
+explicitly. From `260731-2303-coderev-deepreplace-reliability-audit.md:289`:
 
 > `CODING-HYGIENE`'s `HYG-NO-SILENT-FAIL` is the governing rule and the script contravenes it
 > **systematically, not incidentally**.
@@ -568,7 +568,7 @@ citation that step 18 made stale in the same commit, and the record names it pre
 exclusion stopped them writing concurrently; it did not stop one invalidating the other's line
 number."* Third, and most costly, a framing that propagates across fresh contexts because nobody
 asks the inverse question. The orchestrator has already written the correction, at
-`shared/history/260806-1242-orchestrator-session.md:172`:
+`260806-1242-orchestrator-session.md:172`:
 
 > The next correction is the inverse, not a bigger version of the same question: not *"what is
 > exempt from this guard"*, but *"what has no guard proposed at all, and what is this guard's
@@ -627,7 +627,7 @@ top-ranked file is `orchestrator-live.md`, at score 70 across 211 changes, in ev
 onward; second is `CLAUDE.md`. The dismissals are near-identical for four months: *"expected for an
 active workbench, no action"*, *"high-thrash files are the expected ones... no action"*, *"Expected
 — it is the dashboard, overwritten at every transition point by design."* It also outgrew being
-read: `shared/history/260531-2310-orchestrator-session.md:75` records *"`churn.json`: 14260 lines —
+read: `260531-2310-orchestrator-session.md:75` records *"`churn.json`: 14260 lines —
 present but not analysed for thrashing scores at Setup."*
 
 **The stash pair has zero mentions, and the user solved the problem it addresses by hand a month
@@ -665,7 +665,7 @@ with no exceptions and the two filled canvases are high-quality."* The fifth fil
 no `Agent:` line and is not an investigator product, though it is the most consequential file
 there.
 
-Meanwhile the heavy diagnostics went to the analyst. `shared/analyses/260523-1830-bmc-miss-investigation.md`
+Meanwhile the heavy diagnostics went to the analyst. `260523-1830-bmc-miss-investigation.md`
 is typed *"Forensic investigation (4 sim runs)"*, tests two named hypotheses, and concludes
 *"Hypothesis B confirmed"*. On the morning of 17 June the analyst ran a forensic root-cause pass on
 one Mittelstand-Bank capture while the investigator worked the adjacent one. And the input surface
@@ -758,7 +758,7 @@ This is the only place the protected-path machinery has ever run in anger, and t
 
 Every recorded block falls into one of two classes and neither is the guard protecting anything.
 The first is the pre-v6 classifier misfiring on shell syntax, described at
-`circles/260807-0726-remove-the-guess-and-gate-the-ungated/history/260808-0924-orchestrator-session.md:52`:
+`260808-0924-orchestrator-session.md:52`:
 
 > Three recent `protected_path` blocks are on record from the prior session, all of the fail-closed
 > unresolvable-target kind (a `mv` with a `$D`-built path, a `cd` not joined by `&&`, an `ln -sfn`
@@ -903,7 +903,7 @@ half months. The installed plugin is now 7.3.0.
 
 One upgrade has a measured price. The v4.0.0 Circle-container restructure moved every store and
 changed the marker syntax from brackets to underscores. From
-`shared/issues/260801-0156_c_live-tracking-files-cite-the-pre-v4-workbench-layout-and-bracket-markers.md`:
+`260801-0156_*_live-tracking-files-cite-the-pre-v4-workbench-layout-and-bracket-markers.md`:
 
 > The migration moved the files. It did not rewrite the cross-references inside them. The result is
 > that a majority of the *live* tracking surface cites paths and filenames that no longer resolve.
@@ -1224,4 +1224,4 @@ Counts reported here as measured were computed directly.
 
 **This repository:** `.claude-plugin/plugin.json`, `hooks/config.json`, `templates/fusion-guard.json`,
 `bin/fusion-rules` output for all sixteen agents, `agents/*.md` and `rules/*.md` byte counts,
-`fusion-workbench/shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+`260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`

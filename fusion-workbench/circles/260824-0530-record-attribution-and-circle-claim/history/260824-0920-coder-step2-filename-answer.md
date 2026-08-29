@@ -2,14 +2,14 @@
 
 **Date:** 2026-08-24 09:20
 **Agent:** coder
-**Circle:** circles/260824-0530-record-attribution-and-circle-claim
-**Plan:** `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 2
+**Circle:** 260824-0530-record-attribution-and-circle-claim
+**Plan:** `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 2
 **Status:** Complete
 
 ## What was done
 
 Appended an `Answered:` annotation and an `## Answer (user, 260824)` section to
-`shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`,
+`260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`,
 then renamed the marker `_o_` to `_a_` with `mv`. Marked step 2 `[DONE]` in the plan.
 
 The answer takes option 2: the stamp-plus-slug-plus-wildcard citation form becomes normative rule
@@ -26,7 +26,7 @@ citation grammar and the repair belongs there.
 
 **Option 3 is foreclosed, not judged.** The identifier goes in the record body and never in a
 filename, a condition the user attached at the round-3 gate and stated in
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md:173` `### C3`. The section
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md:173` `### C3`. The section
 records that the option was weighed and excluded by that condition, and that its stated advantage is
 unrefuted, so a later reader does not reopen it as an oversight.
 
@@ -62,7 +62,7 @@ find circles shared -type f -name '*.md' \
 `_a_`, not `_i_`. The rule `rules/fusion-workbench-conventions.md` `## Filename Patterns` at HEAD
 (line 266) still carries no citation rule, so nothing realises this answer in normative text. Step 6
 writes the sentence and the record moves to `_i_` at step 12, which is also where
-`shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` meets the condition it
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md` meets the condition it
 set for itself three reconciliations running.
 
 ## Verification

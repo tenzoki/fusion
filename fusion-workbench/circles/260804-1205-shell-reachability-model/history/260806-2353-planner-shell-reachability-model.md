@@ -2,13 +2,13 @@
 
 **Date:** 2026-08-06
 **Agent:** planner (dispatched)
-**Circle:** `circles/260804-1205-shell-reachability-model`
+**Circle:** `260804-1205-shell-reachability-model`
 **Status:** Complete
-**Output:** `circles/260804-1205-shell-reachability-model/planning/260806-2353_o_plan-shell-reachability-model.md`
+**Output:** `260806-2353_*_plan-shell-reachability-model.md`
 
 ## What was read
 
-The Circle record, decision `260804-0947` (option 2, its five constraints and its recommendation), issue `260804-0839` (four shapes, anti-vacuity pins, two reconciliations and the Step 3 disposition), the `### The boundary, by coverage` section of review `260804-0845`, and the two absorbed defects (`260803-1352`, `260806-0022`).
+The Circle record, decision `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` (option 2, its five constraints and its recommendation), issue `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` (four shapes, anti-vacuity pins, two reconciliations and the Step 3 disposition), the `### The boundary, by coverage` section of review `260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md`, and the two absorbed defects (`260803-1352`, `260806-0022`).
 
 Code read in full or in the relevant range: `hooks/lib/shell-parse.ts` (885 lines), `hooks/lib/bash-mutation-guard.ts` (module docstring, the joiner table at `:2229-2313`, the segment walk at `:3168-3297`), `hooks/lib/command-word.ts` `GRAMMAR_PREFIXES`, `hooks/lib/__tests__/bash-mutation-guard.test.ts:3420-3818`, the git insulation pins in `hooks/lib/__tests__/git-branch-guard.test.ts:727-760`, `hooks/lib/__tests__/shell-parse.test.ts` (the joiner and equivalence assertions), `helpers/guard-harness.ts`, and `rules/protected-path-discipline.md:120-270` plus its residual paragraph at `:330-348`.
 
@@ -16,7 +16,7 @@ Code read in full or in the relevant range: `hooks/lib/shell-parse.ts` (885 line
 
 **The design.** The joiner is replaced by a grammar-derived reachability edge; the guard's existing one-table, one-reader, safe-list machinery is re-keyed onto it. `JOINER_FACTS` becomes `REACH_FACTS` with the same two fields and the same absent-row default. No new mechanism is introduced.
 
-**One shape was considered and rejected.** Making a pipeline element a scope alongside `(…)` and `$(…)` — the framing decision `260804-0947` option 2 gestures at — restores the outer directory on exit, and `echo hi | cd build && rm out.js` would then allow where it denies today, because bash subshells the element while zsh runs the last one in the calling shell. The edge vocabulary expresses the same subshell fact with machinery already in the module, and the pessimism across the two shells is preserved.
+**One shape was considered and rejected.** Making a pipeline element a scope alongside `(…)` and `$(…)` — the framing decision `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` option 2 gestures at — restores the outer directory on exit, and `echo hi | cd build && rm out.js` would then allow where it denies today, because bash subshells the element while zsh runs the last one in the calling shell. The edge vocabulary expresses the same subshell fact with machinery already in the module, and the pessimism across the two shells is preserved.
 
 **Two invariants bound the blast radius**, and both are checkable rather than asserted: the parser layer is additive (`joiner` and the segmentation are untouched, so blank mode stays byte-identical), and an edge the layer cannot type falls back to today's flat answer, so only positively recognised shapes can move a verdict.
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # fusion-session-domain — the one place a skill body reads the session's
 # domain, instead of each body carrying its own two-line read of
-# agentstate.yaml (issue 260810-2110: the same lines stood in three skill
-# bodies and had already diverged on the first copy; decision 260810-2145,
+# agentstate.yaml (issue 260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md: the same lines stood in three skill
+# bodies and had already diverged on the first copy; decision 260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md,
 # the reserved half, chose a bin/ helper over a DOMAIN key in fusion-paths,
 # which resolves paths and not state).
 #
@@ -42,7 +42,7 @@
 # a two-space `domain:` added to an earlier block would be read instead, and
 # a `domain:` at any other depth is never read. The three call sites are
 # skills/next/SKILL.md, skills/direct/SKILL.md and skills/cleanup/SKILL.md,
-# each guarded with `[ -x ]` (decision 260810-0921) because an installed copy
+# each guarded with `[ -x ]` (decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md) because an installed copy
 # may predate this helper.
 
 set -eu

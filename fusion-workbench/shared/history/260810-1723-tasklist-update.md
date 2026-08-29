@@ -1,4 +1,4 @@
-# Tasklist rebuild — 260810-1723
+# Tasklist rebuild — 260810-1723-tasklist-update.md
 
 **Agent:** taskplanner
 **Domain:** code
@@ -20,7 +20,7 @@ are answered in one batch.
 | Store | Read | Queued |
 |---|---|---|
 | `shared/issues/` | 47 open defect records (`*_o_*`; no `*_p_*` exist) | 45 tasks + 2 close-without-work |
-| `shared/planning/` | 1 open plan (`260801-1122_o_spec-normative-consolidation`) | none, by instruction |
+| `shared/planning/` | 1 open plan (`260801-1122_*_spec-normative-consolidation`) | none, by instruction |
 | `shared/decisions/` | 7 open decisions | none, by instruction |
 | `shared/reviews/` | the 260810-1632 coderev pass over `430d73a..HEAD`, source of 5 new records | as task sources |
 | `shared/history/` | recent session entries for context | — |
@@ -31,8 +31,8 @@ are answered in one batch.
 - **45 tasks queued.** 25 need no user decision (tasks 1-25); 20 carry a `**Human gate:**` line
   (tasks 26-45), three of them partial.
 - **2 records close without work**, unchanged from the previous build: the lint-gate scope questions
-  (`260717-0031`, all four answered in `path-literal-lint.test.ts`) and the two-layout conversion window
-  (`260717-0115`, no longer reproducible).
+  (`260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md`, all four answered in `path-literal-lint.test.ts`) and the two-layout conversion window
+  (`260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md`, no longer reproducible).
 - **0 blocked.** No task waits on another task that is missing from the queue.
 - **Routing:** 44 to `coder`, 1 to `ontocoder` (the two `stilwerk/default-voice-*.yaml` profiles).
 - **14 dependency edges**, 6 of them genuine content dependencies and 8 sequencing choices inside a
@@ -43,15 +43,15 @@ are answered in one batch.
 The 260810-1434 queue was built at `430d73a` and inventoried 45 records. Nine commits landed since.
 
 - **40 of its records are still open** and were each re-verified today rather than carried forward.
-- **5 closed:** `260809-2243` (stray `</content>` tag, `e0acdb6`), `260810-0352` (Setup Step 5 helper
+- **5 closed:** `260809-2243` (stray `</content>` tag, `e0acdb6`), `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (Setup Step 5 helper
   absence, `26ea3c3`), `260809-2023` (churn key anchored to cwd, `25c5454`), `260801-1020` (archive's
-  durability premise, `4f16c60`), `260810-0507` (Plane doc key shape, `7c4dfb2`).
+  durability premise, `4f16c60`), `260810-0507_*_plane-setup-doc-still-documents-the-marker-bearing-key-so-map-forget-fails-as-written.md` (Plane doc key shape, `7c4dfb2`).
 - **7 records were new to this build:** the commit-message truncation and the release-ordering record,
   both filed by the session that produced the range, plus five from the `coderev` pass over it. Three of
   the five are residuals of the churn work that closed one of the five above.
 
-Two decisions moved `_a_` → `_i_` in the same range (`260810-0920`, `260810-0921`); neither was ever a
-queued task. Two new decisions were filed (`260810-1544`, `260810-1635`) and are out of scope here.
+Two decisions moved `_a_` → `_i_` in the same range (`260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`, `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`); neither was ever a
+queued task. Two new decisions were filed (`260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`, `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`) and are out of scope here.
 
 ## Verification notes
 

@@ -1,4 +1,4 @@
-# Reconciliation — session 260807-2020, the two-language-declaration split
+# Reconciliation — session 260807-2020-orchestrator-session.md, the two-language-declaration split
 
 **Date:** 260808-0030
 **Agent:** reconciler
@@ -24,7 +24,7 @@ two decisions this pass touched are terminal or blocked on work explicitly out o
 
 ## The plan: twelve steps, twelve verified
 
-`shared/planning/260807-2024_c_two-language-declarations.md` claims `**Status:** Complete` with all
+`260807-2024_*_two-language-declarations.md` claims `**Status:** Complete` with all
 twelve steps `[DONE]`. Each was re-derived from the file it names rather than read off its marker.
 The per-step evidence table is appended to the plan itself as `## Reconciliation Log`; the summary
 is that all twelve hold, and that two of them were re-executed rather than inspected.
@@ -41,14 +41,14 @@ promise is discharged by measurement.
 `chat-voice-de` + `default-voice-en`; `en`/`de` routes to the mirror, which is what rules out a
 hard-coded "artifacts are always English"; `en`/`de-DE` resolves to `default-voice-en`, where
 `git show 4992ffb~1:bin/fusion-rules` emits `default-voice-de` for the same input. The prefix-match
-defect was real, the fix is real, and `shared/issues/260807-2152_c_…` is correctly closed.
+defect was real, the fix is real, and `260807-2152_*_…` is correctly closed.
 
 **The suite.** `cd hooks && npm test` — 33 files, 1030 tests, all green, including the regenerated
 emission golden and the three lint gates S10 names.
 
 ## The decision: `_i_` is earned
 
-`shared/decisions/260807-1515_i_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` set its
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` set its
 own condition in its 260807-1941 reconciliation note: it moves to `_i_` when the rule text carries
 the exempt-surface list, the `**Decidability:**` resolution, and the "direct user interaction"
 wording. Checked against `## Project language` as it stands after Turn 2 also edited it, all three
@@ -67,21 +67,21 @@ licence on a terminal record is to append evidence rather than rewrite its annot
 
 Each was re-read against the files it describes, after Turn 2 changed several of them.
 
-**`260807-2153_o_` — the exempt-surface list is plugin-repo-shaped.** Substance unchanged and
+**`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` — the exempt-surface list is plugin-repo-shaped.** Substance unchanged and
 still live: the quoted block is verbatim at `rules/fusion-workbench-conventions.md:204-213`,
 including the reason clause, and Turn 2 touched exactly one other line of that section. Two
 citations are now wrong, both staled by Turn 2's own `4992ffb`, which added 17 comment lines to
 `declared_lang()`: `bin/fusion-rules:387` is now `:404`, and `:464` is now `:481`. Corrected in an
 appended note.
 
-**`260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer`.** Accurate as
+**`260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer`.** Accurate as
 written. The four skill citations hold (`setup:135-138`, `migrate:114`, `archive:91`), the
 `grep -rn "stilwerk" skills/` claim holds, `rules/agent-setup.md:52-56` still resolves, and the
 stale German line the failure scenario quotes is correctly attributed to a pre-v6.1.0 consumer's
 own copy rather than to this tree. One number off by one: the "existing files are left untouched"
 sentence is at `skills/setup/SKILL.md:141`, not `:140`, and was already off at filing.
 
-**`260807-2154_o_the-writing-profile-carries-no-handle…`.** Every citation exact; nothing under
+**`260807-2154_*_the-writing-profile-carries-no-handle…`.** Every citation exact; nothing under
 `stilwerk/` moved after Turn 1. Re-verified mechanically: no `scope:` key in either writing
 profile, and no `chat`/`kurzform`/`short-form` token in either. Turn 2's addition to
 `rules/agent-setup.md:58-61` addresses a different gap — the seven agents holding no writing
@@ -89,11 +89,11 @@ profile at all — and adds no handle to the writing profile itself.
 
 ## Staging: clean
 
-The earlier defect in this workbench (`shared/issues/260807-1941_c_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md`)
+The earlier defect in this workbench (`260807-1941_*_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md`)
 did not recur. Both renames this session performed landed as renames with their deletions:
 
-- `shared/planning/260807-2024_o_…` → `_c_…` (`R099`)
-- `shared/decisions/260807-1515_a_…` → `_i_…` (`R092`)
+- `260807-2024_*_…` → `_c_…` (`R099`)
+- `260807-1515_*_…` → `_i_…` (`R092`)
 
 Swept wider than the two: every tracked path under `fusion-workbench/` at HEAD was reduced to
 `<dir>/<stamp>_<slug>` with the marker stripped, and the result has no duplicates. No record exists
@@ -116,7 +116,7 @@ nothing about the release is incomplete. It simply has not been pushed yet.
 
 ## New issues filed
 
-1. `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+1. `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
    — Low. A record citing a rule file by `file.md:NNN` is correct on the day it is written and
    silently wrong afterwards, and `reference-resolution-lint` reads paths, heading anchors and
    record citations but never a line number. Three live instances measured, two of them staled by
@@ -124,7 +124,7 @@ nothing about the release is incomplete. It simply has not been pushed yet.
    was solved by ratifying a stable citation form (`260806-0015_*_zitierform-fuer-workbench-records`);
    this class has no equivalent.
 
-2. `shared/issues/260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md`
+2. `260808-0030_*_the-coderev-pass-filed-four-issues-and-left-no-review-file.md`
    — Low. Four issues carry `**Filed by:** coderev, review of b246996..HEAD`, and no review
    document exists; `git log --diff-filter=A` over the session confirms it was never written rather
    than lost. `agents/coderev.md:69` makes that file the pass's only durable record and waives the
@@ -135,9 +135,9 @@ nothing about the release is incomplete. It simply has not been pushed yet.
 
 Confirmed present, and each already has a home: the untranslated German artifacts (consequence 2 of
 the answered decision); `agents/editor.md` still reading `**Language:**`, filed as open decision
-`shared/decisions/260807-2131_o_which-language-governs-a-customer-deliverable.md`; the
+`260807-2131_*_which-language-governs-a-customer-deliverable.md`; the
 `## Filename Patterns` citation rule, out of scope by the plan's own `## Out of Scope` and still
-the blocker on `260807-0158_a_…`; the absent marketplace cache clone.
+the blocker on `260807-0158_*_…`; the absent marketplace cache clone.
 
 ## Open-decision surface — `shared/decisions/`, 13 records
 
@@ -145,7 +145,7 @@ Two open, three answered-awaiting-realisation, eight implemented.
 
 ### HIGH — shapes work that is queued or in reach
 
-**`260807-2131_o_which-language-governs-a-customer-deliverable.md`** (Domain `knowledge`). Opened
+**`260807-2131_*_which-language-governs-a-customer-deliverable.md`** (Domain `knowledge`). Opened
 by this session, at a user gate, and correctly left open. The boundary now has three cases; a
 customer deliverable written by `agents/editor.md` fits none of them cleanly, and the agent still
 reads `**Language:**` at `:16,62`. Every project that adopts the second declaration and produces
@@ -155,35 +155,35 @@ the next thing a user can answer cheaply.
 
 ### MEDIUM — real, bounded, not blocking
 
-**`260807-0158_a_how-is-a-unique-record-filename-obtained.md`**. Answered; the operative half is a
+**`260807-0158_*_how-is-a-unique-record-filename-obtained.md`**. Answered; the operative half is a
 citation rule that is not yet in `rules/fusion-workbench-conventions.md` `## Filename Patterns`,
 deferred by the user in the answering session ("nur festschreiben"). Re-checked: the section still
 carries no citation rule, so the record stays `_a_`. Its own line citation into that section went
 stale by this session's S1 and is now the first measured instance of the new issue above.
 
-**`260801-1020_a_where-does-normative-consistency-live.md`**. Answered — a writing consolidation
+**`260801-1020_*_where-does-normative-consistency-live.md`**. Answered — a writing consolidation
 agent across all three normative surfaces. `agents/` still holds the same sixteen prompts and no
-`agents/curator.md`. Realisation belongs to `circles/260801-1244-curator`, which is the sole `_a_`
-Circle in the portfolio. Unchanged since the 260802-1413 pass; stays `_a_`.
+`agents/curator.md`. Realisation belongs to `260801-1244-curator`, which is the sole `_a_`
+Circle in the portfolio. Unchanged since the 260802-1413-reconciliation.md pass; stays `_a_`.
 
-**`260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md`**. Open, unchanged, and
+**`260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`**. Open, unchanged, and
 genuinely a choice rather than a defect: keep two fields that always agree, or drop one and touch
 the schema plus both stash skills. Nothing depends on it.
 
 ### LOW — recorded, no action pending
 
-**`260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md`**. Answered Option 3 —
-fusion does not support concurrency. The 260731-2324 pass left it `_a_` deliberately, on the
+**`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`**. Answered Option 3 —
+fusion does not support concurrency. The 260731-2324-reconciliation.md pass left it `_a_` deliberately, on the
 ground that the realisation of a non-feature has nothing to cite and `_i_` is terminal, and set out
 the two defensible outcomes for the user. That reasoning is untouched by this session and the call
 remains the user's.
 
 **Scope note, stated rather than glossed.** With no active Circle, `$SCAN_DECISIONS` collapses to
 `shared/decisions/` alone, so this surface excludes two Circle-local active decisions —
-`circles/260801-1244-guard-rules-write/decisions/260805-1548_a_…` and
-`circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_…` — and everything under
+`260805-1548_*_…` and
+`260807-0945_*_…` — and everything under
 `archive/`, which no `SCAN_*` key reaches
-(`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`). Both residuals are
+(`260801-1020_*_scan-keys-never-reach-the-archive-store.md`). Both residuals are
 known and neither bears on this session's Directive.
 
 ---
@@ -200,7 +200,7 @@ known and neither bears on this session's Directive.
   coherent at `6.1.0`; 2 marker renames both staged with their deletions and no path duplicated at
   HEAD; 3 of 7 reviewer findings open, all three re-verified as accurately stated and all three
   open by deliberate choice. Drift: 3 stale line citations inside otherwise-accurate records
-  (`260807-2153_o_` ×2, `260807-0158_a_` ×1) and 1 range-notation defect in the `Implemented:` line
+  (`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` ×2, `260807-0158_a_` ×1) and 1 range-notation defect in the `Implemented:` line
   of `260807-1515_i_`. All four are citation precision inside tracking records, repaired or
   annotated in this pass; none contradicts an artifact.
 - **Artifact↔Directive:** all 14 commits in `b246996..c54ead9` move toward the stated Directive,
@@ -213,7 +213,7 @@ known and neither bears on this session's Directive.
   customer-deliverable question as an open decision instead of answering it inside the Directive's
   scope, which is the Directive respected rather than exceeded.
 - **Grounding↔Directive:** 5 active decisions across `shared/decisions/` (2 `_o_`, 3 `_a_`), 5
-  consistent with the Directive, 0 conflicting. `260807-2131_o_` is a gap the Directive opened and
+  consistent with the Directive, 0 conflicting. `260807-2131_*_which-language-governs-a-customer-deliverable.md` is a gap the Directive opened and
   deliberately left open rather than a contradiction of it; the other four are unrelated to the
   language boundary. `260807-1515_i_`, the decision the Directive existed to realise, is now
   implemented and its own stated condition is met.

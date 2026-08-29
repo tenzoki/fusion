@@ -6,7 +6,7 @@ Die Tiefenschranke der Codezählung sieht keinen Cargo-Workspace, kein `internal
 **Domain:** code
 **Filed by:** consultant, gemessen in `/Users/k1/Projects/productive/krk` nach einer Meldung von dort
 **Affects:** `agents/orchestrator.md:123` (Setup Schritt 5, Variable `code_files`), mittelbar `:128` (Zweig `data_files > code_files * 2`)
-**Cross-references:** `fusion-workbench/shared/issues/260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` — die Zweigreihenfolge, wegen der `code_files` im gemeldeten Fall ohnehin nie gelesen wurde. Beide zusammen ergaben den gemeldeten Ausgang, jeder für sich hätte gereicht
+**Cross-references:** `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` — die Zweigreihenfolge, wegen der `code_files` im gemeldeten Fall ohnehin nie gelesen wurde. Beide zusammen ergaben den gemeldeten Ausgang, jeder für sich hätte gereicht
 
 ---
 
@@ -46,7 +46,7 @@ $ find . -type f -name '*.rs' -not -path './target/*' | sed -E 's|/[^/]+$||' | s
 ```
 
 Null gegen neunzig. Die Sitzungsakte von KRK hält denselben Wert fest
-(`fusion-workbench/shared/history/260807-1934-orchestrator-session.md`: `code_files=0`).
+(`260807-1934-orchestrator-session.md`: `code_files=0`).
 
 ## Nicht rustspezifisch
 
@@ -118,7 +118,7 @@ getrennte Defekte mit derselben Folge: wer nur einen behebt, meldet weiter falsc
 Verzeichnisnamen, dafür ganz ohne Tiefenschranke. Wird nur `code_files` korrigiert,
 verschiebt sich das Verhältnis in `data_files > code_files * 2`, statt zu stimmen.
 
-**Gemessen im Plugin-Repo selbst** (260809-1725, Setup-Domänenerkennung): die Suche mit
+**Gemessen im Plugin-Repo selbst** (260809-1725-orchestrator-session.md, Setup-Domänenerkennung): die Suche mit
 Tiefenschranke 2 lieferte `code_files=4`; die TypeScript-Quellen unter `hooks/lib/` und
 `hooks/lib/__tests__/` liegen drei und vier Ebenen tief. `git ls-files` zählt an derselben
 Stelle 95 Dateien und braucht dafür nicht länger (0,011s gegen 0,015s). Hier kippte kein
@@ -130,7 +130,7 @@ Ausnahmeliste (`target/`, `node_modules/`, `vendor/`) überflüssig macht: was `
 ausschließt, taucht gar nicht erst auf.
 
 **Die Entwurfsfrage aus dem vorigen Abschnitt ist jetzt abgelegt:**
-`shared/decisions/260809-1731_o_how-should-the-domain-heuristic-count-a-projects-source-files.md`.
+`260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`.
 Sie hält Tiefe und Breite als gesetzt fest (Nutzerrichtung) und lässt den Mechanismus offen.
 
 ## Herkunft dieses Befunds
@@ -138,14 +138,14 @@ Sie hält Tiefe und Breite als gesetzt fest (Nutzerrichtung) und lässt den Mech
 Aus der KRK-Meldung, die eine fehlende Endung `.rs` als Ursache nannte. Die Endung ist vorhanden.
 Der Zählausfall ist es auch, nur verursacht ihn die Tiefenschranke. Eine frühere KRK-Sitzung hatte
 den Mechanismus bereits richtig benannt
-(`circles/260802-0842-krk-mac-dateimanager-editor-git/history/260806-2257-orchestrator-session.md:31`:
+(`260806-2257-orchestrator-session.md:31`:
 "weil sie höchstens eine Unterverzeichnisebene tief sieht und die Rust-Quellen unter `crates/*/src/`
 liegen"); die spätere Sitzung ersetzte diese Erklärung durch die falsche und meldete sie so weiter.
 
 ---
 Resolved: both axes fixed by one mechanism, in a helper of its own — `bin/fusion-count-sources`.
 
-Counting is now `git ls-files --others --exclude-standard`, per the answered decision `shared/decisions/260809-1731_a_how-should-the-domain-heuristic-count-a-projects-source-files.md`. There is no depth bound left to get wrong and no prune list to maintain, because `.gitignore` already excludes build output and vendored dependencies. Breadth moved with it: `code_files` from 7 extensions to 61, `data_files` from 5 under four fixed directory names to 19 across the whole tree, the RDF family included. Both sides now come from one list under one set of rules, which is what the record's second half asked for.
+Counting is now `git ls-files --others --exclude-standard`, per the answered decision `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`. There is no depth bound left to get wrong and no prune list to maintain, because `.gitignore` already excludes build output and vendored dependencies. Breadth moved with it: `code_files` from 7 extensions to 61, `data_files` from 5 under four fixed directory names to 19 across the whole tree, the RDF family included. Both sides now come from one list under one set of rules, which is what the record's second half asked for.
 
 Measured, not inferred:
 
@@ -169,4 +169,4 @@ Three choices inside the answer, each argued in the helper's own header rather t
 
 `skills/setup/SKILL.md` needed no edit: it points at Setup Step 5 rather than repeating the heuristic, so there was no duplicate to keep in step.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (task T2). Executor log: `shared/history/260810-0337-coder-count-source-files-by-depth-and-breadth.md`.
+Session: `260810-0241-orchestrator-session.md` (task T2). Executor log: `260810-0337-coder-count-source-files-by-depth-and-breadth.md`.

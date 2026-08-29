@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 3); `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md` (the capability question that raised this); `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md` (a defect in the current protection, orthogonal to this choice)
+**Cross-references:** `260801-1020-normative-surface-drift-gap-analysis.md` (Question 3); `260801-1020_*_where-does-normative-consistency-live.md` (the capability question that raised this); `260801-1020_*_guard-protects-rules-but-not-claude-rules.md` (a defect in the current protection, orthogonal to this choice)
 
 ---
 
@@ -60,25 +60,25 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
-Answered: shared/history/260801-0936-orchestrator-session.md '## Design decisions (session, 260801)' D2 — Option 2 selected: an environment-gated exemption (FUSION_ALLOW_RULES_WRITE) following the FUSION_ALLOW_BRANCH_SWITCH precedent at hooks/guard.ts:155-178, plus project-level config resolution so a consuming project can declare its own protectedPaths (hooks/lib/config.ts:15,21-32). User chose against the recommended Option 1 (absolute block), accepting the stated residual risk that the flag is session-wide and inherited by any subagent.
+Answered: 260801-0936-orchestrator-session.md '## Design decisions (session, 260801)' D2 — Option 2 selected: an environment-gated exemption (FUSION_ALLOW_RULES_WRITE) following the FUSION_ALLOW_BRANCH_SWITCH precedent at hooks/guard.ts:155-178, plus project-level config resolution so a consuming project can declare its own protectedPaths (hooks/lib/config.ts:15,21-32). User chose against the recommended Option 1 (absolute block), accepting the stated residual risk that the flag is session-wide and inherited by any subagent.
 
 **Reconciliation 260801-2029 (reconciler) — NOT promoted to `_i_`. Marker stays `_a_`.**
 
-Circle `circles/260801-1244-guard-bash-inspection` closed this session, and the promotion question is live because that Circle is what makes this decision's answer meaningful. It does not realise it.
+Circle `260801-1244-guard-bash-inspection` closed this session, and the promotion question is live because that Circle is what makes this decision's answer meaningful. It does not realise it.
 
 What exists at HEAD `9ab5a2a`: the `exempt` seam the answer's mechanism plugs into — `MutationOptions.exempt` at `hooks/lib/bash-mutation-guard.ts:168`, consulted at `:1243` and `:1252` after a protected match and before the deny. What does not exist: `FUSION_ALLOW_RULES_WRITE` (grep across `hooks/`, `bin/`, `agents/`, `rules/`, `skills/`, `README-hooks.md` — no match), the `guard_advisory` event on an exempted write, the escalation entry, and the project-level configuration resolution (`hooks/lib/config.ts:21-34` still walks up from the compiled hook's own directory, so it still always resolves to the plugin's `hooks/config.json`).
 
-Both halves of what D2 answered — the exemption AND the project-level configuration — are unbuilt. The deferral is deliberate and recorded: `circles/260801-1244-guard-bash-inspection/planning/260801-1253_c_plan-guard-bash-inspection.md` Q1 defers the `FUSION_ALLOW_RULES_WRITE` acceptance criterion to `circles/260801-1244-guard-rules-write`, which carries C5a and C5b and is `_a_`.
+Both halves of what D2 answered — the exemption AND the project-level configuration — are unbuilt. The deferral is deliberate and recorded: `260801-1253_*_plan-guard-bash-inspection.md` Q1 defers the `FUSION_ALLOW_RULES_WRITE` acceptance criterion to `260801-1244-guard-rules-write`, which carries C5a and C5b and is `_a_`.
 
 `_i_` is terminal by the conventions, so a promotion on a seam would be unrecoverable without filing a superseding decision. A seam is preparation, not realisation.
 
-**What did change for this decision, and it is the point of the Circle:** the objection recorded in `shared/issues/260801-1156` — that a flag on the `Edit` path is worth little while `mv` is unguarded — no longer holds. That issue is now `_c_`. This decision's answer is unblocked rather than undercut.
+**What did change for this decision, and it is the point of the Circle:** the objection recorded in `260801-1156` — that a flag on the `Edit` path is worth little while `mv` is unguarded — no longer holds. That issue is now `_c_`. This decision's answer is unblocked rather than undercut.
 
 ---
 
-**Reconciliation 260802-1413 (reconciler, domain `code`) — re-checked, stays `_a_`.**
+**Reconciliation 260802-1413-reconciliation.md (reconciler, domain `code`) — re-checked, stays `_a_`.**
 
-`FUSION_ALLOW_RULES_WRITE` still matches nothing across `hooks/`, `bin/`, `agents/`, `rules/`, `skills/` and `README-hooks.md` at `b568ad9`. The project-level guard configuration is likewise unbuilt. Realisation still belongs to `circles/260801-1244-guard-rules-write` (`_a_`).
+`FUSION_ALLOW_RULES_WRITE` still matches nothing across `hooks/`, `bin/`, `agents/`, `rules/`, `skills/` and `README-hooks.md` at `b568ad9`. The project-level guard configuration is likewise unbuilt. Realisation still belongs to `260801-1244-guard-rules-write` (`_a_`).
 
 This session edited ten files under `rules/` without the flag and without an exemption, which is not a counter-example: the write guard stands down entirely in the plugin's own tree (`hooks/lib/self-detect.ts:18-33`), so the decision's mechanism was never on this Circle's path. Both the spec and the plan record that explicitly.
 
@@ -93,14 +93,14 @@ The first change since this record was filed. `FUSION_ALLOW_RULES_WRITE` exists 
 - the Bash path — `hooks/guard.ts:519` via `MutationOptions.exempt` (`45f53d4`)
 - the advisory the answer promised — `guard_advisory` plus a `clear`-level escalation entry, rendered on the dashboard at `bin/monitor:91-95` and given its own row budget at `:98-109` (`bf75941`, `aff7486`)
 
-**The second half is untouched.** `hooks/lib/config.ts:34` still resolves `CONFIG_PATH` at module load by walking up from the compiled hook's own directory, and `:108` is still `loadConfig(configPath?: string)`. There is no `fusion-guard.json`, no template for one, and no seeding step in `/fusion:setup`. A consuming project still cannot declare its own `protectedPaths`. That is plan Steps 6 to 8 of `circles/260801-1244-guard-rules-write/planning/260802-1856_*_plan-guard-rules-write.md`, all unstarted.
+**The second half is untouched.** `hooks/lib/config.ts:34` still resolves `CONFIG_PATH` at module load by walking up from the compiled hook's own directory, and `:108` is still `loadConfig(configPath?: string)`. There is no `fusion-guard.json`, no template for one, and no seeding step in `/fusion:setup`. A consuming project still cannot declare its own `protectedPaths`. That is plan Steps 6 to 8 of `260802-1856_*_plan-guard-rules-write.md`, all unstarted.
 
-**And the flag is invisible to the people it is for.** `FUSION_ALLOW_RULES_WRITE` appears in no shipped document — `README-hooks.md` and `rules/protected-path-discipline.md` both still state that no override for a protected-path shell write exists (`:187` and `:171` respectively). Plan Step 9 owns that; `circles/260801-1244-guard-rules-write/issues/260803-1402_o_…` lists what it must say.
+**And the flag is invisible to the people it is for.** `FUSION_ALLOW_RULES_WRITE` appears in no shipped document — `README-hooks.md` and `rules/protected-path-discipline.md` both still state that no override for a protected-path shell write exists (`:187` and `:171` respectively). Plan Step 9 owns that; `260803-1402_*_…` lists what it must say.
 
 `_i_` is terminal, and half a mechanism with a documentation surface that denies its own existence is not a realisation. Stays `_a_`.
 
 ---
-Implemented: 2eaee31 (release v5.9.0; current v5.9.2) — both halves the previous reconciliations found missing are now shipped. The second half: `hooks/lib/config.ts` reads a git-tracked `fusion-guard.json` at the project root, merged per leaf over the plugin's `hooks/config.json` and the in-code defaults, with the self-protection floor (loader landed `46d8333`, boundary remediated `f82ac02`/`ac20f7d`; template + repo copy `557340d`, rewritten `21a72b7`; `/fusion:setup` seeding `7f3d789`). The visibility half: `FUSION_ALLOW_RULES_WRITE` is named in the shipped documents, the three "no override exists" sentences are corrected, and `fusion-guard.json` is described for users (`373f5ed`; `README-hooks.md` § "Per-project configuration", `rules/protected-path-discipline.md`, `CLAUDE.md`). The twelve C5a/C5b/C5c acceptance criteria are verified with per-criterion test evidence at `shared/planning/260801-1122_*_spec-normative-consolidation.md:309-332`. Walked `_a_` → `_i_` by the reconciler at the final reconciliation of `circles/260801-1244-guard-rules-write`, 260805-2323.
+Implemented: 2eaee31 (release v5.9.0; current v5.9.2) — both halves the previous reconciliations found missing are now shipped. The second half: `hooks/lib/config.ts` reads a git-tracked `fusion-guard.json` at the project root, merged per leaf over the plugin's `hooks/config.json` and the in-code defaults, with the self-protection floor (loader landed `46d8333`, boundary remediated `f82ac02`/`ac20f7d`; template + repo copy `557340d`, rewritten `21a72b7`; `/fusion:setup` seeding `7f3d789`). The visibility half: `FUSION_ALLOW_RULES_WRITE` is named in the shipped documents, the three "no override exists" sentences are corrected, and `fusion-guard.json` is described for users (`373f5ed`; `README-hooks.md` § "Per-project configuration", `rules/protected-path-discipline.md`, `CLAUDE.md`). The twelve C5a/C5b/C5c acceptance criteria are verified with per-criterion test evidence at `260801-1122_*_spec-normative-consolidation.md:309-332`. Walked `_a_` → `_i_` by the reconciler at the final reconciliation of `260801-1244-guard-rules-write`, 260805-2323.
 
 ---
-Retired: `60c9cd8` + `fa2f00b` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the whole answer was the `FUSION_ALLOW_RULES_WRITE` session flag plus the project-level `guard.protectedPaths` leaf that scoped it, and neither exists. `hooks/lib/rules-write-exemption.ts` and `lib/protected-snapshot.ts` were deleted by `60c9cd8`, the always-on rule `rules/protected-path-discipline.md` by `fa2f00b`, and `README-hooks.md:286` names both by name. A fusion writer may touch `rules/**` today because nothing stops it, not because this record's mechanism grants it.
+Retired: `60c9cd8` + `fa2f00b` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — the whole answer was the `FUSION_ALLOW_RULES_WRITE` session flag plus the project-level `guard.protectedPaths` leaf that scoped it, and neither exists. `hooks/lib/rules-write-exemption.ts` and `lib/protected-snapshot.ts` were deleted by `60c9cd8`, the always-on rule `rules/protected-path-discipline.md` by `fa2f00b`, and `README-hooks.md:286` names both by name. A fusion writer may touch `rules/**` today because nothing stops it, not because this record's mechanism grants it.

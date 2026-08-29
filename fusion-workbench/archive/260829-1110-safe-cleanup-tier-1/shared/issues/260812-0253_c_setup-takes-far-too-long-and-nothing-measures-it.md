@@ -26,7 +26,7 @@ Nothing times any of this. The event log records `session_start` and nothing abo
 it, so the complaint cannot currently be answered with a number — which is the first thing to fix.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). One claim corrected, one confirmed. The felt duration is not Setup-s own shell cost, which was measured at 593 ms; it is Setup plus scope resolution plus a human gate wait (`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`). The second half of the title stands unchanged at HEAD: nothing measures it. No Setup-duration timing exists in `agents/orchestrator.md` or in `hooks/`, and no `session_start`-to-scope-resolved interval is derivable from `orchestrator-events.jsonl` today.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). One claim corrected, one confirmed. The felt duration is not Setup-s own shell cost, which was measured at 593 ms; it is Setup plus scope resolution plus a human gate wait (`260812-0303-simplify-speed-and-why-rules-do-not-hold.md`). The second half of the title stands unchanged at HEAD: nothing measures it. No Setup-duration timing exists in `agents/orchestrator.md` or in `hooks/`, and no `session_start`-to-scope-resolved interval is derivable from `orchestrator-events.jsonl` today.
 
 ---
 Resolved: referred (backlog) — Setup's shell cost was measured at 593 ms; a timing of the full Setup, from `session_start` to `scope_resolved`, written into the event log, is the idea; backlog entry to be filed by the user

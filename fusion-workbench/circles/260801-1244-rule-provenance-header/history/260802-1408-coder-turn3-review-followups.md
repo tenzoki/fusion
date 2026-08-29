@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Circle:** `260801-1244-rule-provenance-header`
-**Timestamp:** 260802-1408
+**Timestamp:** 260802-1408-coder-turn3-review-followups.md
 
 ## What was done
 
@@ -12,7 +12,7 @@ touched, no behavioural change to shipped code.
 
 ### 1 (Medium) — `CLAUDE.md` exclusivity overclaim
 
-Issue: `260802-1343_p_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md`
+Issue: `260802-1343_*_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md`
 
 `CLAUDE.md:30` claimed the provenance headers were "the one subject it governs outside
 `fusion-workbench/`". Verified the reviewer's four counter-examples by reading
@@ -38,7 +38,7 @@ Enforcement half of the path-literal claim also confirmed:
 
 ### 2 (Low) — stale flat glob in the corpus test
 
-Issue: `260802-1344_p_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md`
+Issue: `260802-1344_*_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md`
 
 `hooks/lib/__tests__/provenance-header-lint.test.ts` `:160` (the vitest runner line) and
 `:175` (the vacuity-guard message) said `rules/*.md`; `gatedFilesUnder` has recursed since
@@ -48,7 +48,7 @@ depth" explanation already sits in the file's own header comment at `:21`.
 
 ### 3 (Low) — undeclared Node floor
 
-Issue: `260802-1345_p_the-recursion-fix-raises-the-node-floor-to-20-12-and-no-engines-field-declares-it.md`
+Issue: `260802-1345_*_the-recursion-fix-raises-the-node-floor-to-20-12-and-no-engines-field-declares-it.md`
 
 Added `"engines": { "node": ">=20.12.0" }` to `hooks/package.json`.
 

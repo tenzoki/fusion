@@ -4,7 +4,7 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coderev, Turn 5 incremental review of `circles/260801-1244-guard-rules-write`
+**Filed by:** coderev, Turn 5 incremental review of `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only); `rules/protected-path-discipline.md` and `README-hooks.md` (the residual lists that omit it)
 **Kind:** PRE-EXISTING, and older than this Circle — the model has behaved this way since the virtual-`cd` walk was written. Identical at `cb2c8ad` and HEAD.
 **Cross-references:**
@@ -12,7 +12,7 @@
 `:2193-2245` (the segment loop, which carries `state` across every separator equally);
 `rules/protected-path-discipline.md:350-410` (the "Known and accepted" list — this is not on
 it), `README-hooks.md:199` (the same list);
-`issues/260803-1835_o_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`
+`260803-1835_*_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`
 (the other still-open working-directory issue).
 
 ---
@@ -102,7 +102,7 @@ left the second one standing on its own.
 ## Not implemented — decision filed instead (task T6-1)
 
 Deliberately left open. The decision record is
-`decisions/260803-2338_o_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`,
+`260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`,
 with the four options costed by measurement rather than estimate. Three results are worth
 carrying back here because they change the shape of the question:
 
@@ -132,7 +132,7 @@ chosen. Marker unchanged (`_o_`).
 
 ---
 Resolved (task T7-1): option 1 of
-`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`
+`260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`
 — the model may assume a `cd` succeeded only where the shell guarantees it.
 
 `ParsedSegment` gained a `joiner` (`shell-parse.ts`, `SegmentJoiner`) and

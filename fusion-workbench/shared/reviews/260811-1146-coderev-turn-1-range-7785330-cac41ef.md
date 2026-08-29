@@ -6,7 +6,7 @@
 **Not-opened:** `fusion-workbench/**`, `hooks/dist/**`
 **Commits:** 5 — `d8e38d5`, `8a49fd5`, `b4eb4db`, `afd7c2e`, `cac41ef`
 **Files in range:** 60 (12 024 insertions)
-**Cross-references:** issues `260811-1141` … `260811-1149`; decision `260811-1146`; open record `260810-0510`
+**Cross-references:** issues `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` … `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`; decision `260811-1146`; open record `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 
 ---
 
@@ -16,7 +16,7 @@ Two entries, and neither is a file a re-dispatch should burn a pass on without r
 
 - **`fusion-workbench/**`** (12 files: `tasklist.md`, 7 new history entries, 4 renamed issue records).
   Out of scope by `agents/coderev.md` `## Scope`, which excludes the workbench as "workbench content,
-  not production code". Two of the four issue records (`260810-0510`, `260811-0114`) *were* read,
+  not production code". Two of the four issue records (`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`, `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`) *were* read,
   because the review depends on them. Declared rather than assumed exempt.
 - **`hooks/dist/**`** (14 files). Not read line by line. Verified by a stronger method instead:
   `npx tsc --outDir <tmp>` produced output **byte-identical** to the committed `dist/`
@@ -125,7 +125,7 @@ is genuinely different.
 below structurally impossible: a measurement that declares its event type in one place cannot have
 two of three events land in a log nothing reads.
 
-Filed as issue `260811-1142` (the narrow, unambiguous half: reuse the seam) and decision
+Filed as issue `260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` (the narrow, unambiguous half: reuse the seam) and decision
 `260811-1146` (the chassis question, with the recommendation to build the two owned pieces now and
 the rest before a fourth module).
 
@@ -164,7 +164,7 @@ not as three bolted-together hooks. The registry above is what turns the tenants
 
 ### The two known traps
 
-**Trap 1 (`260810-0510`: negative controls that re-implement instead of calling) — avoided in every
+**Trap 1 (`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`: negative controls that re-implement instead of calling) — avoided in every
 new file, and still present in the file this range edited.**
 
 The four new or heavily changed lints all state the discipline in their headers and all keep it:
@@ -181,7 +181,7 @@ The four new or heavily changed lints all state the discipline in their headers 
 it extracts the bash block from `agents/orchestrator.md` and runs it, against head lines taken out of
 `agents/taskplanner.md`, in a throwaway workbench. Producer and consumer are bound by execution.
 
-**But `queue-ground-lint.test.ts` still carries both defects `260810-0510` names, and this range
+**But `queue-ground-lint.test.ts` still carries both defects `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` names, and this range
 touched one of them without fixing it.** The control at `:246-268` re-implements the table split from
 `:155-160` verbatim; the commit changed only its expected value (`not.toBe(5)` → `not.toBe(3)`). The
 control at `:232-244` still calls `uniqueLine` alone and never `assertRidesTheAct`. Cross-referenced,
@@ -200,14 +200,14 @@ The hole is in what the scan then *decides*. `weakenedStaging` flags a directory
 the token ends with `/`, so `git add fusion-workbench` — the ordinary spelling, and how the `f38f37d`
 defect was written — passes the assertion the file's own header calls "the one that matters most".
 The negative control at `:244` passes on the `-u` token alone and never exercises the directory rule.
-Filed as `260811-1144`.
+Filed as `260811-1144_*_the-staging-shape-lint-misses-a-directory-argument-that-has-no-trailing-slash.md`.
 
 ### Does each lint test what it claims?
 
 Yes, with the two exceptions above and one Low. `commit-message-path.test.ts:141` exempts any line
 matching `/Never inside|never inside|leftover|Measured|improvised|fault/` — a blacklist standing in
 for the undecidable question "does this prose name the path as a defect or prescribe it?", with
-inconsistent case handling (`Measured` capital-only, `fault` lowercase-only). Filed as `260811-1149`.
+inconsistent case handling (`Measured` capital-only, `fault` lowercase-only). Filed as `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`.
 
 `state-drift-detection-lint.test.ts` deserves separate mention: it is honest about its own limits at
 length (`:80-137`), names the blacklist as incomplete by construction, names the sentence-scope gap
@@ -237,10 +237,10 @@ The tarball remains runnable with no `npm install`.
 
 ### Classification and destructive instruction
 
-**`260811-1141` — High. Any workbench file whose name contains "commit-message" is classified as a
+**`260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` — High. Any workbench file whose name contains "commit-message" is classified as a
 commit-message file, and the model is told to delete it.**
 `staging-drift.ts:208` tests `/commit[-._]?(msg|message)/i` against the basename alone, with no
-directory scoping, and it runs first by design (`:296-305`). `shared/history/260810-1810-coder-commit-message-out-of-the-shell.md`
+directory scoping, and it runs first by design (`:296-305`). `260810-1810-coder-commit-message-out-of-the-shell.md`
 already exists in this workbench and classifies as `commit-message`. Reproduced end to end against a
 scratch project: the tracker returned *"A commit-message file is sitting in the workbench: … Delete
 it and use the prescribed path."* — for a session history record. `agents/orchestrator.md`'s Staging
@@ -250,7 +250,7 @@ same moment.
 
 ### Reuse and duplication
 
-**`260811-1142` — Medium. The three modules hand-roll a `.guard-state/` store that
+**`260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` — Medium. The three modules hand-roll a `.guard-state/` store that
 `lib/guard-state-file.ts` already owns, and write it non-atomically.**
 Six functions where two calls plus three coercions would do. The seam's signature resolves the root
 itself and the new modules pass one — a reason to widen the seam by one optional argument, not to
@@ -263,12 +263,12 @@ remembering it.
 
 ### Surfaces and reachability
 
-**`260811-1143` — Medium. `staging_drift` and `review_coverage` events are emitted into a log nothing
+**`260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md` — Medium. `staging_drift` and `review_coverage` events are emitted into a log nothing
 reads.** `bin/monitor:1081` drops every event not in `WARNING_EVENT_TYPES`, and only `state_drift` was
 added (`:125`). The two later siblings emit into `.guard-state/events.jsonl` and reach no panel and
 no event list. `staging_drift` is the one whose subject can actually be *lost*.
 
-**`260811-1145` — Medium. `conceptrev` review files are scanned and trigger the coverage report,
+**`260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` — Medium. `conceptrev` review files are scanned and trigger the coverage report,
 though no mandate covers them.** `reviewFiles()` takes every `*.md` under every reviews store with no
 sender filter, and the tracker trigger (`tracker.ts:905-907`) fires on any `.md` under a `reviews/`
 path. A conceptrev assessment — which structurally cannot carry a commit range — is permanently
@@ -278,17 +278,17 @@ the scan or the trigger.
 
 ### Prompt and parser precision
 
-**`260811-1144` — Medium.** The staging-shape lint misses a directory argument with no trailing slash.
+**`260811-1144_*_the-staging-shape-lint-misses-a-directory-argument-that-has-no-trailing-slash.md` — Medium.** The staging-shape lint misses a directory argument with no trailing slash.
 
-**`260811-1147` — Low.** Both reviewer prompts place the mandated fields "beside `**Sender:**`", a
+**`260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md` — Low.** Both reviewer prompts place the mandated fields "beside `**Sender:**`", a
 header field neither prompt defines anywhere. `headerField` scans the whole file for the first
 matching line, so a review *about* the mandate is the file where that bites.
 
-**`260811-1148` — Low.** `parseNotOpened` reads `none of the prompt files` as "nothing excluded"
+**`260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md` — Low.** `parseNotOpened` reads `none of the prompt files` as "nothing excluded"
 (the quiet failure) and promotes `nothing left unopened` to a one-element file list handed to the
 next dispatch as scope (the loud one).
 
-**`260811-1149` — Low.** The commit-message-path lint's exemption regex is broad and
+**`260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md` — Low.** The commit-message-path lint's exemption regex is broad and
 case-inconsistent.
 
 ---
@@ -296,8 +296,8 @@ case-inconsistent.
 ## Cross-cutting observations
 
 **1. The one real cross-cutting defect is the missing chassis, and it produced two of the other
-findings.** The `bin/monitor` omission (`260811-1143`) and the non-atomic throttle writes
-(`260811-1142`) are both "the third copy did not inherit what the first copy has". A registry that
+findings.** The `bin/monitor` omission (`260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`) and the non-atomic throttle writes
+(`260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md`) are both "the third copy did not inherit what the first copy has". A registry that
 names each measurement's event type and state file in one place makes both classes unrepresentable.
 
 **2. Every module reasons impeccably about its own trigger and not at all about its own surfaces.**
@@ -325,7 +325,7 @@ reproduces. Untested branches worth knowing about, none filed as a defect on its
 `state-drift.ts:263-267` (the `EVENT_TAIL_BYTES` truncation path that reports the Turn row
 unchecked); `review-coverage.ts:427-429` (the mtime floor); `review-coverage.ts:476` (the deliberate
 choice that an `UNUSABLE` review still contributes its `**Not-opened:**` list). The two fixture gaps
-that *are* defects are named inside `260811-1141` and `260811-1145`.
+that *are* defects are named inside `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` and `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`.
 
 ---
 
@@ -333,20 +333,20 @@ that *are* defects are named inside `260811-1141` and `260811-1145`.
 
 **Before the next release**
 
-1. `260811-1141` (High) — the destructive instruction. Nothing else in the range can cost a file.
-2. `260811-1143` — the two unreadable event types. `bin/monitor` is protected, so this is a human
+1. `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` (High) — the destructive instruction. Nothing else in the range can cost a file.
+2. `260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md` — the two unreadable event types. `bin/monitor` is protected, so this is a human
    change; batching it with any other monitor work is sensible.
 
 **Before the fourth measurement module**
 
 3. `260811-1146` (decision) — answer it, at least to option 2.
-4. `260811-1142` — the seam. Mechanical, no test-surface change.
-5. `260811-1145` — the sender filter, on both the scan and the trigger.
+4. `260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` — the seam. Mechanical, no test-surface change.
+5. `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` — the sender filter, on both the scan and the trigger.
 
 **Cleanup, any time**
 
-6. `260811-1144`, `260811-1147`, `260811-1148`, `260811-1149`.
-7. `260810-0510` — the two surviving controls in `queue-ground-lint.test.ts`, plus a line-number
+6. `260811-1144_*_the-staging-shape-lint-misses-a-directory-argument-that-has-no-trailing-slash.md`, `260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md`, `260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md`, `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`.
+7. `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` — the two surviving controls in `queue-ground-lint.test.ts`, plus a line-number
    refresh on the record itself.
 
 **Not a release blocker, stated so it is not mistaken for one:** the range compiles clean, ships a

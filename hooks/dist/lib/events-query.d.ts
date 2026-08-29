@@ -7,7 +7,7 @@
  * `rules/workbench-tracking.md` and carries `merge=union`, so after a pull it
  * holds two checkouts' lines with no ordering between the blocks. Every reader
  * of it treated the file as one session's chronology. The measurement in
- * `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`
+ * `260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`
  * establishes that sorting the file moves that reading from vague to wrong
  * rather than repairing it: neither position nor timestamp separates one
  * session's lines from another's.
@@ -190,7 +190,7 @@ export type TurnsResult = {
 }
 /**
  * A finding, not a zero. Issue
- * `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`
+ * `260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`
  * measured a session whose Turn-2 boundary events never reached the log, and
  * a session that emitted nothing must not read the same as a session on its
  * first Turn.
@@ -210,7 +210,7 @@ export type TurnsResult = {
  * session's `session_start`. All five now read this one implementation. It also
  * replaces the proposed repair of counting after the **last** `session_start`, which is
  * positional and does not survive the union merge
- * (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`).
+ * (`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`).
  *
  * The window is a **timestamp inside one checkout's own lines**, which is
  * genuine chronology: scope by checkout, sort by `ts`, take the first

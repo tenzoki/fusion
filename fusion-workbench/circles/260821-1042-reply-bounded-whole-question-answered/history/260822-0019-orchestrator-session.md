@@ -1,4 +1,4 @@
-# Orchestrator Session — 260822-0019
+# Orchestrator Session — 260822-0019-orchestrator-session.md
 
 **Directive:** Run the measurement the Circle commissioned but could not execute, then take the
 Circle's remaining open work to closure, so the style overhaul is finished and the next topic can
@@ -19,8 +19,8 @@ Taken at Setup, 2026-08-22T00:19:27+0200, HEAD `084c626`, working tree clean.
 | Turn budget | `max_turns=12`, resolved by `bin/fusion-turn-budget`, no loader diagnostics on stderr |
 | Domain | `code` — `code_files=102`, `data_files=10`, `counted_by=git-ls-files`; source present and data does not outweigh it two to one |
 | Open defects | 5 in the Circle, 97 in `shared/issues` |
-| Open plans | 1: `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` (body reads `**Status:** Complete`; the marker is held at `_o_` deliberately) |
-| Open decisions | 1: `circles/260821-1042-.../decisions/260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md` |
+| Open plans | 1: `260821-1805_*_plan-reply-bounded-whole-question-answered.md` (body reads `**Status:** Complete`; the marker is held at `_o_` deliberately) |
+| Open decisions | 1: `circles/260821-1042-.../260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md` |
 | Circles on disk | 1 active, 10 closed-coherent, 2 bounded, 1 superseded, 0 anticipated |
 | Portfolio hint | printed (1 active Circle, 0 anticipated) |
 | Legacy halt flag | absent |
@@ -28,7 +28,7 @@ Taken at Setup, 2026-08-22T00:19:27+0200, HEAD `084c626`, working tree clean.
 | Monitor | refreshed from the installed plugin |
 
 **Inherited state worth naming.** The prior session in this Circle
-(`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md`)
+(`260821-1642-orchestrator-session.md`)
 ran three Turns and ended with the reconciler recommending Bounded Closure. The Circle record still
 carries `_t_` and `.active-circle` still points at it, so that closure was never performed. Two
 obligations were left filed rather than resolved: the plan's marker and the verbosity record's
@@ -65,7 +65,7 @@ have read `Turn: 4` or carried no Turn at all. The commits are not amendable, so
 correction.
 
 **Zero decisions moved, and that is a result rather than an omission.** The one open decision in the
-Circle, `260821-2004`, was deliberately left unanswered; the reasoning and the reconciler's
+Circle, `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, was deliberately left unanswered; the reasoning and the reconciler's
 correction to it are under `## What this session got wrong`.
 
 ## Review coverage
@@ -74,10 +74,10 @@ correction to it are under `## What this session got wrong`.
 
 **Covered by:** four review files, each declaring its range.
 
-- `reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md` — `084c626..dbf259a`
-- `reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md` — `084c626..dbf259a`
-- `reviews/260822-0251-ontorev-the-moved-clause-and-the-restored-anchor.md` — `dbf259a..d6b867e`
-- `reviews/260821-2210-ontorev-two-register-habits-in-the-four-chat-voice-profiles.md` — `e764637..de0c6f6`, from the previous session and covering none of this range
+- `260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md` — `084c626..dbf259a`
+- `260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md` — `084c626..dbf259a`
+- `260822-0251-ontorev-the-moved-clause-and-the-restored-anchor.md` — `dbf259a..d6b867e`
+- `260821-2210-ontorev-two-register-habits-in-the-four-chat-voice-profiles.md` — `e764637..de0c6f6`, from the previous session and covering none of this range
 
 **Not covered:** two commits, and both are structurally unreviewable rather than skipped.
 
@@ -114,7 +114,7 @@ absent from the installed plugin copy and asked for a record if none existed. No
 absence turned out to be a symptom rather than the fault. `git rev-list --count v10.4.0..HEAD` gives
 48, while `.claude-plugin/plugin.json` still reads `10.4.0`; the helper landed in `fac97f4`, after
 the tag. `CLAUDE.md` `## Layout` states the rule that breaks: bump the version on every change. Filed
-as `shared/issues/260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`,
+as `260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`,
 in the shared store rather than the Circle's, because it did not arise from this Circle's Directive.
 
 **One dependency the queue did not carry when it was built, corrected before it could bite.** T5
@@ -254,7 +254,7 @@ habit is the fault: `rules/critical-stance.md` §3 forbids exactly this, and a h
 possible thing to check.
 
 **The reconciler corrected the reasoning behind one of this session's own judgements.** The decision
-`260821-2004` was left unanswered on the ground that a terminal record is never edited. That premise
+`260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md` was left unanswered on the ground that a terminal record is never edited. That premise
 is about the *Circle* record; a decision record inside a closed Circle carries no such bar, so the
 stated reason was wrong. The conclusion survives on a better ground the Circle's own Grounding
 already carried: a decision of exactly this class, answered by an orchestrator in an unattended run,
@@ -268,9 +268,9 @@ the argument that should have been given.
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: 6 of 6 plan steps verified against the tree and 5 of 6 stopping criteria hold; 1 drift item — the hook-test growth bound stands at 15 lines of head-room against 21 at anchor `e764637`, which the criterion at `planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` `## Where this Circle stops` forbids; 4 open coderev+ontorev findings of the 12 filed tonight (`shared/issues/260822-0115`, `-0118`, `-0119`, `-0120`), none blocking; 1 uncovered commit touching shipped files (`746ae4d`, `stilwerk/chat-voice-*.yaml`); and the Circle's own record of itself is incomplete at a terminal transition — `## Turn log` empty after seven Turns, and the session log missing commit `05b46f2` (its trailer reads `Turn: 4`), undercounting Turn 3's closures as three where five landed, and still heading itself `**Directive:** (not yet resolved)`.
+- Artifact↔Grounding: 6 of 6 plan steps verified against the tree and 5 of 6 stopping criteria hold; 1 drift item — the hook-test growth bound stands at 15 lines of head-room against 21 at anchor `e764637`, which the criterion at `260821-1805_*_plan-reply-bounded-whole-question-answered.md` `## Where this Circle stops` forbids; 4 open coderev+ontorev findings of the 12 filed tonight (`260822-0115`, `-0118`, `-0119`, `-0120`), none blocking; 1 uncovered commit touching shipped files (`746ae4d`, `stilwerk/chat-voice-*.yaml`); and the Circle's own record of itself is incomplete at a terminal transition — `## Turn log` empty after seven Turns, and the session log missing commit `05b46f2` (its trailer reads `Turn: 4`), undercounting Turn 3's closures as three where five landed, and still heading itself `**Directive:** (not yet resolved)`.
 - Artifact↔Directive: all 11 commits `084c626..05b46f2` move toward the Directive — `4c7aae6` delivers the commissioned measurement with three before-figures and the after-measurement defined, `53ff99f` closes the plan, and `e202016`/`dce8894`/`dbf259a`/`c964062`/`746ae4d`/`055585f`/`05b46f2` take the Circle's open defects to closure; `c53a903` and `63e5ad5` are the shared defect the briefing asked for and the two reviews, both inside the Directive's own instruction; none is orthogonal and none runs against it.
-- Grounding↔Directive: 24 active decisions consistent (6 in the Circle, 18 in `shared/`), 0 conflicting; the one open Circle decision `260821-2004_o_what-happens-to-the-directive-...` is consistent and deliberately unanswered, and its cost — `**Active spec/plan:**` left at `(none yet)`, so a reader of the terminal record cannot see the plan the Circle ran on — is discharged only if the closure note names the plan.
+- Grounding↔Directive: 24 active decisions consistent (6 in the Circle, 18 in `shared/`), 0 conflicting; the one open Circle decision `260821-2004_*_what-happens-to-the-directive-...` is consistent and deliberately unanswered, and its cost — `**Active spec/plan:**` left at `(none yet)`, so a reader of the terminal record cannot see the plan the Circle ran on — is discharged only if the closure note names the plan.
 
 **Rebalance recommendation:** revise Artifact
 
@@ -283,7 +283,7 @@ stopping criterion the plan wrote in a form nothing could satisfy.
 **Which closure marker the unmet criterion earns: `_c_`, not `_b_`.** Bounded Closure means the
 Directive was judged not reachable, and it was reached. Spending `_b_` on a self-imposed budget
 condition is the reading
-`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 rejected as devaluing the marker, and option 1 of that same record — in force since 2026-08-16 —
 already says what to do with a residual of this kind: name it in the closure note. Three things
 belong there: 15 lines of hook-test head-room rather than the criterion as written, the one
@@ -294,27 +294,27 @@ carry it.
 Directive: fill the Circle record's `## Turn log`, add Turn 4 and the two missing Turn-3 closures to
 this file, replace the head's Directive line with the resolved one, and write the closure note with
 the three residuals above. Filed as
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0234_*_the-session-log-stops-one-commit-and-one-turn-short-and-its-head-still-says-the-directive-is-unresolved.md`;
+`260822-0234_*_the-session-log-stops-one-commit-and-one-turn-short-and-its-head-still-says-the-directive-is-unresolved.md`;
 the empty Turn log is recorded as `Also seen:` on
-`shared/issues/260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`.
+`260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`.
 
-Full pass: `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`.
+Full pass: `260822-0234-reconciliation.md`.
 
 ## Portfolio update
 
 Playmaker regenerated `portfolio.md` after the `_t_` → `_c_` transition. Log:
-`shared/history/260822-0319-playmaker-orchestrator-phase4.md`.
+`260822-0319-playmaker-orchestrator-phase4.md`.
 
 No Circle is active and none is anticipated: all fourteen Circle records on disk are terminal. No
 dependency cycle exists, because the graph is built from non-terminal records and has no nodes, and
 no parent-grounding-stale condition applies, because both bounded Circles are cited only from
 terminal records. The top backlog entry is
-`shared/backlog/260814-1733_*_bounded-executor-dispatches.md`, already at recommended.
+`260814-1733_*_bounded-executor-dispatches.md`, already at recommended.
 
 **One finding bears directly on the topic the user named as next.** The backlog holds nothing on
 multi-user work, and neither does any live plan or open issue, but that is a standing position
 rather than a gap:
-`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` is answered
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` is answered
 at option 3, that fusion stays single-active-Circle with no lock and parallelism is out of scope.
 A multi-user Circle overturns that record, which is the user's act and belongs in its Grounding
 before shaping begins.

@@ -1,9 +1,9 @@
 # coder — Circle activation sets the record's head fields
 
-**Session:** 260811-2115
+**Session:** 260811-2115-coder-circle-head-fields-at-activation.md
 **Agent:** coder
 **Status:** Complete
-**Task:** One transferred defect — `shared/issues/260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`
+**Task:** One transferred defect — `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`
 **Decision realised:** option 1 of that record, taken by the user at a gate on 260811-2050
 
 ## What the defect was
@@ -105,4 +105,4 @@ through `bin/fusion-paths`; both citations were rewritten to that form and the l
 
 - `/Users/k1/Projects/productive/fusion/agents/orchestrator.md`
 - `/Users/k1/Projects/productive/fusion/skills/next/SKILL.md`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260811-0932_c_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md` (resolution note appended; marker `_o_` → `_c_`, renamed with `git mv`, so the rename is staged)
+- `/Users/k1/Projects/productive/fusion/260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md` (resolution note appended; marker `_o_` → `_c_`, renamed with `git mv`, so the rename is staged)

@@ -3,12 +3,12 @@
 **Date:** 2026-08-12 20:54
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`, step 8
-**Predecessors:** `shared/history/260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
-`shared/history/260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`),
-`shared/history/260812-2010-coder-the-playmaker-gains-the-backlog-job.md` (step 7, `6e261c4`)
+**Plan:** `260812-1720_*_circle-first-placement-and-the-backlog-store.md`, step 8
+**Predecessors:** `260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
+`260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`),
+`260812-2010-coder-the-playmaker-gains-the-backlog-job.md` (step 7, `6e261c4`)
 **Decision realised (not marked; step 13 owns the marker):**
-`shared/decisions/260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`
+`260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`
 
 ## What was done
 
@@ -73,7 +73,7 @@ Circle's store. The first-write rule closes that window without naming it: nothi
 before the new Circle exists, and everything after it is resolved against the new Circle.
 
 **Walk 2 — the real backlog entry, and it refuses the plan's instruction.**
-`shared/backlog/260811-0826_*_observations.md` is the store's only occupant: 12 380 bytes, about a
+`260811-0826_*_observations.md` is the store's only occupant: 12 380 bytes, about a
 dozen unrelated observations (setup latency, agent verbosity, operation latency, rules decaying
 mid-session, ETA not computed, the monitor's localhost, absolute paths for editor opening,
 imprecise sub-agent instructions, fusion spending its time on itself, the churn spike, radical
@@ -125,7 +125,7 @@ the decision record.
 added is the shaper key-asymmetry test. Run three times, green at exit 0 each time, the third
 against the final file state after the trimming pass. The `Worker exited unexpectedly`
 parallel-load flake
-(`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
+(`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
 did not appear.
 
 Two live reads beyond the suite, against this workbench rather than a fixture:
@@ -170,6 +170,6 @@ exactly one. Setup, per the reasoning above.
 
 - `agents/shaper.md`
 - `hooks/lib/__tests__/fusion-paths.test.ts`
-- `fusion-workbench/shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` (step 8 marked `[DONE]`)
+- `260812-1720_*_circle-first-placement-and-the-backlog-store.md` (step 8 marked `[DONE]`)
 
 Not committed — the orchestrator commits. Step 9 not started, by instruction.

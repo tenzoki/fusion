@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** Fix the High-severity regression introduced by Turn 1 (commit `cac41ef`)
-**Source:** `shared/issues/260811-1141_c_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`
+**Source:** `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`
 **HEAD at start:** `270c566`
 
 ## What was wrong

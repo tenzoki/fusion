@@ -46,14 +46,14 @@ coercion defect rather than infer it.
 
 ## Artifacts
 
-- `shared/analyses/260809-1101-guard-support-layer.md` — the report, with two
+- `260809-1101-guard-support-layer.md` — the report, with two
   Mermaid diagrams (module dependencies, state-file readers and writers) and six
   ranked consolidation targets.
 - Four defects filed to `shared/issues/`:
-  - `260809-1101_o_churn-and-cross-file-state-are-cast-not-coerced-so-a-shape-valid-file-swallows-the-halt-message.md` (High, verified by execution)
-  - `260809-1101_o_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md` (Medium)
-  - `260809-1101_o_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md` (Medium, interleaving marked speculative)
-  - `260809-1101_o_an-absent-plugin-config-layer-yields-an-empty-protected-list-with-no-diagnostic.md` (Low by reachability)
+  - `260809-1101_*_churn-and-cross-file-state-are-cast-not-coerced-so-a-shape-valid-file-swallows-the-halt-message.md` (High, verified by execution)
+  - `260809-1101_*_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md` (Medium)
+  - `260809-1101_*_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md` (Medium, interleaving marked speculative)
+  - `260809-1101_*_an-absent-plugin-config-layer-yields-an-empty-protected-list-with-no-diagnostic.md` (Low by reachability)
 
 ## Open threads handed on
 

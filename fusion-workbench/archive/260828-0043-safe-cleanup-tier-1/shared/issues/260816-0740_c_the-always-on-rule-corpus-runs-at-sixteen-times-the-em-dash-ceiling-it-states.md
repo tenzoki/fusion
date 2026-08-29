@@ -18,11 +18,11 @@ at 8 to 24 times its stated ceiling, which is the user-visible complaint that ca
 analysis.
 **Filed in the shared store** per the Origin Rule: no Circle is active and no Directive caused
 this condition.
-**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`
+**Cross-references:** `260816-0740-rhetorical-register-of-agent-output.md`
 finding 10 (the measurement and the causal inference);
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 (whether a gate should hold this after it is fixed);
-`shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md` (the earlier,
+`260706-1902-user-facing-agents-garbled-language-rootcause.md` (the earlier,
 different root cause for the same complaint, since fixed).
 
 **Measured at HEAD `787010f`:**
@@ -125,7 +125,7 @@ the five diagram producers and no other agent, and it is the second-worst offend
 emits unconditionally to **every** agent (882 words, 6 em-dash, 6.8 /1000). Swapping the two gives
 the corpus every dispatch actually carries: **22 959 words, 326 em-dash, 14.1 per 1000**. The
 conclusion is unchanged and the number a later pass will compare against is not. Filed as
-`shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
+`260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
 
 **One stale figure in the record's own title.** "Sixteen times" was true of the 16.3 measured at
 `787010f`. At HEAD the same seven files run 14.8 and the always-on set runs 14.1. The title is left
@@ -134,11 +134,11 @@ as filed; the numbers above are the ones to act on.
 Verification: `cd hooks && npm test` at HEAD `dd560ab`, exit 0, 40 files, 764 tests.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). One file of seven was repunctuated, and the corpus figure barely moved. `rules/user-facing-output.md` now runs 6 em-dashes over 2 663 words. The other six are untouched: `agent-setup.md` 15/533, `decision-record-examples.md` 17/554, `design-diagrams.md` 20/794, `critical-stance.md` 29/1587, `fusion-workbench-conventions.md` 131/8570, `CLAUDE.md` 120/8841. The corpus stands at roughly 338 em-dashes over 23 542 words, about 14 per 1 000 against a stated ceiling of 1 per 1 000. Note also `260816-1345`, which is about this record-s own corpus table naming the wrong seven files.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). One file of seven was repunctuated, and the corpus figure barely moved. `rules/user-facing-output.md` now runs 6 em-dashes over 2 663 words. The other six are untouched: `agent-setup.md` 15/533, `decision-record-examples.md` 17/554, `design-diagrams.md` 20/794, `critical-stance.md` 29/1587, `fusion-workbench-conventions.md` 131/8570, `CLAUDE.md` 120/8841. The corpus stands at roughly 338 em-dashes over 23 542 words, about 14 per 1 000 against a stated ceiling of 1 per 1 000. Note also `260816-1345`, which is about this record-s own corpus table naming the wrong seven files.
 
 ---
-**Correction appended 260821-0322** (coder, plan step 15 of
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+**Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md** (coder, plan step 15 of
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
 The two tables above keep their rows and their label; the label is retracted here rather than
 edited out, because a table that says "total always-on context" over the wrong seven files is the
 evidence that the set was never derived.
@@ -159,7 +159,7 @@ that is the root cause the Circle above was opened on.
 **`CLAUDE.md` is always-on prose an agent holds, outside the derivation and inside the corpus.**
 Claude Code loads it as project instructions, so no change to `bin/fusion-rules` can add or remove
 it. Its prose was not repaired in this Circle, by
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+`260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
 option 3.
 
 **What the corrected set measures at HEAD `86edaac`**, with `bin/fusion-prose-metric`, the
@@ -190,12 +190,12 @@ is not closed by this note: it asks for a corpus at its ceiling, and 40 per cent
 word count is unrepaired.
 
 ---
-**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `260821-0416-reconciliation.md`).
 **STAYS `_o_`. The emitted set is under the ceiling for the first time since this record was filed;
 the corpus this record measures is not, and the difference is one file.**
 
 Measured with `bin/fusion-prose-metric`, the authoritative counter since plan step 1 of
-`circles/260820-2051-style-rules-arrive-and-get-measured`, over the set that helper derives:
+`260820-2051-style-rules-arrive-and-get-measured`, over the set that helper derives:
 
 ```
 rules/agent-setup.md                        0 em-dash    488 words   0.0 /1000  permit 0  ok
@@ -208,14 +208,14 @@ total (6 files)                             8 em-dash  13292 words   0.6 /1000  
 ```
 
 Every one of the six is at or under its own permit, read per file, which is the reading
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`
+`260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`
 chose. Against the 260817-1836 reconciliation on this record, which measured 338 em-dashes over
 23 542 words at about 14 per 1000, this is the whole distance.
 
 **Why the marker does not move.** `CLAUDE.md` carries 126 prose em-dashes over 8 892 prose words,
 14.2 per 1000, and is 40 per cent of the always-on prose an agent holds and 94 per cent of the
 em-dashes left in it. It was excluded by
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+`260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
 option 3, answered in the user's absence and still `_o_`. `rules/design-diagrams.md` at 25.2 per
 1000 is conditional, not always-on, and was never in this record's scope once the set was corrected.
 Closing this record now would claim a corpus fix on a corpus whose largest untouched member is
@@ -223,12 +223,12 @@ untouched by a decision the user has not confirmed.
 
 **And the progress note above is still uncorrected.** The `2733` token count at `:82` and the
 inverted capitalisation clause beside it are the two sentences
-`shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
+`260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
 asks to have corrected **on this record**. Plan step 16 wrote its correction onto that record instead
 and said so. Both faults still read verbatim at `:82`.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). This is the corrected statement for two sentences in the progress
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). This is the corrected statement for two sentences in the progress
 note above (the `2733` token count and the capitalisation clause), which stand as written because the
 wrong sentence is the evidence that it was wrong. **The identity, without a total:** normalised for
 punctuation and case, the token streams of `rules/user-facing-output.md` before and after `6049d3e`
@@ -238,9 +238,9 @@ none of them; a total is quoted only with the tokenisation that produces it. **T
 the direction the evidence shows:** ten tokens gained a capital and none lost one; the `see` at `:12`
 gained one, and the `see` inside the merged parenthetical at `:9` reads lowercase before and after.
 Restated from the two independent passes recorded in
-`shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`;
+`260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`;
 no count was re-run for this note.
 
 ---
-Resolved: referred — the six emitted files measure under the ceiling at HEAD and the one untouched member, `CLAUDE.md`, is held by `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`; the progress note's two faulty sentences are corrected in the note appended above; shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:231
-Corrected: 260824-2125 by coder — the `Resolved: referred` line above names no kind; it is `referred (decision)`, the decision being the `260820-2314_*` record it cites. Issue `circles/260824-1853-close-every-open-defect/issues/260824-2100_*_seven-backlog-referrals-close-onto-entries-that-do-not-exist-and-one-referral-names-no-kind.md`.
+Resolved: referred — the six emitted files measure under the ceiling at HEAD and the one untouched member, `CLAUDE.md`, is held by `260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`; the progress note's two faulty sentences are corrected in the note appended above; 260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:231
+Corrected: 260824-2125 by coder — the `Resolved: referred` line above names no kind; it is `referred (decision)`, the decision being the `260820-2314_*` record it cites. Issue `260824-2100_*_seven-backlog-referrals-close-onto-entries-that-do-not-exist-and-one-referral-names-no-kind.md`.

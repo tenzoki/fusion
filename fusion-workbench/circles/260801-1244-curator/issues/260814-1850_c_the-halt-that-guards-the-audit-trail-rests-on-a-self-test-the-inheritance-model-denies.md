@@ -44,7 +44,7 @@ instrumented:
 
 1. A dispatched `curator` returned its gate question instead of asking it.
 2. A dispatched `shaper` returned two clarification rounds for the orchestrator to relay
-   (`shared/history/260813-2345-orchestrator-session.md:38-41`).
+   (`260813-2345-orchestrator-session.md:38-41`).
 3. This review's own dispatch holds no `AskUserQuestion`.
 
 None of the three is a controlled measurement of the shaper under `**Mode:**
@@ -72,7 +72,7 @@ into a check. It also fails silently in the dangerous direction: a shaper that w
 **Scope.** `README-agents.md`, `CLAUDE.md` for the first candidate; `agents/shaper.md` for the
 second. Executor: `coder` for the first, a user gate for the second.
 
-**Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+**Filed by:** coderev, review `260814-1850-coderev-curator-turn-4.md`.
 
 ---
 **Half established, 2026-08-14 (Turn 5).** Two headless probes on Claude Code 2.1.232 returned
@@ -90,7 +90,7 @@ have been a guess. What is exposed today is the safe failure — a top-level hea
 noisily. The silent one stands.
 
 The record stays open because its remedy is a contract change, filed as
-`circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`.
+`260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`.
 Answering that decision is what closes this.
 
 
@@ -100,7 +100,7 @@ Answering that decision is what closes this.
 
 `agents/shaper.md:66` still carries the discriminator verbatim: *"if you hold \`AskUserQuestion\` you are running top-level … if you do not hold it you were dispatched"*. Both inheritance statements it contradicts also stand — `README-agents.md:97` ("inherited from the parent session. Every sub-agent gets the same tool set") and `CLAUDE.md:28` ("the other 14 inherit tools and model from the parent session").
 
-The record says answering `decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run…` is what closes it. That decision is still `_o_` at this pass, re-verified: nothing in ``, `` or any decision store answers it. The silent direction — a dispatched shaper concluding "top-level", waiving the audit line and editing a Circle record with no trail — remains unmeasured.
+The record says answering `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run…` is what closes it. That decision is still `_o_` at this pass, re-verified: nothing in ``, `` or any decision store answers it. The silent direction — a dispatched shaper concluding "top-level", waiving the audit line and editing a Circle record with no trail — remains unmeasured.
 
 ---
-Resolved: fixed — the `AskUserQuestion` discriminator is gone from `agents/shaper.md` and the audit line is required on every mode-3 run; `grep -c "there is no self-test that waives it" agents/shaper.md` at HEAD 260824 prints `1`; the answering decision `circles/260801-1244-curator/decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md` moves to implemented in plan step 4 of `circles/260824-1853-close-every-open-defect`.
+Resolved: fixed — the `AskUserQuestion` discriminator is gone from `agents/shaper.md` and the audit line is required on every mode-3 run; `grep -c "there is no self-test that waives it" agents/shaper.md` at HEAD 260824 prints `1`; the answering decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md` moves to implemented in plan step 4 of `260824-1853-close-every-open-defect`.

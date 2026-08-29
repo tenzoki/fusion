@@ -1,9 +1,9 @@
-# Orchestrator Session — 260803-1737
+# Orchestrator Session — 260803-1737-orchestrator-session.md
 
-**Directive:** Close the guard boundary this Circle exists to establish, rather than narrow it a fourth time. Concretely: the two High findings open at HEAD — `260803-1431` (gate 0 misses a `..` arriving through a `cd -P` operand) and `260802-2320` (case folding bypasses the whole protected list, direction already decided by the user as unconditional folding) — plus `260803-1251` and the three shipped docstrings that assert the closed form and are false. Plan steps 6 to 10 are out of scope by the user's choice, with an ordering reason: Step 9 documents this boundary and cannot be finalised until the behaviour settles.
+**Directive:** Close the guard boundary this Circle exists to establish, rather than narrow it a fourth time. Concretely: the two High findings open at HEAD — `260803-1431` (gate 0 misses a `..` arriving through a `cd -P` operand) and `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (case folding bypasses the whole protected list, direction already decided by the user as unconditional folding) — plus `260803-1251` and the three shipped docstrings that assert the closed form and are false. Plan steps 6 to 10 are out of scope by the user's choice, with an ordering reason: Step 9 documents this boundary and cannot be finalised until the behaviour settles.
 **Mode:** issues
 **Status:** Complete. Circuit breaker: max Turns reached (5/5), normal exit. Coherence verdict `review-needed`; the reconciliation judges the Directive still reachable and advises against Bounded Closure, so the Circle stays active.
-**Predecessor session:** `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-session.md` (1 Turn, 7 commits, 10 issues closed, Coherence verdict `review-needed`)
+**Predecessor session:** `260803-1038-orchestrator-session.md` (1 Turn, 7 commits, 10 issues closed, Coherence verdict `review-needed`)
 
 ## Setup snapshot
 
@@ -12,10 +12,10 @@
 | Workspace | `/Users/k1/Projects/productive/fusion` |
 | Git HEAD at start | `6c447eb` |
 | Domain | `code` |
-| Active Circle | `circles/260801-1244-guard-rules-write` (the Circle's fourth Turn) |
+| Active Circle | `260801-1244-guard-rules-write` (the Circle's fourth Turn) |
 | Open issues | 25 total: 5 in this Circle, 20 shared |
 | Open decisions | 2 in this Circle (`260803-1314_o`, `260803-1402_o`), both awaiting plan steps |
-| Answered decisions | `260803-1419_a` case folding, awaiting realisation — this session realises it |
+| Answered decisions | `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md_a` case folding, awaiting realisation — this session realises it |
 | Guard | not halted; 0 consecutive blocks |
 | Tests at start | 1080 across 23 files |
 
@@ -25,11 +25,11 @@ in the predecessor and are unchanged; the snapshot above was re-taken rather tha
 
 ## Why the first task is an analyst pass
 
-The Circle has met one defect class four times: `260802-2229` (a symlink planted in the rule
-directory spends the grant, closed by gate 2), `260802-2230` (the protected list matched
-un-collapsed, closed by `collapseSegments`), `260802-2330` (the lexical `..` collapse erases
+The Circle has met one defect class four times: `260802-2229_*_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md` (a symlink planted in the rule
+directory spends the grant, closed by gate 2), `260802-2230_*_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md` (the protected list matched
+un-collapsed, closed by `collapseSegments`), `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` (the lexical `..` collapse erases
 the symlink before gate 2 is asked, closed by gate 0), and now `260803-1431` (the same escape
-arriving through the `cd` rather than through the operand). `260802-2320` is the same shape on
+arriving through the `cd` rather than through the operand). `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` is the same shape on
 the protection side.
 
 Three narrowings have shipped. Each was correct about the instance it closed and each was
@@ -134,7 +134,7 @@ This is the third consecutive session with the same failure, and the second in w
 written down and then repeated. The orchestrator's write-point table requires an update at
 every task boundary. Knowing the rule and having documented the breach did not produce
 compliance; whatever fixes this is not another note in a history file.
-`shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 now carries three instances.
 
 ## Coherence
@@ -145,9 +145,9 @@ now carries three instances.
 
 **Edges:**
 
-- **Artifact↔Grounding:** 14 issue closures verified against commits, 0 unsupported — but 3 were made by filename rename with zero content change and one of those left the file arguing it should stay open. 5 decisions verified, all citing what their markers claim; 3 header fields disagreed with their own markers and were corrected. 4 new defects found by this pass and filed, 2 of them High and both in the Bash surface (`260804-1024_o_` `git -C` fails open into `agents/**` and `rules/**`; `260804-1025_o_` the rule file's decision procedure returns "the model stays exact" for the two commands that delete a rule file). 10 open findings in the Circle at close, 2 of them High and measured live at HEAD.
-- **Artifact↔Directive:** The commits move **toward** the Directive and did not reach it. The Directive said "close the guard boundary rather than narrow it a fourth time"; the two High findings it named are closed (`a79ff1a`, `86a437a`) and so are `260803-1251` and the three false docstrings, so every item the Directive listed is done. The boundary is not closed: `048f3db` and `c9c44a3` moved the model from asserting to giving up, which is the right stance change, and `cc012fc` measured zero newly-allowing commands across 222,319 — the first Turn in this Circle to open nothing. Against that, `9aacab5` and `c9c44a3` introduced five regressions between them (four closed, `260804-0839` open), and three no-flag routes to the protected list are live at HEAD.
-- **Grounding↔Directive:** 7 active or open decisions consistent, 0 conflicting. Four in the Circle (`260802-1912_a`, `260803-1314_o`, `260803-1402_o`, `260804-0947_o`) and three shared (`260719-2141_a`, `260801-1020_a_may-any-fusion-writer-touch-rules`, `260801-1020_a_where-does-normative-consistency-live`). Three wait on plan Step 6, one is the Directive's own unanswered question, three are the upstream decisions this Circle implements. No decision record contradicts the Directive.
+- **Artifact↔Grounding:** 14 issue closures verified against commits, 0 unsupported — but 3 were made by filename rename with zero content change and one of those left the file arguing it should stay open. 5 decisions verified, all citing what their markers claim; 3 header fields disagreed with their own markers and were corrected. 4 new defects found by this pass and filed, 2 of them High and both in the Bash surface (`260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` `git -C` fails open into `agents/**` and `rules/**`; `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` the rule file's decision procedure returns "the model stays exact" for the two commands that delete a rule file). 10 open findings in the Circle at close, 2 of them High and measured live at HEAD.
+- **Artifact↔Directive:** The commits move **toward** the Directive and did not reach it. The Directive said "close the guard boundary rather than narrow it a fourth time"; the two High findings it named are closed (`a79ff1a`, `86a437a`) and so are `260803-1251` and the three false docstrings, so every item the Directive listed is done. The boundary is not closed: `048f3db` and `c9c44a3` moved the model from asserting to giving up, which is the right stance change, and `cc012fc` measured zero newly-allowing commands across 222,319 — the first Turn in this Circle to open nothing. Against that, `9aacab5` and `c9c44a3` introduced five regressions between them (four closed, `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` open), and three no-flag routes to the protected list are live at HEAD.
+- **Grounding↔Directive:** 7 active or open decisions consistent, 0 conflicting. Four in the Circle (`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md_a`, `260803-1314_o`, `260803-1402_o`, `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md_o`) and three shared (`260719-2141_a`, `260801-1020_*_may-any-fusion-writer-touch-rules`, `260801-1020_*_where-does-normative-consistency-live`). Three wait on plan Step 6, one is the Directive's own unanswered question, three are the upstream decisions this Circle implements. No decision record contradicts the Directive.
 
 **Rebalance recommendation:** revise Artifact
 
@@ -159,20 +159,20 @@ The flagged edge is Artifact↔Grounding, not Directive. The destination is righ
 
 **What would specifically have to be true for `coherent`.** Four things, all checkable:
 
-1. `decisions/260804-0947_o_` answered, and `260804-0836` / `260804-0837` closed with it. Option 1's cost is measured at zero on every corpus of real work.
-2. `260804-1024_o_` closed — `git -C rules rm x.md` must deny or be modelled. It has no joiner in it, so no option of `260804-0947` reaches it, and it is the reason "answer the joiner decision and the boundary is closed" is not true as stated.
-3. `260804-1025_o_` closed — one clause deleted from `rules/protected-path-discipline.md:172`, so the document's own decision procedure stops returning the safe answer for the commands that delete a rule file.
+1. `260804-0947_*_` answered, and `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` / `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` closed with it. Option 1's cost is measured at zero on every corpus of real work.
+2. `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` closed — `git -C rules rm x.md` must deny or be modelled. It has no joiner in it, so no option of `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` reaches it, and it is the reason "answer the joiner decision and the boundary is closed" is not true as stated.
+3. `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` closed — one clause deleted from `rules/protected-path-discipline.md:172`, so the document's own decision procedure stops returning the safe answer for the commands that delete a rule file.
 4. A review of `048f3db` and `cc012fc`, which are the only two of the session's five code commits with none. This pass verified their claims; it did not review their design.
 
 With those four, the sentence the Turn 7 review names as the prize becomes true and checkable, and a `coherent` verdict would mean something. Without them a clean verdict would be the eighth assurance on a boundary that has moved seven times, which is why this one is not clean.
 
 **On Bounded Closure: not recommended, and the evidence has moved toward reachability rather than away from it.**
 
-The Circle's Directive is `FUSION_ALLOW_RULES_WRITE` on both write surfaces plus per-project guard configuration — Steps 1 to 10 of the plan. Steps 1 to 5 are done. What has consumed eight Turns is not that Directive; it is the pre-existing Bash-surface defect class the Circle keeps meeting while working near it, and that class is now *bounded* rather than open-ended: the Turn 7 review's `### The boundary, by coverage` enumerates what is closed, what is open (two entries, three with `260804-1024`), and what is out of reach of a textual classifier by nature and should never be attempted. That third list is the thing a Circle needs to be able to stop.
+The Circle's Directive is `FUSION_ALLOW_RULES_WRITE` on both write surfaces plus per-project guard configuration — Steps 1 to 10 of the plan. Steps 1 to 5 are done. What has consumed eight Turns is not that Directive; it is the pre-existing Bash-surface defect class the Circle keeps meeting while working near it, and that class is now *bounded* rather than open-ended: the Turn 7 review's `### The boundary, by coverage` enumerates what is closed, what is open (two entries, three with `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md`), and what is out of reach of a textual classifier by nature and should never be attempted. That third list is the thing a Circle needs to be able to stop.
 
 Turn 7 also produced the first Turn in this Circle that opened nothing, across 222,319 generated commands. The trend in the security direction is right. The residual work is four named items, three of them cheap, and Steps 6 to 10 are untouched and independent of all of it.
 
-The honest risk is not unreachability, it is scope. This Circle has absorbed a body of work that is not its Directive, and the argument for a separate Circle covering the shell reachability model — which `decisions/260804-0947_o_` itself recommends as its option 4 — is stronger than the argument for closing this one bounded.
+The honest risk is not unreachability, it is scope. This Circle has absorbed a body of work that is not its Directive, and the argument for a separate Circle covering the shell reachability model — which `260804-0947_*_` itself recommends as its option 4 — is stronger than the argument for closing this one bounded.
 
 ## Remaining Work
 
@@ -181,17 +181,17 @@ verdict, in the order it recommends:
 
 | Issue / decision | Severity | State |
 |---|---|---|
-| `260804-0947_o` (decision) | — | drafted with both directions measured; answering it closes `260804-0836` and `260804-0837` |
-| `260804-0836`, `260804-0837` | High | live at HEAD; `true \|\| cd x && rm rules/y` and `echo hi \| cd x && rm rules/y` both write protected files |
-| `260804-1024` | High | `git -C rules rm x.md` allows and deletes; the first instance of this class that fails open rather than degrading, and no answer to `260804-0947` reaches it |
-| `260804-1025` | High | `rules/protected-path-discipline.md:172` tells an agent the model stays exact for exactly the two commands that delete a rule file |
+| `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md_o` (decision) | — | drafted with both directions measured; answering it closes `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` and `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` |
+| `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md`, `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` | High | live at HEAD; `true \|\| cd x && rm rules/y` and `echo hi \| cd x && rm rules/y` both write protected files |
+| `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` | High | `git -C rules rm x.md` allows and deletes; the first instance of this class that fails open rather than degrading, and no answer to `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` reaches it |
+| `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` | High | `rules/protected-path-discipline.md:172` tells an agent the model stays exact for exactly the two commands that delete a rule file |
 
 Then a review of `048f3db` and `cc012fc`, the only two of the session's five code commits
 without one. The reconciliation verified their claims; it did not review their design.
 
 Six lower-severity issues remain: `260803-1314` and `260803-1402` (decisions awaiting plan
-steps), `260804-0839` (precedence, an open regression from `c9c44a3`), `260804-0842` (the
-gold fixture's corpus), `260804-1026` and `260804-1027`.
+steps), `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` (precedence, an open regression from `c9c44a3`), `260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md` (the
+gold fixture's corpus), `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md` and `260804-1027_*_the-replacement-audit-recipe-went-stale-in-the-turn-after-it-was-written-and-omits-moved.md`.
 
 Plan steps 6 through 10 are unstarted for the second session running, verified rather than
 assumed. `hooks/dist/` is stale by the whole Circle — nothing here is live for any consuming

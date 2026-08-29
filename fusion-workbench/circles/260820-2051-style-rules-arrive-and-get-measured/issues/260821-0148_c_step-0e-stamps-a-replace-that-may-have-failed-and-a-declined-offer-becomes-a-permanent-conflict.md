@@ -29,7 +29,7 @@ Classifying it as a conflict is arguably the honest reading — both copies real
 **Verified at HEAD `7832553`** by reading `skills/setup/SKILL.md:161-233` and tracing the four state variables through the branch chain at `:191-196`. Not verified by execution.
 
 ---
-**Found by:** coderev, review of `7135a19..7832553`, review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
+**Found by:** coderev, review of `7135a19..7832553`, review file `260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
 **Owner:** `coder`.
 **Severity:** Medium for part 1 (a user-requested change is silently recorded as done), Low-Medium for part 2 (a warning with no off-switch on a step whose stated design is to ask at most once).
 **Direction, not a prescription.** Part 1 has an obvious shape and it is the one Step 0d already uses: guard the `cp`, stamp the destination. Part 2 is a design question rather than a bug to patch, and this record should not pre-empt it: either case 4 gets a way to be acknowledged, or the decline path should not produce a state that lands there.

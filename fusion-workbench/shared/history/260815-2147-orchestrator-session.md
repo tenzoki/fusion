@@ -1,4 +1,4 @@
-# Orchestrator Session — 260815-2147
+# Orchestrator Session — 260815-2147-orchestrator-session.md
 
 **Directive:** (not yet stated — Setup ran on its own; the user's request follows)
 **Mode:** (unresolved — Phase 0 has not run)
@@ -57,7 +57,7 @@ fresh session marker was written.
 exit 0, 59 seconds. The baseline is green, so a failing suite after a task is attributable to
 that task rather than inherited. This matters here because the project carries an open defect
 about a red baseline blocking every task
-(`shared/issues/260810-0703_o_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`);
+(`260810-0703_*_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`);
 that condition does not hold this session.
 
 ## Turn 1 — a finding that changed the session's rhythm
@@ -109,7 +109,7 @@ reported `blocked` on a green change, because `hooks/lib/__tests__/fixtures/surf
 is a per-file byte inventory that goes stale on any edit to a bounded surface, and the report
 contract derives `blocked` from the suite's exit code. Each dispatch had to carry a paragraph
 telling the executor the failure was not theirs. That cost is now filed as a decision record
-(`260815-2322`), whose recommendation is a sentence in the golden's own failure text rather than
+(`260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`), whose recommendation is a sentence in the golden's own failure text rather than
 a mechanism.
 
 **A gap in this orchestrator's own measurement.** The full suite after Turn 3's edits returned
@@ -127,14 +127,14 @@ not one test failing).
 **Edges:**
 
 - **Artifact↔Grounding:** 56 of 56 closures re-verified against the tree at HEAD `f77633f` by three
-  independent passes — 55 hold outright, 1 (`260810-0504`) is partial with its residual disclosed in
+  independent passes — 55 hold outright, 1 (`260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`) is partial with its residual disclosed in
   its own closure and now tracked as a decision; **4 drift items** — two records fixed by `f77633f`
-  and left open (`260816-0132`, `260816-0139`, both closed by this pass), one residual table listing
+  and left open (`260816-0132_*_the-next-skills-status-note-is-decided-from-a-file-wide-grep-not-from-the-writes-result.md`, `260816-0139_*_two-demoted-name-instances-remain-in-README-agents-and-the-open-record-tracking-them-lists-none.md`, both closed by this pass), one residual table listing
   only discharged rows (`260815-1633_o_*`, rewritten around the five sites that stand), the compiled
   hooks in `hooks/dist` never committed for `736e276` so the shipped plugin does not carry the fix
   (`shared/issues/260816-0709_*_*`, fixed by `71e97f4` while this verdict was written), and four session-bookkeeping surfaces stopped tracking after
   Turn 3 of 6; **50 open coderev/ontorev-filed defect records** workbench-wide, of which 5 of the 16
-  this session's two reviews filed are still open (`260816-0133`, `-0136` in progress, `-0138`,
+  this session's two reviews filed are still open (`260816-0133_*_the-setup-and-migrate-probes-are-byte-identical-in-three-copies-with-no-gate-against-the-next-drift.md`, `-0136` in progress, `-0138`,
   `-0140`, `-0141`).
 - **Artifact↔Directive:** the commits move **toward** the Directive *"versuche autonom die offenen
   relevanten defekte zu fixen"*. All 27 in `d33cd22..HEAD` serve it and none is orthogonal: one
@@ -143,14 +143,14 @@ not one test failing).
   records, and the closures were verified rather than counted. One qualification, which does not flag
   the edge: `./bin/fusion-review-coverage --since d33cd22` returns `uncovered=7` — the commits after
   `3a0408a` had no reviewer, and `94683c9` inside that gap is itself the re-fix of three closures the
-  second review found had not landed. A `coderev` session stamped `260816-0713` is reviewing exactly
+  second review found had not landed. A `coderev` session stamped `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md` is reviewing exactly
   that range while this verdict is written and had filed nine records by 07:15:48; the gap is being
   closed, not left.
 - **Grounding↔Directive:** **29 active decisions consistent, 0 conflicting.** Every `_o_` and `_a_`
   record across both stores was read against the Directive and none contradicts it. Two are
   load-bearing for how this session ran and are unanswered by design rather than by omission — the
-  session filed both itself: `shared/decisions/260815-2109_o_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
-  (the 7 uncovered commits above) and `shared/decisions/260815-2322_o_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`
+  session filed both itself: `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+  (the 7 uncovered commits above) and `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`
   (the per-Turn golden regeneration, run six times as a recorded departure). Filing the question
   instead of assuming an answer is the correct handling, so neither flags the edge. No decision
   marker moved this pass; three candidates were checked and each stays where it is for a reason
@@ -179,9 +179,9 @@ this pass, and one by an executor.
 **Review coverage is closed.** `./bin/fusion-review-coverage --since d33cd22` now reports
 `commits=29 reviews=3 uncovered=2`, and the two are `71e97f4` and `787010f`, both later than every
 review in the range. The seven-commit gap this verdict opened on was reviewed by
-`shared/reviews/260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md` before the pass finished.
+`260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md` before the pass finished.
 
-Full pass: `shared/history/260816-0715-reconciliation.md`.
+Full pass: `260816-0715-reconciliation.md`.
 
 ## Per-Turn log
 
@@ -245,7 +245,7 @@ project's own rule for that case — an obligation standing beside an act is the
 skipped — predicted it.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `**Status:**` line read `In progress` after this session had
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The `**Status:**` line read `In progress` after this session had
 ended; set to `Complete` on 260824, nine days after the fact. Nothing else in the file was changed.
 Filed as
-`shared/issues/260819-1511_*_a-session-history-file-is-left-at-status-in-progress-after-its-session-ended.md`.
+`260819-1511_*_a-session-history-file-is-left-at-status-in-progress-after-its-session-ended.md`.

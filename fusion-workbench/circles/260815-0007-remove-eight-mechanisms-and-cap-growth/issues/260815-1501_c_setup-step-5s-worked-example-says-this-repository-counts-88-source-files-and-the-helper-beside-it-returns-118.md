@@ -4,10 +4,10 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** `coderev`, review of `5d29b6d..518926d`, review file `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`
+**Filed by:** `coderev`, review of `5d29b6d..518926d`, review file `260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`
 **Owner:** `coder`
 **Affects:** `agents/orchestrator.md:178`; echoed in `hooks/lib/__tests__/domain-cascade.test.ts:176` (`SWEEP.code_files`)
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1440-coder-step9-domain-values.md`; decision `shared/decisions/260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
+**Cross-references:** `260815-1440-coder-step9-domain-values.md`; decision `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
 
 ---
 

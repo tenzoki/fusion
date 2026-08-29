@@ -9,7 +9,7 @@
  * with the heatmap on 2026-08-15. When `guard.ts` stopped deciding anything at
  * all, the write-tool stand-down had no subject left and the cwd-anchored entry
  * point, `isFusionPluginCwd()`, went with it. Decision
- * `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+ * `260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
  * answers this as option 3, dissolution: the stand-down and the cwd entry point
  * go, `isFusionPluginRoot(dir)` stays, and this header says why.
  *

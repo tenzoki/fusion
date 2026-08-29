@@ -3,7 +3,7 @@
 **Agent:** coder
 **Status:** Complete
 **Origin:** Not Circle work. Closes a defect from the shared issue store; no Circle was active.
-**Source record:** `fusion-workbench/shared/issues/260731-2246_o_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`
+**Source record:** `260731-2246_*_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`
 **Queue entry:** `fusion-workbench/tasklist.md` § 10 (`I:260731-2246-empty-key`)
 
 ## What was wrong
@@ -79,7 +79,7 @@ written and run directly, rather than retyped.
 
 `cd hooks && npm test` — **31 files, 898 tests, 1 failing.** The failure is
 `lib/__tests__/reference-resolution-lint.test.ts`, reporting a dangling record citation
-`260719-1600_o_open-issue.md` at `bin/fusion-plane:567`. **It is not from this task.** That token
+`260719-1600_*_open-issue.md` at `bin/fusion-plane:567`. **It is not from this task.** That token
 does not exist in `bin/fusion-plane` at HEAD (`git show HEAD:bin/fusion-plane | grep` finds
 nothing) and does not appear in `skills/cadence/SKILL.md` at all; it arrives with an uncommitted
 117-line change to `bin/fusion-plane` sitting in the working tree from a concurrent task, where it
@@ -106,7 +106,7 @@ Two things, both outside the file this dispatch allowed.
   **task 10 is not fully complete** and its queue entry should stay open until the convention line
   lands.
 - **Tracking updates not made:** `fusion-workbench/tasklist.md` § 10 still reads
-  `**Status:** [ ] open`, and the issue record is still `260731-2246_o_...` with no `Resolved:`
+  `**Status:** [ ] open`, and the issue record is still `260731-2246_*_...` with no `Resolved:`
   note. Given the point above, both are arguably correct as they stand.
 
 ## Files changed

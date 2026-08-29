@@ -1,9 +1,9 @@
-# Orchestrator Session — 260803-1038
+# Orchestrator Session — 260803-1038-orchestrator-session.md
 
-**Directive:** A consuming project can permit rule-file writes on purpose, for one session, and see every write that happened only because it did. `FUSION_ALLOW_RULES_WRITE` exempts the project's rule directories and the `retired/` destination inside them, and nothing else; setting it does not turn the guard off and does not clear an active halt. Alongside the flag, the guard stops sharing one protected-path list across every project on an install: it reads a git-tracked `fusion-guard.json` at the project root first, then the plugin's `hooks/config.json`, then the in-code defaults, merging per top-level key. (Source: `circles/260801-1244-guard-rules-write/_t_circle.md` `## Directive`; capabilities C5a and C5b of `shared/planning/260801-1122_o_spec-normative-consolidation.md`.)
+**Directive:** A consuming project can permit rule-file writes on purpose, for one session, and see every write that happened only because it did. `FUSION_ALLOW_RULES_WRITE` exempts the project's rule directories and the `retired/` destination inside them, and nothing else; setting it does not turn the guard off and does not clear an active halt. Alongside the flag, the guard stops sharing one protected-path list across every project on an install: it reads a git-tracked `fusion-guard.json` at the project root first, then the plugin's `hooks/config.json`, then the in-code defaults, merging per top-level key. (Source: `260801-1244-guard-rules-write` `## Directive`; capabilities C5a and C5b of `260801-1122_*_spec-normative-consolidation.md`.)
 **Mode:** issues — the eleven open issues in this Circle, chosen by the user over the plan's remaining steps 6 to 10. The plan file stays the Circle's spine and did not advance this session.
 **Status:** Complete. One Turn, converged, no circuit breaker. Coherence verdict `review-needed`; the user chose to stop rather than run a fourth Turn at the boundary, so the Circle stays active and does not close.
-**Predecessor session:** `circles/260801-1244-guard-rules-write/history/260802-1827-orchestrator-session.md` (2 Turns, 7 commits, stopped by the net-negative-progress circuit breaker)
+**Predecessor session:** `260802-1827-orchestrator-session.md` (2 Turns, 7 commits, stopped by the net-negative-progress circuit breaker)
 
 ## Setup snapshot
 
@@ -13,10 +13,10 @@
 | Plugin version | 5.8.0 |
 | Git HEAD at start | `c9bf59e` |
 | Domain (detected) | `code` |
-| Active Circle | `circles/260801-1244-guard-rules-write` |
+| Active Circle | `260801-1244-guard-rules-write` |
 | Circles | 1 anticipated, 1 active, 7 closed |
 | Open issues | 31 total: 11 in this Circle, 20 shared |
-| Open plans | 2: this Circle's plan, and the shared spec `260801-1122_o_spec-normative-consolidation.md` |
+| Open plans | 2: this Circle's plan, and the shared spec `260801-1122_*_spec-normative-consolidation.md` |
 | Decisions | 1 answered in this Circle, 0 open anywhere |
 | Guard | not halted; 0 consecutive blocks; last block 2026-08-01 (a branch-switch deny, working as designed) |
 | Session resumed | yes, by user choice at the interrupted-session gate |
@@ -56,12 +56,12 @@ rebuild that every `npm test` run performs.
 
 | Task | Issues | Commit |
 |---|---|---|
-| T3-1 gate 0, the `..` spelling refusal | 260802-2330 | `3b0f9e7` |
-| T3-2 the exemption module cluster | 260802-2213, -2231, -2332, -2333, 260803-1252 | `245b8b7` |
-| T3-4 escalation shape, halt event detail | 260802-2334, -2336 | `d77eda8` |
-| T3-6 the monitor's panel budgets | 260802-2232 | `aff7486` |
-| T3-7 the halt and residual documentation | 260802-2331, -2335 | `ce7a125` |
-| T3-8 the case-folding decision (user gate) | 260802-2320 | `242b723` |
+| T3-1 gate 0, the `..` spelling refusal | 260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md | `3b0f9e7` |
+| T3-2 the exemption module cluster | 260802-2213, -2231, -2332, -2333, 260803-1252_*_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-and-names-a-file-that-is-writable.md | `245b8b7` |
+| T3-4 escalation shape, halt event detail | 260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md, -2336 | `d77eda8` |
+| T3-6 the monitor's panel budgets | 260802-2232_*_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md | `aff7486` |
+| T3-7 the halt and residual documentation | 260802-2331_*_readme-hooks-states-bash-has-no-halt-check-which-this-turn-made-false.md, -2335 | `ce7a125` |
+| T3-8 the case-folding decision (user gate) | 260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md | `242b723` |
 | Review | — | `fa81589` |
 
 Two tasks were merged into their neighbours during the Turn rather than run separately:
@@ -90,7 +90,7 @@ requires an update at every task boundary; it was not followed. The Circle recor
 `## Turn log` is likewise empty after three Turns and twenty-three commits, and its
 `**Status:**` still reads `anticipated`. That surface is outside this agent's write scope
 (only a `## Closure note` may be appended), so it is left for the issue that already tracks
-it: `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`,
+it: `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`,
 annotated by the reconciler with this session as its second instance.
 
 ## Coherence
@@ -100,29 +100,29 @@ annotated by the reconciler with this session as its second instance.
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: 20 claims verified against code (5 plan steps done, 5 unstarted, 10 issue closures traced to their commits, 1080 tests green at `npx vitest run`) / 8 drift items, all corrected or reported / 5 open issues in this Circle, 2 of them High — `260803-1431` filed by `coderev` against this Turn's own work and `260802-2320` predating it, both live at `fa81589`.
-- Artifact↔Directive: the seven commits `c9bf59e..fa81589` move toward the Directive and it was met — ten of eleven issues closed (`3b0f9e7`, `245b8b7`, `d77eda8`, `aff7486`, `ce7a125`), the eleventh answered by decision `260803-1419_a` at `242b723` and deliberately left open, and the Turn 3 review filed at `fa81589`. No commit is orthogonal to "close the eleven issues before adding new surface", and no plan step was drifted into.
-- Grounding↔Directive: 7 active decisions (4 in this Circle, 3 shared), all 7 consistent with the Directive / 0 conflicting. Two carry defects of their own rather than conflicts: `260803-1419_a`'s `Answered:` line cites this file, which does not record the answer, and `shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md` is now half-realised with a documentation surface that still denies the flag exists.
+- Artifact↔Grounding: 20 claims verified against code (5 plan steps done, 5 unstarted, 10 issue closures traced to their commits, 1080 tests green at `npx vitest run`) / 8 drift items, all corrected or reported / 5 open issues in this Circle, 2 of them High — `260803-1431` filed by `coderev` against this Turn's own work and `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` predating it, both live at `fa81589`.
+- Artifact↔Directive: the seven commits `c9bf59e..fa81589` move toward the Directive and it was met — ten of eleven issues closed (`3b0f9e7`, `245b8b7`, `d77eda8`, `aff7486`, `ce7a125`), the eleventh answered by decision `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md_a` at `242b723` and deliberately left open, and the Turn 3 review filed at `fa81589`. No commit is orthogonal to "close the eleven issues before adding new surface", and no plan step was drifted into.
+- Grounding↔Directive: 7 active decisions (4 in this Circle, 3 shared), all 7 consistent with the Directive / 0 conflicting. Two carry defects of their own rather than conflicts: `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md_a`'s `Answered:` line cites this file, which does not record the answer, and `260801-1020_*_may-any-fusion-writer-touch-rules.md` is now half-realised with a documentation surface that still denies the flag exists.
 
 **Rebalance recommendation:** revise Artifact
 
 ---
 
-**Why the verdict is not `coherent`, stated plainly.** The Directive was met and the work is sound — the review's own words are "sound enough to build on", and its three questions came back yes, yes, and yes. That is not enough to close coherent. The boundary this Circle exists to establish moved for the **fourth** time in this Circle: `260802-2229` closed by gate 2, `260802-2230` closed by `collapseSegments`, `260802-2330` closed by gate 0, and now `260803-1431` reaching the same escape through `cd -P` instead of through the operand. Three narrowings have shipped and the class has returned through a door each previous fix did not model. Three shipped docstrings assert the closed form and are false at HEAD.
+**Why the verdict is not `coherent`, stated plainly.** The Directive was met and the work is sound — the review's own words are "sound enough to build on", and its three questions came back yes, yes, and yes. That is not enough to close coherent. The boundary this Circle exists to establish moved for the **fourth** time in this Circle: `260802-2229_*_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md` closed by gate 2, `260802-2230_*_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md` closed by `collapseSegments`, `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` closed by gate 0, and now `260803-1431` reaching the same escape through `cd -P` instead of through the operand. Three narrowings have shipped and the class has returned through a door each previous fix did not model. Three shipped docstrings assert the closed form and are false at HEAD.
 
 **Why it is not `bounded-closure-proposed`.** The Directive is reachable. Steps 6 to 10 are a defined sequence, the fix shape for the open finding is named in the review, and nothing measured here says the goal cannot be met.
 
-**What a later Circle inherits**, ranked, with the full list in `history/260803-1525-reconciliation.md` `## What a later Circle inherits`: the open High `cd -P` gap plus its three false docstrings; the open High case-folding bypass whose direction is decided and whose code is unchanged; a flag that works and that both shipped documents deny exists; plan Steps 6 to 10 entirely unstarted with a stale `hooks/dist/`; and the session-bookkeeping drift that has now left this Circle's `## Turn log` empty across three Turns and twenty-three commits.
+**What a later Circle inherits**, ranked, with the full list in `260803-1525-reconciliation.md` `## What a later Circle inherits`: the open High `cd -P` gap plus its three false docstrings; the open High case-folding bypass whose direction is decided and whose code is unchanged; a flag that works and that both shipped documents deny exists; plan Steps 6 to 10 entirely unstarted with a stale `hooks/dist/`; and the session-bookkeeping drift that has now left this Circle's `## Turn log` empty across three Turns and twenty-three commits.
 
 ## Remaining Work
 
 Five issues open in this Circle, ranked as the reconciliation log ranks them
-(`history/260803-1525-reconciliation.md` `## What a later Circle inherits`):
+(`260803-1525-reconciliation.md` `## What a later Circle inherits`):
 
 | Issue | Severity | State |
 |---|---|---|
 | `260803-1431` gate 0 misses a `..` arriving through `cd -P` | High | live at HEAD; fix shape named in the review, three docstrings false alongside it |
-| `260802-2320` case folding bypasses the whole protected list | High | live at HEAD; direction decided (`260803-1419_a`), code unchanged |
+| `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` case folding bypasses the whole protected list | High | live at HEAD; direction decided (`260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md_a`), code unchanged |
 | `260803-1251` `fs-locator` collapses `..` one call above the audited resolver | — | unreachable today, reachable if gate 0 is ever relaxed |
 | `260803-1352` two advisory details skip the 200-char clamp | — | renders one row at nine times normal height |
 | `260803-1402` Step 9 must also document the hard-link non-exemption | — | belongs to plan Step 9 |

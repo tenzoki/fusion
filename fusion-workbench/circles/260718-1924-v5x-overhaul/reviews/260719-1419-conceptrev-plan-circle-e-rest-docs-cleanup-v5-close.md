@@ -1,7 +1,7 @@
 # Concept Evaluation: Circle E-rest — docs cleanup + v5.0 closing gate
 
 **Date:** 2026-07-19 14:19
-**Target:** `circles/260718-1924-v5x-overhaul/planning/260719-1416_o_plan-circle-e-rest-docs-cleanup-v5-close.md`
+**Target:** `260719-1416_*_plan-circle-e-rest-docs-cleanup-v5-close.md`
 **Verdict:** clean
 **Diagrams evaluated:** 1  |  **Validation:** by-tool (mmdc)
 

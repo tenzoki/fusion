@@ -23,7 +23,7 @@ Identical byte for byte; only the tail differs by purpose (`| head -1`, `| wc -l
 
 ## What is not closed
 
-The record this fix closes (`circles/260805-2005-.../issues/260806-0022_c_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`) is about two probes that were written once and then edited independently. Nothing about the fix prevents that from happening again — the next person who narrows or widens one of the two files has no signal that two other lines must move with it. The `skills/setup/SKILL.md:60` prose says "do not widen it" and cites migrate, which is guidance; guidance is what failed the first time.
+The record this fix closes (`circles/260805-2005-.../260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`) is about two probes that were written once and then edited independently. Nothing about the fix prevents that from happening again — the next person who narrows or widens one of the two files has no signal that two other lines must move with it. The `skills/setup/SKILL.md:60` prose says "do not widen it" and cites migrate, which is guidance; guidance is what failed the first time.
 
 ## Fix direction
 
@@ -41,7 +41,7 @@ If a third copy is judged too many to pin, the other cut is to have Setup call t
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `c0e179a`).
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The probe expression is one unique 218-character string across `skills/setup/SKILL.md:67`, `skills/migrate/SKILL.md:54` and `:87`, and no test asserts the equality. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The probe expression is one unique 218-character string across `skills/setup/SKILL.md:67`, `skills/migrate/SKILL.md:54` and `:87`, and no test asserts the equality. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — one case in `hooks/lib/__tests__/path-literal-lint.test.ts` extracts the `{ [ -d "$WB/shared" ] … grep -E '…'` expression from both skill bodies, asserts three sites and one string, and fails naming the drift when migrate's reformat probe is edited alone; `cd hooks && npx vitest run lib/__tests__/path-literal-lint.test.ts`

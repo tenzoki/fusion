@@ -3,8 +3,8 @@
 **Date:** 2026-08-02 12:34
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-rule-provenance-header`
-**Plan:** `circles/260801-1244-rule-provenance-header/planning/260802-1131_o_plan-rule-provenance-header.md` — Step 3, now `[DONE]`
+**Circle:** `260801-1244-rule-provenance-header`
+**Plan:** `260802-1131_*_plan-rule-provenance-header.md` — Step 3, now `[DONE]`
 **HEAD at start:** `c2c2a04` (Step 2)
 
 ## What was implemented

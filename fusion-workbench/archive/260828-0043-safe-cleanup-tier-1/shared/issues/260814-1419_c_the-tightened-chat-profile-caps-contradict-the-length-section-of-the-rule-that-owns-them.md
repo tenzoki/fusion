@@ -4,11 +4,11 @@ The tightened chat-profile caps contradict the `## Length` section of the rule t
 Commit `ae21c87` set the chat profiles' C04 entry to *gate prompts up to 6 lines, chat replies up to 8 lines*. `rules/user-facing-output.md` `## Length` states 8 and 12 for the same two surfaces and instructs the reader to *"count the lines. If a cap is exceeded, move material to Details — do not relax the cap."* Two always-on surfaces now carry different numbers for the same thing and nothing says which governs. Separately, the German edit dropped a clause its English sibling kept and added one the sibling does not have, so the two profiles now differ in content and not only in language, and it left trailing whitespace.
 
 ---
-**Found by:** coderev, Turn-3 incremental review of `5c843e6..0301909`, review file `circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`.
+**Found by:** coderev, Turn-3 incremental review of `5c843e6..0301909`, review file `260814-1419-coderev-curator-turn-3.md`.
 **Owner:** `coder` for the whitespace and the de/en divergence. The cap number itself may need a decision — see below.
 **Severity:** Medium.
 **Filed in the shared store** per the Origin Rule: `ae21c87` was committed during Circle `260801-1244-curator`'s Turn 3 but was not caused by its Directive.
-**Cross-references:** `shared/issues/260814-1419_o_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` (the same commit, the reason neither number is in force here today); `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` (the complaint this tightening presumably answers).
+**Cross-references:** `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` (the same commit, the reason neither number is in force here today); `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` (the complaint this tightening presumably answers).
 
 **Verified 2026-08-14 at HEAD `0301909`:**
 
@@ -44,13 +44,13 @@ The German dropped *"or to a file"* and *"not the opening lines"*, and added *"K
 **Part 3 — trailing whitespace.** `stilwerk/chat-voice-de.yaml:43` ends `kein Jargon. ` with a trailing space. Cosmetic, in the same lines as parts 1 and 2.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All three parts persist: `rules/user-facing-output.md` states 8 and 12 lines while both shipped chat profiles state 6 and 8, with no precedence stated anywhere; the German C04 block is still missing the mirrored clause and still carries the extra one; and the trailing whitespace is still there. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: All three parts persist: `rules/user-facing-output.md` states 8 and 12 lines while both shipped chat profiles state 6 and 8, with no precedence stated anywhere; the German C04 block is still missing the mirrored clause and still carries the extra one; and the trailing whitespace is still there. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: All three parts, in the shipped profiles, under user decision 5 of
-`circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md` (the conflict resolves in
+`260820-2051-style-rules-arrive-and-get-measured` (the conflict resolves in
 favour of the rule, at 8 and 12) and plan step 5 of
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`.
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`.
 
 Part 1: the C04 entry of both chat profiles no longer states a number for either surface. Each now
 names `rules/user-facing-output.md` `## Length` as where the two caps are stated and says they are
@@ -61,7 +61,7 @@ Part 2: the German C04 regained the two clauses it had dropped, "or to a file" a
 lines", and lost "Klare Formulierungen, kein Jargon", which had no English counterpart and duplicated
 the rule's `## Vocabulary` section and point 4 of its readability gate. Removed rather than mirrored
 into the English file, per the plan step. A clause-by-clause comparison of the two files is recorded
-in `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0049-ontocoder-chat-profiles-stop-restating-the-caps.md`.
+in `260821-0049-ontocoder-chat-profiles-stop-restating-the-caps.md`.
 
 Part 3: the trailing space on the German `kein Jargon. ` line is gone with the clause, and
 `grep -n '[[:space:]]$'` now finds nothing in either file.
@@ -70,5 +70,5 @@ Part 3: the trailing space on the German `kein Jargon. ` line is gone with the c
 every agent actually loads still carry the old text, deliberately: they are refreshed by the
 mechanism built in step 3 of the same plan rather than by hand, at step 8. That divergence is the
 separate defect
-`shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
+`260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
 and this record was never about it — its own verification grep read `rules/` and `stilwerk/` only.

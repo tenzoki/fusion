@@ -57,7 +57,7 @@ and cites `:322` and `:341`, which are the two retirement tables' declaration li
 - `agents/orchestrator.md:132`, `skills/setup/SKILL.md:292`
 - `hooks/lib/__tests__/turn-budget-lint.test.ts:159-330`
 - `hooks/lib/config.ts:239`, `:252`, `:393`, `:409`, `:423`, `:469`
-- `circles/260816-1741-guard-becomes-observation-only/issues/260816-2318_c_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
+- `260816-2318_*_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
 
 ---
 Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN by explicit user decision. Re-measured

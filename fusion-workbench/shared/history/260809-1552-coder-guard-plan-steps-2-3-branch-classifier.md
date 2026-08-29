@@ -6,9 +6,9 @@
 
 ## What was asked
 
-Implement Steps 2 and 3 of `shared/planning/260809-1229_o_plan-five-severe-guard-defects.md`, closing `260809-1105` (a trailing `--` lifts the branch deny) and `260809-1106` (an unrecognised global option's separated value hides the subcommand). Both live in `hooks/lib/git-branch-guard.ts`, in two different functions, and the plan's Approach is explicit that they share a safety property but no code, so they are two steps rather than one.
+Implement Steps 2 and 3 of `260809-1229_*_plan-five-severe-guard-defects.md`, closing `260809-1105_*_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md` (a trailing `--` lifts the branch deny) and `260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md` (an unrecognised global option's separated value hides the subcommand). Both live in `hooks/lib/git-branch-guard.ts`, in two different functions, and the plan's Approach is explicit that they share a safety property but no code, so they are two steps rather than one.
 
-Constraints carried by the dispatch: never type a bypass form into a shell in this repository (the defects mean it would run and move fusion's own HEAD), keep fail-closed as the direction and name any new false denies, open nothing, leave `hooks/lib/protected-snapshot.ts` and `hooks/tracker.ts` to the parallel `coder`, do not commit, and take the recorded remedy for `260809-1106` from the closed sibling records rather than re-deriving one.
+Constraints carried by the dispatch: never type a bypass form into a shell in this repository (the defects mean it would run and move fusion's own HEAD), keep fail-closed as the direction and name any new false denies, open nothing, leave `hooks/lib/protected-snapshot.ts` and `hooks/tracker.ts` to the parallel `coder`, do not commit, and take the recorded remedy for `260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md` from the closed sibling records rather than re-deriving one.
 
 ## What was done
 
@@ -22,13 +22,13 @@ The docblock was rewritten to state the invariant both steps rest on — evidenc
 
 The walk in `classifySegment` consumed the value of the four options it knows and treated every other `-`-prefixed token as valueless, so an option taking a separated value left that value standing in subcommand position, where it matched none of the three rows and the call allowed.
 
-The remedy is `260804-1344`'s, ported rather than invented. The deleted `resolveGit` in `hooks/lib/bash-mutation-guard.ts` was read out of `ba7ccda^` and its structure carried over: a bare word is tested against a new `BRANCH_SUBCOMMANDS` set; a match ends the walk; no match with an unrecognised option in front means the word is that option's value and the walk continues from the next index, recording any `-C` and `--work-tree` it then meets; no match with no unrecognised option in front means the word is git's real subcommand and the walk stops, which keeps it out of the subcommand's own arguments where `-C` means something else (`git commit -C HEAD~1`).
+The remedy is `260804-1344_*_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md`'s, ported rather than invented. The deleted `resolveGit` in `hooks/lib/bash-mutation-guard.ts` was read out of `ba7ccda^` and its structure carried over: a bare word is tested against a new `BRANCH_SUBCOMMANDS` set; a match ends the walk; no match with an unrecognised option in front means the word is that option's value and the walk continues from the next index, recording any `-C` and `--work-tree` it then meets; no match with no unrecognised option in front means the word is git's real subcommand and the walk stops, which keeps it out of the subcommand's own arguments where `-C` means something else (`git commit -C HEAD~1`).
 
-The docblock carries the ported reasoning, both sibling record names, the class bound (`260804-1344`'s wording: closed for options taking at most one separated value; not closed and not claimed for two separated values or a second bare word between value and subcommand), and the one respect in which the fix behaves differently in its new home — three subcommand rows against the mutation classifier's many, so a smaller false-deny surface.
+The docblock carries the ported reasoning, both sibling record names, the class bound (`260804-1344_*_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md`'s wording: closed for options taking at most one separated value; not closed and not claimed for two separated values or a second bare word between value and subcommand), and the one respect in which the fix behaves differently in its new home — three subcommand rows against the mutation classifier's many, so a smaller false-deny surface.
 
 ### What was NOT done, and why
 
-`260809-1106`'s and `260809-1105`'s acceptance criteria include rule text in `rules/git-branch-discipline.md`. That is Step 6 of the plan, bundled there deliberately so it collides once with the concurrent rules-file work instead of three times. Both issues therefore stay `_o_`, as the plan states.
+`260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`'s and `260809-1105_*_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`'s acceptance criteria include rule text in `rules/git-branch-discipline.md`. That is Step 6 of the plan, bundled there deliberately so it collides once with the concurrent rules-file work instead of three times. Both issues therefore stay `_o_`, as the plan states.
 
 ## Verification
 
@@ -43,11 +43,11 @@ Nothing was run by hand. Every verdict comes from the classifier, and every real
 
 The effect rows passing on both sides is the point: they assert that `git checkout -b bar --`, `git checkout -B bar --`, `git --namespace ns switch other` and `git --attr-source HEAD switch t1` really do move HEAD, in `bash` and `zsh`, against git 2.49.0. A deny asserted against a command that turns out to be a no-op proves nothing, and at `451a07e` all four both allowed and moved HEAD.
 
-**One test names the sibling records.** `describe("an unrecognised global option no longer hides the subcommand (260804-1333, 260804-1344)")`, with the loss itself written into the block comment: two modules had the identical eight lines, the fix went to one of them, nothing pinned the other, and v6.0.0 deleted the one that had it. That is `260809-1106`'s own acceptance criterion, and the only mechanism that would surface a shared fix the next time one of two classifiers is retired.
+**One test names the sibling records.** `describe("an unrecognised global option no longer hides the subcommand (260804-1333_*_an-unrecognised-git-global-option-swallows-the-subcommand-and-the-invocation-reads-as-an-unrecognised-program.md, 260804-1344_*_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md)")`, with the loss itself written into the block comment: two modules had the identical eight lines, the fix went to one of them, nothing pinned the other, and v6.0.0 deleted the one that had it. That is `260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`'s own acceptance criterion, and the only mechanism that would surface a shared fix the next time one of two classifiers is retired.
 
 **The bounded no-new-allow corpus**, in place of the 181,115-command cross-product that went with the mutation classifier. `lib/__tests__/helpers/git-corpus.ts` builds 108 commands (9 global-option forms × 12 subcommand tails) and classifies each under all four override combinations, with and without a resolver — 864 verdicts. `lib/__tests__/fixtures/git-corpus-451a07e.json` holds one deny bit per verdict, generated against the unmodified classifier before either edit, so the comparison is a real before/after.
 
-**A correction to the plan's wording, stated rather than silently followed.** Step 3 asks the corpus to assert that "every command allowed at HEAD `451a07e` is still allowed". That is the inverse of the property the fix has, and it contradicts the same step's own acceptance criteria — `git --namespace ns switch main` allowed at `451a07e` and must deny now. The property implemented is the one `260804-1344` measured and the one the structural argument supports: **every verdict that DENIED at the baseline still denies**, checked in that direction only. Its anti-vacuity is asserted from both sides — the corpus must hold more than 100 baseline denies, and at least one verdict must have moved, every mover in the denying direction.
+**A correction to the plan's wording, stated rather than silently followed.** Step 3 asks the corpus to assert that "every command allowed at HEAD `451a07e` is still allowed". That is the inverse of the property the fix has, and it contradicts the same step's own acceptance criteria — `git --namespace ns switch main` allowed at `451a07e` and must deny now. The property implemented is the one `260804-1344_*_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md` measured and the one the structural argument supports: **every verdict that DENIED at the baseline still denies**, checked in that direction only. Its anti-vacuity is asserted from both sides — the corpus must hold more than 100 baseline denies, and at least one verdict must have moved, every mover in the denying direction.
 
 **The false-deny surface, measured rather than argued.** A 1143-command sweep (17 global-option forms × 67 tails, covering everyday agent git work) classified under both versions:
 
@@ -63,7 +63,7 @@ git --paginate grep worktree add    now DENIES (was allow)
 git grep switch                     still allows  (the bound)
 ```
 
-The shape is `git <unknown-option> <non-subcommand> <switch|worktree|checkout>` — the same rule `260804-1333` settled on, one word wider because the walk resumes. `git --no-pager grep switch` is the only one an agent would plausibly type: searching the tree for the word "switch" with the pager off. Pinned in the suite as a stated cost with an open example set, and the bound pinned alongside it.
+The shape is `git <unknown-option> <non-subcommand> <switch|worktree|checkout>` — the same rule `260804-1333_*_an-unrecognised-git-global-option-swallows-the-subcommand-and-the-invocation-reads-as-an-unrecognised-program.md` settled on, one word wider because the walk resumes. `git --no-pager grep switch` is the only one an agent would plausibly type: searching the tree for the word "switch" with the pager off. Pinned in the suite as a stated cost with an open example set, and the bound pinned alongside it.
 
 **A refinement considered and not taken.** An unrecognised option written with an attached value (`--exec-path=/x`) cannot also consume the next word, so skipping the `unknownOption` flag for any token containing `=` would remove three of the ten false denies at no cost in allows. It is not in the plan and not in the recorded remedy, and adding an unmeasured case split to a security control as a side effect of a bug fix is the shape `rules/critical-stance.md` §2 warns about. Named here so it can be taken up on its own merits.
 
@@ -76,12 +76,12 @@ The shape is `git <unknown-option> <non-subcommand> <switch|worktree|checkout>` 
 - `hooks/lib/__tests__/guard-bash-integration.test.ts` — one new describe block (13 cases), `addBranches` and `currentBranch` helpers
 - `hooks/lib/__tests__/helpers/git-corpus.ts` — new
 - `hooks/lib/__tests__/fixtures/git-corpus-451a07e.json` — new
-- `fusion-workbench/shared/planning/260809-1229_o_plan-five-severe-guard-defects.md` — Steps 2 and 3 marked `[DONE]`
+- `260809-1229_*_plan-five-severe-guard-defects.md` — Steps 2 and 3 marked `[DONE]`
 
 `hooks/dist/` was rebuilt by `npm test` (it runs `npm run build` first) and carries the parallel coder's compiled output as well as mine.
 
 ## Open for the orchestrator
 
-- `260809-1105` and `260809-1106` stay `_o_`: their rule-text criteria belong to Step 6.
+- `260809-1105_*_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md` and `260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md` stay `_o_`: their rule-text criteria belong to Step 6.
 - The plan's Step 3 corpus wording should be corrected to the direction actually implemented, or a reader will later take the file to be checking something it is not.
 - Not committed, per the dispatch.

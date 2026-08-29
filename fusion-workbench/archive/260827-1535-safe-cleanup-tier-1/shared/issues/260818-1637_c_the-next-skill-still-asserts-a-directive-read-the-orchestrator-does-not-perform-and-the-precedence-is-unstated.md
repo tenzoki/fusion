@@ -6,7 +6,7 @@ The /fusion:next handoff still asserts a Directive read the orchestrator does no
 **Domain:** code
 **Filed by:** orchestrator, re-filing a residual the closing change named
 **Affects:** `skills/next/SKILL.md` (the activation handoff), `agents/orchestrator.md` (the Coherence gate's Directive resolution)
-**Cross-references:** `shared/issues/260818-1512_c_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md` — the record this residual outlived, closed by plan `260818-1512` step 4
+**Cross-references:** `260818-1512_*_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md` — the record this residual outlived, closed by plan `260818-1512` step 4
 
 ---
 

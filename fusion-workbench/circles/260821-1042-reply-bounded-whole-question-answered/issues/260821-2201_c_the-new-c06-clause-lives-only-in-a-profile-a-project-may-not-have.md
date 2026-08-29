@@ -4,9 +4,9 @@ The new C06 clause lives only in a profile a project may not have, and the rule'
 
 **Severity:** Medium
 **Domain:** data
-**Filed by:** ontorev, reviewing step 4 of plan `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Filed by:** ontorev, reviewing step 4 of plan `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Affects:** `stilwerk/chat-voice-en.yaml:65-66`, `stilwerk/chat-voice-de.yaml:66-67`, and both `fusion-workbench/stilwerk/` copies
-**Cross-references:** `shared/issues/260821-2207_o_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
+**Cross-references:** `260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
 
 ---
 
@@ -44,7 +44,7 @@ reader at all, while its sibling AI04 clause does.
 ## Why it matters
 
 The executor's own log states the residency premise and then does not apply it
-(`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2132-ontocoder-two-register-habits-in-four-profile-files.md`):
+(`260821-2132-ontocoder-two-register-habits-in-four-profile-files.md`):
 
 > The pointer runs profile to rule and never the other way. Every agent reads the rule
 > file; the profile can be absent from a workbench entirely, so a rule file pointing at a
@@ -80,7 +80,7 @@ It is a bullet rather than a sentence appended to its neighbour, because the two
 modes this record's companion separates are variation and repetition, and a bolded lead-in
 is the rule file's lookup surface exactly as `name:` is the profile's. Folding the second
 habit under the first heading would have reproduced in the rule file the defect
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
+`260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
 filed against the profile.
 
 The clause carries no worked example. Its neighbour carries none either since the step-5
@@ -92,7 +92,7 @@ the direction the residency premise forces.
 
 Not taken here, and still open: route 2. `rules/user-facing-output.md:19` still names four
 of the six whitelist entries, so a profile-less project gets this clause and not C05's.
-That is `shared/issues/260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`,
+That is `260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`,
 which was out of this task's scope and is unaffected by the edit.
 
 Bytes: the file stood at 20 062 before this pass and 20 142 after it, against the anchor

@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** answered
-**Filed by:** orchestrator (session `260810-0844`, Turn 3 — from a residual the T14 executor measured and correctly declined to patch)
-**Cross-references:** `shared/issues/260810-0749_c_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `shared/issues/260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4
+**Filed by:** orchestrator (session `260810-0844-orchestrator-session.md`, Turn 3 — from a residual the T14 executor measured and correctly declined to patch)
+**Cross-references:** `260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md` (round 1, closed by `38fe341`); `260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md` (round 2, closed by `c546ef0`); `hooks/lib/__tests__/fusion-count-sources.test.ts`; `bin/fusion-count-sources`; `rules/critical-stance.md` §4
 
 ---
 
@@ -104,7 +104,7 @@ Superseded by:
 
 ---
 
-## Answer (user, session 260810-0844)
+## Answer (user, session 260810-0844-orchestrator-session.md)
 
 **Option 3: the script emits its own extension set.** `bin/fusion-count-sources` gains a
 documented mode whose output the test consumes, and the text parsing goes away entirely.
@@ -125,7 +125,7 @@ The property that closed round 1 must survive: the test may not carry a copy of 
 the script's own output satisfies that, since the script computes the value by running.
 
 ---
-Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
+Answered: 260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844-orchestrator-session.md. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker

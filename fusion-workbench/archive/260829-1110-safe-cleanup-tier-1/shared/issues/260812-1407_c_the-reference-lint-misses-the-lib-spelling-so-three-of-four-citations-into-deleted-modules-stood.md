@@ -19,7 +19,7 @@ imported. The gate does not recognise it, so it resolves nothing and reports not
 
 **Why this is worse than one missed pattern.** A coverage gate that silently skips a spelling
 reports green over the citations it did not examine, and there is no way to tell the two apart from
-its output. This is the same shape as `260810-2149`, where a coverage *floor* could not see coverage
+its output. This is the same shape as `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`, where a coverage *floor* could not see coverage
 leaving the examined set, and the answer taken there — pin the counts rather than assert a floor —
 applies here for the same reason. Queue entry 26 is that pin, unbuilt.
 
@@ -34,7 +34,7 @@ token, or count what it examined and pin the count.
 ---
 
 **Resolved 2026-08-16**, session `260816-0119`, coder, in one pass with three sibling defects
-(`260811-1755`, `260815-1251`, `260810-2149`) — all four live in
+(`260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md`, `260815-1251`, `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`) — all four live in
 `hooks/lib/__tests__/reference-resolution-lint.test.ts`.
 
 `lib` joined the directory alternation in `PLUGIN_PATH_BODY`, and a new `resolveToken()` maps a
@@ -57,6 +57,6 @@ shape as `bin/fu`. The pre-existing "no dead weight" test is what will catch one
 naming it.
 
 **The record's own falsifier — "not to be fixed by widening alone" — is answered by the sibling
-fix.** `260810-2149`'s baseline pin landed in the same pass: `counts.paths`/`anchors`/`records` are
+fix.** `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`'s baseline pin landed in the same pass: `counts.paths`/`anchors`/`records` are
 now asserted equal to committed constants, so a *third* spelling silently leaving or never entering
 scope moves a pinned number and reddens the suite, rather than being invisible the way this one was.

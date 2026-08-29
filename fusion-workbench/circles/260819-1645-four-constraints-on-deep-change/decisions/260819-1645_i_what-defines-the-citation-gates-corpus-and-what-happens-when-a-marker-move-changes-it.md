@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper
-**Cross-references:** `shared/issues/260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`; `shared/issues/260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md`; `shared/issues/260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`; `hooks/lib/__tests__/helpers/citation-scan.ts`; `hooks/lib/__tests__/reference-resolution-lint.test.ts`
+**Cross-references:** `260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`; `260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md`; `260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`; `hooks/lib/__tests__/helpers/citation-scan.ts`; `hooks/lib/__tests__/reference-resolution-lint.test.ts`
 
 ---
 
@@ -55,9 +55,9 @@ surface the lint does not scan.
    `hooks/lib/__tests__/reference-resolution-lint.test.ts` already uses for its three classes.
    - Pros: consistent with the convention this repository already applies to gates that report what
      they examined, and the question of whether that is the convention is itself open
-     (`shared/decisions/260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`).
+     (`260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`).
    - Cons: reproduces defect
-     `shared/issues/260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`
+     `260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`
      in a second place, knowingly. A count that may be
      re-approved is a gate that will be re-approved, and this repository has measured that twice on
      the one gate that has one.
@@ -73,7 +73,7 @@ surface the lint does not scan.
   answers 1 and 2. No option here changes that order.
 - Whatever is chosen must not read the shared build tree during a run, the same constraint
   decision
-  `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
+  `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
   carries, since concurrent suite runs in one checkout are supported by
   design.
 
@@ -101,7 +101,7 @@ Superseded by:
 Retired:
 
 ---
-Answered: circles/260819-1645-four-constraints-on-deep-change/history/260819-2006-orchestrator-session.md — user chose **option 1** at the plan-approval gate on 2026-08-19: zero dangling over the corpus, recomputed on every run. No baseline and no approvable number, so there is nothing that can be edited to silence the gate. Step 10 of the plan therefore does not exist: `skills/archive/SKILL.md` is not made a writer of records it did not create, and the archive half of the annotation obligation is not built.
+Answered: 260819-2006-orchestrator-session.md — user chose **option 1** at the plan-approval gate on 2026-08-19: zero dangling over the corpus, recomputed on every run. No baseline and no approvable number, so there is nothing that can be edited to silence the gate. Step 10 of the plan therefore does not exist: `skills/archive/SKILL.md` is not made a writer of records it did not create, and the archive half of the annotation obligation is not built.
 
 The accepted cost is stated rather than argued away: a `/fusion:cleanup` archive sweep can turn `npm test` red, and so can a newly filed record carrying a bad citation — red, in both cases, for somebody who touched no citation. The user chose this knowing it, against the alternative of making the archive step repair what it breaks.
 
@@ -110,7 +110,7 @@ The measurement this session added to the argument against option 3: the corpus 
 ---
 **Evidence produced inside this Circle, 2026-08-19, after the answer.** Step 8 accounted for the
 plan's 33 `stamp-name` hits and found 30. The missing three sit in
-`circles/260801-1244-guard-rules-write/decisions/260805-1548_i_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`,
+`260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`,
 which **step 4 of this same plan transitioned `_a_` → `_i_`**. An `_i_` decision is in neither corpus
 reading, so the file left the measured set carrying three dead citations, and nothing reported it.
 

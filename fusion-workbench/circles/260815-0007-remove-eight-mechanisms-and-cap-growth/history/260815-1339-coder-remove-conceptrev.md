@@ -3,7 +3,7 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 7
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 7
 **HEAD at start:** `6350854`
 **Verification:** `cd hooks && npm test` — exit 0, 45 files, 828 tests (830 before; two tests left with their subject)
 
@@ -29,7 +29,7 @@ graph gets before the human reads it, and the closing paragraph no longer promis
 evaluation. The five producers keep loading it; the file shrank 5 673 → 4 850 bytes.
 
 **Every `conceptrev` review already on disk**, including this Circle's own plan review at
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`.
+`260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`.
 Removing the agent does not unmake the reviews it wrote. `rules/fusion-workbench-conventions.md`
 `## Filename Patterns` now reads `<sender>` as `coderev` or `ontorev` and carries one clause
 saying older files may carry `conceptrev`, retired with its agent — so an agent meeting one in
@@ -68,11 +68,11 @@ can see it.
 
 ## Two findings filed rather than executed
 
-Filed as `issues/260815-1339_o_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`:
+Filed as `260815-1339_*_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`:
 
 - Step 7's fifth bullet asks for `conceptrev` to be removed from a **recognised sender set** in
   `hooks/lib/review-coverage.ts`. No such set exists — the absence of a sender filter *is*
-  defect `shared/issues/260811-1145`. The bullet also says that defect is retired by this step;
+  defect `260811-1145`. The bullet also says that defect is retired by this step;
   it is not. Existing `conceptrev` files still produce the permanent `UNUSABLE` row, this
   Circle's own review among them, so the issue was **left `_o_`** rather than closed on a fix
   that did not happen.

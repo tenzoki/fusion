@@ -16,9 +16,9 @@ carrier of the person and checkout fields, so a divergence that costs a sentence
 divergence in attribution if only one site is edited.
 **Cross-references:**
 `agents/orchestrator.md` `### 2. Structured Event Log` (the vocabulary, which is the authoring home);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
+`260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
 (the same two-rendering divergence, in the reader rather than the writer);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
 steps 3 and 4, which edit both sites in the same Turn for exactly this reason
 
 ## What was measured

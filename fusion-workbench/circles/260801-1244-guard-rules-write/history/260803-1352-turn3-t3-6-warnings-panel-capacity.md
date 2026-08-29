@@ -2,10 +2,10 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Closes:**
-`issues/260802-2232_c_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md` (Low)
-**Files:** `issues/260803-1352_o_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md` (Low, `hooks/`, out of scope here)
+`260802-2232_*_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md` (Low)
+**Files:** `260803-1352_*_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md` (Low, `hooks/`, out of scope here)
 **Scope touched:** `bin/monitor`,
 `hooks/lib/__tests__/monitor-warnings-panel.test.ts` (new)
 **Tests:** 1080 passed, 23 files (baseline 1076 / 22 files, +4 tests, +1 file)
@@ -218,7 +218,7 @@ nine ordinary rows of screen, which can push blocks below the fold — the same 
 eviction this task closed, arriving through the height axis instead of the count axis.
 
 Filed as
-`issues/260803-1352_o_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md`
+`260803-1352_*_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md`
 rather than fixed, because the fix is two `forEvent()` calls in `hooks/guard.ts` and this
 task's scope is `bin/monitor`. The issue argues against the alternative of clamping in the
 monitor's CSS: that would be a second, weaker bound compensating for an unbounded producer,

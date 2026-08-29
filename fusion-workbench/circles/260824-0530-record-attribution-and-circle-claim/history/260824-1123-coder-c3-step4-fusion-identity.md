@@ -1,7 +1,7 @@
 # Coder — C3 step 4: `bin/fusion-identity`, the one identity mechanism
 
 **Status:** Complete
-**Task:** Plan step 4 of `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`
+**Task:** Plan step 4 of `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`
 **Executor:** coder
 
 ## What was built
@@ -26,7 +26,7 @@ program cannot produce is absent rather than empty.
 ## The exit-code table, and the departure from the step text
 
 The step text folds two states into exit 1, "the identity cannot be produced". The blocking decision
-`circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`
+`260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`
 was answered after the plan was written, and option 2 makes those two states **opposite instructions
 to the caller**: inside a git work tree with the identity unset the caller halts, outside a work tree
 it carries on and files with the agent alone. A prompt keys on the code and cannot key on stderr

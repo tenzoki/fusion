@@ -4,9 +4,9 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** orchestrator, from an adjacent finding reported by the executor of task T1 (session `260810-0844`, Turn 1)
+**Filed by:** orchestrator, from an adjacent finding reported by the executor of task T1 (session `260810-0844-orchestrator-session.md`, Turn 1)
 **Affects:** `bin/fusion-plane` — `cmd_push` flag handling
-**Cross-references:** commit `4bf509e`; `shared/issues/260810-0747_c_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md` (the same silence, from the other side)
+**Cross-references:** commit `4bf509e`; `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md` (the same silence, from the other side)
 
 ---
 
@@ -16,7 +16,7 @@
 `--rebuild-map` gets a run that ignores the file entirely, exits 0, and prints nothing about
 the flag on either stream.
 
-This is the same silent-no-op family as `260810-0747`, which `4bf509e` just closed: the user
+This is the same silent-no-op family as `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md`, which `4bf509e` just closed: the user
 named an input, the input was not used, and nothing said so. The file's own rule is stated in
 `map_forget` (around `:1504`) — an absent mutation is a reported failure, never a silent no-op.
 

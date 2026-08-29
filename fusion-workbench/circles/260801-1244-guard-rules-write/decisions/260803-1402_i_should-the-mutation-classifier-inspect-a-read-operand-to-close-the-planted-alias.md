@@ -4,16 +4,16 @@
 **Domain:** code
 **Status:** open
 **Filed by:** coder (Turn 3, task T3-7), on the instruction in
-`issues/260802-2335` direction 2
+`260802-2335` direction 2
 **Cross-references:**
-`issues/260802-2335_p_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md`
+`260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md`
 (directions 1–3; direction 1 landed in T3-7),
 `rules/protected-path-discipline.md` "Where this check does not reach" (the residual row
 this decision would remove),
 `hooks/lib/bash-mutation-guard.ts` `WrittenPositionals` / `VerbSpec.exemptible` (the
 `exemptible: false` row on `ln`, which makes the same argument on the GRANT side),
 `hooks/lib/paths.ts:71-75` (protection is purely textual, by design),
-`shared/issues/260802-2320` (case-folding — carries direction 3, the complete answer)
+`260802-2320` (case-folding — carries direction 3, the complete answer)
 
 ---
 
@@ -41,7 +41,7 @@ Measured at HEAD, real guard subprocess, throwaway consuming project, shipped
 Two commands, no flag, both spellings, both surfaces. The guard sees each command in full
 and resolves every operand; it allows them because neither *names* a protected path.
 
-Direction 2 of `260802-2335` proposes denying `ln`, `ln -s` and `cp -l` when the SOURCE
+Direction 2 of `260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md` proposes denying `ln`, `ln -s` and `cp -l` when the SOURCE
 operand is protected. That closes the deliberate plant at the moment of planting. It also
 introduces the first case in which the classifier inspects a read operand, which is why
 this is a decision rather than a patch: "only the operands a verb writes count" is stated
@@ -79,7 +79,7 @@ answer is that the plant should be denied, that row is wrong the day the deny la
    - Pros: the complete answer. Both spellings, pre-existing aliases included, on both
      surfaces.
    - Cons: expensive, platform-dependent, and already under discussion at
-     `shared/issues/260802-2320` as direction 3 of the case-folding question. Deciding it
+     `260802-2320` as direction 3 of the case-folding question. Deciding it
      here would pre-empt that.
 
 ## Constraints
@@ -92,7 +92,7 @@ answer is that the plant should be denied, that row is wrong the day the deny la
 - Whichever way this goes, `rules/protected-path-discipline.md` and `README-hooks.md` move
   together. Option 2 removes the residual row from one and the residual sentence from the
   other.
-- Option 3 belongs to `260802-2320`, not here. This decision should not answer it.
+- Option 3 belongs to `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`, not here. This decision should not answer it.
 
 ## Recommendation
 
@@ -110,7 +110,7 @@ prevent: an unexplained deny, followed by a rephrasing that works
 
 What makes option 1 defensible is the honesty of the residual row rather than the strength
 of the guard. If that is not enough, the answer is option 3 and the place to decide it is
-`260802-2320`, where the cost is already being weighed.
+`260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`, where the cost is already being weighed.
 
 `inference:` the "partial gain" judgement rests on my reading of the verb table and on the
 measured rows above; I did not implement option 2 and have not measured what it would
@@ -130,20 +130,20 @@ The measured table still reproduces the boundary it describes: `hooks/lib/paths.
 
 **Two cross-references do not resolve as written.**
 
-1. `issues/260802-2335_p_the-stated-residual-list-omits-the-alias-…` — the file is now `260802-2335_c_…`. It was closed by `ce7a125` in the same session that filed this record. This is the failure mode already filed at `shared/issues/260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md`; the target moved one marker later, exactly as that issue predicts.
-2. `shared/issues/260802-2320` — that issue is not in the shared store. It is `circles/260801-1244-guard-rules-write/issues/260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`. The same wrong store appears in `## Options` option 3 and again in `## Constraints`.
+1. `260802-2335_*_the-stated-residual-list-omits-the-alias-…` — the file is now `260802-2335_*_…`. It was closed by `ce7a125` in the same session that filed this record. This is the failure mode already filed at `260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md`; the target moved one marker later, exactly as that issue predicts.
+2. `260802-2320` — that issue is not in the shared store. It is `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`. The same wrong store appears in `## Options` option 3 and again in `## Constraints`.
 
-**Option 3's status has moved since this record was written, and it matters here.** This record defers option 3 to `260802-2320` on the grounds that deciding it here would pre-empt that question. `260802-2320` has since been decided: `decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` chose **unconditional case folding**, not filesystem resolution. So option 3 was not taken there and remains genuinely open for this record — the deferral did not resolve it by proxy, and whoever answers this decision cannot treat it as answered elsewhere.
+**Option 3's status has moved since this record was written, and it matters here.** This record defers option 3 to `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` on the grounds that deciding it here would pre-empt that question. `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` has since been decided: `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` chose **unconditional case folding**, not filesystem resolution. So option 3 was not taken there and remains genuinely open for this record — the deferral did not resolve it by proxy, and whoever answers this decision cannot treat it as answered elsewhere.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Content re-verified live; the urgency argument has strengthened.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Content re-verified live; the urgency argument has strengthened.**
 
 The measured table still reproduces at HEAD `cc012fc`: `ln -s ../agents/coder.md build/alias`, `cp -l agents/coder.md build/hardalias` and the follow-up `echo pwned > build/alias` all allow. `hooks/lib/paths.ts` still decides protection on the text of a path, and the classifier still reads only written operands.
 
-The residual row this record would remove is live at `rules/protected-path-discipline.md:519-530`, and the same file now carries a second, larger honesty problem in the section an agent reasons from (`issues/260804-1025_o_`). That does not change this record's answer; it changes the weight of the record's own argument that a residual row calling the gap "accepted" becomes wrong the day a deny lands.
+The residual row this record would remove is live at `rules/protected-path-discipline.md:519-530`, and the same file now carries a second, larger honesty problem in the section an agent reasons from (`260804-1025_*_`). That does not change this record's answer; it changes the weight of the record's own argument that a residual row calling the gap "accepted" becomes wrong the day a deny lands.
 
-The two cross-reference corrections from reconciliation 260803-1516 were not applied and are repeated here so they are not lost: `issues/260802-2335_p_…` is now `_c_`, and `shared/issues/260802-2320` is not in the shared store — it is `circles/260801-1244-guard-rules-write/issues/260802-2320_c_…`, and its marker has since moved from `_o_` to `_c_` as well, so the citation is now wrong in two ways.
+The two cross-reference corrections from reconciliation 260803-1516 were not applied and are repeated here so they are not lost: `260802-2335_*_…` is now `_c_`, and `260802-2320` is not in the shared store — it is `260802-2320_*_…`, and its marker has since moved from `_o_` to `_c_` as well, so the citation is now wrong in two ways.
 
 ## Answer
 
@@ -161,7 +161,7 @@ close one spelling of the class at the price of that regularity, and an agent th
 `rules/protected-path-discipline.md` exists to prevent: an unexplained deny, followed by a
 rephrasing that works.
 
-The residual is not new and is already on both residual lists, added when `260802-2335`
+The residual is not new and is already on both residual lists, added when `260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md`
 closed. **The obligation this answer creates is that the lists say the whole of it**: not only
 that a pre-existing alias escapes protection, but that an agent may create one itself, in one
 allowed command, with no flag, and write through it on either surface. Step 7 of the
@@ -169,7 +169,7 @@ remediation plan owns that sentence.
 
 The larger fix remains available and is where it belongs: resolving every guarded path through
 the filesystem drops this case out as a by-product rather than as a special case, and that is
-`circles/260804-1205-shell-reachability-model`'s neighbourhood rather than this Circle's.
+`260804-1205-shell-reachability-model`'s neighbourhood rather than this Circle's.
 
 ---
 Answered: this record, `## Answer` — user chose option 1; the write-only rule is worth more than the spelling it leaves open, and the residual must be stated in full rather than in part.
@@ -178,4 +178,4 @@ Answered: this record, `## Answer` — user chose option 1; the write-only rule 
 Implemented: 98c9363 — option 1 is documentation-only, and the obligation landed: the planted-alias residual is stated in full in `rules/protected-path-discipline.md` (rewritten around the measured block) and `README-hooks.md:215`, and the hard-linked-rule-file exception on the exemption side landed with C5b plan Step 7 obligation 3 (`373f5ed`). Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md), completed by `fa2f00b` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the mutation classifier this record declined to widen was deleted whole: `ba7ccda` removed `hooks/lib/bash-mutation-guard.ts` (3,351 lines) and `hooks/lib/shell-reach.ts`, and struck the `classifyBashMutation` call from `hooks/guard.ts`. Option 1 was documentation-only and both documents it landed in are gone or cut: `rules/protected-path-discipline.md` was deleted by `fa2f00b`, and the planted-alias residual it stated no longer describes anything the guard does. Nothing about a `Bash` command is read by the guard today.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md), completed by `fa2f00b` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — the mutation classifier this record declined to widen was deleted whole: `ba7ccda` removed `hooks/lib/bash-mutation-guard.ts` (3,351 lines) and `hooks/lib/shell-reach.ts`, and struck the `classifyBashMutation` call from `hooks/guard.ts`. Option 1 was documentation-only and both documents it landed in are gone or cut: `rules/protected-path-discipline.md` was deleted by `fa2f00b`, and the planted-alias residual it stated no longer describes anything the guard does. Nothing about a `Bash` command is read by the guard today.

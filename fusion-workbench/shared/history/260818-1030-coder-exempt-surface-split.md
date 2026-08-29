@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 2026-08-18
-**Task:** T3 — close `shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`, routed by `shared/decisions/260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md` option 2.
+**Task:** T3 — close `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`, routed by `260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md` option 2.
 
 ---
 
@@ -27,7 +27,7 @@ it pointed at "the exempt surfaces listed below" as one list and now names the t
 
 ## The constraint this had to satisfy
 
-`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
 required the answer to *name* this repository's double role instead of passing over it. The
 old text passed over it by universalising the plugin's own exemptions. The new closing
 paragraph names both roles in one sentence — source of the shipped rule text, and a `de`
@@ -66,8 +66,8 @@ and are marked superseded by the resolution note rather than rewritten.
 
 ## Records
 
-- `shared/issues/260807-2153_c_...` — `_o_` -> `_c_`, resolution note appended.
-- `shared/decisions/260818-0814_i_...` — `_a_` -> `_i_`, `Implemented:` line appended,
+- `260807-2153_*_...` — `_o_` -> `_c_`, resolution note appended.
+- `260818-0814_*_...` — `_a_` -> `_i_`, `Implemented:` line appended,
   `**Status:**` open -> answered.
 
 ## Verification

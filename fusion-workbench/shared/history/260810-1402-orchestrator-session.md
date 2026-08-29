@@ -122,13 +122,13 @@ for ten minutes would have been. Filed as its own record.
 **Two staging faults, both mine.** A `bash -c` wrapper with a heredoc inside it
 truncated a commit message at the first apostrophe (`045a14f`, repaired by amend
 as `4f16c60`); the prompt's own Step 3b instructs both halves of that
-combination, and it is filed as `260810-1535`. Separately, `git add -u` on
+combination, and it is filed as `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md`. Separately, `git add -u` on
 `shared/issues/` swept two in-flight records' `Resolved:` notes into `7c4dfb2`
 ahead of their own commits, so both claimed resolution one commit early.
 
 **A decision was marked implemented while two thirds of it were unbuilt.**
-`260810-0921` bundled three questions; only part (a1) was realised. Reverted,
-split into `260810-1544_o_...`, then marked implemented on its remaining scope.
+`260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` bundled three questions; only part (a1) was realised. Reverted,
+split into `260810-1544_*_...`, then marked implemented on its remaining scope.
 A record bundling separable questions cannot hold a single state.
 
 **Parallel dispatch cost more than it bought.** Two executors reached outside

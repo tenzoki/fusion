@@ -43,6 +43,7 @@ bin/*
 !bin/fusion-session-domain
 !bin/fusion-events
 !bin/fusion-cadence-anchor
+!bin/fusion-citation-check
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go

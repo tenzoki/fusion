@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-04 12:05
 **Agent:** shaper (anticipated-circle mode)
-**Dispatched by:** orchestrator, task T9-2, in Circle `circles/260801-1244-guard-rules-write`
+**Dispatched by:** orchestrator, task T9-2, in Circle `260801-1244-guard-rules-write`
 **Status:** Complete
-**Produced:** `circles/260804-1205-shell-reachability-model/` (record `_a_circle.md`, plus the six artifact subdirectories)
+**Produced:** `260804-1205-shell-reachability-model` (record `_a_circle.md`, plus the six artifact subdirectories)
 
 ---
 
@@ -12,24 +12,24 @@
 
 > Replace the guard's flat joiner model with a real shell reachability model, so the classifier asks "is this segment guaranteed reached given that the command started?" rather than inspecting one adjacent operator at a time.
 
-The dispatch framed this as a capture rather than an open shaping job: the work had already been analysed, costed and argued in `decisions/260804-0947`, and the user answered that record an hour earlier by choosing option 4 (take the cheap give-up now, give the reachability model its own Circle). The shaper's job was a Directive and a Grounding snapshot, not a re-litigation.
+The dispatch framed this as a capture rather than an open shaping job: the work had already been analysed, costed and argued in `260804-0947`, and the user answered that record an hour earlier by choosing option 4 (take the cheap give-up now, give the reachability model its own Circle). The shaper's job was a Directive and a Grounding snapshot, not a re-litigation.
 
 ## What was read
 
-- `circles/260801-1244-guard-rules-write/decisions/260804-0947_i_…joiner…moves…writes.md` — the four options, the five constraints, the recommendation, the user's answer, and the implementation note on `4f1007f`.
-- `circles/260801-1244-guard-rules-write/issues/260804-0839_o_…flat-joiner…precedence….md` — the live over-deny, its four shapes, its anti-vacuity pins.
-- `circles/260801-1244-guard-rules-write/reviews/260804-0845-coderev-turn7-….md` — `### The boundary, by coverage`.
-- `circles/260801-1244-guard-rules-write/history/260804-1021-reconciliation.md` — sections D, E, G and I, for the parent Circle's open ledger.
-- `circles/260801-1244-guard-rules-write/_t_circle.md` and `circles/260801-1244-curator/_a_circle.md`, as the format precedent for a Circle record in this workbench.
-- The parent Circle's plan (`planning/260802-1856_o_plan-guard-rules-write.md`) step headings, to state the dependency in terms of actual steps rather than a remembered range.
+- `260804-0947_*_…joiner…moves…writes.md` — the four options, the five constraints, the recommendation, the user's answer, and the implementation note on `4f1007f`.
+- `260804-0839_*_…flat-joiner…precedence….md` — the live over-deny, its four shapes, its anti-vacuity pins.
+- `260804-0845-coderev-turn7-….md` — `### The boundary, by coverage`.
+- `260804-1021-reconciliation.md` — sections D, E, G and I, for the parent Circle's open ledger.
+- `260801-1244-guard-rules-write` and `260801-1244-curator`, as the format precedent for a Circle record in this workbench.
+- The parent Circle's plan (`260802-1856_*_plan-guard-rules-write.md`) step headings, to state the dependency in terms of actual steps rather than a remembered range.
 
 ## Clarification rounds: none run, and why
 
 The shaper was dispatched as a sub-agent and therefore had no `AskUserQuestion`. Both candidate questions in the dispatch brief were checked against the records first, as the brief instructed.
 
-**Scope (reachability alone, or reachability plus the exit-status question).** Settled by `260804-0947` and not a choice: *"The control row does not improve. `[ -d nope ] || cd build && rm rules/x.md` still denies: reachability is a static property, the exit status is not, and no parser recovers it."* Asking the user to pick between reachability and reachability-plus-exit-status would offer an option that does not exist. Recorded in the Directive as a stated residual instead.
+**Scope (reachability alone, or reachability plus the exit-status question).** Settled by `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` and not a choice: *"The control row does not improve. `[ -d nope ] || cd build && rm rules/x.md` still denies: reachability is a static property, the exit status is not, and no parser recovers it."* Asking the user to pick between reachability and reachability-plus-exit-status would offer an option that does not exist. Recorded in the Directive as a stated residual instead.
 
-**Sequencing against the parent Circle.** Settled for this Circle's own dependency and left open where it genuinely is open. The dependency itself is mechanical and certain: the two Circles edit the same two files (`260804-1024` lands in `bash-mutation-guard.ts`, which this Circle restructures), the parent's `260804-1025` corrects the very text this Circle's work will rewrite again, and fusion activates one Circle at a time. What is *not* settled is whether the parent ships (plan Step 10) before or after this Circle runs. That choice belongs to the parent Circle's plan, changes nothing in this Circle's content, and is recorded as an open note in `## Dependencies` rather than decided.
+**Sequencing against the parent Circle.** Settled for this Circle's own dependency and left open where it genuinely is open. The dependency itself is mechanical and certain: the two Circles edit the same two files (`260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` lands in `bash-mutation-guard.ts`, which this Circle restructures), the parent's `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` corrects the very text this Circle's work will rewrite again, and fusion activates one Circle at a time. What is *not* settled is whether the parent ships (plan Step 10) before or after this Circle runs. That choice belongs to the parent Circle's plan, changes nothing in this Circle's content, and is recorded as an open note in `## Dependencies` rather than decided.
 
 ## What the Directive kept from the draft, and what it added
 

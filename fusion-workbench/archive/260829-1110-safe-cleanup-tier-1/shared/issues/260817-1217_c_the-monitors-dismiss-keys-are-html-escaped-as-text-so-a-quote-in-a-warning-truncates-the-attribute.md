@@ -3,7 +3,7 @@ The monitor's dismiss keys are escaped as text, so a quote in a warning truncate
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md (found during its step 15, off-repository verification)
+**Cross-references:** 260816-1915_*_the-compliance-guard-becomes-observation-only.md (found during its step 15, off-repository verification)
 
 ---
 
@@ -88,7 +88,7 @@ predates the Directive, affects every consuming project, and outlives this Circl
 found by the Circle's verification step, which is discovery rather than origin.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:527-531` still escapes through a text-node round trip, which does not escape the double quote, and `:621` still interpolates the result into a `data-key` attribute. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:527-531` still escapes through a text-node round trip, which does not escape the double quote, and `:621` still interpolates the result into a `data-key` attribute. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: the key no longer travels through the markup at all.
@@ -122,4 +122,4 @@ the open half:** whether that pin is worth its lines, and what gets cut to pay f
 **One thing this fix does not reach.** A consuming project runs `fusion-workbench/monitor`, copied
 from `$FUSION_PLUGIN_ROOT` at Setup, and that install copy is the released plugin. Until a release is
 cut, no consuming project gets this. The release gap is
-`shared/issues/260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`.
+`260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`.

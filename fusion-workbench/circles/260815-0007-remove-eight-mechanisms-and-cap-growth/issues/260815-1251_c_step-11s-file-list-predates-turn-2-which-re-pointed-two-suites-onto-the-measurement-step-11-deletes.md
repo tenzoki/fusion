@@ -2,7 +2,7 @@
 
 ---
 
-Step 11 of `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` deletes
+Step 11 of `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` deletes
 `hooks/lib/state-drift.ts`, the tracker's state-drift call and `bin/monitor`'s `state_drift`
 branch. Its file list was written on 2026-08-15 at planning time and corrected once at 08:47
 (`d1ae1c0`). Between that correction and now, `a69d56e` re-pointed **two** test surfaces onto
@@ -13,10 +13,10 @@ written lands a red commit, which the orchestrator's Step 3b reverts whole.
 
 **Severity:** Medium — step 11 lands red as written, and the orchestrator's Step 3b reverts the whole task on red.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1251-coderev-turn-2-build-churn-and-stash.md`)
+**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`260815-1251-coderev-turn-2-build-churn-and-stash.md`)
 **Owner:** `planner` for the plan edit; `coder` at step 11 for the test work it names
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:285-299`; `hooks/lib/__tests__/guard-state-shape.test.ts`; `hooks/lib/__tests__/monitor-warnings-panel.test.ts:730`; `hooks/lib/__tests__/hook-fail-open.test.ts:184-215`, `:325-374`
-**Cross-references:** `issues/260815-0804_o_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md` — the same step, the other direction
+**Affects:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:285-299`; `hooks/lib/__tests__/guard-state-shape.test.ts`; `hooks/lib/__tests__/monitor-warnings-panel.test.ts:730`; `hooks/lib/__tests__/hook-fail-open.test.ts:184-215`, `:325-374`
+**Cross-references:** `260815-0804_*_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md` — the same step, the other direction
 
 **Verified 2026-08-15 at HEAD `5d29b6d`.** Suite green at that commit: 45 files, 830 tests.
 
@@ -66,10 +66,10 @@ cases lose their subject rather than their wording:
 
 - `:184-215` "tracker replies with a valid envelope, exits 0, and still says why on stderr" — added
   by `a69d56e` with a comment stating in full why it now needs a drifted project.
-- `:325-374` "delivers the tracker's report with its throttle record unwritable (260809-2045)" —
+- `:325-374` "delivers the tracker's report with its throttle record unwritable (260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md)" —
   re-pointed by `a69d56e` from `churn.json` onto `state-drift.json`.
 
-Both exist to hold the property of `shared/issues/260809-2045`: a report may not withdraw a verdict.
+Both exist to hold the property of `260809-2045`: a report may not withdraw a verdict.
 `inference:` a replacement probe is available — `measureStagingDriftForModel` writes
 `staging-drift.json` on the first sighting of a HEAD (`tracker.ts`, the `if (!moved)` arm) — but it
 fires once per project rather than on every call, so it is a different construction, not an edit.
@@ -85,7 +85,7 @@ re-pointed onto seventeen hours earlier.
 `a69d56e`'s own message names the re-pointings and argues each one. The gap is between two steps
 six apart: step 4 re-pointed the suites correctly for the tree it left, and step 11's file list
 describes a tree that no longer exists. This is the same shape as
-`260815-0804_o_the-plan-still-carries-the-false-premise-step-2-disproved-…`, arriving from the
+`260815-0804_*_the-plan-still-carries-the-false-premise-step-2-disproved-…`, arriving from the
 other direction — there a landed step falsified an instruction, here a landed step falsified a
 file list.
 
@@ -104,11 +104,11 @@ Three edits to step 11, all in the plan:
 
 ## Related
 
-- `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 11 (line 285-299),
+- `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 11 (line 285-299),
   step 4 (line 188-204)
-- `history/260815-1206-coder-step4-churn-removal.md` — the run that re-pointed them
-- `260815-0804_o_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`
-- `shared/issues/260809-2045_c_the-churn-half-still-runs-before-the-reply-…` — the property the
+- `260815-1206-coder-step4-churn-removal.md` — the run that re-pointed them
+- `260815-0804_*_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`
+- `260809-2045_*_the-churn-half-still-runs-before-the-reply-…` — the property the
   two `hook-fail-open` cases hold
 
 ---

@@ -35,7 +35,7 @@ Prompt body:
 **Mode:** survey
 ```
 
-Add `**Scope:** full` on its own line only when the caller passed `--full` — the unbounded evidence pass (decision `260827-0745`). `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
+Add `**Scope:** full` on its own line only when the caller passed `--full` — the unbounded evidence pass (decision `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md`). `survey` is the agent's default; passing it anyway is deliberate — the dispatch says which pass it wants. The agent resolves its own paths at its Setup, reads its evidence sources bounded by its anchor, and writes the run file. It writes to no normative surface in this pass. Wait for it.
 
 ## Step 3 — Read what the survey returned
 

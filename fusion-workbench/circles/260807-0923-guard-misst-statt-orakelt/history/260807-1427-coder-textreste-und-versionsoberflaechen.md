@@ -1,7 +1,7 @@
 # Textreste im Produktivcode und die drei Versionsoberflächen auf 6.0.0
 
 **Agent:** coder
-**Circle:** `circles/260807-0923-guard-misst-statt-orakelt`
+**Circle:** `260807-0923-guard-misst-statt-orakelt`
 **Auftrag:** Freigabe-Vorbereitung, zwei Teile, ohne Commit und ohne Push
 **Status:** Complete
 
@@ -15,11 +15,11 @@ ausgeliefertem `hooks/`-Code, alle reine Kommentarprosa ohne Importkante.
 | Datei | Was dort stand | Was jetzt dort steht |
 |---|---|---|
 | `hooks/lib/rules-write-exemption.ts` (benannt) | „the conventions of `isProtected` in `bash-mutation-guard.ts` and of `matchesAnyFolded`" | Beide Konventionen mit ihren lebenden Trägern: `matchesAnyFolded` in `paths.ts` faltet die Groß-/Kleinschreibung, `shouldDescend` in `protected-snapshot.ts` wiederholt den abschließenden Trenner |
-| `hooks/lib/protected-snapshot.ts:20` (benannt) | `circles/260804-1205-…/decisions/260807-0825_*_….md`, „option 3" | Der Inhalt der Entscheidung: vom Nutzer am 2026-08-07 aus vier Optionen gewählt, nachträglich feststellen statt vorherzusagen |
+| `hooks/lib/protected-snapshot.ts:20` (benannt) | `circles/260804-1205-…/260807-0825_*_….md`, „option 3" | Der Inhalt der Entscheidung: vom Nutzer am 2026-08-07 aus vier Optionen gewählt, nachträglich feststellen statt vorherzusagen |
 | `hooks/guard.ts:35` (benannt) | derselbe Entscheidungspfad, über zwei Zeilen umgebrochen | „Decided by the user on 2026-08-07: detect afterwards instead of predicting." |
-| `hooks/guard.ts:325` | `circles/260807-0923-…/decisions/260807-1026_a_verlust-des-bash-halts-….md` | Der Inhalt: der Nutzer nahm den Verlust des Bash-Halts als Preis für den Wegfall des Klassifizierers ausdrücklich an |
-| `hooks/lib/protected-snapshot.ts:37` | „Closed by this: `circles/…/issues/260807-1026_*_rueckrollen-auf-head-….md`" | Ein Halbsatz im Absatz selbst: der `HEAD`-Rückroller wurde während der Entstehung als Befund erfasst und durch das Mitführen des Inhalts geschlossen |
-| `hooks/lib/paths.ts:74` | `circles/260801-1244-…/decisions/260804-1632_*_should-findrelevantdecisions-fold-case….md` | Ersatzlos gestrichen. Der Absatz nennt die Vertagung, ihr Datum und ihre Bedingung bereits vollständig; der Pfad trug nichts hinzu |
+| `hooks/guard.ts:325` | `circles/260807-0923-…/260807-1026_*_verlust-des-bash-halts-….md` | Der Inhalt: der Nutzer nahm den Verlust des Bash-Halts als Preis für den Wegfall des Klassifizierers ausdrücklich an |
+| `hooks/lib/protected-snapshot.ts:37` | „Closed by this: `circles/…/260807-1026_*_rueckrollen-auf-head-….md`" | Ein Halbsatz im Absatz selbst: der `HEAD`-Rückroller wurde während der Entstehung als Befund erfasst und durch das Mitführen des Inhalts geschlossen |
+| `hooks/lib/paths.ts:74` | `circles/260801-1244-…/260804-1632_*_should-findrelevantdecisions-fold-case….md` | Ersatzlos gestrichen. Der Absatz nennt die Vertagung, ihr Datum und ihre Bedingung bereits vollständig; der Pfad trug nichts hinzu |
 | `hooks/lib/paths.ts:121` | „The user's decision, recorded at `circles/…/260803-1419_*_….md`" | Der Inhalt: am 2026-08-03 entschieden, dass die Prüfung auf jeder Plattform faltet, nicht nur wo das Dateisystem es tut |
 | `hooks/lib/config.ts:103` | „Decided by the user at the plan gate — see `circles/…/260802-1912_*_….md`" | Der Inhalt: am 2026-08-02 am Plan-Gate entschieden, dass der Selbstschutz erst greift, sobald die Konfigurationsdatei existiert |
 
@@ -33,7 +33,7 @@ dem Code gelesen ist (die Frage wird pro Datei gestellt, nie über einen Verzeic
 weil `enumerateProtected` nur `entry.isFile()` aufnimmt und CHECK 2 das Ziel eines
 Schreibwerkzeugs bekommt). Der Abschnitt heißt nicht mehr „measured", weil er es nicht mehr
 ist. Befund dazu:
-`issues/260807-1427_o_reichweite-der-regel-ausnahme-ist-nach-dem-mechanismuswechsel-nicht-neu-gemessen.md`.
+`260807-1427_*_reichweite-der-regel-ausnahme-ist-nach-dem-mechanismuswechsel-nicht-neu-gemessen.md`.
 
 ### Die mechanische Nachprüfung
 
@@ -123,6 +123,6 @@ sind in `dist/lib/` keine mehr vorhanden.
 - `CLAUDE.md`
 
 Neu angelegt:
-`issues/260807-1427_o_reichweite-der-regel-ausnahme-ist-nach-dem-mechanismuswechsel-nicht-neu-gemessen.md`
+`260807-1427_*_reichweite-der-regel-ausnahme-ist-nach-dem-mechanismuswechsel-nicht-neu-gemessen.md`
 
 Nicht committet und nicht gepusht, wie beauftragt.

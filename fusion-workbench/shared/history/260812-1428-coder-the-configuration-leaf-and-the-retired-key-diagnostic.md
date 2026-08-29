@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Dispatched by:** orchestrator
-**Plan:** `shared/planning/260812-1232_p_remove-the-protected-path-half-of-the-compliance-guard.md`, steps 7–8
+**Plan:** `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, steps 7–8
 
 ---
 
@@ -97,8 +97,8 @@ rather than leaving the reader to notice that the reason evaporated.
 
 ### The floor is a loss, and it is recorded as one in three places
 
-Nothing in the guard defends `fusion-guard.json` from an agent any more. `260804-1604` (two
-spellings) and `260802-1912` (only once the file exists) are implemented decisions whose
+Nothing in the guard defends `fusion-guard.json` from an agent any more. `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` (two
+spellings) and `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (only once the file exists) are implemented decisions whose
 subject this deletes. The module docstring, the test file where the eleven floor cases
 stood, and the seeded template each say it in their own register, and each names the one
 thing that still bounds it: the file is git-tracked, so a change to it appears in a diff.
@@ -232,7 +232,7 @@ it is two cases, not a re-opening of the file.
 
 ## For the reconciler
 
-`circles/260801-1244-guard-rules-write/decisions/260802-1912_i_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
 and `.../260804-1604` (filed as an issue, closed) are the floor's records. The plan's
 supersession list names three `_i_` decisions whose subject it deletes and does not name
-`260802-1912`, whose subject — the floor's existence condition — this step deletes outright.
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`, whose subject — the floor's existence condition — this step deletes outright.

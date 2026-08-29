@@ -4,7 +4,7 @@
 **Started:** 260810-0326
 **Status:** Complete
 **Task:** T1 — grant agent-dispatch permissions so a fusion session stops prompting once per dispatch
-**Source record:** `fusion-workbench/shared/issues/260801-2352_o_plugin-settings-json-has-no-agent-allow-entries.md`
+**Source record:** `260801-2352_*_plugin-settings-json-has-no-agent-allow-entries.md`
 **Queue entry:** `fusion-workbench/tasklist.md` task 1
 **Origin:** no Circle active; shared store per the Origin Rule
 
@@ -66,7 +66,7 @@ picking one.
 | File | Change |
 |---|---|
 | `CLAUDE.md:100` | The HTTPS-installer bullet's "permission parity with a marketplace install" sentence, replaced with what the file actually grants: nothing, because it is not read. Cites the measurement, the new record, and the scoped-pattern finding. |
-| `fusion-workbench/shared/issues/260810-0326_o_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md` | New defect record. `/fusion:setup` should seed `.claude/settings.local.json` the way `/fusion:unlock` does. Carries the full measurement, the scoped-pattern finding, the unreproduced dispatch symptom, and three open sub-decisions. |
+| `260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md` | New defect record. `/fusion:setup` should seed `.claude/settings.local.json` the way `/fusion:unlock` does. Carries the full measurement, the scoped-pattern finding, the unreproduced dispatch symptom, and three open sub-decisions. |
 
 `settings.json` at the plugin root was deliberately **not** edited. `git diff -- settings.json`
 is empty.
@@ -74,7 +74,7 @@ is empty.
 ## Not done here, deliberately
 
 - The `/fusion:setup` seeding change. Different file, different acceptance criterion; filed.
-- The predecessor record `260801-2352_o_…` keeps its open marker and the queue entry stands. Its
+- The predecessor record `260801-2352_*_…` keeps its open marker and the queue entry stands. Its
   real fix has moved to the new record, and closing it is a reconciliation call, not this task's.
 - The scoped-pattern finding was folded into the new record as context for whoever writes the
   seeding, rather than filed separately. It is not a live defect in shipped behaviour: the

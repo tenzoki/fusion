@@ -64,7 +64,7 @@ not hearing about it. That question is not recorded anywhere and is worth record
 **Cross-references:**
 - `hooks/lib/config.ts:105-114`, `:324-327` (the diagnostic and the argument for the channel)
 - `hooks/turn-budget.ts:92-94` (the stderr write)
-- `circles/260816-1741-guard-becomes-observation-only/decisions/260816-1916_a_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`
+- `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`
 
 ---
 Reconciliation 2026-08-17, Phase 3. **Left OPEN, and it is the one open record against a surface

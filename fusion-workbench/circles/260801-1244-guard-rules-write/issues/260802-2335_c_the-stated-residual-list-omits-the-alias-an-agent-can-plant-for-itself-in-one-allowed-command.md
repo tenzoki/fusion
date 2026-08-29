@@ -4,7 +4,7 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 2 of `circles/260801-1244-guard-rules-write` (`bf75941..HEAD`)
+**Filed by:** coderev, reviewing Turn 2 of `260801-1244-guard-rules-write` (`bf75941..HEAD`)
 **Affects:** the protected-path check on both surfaces, and the honesty of a shipped boundary
 statement
 **Cross-references:** `rules/protected-path-discipline.md` "Where this check does not reach"
@@ -65,7 +65,7 @@ and it is the one not made.
 > classifier, and one the protected-path check still carries. Here a symlink let a write
 > ACQUIRE A GRANT, which is an escalation.
 
-The escalation half was closed (in one spelling — see `260802-2330`). The escape half is
+The escalation half was closed (in one spelling — see `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`). The escape half is
 stated here, in a module docstring, and does not appear in the file every agent actually
 reads.
 
@@ -73,7 +73,7 @@ reads.
 
 Medium. Nothing here is new — it is the protection side's known textual nature, and closing it
 means resolving every guarded path through the filesystem, which is candidate direction 3 of
-the open case-folding issue `260802-2320` and carries the same cost and the same
+the open case-folding issue `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` and carries the same cost and the same
 platform-dependence. I am not proposing that here.
 
 What is a defect is that a document whose stated purpose is to stop an agent working around
@@ -94,7 +94,7 @@ been taught that the list is not the boundary.
    first case where the classifier inspects a read operand, which is a design change and wants
    a decision record.
 3. **Resolve every guarded path through the filesystem.** Complete, expensive, and already
-   under discussion at `260802-2320`. Do not decide it here.
+   under discussion at `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`. Do not decide it here.
 
 Direction 1 is the one this issue asks for. Direction 2 is worth considering with the
 `exemptible: false` reasoning already in `bash-mutation-guard.ts:247-271`, which made exactly
@@ -102,9 +102,9 @@ this argument about `ln` for the grant side.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while checking the accuracy of the four
+Found in `260801-1244-guard-rules-write` while checking the accuracy of the four
 residuals the implementer reported. Three of the four are accurate as stated; this one
-understates and `260802-2330` falsifies the fourth.
+understates and `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` falsifies the fourth.
 
 ---
 
@@ -137,9 +137,9 @@ through: `agents/coder.md` read `pwned`, then `pwned2`.
 
 **Direction 2** (deny `ln` / `cp -l` on a protected SOURCE) not implemented, per this
 issue's own instruction. Filed as
-`decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md`,
+`260803-1402_*_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md`,
 with the measured table, the three options, and a low-confidence recommendation for
 option 1. It has to be decided rather than dropped, because the row that just shipped
 calls the residual accepted and that row is wrong the day a deny lands.
 
-**Direction 3** left with `shared/issues/260802-2320`, untouched.
+**Direction 3** left with `260802-2320`, untouched.

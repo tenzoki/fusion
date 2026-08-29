@@ -4,7 +4,7 @@
 
 **Severity:** High
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 1 of `circles/260801-1244-guard-rules-write` (`c7f117b..HEAD`)
+**Filed by:** coderev, reviewing Turn 1 of `260801-1244-guard-rules-write` (`c7f117b..HEAD`)
 **Affects:** the write-tool path only (`Write` / `Edit` / `MultiEdit` / `NotebookEdit`). The Bash
 path is not affected — `resolveTarget` already canonicalises.
 **Status at HEAD:** pre-existing, unchanged by this diff. Surfaced by it, and the diff's own
@@ -113,11 +113,11 @@ asserts it.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while hunting the third spelling. The defect
+Found in `260801-1244-guard-rules-write` while hunting the third spelling. The defect
 predates the Circle; the Circle is what makes it consequential, because the diff's stated
 threat model asserts the input class is real.
 
 ---
 Resolved: 49bb4da — protection is now matched against the collapsed path. NOT via the proposed one-liner: canonicalise also strips a trailing separator, which widens the set it is matched against, so reusing it here turned Edit agents/ into an allow. paths.ts exports collapseSegments for protection and canonicalise for the grant, and isProjectRulePath keeps its own call because the Bash path hands it operands guard.ts never sees.
 
-One member of this class remains open and is filed separately at 260802-2320: case folding on a case-insensitive filesystem.
+One member of this class remains open and is filed separately at 260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md: case folding on a case-insensitive filesystem.

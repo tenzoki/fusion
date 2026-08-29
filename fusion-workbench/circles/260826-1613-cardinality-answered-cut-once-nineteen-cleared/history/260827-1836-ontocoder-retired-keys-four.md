@@ -1,6 +1,6 @@
 # ontocoder — fusion.json `_retired` prose names four retired keys
 
-**Task:** plan step 13a of `planning/260827-1756_p_repair-the-twenty-open-defect-records.md` (record `shared/issues/260825-1456_p_three-shipped-surfaces-say-the-retired-configuration-key-set-is-three-and-the-loader-holds-four.md`).
+**Task:** plan step 13a of `260827-1756_*_repair-the-twenty-open-defect-records.md` (record `260825-1456_*_three-shipped-surfaces-say-the-retired-configuration-key-set-is-three-and-the-loader-holds-four.md`).
 
 **Changed:** `fusion.json` and `templates/fusion.json`, identically — "the three top-level keys that held it — guard, decisions, escalation" is now "the four top-level keys that held it — guard, decisions, escalation and, since 260824, churn". Source: `RETIRED_TOP_LEVEL_KEYS` in `hooks/lib/config.ts`.
 

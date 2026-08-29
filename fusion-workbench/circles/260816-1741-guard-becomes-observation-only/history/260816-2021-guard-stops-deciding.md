@@ -4,7 +4,7 @@
 **Date:** 2026-08-16
 **Agent:** coder
 **Circle:** 260816-1741-guard-becomes-observation-only
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 2
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 2
 
 ## What was implemented
 
@@ -57,7 +57,7 @@ the reason written beside the existing approval note. The arithmetic, measured r
 assumed:
 
 - At HEAD the gate was already red twice. `guard.ts:307` cited
-  `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+  `260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
   under an exact `_o_` marker, and the record now stands at `_a_`, so the citation was a
   stale-marker violation and contributed nothing to the resolved count. Received was 94 against
   a pin of 95.
@@ -80,7 +80,7 @@ weaker account than a dated sentence.
   `reference-resolution-lint.test.ts` is green (34 passed). `guard-bash-integration.test.ts` is
   **not**, and the plan requires it to be; five of its cases assert a CHECK 3 deny or the
   stand-down. Filed as
-  `circles/260816-1741-guard-becomes-observation-only/issues/260816-2021_o_the-plan-requires-guard-bash-integration-to-stay-green-while-five-of-its-cases-assert-a-deny.md`.
+  `260816-2021_*_the-plan-requires-guard-bash-integration-to-stay-green-while-five-of-its-cases-assert-a-deny.md`.
   The two properties the plan's Testing Strategy actually names for that file are green: the
   Bash zero-side-effect case and the write-tool `guard_allow` case both pass.
 - `cd hooks && npm test` — 7 test files failing, 31 cases. Baseline before the change was 1 file

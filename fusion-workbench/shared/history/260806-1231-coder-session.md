@@ -3,7 +3,7 @@
 **Agent:** coder
 **Date:** 2026-08-06
 **Status:** Complete
-**Grounding:** shared/reviews/260806-1154-coderev-implementation-vs-intention-textschicht-delta.md; die drei Issues 260806-1153/-1154 (jetzt `_c_`)
+**Grounding:** 260806-1154-coderev-implementation-vs-intention-textschicht-delta.md; die drei Issues 260806-1153/-1154 (jetzt `_c_`)
 
 ## What was done
 

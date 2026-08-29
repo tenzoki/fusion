@@ -65,8 +65,8 @@ sed  -li 's/a/b/' rules/x.md
 ```
 
 `perl -lpi -e` is the canonical one-liner. Filed **High**:
-`260801-1955_o_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md`. The closing note on
-`260801-1903` ("nothing the tools would honour") is false for this shape — perl reads `-lpi` as
+`260801-1955_*_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md`. The closing note on
+`260801-1903_*_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md` ("nothing the tools would honour") is false for this shape — perl reads `-lpi` as
 three flags.
 
 **The `git stash` row overreaches.** `stash: { written: "all" }` (`:383`) reads the sub-subcommand
@@ -75,7 +75,7 @@ project root: `cd hooks && git stash pop` now denies on `hooks/pop`, and
 `git stash push -m "$MSG"` / `git stash show "$REF"` deny fail-closed on a message and a ref. It
 also re-opens the redirect case the other fix closed — `git stash list > "$LOG"` denies while
 `npm test > "$LOG"` does not. Filed **Medium**:
-`260801-1956_o_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md`.
+`260801-1956_*_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md`.
 
 `git clean` and `git restore` are correct. `-e`/`--exclude` as a value flag, `--staged` still
 allowed, `--source HEAD~1` reaching `mutatesOnlyWhen` through the asked-first reordering
@@ -128,15 +128,15 @@ Re-ran the four mutations against HEAD:
 The fourth is caught by `"treats a bare cd and a ~ as somewhere outside the tree"` — and I ran the
 same mutation against `e31c0f3`, where it is **also** caught. So Turn 2 did not fix it; my Turn-1
 finding miscounted, and the number was three from the start. Turn 2 added no new deletable
-behaviour. `260801-1904` stands, with the count corrected to three.
+behaviour. `260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md` stands, with the count corrected to three.
 
 ## Sequencing
 
-1. `260801-1955` (High) before this Circle closes — it is a regression of this Turn on the guard's
+1. `260801-1955_*_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md` (High) before this Circle closes — it is a regression of this Turn on the guard's
    core purpose, and the discriminating test pair (`perl -lpi` deny / `perl -Ilib` allow) is what
    proves any fix is not just the old behaviour back.
-2. `260801-1956` (Medium) with it or immediately after; the `-m` value flag is a one-line partial.
-3. `260801-1904` (Low) whenever, with the count read as three.
+2. `260801-1956_*_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md` (Medium) with it or immediately after; the `-m` value flag is a one-line partial.
+3. `260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md` (Low) whenever, with the count read as three.
 
 ## What is right, briefly
 
@@ -155,11 +155,11 @@ Findings not rewritten; disposition only, verified at HEAD `9ab5a2a`.
 
 | Filed issue | Severity | State | Evidence |
 |---|---|---|---|
-| `260801-1955` value-letter truncation loses `perl -lpi` | High | `_c_` | `9ab5a2a` — two-class `ShortFlagGrammar`, letter classes measured against perl 5.34.1 and both seds |
-| `260801-1956` git stash row reads refs as written paths | Medium | `_c_` | `9ab5a2a` — `SubcommandDispatch` / `GIT_STASH` at `hooks/lib/bash-mutation-guard.ts:491-551`, model measured against git 2.53.0 |
+| `260801-1955_*_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md` value-letter truncation loses `perl -lpi` | High | `_c_` | `9ab5a2a` — two-class `ShortFlagGrammar`, letter classes measured against perl 5.34.1 and both seds |
+| `260801-1956_*_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md` git stash row reads refs as written paths | Medium | `_c_` | `9ab5a2a` — `SubcommandDispatch` / `GIT_STASH` at `hooks/lib/bash-mutation-guard.ts:491-551`, model measured against git 2.53.0 |
 
 Both were regressions this review's own scope (`5d9bbcc`, `18e2e4f`) introduced, and both were fixed inside the same session. The review's correction of the base git-suite figure (94 cases, not 84) is carried forward: the suite is 753 tests across 16 files at HEAD.
 
-The review's judgement that the Turn-1 Low finding was untouched by Turn 2 is confirmed independently — `260801-1904` remains `_o_`.
+The review's judgement that the Turn-1 Low finding was untouched by Turn 2 is confirmed independently — `260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md` remains `_o_`.
 
-Worth recording because it is the sharper lesson: `260801-1903`'s resolution note claimed "nothing the tools would honour" was given up, and that claim was false. The issue file now carries the correction in its own body, appended when `260801-1955` closed. A resolution note that asserts a bound should be verified against the family it changes, not only against the cases the fix was written for.
+Worth recording because it is the sharper lesson: `260801-1903_*_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`'s resolution note claimed "nothing the tools would honour" was given up, and that claim was false. The issue file now carries the correction in its own body, appended when `260801-1955_*_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md` closed. A resolution note that asserts a bound should be verified against the family it changes, not only against the cases the fix was written for.

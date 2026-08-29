@@ -17,7 +17,7 @@ closed the documentation half, so it is filed here rather than carried in that c
 
 ## Context
 
-Predecessor: `fusion-workbench/shared/issues/260801-2352_o_plugin-settings-json-has-no-agent-allow-entries.md`
+Predecessor: `260801-2352_*_plugin-settings-json-has-no-agent-allow-entries.md`
 — it raised the question this record answers and left both candidate fixes open pending the
 answer. Queue entry: `fusion-workbench/tasklist.md` task 1.
 
@@ -115,7 +115,7 @@ deleted and its merge procedure moved into that step verbatim, so exactly one im
 exists. The plugin-root `settings.json` was deleted with its `install.sh` copy entry, and `CLAUDE.md`'s
 installer bullet now states the measurement without naming a file that is gone. Both decisions this record
 deferred are answered and implemented:
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`.
+`260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`.
 
 **Two of the three acceptance criteria are met outright; the first is met with a bound that could not be
 removed, and closing this record without naming it would misreport the fix.**
@@ -136,4 +136,4 @@ removed, and closing this record without naming it would misreport the fix.**
 Not settled by this fix, and filed on: whether the approval dialogs this record was written about still
 occur at all on the current Claude Code version. The decision's *Not established* paragraph names it, and
 if they are gone, Step 0g is asking a dead question. See
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1617_o_re-measure-whether-a-fresh-project-still-raises-approval-dialogs-before-setup-keeps-asking.md`.
+`260815-1617_*_re-measure-whether-a-fresh-project-still-raises-approval-dialogs-before-setup-keeps-asking.md`.

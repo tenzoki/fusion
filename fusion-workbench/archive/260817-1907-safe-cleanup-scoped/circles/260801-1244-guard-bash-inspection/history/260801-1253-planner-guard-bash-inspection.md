@@ -1,9 +1,9 @@
 # Planner — guard Bash inspection (C5c)
 
 **Date:** 2026-08-01 12:53
-**Circle:** `circles/260801-1244-guard-bash-inspection`
+**Circle:** `260801-1244-guard-bash-inspection`
 **Agent:** planner (executors: coder, ontocoder)
-**Produced:** `circles/260801-1244-guard-bash-inspection/planning/260801-1253_o_plan-guard-bash-inspection.md`
+**Produced:** `260801-1253_*_plan-guard-bash-inspection.md`
 
 ---
 
@@ -14,8 +14,8 @@ An eight-step implementation plan for capability C5c: widening the compliance gu
 ## Inputs read
 
 - The Circle record `_t_circle.md`.
-- `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md` — the defect and its verified control flow.
-- `shared/planning/260801-1122_o_spec-normative-consolidation.md`, `### C5` and the `*C5c — Bash inspection:*` criteria block, plus the constraint and open-question lines at 608-612 and 651-660.
+- `260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md` — the defect and its verified control flow.
+- `260801-1122_*_spec-normative-consolidation.md`, `### C5` and the `*C5c — Bash inspection:*` criteria block, plus the constraint and open-question lines at 608-612 and 651-660.
 - `hooks/guard.ts` in full, `hooks/lib/git-branch-guard.ts` in full, and `hooks/lib/self-detect.ts`, `paths.ts`, `workbench-root.ts`, `escalation.ts`, `events.ts`, `config.ts`, `config.json`, `hooks.json`, `package.json`, `tsconfig.json`.
 - `rules/git-branch-discipline.md`, `README-hooks.md`, `.gitignore`, `bin/fusion-rules`, and the existing test suite layout.
 

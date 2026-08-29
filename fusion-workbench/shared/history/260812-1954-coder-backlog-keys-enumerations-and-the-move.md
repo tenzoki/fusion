@@ -3,8 +3,8 @@
 **Date:** 2026-08-12 19:54
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`, steps 4, 5 and 6
-**Predecessor:** `shared/history/260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`)
+**Plan:** `260812-1720_*_circle-first-placement-and-the-backlog-store.md`, steps 4, 5 and 6
+**Predecessor:** `260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`)
 
 ## What was done
 
@@ -36,10 +36,10 @@ included (see *What the plan got wrong*).
 2. `hooks/lib/staging-drift.ts` — `"backlog"` added to `STORES`, so an uncommitted entry is
    an unstaged `record` and enters the verdict. Verified live in this workbench, not only in
    a fixture: `bin/fusion-staging-drift` now prints
-   `record RM shared/backlog/260811-0826_o_observations.md UNSTAGED (an authored record under the backlog store)`.
+   `record RM 260811-0826_*_observations.md UNSTAGED (an authored record under the backlog store)`.
 3. `hooks/lib/__tests__/path-literal-lint.test.ts` — `"backlog"` added to `TYPE_FOLDERS`, so
    a prompt naming the literal path fails the gate. The whole tree still passes, and two
-   fixtures were added: `shared/backlog/260812-1720_o_an-idea.md` must fire, and the
+   fixtures were added: `260812-1720_*_an-idea.md` must fire, and the
    log-activity legend row `| b | backlog entries |` must not.
 4. `skills/archive/SKILL.md` — a Tier 1 row for `$SCAN_BACKLOG` `*_c_*.md`, safety filter 2
    extended to name backlog entries in both its live-marker groups, and a paragraph in Step 1
@@ -72,7 +72,7 @@ claimed them), so this is a truth repair, not a fix. One test was added: an unco
 backlog entry is an unstaged `record`.
 
 **Step 6 — the move.** `git mv` from `shared/backlogs/260811-0826_observations.txt` to
-`shared/backlog/260811-0826_o_observations.md`, the empty `shared/backlogs/` removed, and one
+`260811-0826_*_observations.md`, the empty `shared/backlogs/` removed, and one
 head line prepended:
 
 > `# Raw observations, hand-written by the user: about a dozen distinct ideas in one dump, awaiting consolidation by the playmaker`
@@ -111,7 +111,7 @@ sixteen-agent corpus; steps 4–6 add zero.
 
 `cd hooks && npm test` — **exit 0**, 48 files, 1003 tests. Run twice, green both times; the
 `Worker exited unexpectedly` parallel-load flake
-(`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
+(`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
 did not appear. Baseline at `3c6ec4e` was 995 tests; the eight added are five in
 `fusion-paths.test.ts`, two in `path-literal-lint.test.ts` and one in `staging-drift.test.ts`.
 
@@ -169,7 +169,7 @@ is what gives it a code when it arrives.
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts`
 - `hooks/lib/__tests__/staging-drift.test.ts`
 - `hooks/dist/**` (rebuilt by `npm test`: `staging-drift.js`/`.d.ts` in both locations)
-- `fusion-workbench/shared/backlogs/260811-0826_observations.txt` → `fusion-workbench/shared/backlog/260811-0826_o_observations.md` (moved, one head line added)
-- `fusion-workbench/shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` (steps 4–6 marked `[DONE]`)
+- `fusion-workbench/shared/backlogs/260811-0826_observations.txt` → `260811-0826_*_observations.md` (moved, one head line added)
+- `260812-1720_*_circle-first-placement-and-the-backlog-store.md` (steps 4–6 marked `[DONE]`)
 
 Not committed — the orchestrator commits. Step 7 not started, by instruction.

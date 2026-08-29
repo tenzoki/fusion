@@ -3,7 +3,7 @@
 **Agent:** coder
 **Datum:** 2026-08-07 11:17
 **Status:** Complete
-**Plan:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Schritt 4
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 4
 
 ## Was gelöscht wurde
 

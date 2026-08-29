@@ -3,8 +3,8 @@
 **Date:** 2026-08-23
 **Agent:** coder
 **Circle:** `260823-0023-settle-what-travels-between-checkouts`
-**Dispatched for:** the Critical finding of `circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1110-coderev-c2-turn-1.md`
-**Record:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`
+**Dispatched for:** the Critical finding of `260823-1110-coderev-c2-turn-1.md`
+**Record:** `260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`
 **Status:** Complete
 
 ## What was implemented
@@ -17,7 +17,7 @@ citations is unchanged wherever a checkout has one.
 The fork the dispatch named was decided **against** dropping the portfolio from the corpus. The
 reasoning is written out in full in the record's `Resolved:` note; in short, the corpus is a user's
 recorded answer pinned by decision
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
 this gate is the only thing that reads a generated portfolio's citations against the tree, and
 class L of `rules/workbench-tracking.md` governs what git carries rather than what a gate may read.
 

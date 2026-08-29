@@ -1,4 +1,4 @@
-# Tasklist rebuild — 260810-1455
+# Tasklist rebuild — 260810-1455-tasklist-update.md
 
 **Agent:** taskplanner
 **Domain:** code
@@ -24,7 +24,7 @@ and then by priority.
 | `shared/decisions/*_o_*.md` | 5 counted; 2 answered records read in full | 0 as tasks; two answers carried into tasks 2 and 4 |
 | `shared/reviews/` | 13 counted, 2 read for verification | 0 — excluded, stated |
 | `shared/analyses/` | 9 counted | 0 — excluded, stated |
-| previous `tasklist.md` (260810-0249, built at `8960e1a`) | read in full | reused as a starting point, re-verified throughout |
+| previous `tasklist.md` (260810-0249-tasklist-update.md, built at `8960e1a`) | read in full | reused as a starting point, re-verified throughout |
 
 All five exclusions are named in the queue's `## Scope of this queue`, so their absence is a recorded
 fact rather than something a later reader has to infer.
@@ -94,7 +94,7 @@ section; and an explicit statement, for each look-alike pair, of why two records
 duplicates. That last one now covers six groups rather than two.
 
 One convention was added, per
-`shared/issues/260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md`: the queue head
+`260810-0431_*_the-work-queue-does-not-record-the-ground-it-was-built-on.md`: the queue head
 carries `**Active Circle:** none (unaffiliated backlog)`. Writing it by hand here does not close that
 record — it asks that the producer be required to write it, which is task 3 in the queue.
 
@@ -110,6 +110,6 @@ work, not forgotten work.
 ## Files written
 
 - `/Users/k1/Projects/productive/fusion/fusion-workbench/tasklist.md`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260810-1455-tasklist-update.md`
+- `/Users/k1/Projects/productive/fusion/260810-1455-tasklist-update.md`
 
 Nothing else was touched. No planning, issue, decision or review file was edited.

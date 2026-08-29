@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** open
-**Filed by:** coder, closing `260802-2231` (T3-2) in `circles/260801-1244-guard-rules-write`
-**Cross-references:** `circles/260801-1244-guard-rules-write/issues/260802-2231_c_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` `## Adjacent, for Turn 2` (where the question was raised); `hooks/lib/rules-write-exemption.ts` `RULE_DIR_PATTERNS`; `circles/260801-1244-guard-rules-write/decisions/260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (the floor this would sit next to); plan Step 6 (project-configurable `protectedPaths`)
+**Filed by:** coder, closing `260802-2231_*_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` (T3-2) in `260801-1244-guard-rules-write`
+**Cross-references:** `260802-2231_*_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` `## Adjacent, for Turn 2` (where the question was raised); `hooks/lib/rules-write-exemption.ts` `RULE_DIR_PATTERNS`; `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (the floor this would sit next to); plan Step 6 (project-configurable `protectedPaths`)
 
 ---
 
@@ -24,7 +24,7 @@ The question has to be answered wherever the effective protected list is assembl
    - Pros: the exempt set is readable without opening the project's configuration, and no project can widen the grant by editing a file the guard reads. The exemption stays a claim about fusion, not about a project.
    - Cons: a project cannot carve out an immutable subtree inside `rules/`, and a project with a differently-named rule directory has a flag that does nothing.
 2. **Subtract the project's own protected entries from the exempt set.** An entry a project adds explicitly (`rules/immutable/**`) wins over the exemption; the two default rule patterns keep working as they do now.
-   - Pros: answers both consequences with one rule, and matches the intuition that a list a project wrote by hand outranks a flag it set in a shell. Natural neighbour of the self-protection floor decided in `260802-1912`.
+   - Pros: answers both consequences with one rule, and matches the intuition that a list a project wrote by hand outranks a flag it set in a shell. Natural neighbour of the self-protection floor decided in `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`.
    - Cons: the exempt set becomes a function of the project's configuration, so "what does the flag reach" is no longer answerable from the plugin alone. Needs a precedence rule precise enough to test.
 3. **Make the rule roots configurable too**, alongside `protectedPaths`.
    - Pros: covers the differently-named-rule-directory project.
@@ -38,7 +38,7 @@ The question has to be answered wherever the effective protected list is assembl
 
 ## Recommendation
 
-None yet, and deliberately: the question belongs to Step 6, which is where the effective list is assembled and where the cost of each option becomes measurable. Recorded now because closing `260802-2231` would otherwise take the question with it.
+None yet, and deliberately: the question belongs to Step 6, which is where the effective list is assembled and where the cost of each option becomes measurable. Recorded now because closing `260802-2231_*_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` would otherwise take the question with it.
 
 ---
 Answered:
@@ -54,11 +54,11 @@ Superseded by:
 
 Searched for an answer across `circles/260801-1244-guard-rules-write/analyses/` (empty), `shared/analyses/`, both planning stores, and both decision stores. Nothing addresses it. The record's own `## Recommendation` declines to recommend, deliberately, and defers to plan Step 6.
 
-**Cross-reference confirmed live.** Plan Step 6 of `planning/260802-1856_o_plan-guard-rules-write.md` is the step this record hands the question to, and it is unstarted. Whoever picks up Step 6 inherits this decision as an input, not as a note to read afterwards.
+**Cross-reference confirmed live.** Plan Step 6 of `260802-1856_*_plan-guard-rules-write.md` is the step this record hands the question to, and it is unstarted. Whoever picks up Step 6 inherits this decision as an input, not as a note to read afterwards.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`, unchanged. The precondition still does not exist.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_o_`, unchanged. The precondition still does not exist.**
 
 `RULE_DIR_PATTERNS` is still the hardcoded `["rules/**", ".claude/rules/**"]` in `hooks/lib/rules-write-exemption.ts`, and `protectedPaths` is still not project-configurable (`hooks/lib/config.ts:34`). Plan Step 6, which this record defers to, is unstarted at HEAD `cc012fc`. Searched both analysis stores, both planning stores and both decision stores for an answer; there is none, exactly as the previous reconciliation found.
 
@@ -76,7 +76,7 @@ is untouched.
 
 The reasoning that carried it: a list a project wrote by hand outranks a flag an agent set in
 a shell, and this is the natural neighbour of the self-protection floor decided in
-`260802-1912`. Option 3 was rejected for the reason that produced that floor in the first
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`. Option 3 was rejected for the reason that produced that floor in the first
 place: it lets a project *widen* its own grant, which is the direction a guard may not move
 without the user knowing.
 
@@ -86,7 +86,7 @@ That is what the constraint about a precise precedence rule is for.
 
 **Two obligations follow, both binding on the implementation.**
 
-- **"Explicitly declared" must mean declared, not inherited.** After `260804-1630_a`, an
+- **"Explicitly declared" must mean declared, not inherited.** After `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md_a`, an
   omitted `protectedPaths` inherits the plugin's list — and subtracting an *inherited* entry
   would silently end the exemption for every project, since the plugin's own list contains
   `rules/**`. The subtraction applies only to entries the project layer actually supplied,
@@ -103,11 +103,11 @@ Answered: this record, `## Answer` — user chose option 2 at the plan gate; a p
 
 ---
 
-**Realised in code 260804-1940 (coder, plan Step 4) — marker stays `_a_` until the commit
+**Realised in code 260804-1940-coder-step1-floor-step4-exemption-precedence.md (coder, plan Step 4) — marker stays `_a_` until the commit
 exists.** The convention wants `Implemented:` to cite the hash, and this work is deliberately
 uncommitted: the orchestrator commits after validation. The reconciler transitions `_a_` →
 `_i_` at Phase 3 against the commit, not against this note. Session:
-`history/260804-1940-coder-step1-floor-step4-exemption-precedence.md`.
+`260804-1940-coder-step1-floor-step4-exemption-precedence.md`.
 
 **Both binding obligations are met, and both are asserted rather than argued.**
 
@@ -154,4 +154,4 @@ declared protected with the flag set.
 Implemented: `ac20f7d` — the subtraction applies only to entries whose provenance is the project layer, which is what `protectedPathsSource === "project"` means and why Step 4 waited on Step 2. A project that declares nothing keeps the exemption byte-identically: the whole 145-case exemption unit suite passes an empty declared list, three integration cases assert it through a real guard subprocess, and the mutation substituting the effective list for the declared one breaks 26 cases. The subtraction adopts the protection side's match conventions, case folded with the trailing-separator retry, or `rm -rf rules/immutable` would delete the subtree a project declared immutable.
 
 ---
-Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the subtraction `ac20f7d` built ran between two sets that no longer exist. `hooks/lib/paths.ts:9-31` records both in its own header as gone: the PROTECTED set with `matchesAnyFolded`, and the EXEMPT set (`RULE_DIR_PATTERNS`, the `FUSION_ALLOW_RULES_WRITE` exemption) with `canonicalise`. A project can declare no protected path, so there is nothing for the flag to be subtracted from.
+Retired: `60c9cd8` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — the subtraction `ac20f7d` built ran between two sets that no longer exist. `hooks/lib/paths.ts:9-31` records both in its own header as gone: the PROTECTED set with `matchesAnyFolded`, and the EXEMPT set (`RULE_DIR_PATTERNS`, the `FUSION_ALLOW_RULES_WRITE` exemption) with `canonicalise`. A project can declare no protected path, so there is nothing for the flag to be subtracted from.

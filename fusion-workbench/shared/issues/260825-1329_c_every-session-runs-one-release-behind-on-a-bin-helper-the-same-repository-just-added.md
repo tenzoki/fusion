@@ -8,7 +8,7 @@ its miss branch, in a repository whose own work tree held the helper the whole t
 the direct cause of the 28 unattributed records, and it is structural rather than a one-off.
 ---
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md (the consequence this explains); CLAUDE.md `## Release process` (the two-session shape, stated for agents only); shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md (the guard convention that makes the miss silent)
+**Cross-references:** 260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md (the consequence this explains); CLAUDE.md `## Release process` (the two-session shape, stated for agents only); 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md (the guard convention that makes the miss silent)
 
 ## What was measured
 
@@ -19,7 +19,7 @@ Timestamps, 260825:
 | `bin/fusion-identity` added to the work tree (`3ba7a46`) | 260824-1130 |
 | `### Who filed it` added to the rules (`2b055a0`) | 260824-1214 |
 | Installed copy at `$FUSION_PLUGIN_ROOT` refreshed | 260825-0829 |
-| Every silent record's filename stamp | between 260824-1621 and 260824-2155 |
+| Every silent record's filename stamp | between 260824-1621_*_the-filing-rules-residual-branch-promises-a-person-line-that-exit-5-does-not-print.md and 260824-2155 |
 
 Every one of the 28 records lacking the field falls inside the window in which the helper
 was in the tree and not in the install. Not one falls outside it.
@@ -31,7 +31,7 @@ was in the tree and not in the install. Not one falls outside it.
 the same session. Helper **resolution** does not: every call site is written
 `"$FUSION_PLUGIN_ROOT/bin/<name>"`, which is the installed copy, pinned for the session.
 Whether the work-tree preference should reach helper resolution is part (c) of
-`shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention...`
+`260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention...`
 and is deliberately unanswered.
 
 The consequence is that this repository can never exercise a helper it just wrote, in the
@@ -43,7 +43,7 @@ only to be noticed present.
 
 ## Why the miss is silent, which is the part that hurts
 
-The guarded call convention (decision `260810-0921`, option a1: tolerate and report) has each
+The guarded call convention (decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`, option a1: tolerate and report) has each
 call site print one line on stderr and continue. That is right for a single call. Across a
 session it means the absence is reported once per call site into a stream nobody aggregates,
 and the agent proceeds down a branch whose output is indistinguishable from ordinary work
@@ -53,7 +53,7 @@ that only exists for this situation.
 
 ## Candidate directions, none preferred here
 
-1. **Answer part (c) of `260810-1544`**: let helper resolution prefer the work tree in this
+1. **Answer part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`**: let helper resolution prefer the work tree in this
    repository, as rule resolution already does. Closes the window at its source, and only for
    fusion's own development.
 2. **Setup measures the gap once** and says so: compare `bin/` in the work tree against
@@ -86,14 +86,14 @@ against the same predicate; I reproduced its table independently at HEAD and rea
 25 person, 14 reason, 31 neither. So the failure rate this record quotes as *67 per cent*
 (28 of 42) is 69 per cent (31 of 45). The body is left as written, because the correction
 belongs where the measurement lives:
-`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`
+`260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`
 `## What was measured` and its `### Three passes produced three different counts of one set`
 carry the current figures and why three passes disagreed.
 
 **One claim of this record was verified rather than carried over.** The 21-hour window is
 real: `bin/fusion-identity` was added to the work tree in `3ba7a46` at 2026-08-24 11:30:31
 and the installed copy at `~/.fusion/bin/fusion-identity` carries mtime 2026-08-25 08:29.
-All 31 records in the set are stamped between `260824-1621` and `260824-2155`, inside that
+All 31 records in the set are stamped between `260824-1621_*_the-filing-rules-residual-branch-promises-a-person-line-that-exit-5-does-not-print.md` and `260824-2155`, inside that
 window without exception, and every in-window record stamped `260825` carries its person
 half.
 
@@ -104,17 +104,17 @@ Also seen: 260826-0904 by coder — the orchestrator's own Setup on 2026-08-26 t
 puts the helper in the work tree at `97407df`; `~/.fusion/bin/fusion-events` does not exist. So the
 Setup step that reads the session's Turn count found no helper to run and fell back to a hand-scoped
 read of `fusion-workbench/orchestrator-events.jsonl`, which is exactly the branch the guard is written
-for. Nothing malfunctioned: `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
+for. Nothing malfunctioned: `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
 requires the guard, and the guard behaved. What the instance adds is that the lag now reaches the
 helper this Circle built to fix a different reading fault, so the Circle could not use its own output
 in the session that produced it.
 
-**Not discharged by `circles/260825-2023-presence-travels-monitor-filters-own-checkout`.** The Circle's
+**Not discharged by `260825-2023-presence-travels-monitor-filters-own-checkout`.** The Circle's
 Directive is presence and per-checkout reading; helper resolution is untouched by every commit in its
 range, each call site is still `"$FUSION_PLUGIN_ROOT/bin/<name>"`, and part (c) of
-`shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` stays
+`260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` stays
 unanswered, so neither candidate direction in `## Candidate directions, none preferred here` is built.
 The marker stays `_o_`. This note records a sighting, not a closure.
 
 ---
-Resolved: 260827-2020 by coder (plan `260827-1756` step 18b, candidate direction 2). `skills/setup/SKILL.md` Step 2 now, when `bin/fusion-plugin-cwd` exits 0, lists every `bin/` executable present in the work tree and absent from `$FUSION_PLUGIN_ROOT/bin/`, and the Done report names each. It measures the window and changes no resolution: whether the work-tree preference reaches helper resolution is part (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` and stays deliberately unanswered.
+Resolved: 260827-2020-coder-setup-skill-steps-5-18b-c4.md by coder (plan `260827-1756` step 18b, candidate direction 2). `skills/setup/SKILL.md` Step 2 now, when `bin/fusion-plugin-cwd` exits 0, lists every `bin/` executable present in the work tree and absent from `$FUSION_PLUGIN_ROOT/bin/`, and the Done report names each. It measures the window and changes no resolution: whether the work-tree preference reaches helper resolution is part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` and stays deliberately unanswered.

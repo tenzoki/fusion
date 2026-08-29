@@ -8,8 +8,8 @@
 
 ## What was planned
 
-The implementation plan for capability C2 of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, written to
-`circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`.
+The implementation plan for capability C2 of `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, written to
+`260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`.
 
 Nine steps, dependency-ordered. Eight route to `coder` and one to `analyst`. **No step routes to `ontocoder`**, and the reason is that C2 changes no structured data file: the `.fusion-setup` marker is JSON, but the change is to the skill-body prose that writes it, and `.gitignore` and `.gitattributes` are repository configuration, which the routing table assigns to `coder` along with build configuration of any extension.
 
@@ -27,9 +27,9 @@ Growth-bound head-room at HEAD `3ee8eaf`, computed from the checked-in goldens a
 
 ## Records filed
 
-- Decision: `circles/260823-0023-settle-what-travels-between-checkouts/decisions/260823-0800_*_does-the-two-checkout-transport-verification-become-a-shipped-check.md` — binds C3 and C4, which need the same verification. C2 proceeds on the one-off reading and is not blocked.
-- Defect: `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md` — `hooks/lib/staging-drift.ts` `ROOT_RECORDS` and `agents/orchestrator.md:1138`, both outside the dispatch's scope bound.
-- Defect: `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`
+- Decision: `260823-0800_*_does-the-two-checkout-transport-verification-become-a-shipped-check.md` — binds C3 and C4, which need the same verification. C2 proceeds on the one-off reading and is not blocked.
+- Defect: `260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md` — `hooks/lib/staging-drift.ts` `ROOT_RECORDS` and `agents/orchestrator.md:1138`, both outside the dispatch's scope bound.
+- Defect: `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`
 
 ## Open decisions read at Setup
 

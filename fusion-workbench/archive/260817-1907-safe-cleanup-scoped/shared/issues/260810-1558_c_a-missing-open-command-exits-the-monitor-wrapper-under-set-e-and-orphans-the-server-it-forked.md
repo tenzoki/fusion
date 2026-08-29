@@ -66,5 +66,5 @@ alive with the server as its child, the dashboard serves, and a SIGINT takes bot
 frees the port. `npx vitest run lib/__tests__/monitor-warnings-panel.test.ts` — exit 0,
 12/12, all three browser-launch cases included.
 
-Fixed by coder, session 260810-1646, Turn 1 (task 3). Full record:
-`fusion-workbench/shared/history/260810-1807-coder-monitor-launcher-lifetime.md`.
+Fixed by coder, session 260810-1646-orchestrator-session.md, Turn 1 (task 3). Full record:
+`260810-1807-coder-monitor-launcher-lifetime.md`.

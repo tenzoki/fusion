@@ -7,7 +7,7 @@
 **Filed by:** coderev (Turn 3 review, range `7d9efc8..adaa545`)
 **Affects:** `hooks/lib/state-drift.ts:271` (the only line of the event log the check reads), `agents/orchestrator.md:993-999` (the row table)
 **Cross-references:**
-`shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the finding the drift check answers);
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the finding the drift check answers);
 `agents/orchestrator.md:1152-1158` (the `task_start` / `task_done` / `commit` rows of the event schema);
 `fusion-workbench/orchestrator-events.jsonl` as committed in `3b30f5e` (the evidence)
 
@@ -45,7 +45,7 @@ ran, which agent ran it and which commit closed it.
 ```
 
 Turn 3 then produced three commits (`41d8e2b`, `3b30f5e`, `adaa545`) closing eleven queue entries —
-tasks 11, 12, 18, 21 and the seven review findings `CR:260811-1406` … `CR:260811-1413`. The log
+tasks 11, 12, 18, 21 and the seven review findings `CR:260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` … `CR:260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`. The log
 carries **no** `task_start`, **no** `task_done` and **no** `commit` event for any of them. Turn 2, for
 comparison, emitted a `task_done` per task.
 
@@ -108,7 +108,7 @@ projects.
   same defect, and the reporting project cannot fix it.
 - **Turn 4 of this session, 260811-2000 onward**: the log carries `turn_start` for Turn 4 and then
   nothing, while `36984d7` and `9f84254` landed and closed five queue entries. Measured at the
-  resume drift check at 260811-1915, which reported **clean** on all four rows while this was true.
+  resume drift check at 260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md, which reported **clean** on all four rows while this was true.
 
 The pattern across all four instances is one thing, and it is the thing this record proposes to
 fix: `turn_start` is emitted at a boundary the orchestrator stops at anyway, while the per-task
@@ -125,4 +125,4 @@ exists to make the gap visible while the session can still act, not to prove it 
 but the row's failure message should not claim more than it measures.
 
 ---
-Resolved: moot, not fixed. `hooks/lib/state-drift.ts` was deleted whole in `f45f76a` (Circle `260815-0007-...`, step 11), all five rows including the Turn row. The deletion was put to the user as a one-way door at the plan gate and accepted (`shared/history/260814-2306-orchestrator-session.md:174`). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.
+Resolved: moot, not fixed. `hooks/lib/state-drift.ts` was deleted whole in `f45f76a` (Circle `260815-0007-...`, step 11), all five rows including the Turn row. The deletion was put to the user as a one-way door at the plan gate and accepted (`260814-2306-orchestrator-session.md:174`). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913.

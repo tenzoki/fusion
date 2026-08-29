@@ -2,10 +2,10 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Task:** implement `decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`, option 4 (take option 1 now; the reachability model gets its own Circle)
-**Closes:** `issues/260804-0836_p_…` (`||`) and `issues/260804-0837_p_…` (`|`) — one fact seen twice
-**Does NOT touch:** `260804-0839` (the over-deny), `260804-1024` (`git -C`), `260804-1025` (the clause at the decision procedure), `hooks/lib/shell-parse.ts`, `paths.ts`, `fs-locator.ts`, `rules-write-exemption.ts`
+**Circle:** `260801-1244-guard-rules-write`
+**Task:** implement `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`, option 4 (take option 1 now; the reachability model gets its own Circle)
+**Closes:** `260804-0836_*_…` (`||`) and `260804-0837_*_…` (`|`) — one fact seen twice
+**Does NOT touch:** `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` (the over-deny), `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` (`git -C`), `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` (the clause at the decision procedure), `hooks/lib/shell-parse.ts`, `paths.ts`, `fs-locator.ts`, `rules-write-exemption.ts`
 
 ---
 
@@ -51,7 +51,7 @@ The lookup is a **safe-list**: a joiner with no row answers `false` to both. Tha
 inversion the record asked for — the condition reads *"the joiner is one of the safe ones"*,
 not *"the joiner is `||` or `|`"* — so a joiner added to `SegmentJoiner` later is unsafe on
 both counts until someone argues otherwise and adds a row. It is the same stance
-`firstDirArg` takes for flags and `260803-2338` took for the write side.
+`firstDirArg` takes for flags and `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` took for the write side.
 
 In the segment walk:
 
@@ -108,13 +108,13 @@ both. The cost is stated as a rule with labelled examples, never as a closed lis
   to both"* stated explicitly;
 - the decision procedure gained a question — *"is the joiner in front of the builtin's own
   segment one that moves your shell?"* — **in front of** the existing ones, which are
-  unchanged in wording (see the note on `260804-1025` below);
+  unchanged in wording (see the note on `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` below);
 - a third surprising word joins "reachable" and "unknown": **"written", not "run"** — the
   guard reads a `cd` that may never execute exactly as it reads one that does, which is why
   the control row `[ -d nope ] || cd build && rm out.js` denies although its `cd` runs;
 - six rows added to the illustration block, which already says the set is open;
 - "two honest edges, both open" became "one honest edge, still open, and it costs rather
-  than leaks" (`260804-0839`), with `until` named there as the reason that edge needs a
+  than leaks" (`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`), with `until` named there as the reason that edge needs a
   model rather than an exemption;
 - the residual bullet that stated the `&&` premise as a live hole now states what is left of
   it: the ordinary give-up behaviour in a second place, erring toward deny.
@@ -227,10 +227,10 @@ test that states the claim:
 
 ## Findings to report, none of them fixed here
 
-- **`260804-0839` is unrelieved, as required.** The 84 generated `if` / `while` / brace-group
+- **`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` is unrelieved, as required.** The 84 generated `if` / `while` / brace-group
   / pipeline rows that degrade although the shell guarantees the `cd` deny identically before
   and after. Nothing in this change touches them; they need the reachability model.
-- **`260804-1025` (not mine, a later session owns it) is no longer reproducible by its own
+- **`260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` (not mine, a later session owns it) is no longer reproducible by its own
   steps, and its cited clause is untouched.** That issue reports that the decision procedure
   answers "the model stays exact" for the two commands that delete a rule. Its question 2 is
   verbatim as it was — it is now question 3, and the new question 2 in front of it stops both
@@ -242,7 +242,7 @@ test that states the claim:
   They are closed. That file was explicitly out of scope for this task ("beyond reading it"),
   so it is reported rather than edited. It is a comment, with no behavioural effect, and the
   fix is one clause.
-- **`260804-1024` (`git -C rules rm x.md`) is untouched and still allows.** The boundary
+- **`260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` (`git -C rules rm x.md`) is untouched and still allows.** The boundary
   sentence this Circle wants needs it as well as this change; the reconciliation note on the
   decision record already says so.
 

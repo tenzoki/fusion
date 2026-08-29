@@ -3,7 +3,7 @@
 **Date:** 2026-08-22 13:18
 **Type:** Record
 **Status:** Complete
-**Requested by:** coder, step 2 of `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+**Requested by:** coder, step 2 of `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 
 ## What this is
 
@@ -25,8 +25,8 @@ long again, entries roll into a record like this one.
 ## Where this came from and what it cost
 
 The move was decided at Gate A of the C0 plan, as option 2 of
-`shared/decisions/260822-1229_a_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
-raised by the measurement in `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`
+`260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
+raised by the measurement in `260822-1226-cut-ledger-for-three-bounded-surfaces.md`
 (row H6). Two costs were stated at the gate and accepted rather than mitigated: the attribution no
 longer stands in front of the person editing `BASELINE`, which is the property that made the log
 trustworthy; and the bytes are relocated rather than removed, so the maintenance cost the line
@@ -86,7 +86,7 @@ move.
 
 Re-approved 2026-08-17, same Circle, step 16 — the curator's pass over
 `CLAUDE.md` and `rules/fusion-workbench-conventions.md` (run log
-`circles/260816-1741-guard-becomes-observation-only/history/260817-0845-curator-run.md`).
+`260817-0845-curator-run.md`).
 paths 1112 -> 1120, measured per file by rerunning this gate against each file
 reverted in turn: `CLAUDE.md` moves +7 and the conventions file +1. The nine
 citations the curator's replacement text adds are `bin/fusion-plugin-cwd`,
@@ -100,7 +100,7 @@ that edit was measured on its own by reverting it, and the count stood at 1120
 either way. anchors and records did not move.
 
 Re-approved 2026-08-17 — the curator's next pass, run log
-`shared/history/260817-1925-curator-run.md`, whose three applied ledger entries
+`260817-1925-curator-run.md`, whose three applied ledger entries
 (L01 `rules/circle-records.md`, L02 `rules/fusion-workbench-conventions.md`,
 L03 `CLAUDE.md`) replace one false claim: that `rules/circle-records.md`'s
 emission audience is *derived* from which prompts name a Circle-scoped resolver
@@ -114,17 +114,17 @@ anchors and records did not move.
 
 Re-approved 2026-08-18 — the exempt-surface split in
 `rules/fusion-workbench-conventions.md` `## Project language` (issue
-`shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`).
+`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`).
 paths 1124 -> 1125 and records 94 -> 95, both in that one file and measured by
 reverting it and rerunning this gate. The path is a second `README.md`: the
 replacement states the criterion twice, once for a project that ships nothing
 onward and once for this repository, and names README on both sides. The record
-is the citation of `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`,
+is the citation of `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`,
 whose third constraint the new closing paragraph satisfies. anchors did not move.
 
 Re-approved 2026-08-18 — the Circle record's `## Directive` becomes a pointer
 once `**Active spec/plan:**` cites a file, and gains a writer for the case where
-it does not (`shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`,
+it does not (`260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`,
 all seven steps). paths 1125 -> 1133 and anchors 139 -> 145, measured per file by
 reverting each of the five in turn and rerunning this gate. paths: +2 in
 `rules/circle-records.md` (the new subsection names `agents/orchestrator.md` and
@@ -144,9 +144,9 @@ deliberately NOT in this count: `skills/next/SKILL.md` spells its paths
 `$FUSION_SRC/...`, which ANCHOR_RE's character class does not admit, the same
 way that file's pre-existing `## Circle head fields` citation has never been
 counted. records 95 -> 97, one in each of the two files that names the record
-this change realises: `shared/decisions/260818-1504_*_...` in
+this change realises: `260818-1504_*_...` in
 `rules/circle-records.md` as the subsection's binding decision, and
-`shared/decisions/260818-1512_*_...` in `agents/orchestrator.md`, which is where
+`260818-1512_*_...` in `agents/orchestrator.md`, which is where
 the mode's name is recorded as kept and its residual named.
 
 Re-approved 2026-08-18 — the v10.2 release material: the version-surface bumps and
@@ -176,8 +176,8 @@ records did not move.
 
 Re-approved 2026-08-19 — the move of `### Which of them a tracked workbench tracks` out of
 `rules/fusion-workbench-conventions.md` into the new `rules/workbench-tracking.md`,
-realising decisions `shared/decisions/260816-0711_*_...` (the move) and
-`shared/decisions/260816-1707_*_...` (the emission target it was blocked on).
+realising decisions `260816-0711_*_...` (the move) and
+`260816-1707_*_...` (the emission target it was blocked on).
 paths 1142 -> 1152 and records 97 -> 101; anchors did not move. Measured per file by
 reverting each of the five changed files in turn, in a detached worktree at HEAD `52b1d95`
 holding only their working-tree versions with `agents/*.md` left at HEAD, so none of the
@@ -201,7 +201,7 @@ changed comments repoint from that same anchor to a bare `rules/workbench-tracki
 `hooks/lib/*.ts` is scanned recordsOnly, so classes (a) and (b) are not read there at all.
 
 Re-approved 2026-08-19 — the `**Status:**` field leaves the decision-record template,
-realising decision `shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
+realising decision `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
 (option 1: the filename marker is the only source of a decision record's state). anchors
 148 -> 149 and records 101 -> 102; paths did not move. Measured per file by reverting each
 of the two changed rule files in turn and rerunning this gate; the two contributions are
@@ -286,7 +286,7 @@ Measured per file by copying each changed file in turn into a detached worktree 
   `rules/circle-records.md`  +1 / 0 / +2 — the whole of the movement, from the new section
        on deleting a Circle. Three of its tokens are ones this gate reads: `bin/fusion-rules`
        in the paragraph naming who the file is emitted to (class (a)), and two class-(c)
-       record citations — `shared/history/260819-1400-reconciliation-circles.md`, cited for
+       record citations — `260819-1400-reconciliation-circles.md`, cited for
        the archive sweep that broke six citations, and the binding decision `260805-1548` on
        the closing line. `/fusion:archive` and `/fusion:circle-delete` are skill tokens and
        no class reads them; `$PORTFOLIO` is a resolver key, not a path.
@@ -303,7 +303,7 @@ The figures sum to +1 / 0 / +2 against an actual +1 / 0 / +2. That arithmetic do
 generally hold, per the blocks above; it holds here because only one file moved at all.
 
 Re-approved 2026-08-20 — the `stamp-name` class enters `GATE_KINDS`, realising decision
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+`260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
 (option 2). This is a widening of WHAT the gate reads, not an edit to the surface it reads:
 no shipped file gained a citation, and the movement is entirely tokens that were already
 resolving in the measuring view and were filtered out of the gate's count on their way past.
@@ -329,7 +329,7 @@ SECOND CAUSE, same commit — the convention line the same plan step adds to
 `rules/fusion-workbench-conventions.md`: a record that states something ABOUT a citation
 names file and line, or fences the verbatim form. It is the third leg of the recurrence
 answer at the foot of
-`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`
+`260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`
 — the gate catches, the failure message teaches, the convention reaches whoever reads first.
 paths 1179 -> 1180, anchors 155 -> 156, records 107 -> 109, all of it that one paragraph:
 one class-(a) path (`rules/circle-records.md`), one anchor into it
@@ -346,7 +346,7 @@ caller cannot pin its own corpus through this baseline.
 
 Re-approved 2026-08-20 — the three blocking gates get named on the two surfaces a reader
 reaches before a red run, closing
-`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_neither-new-blocking-gate-is-named-on-any-shipped-surface.md`.
+`260820-0805_*_neither-new-blocking-gate-is-named-on-any-shipped-surface.md`.
 The record was filed against two gates; a third, `plan-stopping-section-lint.test.ts`, was
 armed in the same Turn and is named alongside them.
 paths 1180 -> 1194, anchors 156 -> 157, records 109 -> 111. Every token is an addition to
@@ -372,7 +372,7 @@ WHAT DID NOT MOVE, and it is the same fact the note above records: this Turn als
 four contributes a token here.
 
 Re-approved 2026-08-20 — `analyst` gained a `PATTERNS` arm in `bin/fusion-rules`, realising
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md`
+`260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md`
 (option 3, answered by the user 2026-08-20).
 paths 1194 -> 1195, records 111 -> 112, anchors unchanged. Both tokens are additions to shipped
 PROSE — the comment block above the new `analyst)` arm — and no scanner, exemption or class
@@ -419,7 +419,7 @@ the release material is read from an install that has none. The same Turn also b
 surface for class (a), and the version strings carry no path.
 
 Re-approved 2026-08-20 — `bin/fusion-prose-metric` is new and CLAUDE.md's Layout table gained its
-row (step 1 of `circles/260820-2051-style-rules-arrive-and-get-measured`). paths 1223 -> 1235,
+row (step 1 of `260820-2051-style-rules-arrive-and-get-measured`). paths 1223 -> 1235,
 records 112 -> 113, anchors unchanged. Every token is an addition to shipped PROSE, the helper's
 header and the row, and no scanner, exemption or class changed. Attributed by removing each of the
 two in turn and re-running: the header carries 7 paths (`bin/fusion-staging-drift`,
@@ -428,7 +428,7 @@ two in turn and re-running: the header carries 7 paths (`bin/fusion-staging-drif
 row those same four cited files plus its own `bin/…` key, and 1 record, the ceiling decision.
 
 Re-approved 2026-08-21 — `/fusion:setup` gained Step 0e, the copied-asset comparison, and Step 0d
-gained the stamp it reads (step 3 of `circles/260820-2051-style-rules-arrive-and-get-measured`).
+gained the stamp it reads (step 3 of `260820-2051-style-rules-arrive-and-get-measured`).
 paths 1235 -> 1244, anchors 160 -> 161, records 113 -> 115. Every token is an addition to shipped
 PROSE or to a shipped shell block, and no scanner, exemption or class changed. Attributed by
 restoring each of the four edited files to HEAD in turn and re-running this gate; the four
@@ -445,7 +445,7 @@ here rather than left out:
                           `install.sh`, `rules/user-facing-output.md` and
                           `rules/fusion-workbench-conventions.md`, the last carrying the anchor
                           `## Project language`. The record is the distribution defect the step
-                          closes, `shared/issues/260807-2154_*_corrected-sibling-wording…`.
+                          closes, `260807-2154_*_corrected-sibling-wording…`.
   CLAUDE.md               +1 path, +1 record. The `bin/fusion-source-root` row now states why the
                           comparison reads the work tree — `install.sh` reads a GitHub tarball —
                           and cites the decision that scoped the exception to that comparison.
@@ -462,7 +462,7 @@ carrying `## Project language`. No scanner, exemption or class changed; attribut
 `bin/fusion-rules` alone to HEAD and re-running this gate, which was green at the old numbers.
 
 Re-approved 2026-08-21 — Step 0e's three shell blocks now resolve the source root themselves instead of
-reading the held `$FUSION_SRC` (issues 260821-0140 and 260821-0141). paths 1247 -> 1254, anchors and records
+reading the held `$FUSION_SRC` (issues 260821-0140_*_setup-step-0e-reads-fusion-src-which-does-not-survive-the-fresh-shell-every-bash-call-gets.md and 260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md). paths 1247 -> 1254, anchors and records
 unchanged: six are `$FUSION_PLUGIN_ROOT/bin/fusion-source-root`, twice in each block, the seventh is
 `bin/fusion-rules` in the new `case5-missing-local` entry. Attributed by reverting that one file; green at 1247.
 

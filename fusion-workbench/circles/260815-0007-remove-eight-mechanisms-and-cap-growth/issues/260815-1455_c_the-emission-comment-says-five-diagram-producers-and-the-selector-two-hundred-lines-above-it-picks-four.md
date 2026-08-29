@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** ontorev (Turn 3 review, range `5d29b6d..518926d`)
 **Affects:** `bin/fusion-rules:408`
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1339-coder-remove-conceptrev.md`; `rules/design-diagrams.md:5`
+**Cross-references:** `260815-1339-coder-remove-conceptrev.md`; `rules/design-diagrams.md:5`
 
 ---
 

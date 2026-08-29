@@ -1,4 +1,4 @@
-# Playmaker run 260822-2104 (direct dispatch)
+# Playmaker run 260822-2104-playmaker-direct-dispatch.md (direct dispatch)
 
 **Status:** Complete
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:**` line)
@@ -8,10 +8,10 @@
 
 ## Why this run happened
 
-Two things changed since 260822-2040. The Circle that run recommended was activated by the user
+Two things changed since 260822-2040-playmaker-direct-dispatch.md. The Circle that run recommended was activated by the user
 through the explicit form of `/fusion:next`, so the previous portfolio's account of an empty Active
 section was false. And that portfolio carried one dangling citation, which the orchestrator filed as
-`shared/issues/260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md`.
+`260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md`.
 
 ## Circle inventory
 
@@ -32,7 +32,7 @@ exists, its record carries `_t_`, and no second record does. No pointer warning.
 ## Ranking
 
 **Top-ranked anticipated Circle: none.** The store holds no `_a_` record, so Step 3 produced an empty
-ranking and no `## Activation proposal` was appended anywhere. The one appended at 260822-2040 stands
+ranking and no `## Activation proposal` was appended anywhere. The one appended at 260822-2040-playmaker-direct-dispatch.md stands
 on the now-active record and was not touched, which is correct: those appends carry no idempotence
 guard and a second copy would sit on the record the user just activated.
 
@@ -46,8 +46,8 @@ Entries read: 3. One closed (`_c_`), one recommended (`_p_`), one open (`_o_`). 
 inside the two live entries: one each, so no split is indicated. Duplicate groups: none. Items handed
 to `## Warnings` as defect- or decision-shaped: none new; the two live entries are both ideas.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`. Its evidence is
-on disk and already sized in `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`,
+**Top-ranked entry:** `260814-1733_*_bounded-executor-dispatches.md`. Its evidence is
+on disk and already sized in `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`,
 and shaping it needs no user act first.
 
 **Backlog writes performed:** none. Both live markers already matched this run's ranking, so the one
@@ -55,18 +55,18 @@ autonomous write available to a run without confirmation had nothing to do.
 
 **Proposed and not performed, for want of a confirmation naming the operation:**
 
-    defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived
+    defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived
 
-Carried forward verbatim from 260822-2040. The user was not asked in between: the explicit form of
+Carried forward verbatim from 260822-2040-playmaker-direct-dispatch.md. The user was not asked in between: the explicit form of
 `/fusion:next` skips the backlog relay by design, so the activation that ran between the two
 generations put no backlog question to anybody.
 
 ## Warnings emitted to the portfolio
 
-- `portfolio-citation-regression`, the 260822-2040 spelled marker and the defect record filed for it.
+- `portfolio-citation-regression`, the 260822-2040-playmaker-direct-dispatch.md spelled marker and the defect record filed for it.
 - `activation-head-fields-inconsistent`, the active Circle's two `(none yet)` head fields and the
   route disagreement filed as
-  `shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`.
+  `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`.
 - `spec-circles-unfiled`, C2 through C4 of the multi-user specification still prose only, which is
   now also why the anticipated section is empty.
 - `dead-citation-in-live-store`, the closed observations entry naming an archived sibling.
@@ -96,7 +96,7 @@ portfolio cites most, and it is the class the dead citation belonged to.
 `cd hooks && npm test`, exit code **1**. 723 of 724 tests pass; the one failure is
 `workbench-citation-lint`, and **none of its three remaining violations is in `portfolio.md`**, which
 contributes zero. All three are in
-`shared/issues/260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md`,
+`260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md`,
 in the worked-exhibit table added to that record while this run was working: the table demonstrates
 the gate's detection pattern by writing out three example citations, two of which are the dead
 Circle-record pointers themselves, and the lint reads exhibits as citations. Repairing that record is

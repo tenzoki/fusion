@@ -30,10 +30,10 @@ stderr was empty. `grep -n "stilwerk\|voice" hooks/lib/__tests__/fixtures/rules-
 **Verified at HEAD `7832553`** by reading `hooks/lib/__tests__/rules-emission-golden.test.ts:39-47` and `:700-720`, `bin/fusion-rules:300-347`, and by running the script from an empty temp cwd as shown above.
 
 ---
-**Found by:** coderev, review of `7135a19..7832553`, review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
+**Found by:** coderev, review of `7135a19..7832553`, review file `260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
 **Owner:** `coder`. No behaviour changes: the correction is to the four comment lines at `bin/fusion-rules:327-330`, which should name `rules-voice-profile.test.ts` and the two cases that actually hold the stdout identity.
 **Severity:** Medium. Nothing is broken now. The cost is a false falsifier written into the source of the one script every agent's Setup runs.
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0042_o_the-always-on-rule-states-two-things-about-the-voice-profile-fallback-that-stopped-being-true.md` — the other standing defect on the same paragraph, from the same step.
+**Cross-references:** `260821-0042_*_the-always-on-rule-states-two-things-about-the-voice-profile-fallback-that-stopped-being-true.md` — the other standing defect on the same paragraph, from the same step.
 
 ---
 Resolved: fixed — the comment names `hooks/lib/__tests__/rules-voice-profile.test.ts` and its two cases as the gate that holds the stdout identity, and says why the golden cannot observe the function; `bin/fusion-rules` `emit_voice_profile` header comment

@@ -7,7 +7,7 @@
 
 ## What the task was
 
-Give back as much as honestly possible of the ten hook-test lines this Circle spent on two attribution comment blocks above `BASELINE` in `hooks/lib/__tests__/reference-resolution-lint.test.ts`, without losing the attribution those blocks carry. Filed as `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_o_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`.
+Give back as much as honestly possible of the ten hook-test lines this Circle spent on two attribution comment blocks above `BASELINE` in `hooks/lib/__tests__/reference-resolution-lint.test.ts`, without losing the attribution those blocks carry. Filed as `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`.
 
 ## What was changed
 
@@ -53,6 +53,6 @@ The first run failed as expected on `surface-growth-bound.test.ts` alone, becaus
 
 ## Record updated
 
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_o_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` carries an appended progress note and stays open (`_o_`). The head-room was not restored to the anchor's 21, so the record was not closed; what it now holds is the closure-note decision, whether to state 15 lines of head-room or to keep the criterion the Circle cannot meet.
+`260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` carries an appended progress note and stays open (`_o_`). The head-room was not restored to the anchor's 21, so the record was not closed; what it now holds is the closure-note decision, whether to state 15 lines of head-room or to keep the criterion the Circle cannot meet.
 
 Nothing was staged and nothing was committed.

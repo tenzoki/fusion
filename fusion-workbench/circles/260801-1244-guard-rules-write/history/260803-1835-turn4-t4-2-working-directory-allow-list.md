@@ -2,18 +2,18 @@
 
 **Date:** 2026-08-03 18:35
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 1 (the Circle's fourth)
+**Circle:** `260801-1244-guard-rules-write`, Turn 1 (the Circle's fourth)
 **Task:** T4-2 — close the working-directory entrance into the guard's protected-path
 classifier
 **Status:** Complete. Not committed — the orchestrator commits after validation.
 
 **Closes:**
-`issues/260803-1431_p_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`
+`260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`
 (High, grant side) and
-`issues/260803-1803_p_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md`
+`260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md`
 (High, protection side). Both left at `_p_`; the marker transition belongs with the commit.
 
-**Brief:** `analyses/260803-1803-guard-path-model-root-cause.md` (analyst, T4-1).
+**Brief:** `260803-1803-guard-path-model-root-cause.md` (analyst, T4-1).
 
 ---
 
@@ -271,14 +271,14 @@ Two further prose changes in the same commit, both required for the change to be
    `pushd -n docs && echo pwned > agents/coder.md` — **allow**, real bash **OVERWRITTEN**.
    The working directory is unknown, the operand is an ordinary relative path, and `echo` is
    not a table verb, so the fail-closed pass never runs on it. Its `rm` and `cp` neighbours
-   deny. Not fixed here because closing it reverses part of `260801-1859_c_…`, which is
+   deny. Not fixed here because closing it reverses part of `260801-1859_*_…`, which is
    pinned by two named tests and stated to every agent — a separate decision with its own
    cost. Filed with the measurement and a direction worth measuring
-   (`issues/260803-1835_o_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`).
+   (`260803-1835_*_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`).
 2. **An ambient `CDPATH`.** Set in the user's shell profile rather than written into the
    command, so invisible to a module that reads no environment. Explicitly out of scope per
    the task; the decision record
-   (`decisions/260803-1803_o_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`)
+   (`260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`)
    is unchanged and neither side of it was implemented. Now named in the rule file's
    residual list, which it was not before.
 3. **The sticky `cdpath` flag over-denies the prefix form.** `CDPATH=.. cd a; cd b` puts
@@ -300,7 +300,7 @@ Two further prose changes in the same commit, both required for the change to be
    and reading `pwd`; `command` is the one exception, inert in zsh because zsh's `command`
    forces an external lookup. So `command cd rules && rm x.md` allowed at `b85f6a0` while real
    bash deleted the file, and the reason recorded here is why nobody looked
-   (`issues/260803-2038…`, filed by coderev's Turn 4 review).
+   (`260803-2038…`, filed by coderev's Turn 4 review).
 
    The claim that survives is the narrow one: `env`, `sudo`, `doas`, `nice`, `xargs` and the
    rest of the external wrappers genuinely cannot run a builtin, and after `command cd` was
@@ -313,7 +313,7 @@ Two further prose changes in the same commit, both required for the change to be
 
 Everything in the task's not-yours list, unchanged and untouched:
 
-- `260802-2320`, case folding — `hooks/lib/paths.ts` matching semantics not touched (T4-3).
+- `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`, case folding — `hooks/lib/paths.ts` matching semantics not touched (T4-3).
 - `260803-1251`, `fs-locator.absolute()` — not touched, and this change neither closes it nor
   makes it reachable (T4-4).
 - The ambient-`CDPATH` decision — neither side implemented.

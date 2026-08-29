@@ -6,7 +6,7 @@ CLAUDE.md's layout table enumerates rule files one by one and gained no row for 
 **Domain:** code
 **Filed by:** orchestrator, cutting the v10.6 release; noticed by the coder writing its text
 **Affects:** `CLAUDE.md` `## Layout`, its rule-file rows
-**Cross-references:** `shared/issues/260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md` (the other open claim in the same table, filed the same way and for the same reason)
+**Cross-references:** `260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md` (the other open claim in the same table, filed the same way and for the same reason)
 
 ---
 
@@ -27,7 +27,7 @@ of inventories to avoid.
 
 `CLAUDE.md` is the curator's surface. The convention is that its reconciliation happens at a user gate
 through `/fusion:cleanup --only claude-md`, not as a side edit during other work, and this session has
-held to that once already with `260822-1503`. Two open records against one table is a better input to
+held to that once already with `260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`. Two open records against one table is a better input to
 that pass than two hand-patches that arrived without one.
 
 The release is not blocked by it: the file is dev-only, so the gap ships nowhere.

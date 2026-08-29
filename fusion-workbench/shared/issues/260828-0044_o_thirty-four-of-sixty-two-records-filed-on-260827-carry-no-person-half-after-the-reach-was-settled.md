@@ -6,18 +6,18 @@ The obligation to write `**Filed by:** <agent>, Name <email>` now reaches four r
 ---
 **Filed by:** reconciler, Kai Stalmann <ks@qantr.com>
 
-**Severity:** Medium. C3's third acceptance criterion in `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` is the one thing keeping that spec at Partially Complete, and the record that counted the first miss closed on the reach question rather than on the count.
+**Severity:** Medium. C3's third acceptance criterion in `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` is the one thing keeping that spec at Partially Complete, and the record that counted the first miss closed on the reach question rather than on the count.
 
 **Cross-references:**
-`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2, `_i_`);
-`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md` (closed 260827-1845 on the reach);
+`260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2, `_i_`);
+`260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md` (closed 260827-1845 on the reach);
 `rules/fusion-workbench-conventions.md` `### Who filed it` and `## History Logging`.
 
 ## Measurement
 
 At HEAD `36cd574`, over every record stamped `260827-*` in the closed Circle's `issues/`, `decisions/`, `history/` and `reviews/` plus `shared/issues/` and `shared/decisions/`: 62 files. 28 carry a line matching `^\*\*Filed by:\*\* <agent>, .*<.*@` and 34 do not:
 
-- 21 session-history entries in the Circle's `history/` (every coder, planner, analyst, ontocoder, playmaker, orchestrator and reconciler entry of that day, `260827-1521` through `260827-2110`);
+- 21 session-history entries in the Circle's `history/` (every coder, planner, analyst, ontocoder, playmaker, orchestrator and reconciler entry of that day, `260827-1521-orchestrator-session.md` through `260827-2110-coder-turn-2-bookkeeping.md`);
 - 11 `shared/decisions/260827-*` records (`0745`, `0830`, `0910`, `1056`, `1120`, `1210`, `1305`, `1310`, `1311`, `1330`, `1439`);
 - 2 `shared/issues/260827-*` records (`0410_o_*`, `0716_c_*`).
 

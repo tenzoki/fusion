@@ -6,7 +6,7 @@ Record filenames collide on the minute, and the convention has no mechanism that
 **Domain:** knowledge (the convention) with a code half (a helper, if the answer is a helper)
 **Filed by:** consultant, from a report by the consuming project `unite-co-creator`, session 260806-1242
 **Affects:** `rules/fusion-workbench-conventions.md` `## Filename Patterns` (lines 185-208) and `## Timestamps` (lines 172-174); every agent prompt and skill body that mints a record filename
-**Cross-references:** decision `fusion-workbench/shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md` (the three-option fork this defect opened; answered 260807-1925)
+**Cross-references:** decision `260807-0158_*_how-is-a-unique-record-filename-obtained.md` (the three-option fork this defect opened; answered 260807-1925)
 
 ---
 
@@ -89,10 +89,10 @@ A fix scoped to cause 2 leaves the larger half untouched.
 
 Bare-identifier citation is real practice in this repository:
 
-- `rules/protected-path-discipline.md:137` cites `issues/260804-0838…`
-- `rules/protected-path-internals.md:133` cites `issues/260804-1332…`
-- `fusion-workbench/shared/issues/260805-1134_o_clear-halt-…md:45-48` cites three sibling
-  defects as `260804-1607`, `260804-1601` and `260802-2334`, with no slug
+- `rules/protected-path-discipline.md:137` cites `260804-0838…`
+- `rules/protected-path-internals.md:133` cites `260804-1332…`
+- `260805-1134_*_clear-halt-…md:45-48` cites three sibling
+  defects as `260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`, `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md` and `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`, with no slug
 
 Checked: each of those five stamps still resolves to exactly one file in this workbench,
 so no live citation in this repository is currently broken. The practice is established
@@ -159,7 +159,7 @@ correction says so. Both statements now stand side by side in the file, in that 
 right shape: the measurement that was wrong is still readable, and the heading above it says why.
 
 The decision to close rather than rename holds. The file is cited by full filename from
-`shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` and from the session
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md` and from the session
 history; the `_o_` → `_c_` marker change is the only name change, and that is what the marker is for.
 
 Two notes for a later reader:
@@ -167,7 +167,7 @@ Two notes for a later reader:
 - **The residual is carried, not dropped.** The citation rule this defect proposed under `## Not
   retroactively fixable` survives as the operative half of the answered decision. Writing it into
   `rules/fusion-workbench-conventions.md` `## Filename Patterns` is open rule-text work, deferred by
-  the user in the closing session, and listed in `shared/history/260807-1917-orchestrator-session.md`
+  the user in the closing session, and listed in `260807-1917-orchestrator-session.md`
   `## Remaining Work`.
 - **The five bare-stamp citations named under `## What this costs` were not re-checked in this pass.**
   The correction states they were each verified at 260807-1925 to resolve to exactly one file, and
@@ -178,7 +178,7 @@ Resolved: Closed as mis-scoped, not as fixed. The premise was falsified by re-me
 260807-1925: zero filename collisions across 579 record files, 84 multiply-occupied timestamps. The
 naming pattern stands unchanged. The residual finding, that a bare-timestamp citation is ambiguous,
 is carried by the answered decision
-`shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md`, whose answer is a
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md`, whose answer is a
 citation rule: cite a record by its full filename, never by the timestamp alone. Adding that rule
 to `rules/fusion-workbench-conventions.md` `## Filename Patterns` is open rule-text work the user
 deliberately deferred in this session.

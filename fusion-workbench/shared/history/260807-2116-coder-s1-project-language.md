@@ -3,8 +3,8 @@
 **Date:** 2026-08-07 21:16
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260807-2024_o_two-language-declarations.md`, step S1
-**Decision realised:** `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (three of its three open rule-text edits: the exempt-surface list, the head-label resolution, the direct-user-interaction wording — the first two land here in full, the third here and in S5)
+**Plan:** `260807-2024_*_two-language-declarations.md`, step S1
+**Decision realised:** `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (three of its three open rule-text edits: the exempt-surface list, the head-label resolution, the direct-user-interaction wording — the first two land here in full, the third here and in S5)
 
 ## What changed
 

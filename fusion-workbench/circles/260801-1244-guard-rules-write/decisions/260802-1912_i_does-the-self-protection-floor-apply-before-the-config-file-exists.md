@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator, from a planner finding at the plan gate
-**Cross-references:** `shared/planning/260801-1122_o_spec-normative-consolidation.md:293` (seeding) and `:301` (the floor); `circles/260801-1244-guard-rules-write/planning/260802-1856_*_plan-guard-rules-write.md` `## User Decisions Pending`; `circles/260801-1244-guard-rules-write/_c_circle.md` `## Directive`
+**Cross-references:** `260801-1122_*_spec-normative-consolidation.md:293` (seeding) and `:301` (the floor); `260802-1856_*_plan-guard-rules-write.md` `## User Decisions Pending`; `260801-1244-guard-rules-write` `## Directive`
 
 ---
 
@@ -51,10 +51,10 @@ planner escalated rather than choosing.
   documentation, not only here.
 
 ---
-Answered: user decision at the plan gate, 260802-1912 — **option 1, the floor applies once the file
+Answered: user decision at the plan gate, 260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md — **option 1, the floor applies once the file
 exists**. The residual is accepted on the grounds that a creation appears in a git diff, which is
 precisely the property decision D-c chose the project root to obtain
-(`shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`; spec `:291`). The plan
+(`260801-1020_*_may-any-fusion-writer-touch-rules.md`; spec `:291`). The plan
 proceeds on this answer: Step 6's floor condition and Step 8's seeding block both implement it, and
 the residual is to be stated in `rules/protected-path-discipline.md` at Step 9 rather than left in
 this record alone.
@@ -65,26 +65,26 @@ this record alone.
 
 The floor this record decides sits in plan Step 6, and Step 6 has not begun: `hooks/lib/config.ts` has no `PROJECT_CONFIG_FILENAME`, no `diagnostics` field, and still resolves one source at module load (`:34`). There is no `fusion-guard.json` anywhere in the tree and no seeding block in `skills/setup/SKILL.md`, so the collision this record resolves has not yet been reachable in practice.
 
-The `Answered:` footer cites "user decision at the plan gate, 260802-1912" rather than a `<path>:<line>`, which is what `rules/fusion-workbench-conventions.md` `## State Markers — decisions` asks for. The answer itself is unambiguous and is restated in full in the footer, so this is a citation-form note, not a doubt about the content. The resolvable citation is the plan's own `## Decision record to file` section and `## Open Questions` item 1, both of which now record the outcome.
+The `Answered:` footer cites "user decision at the plan gate, 260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md" rather than a `<path>:<line>`, which is what `rules/fusion-workbench-conventions.md` `## State Markers — decisions` asks for. The answer itself is unambiguous and is restated in full in the footer, so this is a citation-form note, not a doubt about the content. The resolvable citation is the plan's own `## Decision record to file` section and `## Open Questions` item 1, both of which now record the outcome.
 
 The residual this record accepts — an agent may create a narrowing `fusion-guard.json` in a project that has never run `/fusion:setup` since this version — is still owed a sentence in `rules/protected-path-discipline.md` at Step 9. It is not there yet.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_a_`, unchanged. Re-verified, nothing has moved.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_a_`, unchanged. Re-verified, nothing has moved.**
 
 Plan Step 6 has still not begun: `hooks/lib/config.ts:34` is still `const CONFIG_PATH = findConfigPath();` at module level, `:108` is still `loadConfig(configPath?: string)`, and grep finds no `diagnostics` field and no `PROJECT_CONFIG_FILENAME`. `find . -name fusion-guard.json` returns nothing anywhere in the tree, and `grep -n fusion-guard skills/setup/SKILL.md` returns nothing. The collision this record resolves is still unreachable in practice.
 
-The two notes from reconciliation 260803-1516 both still stand: the `Answered:` footer cites a gate rather than a `<path>:<line>`, and the residual this record accepts is still owed a sentence in `rules/protected-path-discipline.md` at Step 9. Neither was acted on, and Step 9 acquired more work rather than less this session — see `issues/260803-1402_o_`.
+The two notes from reconciliation 260803-1516 both still stand: the `Answered:` footer cites a gate rather than a `<path>:<line>`, and the residual this record accepts is still owed a sentence in `rules/protected-path-discipline.md` at Step 9. Neither was acted on, and Step 9 acquired more work rather than less this session — see `260803-1402_*_`.
 
 ---
-Implemented: plan Step 6 — `floorApplies = projectConfigPath !== null && existsSync(projectConfigPath)` in `hooks/lib/config.ts`. The floor is keyed on the file's **existence**, not on its parseability, which the plan did not specify: the alternative would let a project unprotect its own configuration by breaking it. Six unit cases cover both halves, and a mutation applying the floor unconditionally fails five of them, including both byte-identity cases. Residual re-measured and found wider than this record bounded it, filed separately at `issues/260804-1427_o_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`.
+Implemented: plan Step 6 — `floorApplies = projectConfigPath !== null && existsSync(projectConfigPath)` in `hooks/lib/config.ts`. The floor is keyed on the file's **existence**, not on its parseability, which the plan did not specify: the alternative would let a project unprotect its own configuration by breaking it. Six unit cases cover both halves, and a mutation applying the floor unconditionally fails five of them, including both byte-identity cases. Residual re-measured and found wider than this record bounded it, filed separately at `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`.
 
 ---
 
 **Reconciliation 260805-2323 (reconciler, domain `code`) — stays `_i_`, terminal. Record and shipped documents reconciled on the residual's reach.**
 
-This record bounds the accepted residual at "an agent may create a narrowing `fusion-guard.json` … and the guard will honour it" without stating how far the narrowing reaches. Issue `issues/260804-1427_c_` measured the reach one step wider than the record's framing: a narrowing file removes **everything** on the effective list, `fusion-workbench/.guard-state/**` and therefore the escalation machinery included. The issue's own instruction was to state the residual at its measured reach in the shipped documents *or* widen the floor, not both and not neither. The documentation leg was taken, in commit `373f5ed` (C5b remediation plan Step 7, obligation 10):
+This record bounds the accepted residual at "an agent may create a narrowing `fusion-guard.json` … and the guard will honour it" without stating how far the narrowing reaches. Issue `260804-1427_*_` measured the reach one step wider than the record's framing: a narrowing file removes **everything** on the effective list, `fusion-workbench/.guard-state/**` and therefore the escalation machinery included. The issue's own instruction was to state the residual at its measured reach in the shipped documents *or* widen the floor, not both and not neither. The documentation leg was taken, in commit `373f5ed` (C5b remediation plan Step 7, obligation 10):
 
 - `README-hooks.md:179` states the residual at its measured reach — "across **everything** on the effective list, `fusion-workbench/.guard-state/**` and therefore the escalation machinery included" — with the two measured bounds (git diff on a tracked file; an active halt blocks the narrowing write itself).
 - `rules/protected-path-discipline.md:36-46` states the same in the project-layer paragraph ("The guard's own state directory is an ordinary entry and goes with the rest").
@@ -92,4 +92,4 @@ This record bounds the accepted residual at "an agent may create a narrowing `fu
 The record's own text keeps its original, narrower framing; this note is the bridge, so a reader of the record finds the measured bound where it now lives. No marker change — `_i_` is terminal and the implementation this record cites is unchanged.
 
 ---
-Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the self-protection floor over `fusion-guard.json` is one of the pieces `README-hooks.md:286` names as removed, and `hooks/lib/config.ts:127` carries the note in the source ("THE SELF-PROTECTION FLOOR WENT WITH IT"). The residual this record accepted and the reach the 260805-2323 note widened it to are both moot: nothing is on an effective list at all.
+Retired: `60c9cd8` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — the self-protection floor over `fusion-guard.json` is one of the pieces `README-hooks.md:286` names as removed, and `hooks/lib/config.ts:127` carries the note in the source ("THE SELF-PROTECTION FLOOR WENT WITH IT"). The residual this record accepted and the reach the 260805-2323 note widened it to are both moot: nothing is on an effective list at all.

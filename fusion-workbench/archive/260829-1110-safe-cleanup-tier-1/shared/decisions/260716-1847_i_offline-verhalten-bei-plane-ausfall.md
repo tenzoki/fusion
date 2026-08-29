@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper
-**Cross-references:** `shared/decisions/260716-1847_*_plane-rolle-source-of-truth.md`, `circles/260716-1847-workbench-umbau/planning/260716-1847_*_spec-plane-integration-und-workbench-struktur.md`
+**Cross-references:** `260716-1847_*_plane-rolle-source-of-truth.md`, `260716-1847_*_spec-plane-integration-und-workbench-struktur.md`
 
 **Status-Notiz (Orchestrator, 2026-07-16):** Die Rollen-Entscheidung ist inzwischen beantwortet und fiel auf "Spiegel" (Push-only). Damit ist die Bedingung erfüllt, unter der der Shaper Option 2 empfiehlt. Diese Entscheidung bleibt dennoch offen, weil sie dem Nutzer gehört und erst für Circle 2 (Plane-Anbindung) beantwortet werden muss. Circle 1 (Umbau) ist von ihr nicht blockiert.
 
@@ -49,8 +49,8 @@ Deferred:
 Superseded by:
 
 ---
-Answered: `circles/260716-1847-workbench-umbau/planning/260716-1847_*_spec-plane-integration-und-workbench-struktur.md` §"Entscheidungen (Kai)" D3 — "Weiterarbeiten, Plane ist sekundäre View" (keep working; Plane is a secondary view; a failure is never silent). Realisation is scoped into the Plane mirror Circle (C4). Bookkeeping caught at Plane-Circle prep, 2026-07-19.
-Implemented: `982336f` — C4 is live in `bin/fusion-plane`. Verified 260731-2324 (reconciler): `defer()` (`:629-632`) routes an unreachable-Plane transition to `outbox_append()` (`:561`), which writes a human-readable line to `.plane-outbox.jsonl` (`:88`); the run exits `EXIT_DEFERRED=10` — "work deferred to the outbox — non-error, non-crash" (`:108`) — so the failure is recorded, never silent, and never blocks the file-side work. `outbox_drain_circle()` (`:567-572`, called at `:920-923`) clears a Circle's notes only once its reconcile fully succeeds. Shipped in v5.5.0. Test coverage: "absent key / unreachable Plane defers with the manual-paste fallback (exit 10)" in `hooks/lib/__tests__/fusion-plane.test.ts` (suite green 316/316, run 260731-2324).
+Answered: `260716-1847_*_spec-plane-integration-und-workbench-struktur.md` §"Entscheidungen (Kai)" D3 — "Weiterarbeiten, Plane ist sekundäre View" (keep working; Plane is a secondary view; a failure is never silent). Realisation is scoped into the Plane mirror Circle (C4). Bookkeeping caught at Plane-Circle prep, 2026-07-19.
+Implemented: `982336f` — C4 is live in `bin/fusion-plane`. Verified 260731-2324-reconciliation.md (reconciler): `defer()` (`:629-632`) routes an unreachable-Plane transition to `outbox_append()` (`:561`), which writes a human-readable line to `.plane-outbox.jsonl` (`:88`); the run exits `EXIT_DEFERRED=10` — "work deferred to the outbox — non-error, non-crash" (`:108`) — so the failure is recorded, never silent, and never blocks the file-side work. `outbox_drain_circle()` (`:567-572`, called at `:920-923`) clears a Circle's notes only once its reconcile fully succeeds. Shipped in v5.5.0. Test coverage: "absent key / unreachable Plane defers with the manual-paste fallback (exit 10)" in `hooks/lib/__tests__/fusion-plane.test.ts` (suite green 316/316, run 260731-2324-reconciliation.md).
 
 ---
-Retired: `d0ddabb` + `7c12d6a` (Schritte 2 und 3 von circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — die Outbox (`.plane-outbox.jsonl`) und der Reconcile-Pfad, die das Offline-Verhalten trugen, sind mit dem Spiegel entfernt. Ein Plane-Ausfall ist kein Zustand mehr, den fusion kennt.
+Retired: `d0ddabb` + `7c12d6a` (Schritte 2 und 3 von 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md) — die Outbox (`.plane-outbox.jsonl`) und der Reconcile-Pfad, die das Offline-Verhalten trugen, sind mit dem Spiegel entfernt. Ein Plane-Ausfall ist kein Zustand mehr, den fusion kennt.

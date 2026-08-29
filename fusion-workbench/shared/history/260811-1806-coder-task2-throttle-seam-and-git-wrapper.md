@@ -2,10 +2,10 @@
 
 **Agent:** coder
 **Status:** Complete
-**Started:** 260811-1806
-**Task:** `fusion-workbench/tasklist.md` task 2 (`I:260811-1730`)
-**Record:** `shared/issues/260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`
-**Realises:** `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`, option 2
+**Started:** 260811-1806-coder-task2-throttle-seam-and-git-wrapper.md
+**Task:** `fusion-workbench/tasklist.md` task 2 (`I:260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`)
+**Record:** `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`
+**Realises:** `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`, option 2
 **Active Circle:** none (`.active-circle` absent; every `OUT_*` resolved into `shared/`)
 **Git HEAD at start:** `b261d83`
 
@@ -151,8 +151,8 @@ that is not there.
 
 ## Bookkeeping
 
-- `shared/issues/260811-1730_o_…` → `_c_`, with a `Resolved:` note.
-- `shared/decisions/260811-1146_a_…` → `_i_`, with an `Implemented:` note citing paths rather
+- `260811-1730_*_…` → `_c_`, with a `Resolved:` note.
+- `260811-1146_*_…` → `_i_`, with an `Implemented:` note citing paths rather
   than a hash, because this agent does not commit. The whole of what the answer asked to be
   **built** is built; the "option 1 at the fourth module" half is a standing condition, and the
   only thing that could be done for it — writing the trip-wire and the criterion where the next

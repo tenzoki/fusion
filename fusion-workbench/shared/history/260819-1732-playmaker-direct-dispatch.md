@@ -1,4 +1,4 @@
-# Playmaker run — 260819-1732
+# Playmaker run — 260819-1732-playmaker-direct-dispatch.md
 
 **Status:** Complete
 **Trigger:** `direct-dispatch`
@@ -39,7 +39,7 @@ Measured on this run rather than read off the record:
 - All 21 workbench-record paths cited in the record's Directive, Grounding and Dependencies were
   expanded and resolved against the store. None dangles.
 - Three of the four decisions the Grounding cites carry the answered marker; the fourth,
-  `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
+  `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
   is open.
 - The three lineage Circles in `## Dependencies` all resolve to existing directories: two
   closed-coherent, one bounded. The bounded one would raise a strict dependencies-closed flag; the
@@ -51,7 +51,7 @@ Measured on this run rather than read off the record:
 ## Writes performed
 
 - `## Activation proposal` appended to
-  `circles/260819-1645-four-constraints-on-deep-change/_a_circle.md`.
+  `260819-1645-four-constraints-on-deep-change`.
 - `## Parent grounding stale` appended to the same record. See the propagation event below.
 - `fusion-workbench/portfolio.md` regenerated in full.
 
@@ -78,7 +78,7 @@ recorded in the appended section and in the portfolio's `## Warnings`. Nothing w
 
 **Entries read:** 4 files under `shared/backlog/` — 1 open (`_o_`), 1 recommended (`_p_`), 2 closed
 (`_c_`). The two closed were read and not touched; one of them,
-`shared/backlog/260811-0826_*_observations.md`, is the retired original of the 260814-1733 split.
+`260811-0826_*_observations.md`, is the retired original of the 260814-1733 split.
 
 **Distinct ideas found inside the live entries:** 2, one per entry. Neither is a multi-idea entry, so
 no split applies.
@@ -90,9 +90,9 @@ check. A merge would consolidate two ideas into one and lose one of them.
 **Handed to `## Warnings` as defect- or decision-shaped:** 0. Nothing in the store reads as a defect
 or an open question misfiled as an idea.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — the only live
+**Top-ranked entry:** `260814-1733_*_bounded-executor-dispatches.md` — the only live
 idea whose path is clear of a user act it cannot perform itself; its evidence is on disk and already
-sized by `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`.
+sized by `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`.
 
 **Backlog writes performed: none.** Both live entries already carry the markers this run's ranking
 gives them, so even the autonomous rename between open and recommended had nothing to do. No entry
@@ -100,7 +100,7 @@ was created, split, merged, closed or deferred.
 
 **One ranking judgement worth recording, because it reverses a caveat two earlier refreshes carried.**
 The portfolio now holds both a ready anticipated Circle and a ready backlog entry. The refresh of
-260816-1822 treated that combination as competition for the single orchestrator slot and warned
+260816-1822-playmaker-user-fusion-next.md treated that combination as competition for the single orchestrator slot and warned
 against shaping. This run does not, because shaping produces a second *anticipated* Circle and the
 store can hold any number of those. The two are in sequence, not in competition, and the portfolio
 says so.
@@ -111,9 +111,9 @@ each states one idea and can be promoted whole, the two are not duplicates, both
 deferring the blocked one would cost the user two later acts where leaving it open costs one.
 
 **The obstruction on the second entry is unchanged across four refreshes**, re-verified on disk here:
-`shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
 carries the deferred marker, and the record it waits on,
-`shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
+`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
 is still open. Reviving a deferred decision is the user's act.
 
 ## Warnings emitted to the portfolio

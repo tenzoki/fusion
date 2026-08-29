@@ -33,7 +33,7 @@ wrong; it is one whose subject was deleted on 2026-08-16 and that no step reache
 decides. Neither opened `agents/curator.md` or `skills/curate/SKILL.md`: the curator is not a hooks
 surface, not a configuration surface and not a migration surface, and the word "guard" appears in
 those two files only inside this one clause. The clause names no removed identifier and no removed
-path, so `reference-resolution-lint` cannot see it either — the same limit `260816-2321` and
+path, so `reference-resolution-lint` cannot see it either — the same limit `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md` and
 `260817-1105` each record from a different direction.
 
 **Effect.** No behaviour changes, because the denial the sentence classifies never arrives. What
@@ -53,8 +53,8 @@ read-only file, a permission denial from the harness, and a disk error, none of 
 **Cross-references:**
 - `agents/curator.md:212`, `skills/curate/SKILL.md:110`
 - `hooks/guard.ts:1-21`, `hooks/lib/config.ts:305-313`, `:343-351`
-- `circles/260816-1741-guard-becomes-observation-only/issues/260816-2321_c_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
-- `circles/260816-1741-guard-becomes-observation-only/issues/260817-1105_c_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md`
+- `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
+- `260817-1105_*_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md`
 
 ---
 Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN by explicit user decision, against the
@@ -77,7 +77,7 @@ in `docs/philosophy.md`" (`_t_circle.md:25-27`). `agents/curator.md` is an agent
 `skills/curate/SKILL.md` is a skill body, and neither says what the guard now is. Every other clause
 of that Directive verifies at HEAD. This is why the second pass's Artifact↔Directive edge is flagged
 on completeness, and it is flagged as a user-chosen shortfall rather than as drift — see
-`circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`
+`260816-1841-orchestrator-session.md`
 `## Coherence — second pass`.
 
 ---

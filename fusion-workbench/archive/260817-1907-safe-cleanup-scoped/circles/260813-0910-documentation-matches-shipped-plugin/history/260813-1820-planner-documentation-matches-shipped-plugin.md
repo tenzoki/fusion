@@ -3,13 +3,13 @@
 **Date:** 2026-08-13 18:20
 **Agent:** planner (domain: code, dispatched by the orchestrator)
 **Status:** Complete
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin/`
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
 
 ## What was produced
 
-- `circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md` — ten implementation steps across five Turns, every step routed to `coder`.
-- `circles/260813-0910-documentation-matches-shipped-plugin/decisions/260813-1820_o_should-the-planner-accept-a-domain-parameter-that-three-documented-surfaces-already-promise.md`
-- `circles/260813-0910-documentation-matches-shipped-plugin/decisions/260813-1820_o_how-fusion-s-own-documentation-treats-a-hand-measured-number-that-decays.md`
+- `260813-1820_*_documentation-matches-shipped-plugin.md` — ten implementation steps across five Turns, every step routed to `coder`.
+- `260813-1820_*_should-the-planner-accept-a-domain-parameter-that-three-documented-surfaces-already-promise.md`
+- `260813-1820_*_how-fusion-s-own-documentation-treats-a-hand-measured-number-that-decays.md`
 
 No issue was filed. Both defects found while planning are documentation defects inside this Circle's remit and are carried as plan steps; the one design question each of them raises went to a decision record.
 

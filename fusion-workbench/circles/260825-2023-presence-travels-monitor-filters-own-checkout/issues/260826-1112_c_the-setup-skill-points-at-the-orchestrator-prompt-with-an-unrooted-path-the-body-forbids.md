@@ -15,7 +15,7 @@ In a consuming project the reader of Step 0i is sent to a file that is not there
 no longer carries the two fields literally, there is no second route to what `<ID>` expands to.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`
+`260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`
 (the record `6deeb33` closed; its resolution note calls the new citation "unrooted" as a measurement
 property and does not read it as a convention breach).
 
@@ -55,4 +55,4 @@ not move: `scanPluginPaths` and `scanHeadingAnchors` both strip a `ROOT_VARS` pr
 token registers exactly as its bare form does. Measure it rather than assume it.
 
 ---
-Resolved: 260827-2020 by coder. Both citations in `skills/setup/SKILL.md` (Step 0i and Step 5) now read `$FUSION_SRC/agents/orchestrator.md`. Measured by single-file revert: the reference pin moves by +4 paths and +2 anchors across the whole edit set landing in this commit (Steps 0j, 2 and 3 added citations); the two rootings themselves register as their bare forms did.
+Resolved: 260827-2020-coder-setup-skill-steps-5-18b-c4.md by coder. Both citations in `skills/setup/SKILL.md` (Step 0i and Step 5) now read `$FUSION_SRC/agents/orchestrator.md`. Measured by single-file revert: the reference pin moves by +4 paths and +2 anchors across the whole edit set landing in this commit (Steps 0j, 2 and 3 added citations); the two rootings themselves register as their bare forms did.

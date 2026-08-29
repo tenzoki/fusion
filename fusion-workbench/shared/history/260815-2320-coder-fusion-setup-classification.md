@@ -3,8 +3,8 @@
 **Agent:** coder
 **Date:** 2026-08-15
 **Status:** Complete
-**Sources:** `shared/issues/260812-0758_c_fusion-setup-is-gitignored-in-a-consumer-…md`,
-`shared/issues/260810-0504_c_the-tracked-workbench-section-re-enumerates-a-closed-list-…md`
+**Sources:** `260812-0758_*_fusion-setup-is-gitignored-in-a-consumer-…md`,
+`260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-…md`
 
 ## What was wrong
 

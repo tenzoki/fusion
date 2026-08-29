@@ -4,7 +4,7 @@
  * The computation is `lib/staging-drift.ts`; this is one of its two callers.
  * The other is `hooks/tracker.ts`, the PostToolUse hook, which runs it unasked
  * on the tool call that moved HEAD. Read that module's header for the defect
- * (issue `260811-0114`) and for why the trigger is a measured HEAD rather than
+ * (issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`) and for why the trigger is a measured HEAD rather than
  * a `Bash` command's text.
  *
  * Called through `bin/fusion-staging-drift` by `agents/orchestrator.md` at
@@ -21,7 +21,7 @@
  *   unstaged=2
  *   verdict=unstaged
  *     record          M circles/<dir>/_t_circle.md  UNSTAGED  (a Circle record)
- *     record         ?? shared/history/260810-1723-tasklist-update.md  UNSTAGED  (…)
+ *     record         ?? 260810-1723-tasklist-update.md  UNSTAGED  (…)
  *     in-flight       M orchestrator-events.jsonl  (append-only — …)
  *     unclassified   ?? stilwerk/chat-voice-de.yaml  (not a record store …)
  *
@@ -39,7 +39,7 @@
  *   2  no fusion workbench above the working directory; nothing to check.
  *
  * **Finding an unstaged record is not an error exit**, for the reason
- * `bin/fusion-review-coverage` gives at the same place (issue `260810-0710`): a
+ * `bin/fusion-review-coverage` gives at the same place (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`): a
  * check that hands its verdict to an exit code teaches its reader to ignore
  * that code, and a Turn that legitimately ends with a record still in flight
  * would then be reporting failure where nothing is wrong. The verdict is a line

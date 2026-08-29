@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** circles/260718-1924-v5x-overhaul/planning/260718-1001_*_master-plan-fusion-v5x-overhaul.md (Circle B steps 5–8); circles/260719-1536-brest-unite-co-creator-conversion/_c_circle.md
+**Cross-references:** 260718-1001_*_master-plan-fusion-v5x-overhaul.md (Circle B steps 5–8); 260719-1536-brest-unite-co-creator-conversion
 
 ---
 
@@ -38,7 +38,7 @@ The context-reduction win depends on the mirror. Claude Code auto-loads `.claude
 Option 1 for this Circle (deliver the fusion-agent-side win without changing unite's plain-session convention), and file Option 2 as a follow-up decision if the user wants the fuller reduction. This keeps the Circle bounded and reversible. The user owns unite's convention, so this is theirs to decide.
 
 ---
-Answered: user direction (session 260719-1632) — go beyond the recorded options. Canonical home = `rules/` (lowercase, tracked, ALL 12 rules); `.claude/rules/` emptied and the `make mirror-rules` mechanism removed; selective loading via `rules/context-manifest.yaml`; `CLAUDE.md` reduced to links only. Realisation designed in the planner's implementation plan (this Circle's planning/). Step 5 "dedup by deletion" is dropped; replaced by case-consolidation + mirror removal.
+Answered: user direction (session 260719-1632-orchestrator-session.md) — go beyond the recorded options. Canonical home = `rules/` (lowercase, tracked, ALL 12 rules); `.claude/rules/` emptied and the `make mirror-rules` mechanism removed; selective loading via `rules/context-manifest.yaml`; `CLAUDE.md` reduced to links only. Realisation designed in the planner's implementation plan (this Circle's planning/). Step 5 "dedup by deletion" is dropped; replaced by case-consolidation + mirror removal.
 
 ---
-Implemented: `3876e0c0` (consolidate 12 → lowercase `rules/`) + `5be1cb25` (remove `.claude/rules/` mirror, fix 17 references) + `06734571` (add `rules/context-manifest.yaml` for selective loading) + `2e9abf30` (lean `CLAUDE.md` 43,145 → 8,504 B). All in `$U`; verified on disk 2026-07-19 by the reconciler. Acceptance proof 9/9 PROVEN (`history/260719-2045-step6-acceptance-evidence.md`). `_a_` → `_i_`.
+Implemented: `3876e0c0` (consolidate 12 → lowercase `rules/`) + `5be1cb25` (remove `.claude/rules/` mirror, fix 17 references) + `06734571` (add `rules/context-manifest.yaml` for selective loading) + `2e9abf30` (lean `CLAUDE.md` 43,145 → 8,504 B). All in `$U`; verified on disk 2026-07-19 by the reconciler. Acceptance proof 9/9 PROVEN (`260719-2045-step6-acceptance-evidence.md`). `_a_` → `_i_`.

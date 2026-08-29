@@ -9,7 +9,7 @@
 
 ## Question
 
-The prior analysis `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+The prior analysis `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
 named four mechanisms as removal candidates and measured what each costs. It did not establish what
 any of them was *for*. This report answers four questions that analysis left open. What idea does
 the churn apparatus serve, and why does nothing act on its output? What does the domain parameter
@@ -49,7 +49,7 @@ Churn carries no authorising record, and it is not fusion's invention. Its file 
 source: *"Ported from `fusion/reactor/pkg/guard/churn_heatmap.go`"* (`hooks/lib/churn.ts:4`), a Go
 project outside this tree. Both `churn.ts` and `escalation.ts` arrive in `b05b423`, the root commit
 of this repository, inside the v2.3.0 initial release. There is no prior discussion to recover. The
-three decision records that mention churn (`260809-2004`, `260810-0920`, `260811-1534`) are all
+three decision records that mention churn (`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`, `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`, `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`) are all
 repairs, and all three were filed in the last four days.
 
 The clearest statement of intent is `docs/philosophy.md:17`:
@@ -349,14 +349,14 @@ is one experiment on one Circle.
 ### The failure it was built for was real and was measured six times
 
 The origin record is
-`shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`, 224
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`, 224
 lines, now closed. The prior analysis credits it with four freezes. The record documents six.
 
 | # | Session | `agentstate.yaml` claimed | git said | Divergence |
 |---|---|---|---|---:|
 | 1 | 260801, HEAD `9ab5a2a` | turn 1, tasks 4, commits 4 | 16 commits, 8 of 8 plan steps done | 12 |
-| 2 | `260803-1038` | turn 0, commits 0, 8 tasks queued | 7 commits, 10 issues closed | 7 |
-| 3 | `260806-2158` | turn 1, tasks 0, commits 0 | 8 commits, 11 steps done, v6.0.0 tagged | 8 |
+| 2 | `260803-1038-orchestrator-session.md` | turn 0, commits 0, 8 tasks queued | 7 commits, 10 issues closed | 7 |
+| 3 | `260806-2158-orchestrator-session.md` | turn 1, tasks 0, commits 0 | 8 commits, 11 steps done, v6.0.0 tagged | 8 |
 | 4 | `260808-0920` | turn 1, tasks 1, commits 0 | 6 commits, 6 defects closed | 6 |
 | 5 | during the fix | turn 0, commits 0 | 12 | 12 |
 | 6 | the fixing session itself | frozen at four surfaces | — | — |
@@ -409,7 +409,7 @@ of another drift event eleven seconds later (*"die gemessenen Werte sind … 7 g
 repairing a drift, and one records the drift check reporting `verdict=clean` while the surface it
 was built to protect was frozen.
 
-That last one is the important one. Issue `260811-1614` (open) records that the Turn row counts only
+That last one is the important one. Issue `260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md` (open) records that the Turn row counts only
 `turn_start` events, so a Turn emitting its boundary event and none of its per-task events reads
 clean. Measured four times across two projects, including three consecutive Turns in the control
 with no task event at all. The record's diagnosis:
@@ -509,7 +509,7 @@ and that tab already reads "No active session" in both projects today.
 
 ### The honest counter-argument
 
-The event log is not truth. It is a better-shaped hand-kept record. Issue `260811-1614` measured the
+The event log is not truth. It is a better-shaped hand-kept record. Issue `260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md` measured the
 log freezing at the per-task level while its boundary events kept coming, which means anything
 derived from `task_done` inherits the same hand-maintenance property, just with better survival
 characteristics: a lapse loses one entry rather than freezing an entire surface.
@@ -531,8 +531,8 @@ instruction** (sections L718-798 and L1007-1381). The single `### Drift check` s
 bytes, larger than the entire event-log schema it depends on.
 
 Defect cost: **21 records filed against the mechanism within 48 hours of its birth, 8 still open**,
-including two saying its outputs reach no reader (`260811-1143`, `260811-1145`) and two saying the
-check itself reports clean on conditions it was built to catch (`260811-1614`, `260811-2307`).
+including two saying its outputs reach no reader (`260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`, `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`) and two saying the
+check itself reports clean on conditions it was built to catch (`260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md`, `260811-2307`).
 
 ### Verdict: **change** — keep the measurement, delete its subject
 
@@ -555,10 +555,10 @@ detection of a frozen surface instead of removing the surface that freezes.
 5. **`staging-drift`: keep, fix the reader.** One catch, recovered in the next commit, and its
    subject can be permanently lost (`git checkout -- fusion-workbench/` takes an unstaged record).
    Add `staging_drift` to `WARNING_EVENT_TYPES` in `bin/monitor`, which is what open issue
-   `260811-1143` already specifies.
+   `260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md` already specifies.
 6. **`review-coverage`: change.** Zero firings, one report, an open scoping defect where a
    `conceptrev` verdict at the plan gate triggers a coverage measurement about code commits
-   (`260811-1145`). Filter the reviews scan by sender before adding it to the monitor. If it still
+   (`260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`). Filter the reviews scan by sender before adding it to the monitor. If it still
    produces nothing in a week of use, remove it.
 7. **Turn budget: too new to judge.** It is nine hours older than this analysis and produced four
    open records the night it landed. Leave it and revisit at one week.
@@ -640,11 +640,11 @@ each branch of it. None of that is smaller than the shell it replaced.
 2. **`.gitignore`.** The pattern is `bin/*` with fifteen `!bin/<name>` exceptions and a warning
    comment at line 17. **No test asserts that every shipped helper is tracked.** A sixteenth helper
    omitted from that list ships as nothing, silently.
-3. **Version skew.** Decision `260810-0921` measured this: `$FUSION_PLUGIN_ROOT` points at the
+3. **Version skew.** Decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` measured this: `$FUSION_PLUGIN_ROOT` points at the
    installed copy and is pinned for the whole session, so a helper one commit old is `exit 127` at
    Setup. Its answer (a1) was "tolerate and report", implemented in `26ea3c3`, which is why six call
    sites now carry an `[ -x ]` guard and a stderr line, at roughly 250 bytes each. **Parts (b) and
-   (c) of that decision are still open** in `260810-1544`: whether prompt-called helpers get one
+   (c) of that decision are still open** in `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`: whether prompt-called helpers get one
    uniform guarded-call convention, and whether the work-tree preference extends to helper
    resolution. Extracting more blocks without answering (b) means writing the guard by hand at every
    new site.
@@ -698,7 +698,7 @@ tests import it and a fourth carries its own copy (`circle-stash-git-exclusion.t
 > none of them visible to a reader.
 
 Six defect records were filed against that single 35-line block within twelve hours on 11 August:
-`260811-1406`, `-1407`, `-1412`, `-1610`, `-1616`, `-2149`. All six closed. That is 0.17 records per
+`260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md`, `-1407`, `-1412`, `-1610`, `-1616`, `-2149`. All six closed. That is 0.17 records per
 line, against a project average of 1.37 records per commit.
 
 ```mermaid
@@ -760,7 +760,7 @@ Concretely:
    helper's `--help` and its header, not in the prompt. Budget: the `### The record counts are
    computed, not tallied` section is 9,626 bytes for a 1,862-byte program; the target after
    extraction is under 1,500 bytes of prompt.
-3. **Answer decision `260810-1544` part (b) first.** One uniform guarded-call convention, stated
+3. **Answer decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` part (b) first.** One uniform guarded-call convention, stated
    once in `rules/`, cited at every call site. Six sites already carry a hand-written copy of it at
    about 250 bytes each. A convention plus a lint asserting every `$FUSION_PLUGIN_ROOT/bin/` call is
    guarded costs less than the seventh copy.
@@ -820,8 +820,8 @@ one that touches it, and it covers one surface.
 |---|---|---|---|
 | 1 | Churn apparatus | **change** | Emit on threshold crossing rather than per write; key the event on the thrashing file; delete `churn.json`, `churn-rank.ts`, `bin/fusion-churn-rank` and Setup Step 5's churn read; delete the orphaned `cross-file.json`. Keep escalation unchanged. Net: 2,028 lines to ~450, 340 KB of state removed, the live monitor panel preserved and made informative |
 | 2 | Domain parameter | **change** | Collapse to `code \| data`. That removes three of six cascade inputs, `domain-cascade-order-lint.test.ts` entirely, most of `domain-cascade.ts`, eight table rows across three prompts, and the `**Domain:**` field from the two record templates that nothing reads. Keep the dispatch line and the Setup summary |
-| 3 | Self-bookkeeping family | **change** | Delete every counter field from `agentstate.yaml`, keeping the seven intent fields. Drift rows 1, 2 and 5 go with them; rows 3 and 4 stay. Derive at the point of need, preferring git over the event log. Keep `staging-drift` and give it a monitor row (`260811-1143`); fix `review-coverage`'s sender filter (`260811-1145`) before judging it |
-| 4 | Shell blocks into `bin/` | **change** | Extract exactly two blocks and delete the prose with them. Answer decision `260810-1544` part (b) first, add `bin/**` to `protectedPaths`, add a ten-line test that every `bin/` file is tracked, and cap new fenced blocks at three lines |
+| 3 | Self-bookkeeping family | **change** | Delete every counter field from `agentstate.yaml`, keeping the seven intent fields. Drift rows 1, 2 and 5 go with them; rows 3 and 4 stay. Derive at the point of need, preferring git over the event log. Keep `staging-drift` and give it a monitor row (`260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`); fix `review-coverage`'s sender filter (`260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`) before judging it |
+| 4 | Shell blocks into `bin/` | **change** | Extract exactly two blocks and delete the prose with them. Answer decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` part (b) first, add `bin/**` to `protectedPaths`, add a ten-line test that every `bin/` file is tracked, and cap new fenced blocks at three lines |
 
 **Ordered by weight removed against capability lost**, items 3 and 1 are the two large ones: roughly
 6,500 lines and 45,623 bytes of prompt for item 3, roughly 1,600 lines and 340 KB of state for
@@ -837,8 +837,8 @@ ships against a schema about to change.
 
 None. Six of the seven changes above are decisions for the user rather than defects for an executor,
 and the seventh (`bin/` git-tracking test) is smaller than the record that would describe it. Two
-existing open records already carry parts of this: `260811-1143` (drift outputs reach no reader) and
-`260811-1145` (review-coverage scans the wrong senders). Decision `260810-1544` parts (b) and (c)
+existing open records already carry parts of this: `260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md` (drift outputs reach no reader) and
+`260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` (review-coverage scans the wrong senders). Decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` parts (b) and (c)
 are open and are the prerequisite for Finding 4. Filing more would add to the 75-record backlog whose
 size prompted the prior analysis.
 
@@ -857,17 +857,17 @@ size prompted the prior analysis.
   `:1022`, `:1099`; all 29 fenced blocks parsed at L33-L1372.
 - `hooks/lib/__tests__/helpers/prompt-blocks.ts`; `hooks/lib/__tests__/record-counts-measurement.test.ts:1-45`;
   `hooks/lib/__tests__/fusion-count-sources.test.ts`; the twelve prompt-lint test files enumerated in Finding 4.
-- `shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` lines 5-14,
+- `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` lines 5-14,
   16, 35, 46-57, 65-76, 86-97, 113, 131-148.
-- `shared/issues/260811-1143_o_…`, `260811-1145_o_…`, `260811-1614_o_…`, `260811-2307_o_…`,
-  `260810-1205_c_…the-session-closure-and-filing-counts-are-hand-maintained…`, and the six records
-  `260811-1406/-1407/-1412/-1610/-1616/-2149`.
-- `shared/decisions/260810-0921_i_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`;
-  `260810-1544_o_…`; `260809-2004_i_…`; `260810-0920_i_…`; `260811-1146_i_…`.
+- `260811-1143_*_…`, `260811-1145_*_…`, `260811-1614_*_…`, `260811-2307_*_…`,
+  `260810-1205_*_…the-session-closure-and-filing-counts-are-hand-maintained…`, and the six records
+  `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md/-1407/-1412/-1610/-1616/-2149`.
+- `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`;
+  `260810-1544_*_…`; `260809-2004_*_…`; `260810-0920_*_…`; `260811-1146_*_…`.
 - `git log --diff-filter=A` on all named modules; `git show <c>^:agents/orchestrator.md` at six extraction commits.
 - `/Users/k1/Projects/productive/krk/fusion-workbench/`: `.guard-state/{churn,escalation,events}.json(l)`,
   `orchestrator-events.jsonl`, 27 shared history files.
-- `fusion-workbench/shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`,
+- `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`,
   cited and not re-derived.
 
 ## Confidence and counter-evidence
@@ -899,7 +899,7 @@ size prompted the prior analysis.
       a week and decides whether Finding 1 is change or remove.
 - [ ] Does a `**Domain:** data` reconciliation produce different output from a `code` one? One run on
       one Circle decides whether Finding 2 is change or remove.
-- [ ] Decision `260810-1544` parts (b) and (c) are open and block Finding 4. Should prompt-called
+- [ ] Decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` parts (b) and (c) are open and block Finding 4. Should prompt-called
       `bin/` helpers get one uniform guarded-call convention, and does the work-tree preference
       extend to helper resolution?
 - [ ] Should `bin/**` join `guard.protectedPaths`? Every extraction moves code out of protection

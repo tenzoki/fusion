@@ -23,7 +23,7 @@ therefore holds:
 
 | Key shape | Count | Example |
 |---|---:|---|
-| relative to `fusion-workbench/`, not the repo root | 229 | `tasklist.md`, `shared/history/260719-1632-orchestrator-session.md` |
+| relative to `fusion-workbench/`, not the repo root | 229 | `tasklist.md`, `260719-1632-orchestrator-session.md` |
 | absolute, this checkout | 149 | `/Users/k1/Projects/productive/fusion/hooks/lib/churn.ts` |
 | absolute, a session scratchpad or `/tmp` | 120 | `/private/tmp/claude-502/-Users-k1-…/…`, `/tmp/fusion-commit-msg-p5.txt` |
 | absolute, another root entirely | 37 | `/Users/kai/Dropbox/qboot/projects/F04-FUSION/codebase/fusion/bin/fusion-plane`, `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins/…` |
@@ -72,7 +72,7 @@ session the reader is asking about.
 ---
 
 Not caused by, and not fixed by, the latching-thresholds work. Decision
-`260809-2004` removed the lifetime *threshold comparison* from `analyzeChurn`;
+`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` removed the lifetime *threshold comparison* from `analyzeChurn`;
 `totalChanges` and `thrashingScore` are untouched by that change, by design,
 because the Setup read wants the lifetime number. This record is about what the
 lifetime number is computed over, which is a separate question the decision's
@@ -103,21 +103,21 @@ cleared, and an existence check on every record is a stat per entry per write.
 Do not settle (c) by adding the check and seeing whether anyone complains.
 
 Cross-references:
-`shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`
+`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`
 (measurement 7 names the `bash-mutation-guard.ts` entry and calls it "the same
 missing boundary seen from the reader's side"; this record measures the rest of
 it and finds a second cause, the cwd-dependent key, that measurement 7 did not
 see);
-`shared/issues/260809-1101_*_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`
+`260809-1101_*_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`
 (the thresholds defect, resolved separately);
 `agents/orchestrator.md:113`, `skills/setup/SKILL.md:226` (the reader);
 `hooks/tracker.ts` (the normalisation), `hooks/lib/churn.ts` (the map).
 
 ---
-Decision filed: `shared/decisions/260810-0920_o_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` — this record states that a decision precedes the fix and names three parts. They are now on the record as an open question with options and constraints. No code change until it is answered.
+Decision filed: `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` — this record states that a decision precedes the fix and names three parts. They are now on the record as an open question with options and constraints. No code change until it is answered.
 
 ---
-Resolved 260810-1526 (coder, task `I:260809-2023-churn-key`, session `260810-1402`) — **all three parts of the answer are in code; the marker is the orchestrator's to move after the commit lands.**
+Resolved 260810-1526-churn-key-anchored-to-workbench-root.md (coder, task `I:260809-2023-churn-key`, session `260810-1402`) — **all three parts of the answer are in code; the marker is the orchestrator's to move after the commit lands.**
 
 Decision `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`, realised part by part:
 
@@ -133,4 +133,4 @@ Measured against this repository's own live map, which the ranking reads without
 
 Nothing is enforced off `churn.json` and nothing here changes that — `analyzeChurn` is untouched, and no new caller reads the map for a decision.
 
-History: `shared/history/260810-1526-churn-key-anchored-to-workbench-root.md`
+History: `260810-1526-churn-key-anchored-to-workbench-root.md`

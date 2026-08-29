@@ -3,13 +3,13 @@
 **Date:** 2026-08-22 22:19
 **Agent:** analyst
 **Status:** Complete
-**Circle:** `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
+**Circle:** `260822-1921-measure-what-two-checkouts-share`
 **Dispatched by:** orchestrator, as the Circle's single measuring task
 **Git HEAD at start:** `f90de0c`
 
 ## What was asked
 
-Capability C1 of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`: establish from measurement, not from reasoning, whether two checkouts of one project produce two isolated workbench states. Two arrangements, every entry of the spec's four-class state partition, plus four named questions about a fresh clone, an agent before Setup, the nested case, and two trees holding one Circle active.
+Capability C1 of `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`: establish from measurement, not from reasoning, whether two checkouts of one project produce two isolated workbench states. Two arrangements, every entry of the spec's four-class state partition, plus four named questions about a fresh clone, an agent before Setup, the nested case, and two trees holding one Circle active.
 
 ## What was done
 
@@ -29,10 +29,10 @@ Two normative statements were measured false. `.fusion-setup` is not written onc
 
 ## Artifacts
 
-- Report: `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`
-- Defect: `circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_o_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`
-- Open decision: `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
+- Report: `260822-2219-what-two-checkouts-of-one-project-actually-share.md`
+- Defect: `260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`
+- Open decision: `260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
 
 ## What is left
 
-The addendum to `shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` is the orchestrator's next task and was deliberately not written here.
+The addendum to `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` is the orchestrator's next task and was deliberately not written here.

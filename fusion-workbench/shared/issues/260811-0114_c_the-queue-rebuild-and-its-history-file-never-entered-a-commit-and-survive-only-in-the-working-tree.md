@@ -2,7 +2,7 @@ The 17:23 queue rebuild and its history file never entered a commit, and survive
 
 ---
 
-At HEAD `e2a34f0`, after eighteen commits of session `260810-1646`:
+At HEAD `e2a34f0`, after eighteen commits of session `260810-1646-orchestrator-session.md`:
 
 ```
 $ git log --oneline -1 -- fusion-workbench/tasklist.md
@@ -26,7 +26,7 @@ $ git status --porcelain --untracked-files=all fusion-workbench/
 
 The queue the whole session worked from — the 17:23 rebuild against `5ef92eb`, 2128 lines,
 1409 insertions against the committed copy — is **uncommitted**. Its companion history file,
-`shared/history/260810-1723-tasklist-update.md`, is **untracked**. Neither is gitignored: the
+`260810-1723-tasklist-update.md`, is **untracked**. Neither is gitignored: the
 workbench's `.gitignore` block lists six live-state paths (`agentstate.yaml`,
 `orchestrator-live.md`, `.session-marker`, `.active-circle`, `.guard-state/*`, `.commit-lock/*`,
 `monitor`) and `tasklist.md` is deliberately not among them —
@@ -78,7 +78,7 @@ defensible and one of them belongs to `taskplanner`:
   --porcelain fusion-workbench/` at the Turn boundary would have caught this in Turn 1 and every
   Turn after. It is the measurement counterpart to the staging shape — the same move the guard made
   when it stopped predicting writes and started measuring paths
-  (`circles/260807-0923-guard-misst-statt-orakelt`). It also overlaps queued task 33 ("Let the
+  (`260807-0923-guard-misst-statt-orakelt`). It also overlaps queued task 33 ("Let the
   orchestrator notice a file that changed with no task authorising it"), which is the same
   observation from the other side: task 33 watches for changes nobody authorised, this watches for
   changes nobody staged.
@@ -86,14 +86,14 @@ defensible and one of them belongs to `taskplanner`:
   `/tmp`; nothing enforces it.
 
 **Cross-references.** `fusion-workbench/tasklist.md` task 33;
-`shared/issues/260810-2024_o_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`
+`260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`
 (the other ownership gap around record writes);
-`shared/issues/260810-1918_c_the-explicit-staging-instruction-became-a-shell-comment-and-still-does-not-forbid-add-u.md`
+`260810-1918_*_the-explicit-staging-instruction-became-a-shell-comment-and-still-does-not-forbid-add-u.md`
 (the rule whose blind side this is);
 `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` and
 `## Which of them a tracked workbench tracks`; `agents/orchestrator.md:419-422`.
 
-**Filed by:** reconciler, final reconciliation of session `260810-1646`, at HEAD `e2a34f0`.
+**Filed by:** reconciler, final reconciliation of session `260810-1646-orchestrator-session.md`, at HEAD `e2a34f0`.
 
 ---
 Resolved: the durable half of the record, all three questions. (1) `agents/taskplanner.md` Step 6
@@ -108,4 +108,4 @@ and at test time (`commit-message-path.test.ts` pins Step 3b to `/tmp` and fails
 prescribes a path inside `fusion-workbench/`). The staging shape is not weakened:
 `queue-commit-ownership-lint.test.ts` asserts no `git add` in any fenced block of the orchestrator
 prompt carries `-A`, `-u`, `--all`, a bare `.` or a directory argument. The immediate half was already
-discharged by `60f47c2` and was not redone. Task 5 of the 260811-0903 queue.
+discharged by `60f47c2` and was not redone. Task 5 of the 260811-0903-tasklist-update.md queue.

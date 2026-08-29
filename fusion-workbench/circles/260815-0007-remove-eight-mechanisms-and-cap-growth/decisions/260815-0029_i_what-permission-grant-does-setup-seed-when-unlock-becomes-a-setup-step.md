@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** planner
-**Cross-references:** `shared/issues/260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md` (fix items 2 and 3, both filed there as decisions); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md` § Grounding snapshot → The administrative surface; `skills/unlock/SKILL.md`; `skills/setup/SKILL.md`; `install.sh`
+**Cross-references:** `260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md` (fix items 2 and 3, both filed there as decisions); `260815-0007-remove-eight-mechanisms-and-cap-growth` § Grounding snapshot → The administrative surface; `skills/unlock/SKILL.md`; `skills/setup/SKILL.md`; `install.sh`
 
 ---
 
@@ -99,7 +99,7 @@ question and option 3 becomes honest. Re-measuring on the current Claude Code ve
 scratch project and settles it.
 
 ---
-Answered: shared/history/260814-2306-orchestrator-session.md:153 — Part (a) option 2: Setup asks once, defaulting to yes, naming the file and bypassPermissions in plain words, and writes on the answer. Part (b) option 1: the inert settings.json is deleted together with its install.sh copy entry. Answered by the user at the plan gate.
+Answered: 260814-2306-orchestrator-session.md:153 — Part (a) option 2: Setup asks once, defaulting to yes, naming the file and bypassPermissions in plain words, and writes on the answer. Part (b) option 1: the inert settings.json is deleted together with its install.sh copy entry. Answered by the user at the plan gate.
 Implemented: skills/setup/SKILL.md `## Step 0g — Offer to seed the project's permission file` (part a option 2: one AskUserQuestion defaulting to yes, naming .claude/settings.local.json and bypassPermissions in plain words, bare tool names only, the unlock body's merge and gitignore steps carried over verbatim as the single implementation, and a declined answer reported in the Done report); settings.json deleted and its copy entry removed from install.sh, with CLAUDE.md's installer bullet rewritten to state the measurement without naming the file (part b option 1). No commit hash: the executor does not commit, and the orchestrator's commit for this step is what carries these paths.
 Deferred:
 Superseded by:

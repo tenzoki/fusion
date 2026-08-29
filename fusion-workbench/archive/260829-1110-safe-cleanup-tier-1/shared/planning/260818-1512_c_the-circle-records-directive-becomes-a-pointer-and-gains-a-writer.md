@@ -2,18 +2,18 @@
 
 **Date:** 2026-08-18
 **Status:** Complete
-**Spec:** none — planned from the answered decision `shared/decisions/260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1, pointer plus writer)
+**Spec:** none — planned from the answered decision `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1, pointer plus writer)
 **Decidability:** The load-bearing question is *may this writer put Directive prose into this record?* It is decidable from an input every writer already holds: the record's own `**Active spec/plan:**` field, tested against the literal `(none yet)` that `agents/orchestrator.md` `## Circle head fields` already defines as a value rather than a gap. No writer predicts, classifies, or infers anything. The cut that would **not** have been decidable is named here so it is not reintroduced: *is this edit a typo correction or a re-shaping?* cannot be answered from what the shaper holds, and the only material available for the guess is the free text of `**Initiated by:**`. Reading intent out of an operator's own words is the shape of the branch-switch guard this repository deleted on 2026-08-09 after five patches and 24 consecutive false blocks. So the mechanism changes rather than the approximation improving: the fork moves onto the dispatch as an explicit `**Scope:**` parameter, which asks the dispatcher a question the dispatcher holds the answer to.
 
 ## Directive
 
-Realise the answered decision `260818-1504`. Where a Circle has a spec, its record's `## Directive`
+Realise the answered decision `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md`. Where a Circle has a spec, its record's `## Directive`
 stops carrying prose and carries a reference to the record's `**Active spec/plan:**` field, so the
 Directive has one source. Where a Circle has no spec, which is its state from activation until
 planning finishes, the shaper may rewrite the prose under the user-initiated condition that
 already governs its third mode.
 
-The defect being closed is `shared/issues/260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md`.
+The defect being closed is `260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md`.
 
 ## Current State
 
@@ -47,7 +47,7 @@ from the plan, then the spec, then the session history line, and never from the 
 (`agents/orchestrator.md:601`). One reader remains, and it is broken already:
 `skills/next/SKILL.md:264` tells the orchestrator to take the record's `## Directive` as the
 session Directive, and no orchestrator step does so. Filed separately as
-`shared/issues/260818-1512_*_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md`.
+`260818-1512_*_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md`.
 
 **The population to migrate.** Eleven Circle records exist in this workbench and every one carries
 a terminal marker. Zero anticipated, zero active. A migration would have nothing to convert here,
@@ -154,7 +154,7 @@ record per project, and zero in this repository, where all eleven records are te
 The second argument is stronger than the arithmetic. Converting a `_t_` record whose prose
 contradicts its spec **deletes the evidence of the contradiction**, and in the worked instance the
 Turn log entry points at that prose as the declared symptom
-(`shared/issues/260815-0752_*_…`, `## Worked instance`). A migration would silently remove what a
+(`260815-0752_*_…`, `## Worked instance`). A migration would silently remove what a
 record deliberately points at.
 
 **3. The moment the pointer replaces the prose.** Not one moment, and not the shaper's alone. The
@@ -291,7 +291,7 @@ flowchart TD
    - Budget: `agents/`, shares the 12 255 with step 2. Estimate +1 300.
    - Note for the executor: mode 3's name is unchanged on purpose. The reasoning and the alternative
      are filed as
-     `shared/decisions/260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md`.
+     `260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md`.
 
 4. **Stop the activation handoff from instructing a wrong read** [DONE]
    - Executor: `coder`
@@ -300,7 +300,7 @@ flowchart TD
      gains the pointer case, so the message does not tell the orchestrator to take a redirection
      sentence as a Directive. One clause, not a rewrite. The deeper gap, that no orchestrator step
      performs this read at all, is **out of scope for this plan** and is filed as
-     `shared/issues/260818-1512_*_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md`.
+     `260818-1512_*_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md`.
      Step 6.2's treatment of the three head fields is correct as written and is not touched.
    - Dependencies: step 1
    - Budget: `skills/`, 10 515 bytes of head-room measured at HEAD `83d3b04`. Estimate +200.
@@ -316,7 +316,7 @@ flowchart TD
      stale prompt-line citations measured at HEAD `83d3b04`: `agents/orchestrator.md:319` and `:320`
      should read `:329` and `:330`, and re-read every citation the earlier steps shifted. The
      underlying reason those citations rot is filed as
-     `shared/issues/260818-1512_*_the-dispatch-parameter-tables-prompt-line-citations-are-resolved-by-no-gate-and-two-are-already-ten-lines-off.md`
+     `260818-1512_*_the-dispatch-parameter-tables-prompt-line-citations-are-resolved-by-no-gate-and-two-are-already-ten-lines-off.md`
      and is not fixed here.
    - Dependencies: steps 2 and 3 (their line numbers are the citations)
    - Budget: `README-agents.md` is on no bounded surface.
@@ -335,7 +335,7 @@ flowchart TD
      record and rename it `_a_` to `_i_`.
    - Dependencies: none technically. Sequence it after step 5 so two rewrites of the same paragraph
      region do not collide.
-   - **Why it is in this plan at all.** `shared/decisions/260815-2312_a_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`
+   - **Why it is in this plan at all.** `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`
      was answered on 2026-08-16 for option 1, drop the field, and the answer timed the removal "to
      the next Circle that touches Circle records for another reason". This is that Circle: steps 1,
      2 and 4 touch the template, the head-fields table and Step 6.2, which are exactly the sites the
@@ -415,14 +415,14 @@ than implying more coverage than exists.
 | `agents/` head-room is 12 255 bytes and steps 2 and 3 both spend it. | Estimates are 1 200 and 1 300. Step 7 measures rather than assumes. If a bound goes red, the answer is a cut in the same surface, never a baseline edit. |
 | Step 1's heading is renamed during review, and steps 2 and 3 keep citing the old one. | `reference-resolution-lint` class (b) fails on exactly that, and the coupling is stated in step 1. |
 | The mode name `portfolio-activation` now under-describes the mode, and a later reader has to be told the name is historical. | Accepted with the residual stated, and filed as its own open decision so the choice is visible rather than buried in a prompt. Option 2 there is one extra step in this plan if the user prefers it at the gate. |
-| Step 6 turns a plan about the Directive into a plan that also removes a head field, and the user did not ask for it. | It is marked optional, sequenced last, and depends on nothing. The reason it is offered at all is that decision `260815-2312` timed itself to this exact trigger. The gate decides. |
+| Step 6 turns a plan about the Directive into a plan that also removes a head field, and the user did not ask for it. | It is marked optional, sequenced last, and depends on nothing. The reason it is offered at all is that decision `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` timed itself to this exact trigger. The gate decides. |
 
 ## Open Questions
 
 - [ ] **Step 6, in or out?** Realise the answered decision
-      `shared/decisions/260815-2312_a_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`
+      `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`
       in this plan, or leave the trigger unfired for another Circle? The plan is whole either way.
-- [ ] **The mode name.** `shared/decisions/260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md`
+- [ ] **The mode name.** `260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md`
       is filed open, with a recommendation for keeping the wire value. Overturning it at the gate
       adds one step and changes no other.
 - [ ] **Should anything enforce the invariant?** No gate compares a record's `## Directive` against
@@ -431,7 +431,7 @@ than implying more coverage than exists.
       from a gate over shipped text. Not blocking; worth deciding before a second such invariant is
       written.
 - [ ] **Mode 3's self-test is under an open decision.**
-      `circles/260801-1244-curator/decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`
+      `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`
       questions the `AskUserQuestion` discriminator that step 3 edits around, with measurement
       showing the test unsound in one direction. This plan is written against today's contract and
       does not touch the discriminator. Answering that decision first would change step 3's text but

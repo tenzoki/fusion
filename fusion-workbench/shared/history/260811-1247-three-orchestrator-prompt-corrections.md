@@ -10,7 +10,7 @@
 
 ## Task 27 — `I:260810-0509-cleanup-wording`
 
-Source: `shared/issues/260810-0509_*_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md`.
+Source: `260810-0509_*_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md`.
 
 Two sentences claimed something Phase 2 contradicts, and both are now statements about what
 a short session can *find* rather than about which call points it reaches:
@@ -35,10 +35,10 @@ in any sentence naming the drift check. None of the three new sentences names it
 
 ## Task 28 — `I:260810-1205-session-counts`
 
-Source: `shared/issues/260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`.
+Source: `260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`.
 
 **No fourth measurement module was built.** Decision
-`shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
+`260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
 is open and deferred by the user, and this count does not need one: it is a single shell block
 over data already on disk, run at the moment the table is written. `agents/orchestrator.md`
 Phase 4 gained `### The record counts are computed, not tallied`, a sibling of the
@@ -81,11 +81,11 @@ derived.
 
 ## Task 31 — `I:260810-1632-churnrank-exit3`
 
-Source: `shared/issues/260810-1632_*_setup-documents-churn-rank-exit-2-and-not-the-exit-3-that-this-repos-own-build-cycle-produces.md`.
+Source: `260810-1632_*_setup-documents-churn-rank-exit-2-and-not-the-exit-3-that-this-repos-own-build-cycle-produces.md`.
 
 Setup Step 5's `bin/fusion-churn-rank` paragraph now covers both non-zero exits, with no cascade
 branch added — the outcome stays the absent-helper branch's, and the reason is reported rather
-than branched on (decision `260810-0921`). Exit 3 means the compiled hooks are missing: the
+than branched on (decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`). Exit 3 means the compiled hooks are missing: the
 wrapper passes `[ -x ]` because what is absent is `hooks/dist/churn-rank.js` one directory over,
 and the remedy is `fusion --update` for an installed copy or `cd hooks && npm run build` in the
 work tree.

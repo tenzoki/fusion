@@ -7,7 +7,7 @@
 **Filed by:** coderev (incremental review of `6b94e17..HEAD`)
 **Affects:** `hooks/lib/shell-parse.ts:376` (`out += hd.strip ? blankData(body) : blankHeredocBody(body)`), reached from `stripDataRegions` → `classifyGitCommand`. The git branch policy only; the protected-path measurement is unaffected because it measures rather than reads the command.
 **Cross-references:**
-`fusion-workbench/shared/issues/260809-1111_c_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` (the defect `69a2d00` closed),
+`260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` (the defect `69a2d00` closed),
 `rules/git-branch-discipline.md:18` and `:20` (both claims are falsified by this),
 `hooks/lib/__tests__/shell-parse.test.ts`, `hooks/lib/__tests__/git-branch-guard.test.ts` (neither reaches this shape)
 
@@ -88,7 +88,7 @@ second is chosen.
 A cheaper partial mitigation, if neither lands: when a heredoc's body is blanked
 under an *unquoted* delimiter, still classify what was blanked and deny on it —
 i.e. restrict the `69a2d00` relaxation to bodies whose opener the lexer is
-confident about. That reintroduces the false deny `260809-1111` fixed, so it is
+confident about. That reintroduces the false deny `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` fixed, so it is
 listed for completeness rather than recommended.
 
 Whatever lands, `rules/git-branch-discipline.md` needs its two claims narrowed:
@@ -100,11 +100,11 @@ shapes above.
 
 - [x] `# … <<EOF\ngit switch main\n… <<EOF\n…\nEOF` denies.
 - [x] `echo $((1<<2))\ngit switch main\n2` denies.
-- [x] `cat <<EOF\ngit switch main\nEOF` still ALLOWS — the `260809-1111` case
+- [x] `cat <<EOF\ngit switch main\nEOF` still ALLOWS — the `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` case
       must not regress.
 - [x] `cat <<EOF\n$(git switch main)\nEOF` still denies.
 - [x] Both new cases sit in `hooks/lib/__tests__/git-branch-guard.test.ts` next
-      to the `260809-1111` case, naming this record.
+      to the `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` case, naming this record.
 - [x] `rules/git-branch-discipline.md` states the residual, or the claims are
       narrowed to what the lexer can carry.
 
@@ -119,10 +119,10 @@ stand-down did not mask the result).
 
 - Criteria 1 and 2 — CONFIRMED, measured through the real hook: both the comment-borne and the
   arithmetic `<<` shapes BLOCK at HEAD and allowed at `6fae676^`.
-- Criteria 3 and 4 — CONFIRMED. The `260809-1111` contract is intact: a plain heredoc body still
+- Criteria 3 and 4 — CONFIRMED. The `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` contract is intact: a plain heredoc body still
   allows, `$(git switch main)` in that body still denies.
 - Criterion 5 — CONFIRMED. `hooks/lib/__tests__/git-branch-guard.test.ts:1264` and `:1274`, both
-  naming this record, sitting directly under the `260809-1111` block at `:1196`.
+  naming this record, sitting directly under the `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` block at `:1196`.
 - Criterion 6 — CONFIRMED, by `97d5846` rather than by `6fae676`.
   `rules/git-branch-discipline.md` now names the six spans, states that emitting rather than
   removing bounds a wrong guess ("costs a false deny and never an allow"), and cites this
@@ -150,4 +150,4 @@ heredoc is **eleven** — those six plus backslash-escape pairs, single quotes, 
 **A live gap of this record's own class survives and is filed separately.** `((` is recognised
 only at a word start, so `if((1<<2))` with no blank defeats it and the guard allows a
 `git switch` on the next line — same shape as this record, different entry.
-`shared/issues/260809-2300_o_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`.
+`260809-2300_*_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`.

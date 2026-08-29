@@ -10,7 +10,7 @@
 ## What was asked
 
 Close the still-live part of defect record
-`shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md`.
+`260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md`.
 
 Most of that record had already dissolved. It was filed when this repository's workbench was
 neither tracked nor gitignored; the workbench is tracked since `e8988d9` (260801) and `CLAUDE.md`
@@ -63,11 +63,11 @@ The wording was reused from the governing rule rather than invented, as dispatch
 | 4 | Repeat occurrences fixed | Grepped the skill body for `git`, `preserv`, `durab`, `byte`, `recover`, `reversib`, `undo`, `lost`, `loss`, `safe`, `version control`, `track`. `:9` was the only unconditional promise. |
 | 5 | `cd hooks && npm test` | **exit 1** — 40 files, 1067 tests, 1 failed, 258s. The single failure is `fusion-commit-lock.test.ts`, "a creator reaped between mkdir and its holder write loses the acquisition instead of overwriting the waiter's holder". See below. |
 
-**The one failing test is task 32, not this change.** It asserts a *transient* state — that a poll observes the lock directory in the window between `mkdir` and the holder write (`fusion-commit-lock.test.ts:196`, `expected false to be true`) — against a wall-clock threshold. Under CPU contention the window closes before the poll sees it. Re-run alone it still failed (21.6s, 9 of 10 passing), so on this machine at this moment it is not a *load* flake in the narrow sense; two other agents were running their own suites and edits concurrently throughout. It cannot be reached from this task's file set: the test drives `bin/fusion-commit-lock` against a project root it builds under `mkdtemp`, and this change touched one skill body and three workbench markdown files. The same case failed for the previous task in this session (`260810-1511-…`) and passed on its clean re-run.
+**The one failing test is task 32, not this change.** It asserts a *transient* state — that a poll observes the lock directory in the window between `mkdir` and the holder write (`fusion-commit-lock.test.ts:196`, `expected false to be true`) — against a wall-clock threshold. Under CPU contention the window closes before the poll sees it. Re-run alone it still failed (21.6s, 9 of 10 passing), so on this machine at this moment it is not a *load* flake in the narrow sense; two other agents were running their own suites and edits concurrently throughout. It cannot be reached from this task's file set: the test drives `bin/fusion-commit-lock` against a project root it builds under `mkdtemp`, and this change touched one skill body and three workbench markdown files. The same case failed for the previous task in this session (`260810-1511-setup-step-5-guarded-helper-call.md-…`) and passed on its clean re-run.
 
 Two earlier full runs in this session also failed tests that were **other agents' work in flight**, and both cleared without any action here: `reference-resolution-lint` flagged two dangling citations in `docs/plane-setup.md` (that agent had put literal record filenames in an illustrative passage and replaced them with `<stamp>` placeholders minutes later), and `clear-halt-concurrent-halt` failed while `hooks/tracker.ts` and `hooks/lib/churn.ts` were mid-edit. Both pass in the run reported above. Reading a full-suite result in this repository right now requires knowing which files are moving under it.
 
 ## Files changed
 
 - `/Users/k1/Projects/productive/fusion/skills/archive/SKILL.md`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md` (`Resolved:` note appended; marker left `_o_` for the orchestrator to rename after the commit)
+- `/Users/k1/Projects/productive/fusion/260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md` (`Resolved:` note appended; marker left `_o_` for the orchestrator to rename after the commit)

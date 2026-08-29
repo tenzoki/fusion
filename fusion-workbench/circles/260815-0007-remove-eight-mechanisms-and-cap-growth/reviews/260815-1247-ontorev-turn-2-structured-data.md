@@ -73,7 +73,7 @@ left `hooks/` clean and `hooks/.build-staging/` empty, and that directory is git
 transient can reach the tarball.
 
 **5. The four decision records — each carries its citation, and each citation resolves.**
-The three `_a_` records cite `shared/history/260814-2306-orchestrator-session.md`; line 103 is the exact
+The three `_a_` records cite `260814-2306-orchestrator-session.md`; line 103 is the exact
 answer sentence for the cleanup-gate record, and `:153` is the four-answer section header, shared by the
 other two. A section header is a location and satisfies the rule, but two records citing one line for two
 different answers is weaker than it needs to be — answers 2 and 3 sit at `:166` and `:171`. Not filed; it
@@ -87,21 +87,21 @@ verified and not merely present.
 
 ### Medium — the inserted step P-3b is in no plan and in no Turn log
 
-`issues/260815-1247_o_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md`
+`260815-1247_*_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md`
 
 Turn 2 inserted a prerequisite step, dispatched it, and landed it as `332267a`. The plan at
-`planning/260815-0029_o_plan-…md:138-345` lists steps 1 to 15 with no `3b`, and `_t_circle.md:216` names
+`260815-0029_*_plan-…md:138-345` lists steps 1 to 15 with no `3b`, and `_t_circle.md:216` names
 "steps P-4 to P-6". Only `orchestrator-events.jsonl` has it. The plan and the record were both edited
 inside this range, so neither is a file nobody touched.
 
-This is adjacent to `issues/260815-0804_c_…-no-inline-state-marker-…`, closed this session with *"Marking
+This is adjacent to `260815-0804_*_…-no-inline-state-marker-…`, closed this session with *"Marking
 is now performed with each step's commit."* That repair held — steps 4, 5 and 6 all carry `[DONE]`
 correctly. It has nothing to act on for a step the plan never contained, which is why closing the first
 defect left this one reachable.
 
 ### Medium — `churn` left the configuration surface without the retirement notice the template promises
 
-`issues/260815-1247_o_the-churn-leaves-were-removed-without-a-retirement-entry-and-the-retirement-table-could-not-have-held-one.md`
+`260815-1247_*_the-churn-leaves-were-removed-without-a-retirement-entry-and-the-retirement-table-could-not-have-held-one.md`
 
 Two halves. The **surface** half: `templates/fusion-guard.json` `_what` tells every consuming project that
 a key which used to configure something and no longer does is reported on every guarded call, *"because a
@@ -123,16 +123,16 @@ a merge rather than two fixes if the unreachable branch was filed there too.
 
 ### Low — the implemented decision record's two cross-references were broken by the commit that transitioned it
 
-`issues/260815-1247_o_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md`
+`260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md`
 
-`shared/decisions/260811-2009_i_…md:7` names `260810-1135_o_…` and `260811-1409_o_…`. Commit `332267a`
+`260811-2009_*_…md:7` names `260810-1135_*_…` and `260811-1409_*_…`. Commit `332267a`
 renamed both to `_c_` while moving this record from `_o_` to `_a_`. One commit, no drift, no race.
 
 ### Low — a backlog entry's Related line points at a marker the playmaker has since moved
 
-`issues/260815-1247_o_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`
+`260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`
 
-`shared/backlog/260814-2312_c_…md:6` cites `260814-1733_p_radical-simplification.md`, now `_c_`. Its
+`260814-2312_*_…md:6` cites `260814-1733_*_radical-simplification.md`, now `_c_`. Its
 sibling cites the same store as `260811-0826_*_observations.md` and survives. Two citation forms in one
 directory, both written by the same maintenance pass, and the backlog is where this hurts most: the
 `_o_`↔`_p_` rename is the playmaker's **autonomous** write, so a pointer can be invalidated with no gate
@@ -144,18 +144,18 @@ declared them not opened.
 
 ## Standing issues this range added instances to — cross-referenced, not refiled
 
-- **`shared/issues/260811-2146_o_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker…`.**
+- **`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker…`.**
   `a69d56e` renamed `260811-2009` from `_a_` to `_i_` and left `**Status:** answered` in the head. A fresh
   instance of the standing class. Re-measured at HEAD across `shared/decisions/` and every
   `circles/*/decisions/`: **35 mismatched of 90**, where that record measured 34 of 67. The store grew by
   23 records and the mismatch count by 1, so the rate has fallen sharply — but the class is live and this
   Turn contributed to it. The unfilled-template-stub half is nearly gone: 1 non-open record still carries
   it, against the 12 recorded.
-- **`issues/260815-1206_o_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`.**
+- **`260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`.**
   Item 2 of that record is `.claude-plugin/plugin.json:4`, whose shipped `description` still advertises
   "churn detection". Confirmed still true at HEAD and **not refiled**. The manifest is otherwise correct
   for this range: no version bump is due, since the release is the plan's own step 15.
-- **`issues/260815-0804_o_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`.**
+- **`260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`.**
   The two findings above are the second and third instances of its class, now across three stores. That
   record defers the citation-form convention to a decision against `rules/circle-records.md`; the evidence
   for taking that decision is stronger than it was.

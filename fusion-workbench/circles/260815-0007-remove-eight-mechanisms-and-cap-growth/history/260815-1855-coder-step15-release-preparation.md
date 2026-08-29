@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Task:** P-15
-**Source:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 15
+**Source:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 15
 **HEAD at start:** `9cde86c`
 
 ## What this step did
@@ -92,7 +92,7 @@ Neither was owned by a plan step. Both were raised in review and left for step 1
 
 ### 1. The orphaned project-local rule file — filed as a decision, not fixed
 
-`reviews/260815-1501-coderev-turn-3-…:155` named it and deliberately did not file it: a
+`260815-1501-coderev-turn-3-…:155` named it and deliberately did not file it: a
 consuming project that had the investigator configured now holds
 `./rules/investigator-capture-layout.md` that nothing loads, because `analyst` sits in
 `bin/fusion-rules`' `PATTERNS=""` arm and draws no project-local rule by filename pattern.
@@ -105,7 +105,7 @@ Split in two, because only one half is a decision:
   exists for.
 - **The question** — should `analyst` instead gain a `PATTERNS` arm of its own — is a
   design choice with real options and was filed as
-  `decisions/260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md`.
+  `260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md`.
   The recommendation is option 1 (the manifest is the successor, nothing changes) and it is
   deliberately weak: the missing input is how many consuming projects ever filled the
   template in. In this repository the answer is zero — `rules/investigator-capture-layout.md`
@@ -188,10 +188,10 @@ recording since step 13 armed the cap two commits ago:
 - Step 15 marked `[DONE]`.
 - **Step 14 was also marked `[DONE]`**, by this step rather than its own executor. It
   landed as `9cde86c` and the plan still carried no marker for it. This is the second
-  occurrence in this Circle — `issues/260815-0804_c_three-plan-steps-have-landed-…` recorded
+  occurrence in this Circle — `260815-0804_*_three-plan-steps-have-landed-…` recorded
   the same defect for steps 1–3 and was closed by adding the markers, which fixed the
   instances and not the class. The recurrence is filed as
-  `issues/260815-1848_o_step-14-landed-without-its-done-marker-…`.
+  `260815-1848_*_step-14-landed-without-its-done-marker-…`.
 - **The plan's `**Status:**` and filename marker were left alone.** With 14 and 15 marked,
   every step is `[DONE]`, and `rules/fusion-workbench-conventions.md` `## Inline State Tracking`
   says that is when `**Status:** Complete` and the `_o_`→`_c_` rename happen. Two reasons

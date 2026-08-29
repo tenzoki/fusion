@@ -35,7 +35,7 @@ runs Setup at all." Same shape.
 
 **And the record.** `hooks/lib/config.ts:105-114` states the same in capitals ("THE RETIRED-FILE
 DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION") and cites decision
-`260816-1916_i_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`,
+`260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`,
 whose option 1 was chosen and whose recorded Con reads: *"the advisory reaches it through the
 monitor's warnings panel and the event log rather than as a sentence in the terminal."* `01932d6`
 removes that Con without amending the record's `Implemented:` note.
@@ -57,7 +57,7 @@ that contradicts it**, so these edits belong in the same patch, not after it.
 2. `docs/upgrading-to-v10.md:74-77` — say the per-call channel was chosen as the one that does not
    depend on Setup running, and that the Setup summary repeats it when Setup does run.
 3. `README-hooks.md:315` — same correction, same reason.
-4. `hooks/lib/config.ts:105-114` and the `Implemented:` note on `260816-1916` — record that the
+4. `hooks/lib/config.ts:105-114` and the `Implemented:` note on `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md` — record that the
    Setup surface repeats the loader's stderr, so a later reader does not take the module docstring
    as the complete channel list.
 
@@ -66,7 +66,7 @@ that contradicts it**, so these edits belong in the same patch, not after it.
 - `README-hooks.md:315`
 - `hooks/lib/config.ts:105-114`
 - `agents/orchestrator.md:132`, `skills/setup/SKILL.md:292` (the fix)
-- `circles/260816-1741-guard-becomes-observation-only/decisions/260816-1916_i_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`
+- `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`
 
 ---
 Resolved: three of the four cited sites were corrected; the fourth was left alone as still true.
@@ -86,14 +86,14 @@ Resolved: three of the four cited sites were corrected; the fourth was left alon
   Setup summary repeats the diagnostic rather than performing the migration.
 - `hooks/lib/config.ts:105-114` — the docstring was not false but was readable as the complete
   channel list. Narrowed "`/fusion:setup` was the alternative" to "`/fusion:setup` MOVING THE
-  BUDGET was the alternative", which is what `260816-1916` options 2 and 3 actually proposed, and
+  BUDGET was the alternative", which is what `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md` options 2 and 3 actually proposed, and
   added that `bin/fusion-turn-budget` puts the loader's diagnostics on stderr and the
   orchestrator repeats them at Setup, while Setup still writes nothing and reads no old file.
   `hooks/dist/lib/config.js` and `.d.ts` rebuilt so the shipped copies carry the same comment.
 
 Left alone deliberately, with reasons:
 
-- The recorded `Cons` line on decision `260816-1916` option 1 ("the advisory reaches it through
+- The recorded `Cons` line on decision `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md` option 1 ("the advisory reaches it through
   the monitor's warnings panel and the event log rather than as a sentence in the terminal"). A
   Con is a record of what was weighed at the time, not a live claim, and amending it was outside
   the scope this patch was dispatched with. Its `Implemented:` note cites `fab8a4b`, `92db96a`

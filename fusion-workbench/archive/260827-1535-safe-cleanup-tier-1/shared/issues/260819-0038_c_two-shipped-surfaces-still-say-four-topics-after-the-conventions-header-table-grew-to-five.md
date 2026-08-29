@@ -40,9 +40,9 @@ the always-on rule list, the conditional emission sets, the `hooks/lib` table an
 roster — it has no case for the partition table, and neither the number nor the file list is
 derivable from anything it already reads. `npm test` is green at HEAD with both copies stale.
 
-This is the class `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
+This is the class `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
 names, arriving through a third surface, and the same shape as
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-0803_o_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`.
+`260815-0803_*_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`.
 
 **Fix direction.** Correct both counts, add `workbench-tracking.md` to the README enumeration with
 its "emitted to no agent" qualifier, and — separately, because it is a wider question — decide
@@ -50,7 +50,7 @@ whether the partition table earns a `derivable-enumerations-lint` case the way t
 did. Scope: shipped documentation, both consuming-project-facing (`README-agents.md`) and
 this repository's auto-loaded context (`CLAUDE.md`).
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

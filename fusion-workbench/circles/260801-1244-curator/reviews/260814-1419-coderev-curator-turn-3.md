@@ -4,7 +4,7 @@
 **Sender:** coderev
 **Circle:** `260801-1244-curator`
 **Reviewed-range:** `5c843e6..0301909`
-**Not-opened:** `fusion-workbench/circles/260801-1244-curator/history/260814-1332-curator-run.md` (2 633 lines — read by section and by search, not end to end: §2, §6 tail, §7, §8, §9 with its per-entry table, and ledger entry L24 in full), `fusion-workbench/orchestrator-events.jsonl` (1 418 lines — the range diff and the tail read, not the whole file), `fusion-workbench/shared/history/260813-2345-orchestrator-session.md` lines 1-127 (Setup snapshot, Turn 1, the Phase 0b plan gate — unchanged in this range; the Turn 2, Resume and Turn 3 sections read in full), `fusion-workbench/circles/260801-1244-curator/issues/260814-1128_c_the-curators-frontmatter-description-still-carries-the-unqualified-gate-absolute.md`, `fusion-workbench/circles/260801-1244-curator/issues/260814-1128_c_the-justification-dutys-prose-describes-a-firing-path-the-floor-based-assertion-does-not-have.md`, `fusion-workbench/circles/260801-1244-curator/issues/260814-1128_c_three-byte-figures-and-one-agent-count-beside-the-arming-were-left-stale.md`, `fusion-workbench/circles/260801-1244-curator/issues/260814-1200_o_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`, `fusion-workbench/circles/260801-1244-curator/decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` (rename only in this range)
+**Not-opened:** `260814-1332-curator-run.md` (2 633 lines — read by section and by search, not end to end: §2, §6 tail, §7, §8, §9 with its per-entry table, and ledger entry L24 in full), `fusion-workbench/orchestrator-events.jsonl` (1 418 lines — the range diff and the tail read, not the whole file), `260813-2345-orchestrator-session.md` lines 1-127 (Setup snapshot, Turn 1, the Phase 0b plan gate — unchanged in this range; the Turn 2, Resume and Turn 3 sections read in full), `260814-1128_*_the-curators-frontmatter-description-still-carries-the-unqualified-gate-absolute.md`, `260814-1128_*_the-justification-dutys-prose-describes-a-firing-path-the-floor-based-assertion-does-not-have.md`, `260814-1128_*_three-byte-figures-and-one-agent-count-beside-the-arming-were-left-stale.md`, `260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`, `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` (rename only in this range)
 
 **On the nineteen decision records.** Each was opened as its complete diff, and the full text of all nineteen was read programmatically — every path citation extracted and resolved against the stores, and every literal marker compared with the marker the target carries on disk. Not read end to end as prose. Both scripted passes are reproduced under *What was verified, and how*.
 
@@ -56,17 +56,17 @@ Ledger entry L24 replaced `hooks/tracker.ts:33-36, bin/monitor:72-75` on four ro
 
 The entry's evidence is `grep … hooks/tracker.ts`, scoped to one file, where the finding is correct. The same entry then widened the search for the fourth row and added `hooks/lib/events.ts` and `hooks/lib/guard-state-file.ts` to `.guard-state/`. One row of four got the wider search. That inconsistency inside a single ledger entry is what makes this a defect rather than a defensible cut.
 
-Issue: `circles/260801-1244-curator/issues/260814-1419_o_the-layout-trees-consumer-column-now-names-only-bin-monitor-…`
+Issue: `260814-1419_*_the-layout-trees-consumer-column-now-names-only-bin-monitor-…`
 
 ### A half-landed fix against an open issue
 
 **2. Three Plane files entered the tree; neither per-surface argument below it was extended. (Medium)**
 
-Ledger entry L23 added `plane.config.yaml`, `.plane-map.json` and `.plane-outbox.jsonl`, which is what open issue `shared/issues/260810-0410_*_…` asked for, and the anchoring is real (`bin/fusion-plane:236-238`). Two paragraphs below the tree range over the root-anchored surfaces and neither moved: the per-surface justification still argues six cases, and `### Which of them a tracked workbench tracks` still splits the set in two without placing any of the three. `rules/critical-stance.md` §4 is the section's own standard.
+Ledger entry L23 added `plane.config.yaml`, `.plane-map.json` and `.plane-outbox.jsonl`, which is what open issue `260810-0410_*_…` asked for, and the anchoring is real (`bin/fusion-plane:236-238`). Two paragraphs below the tree range over the root-anchored surfaces and neither moved: the per-surface justification still argues six cases, and `### Which of them a tracked workbench tracks` still splits the set in two without placing any of the three. `rules/critical-stance.md` §4 is the section's own standard.
 
-Before the addition the three were absent everywhere, consistently. Now they are in the tree and out of the split, so the file states a case split that visibly misses three of its own entries — and `260810-0410` is still `_o_` with half its fix landed.
+Before the addition the three were absent everywhere, consistently. Now they are in the tree and out of the split, so the file states a case split that visibly misses three of its own entries — and `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` is still `_o_` with half its fix landed.
 
-Issue: `circles/260801-1244-curator/issues/260814-1419_o_three-plane-files-entered-the-layout-tree-…`
+Issue: `260814-1419_*_three-plane-files-entered-the-layout-tree-…`
 
 ### A shipped change that reaches nothing here, and is recorded nowhere
 
@@ -78,7 +78,7 @@ The class is general. Every asset setup copies into the workbench is edited in t
 
 **And the commit is attributed to no task.** `grep -rn ae21c87 fusion-workbench/` returns five hits, every one of them the curator citing it as the HEAD it read against. No `commit` event, no `orchestrator-live.md` row (both neighbours `2a8a2f7` and `e101761` have one), no Circle Turn-log entry, no session-history sentence. A shipped-asset change with no task, no event and no entry is one no review is dispatched against.
 
-Issue: `shared/issues/260814-1419_o_the-shipped-chat-voice-profiles-changed-…`
+Issue: `260814-1419_*_the-shipped-chat-voice-profiles-changed-…`
 
 **4. The tightened caps contradict `rules/user-facing-output.md` `## Length`. (Medium)**
 
@@ -86,7 +86,7 @@ Issue: `shared/issues/260814-1419_o_the-shipped-chat-voice-profiles-changed-…`
 
 The same edit also diverged the German from the English beyond translation — the German dropped "or to a file" and "not the opening lines" and added "Klare Formulierungen, kein Jargon", which has no English counterpart — and left trailing whitespace at `stilwerk/chat-voice-de.yaml:43`. The commit message covers only the caps.
 
-Issue: `shared/issues/260814-1419_o_the-tightened-chat-profile-caps-contradict-…`
+Issue: `260814-1419_*_the-tightened-chat-profile-caps-contradict-…`
 
 ### Citation and count hygiene
 
@@ -94,13 +94,13 @@ Issue: `shared/issues/260814-1419_o_the-tightened-chat-profile-caps-contradict-�
 
 All citations resolve today, so nothing is broken. But `_o_` is the one marker guaranteed to move, and in two records the pass starred one `_o_` pointer and left another literal *in the same `**Cross-references:** ` line*, with no distinction the rule's test ("a pointer loses nothing, a statement loses its content") can draw between them. Nothing required these rewrites at all — the enforced scope is shipped text and `portfolio.md`, not workbench records — which is what makes a half-applied convention worse than none: the next reader cannot tell which literals are deliberate.
 
-Issue: `circles/260801-1244-curator/issues/260814-1419_o_nine-open-marker-citations-were-left-literal-…`
+Issue: `260814-1419_*_nine-open-marker-citations-were-left-literal-…`
 
 **6. The T8 history states eighteen agent blocks and five rule files; there are seventeen and three. (Low)**
 
 `260814-1352-coder-golden-regeneration.md` says the sizes moved "across all eighteen agent blocks" (the fixture holds 17, matching 17 agents) and that the curator "edited five project rule files" of which "three of them are emitted" (three files, two emitted) — then states the correct fact about the third two paragraphs later. The task itself was performed and verified correctly; only the counts are wrong.
 
-Issue: `circles/260801-1244-curator/issues/260814-1419_o_the-golden-regeneration-history-states-eighteen-agent-blocks-…`
+Issue: `260814-1419_*_the-golden-regeneration-history-states-eighteen-agent-blocks-…`
 
 ## The four things the dispatch asked to be judged
 
@@ -108,7 +108,7 @@ Issue: `circles/260801-1244-curator/issues/260814-1419_o_the-golden-regeneration
 
 The pass's method deserves naming, because it is the reason the count is zero: it extracted every before/after string programmatically from its own ledger after a hand transcription failed the staleness check on the first attempt, and wrote nothing on that attempt. That check caught a curator error rather than a drifted file, which is the case it was written for.
 
-**2. The citation rewrites.** The wildcard form is the one `rules/circle-records.md` `### Citation form in the portfolio` defines, and no rewrite starred a marker that was being named rather than pointing at a file — I checked the ones where the surrounding text makes a state claim, and in each the letter was kept (`260810-0352_c_` beside "now closed by `26ea3c3`", `260809-1101_c_` beside "closed by the same commit"). The distinction was applied in the right direction. Two things sit beside that, and only one is a defect. The defect is finding 5. The other is scope, and it is worth stating rather than filing: the rule's heading is *in the portfolio*, and `260806-0015_*_zitierform-fuer-workbench-records.md` scopes its answer to *ausgelieferte Texte*. `hooks/lib/__tests__/reference-resolution-lint.test.ts` enforces the grammar over shipped text and `portfolio-citation-form-lint.test.ts` over `portfolio.md`; a workbench decision record is in neither. So the pass extended a convention into an unenforced surface — defensibly, but that is why its unevenness has no rule to appeal to.
+**2. The citation rewrites.** The wildcard form is the one `rules/circle-records.md` `### Citation form in the portfolio` defines, and no rewrite starred a marker that was being named rather than pointing at a file — I checked the ones where the surrounding text makes a state claim, and in each the letter was kept (`260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` beside "now closed by `26ea3c3`", `260809-1101_c_` beside "closed by the same commit"). The distinction was applied in the right direction. Two things sit beside that, and only one is a defect. The defect is finding 5. The other is scope, and it is worth stating rather than filing: the rule's heading is *in the portfolio*, and `260806-0015_*_zitierform-fuer-workbench-records.md` scopes its answer to *ausgelieferte Texte*. `hooks/lib/__tests__/reference-resolution-lint.test.ts` enforces the grammar over shipped text and `portfolio-citation-form-lint.test.ts` over `portfolio.md`; a workbench decision record is in neither. So the pass extended a convention into an unenforced surface — defensibly, but that is why its unevenness has no rule to appeal to.
 
 **3. `agents/curator.md` and the golden fixture.** `agents/curator.md` changed one clause of the frontmatter `description`, from "nothing is written before a user gate" to "no existing statement is changed before a user gate", which is the wording the Turn-2 defect record proposed and which agrees with `:16`, `:168` and `## Scope`. No colon introduced; `claude plugin validate` was run by the executor and the suite is green. The fixture moved sizes and totals only: 17 blocks before and after, identical order, identical file list per agent, every changed line a size or a total. Nothing structural moved.
 
@@ -116,14 +116,14 @@ The pass's method deserves naming, because it is the reason the count is zero: i
 
 ## The coverage note the dispatch left to my judgement
 
-**Already filed twice, so I filed nothing.** `bin/fusion-review-coverage` reports `circles/260801-1244-curator/reviews/260814-0857-conceptrev-plan-curator.md` as `UNUSABLE (no **Reviewed-range:** line)`, and will report every conceptrev file that way forever. The mandate is deliberately two-prompt: `hooks/lib/__tests__/review-coverage-mandate.test.ts` fixes `REVIEWER_PROMPTS` to `coderev` and `ontorev`, and a conceptrev run evaluates one document's diagrams and has no commit range to state — its own header carries `**Target:**` instead. The helper globs the store with no sender filter.
+**Already filed twice, so I filed nothing.** `bin/fusion-review-coverage` reports `260814-0857-conceptrev-plan-curator.md` as `UNUSABLE (no **Reviewed-range:** line)`, and will report every conceptrev file that way forever. The mandate is deliberately two-prompt: `hooks/lib/__tests__/review-coverage-mandate.test.ts` fixes `REVIEWER_PROMPTS` to `coderev` and `ontorev`, and a conceptrev run evaluates one document's diagrams and has no commit range to state — its own header carries `**Target:**` instead. The helper globs the store with no sender filter.
 
 So the defect is in the helper, not in that file and not in `agents/conceptrev.md`. Two open records already say so:
 
-- `shared/issues/260811-1145_o_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` — the fuller one. Names both halves (the scan in `hooks/lib/review-coverage.ts` and the trigger in `hooks/tracker.ts`), and proposes filtering on the `<sender>` segment the filename convention already mandates, held in one exported constant the mandate test asserts against.
-- `shared/issues/260814-1012_o_a-conceptrev-review-is-counted-unusable-by-the-coverage-helper.md` — filed three days later, three candidate resolutions, first of which is the same fix.
+- `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` — the fuller one. Names both halves (the scan in `hooks/lib/review-coverage.ts` and the trigger in `hooks/tracker.ts`), and proposes filtering on the `<sender>` segment the filename convention already mandates, held in one exported constant the mandate test asserts against.
+- `260814-1012_*_a-conceptrev-review-is-counted-unusable-by-the-coverage-helper.md` — filed three days later, three candidate resolutions, first of which is the same fix.
 
-The second is a duplicate of the first and covers less. Whoever picks this up should close it against `260811-1145` rather than working both.
+The second is a duplicate of the first and covers less. Whoever picks this up should close it against `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` rather than working both.
 
 ## Cross-cutting observation
 
@@ -131,7 +131,7 @@ The second is a duplicate of the first and covers less. Whoever picks this up sh
 
 **The measured half held everywhere.** Every claim in this Turn that a mechanical gate covers came out right: the golden pinned the fixture to two sizes across seventeen blocks, the growth bound held at 11 478 bytes of head-room and was checked in both directions, the enumeration lint held, `claude plugin validate` held. All six findings sit in text no parser reads.
 
-**One thing the run did honestly that is worth naming.** Candidate C01 measured 16 decision records in the editable surface whose `**Status:**` header contradicts their filename marker, reported it, and declined to act because deciding which of the two is right is the reconciler's ground-truth work. I re-measured it across the whole workbench at 34 of 85, and the two open records it cites (`260811-2146`, `260812-1232`) do carry the class. The declining is correct and I am not refiling it.
+**One thing the run did honestly that is worth naming.** Candidate C01 measured 16 decision records in the editable surface whose `**Status:**` header contradicts their filename marker, reported it, and declined to act because deciding which of the two is right is the reconciler's ground-truth work. I re-measured it across the whole workbench at 34 of 85, and the two open records it cites (`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`, `260812-1232`) do carry the class. The declining is correct and I am not refiling it.
 
 ## Is the Directive met?
 
@@ -145,8 +145,8 @@ The qualification is the run's own, and it is in the record rather than glossed:
 
 1. **Finding 1.** It is the one correction that leaves a shipped rule file saying less than it promises, in the file every agent loads on every dispatch, about the surfaces whose whole documented property is that moving one breaks something silently.
 2. **Findings 3 and 4 together, and in that order.** Decide what the caps should be before deciding how they reach an agent; fixing the plumbing first ships whichever number happens to be in the file.
-3. **Finding 2**, which also lets `shared/issues/260810-0410` finally close.
-4. **The three Circle issues still open from activation** — `260814-0813`, `260814-0828`, `260814-0920` — unchanged from Turn 2's list and still standing. The first two are records contradicting themselves inside the Circle whose subject is records contradicting themselves.
+3. **Finding 2**, which also lets `260810-0410` finally close.
+4. **The three Circle issues still open from activation** — `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`, `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`, `260814-0920_*_the-turn-log-drift-row-reports-drift-for-the-whole-duration-of-every-turn.md` — unchanged from Turn 2's list and still standing. The first two are records contradicting themselves inside the Circle whose subject is records contradicting themselves.
 5. **Findings 5 and 6**, ordinary cleanup, any time.
 
 One thing I am not filing and will name, because it belongs to the release process rather than to this Circle. `.claude-plugin/plugin.json` reads `8.2.0` and `~/.fusion` was updated to `8.2.0` at 13:11, after which three further commits changed shipped files under the same version number. The installed 8.2.0 and the source 8.2.0 are no longer the same bytes, and nothing in the version surface says so. That is the residual `CLAUDE.md` `## Release process` already documents in its "between releases" paragraph, arriving from the other side.
@@ -167,11 +167,11 @@ behaviour" and `## Totals` says "Three are filed under `circles/…` and two und
 findings", `## Findings by theme` numbers six, the commit message of `18173e1` says six, and six
 issue files exist at stamp `260814-1419` — four under `circles/260801-1244-curator/issues/` and two
 under `shared/issues/`. So the split is four and two, not three and two. Filed as
-`circles/260801-1244-curator/issues/260814-1450_o_the-turn-3-review-states-five-findings-and-a-three-two-split-while-carrying-six-and-a-four-two-split.md`.
+`260814-1450_*_the-turn-3-review-states-five-findings-and-a-three-two-split-while-carrying-six-and-a-four-two-split.md`.
 Findings are not rewritten by a reconciliation pass; the note is left beside them.
 
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The two summary counts the note above describes were corrected in place on
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The two summary counts the note above describes were corrected in place on
 260824: `## Summary` now opens "Six findings" and `## Totals` now says "Four are filed under", so the two
 sentences a reader meets first agree with the table, the numbered findings, the commit message and the
 disk. No finding was touched. Filed as
-`circles/260801-1244-curator/issues/260814-1450_*_the-turn-3-review-states-five-findings-and-a-three-two-split-while-carrying-six-and-a-four-two-split.md`.
+`260814-1450_*_the-turn-3-review-states-five-findings-and-a-three-two-split-while-carrying-six-and-a-four-two-split.md`.

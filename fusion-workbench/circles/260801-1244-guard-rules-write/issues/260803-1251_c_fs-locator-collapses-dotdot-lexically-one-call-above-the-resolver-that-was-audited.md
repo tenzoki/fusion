@@ -8,10 +8,10 @@ uncovered a THIRD instance of the same collapse in the same file that WAS reacha
 granted a write outside the rule directory. See the resolution note at the foot of this file.
 **Status:** Closed 260803-1920 (coder, T4-4) — fixed, measured, tested.
 **Domain:** code
-**Filed by:** coder, closing `260802-2330` (T3-1) in `circles/260801-1244-guard-rules-write`
+**Filed by:** coder, closing `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` (T3-1) in `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/fs-locator.ts` — `absolute` (the cited instance), `tryRealpath`'s JS
 fallback, and `resolveLocation`'s link expansion (the reachable one)
-**Cross-references:** `260802-2330_c_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`
+**Cross-references:** `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`
 (its **direction 2**, "resolve the path as spelled"), `hooks/lib/fs-locator.ts:91-122`
 (`resolveLocation`, audited clean), `hooks/lib/rules-write-exemption.ts` `## Gate 0`
 
@@ -104,9 +104,9 @@ const absolute = (path: string): string =>
 
 Unchanged by any of this session's seven commits.
 
-**The reachability claim survives the Turn 3 review finding, which is not obvious and was checked.** `issues/260803-1431_o_gate-0-misses-the-dotdot-in-a-cd-p-operand-…` shows a `..` reaching past gate 0 through a `cd -P` operand, which reads like it would also deliver a `..` here. It does not. On that route the `..` is consumed by `resolveDir` (`hooks/lib/bash-mutation-guard.ts:1143`) before `Target.spelled` is built, so the path handed to `isProjectRulePath` — and from there to `locate` — carries no `..` at all. The `cd -P` gap makes the grant wrong; it does not make this resolver reachable. Both defects are the same class and they are not the same defect.
+**The reachability claim survives the Turn 3 review finding, which is not obvious and was checked.** `260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand-…` shows a `..` reaching past gate 0 through a `cd -P` operand, which reads like it would also deliver a `..` here. It does not. On that route the `..` is consumed by `resolveDir` (`hooks/lib/bash-mutation-guard.ts:1143`) before `Target.spelled` is built, so the path handed to `isProjectRulePath` — and from there to `locate` — carries no `..` at all. The `cd -P` gap makes the grant wrong; it does not make this resolver reachable. Both defects are the same class and they are not the same defect.
 
-**Severity confirmed Low.** Nothing behavioural depends on it today, and the cost of leaving it open is the one the issue already states: direction 2 of `260802-2330` is larger than that issue estimated.
+**Severity confirmed Low.** Nothing behavioural depends on it today, and the cost of leaving it open is the one the issue already states: direction 2 of `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` is larger than that issue estimated.
 
 ---
 
@@ -197,7 +197,7 @@ through a *dangling* link — still answers `<root>/rules/x.md` via the walk-up'
 re-append, where the kernel refuses the path outright. There is no kernel answer
 to be faithful to and the write it would authorise fails at the syscall.
 
-**Direction 2 of `260802-2330` is now unblocked**, which was the stated cost of
+**Direction 2 of `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` is now unblocked**, which was the stated cost of
 leaving this open: `FsLocator.locate` now honours its documented contract for a
 `..`-carrying path in both the relative and the absolute form.
 

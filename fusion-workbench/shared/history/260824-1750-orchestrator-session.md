@@ -1,4 +1,4 @@
-# Orchestrator Session — 260824-1750
+# Orchestrator Session — 260824-1750-orchestrator-session.md
 
 **Directive:** Close every open defect in the workbench (220 plus any found), fixed, moot/unfixable with reason, or referred; suite and growth budgets green.
 **Mode:** plan (Circle 260824-1853-close-every-open-defect)
@@ -28,9 +28,9 @@
 
 ## Open decisions at session start
 
-- `260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`
-- `260822-1154_o_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
-- `260823-1414_o_does-the-workbench-citation-gates-corpus-cover-review-files.md`
+- `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`
+- `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
+- `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`
 
 ## Session log
 
@@ -54,7 +54,7 @@ Setup complete. Awaiting the user's Directive.
 ## Turn 3 (from 2acb9f8)
 
 - Close the 8 Turn-2 findings; coderev opens 01964e4, the one commit no review covered.
-- Turn 3: T3-code (5), T3-notes (3), T3-readme (1 new low) closed in 3b0dc93. That commit also carries the review of 01964e4 (`reviews/260824-2154-coderev-step-13-rules-commit.md`) and its three records, because the staging list was taken from the tree after the reviewer had written them; the commit message does not name them. T3-rules dispatched for those three (1 medium: the heading-anchor clause versus the closure-note form).
+- Turn 3: T3-code (5), T3-notes (3), T3-readme (1 new low) closed in 3b0dc93. That commit also carries the review of 01964e4 (`260824-2154-coderev-step-13-rules-commit.md`) and its three records, because the staging list was taken from the tree after the reviewer had written them; the commit message does not name them. T3-rules dispatched for those three (1 medium: the heading-anchor clause versus the closure-note form).
 
 ## Coherence
 <!-- RECONCILER-OWNED -->
@@ -62,9 +62,9 @@ Setup complete. Awaiting the user's Directive.
 **Verdict:** coherent
 
 **Edges:**
-- Artifact↔Grounding: 15 plan steps and 250 closures verified against the tree / 1 drift item (steps 11 and 12 carried `[DONE]` after the title; corrected, `planning/260824-1905_*_plan-close-every-open-defect.md` `## Reconciliation Log`) / 0 open coderev+ontorev issues (`find … '*_[op]_*'` prints nothing at `5ad6185`; 43 files, 760 tests green).
-- Artifact↔Directive: all 24 commits in `571f945..5ad6185` move toward the Directive; the record-only closures `34d682c`, `a760849`, the surface fixes `e31a73d`, `1ea8fed`, `f3f7895`, `b0fd2f0`, `8140cf3`, `d5c34cd`, `01964e4`, the review-and-close pairs `e7fc2a1`/`f0b07b6`→`011cc92`/`6b26e2c`, `1eb7ef6`/`2acb9f8`→`3b0dc93`, `5ad6185`, and the measurement `13aaa85` each discharge a named clause; four uncovered commits at close are stated per `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`.
-- Grounding↔Directive: 29 active decisions consistent (8 `_o_` in the Circle's `decisions/`, filed as referral targets; 3 `_o_` and 18 `_a_` in `shared/decisions/`) / 0 potentially conflicting; the two the Directive leans on, `260815-2109` (uncovered tail tolerated at closure) and `260822-1102` (work exceeding head-room), are realised as answered.
+- Artifact↔Grounding: 15 plan steps and 250 closures verified against the tree / 1 drift item (steps 11 and 12 carried `[DONE]` after the title; corrected, `260824-1905_*_plan-close-every-open-defect.md` `## Reconciliation Log`) / 0 open coderev+ontorev issues (`find … '*_[op]_*'` prints nothing at `5ad6185`; 43 files, 760 tests green).
+- Artifact↔Directive: all 24 commits in `571f945..5ad6185` move toward the Directive; the record-only closures `34d682c`, `a760849`, the surface fixes `e31a73d`, `1ea8fed`, `f3f7895`, `b0fd2f0`, `8140cf3`, `d5c34cd`, `01964e4`, the review-and-close pairs `e7fc2a1`/`f0b07b6`→`011cc92`/`6b26e2c`, `1eb7ef6`/`2acb9f8`→`3b0dc93`, `5ad6185`, and the measurement `13aaa85` each discharge a named clause; four uncovered commits at close are stated per `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`.
+- Grounding↔Directive: 29 active decisions consistent (8 `_o_` in the Circle's `decisions/`, filed as referral targets; 3 `_o_` and 18 `_a_` in `shared/decisions/`) / 0 potentially conflicting; the two the Directive leans on, `260815-2109` (uncovered tail tolerated at closure) and `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` (work exceeding head-room), are realised as answered.
 
 **Rebalance recommendation:** none
 
@@ -90,7 +90,7 @@ Setup complete. Awaiting the user's Directive.
 | Agent errors | 5 task_error events (each resolved by a follow-up dispatch; no revert) |
 | Human gates hit | 4 (shaper clarification round, plan gate, Turn 1 Coherence gate, stop conditions; only the last carries a `gate_hit` event, the others were asked directly) |
 
-The record counts are read off the stores (`records anchor=571f945 start=260824-1750`): `30 filed issue`, `156 now_c issue`, `8 filed decision`, `8 now_o decision`. The scanned stores are this Circle's and `shared/`; the 94 records closed inside terminal Circles' `issues/` stores are outside every `SCAN_*` set, which is why the whole-range figure (250) is larger.
+The record counts are read off the stores (`records anchor=571f945 start=260824-1750-orchestrator-session.md`): `30 filed issue`, `156 now_c issue`, `8 filed decision`, `8 now_o decision`. The scanned stores are this Circle's and `shared/`; the 94 records closed inside terminal Circles' `issues/` stores are outside every `SCAN_*` set, which is why the whole-range figure (250) is larger.
 
 ## Per-Turn Log
 
@@ -121,7 +121,7 @@ The record counts are read off the stores (`records anchor=571f945 start=260824-
 ## Review coverage
 
 **Range:** `571f945..cce3c8e` — 24 commits
-**Covered by:** `reviews/260824-2056-coderev-turn-1-defect-closure-range.md` (571f945..d5c34cd); `reviews/260824-2102-ontorev-turn-1-profiles-and-record-closures.md` (571f945..d5c34cd); `reviews/260824-2154-coderev-step-13-rules-commit.md` (a760849..01964e4); `reviews/260824-2145-coderev-turn-2-review-closure-range.md` (01964e4..13aaa85); `reviews/260824-2155-ontorev-turn-2-profiles-closed-and-the-record-layer-at-close.md` (01964e4..13aaa85). Two older shared reviews report UNUSABLE (pre-existing, 260810, not this session's).
+**Covered by:** `260824-2056-coderev-turn-1-defect-closure-range.md` (571f945..d5c34cd); `260824-2102-ontorev-turn-1-profiles-and-record-closures.md` (571f945..d5c34cd); `260824-2154-coderev-step-13-rules-commit.md` (a760849..01964e4); `260824-2145-coderev-turn-2-review-closure-range.md` (01964e4..13aaa85); `260824-2155-ontorev-turn-2-profiles-closed-and-the-record-layer-at-close.md` (01964e4..13aaa85). Two older shared reviews report UNUSABLE (pre-existing, 260810, not this session's).
 **Not covered:** 1eb7ef6 (Turn 2 ontorev records), 2acb9f8 (Turn 2 coderev records), 3b0dc93 (Turn 3 closures), 5ad6185 (Turn 3 rules findings), cce3c8e (reconciliation records)
 **Carried out-of-scope files:** the Turn 2 ontorev's list of 15 coderev-scope files, read by the Turn 2 coderev over the same range (`carried-from=…260824-2155-ontorev…`).
 
@@ -233,4 +233,4 @@ sequenceDiagram
 
 ## Portfolio update
 
-Playmaker ran at Phase 4 after the `_t_`→`_c_` rename: `shared/history/260825-0707-playmaker-orchestrator-phase4.md`. `portfolio.md` regenerated; recommendation `Recommended next: (none)` (no anticipated Circle); backlog ranking unchanged (`shared/backlog/260814-1733_*_bounded-executor-dispatches.md` recommended to shape); 18 Circle records, all terminal.
+Playmaker ran at Phase 4 after the `_t_`→`_c_` rename: `260825-0707-playmaker-orchestrator-phase4.md`. `portfolio.md` regenerated; recommendation `Recommended next: (none)` (no anticipated Circle); backlog ranking unchanged (`260814-1733_*_bounded-executor-dispatches.md` recommended to shape); 18 Circle records, all terminal.

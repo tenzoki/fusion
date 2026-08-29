@@ -12,7 +12,7 @@
  * on zero lines although the SessionStart hook that supplies it had shipped.
  * The mandate was right and the work departed from it — the project's own
  * reconciler had already filed that as a defect
- * (`shared/history/260825-1430-reconciliation.md`). The repair is not a louder
+ * (`260825-1430-reconciliation.md`). The repair is not a louder
  * mandate; it is moving the mechanical rows to a writer that cannot forget.
  *
  * Three row kinds are machine-written now, and only three:
@@ -142,7 +142,7 @@ export function resolveIdentity(root) {
  * The backgrounded dispatch, and why task_done has two emitters
  *
  * Measured 2026-08-27 against Claude Code 2.1.x in a throwaway project
- * (`shared/analyses/260827-0740-subagentstop-payload-measurement.md`):
+ * (`260827-0740-subagentstop-payload-measurement.md`):
  *
  *   - SYNC dispatch: PreToolUse -> SubagentStop -> PostToolUse, and the
  *     PostToolUse payload carries `tool_response.status: "completed"` plus
@@ -159,7 +159,7 @@ export function resolveIdentity(root) {
  * pairing back to the tool-use id when the agent really stops. The ordering
  * removes the need for any dedup heuristic: a sync SubagentStop fires before
  * PostToolUse ever wrote a mapping entry, finds nothing, and stays silent.
- * Issue `shared/issues/260827-0716_*_task-done-fires-at-dispatch-launch-when-the-sub-agent-runs-in-the-background.md`.
+ * Issue `260827-0716_*_task-done-fires-at-dispatch-launch-when-the-sub-agent-runs-in-the-background.md`.
  * ------------------------------------------------------------------ */
 const DISPATCH_MAP = ["fusion-workbench", ".guard-state", "dispatch-map.json"];
 /** A mapping entry older than this is a crashed session's leftover. */

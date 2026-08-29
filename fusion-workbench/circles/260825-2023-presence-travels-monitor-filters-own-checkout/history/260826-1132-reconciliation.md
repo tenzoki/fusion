@@ -3,7 +3,7 @@
 **Date:** 2026-08-26
 **Agent:** reconciler
 **Domain:** code
-**Circle:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout`
+**Circle:** `260825-2023-presence-travels-monitor-filters-own-checkout`
 **Range:** `8119fc2..7774d56` (session anchor to HEAD); the Circle's own first commit is `73ca11c`
 **Tree state:** clean apart from `fusion-workbench/orchestrator-events.jsonl`, which is in flight all
 session
@@ -25,7 +25,7 @@ session
 can be discharged is discharged. What is flagged is that three counts about this Circle's own
 mechanism are wrong at HEAD, two of them in shipped text, in a Circle whose declared recurring fault
 is exactly that. The three-edge reading is appended to
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`
+`260825-2123-orchestrator-session.md`
 `## Coherence`.
 
 ## The Directive, clause by clause, against the tree
@@ -55,21 +55,21 @@ caught by a review or a later pass and none by a gate. Two more stand, plus one 
 1. `rules/workbench-tracking.md` — "Three readers apply that scoping"; four do. The fourth is the
    Phase-4 session-flow diagram (`agents/orchestrator.md:915`, `:1376`), which plan step 8 of this
    same Circle converted, while plan step 9 instructed the executor to name three. Filed as
-   `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`.
+   `260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`.
    This is the worst placement available: the file is the Circle's designated single authoring home
    for the repair.
 2. Five shipped sites — `CLAUDE.md:43`, `bin/fusion-events:202`, `hooks/lib/events-query.ts:374` and
    the two compiled copies — say `turns` replaced "four copies of a whole-file `grep -c turn_start`".
    At `8119fc2` the tree held **two** (`agents/orchestrator.md:99`, `skills/setup/SKILL.md:377`); on
    the looser site reading the number is now five. Wrong on both readings. Filed as
-   `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`.
+   `260826-1127_*_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`.
 3. Acceptance criterion 6 says "the plan refers **six** by path"; it refers seven. `287f7ff` added the
    seventh to criterion 5 in the same edit that corrected criterion 6 from three to six, so the number
    was true of the file the commit read and false of the file it wrote. Recorded in the plan's
    `## Reconciliation Log` rather than corrected in the clause, so the pattern stays visible.
 
 **Criterion 6 has one substantive residual.** Six of the seven referred defect records satisfy it.
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
+`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
 carries only `Resolved: referred (C4)`, written before this Circle opened, and C4 did discharge its
 direction (`hooks/lib/events-query.ts:374-434`, `97407df`: the window is a timestamp inside one
 checkout's own lines, not a position in the merged file). Its sibling `260823-1302_*_…` got such a
@@ -83,7 +83,7 @@ stdout, and yes to (c), so both branches of step 11 were built and nothing was w
 sub-result was negative, `hookSpecificOutput.systemMessage` not reaching the model, and it shaped the
 answer rather than withholding it: `session-id.ts` is a fourth SessionStart command because one
 process writes one stdout. Appended as a fourth sighting on
-`shared/issues/260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`.
+`260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`.
 
 **Review coverage over the Circle's range holds.** `bin/fusion-review-coverage --since 73ca11c` reads
 `commits=17 reviews=3 uncovered=4`. All four uncovered commits (`b11bec6`, `8fb42ce`, `287f7ff`,
@@ -112,19 +112,19 @@ behavioural effect. Nothing open falsifies a Directive clause.
 
 ## Tracking updates made
 
-- `planning/260825-2140_c_c4-…md` — `## Reconciliation Log` appended. `**Status:** Complete` and the
+- `260825-2140_*_c4-…md` — `## Reconciliation Log` appended. `**Status:** Complete` and the
   `_c_` marker confirmed correct against eleven verified steps; no marker moved.
-- `decisions/260825-2140_a_where-do-c4s-hook-test-lines-come-from-…md` → `_i_`, with
+- `260825-2140_*_where-do-c4s-hook-test-lines-come-from-…md` → `_i_`, with
   `Implemented: c649556 and 46de871`.
-- `issues/260826-0136_c_…three-emit-templates.md` — `Revised by: 6deeb33` appended, no rename.
-- `shared/issues/260825-1250_o_a-conditional-acceptance-criterion-…md` — `Also seen: 260826-1127`
+- `260826-0136_*_…three-emit-templates.md` — `Revised by: 6deeb33` appended, no rename.
+- `260825-1250_*_a-conditional-acceptance-criterion-…md` — `Also seen: 260826-1127`
   appended, no rename.
 - The three review files — one disposition annotation each, findings unaltered.
 
 ## New records filed
 
-- `issues/260826-1127_o_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`
-- `issues/260826-1127_o_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`
+- `260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`
+- `260826-1127_*_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`
 
 ## Nothing misfiled
 
@@ -139,5 +139,5 @@ Every count corrected in this Circle was found by a human reading, a code review
 pass. Nothing in `npm test` reads a number in prose and compares it with the tree, and the two records
 filed today are the fourth and fifth demonstrations of that in one Circle. The adjacent standing
 record is
-`shared/issues/260825-1456_*_three-shipped-surfaces-say-the-retired-configuration-key-set-is-three-and-the-loader-holds-four.md`,
+`260825-1456_*_three-shipped-surfaces-say-the-retired-configuration-key-set-is-three-and-the-loader-holds-four.md`,
 which is the same fault in a different subject.

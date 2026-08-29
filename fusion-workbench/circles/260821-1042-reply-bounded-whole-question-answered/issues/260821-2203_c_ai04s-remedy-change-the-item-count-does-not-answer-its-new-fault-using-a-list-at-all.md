@@ -4,7 +4,7 @@ AI04's remedy, change the item count, does not answer its new fault, using a lis
 
 **Severity:** Medium
 **Domain:** data
-**Filed by:** ontorev, reviewing step 4 of plan `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Filed by:** ontorev, reviewing step 4 of plan `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Affects:** `stilwerk/chat-voice-en.yaml:119-126`, `stilwerk/chat-voice-de.yaml:121-128`, and both `fusion-workbench/stilwerk/` copies
 
 ---
@@ -77,7 +77,7 @@ judgement rather than a token match, unlike AI02's character or AI01's phrase li
 record's own candidate has the same residual and no text-only fix removes it.
 
 The German clause was rewritten in the same pass, which also settles
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2205_*_the-german-ai04-clause-reads-as-a-calque-of-the-english-one.md`.
+`260821-2205_*_the-german-ai04-clause-reads-as-a-calque-of-the-english-one.md`.
 
 Verified: `cd hooks && npm test` exit 0; all four files parse (`ruby -ryaml`) with entry
 shape and both id lists intact; both pairs byte-identical by `md5` and `diff -q`. English

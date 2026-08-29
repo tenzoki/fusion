@@ -13,7 +13,7 @@ The user received a favourable assessment of fusion ("more mature than Level 2",
 
 - fusion plugin source at HEAD (`6d4a88d`), full audit of `hooks/`, `agents/`, `rules/`, `bin/`, `settings.json`, `hooks/config.json`
 - fusion's own dogfood telemetry: `fusion-workbench/orchestrator-events.jsonl`, `issues/`, `circles/`, `history/`
-- Prior analysis: `fusion-workbench/analyses/260621-1316-fusion-vs-spec-driven-agentic-engineering-critique.md`
+- Prior analysis: `260621-1316-fusion-vs-spec-driven-agentic-engineering-critique.md`
 - External practice: 12 primary sources fetched and read this session (Anthropic, Cognition, METR, DORA, Chroma, arXiv, GitHub, AWS)
 
 ---
@@ -93,9 +93,9 @@ Cross-checking filename markers against body status in fusion's own `issues/`:
 
 | Filename marker | Body says | File |
 |---|---|---|
-| `[c]` closed | **open** | `260707-0750[c]-bash-allow-resets-block-counter...` |
-| `[c]` closed | **open** | `260707-0751[c]-guard-allow-bash-events-flood...` |
-| `[c]` closed | **open** | `260707-1019[c]-fusion-plugin-root-unverified...` |
+| `[c]` closed | **open** | `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md...` |
+| `[c]` closed | **open** | `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md...` |
+| `[c]` closed | **open** | `260707-1019_*_fusion-plugin-root-unverified-on-marketplace-plugin-dir-installs.md...` |
 
 **Three of the seven marker-bearing issues contradict themselves.** Both `0750` and `0751` were "closed" by the very Turn traced in §3 — the Turn that also skipped its Coherence gate.
 
@@ -111,9 +111,9 @@ Cross-checking filename markers against body status in fusion's own `issues/`:
 
 #### The consequence, demonstrated
 
-Commit `4950ffa` (2026-06-24) shipped with the message *"The PreToolUse guard now intercepts Bash calls and DENIES branch/worktree-moving git operations."* The matcher in `hooks/hooks.json` did not include `Bash`. **The entire branch guard — fusion's single strongest control, 325 lines with 48 passing unit tests — was dead code in production for 13 days**, until an empirical probe caught it on 2026-07-07 (`issues/260707-0616[c]`). The unit tests passed the whole time. The regression test that would have caught it (`hooks-wiring.test.ts`) was written *with the fix*, 13 days late.
+Commit `4950ffa` (2026-06-24) shipped with the message *"The PreToolUse guard now intercepts Bash calls and DENIES branch/worktree-moving git operations."* The matcher in `hooks/hooks.json` did not include `Bash`. **The entire branch guard — fusion's single strongest control, 325 lines with 48 passing unit tests — was dead code in production for 13 days**, until an empirical probe caught it on 2026-07-07 (`260707-0616[c]`). The unit tests passed the whole time. The regression test that would have caught it (`hooks-wiring.test.ts`) was written *with the fix*, 13 days late.
 
-The fix then immediately introduced a second guard bug (`260707-0750`: any innocuous Bash call reset the halt escalation counter, defeating the latch). That is now fixed — and the invariant is **still unpinned by any test** (`260707-1006[o]`, open).
+The fix then immediately introduced a second guard bug (`260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md`: any innocuous Bash call reset the halt escalation counter, defeating the latch). That is now fixed — and the invariant is **still unpinned by any test** (`260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md`, open).
 
 Two guard defects in 13 days, in the one component that matters, in a 1,900-line codebase, caught by manual probing rather than by any gate.
 
@@ -123,8 +123,8 @@ Being accurate cuts both ways. The following are real and better than typical:
 
 1. **The git-branch guard is excellent work.** Deterministic, fail-closed, segment-aware, shell-substitution-aware, override-gated, and it correctly stays active in fusion's own repo (`guard.ts:225-243`) with a well-reasoned comment explaining why. `orchestrator.md:547` describes it accurately — *"you cannot work around it by rephrasing the command."* This is the one documented claim fully backed by code.
 
-   **New defect found live, mid-analysis** (filed as `issues/260716-2005[o]`): the guard **denied this document being written**, because the prose contains backticked git commands. Three probes isolate it — `git switch` inside a quoted heredoc is allowed; the same string wrapped in **markdown backticks** is denied. The classifier's substitution-recursion (`git-branch-guard.ts:67-133`) reads markdown inline-code as shell command substitution and does not model heredoc quoting, where bash performs no substitution at all. Consequence: an agent asked to edit `rules/git-branch-discipline.md` — which contains those exact backticked strings — would be blocked by the rule it is documenting. This is a *precision* defect and fails in the safe direction, so it does not diminish the control. It does show that even fusion's one strong mechanism has an untested contract boundary: its 48 tests all feed it *commands*, never *data regions*.
-2. **Step 3b mandates real test execution per task** (`orchestrator.md:322`: *"Execute the project's test suite and validation tools… All relevant checks must pass"*), with a bounded one-attempt bugfixer and revert-on-failure. This is the correct shape, and it demonstrably runs: `history/260707-0957` records *"hooks vitest suite 91/91 pass."* When the project has a suite, this is genuine verification — not LLM opinion.
+   **New defect found live, mid-analysis** (filed as `260716-2005[o]`): the guard **denied this document being written**, because the prose contains backticked git commands. Three probes isolate it — `git switch` inside a quoted heredoc is allowed; the same string wrapped in **markdown backticks** is denied. The classifier's substitution-recursion (`git-branch-guard.ts:67-133`) reads markdown inline-code as shell command substitution and does not model heredoc quoting, where bash performs no substitution at all. Consequence: an agent asked to edit `rules/git-branch-discipline.md` — which contains those exact backticked strings — would be blocked by the rule it is documenting. This is a *precision* defect and fails in the safe direction, so it does not diminish the control. It does show that even fusion's one strong mechanism has an untested contract boundary: its 48 tests all feed it *commands*, never *data regions*.
+2. **Step 3b mandates real test execution per task** (`orchestrator.md:322`: *"Execute the project's test suite and validation tools… All relevant checks must pass"*), with a bounded one-attempt bugfixer and revert-on-failure. This is the correct shape, and it demonstrably runs: `260707-0957` records *"hooks vitest suite 91/91 pass."* When the project has a suite, this is genuine verification — not LLM opinion.
 3. **`bin/fusion-commit-lock`** is a real POSIX `mkdir` mutex with PID and stale detection. Sound primitive.
 4. **The role separation is real and useful.** Reviewer-never-fixes, executor-scoped-writes, read-only analysts. This reduces a class of drift, cheaply.
 5. **`CLAUDE.md:26,49` is admirably self-critical** — it names the concurrency races rather than hiding them. That honesty is a genuine asset and stands in contrast to the docs' more promotional register elsewhere.
@@ -331,7 +331,7 @@ Reordered after the research. The literature changes the priority: **stop growin
 4. **Shrink the orchestrator prompt, and treat every component as depreciating.** 914 lines is a liability per Anthropic's own guidance and has already cost the Coherence gate. Anything that must happen deterministically belongs in a hook. Anything that exists because a 2025 model needed hand-holding should be re-tested against the current model and deleted if it no longer earns its tokens. → `planner`
 5. **Downgrade the vocabulary to match the mechanism.** README says 14 agents, `plugin.json` says 15, conceptrev appears in neither README nor philosophy. `philosophy.md:54` says churn halts sessions; it cannot. `plugin.json:4` says conceptrev "parses"; there is no parser. Each overstatement is an input to the next flattering assessment. → `coder`
 6. **Add model, token, and cost fields to the event log** (June rec #3, unimplemented). Token usage explained **80%** of variance in Anthropic's multi-agent results; without it, no fusion result is interpretable. → `coder`
-7. **Fix the branch-guard false positive** (`issues/260716-2005[o]`, filed this session). Small, well-scoped, and it protects the one control that works. → `coder`
+7. **Fix the branch-guard false positive** (`260716-2005[o]`, filed this session). Small, well-scoped, and it protects the one control that works. → `coder`
 8. **Do not implement parallel worktrees.** The verdict is now stronger than June's: Anthropic says coding has *"fewer truly parallelizable tasks than research"*; Cognition's current rule is writes-single-threaded, which fusion already satisfies; and Anthropic's own parallel Claudes *"overwrite each other's changes"* until a GCC oracle was built to manufacture independence. fusion has no oracle. The recommendation asks you to dismantle your strongest control to adopt the one pattern every source warns about. → no action
 
 **What to stop doing:** asking an LLM to assess fusion by reading fusion. That loop produced the report you distrusted. Anthropic documents it as a known failure mode, and the code-judge literature puts the instrument near chance (kappa = 0.10–0.21). The June analysis, this analysis, and the flattering report were all produced that way. Only the parts that ran commands and fetched primary sources are worth much — which is exactly why this one filed a bug it discovered by being blocked, rather than by reading about it.
@@ -356,13 +356,13 @@ Reordered after the research. The literature changes the priority: **stop growin
 - `fusion-workbench/orchestrator-events.jsonl` — 48 events; 0 `coherence_review`, 0 `circuit_breaker`, 4 `session_start` / 1 `session_end`, 2 `turn_start` / 1 `turn_end`
 - `fusion-workbench/issues/` — 3 of 7 marker/body contradictions
 - `fusion-workbench/circles/` — empty
-- `fusion-workbench/history/260707-0957-orchestrator-session.md:17` — "hooks vitest suite 91/91 pass"
+- `260707-0957-orchestrator-session.md:17` — "hooks vitest suite 91/91 pass"
 - `npx vitest run` → 7 files, 110 tests, all pass, 1.39s
 - `git log` → 184 commits, single author, 29 version bumps, 2026-05-04 → 2026-07-16
-- Live guard probes 1–3 (§6.1) → issue `260716-2005[o]`
+- Live guard probes 1–3 (§6.1) → issue `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md`
 
 **Prior analysis:**
-- `fusion-workbench/analyses/260621-1316-fusion-vs-spec-driven-agentic-engineering-critique.md` (esp. §1, §2, §5.1, §5.6, §112, §139)
+- `260621-1316-fusion-vs-spec-driven-agentic-engineering-critique.md` (esp. §1, §2, §5.1, §5.6, §112, §139)
 
 **External primary sources (fetched and read this session):**
 - Anthropic, [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) (2024-12-19)
@@ -399,7 +399,7 @@ Reordered after the research. The literature changes the priority: **stop growin
 
 ## Filed Issues
 
-- `fusion-workbench/issues/260716-2005[o]-branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` — the branch guard denies prose containing backticked git commands; isolated to markdown backticks read as shell command substitution, with no heredoc-quoting model. Found live while writing this document.
+- `260716-2005[o]-branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` — the branch guard denies prose containing backticked git commands; isolated to markdown backticks read as shell command substitution, with no heredoc-quoting model. Found live while writing this document.
 
 Recommendations 1–8 are not filed as issues; queue them if you want them in the work stream.
 

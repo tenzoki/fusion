@@ -84,7 +84,7 @@ session history, decision record and review that cites a spec or plan in `shared
 move with it, or the migration trades one broken container for a field of dangling references. Ten
 of the twelve are closed, which does not make their citations less real.
 
-This decision is answered together with `260812-0254_a_does-fusion-need-a-backlog-store-…`; they are
+This decision is answered together with `260812-0254_*_does-fusion-need-a-backlog-store-…`; they are
 one design and neither is implementable alone.
 
 ---
@@ -93,7 +93,7 @@ twelve existing Circles are migrated with their citations.
 
 ---
 Implemented: `3c6ec4e` + `406ec0d` + `0978e9a` — option 1 in both its halves, realised by the plan
-`shared/planning/260812-1720_c_circle-first-placement-and-the-backlog-store.md` (`**Status:**
+`260812-1720_*_circle-first-placement-and-the-backlog-store.md` (`**Status:**
 Complete`).
 
 *The mechanism.* `bin/fusion-paths <name> [<circle-dir>]` takes an existing Circle directory as the
@@ -115,10 +115,10 @@ file, not fourteen: each spec's sibling session history witnesses where `OUT_*` 
 was written, and six of the seven sat in `shared/history/`. The move question was put to the user
 at 260812-2100 and answered **leave it** — the single candidate's promotion out of its Circle was
 deliberate and recorded, which the Origin Rule's own promotion clause tolerates
-(`shared/decisions/260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`).
+(`260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`).
 Step 12 therefore did not run, and step 13 wrote that reason into the file itself, which is the
 migration's whole product under that answer (`0978e9a`; the paragraph is at
-`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/planning/260717-1918_c_skill-glob-nomatch-zsh-hardening.md:6-20`,
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260717-1918_*_skill-glob-nomatch-zsh-hardening.md:6-20`,
 archived by `e59dea2` after being written).
 
 ---
@@ -128,19 +128,19 @@ and why the transition is nineteen versions late.**
 Plan step 13 instructed its executor to "walk both decision records from `_a_` to `_i_`". The
 executor read "both" as the two **gate** records filed under stamp `260812-1720`, and moved those
 (`0978e9a`, both now `_i_`). The two **design** records under stamp `260812-0254` — this one and
-`260812-0254_i_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`, which
+`260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`, which
 the answer itself calls "one design, neither implementable alone" — were not moved by that commit.
 The backlog half was picked up separately by a reconciler at 260813-1545, citing `dec40bb`,
 `3c6ec4e` and `b995049`. This half was not, and has stood `_a_` since while every clause of its
 answer was on disk.
 
 The `**Status:** open` head field is left exactly as it stands. This record is a member of the
-population `260818-2212_i_should-the-decision-records-status-field-exist-at-all-...` measured, and
+population `260818-2212_*_should-the-decision-records-status-field-exist-at-all-...` measured, and
 that record's answer is explicit that a record written before the field's removal keeps it, because
 hand-correcting one destroys the evidence the removal was decided on.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `## Answer` sentence "The existing twelve Circles are migrated,
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The `## Answer` sentence "The existing twelve Circles are migrated,
 not left" rests on a premise the workbench was not in. Measured on 260812, ten of the twelve Circles
 already held their planning documents inside their own directories, and `shared/planning/` held seven
 files, six of them written with no Circle active; the one Circle-origin file had been lifted out of
@@ -148,4 +148,4 @@ its Circle deliberately at closure. The migration therefore touched one candidat
 plan step 12 never ran: the gate answered leave it (the reconciliation note above records both). The
 placement rule the answer sets is unaffected; what this note corrects is the record's account of what
 the migration cost. Filed as
-`shared/issues/260812-1720_*_the-migration-premise-in-the-circle-placement-decision-does-not-match-the-workbench.md`.
+`260812-1720_*_the-migration-premise-in-the-circle-placement-decision-does-not-match-the-workbench.md`.

@@ -33,16 +33,16 @@ pointer; the records and live-state bullets and both consequence paragraphs are 
 `rules/workbench-tracking.md:11-19`.
 
 **Fix direction.** Repoint the comment at `rules/workbench-tracking.md`. Treat it together with the
-already-open `shared/issues/260816-1051_o_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`,
+already-open `260816-1051_*_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`,
 which is a second defect in the same two lines — one edit settles both, and doing them separately
 means touching the block twice.
 
 Worth noting beyond this repository: a consuming project that copied the comment form has the same
 stale pointer and no gate at all. Whether the move owes those projects a migration line is the
-question `260819-0041_o_the-decision-record-status-removal-…` raises for the other half of this
+question `260819-0041_*_the-decision-record-status-removal-…` raises for the other half of this
 range; the two share a cause.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

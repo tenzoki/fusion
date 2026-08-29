@@ -9,9 +9,9 @@ choice lands in it, and the reconciler has to improvise the verdict.
 **Affects:** `agents/reconciler.md` `### Step 2.5: Three-edge Coherence verdict` (the three-value
 aggregate) and `## Rules`-adjacent `### Step 4` (the recommendation mapping table)
 **Cross-references:**
-- `circles/260816-1741-guard-becomes-observation-only/issues/260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` — the case that exposed it
-- `circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md` `## Coherence — second pass` — where the improvisation is recorded
-- `shared/issues/260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md` — the adjacent gap on the write side: even when "revise Directive" is chosen, no agent may perform it
+- `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` — the case that exposed it
+- `260816-1841-orchestrator-session.md` `## Coherence — second pass` — where the improvisation is recorded
+- `260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md` — the adjacent gap on the write side: even when "revise Directive" is chosen, no agent may perform it
 
 ---
 
@@ -47,7 +47,7 @@ guard as a live property says what the guard now is, in code, in the agent promp
 bodies, …". `agents/curator.md:212` and `skills/curate/SKILL.md:110` still say a write denied by
 the project's guard configuration is a `failed` entry — an agent prompt and a skill body, both
 named by that clause, both stating a mechanism that cannot fire at HEAD. The defect is filed as
-`260817-1505` and was left open **by explicit user decision** against a shipped release.
+`260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` and was left open **by explicit user decision** against a shipped release.
 
 Nothing here is unreachable and nothing is in doubt. The Directive was simply stopped short of, on
 purpose, and the vocabulary has no word for that.
@@ -86,7 +86,7 @@ stretched over two cases. Option 2's saving is one enum value; its cost is the d
 matters most at the moment the marker is written.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/reconciler.md:113-115` still enumerates three verdicts and `:172-176` still maps only those three. This pass hit an adjacent gap in the same vocabulary and filed it as `260817-1836_o_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`; the two are different causes and neither fix covers the other. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/reconciler.md:113-115` still enumerates three verdicts and `:172-176` still maps only those three. This pass hit an adjacent gap in the same vocabulary and filed it as `260817-1836_*_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`; the two are different causes and neither fix covers the other. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — option 1: a fourth verdict `directive-partially-met` (reachable, a clause unmet, the shortfall filed) mapped to `accept Bounded Closure`, in one edit with 260817-1836 and 260823-1446; `agents/reconciler.md:113-118`, `:174-180`

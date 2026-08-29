@@ -5,8 +5,8 @@ A question the closing pass explicitly left to the user has no open record anywh
 **Severity:** Medium
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 3
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_ten-record-citations-in-the-turn-1-review-dangle-after-this-turns-renames-and-no-gate-covers-reviews.md:56-64` (`## Direction`) and its closure note
-**Cross-references:** `rules/fusion-workbench-conventions.md` `## Issues vs decisions` (a question goes to `$OUT_DECISION`, not to an issue); `agents/reconciler.md:131`, `:141` (a decision misfiled as a defect is surfaced, not closed); `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, the user answer this question would amend
+**Affects:** `260823-1318_*_ten-record-citations-in-the-turn-1-review-dangle-after-this-turns-renames-and-no-gate-covers-reviews.md:56-64` (`## Direction`) and its closure note
+**Cross-references:** `rules/fusion-workbench-conventions.md` `## Issues vs decisions` (a question goes to `$OUT_DECISION`, not to an issue); `agents/reconciler.md:131`, `:141` (a decision misfiled as a defect is surfaced, not closed); `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, the user answer this question would amend
 
 ---
 
@@ -20,7 +20,7 @@ The record is nonetheless renamed `_c_`. So the sentence "it stays a question fo
 
 **The question is real and it recurred inside this Circle.** Turn 2 measured ten dangling citations in the Turn 1 review; Turn 3 repaired those and pre-emptively repaired seven more in the Turn 2 review, because closing six records would have broken the file recording them. That is the same fault twice in two Turns, and the closure note names the trade the answer turns on (admitting reviews reddens the suite on every successful repair pass unless the closing pass corrects the review in the same commit). A trade that specific is a decision record's content.
 
-**Closure compounds it.** Once C2 goes terminal the sentence sits in a closed issue inside a closed Circle: outside every `$SCAN_ISSUES` and `$SCAN_DECISIONS` by the resolver's scoping, and outside the marker filters as well. It is filed separately as `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`.
+**Closure compounds it.** Once C2 goes terminal the sentence sits in a closed issue inside a closed Circle: outside every `$SCAN_ISSUES` and `$SCAN_DECISIONS` by the resolver's scoping, and outside the marker filters as well. It is filed separately as `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`.
 
 ## Verified
 
@@ -35,14 +35,14 @@ Do this before the Circle closes. Afterwards the question is reachable only by s
 ---
 
 Resolved: 2026-08-23 by coder. The question is filed as an open decision record at
-`shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`,
+`260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`,
 in `shared/` per the Origin Rule and for the reason this record gives: the corpus is a
 framework-wide surface and the question outlives the Circle that met it twice.
 
 **It is filed unanswered, and that is the whole point of filing it.** The record carries no
 `Recommendation` beyond a statement of why the filing pass may not make the call: the corpus is the
 user's own recorded answer under
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
 which no repair pass may amend.
 
 **What the filing added to the closure note it rescued.** The note stated the two options and the

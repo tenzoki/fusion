@@ -4,15 +4,15 @@ A defect record cites a verification run that no copy of the code it names can p
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** orchestrator, session `shared/history/260818-2124-orchestrator-session.md`
-**Affects:** `shared/issues/260818-2104_c_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`; the filing discipline in `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`; the honesty norm in `rules/critical-stance.md` §3
-**Cross-references:** `shared/issues/260812-1152_o_an-analysis-of-another-project-recorded-no-head-and-turned-a-three-day-old-snapshot-into-a-claim-about-now.md` (the same class, measured on an analysis rather than on a defect record)
+**Filed by:** orchestrator, session `260818-2124-orchestrator-session.md`
+**Affects:** `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`; the filing discipline in `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`; the honesty norm in `rules/critical-stance.md` §3
+**Cross-references:** `260812-1152_*_an-analysis-of-another-project-recorded-no-head-and-turned-a-three-day-old-snapshot-into-a-claim-about-now.md` (the same class, measured on an analysis rather than on a defect record)
 
 ---
 
 ## The defect
 
-Record `260818-2104` reported a typo in `skills/cleanup/SKILL.md` `## Step 8`, claiming the
+Record `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` reported a typo in `skills/cleanup/SKILL.md` `## Step 8`, claiming the
 `LAST_RUN` block reads `{ print $NF "\t" --only }` where `$0` belongs. It carried an `## Evidence`
 section opening "Run today against this repository", stating that the block "returns `0`" and that
 the same block with `$0` substituted returns `260818-2050-curator-run.md`.
@@ -53,7 +53,7 @@ shape `rules/critical-stance.md` §4 warns against answering by approximation.
 
 What is claimed is narrower and verifiable: one record in the store asserts a run that did not
 happen, the assertion was load-bearing for the record's entire content, and the store now holds a
-second instance of the class `260812-1152` opened.
+second instance of the class `260812-1152_*_an-analysis-of-another-project-recorded-no-head-and-turned-a-three-day-old-snapshot-into-a-claim-about-now.md` opened.
 
 ## Evidence
 
@@ -63,11 +63,11 @@ Measured 2026-08-18 at HEAD `53b6862`:
   `+done | awk -F/ '{ print $NF "\t" $0 }' | sort | tail -1 | cut -f2)"`. No `-` counterpart exists,
   so the line has never been changed since it was introduced.
 - `git log -1 -- skills/cleanup/SKILL.md` is `381f6d8`, dated 260816-0040, two days before
-  `260818-2104` was filed. The file was not modified between the filing and this measurement.
+  `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` was filed. The file was not modified between the filing and this measurement.
 - The work tree and `~/.fusion` both carry `$0`, both at plugin version 10.2.0. No other copy of
   the file exists under `~/.claude` or `~/.fusion`; the marketplace cache clone is absent.
 - Executing the block against this workbench returns
-  `fusion-workbench/shared/history/260818-2050-curator-run.md`.
+  `260818-2050-curator-run.md`.
 - `grep -rn` for the broken form over the whole tree matches one line: the quoted evidence inside
   the record itself.
 
@@ -84,19 +84,19 @@ later reader who reaches it through `git log` rather than through the record fin
 from this end.
 
 ---
-**Reconciliation 260818-2230** (reconciler, domain `code`). Every claim in this record was
+**Reconciliation 260818-2230-reconciliation.md** (reconciler, domain `code`). Every claim in this record was
 re-derived independently at HEAD `8fa3286` and holds: the pickaxe over the correct-form line returns
 nothing, `git log -1 -- skills/cleanup/SKILL.md` is `381f6d8` dated 260816-0040, the work tree and
 `~/.fusion` copies of the file are byte-identical under `diff -q` and both carry `$0`, no
 `tenzoki-plugins` clone exists under `~/.claude/plugins/marketplaces/` (only
 `claude-plugins-official`), and the Step 8 block executed as written returns
-`fusion-workbench/shared/history/260818-2050-curator-run.md`. Marker stays open: the fabrication is
+`260818-2050-curator-run.md`. Marker stays open: the fabrication is
 corrected in the store but survives in the message of commit `53b6862`, which is what this record
 exists to reach.
 
 Also seen, in the correction rather than in the original: the resolution note that closed
-`260818-2104` carries a false universal of its own, filed as
-`shared/issues/260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
+`260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` carries a false universal of its own, filed as
+`260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
 Filed separately rather than as a line here because it is a different sentence in a different half
 of that file, written by the correcting session rather than by the one this record indicts.
 

@@ -1,6 +1,6 @@
 # Circle Records — state markers, transitions, and the record and portfolio templates
 
-**Provenance:** circles/260801-1244-guard-rules-write
+**Provenance:** 260801-1244-guard-rules-write
 
 **This document is the definition** for the Circle state vocabulary, its transitions, the
 Circle record template and the `portfolio.md` template. No agent prompt and no skill body
@@ -38,7 +38,7 @@ The price of the marker-on-the-record design is that `ls circles/` no longer sho
 
 The vocabulary is parallel to but distinct from issues/planning and decisions. It is unchanged by the container layout.
 
-Binding decision: `circles/260716-1847-workbench-umbau/decisions/260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
+Binding decision: `260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
 
 | Marker | Meaning |
 |--------|---------|
@@ -62,7 +62,9 @@ Every transition renames only `<circle-dir>/_S_circle.md`. The directory is neve
 
 **Terminal-states statement:** `_c_`, `_b_`, `_s_`, `_d_` are terminal — `mv` back to `_a_` or `_t_` is disallowed. If continuation is needed, create a new Circle that cites the terminal one via its `## Dependencies` section. A terminal Circle keeps its directory and all its artifacts in place; closure is not a move.
 
-**A terminal Circle's spec and plan are history, like its record.** They are read as evidence and never reconciled in place: no step mark, ticked criterion or header change is written into them after the transition, and an unticked box there is not outstanding work. `bin/fusion-paths` resolves no `SCAN_*` key to a terminal Circle's stores; an agent's scan reaches them only when a run names the Circle as the resolver's second argument, and a skill walking `$SCAN_CIRCLES` directories itself (the archive step's `open_in()`) is a different reader, bound by the terminal-states statement above. Binding decision: `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (option 5, written here rather than in the conventions because this file is where terminal states are defined).
+**A terminal Circle's spec and plan are history, like its record.** They are read as evidence and never reconciled in place: no step mark, ticked criterion or header change is written into them after the transition, and an unticked box there is not outstanding work. `bin/fusion-paths` resolves no `SCAN_*` key to a terminal Circle's stores; an agent's scan reaches them only when a run names the Circle as the resolver's second argument, and a skill walking `$SCAN_CIRCLES` directories itself (the archive step's `open_in()`) is a different reader, bound by the terminal-states statement above.
+
+Binding decision: `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (option 5, written here rather than in the conventions because this file is where terminal states are defined).
 
 **Grounding-Stand vs Grounding-Historie parallel:** as with `decisions/`, the marker carries the layer information. `_a_` and `_t_` are Grounding-Stand (current working state); `_c_`, `_b_`, `_s_`, `_d_` are Grounding-Historie (preserved record).
 
@@ -119,10 +121,10 @@ skill nor closes that question. Until one exists the obligation rides on the car
 deletes, which is weaker than every other rule in this file and is stated here rather than papered
 over. The neighbouring operation shows the size of that residual: the `260817-1907` archive sweep
 broke six citations from live Circle records and nothing detected them
-(`shared/history/260819-1400-reconciliation-circles.md`) — and archival is the operation that
+(`260819-1400-reconciliation-circles.md`) — and archival is the operation that
 *preserves* its target.
 
-Binding decision: `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`.
+Binding decision: `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`.
 
 ## Circle record template
 
@@ -135,8 +137,8 @@ The Circle record is `<circle-dir>/_S_circle.md`. Creating a Circle means creati
 **Domain:** <code|data>
 **Filed by:** <agent name or "user">, <person>
 **Claim:** <Unclaimed, or the `Claimed ` form — see `### The claim field` below>
-**Active spec/plan:** <workbench-relative path to the spec or plan, `_*_` at the marker position, or "(none yet)">
-**Active session history:** <workbench-relative path to the session history file, or "(none yet)">
+**Active spec/plan:** <storeless basename of the spec or plan, `_*_` at the marker position, or "(none yet)">
+**Active session history:** <storeless basename of the session history file, or "(none yet)">
 
 ---
 
@@ -235,12 +237,7 @@ work of activating. The person who loses that race pulls, sees the claim standin
 Circle. That is what choosing git as the transport forecloses, and no value of this field changes
 it.
 
-**`Active spec/plan:` and `Active session history:` hold workbench-relative paths, not bare filenames.** In the ordinary case the path points inside the Circle (`circles/260716-1847-umbau/planning/260716-1910_*_plan-foo.md`) and looks redundant. It is not, because the cross-store case is real and routine:
-
-- A spec written with **no Circle in scope** lands in `shared/planning/`, and a Circle created later adopts it — one shared spec can serve several Circles at once. (Anticipated-circle mode no longer produces one: it creates the Circle first and writes inside it.)
-- A migrated pre-v4 Circle names a plan that the migration moved to `shared/planning/`, correctly: unknown origin means `shared/` (Origin Rule, corollary 1). The file genuinely is not in the Circle, and rewriting the field to claim otherwise would point it at nothing.
-
-A path resolves in both cases; a bare filename resolves only in the first, and fails silently in the second — the consumers (playmaker's `portfolio.md` rendering and the orchestrator's resume) both degrade without announcing it. This does not weaken the container premise: a Circle still *holds* its artifacts, and the Origin Rule still decides which. The field merely reports where the file is rather than assuming it.
+**`Active spec/plan:` and `Active session history:` hold the storeless basename** (`260716-1910_*_plan-foo.md`, `260716-1847-foo-session.md`), the citation form `rules/fusion-workbench-conventions.md` `## Filename Patterns` mandates everywhere. The field says nothing about the store, and does not need to: a spec written with no Circle in scope lands in `shared/planning/` and a Circle created later adopts it, a migrated pre-v4 plan sits in `shared/planning/` by the Origin Rule, and a workbench-wide lookup resolves both cases the same way it resolves a file inside the Circle. The consumers (playmaker's `portfolio.md` rendering and the orchestrator's resume) resolve it with `find "$WORKBENCH" -name '<basename>'`, which is correct because no two stamped artifacts share a marker-normalised basename (measured live tree and `archive/`, and pinned by a test — the conventions paragraph carries the figures).
 
 ### The Directive is a pointer once a spec exists
 
@@ -280,7 +277,7 @@ anticipated Circle reads `(none yet)` by construction, so the invariant already 
 is left is the single active Circle a project may have — and converting that one by hand would
 delete the evidence of exactly the contradiction the conversion exists to end.
 
-Binding decision: `shared/decisions/260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1).
+Binding decision: `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1).
 
 `$PORTFOLIO` is regenerated by playmaker on every run. Template:
 
@@ -325,14 +322,15 @@ A Phase 4 dispatch holds no confirmation: everything is proposed and `Performed 
 
 ### Citation form in the portfolio
 
-**Every path citation in `$PORTFOLIO` carries `_*_` at the marker position** — write
-`YYMMDD-HHMM_*_<slug>.md`, never the letter the target carries today. The reason is the
+**Every record citation in `$PORTFOLIO` is the storeless basename with `_*_` at the marker
+position** — write `YYMMDD-HHMM_*_<slug>.md`, never a store segment and never the letter the
+target carries today. The reason is the
 regeneration: playmaker overwrites the whole file on every run, and between two runs its
 targets move on (`_o_ → _p_ → _c_`, `_o_ → _a_ → _i_`), so a spelled-out marker is a pointer
 that dies at its target's first transition — and correcting one by hand buys nothing, because
 the next run writes the same form back over the correction. The wildcard costs the reader
-nothing: they resolve it against the store and read the current marker off the resolved
-filename.
+nothing: they resolve it by a workbench-wide lookup and read the current marker off the
+resolved filename.
 
 **Star a pointer to a file; leave the letter on a marker that is being named.** The two look
 alike and mean opposite things. In a Circle's entry the letter is noise that ages. In a
@@ -341,16 +339,16 @@ warning whose subject *is* a transition (`_t_circle.md` → `_b_circle.md`), or 
 the statement. The test is what a star would cost: a pointer loses nothing, a statement loses
 its content.
 
-Binding decision: `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`.
+Binding decision: `260806-0015_*_zitierform-fuer-workbench-records.md`.
 Measured elsewhere and transferred here as
-`shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`:
+`260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`:
 five citations in one generated portfolio, two pointing at nothing on the day of filing and a
 third two hours later.
 
 ### Citation form in a Circle record's head field
 
-**`Active spec/plan:` carries `_*_` at the marker position too**, and for the second half of
-the reason above without the first. The field is a pointer; its target transitions
+**`Active spec/plan:` carries the storeless basename with `_*_` at the marker position too**,
+and for the second half of the reason above without the first. The field is a pointer; its target transitions
 `_o_ → _p_ → _c_`; and nothing rewrites the field when it does, so a spelled marker dies at
 the target's first transition and, no regeneration ever reaching this file, stays dead. The
 portfolio's rule needs regeneration only to explain why correcting one by hand is futile.
@@ -363,5 +361,5 @@ test it states: that test is this document's, it governs every citation, and wha
 to `$PORTFOLIO` is only the regeneration argument beside it. `Active session history:` needs no
 rule of its own: a history filename carries no marker position to spell.
 
-Filed as `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`,
+Filed as `260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`,
 against a record head field that had been rewritten correctly and authorised nowhere.

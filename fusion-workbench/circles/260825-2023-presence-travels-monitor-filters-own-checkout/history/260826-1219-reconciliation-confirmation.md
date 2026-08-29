@@ -3,13 +3,13 @@
 **Date:** 2026-08-26
 **Agent:** reconciler (seventh pass over this Circle's count theme)
 **Domain:** code
-**Circle:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout`
+**Circle:** `260825-2023-presence-travels-monitor-filters-own-checkout`
 **Range confirmed:** `7774d56..e66f7d5` — the fix commit alone
 **Tree state:** clean apart from `fusion-workbench/orchestrator-events.jsonl`, in flight all session
 **Filed by:** reconciler, Kai Stalmann <ks@qantr.com>, checkout 5e8248d7
 
 Tightly scoped. The full reconciliation stands at
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1132-reconciliation.md`
+`260826-1132-reconciliation.md`
 and was not re-run. This pass confirms the three named causes, the one residual, and looks once more
 for a wrong count by a method the sixth pass did not use.
 
@@ -79,7 +79,7 @@ have to carry.
 
 ## The residual, confirmed
 
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_c_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
+`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
 now carries `Resolved: 97407df` appended beside the earlier `Resolved: referred (C4)`, the shape its
 sibling `260823-1302_*_…` already had. The note's substantive claim was checked against source, not
 accepted: `hooks/lib/events-query.ts:392-434` scopes by checkout, sorts by `ts`, anchors on the
@@ -119,7 +119,7 @@ not see it. The three fields fail independently (`bin/fusion-identity` for the f
 "**No line, no key**" at `:140` for the third), and two shipped files cite this paragraph as the
 authority for the rule rather than restating it (`hooks/lib/events.ts:90`,
 `rules/workbench-tracking.md:55`), so the generalisation is load-bearing. Filed as
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1219_o_the-event-line-contracts-own-rule-sentence-says-a-half-of-a-set-this-circle-grew-to-three.md`.
+`260826-1219_*_the-event-line-contracts-own-rule-sentence-says-a-half-of-a-set-this-circle-grew-to-three.md`.
 
 **Why the sixth pass could not have found it, which is worth more than the instance.** The line was
 inside its declared scope and its instrument was blind to it on two counts. `half` is not in the
@@ -152,7 +152,7 @@ filed record as a companion observation.
 
 - One new defect filed, above. No marker moved, no plan status changed, no review annotated.
 - `## Coherence` in
-  `circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`
+  `260825-2123-orchestrator-session.md`
   gained a **Confirmation pass** subsection, appended below the existing section, which was not
   rewritten.
 - The Circle record and `.active-circle` were not touched. Nothing staged, nothing committed.

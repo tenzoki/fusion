@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Task:** 5 of `fusion-workbench/tasklist.md`, ID `I:260811-0114-uncommitted-queue`
-**Source:** `shared/issues/260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`
+**Source:** `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`
 **HEAD at start:** `afd7c2e`
 **Verification:** `cd hooks && npm test` — exit 0, 1243 tests (1210 at HEAD, 33 added)
 
@@ -118,7 +118,7 @@ field reader; `readStateFile` / `stateField` are now exported from
 - **Gated task 49** (changes nobody authorised) is untouched. It meets this from
   the opposite side and was out of scope.
 - **The marker rename and the tasklist tick** are left to the orchestrator.
-  `shared/issues/260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`
+  `260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`
   is the open record about an executor doing that, and doing it here would be
   the same defect.
 - **`bin/monitor`** does not surface `staging_drift`. Parity with

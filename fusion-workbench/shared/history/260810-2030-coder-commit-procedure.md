@@ -1,4 +1,4 @@
-# coder — `R:260810-1918-commit-procedure` (Turn 2, session `260810-1646`)
+# coder — `R:260810-1918-commit-procedure` (Turn 2, session `260810-1646-orchestrator-session.md`)
 
 **Status:** Complete
 **Domain:** code
@@ -6,7 +6,7 @@
 
 ## What the task was
 
-Four findings from the Turn-1 review (`shared/reviews/260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`),
+Four findings from the Turn-1 review (`260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`),
 one of them a regression this session introduced in `a7d02da`.
 
 ## The decision on the lock form
@@ -30,7 +30,7 @@ and is finished before step 5 acquires. Holding a commit lock across an agent di
 wrong on its own terms. So the carve-out does not reach this sequence, and the prompt now carries
 exactly one criterion — the rule's — instead of the second one `a7d02da` invented.
 
-The `260810-1535` constraint is preserved unchanged: nothing inside the `bash -c` string is prose.
+The `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md` constraint is preserved unchanged: nothing inside the `bash -c` string is prose.
 The prompt now says *why* the wrapper is safe here rather than leaving it to be re-derived.
 
 ## Changes
@@ -56,7 +56,7 @@ The prompt now says *why* the wrapper is safe here rather than leaving it to be 
 ## Verification
 
 Scratch repository at `<scratchpad>/lockdemo` (never the working tree — four executors were writing
-here; the destructive-verification rule is decision `260810-1820`).
+here; the destructive-verification rule is decision `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`).
 
 | Case | Result |
 |---|---|
@@ -75,7 +75,7 @@ shown, and the note is in the finding-2 record for the next author.
 
 ## Records
 
-`260810-1918_c_step-3b-drops-the-lock-form…`, `…_c_the-explicit-staging-instruction…`,
+`260810-1918_*_step-3b-drops-the-lock-form…`, `…_c_the-explicit-staging-instruction…`,
 `…_c_the-bugfixer-success-path…`, `…_c_the-commit-skills-heredoc-example…` — each carries a
 `Resolved:` note; `_p_` → `_c_`.
 

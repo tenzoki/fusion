@@ -3,12 +3,12 @@
 **Date:** 2026-08-12 21:36
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`, step 11
-**Predecessors:** `shared/history/260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
-`shared/history/260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`),
-`shared/history/260812-2010-coder-the-playmaker-gains-the-backlog-job.md` (step 7, `6e261c4`),
-`shared/history/260812-2054-coder-the-shaper-becomes-circle-first.md` (step 8, `406ec0d`),
-`shared/history/260812-2116-coder-the-planner-parameter-and-the-three-user-surfaces.md` (steps 9–10, `994fe05`)
+**Plan:** `260812-1720_*_circle-first-placement-and-the-backlog-store.md`, step 11
+**Predecessors:** `260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
+`260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`),
+`260812-2010-coder-the-playmaker-gains-the-backlog-job.md` (step 7, `6e261c4`),
+`260812-2054-coder-the-shaper-becomes-circle-first.md` (step 8, `406ec0d`),
+`260812-2116-coder-the-planner-parameter-and-the-three-user-surfaces.md` (steps 9–10, `994fe05`)
 **Voice profile:** `bin/fusion-rules coder` emitted `chat-voice-de.yaml` and no
 `default-voice-*.yaml`, which is correct — `coder` is not one of the nine long-form-prose agents.
 This file follows the artifact language (`en`) with no writing profile, per
@@ -94,7 +94,7 @@ resolution.
 
 ## What the measurement says about the two defect records it touches
 
-**`shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+**`260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
 is concretely worse than filed, and now has its number.** It said "the workbench cites thousands"
 and "nothing has counted them". Both stand: 4514 path-shaped citations, and turning the exclusion
 on unchanged would fail the suite with 1454 findings. The record was appended to rather than
@@ -106,7 +106,7 @@ session log to the wildcard-citation rule means rewriting history to keep a gate
 `history/` is out of a standing gate's scope or its rule is different, and deciding that moves the
 headline number by 47 per cent.
 
-**`shared/issues/260812-1407_*_the-reference-lint-misses-the-lib-spelling-so-three-of-four-citations-into-deleted-modules-stood.md`
+**`260812-1407_*_the-reference-lint-misses-the-lib-spelling-so-three-of-four-citations-into-deleted-modules-stood.md`
 is neither better nor worse.** It is a class-(a) defect about plugin-file path spellings; this run
 touched class (c) only and scanned a corpus with no plugin-file paths in it. The two records share
 a shape — an enumerated grammar that silently reinterprets what it does not recognise — and the
@@ -114,7 +114,7 @@ new record filed below cites it for that reason, but nothing here measures it.
 
 ## Issues filed
 
-- `shared/issues/260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
+- `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
   Two grammar gaps found by the run, moving the count in opposite directions: ASCII `...` is not
   read as a truncation where `…` is, manufacturing 54 false danglings; and the retired pre-v4
   bracket marker (`260717-1918[o]`, 171 occurrences) has no case at all, so with a store prefix it
@@ -128,11 +128,11 @@ measurement. No citation was rewritten, no marker touched, no file moved.
 - `hooks/lib/__tests__/helpers/citation-scan.ts` (new) — the parser, the corpus scan, the CLI
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts` — imports it; four tests added, none
   changed, none removed
-- `fusion-workbench/shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`
+- `260812-1720_*_circle-first-placement-and-the-backlog-store.md`
   — step 11 `[DONE]`, the gate recorded as answered, `## Reconciliation Log` added
-- `fusion-workbench/shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+- `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
   — measured update appended
-- `fusion-workbench/shared/issues/260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`
+- `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`
   (new)
 
 ## Verification

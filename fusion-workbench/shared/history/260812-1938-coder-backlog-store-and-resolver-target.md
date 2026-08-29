@@ -3,10 +3,10 @@
 **Date:** 2026-08-12 19:38
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`, steps 1, 2 and 3
-**Decisions realised (not yet marked):** `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`,
-`shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`,
-`shared/decisions/260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`
+**Plan:** `260812-1720_*_circle-first-placement-and-the-backlog-store.md`, steps 1, 2 and 3
+**Decisions realised (not yet marked):** `260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`,
+`260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`,
+`260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`
 
 ## What was done
 
@@ -109,8 +109,8 @@ Three full runs were made. Runs 1 and 3 were green at exit 0; run 2 exited 1 on
 `Error: Worker exited unexpectedly` from tinypool with **no failing assertion** (993 of 995
 tests passed, two never ran, 47 of 48 files reported). That is the known pre-existing
 parallel-load flake recorded in
-`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
-and `shared/issues/260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`,
+`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
+and `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`,
 not a regression from this work.
 
 ## What the plan got wrong
@@ -139,6 +139,6 @@ conventions both.
 - `bin/fusion-paths`
 - `hooks/lib/__tests__/fusion-paths.test.ts`
 - `hooks/lib/__tests__/fixtures/rules-emission.golden`
-- `fusion-workbench/shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` (steps 1–3 marked `[DONE]`)
+- `260812-1720_*_circle-first-placement-and-the-backlog-store.md` (steps 1–3 marked `[DONE]`)
 
 Not committed — the orchestrator commits. Step 4 not started.

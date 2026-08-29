@@ -36,7 +36,7 @@
 #
 # It was stated: `5`, in seven places in agents/orchestrator.md, in four
 # spellings, one of which already called it a "default" while no source could
-# override it (issue 260811-1712). Seven copies of one fact go stale together
+# override it (issue 260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md). Seven copies of one fact go stale together
 # and no project could change any of them.
 #
 # The value now lives in hooks/lib/config.ts DEFAULTS — once — and is overridden

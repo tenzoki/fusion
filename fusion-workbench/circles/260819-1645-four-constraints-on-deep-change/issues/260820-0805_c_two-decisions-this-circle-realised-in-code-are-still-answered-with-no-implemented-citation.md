@@ -6,17 +6,17 @@ Both of this Circle's own decision records were answered at the plan gate and bo
 in code by `bbfc912`. Neither has moved from the answered marker to the implemented one, and neither
 carries an `Implemented:` line.
 
-- The corpus decision, `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+- The corpus decision, `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
   — option 1 is realised by `hooks/lib/__tests__/workbench-citation-lint.test.ts`, which asserts zero
   violations over a recomputed corpus and carries no baseline and no approvable number.
-- The `stamp-name` decision, `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+- The `stamp-name` decision, `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
   — option 2 is realised by the `GATE_KINDS` array in
   `hooks/lib/__tests__/helpers/citation-scan.ts:443-449`, with the sibling lint's `BASELINE`
   re-approved in the same commit as the widening requires.
 
 The same Circle did perform this transition twice, for the two decisions it consumed rather than
-produced: `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
-and `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
+produced: `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+and `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
 both carry the implemented marker and a resolving `Implemented:` citation. So the omission is these
 two records, not a practice.
 

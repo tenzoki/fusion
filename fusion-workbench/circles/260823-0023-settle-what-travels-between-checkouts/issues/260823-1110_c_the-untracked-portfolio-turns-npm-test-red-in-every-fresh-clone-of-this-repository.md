@@ -6,7 +6,7 @@ The untracked portfolio turns `npm test` red in every fresh clone of this reposi
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `hooks/lib/__tests__/workbench-citation-lint.test.ts:263`, `.gitignore:85`, and step 9 of this Circle's own plan
-**Cross-references:** plan step 2 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `shared/issues/260821-1810_o_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md` (a different cause, same class of failure)
+**Cross-references:** plan step 2 in `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md` (a different cause, same class of failure)
 
 ---
 
@@ -67,7 +67,7 @@ of their class but because they carry no citations. Two further reasons decide i
 1. **The corpus is a user's recorded answer.** It was set as "the Circle records, `portfolio.md`,
    the open decisions and the open issues" at the first shaping answer of Circle
    `260819-1645-four-constraints-on-deep-change` and pinned by decision
-   `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
+   `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
    Removing a named kind from it is a change to that answer and belongs at a user gate, not in a
    defect repair.
 2. **Dropping it would lose real coverage and replace it with nothing.** The portfolio is the
@@ -117,7 +117,7 @@ above the constant per that file's own invariant.
 
 **Not repaired here:** the log above that constant closes at `paths 1291` while the constant read
 `1292`, which is
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_two-of-six-baseline-re-approvals-carry-no-accounting-and-the-log-now-contradicts-the-constant.md`.
+`260823-1110_*_two-of-six-baseline-re-approvals-carry-no-accounting-and-the-log-now-contradicts-the-constant.md`.
 The new block states its move against the constant and says so.
 
 **Files:** `hooks/lib/__tests__/workbench-citation-lint.test.ts`,

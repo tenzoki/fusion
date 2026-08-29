@@ -42,7 +42,7 @@ The section headings are `## Origin Rule (Herkunftsregel)` at `:97` and `## Path
 ## Why this is not caught by the lint
 
 `hooks/lib/__tests__` scans `docs/` for citations and resolves them — the step-7 history record
-notes that every citation added there was resolved (`history/260813-2150-coder-…:102-104`). The
+notes that every citation added there was resolved (`260813-2150-coder-…:102-104`). The
 cited section exists, so the citation resolves; what does not hold is that the cited section
 contains the claim. The check is structural, and this class of defect is below it.
 

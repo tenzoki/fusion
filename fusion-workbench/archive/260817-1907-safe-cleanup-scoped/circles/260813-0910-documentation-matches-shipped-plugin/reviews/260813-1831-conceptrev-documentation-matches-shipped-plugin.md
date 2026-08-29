@@ -1,7 +1,7 @@
 # Concept Evaluation: Implementation Plan — fusion's documentation agrees with the plugin at v8.1.0
 
 **Date:** 2026-08-13 18:31
-**Target:** `circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md`
+**Target:** `260813-1820_*_documentation-matches-shipped-plugin.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (`@mermaid-js/mermaid-cli@11`, with a negative control)
 
@@ -43,4 +43,4 @@ Optionally, one sentence under diagram 2 stating what a dotted edge means would 
 
 ---
 
-**Reconciled 260813-2258. Neither recommendation was applied, and the second one matters more now than it did when it was written.** Recommendation 1, the `S3 -.-> S4` edge in diagram 2: the plan's diagram at `:96-97` still carries only the two edges into `S6`. Recommendation 2, the risk row at `:197`: it still reads "It is the only step with no dependency in either direction". Counted from the plan's own `Dependencies:` lines, steps 1, 5, 8, 9 and 10 each have none, and none of them has a dependent — five steps share the property. Step 10 was in fact deferred at the Turn 4 gate, so that sentence is now the written justification for a decision that was taken, and it is wrong about the uniqueness while right about the consequence: nothing depends on step 10, so deferring it blocked nothing. This review is advisory and no issue was filed against it; the finding is restated in the plan's `## Reconciliation Log`.
+**Reconciled 260813-2258-reconciliation.md. Neither recommendation was applied, and the second one matters more now than it did when it was written.** Recommendation 1, the `S3 -.-> S4` edge in diagram 2: the plan's diagram at `:96-97` still carries only the two edges into `S6`. Recommendation 2, the risk row at `:197`: it still reads "It is the only step with no dependency in either direction". Counted from the plan's own `Dependencies:` lines, steps 1, 5, 8, 9 and 10 each have none, and none of them has a dependent — five steps share the property. Step 10 was in fact deferred at the Turn 4 gate, so that sentence is now the written justification for a decision that was taken, and it is wrong about the uniqueness while right about the consequence: nothing depends on step 10, so deferring it blocked nothing. This review is advisory and no issue was filed against it; the finding is restated in the plan's `## Reconciliation Log`.

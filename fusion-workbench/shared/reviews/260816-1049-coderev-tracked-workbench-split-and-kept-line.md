@@ -68,7 +68,7 @@ carrying either store is unchanged: `archive/` is in the "all simply tracked" li
 `archive/`" resolves to simply tracked, which is what "and the two above, all simply tracked" already
 said. What changed is the kind of statement — an unconditional assertion about stores that exist
 nowhere became a conditional rule with a stated ground, which is exactly the `Also seen:` objection
-appended to the record on 260816-0713.
+appended to the record on 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md.
 
 **One observation, not a finding.** `monitor`'s membership rides on the bullet's trailing sentence
 rather than on its enumerated list, whose subject clause is "each describe *now*" — which `monitor`
@@ -157,7 +157,7 @@ Three sources in the tree contradict it, one of them nine lines above in the sam
 
 - `rules/fusion-workbench-conventions.md:49` — the layout tree: `portfolio.md  # playmaker output`
 - `agents/playmaker.md:151` — "Regenerate `$PORTFOLIO` in full on every run (overwrite)."
-- `fusion-workbench/portfolio.md:3` — the live file's own header: `**Generated:** 260815-2116 (by
+- `fusion-workbench/portfolio.md:3` — the live file's own header: `**Generated:** 260815-2116-playmaker-orchestrator-phase4.md (by
   playmaker session 260815-2116-playmaker-orchestrator-phase4)`, and at `:13` "Every figure here was
   measured against disk on this run; nothing is carried forward from the previous portfolio."
 
@@ -182,7 +182,7 @@ that gives the wrong answer on the one entry it is attached to. Three passes ove
 in three days — `0a514e6`, `d83c1b4`, `b18a8cf` — each certified the section as tiling with no
 remainder and none read the parentheticals.
 
-Filed: `shared/issues/260816-1049_o_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`
+Filed: `260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`
 
 ### Theme: a preservation mechanism asserted and never exercised
 
@@ -217,7 +217,7 @@ What is false is the implicature of `:81`'s closing clause: the configuration th
 the *untracked* half of that pair and not yet the *preserving* half, and it has been that way for the
 whole life of the store.
 
-Filed: `shared/issues/260816-1050_o_the-guard-logs-preservation-half-has-never-run-and-the-archive-store-has-no-commit-in-the-repositorys-history.md`
+Filed: `260816-1050_*_the-guard-logs-preservation-half-has-never-run-and-the-archive-store-has-no-commit-in-the-repositorys-history.md`
 
 ### Theme: comment text left behind by the block's rewrite
 
@@ -236,11 +236,11 @@ the tree, **not because a skill reads it today**."
 
 This commit rewrote `:67-72` of the block and left `:61-66`. A three-word fix.
 
-Filed: `shared/issues/260816-1051_o_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`
+Filed: `260816-1051_*_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`
 
-#### F4 — session history `260816-1030` states the reverted four-entry KEPT line as what landed — **Low**
+#### F4 — session history `260816-1030-coder-tracked-workbench-split-remainder.md` states the reverted four-entry KEPT line as what landed — **Low**
 
-`fusion-workbench/shared/history/260816-1030-coder-tracked-workbench-split-remainder.md`, under
+`260816-1030-coder-tracked-workbench-split-remainder.md`, under
 "What changed", item 1:
 
 > **1. `.gitignore:67`** — the KEPT list now names the records group exactly as
@@ -257,7 +257,7 @@ The committed record set therefore says two different things about what one line
 one that describes it wrongly is the one a reader reaches first, since it is the pass's main history
 file and `1040` reads as a sub-note.
 
-Filed: `shared/issues/260816-1051_o_the-main-session-history-states-the-reverted-four-entry-kept-line-as-what-landed.md`
+Filed: `260816-1051_*_the-main-session-history-states-the-reverted-four-entry-kept-line-as-what-landed.md`
 
 ---
 
@@ -290,7 +290,7 @@ Nothing here blocks a release.
 ## References
 
 - Commit under review: `b18a8cf`, range `433e206..b18a8cf`
-- Source record: `shared/issues/260816-0136_c_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`
-- Second record touched: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
+- Source record: `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`
+- Second record touched: `260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
 - Originating commit of the `portfolio.md` clause: `65f7c3b`
 - Coverage: `bin/fusion-review-coverage --since 433e206` reported `uncovered=1` before this file

@@ -3,14 +3,14 @@
 ---
 **Severity:** Low — nothing breaks; the cost is that a reader following a citation gets nothing
 **Domain:** code
-**Filed by:** reconciler, Phase-3 pass `history/260815-1913-reconciliation.md`, HEAD `9306f0a`
+**Filed by:** reconciler, Phase-3 pass `260815-1913-reconciliation.md`, HEAD `9306f0a`
 **Owner:** none assigned — this is a class question, not a repair
-**Cross-references:** `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` (state change is a rename); `issues/260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md` (same class, one entry); `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` (why no gate sees it)
+**Cross-references:** `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` (state change is a rename); `260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md` (same class, one entry); `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` (why no gate sees it)
 
 ---
 
 This pass renamed this Circle's plan,
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`,
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`,
 from `_o_` to `_c_`, which the conventions require once every step carries `[DONE]`. The old
 filename is spelled out once below, inside the measurement it is the argument to. Measured
 immediately before the rename:
@@ -43,16 +43,16 @@ down:
 2. A citation spells the marker it saw, and going stale is the record's honesty about when it was
    written.
 3. Something reads the workbench and repoints them, which is
-   `shared/issues/260812-1720_o_…` from the other side.
+   `260812-1720_*_…` from the other side.
 
 The same class already has an instance in this Circle at
-`issues/260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`,
+`260815-1247_*_a-backlog-entrys-related-line-points-at-a-marker-the-playmaker-has-since-moved.md`,
 filed against one entry rather than thirty-four. Whether it is a defect at all depends on which of
 the three positions holds, which makes it a decision this record does not take.
 
 ---
 
-**Re-measured 260815-2109 at HEAD `d2b45e1`** (reconciler, `history/260815-2109-reconciliation.md`).
+**Re-measured 260815-2109 at HEAD `d2b45e1`** (reconciler, `260815-2109-reconciliation.md`).
 The count in the title is stale and the record stays open. `grep -ro` across `fusion-workbench/`
 now returns **57** occurrences, or **41** once the two append-only event streams
 (`orchestrator-events.jsonl`, `.guard-state/events.jsonl`) are excluded — those two legitimately
@@ -86,4 +86,4 @@ ls circles/260815-0007-…/planning/  →  260815-0029_c_plan-remove-eight-mecha
 The record is filed as a class question and not a repair: which of the three citation positions holds — rewrite each to `_*_`, leave literal markers as historical, or require the wildcard at write time. No decision record in any store answers it. Until one does, mass-rewriting 55 citations would be one agent's judgement applied at scale, which is the outcome the record was filed to prevent.
 
 ---
-Resolved: referred (decision) — option 1 of the decision: literal historical citations stay, and the reference lint is the whole mechanism; shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md
+Resolved: referred (decision) — option 1 of the decision: literal historical citations stay, and the reference lint is the whole mechanism; 260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md

@@ -16,7 +16,7 @@ Two text fixes, dispatched together:
    executor that caused it.
 2. `skills/curate/SKILL.md:2` lacked the "(reachable alone as ...)" clause both its sibling
    pipeline-step bodies carry. Source record:
-   `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_the-claude-md-steps-only-selector-is-claude-md-and-the-documents-that-say-reachable-alone-never-spell-it.md`.
+   `260815-1633_*_the-claude-md-steps-only-selector-is-claude-md-and-the-documents-that-say-reachable-alone-never-spell-it.md`.
 
 ## What I did
 

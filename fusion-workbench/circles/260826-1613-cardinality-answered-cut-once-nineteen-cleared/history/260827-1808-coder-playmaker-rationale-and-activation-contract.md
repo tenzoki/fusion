@@ -2,7 +2,7 @@
 
 **Date:** 260827-1808
 **Status:** Complete
-**Plan:** `planning/260827-1756_*_repair-the-twenty-open-defect-records.md` Bundle C step 2 (records 2 and 3)
+**Plan:** `260827-1756_*_repair-the-twenty-open-defect-records.md` Bundle C step 2 (records 2 and 3)
 
 ## Implemented
 

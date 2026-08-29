@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md` (step 3, which implements whichever answer stands), `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md` (`## Open for Planner`, which hands this question to the plan), `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
+**Cross-references:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md` (step 3, which implements whichever answer stands), `260820-2249_*_spec-style-rules-arrive-and-get-measured.md` (`## Open for Planner`, which hands this question to the plan), `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
 
 ---
 
@@ -63,7 +63,7 @@ Implemented:
 Deferred:
 Superseded by:
 
-**Reconciliation 260825-1241 (reconciler, domain `code`, HEAD `cfab17e`).** Option 1 is on disk,
+**Reconciliation 260825-1241-reconciliation.md (reconciler, domain `code`, HEAD `cfab17e`).** Option 1 is on disk,
 including both documentation obligations its `## Constraints` attached to it, and the record never
 recorded any of it. `fusion-workbench/.asset-provenance` exists at the workbench root and is written
 and read by `skills/setup/SKILL.md` Step 0e alone, one `shasum -a 256` line per asset, exactly the

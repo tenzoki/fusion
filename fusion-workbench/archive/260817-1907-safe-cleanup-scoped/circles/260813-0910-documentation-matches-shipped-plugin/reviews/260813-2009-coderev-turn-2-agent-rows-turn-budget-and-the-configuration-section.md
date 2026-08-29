@@ -4,7 +4,7 @@
 **Sender:** coderev
 **Reviewed-range:** `28f3029..5d51abd`
 **Not-opened:** none
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
 **Files as dispatched:** `README-agents.md`, `README.md`, `CLAUDE.md`
 
 ## Summary
@@ -63,14 +63,14 @@ validates that leaf like any other; `hooks/guard.ts:238-241` turns each resultin
 loader returns `maxTurns=5` plus the diagnostic naming the key — which is the advisory the same
 table cell goes on to describe. The intended claim (no hook *acts on* the value) is true and worth
 keeping; as written the cell sends a reader away from the surface they will actually meet.
-Record: `issues/260813-2009_o_the-turn-budget-row-says-no-hook-reads-the-key-while-describing-the-advisory-a-hook-emits.md`
+Record: `260813-2009_*_the-turn-budget-row-says-no-hook-reads-the-key-while-describing-the-advisory-a-hook-emits.md`
 
 **2. `README.md:105` — the rewritten preamble instructs a declaration the first row refuses.**
 "Declare the ones you want in your project's `fusion-guard.json`" precedes the `guard.enabled` row,
 and `hooks/lib/config.ts:707` reads that leaf from the plugin layer only, with `:601-606` turning a
 project declaration into a diagnostic. The row corrects the preamble one line later, so the reader
 recovers immediately — but the sentence was rewritten in this Turn precisely to be true.
-Record: `issues/260813-2009_o_the-tuning-table-preamble-tells-the-reader-to-declare-a-key-the-project-layer-refuses.md`
+Record: `260813-2009_*_the-tuning-table-preamble-tells-the-reader-to-declare-a-key-the-project-layer-refuses.md`
 
 ### Agent-row accuracy (`README-agents.md`) — 2 Low
 
@@ -79,14 +79,14 @@ Record: `issues/260813-2009_o_the-tuning-table-preamble-tells-the-reader-to-decl
 `**Active spec/plan:**` field, and `skills/next/SKILL.md:250` depends on it having happened, with
 no fallback when it has not. The omission is easy to make: the field is not a `##` section, and the
 cell inherited the section-shaped framing of the prompt's own Scope sentence at `agents/shaper.md:24`.
-Record: `issues/260813-2009_o_the-shaper-writes-cell-enumerates-two-of-three-in-place-record-edits.md`
+Record: `260813-2009_*_the-shaper-writes-cell-enumerates-two-of-three-in-place-record-edits.md`
 
 **4. The `shaper` Writes cell states the backlog promotion unconditionally.**
 `agents/shaper.md` "An entry is promoted whole or not at all" gives a second branch in which the
 entry is left untouched: no rename, no `Promoted:` line. Locations written are the same on either
 branch, so scope is not misrepresented; what is lost is the guarantee that a closed backlog entry
 means the entry became the Circle rather than one of its ideas did.
-Record: `issues/260813-2009_o_the-shaper-writes-cell-states-the-backlog-promotion-unconditionally-while-the-prompt-conditions-it.md`
+Record: `260813-2009_*_the-shaper-writes-cell-states-the-backlog-promotion-unconditionally-while-the-prompt-conditions-it.md`
 
 ### Self-consistency of a line about staleness (`CLAUDE.md`) — 1 Low
 
@@ -95,7 +95,7 @@ Record: `issues/260813-2009_o_the-shaper-writes-cell-states-the-backlog-promotio
 by 30 588 bytes, a `wc -c` over three rule files that any rule edit moves — the same decay the
 sentence cites for the two figures it deleted, which had each drifted 5 796 bytes. The proportion
 that follows it ("about a third") carries the meaning and survives a rule edit.
-Record: `issues/260813-2009_o_the-byte-budget-line-bans-a-number-and-then-states-one-two-sentences-later.md`
+Record: `260813-2009_*_the-byte-budget-line-bans-a-number-and-then-states-one-two-sentences-later.md`
 
 ## What was checked and holds
 
@@ -163,4 +163,4 @@ dispatch-parameter table is the natural home for 3 and 4.
 
 ---
 
-**Reconciled 260813-2258.** Five findings filed, two closed and three still open. Both closures re-checked at HEAD `c0e4219` in `README-agents.md:25`: the shaper's Writes cell now names the `**Active spec/plan:**` head field, and the backlog-promotion clause now carries the single-idea condition and the untouched-and-reported-back branch. The three open findings (the 30 588-byte figure, the tuning-table preamble, the `orchestrator.maxTurns` row) were each re-verified as still present in `CLAUDE.md:65` and `README.md:104`, `:112`.
+**Reconciled 260813-2258-reconciliation.md.** Five findings filed, two closed and three still open. Both closures re-checked at HEAD `c0e4219` in `README-agents.md:25`: the shaper's Writes cell now names the `**Active spec/plan:**` head field, and the backlog-promotion clause now carries the single-idea condition and the untouched-and-reported-back branch. The three open findings (the 30 588-byte figure, the tuning-table preamble, the `orchestrator.maxTurns` row) were each re-verified as still present in `CLAUDE.md:65` and `README.md:104`, `:112`.

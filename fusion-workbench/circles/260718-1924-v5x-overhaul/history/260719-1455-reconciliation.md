@@ -1,11 +1,11 @@
-# Reconciliation — 260719-1455 (Circle E-rest final, domain=code)
+# Reconciliation — 260719-1455-reconciliation.md (Circle E-rest final, domain=code)
 
 **Circle:** `260718-1924-v5x-overhaul` (stays active — B-rest). **Scope:** verify E-rest docs+release tracking against the live tree; produce the three-edge Coherence verdict for E-rest's Directive.
 
 ## Counts
 
 - **Plans reviewed:** 1 E-rest plan (+ spec, master plan, Circle-D plan as context). **Updated:** 1 (`_p_`→`_c_`).
-- **Issues reviewed:** 4 Circle issues + 24 shared. **Updated:** 1 (`260717-1740` `_o_`→`_c_`).
+- **Issues reviewed:** 4 Circle issues + 24 shared. **Updated:** 1 (`260717-1740_*_preexisting-readme-drift-agent-count-test-count-rule-file-count.md` `_o_`→`_c_`).
 - **Decisions reviewed:** 1 Circle + 3 shared. **Updated:** 0.
 - **New issues filed:** 0.
 
@@ -20,7 +20,7 @@ Everything the session claimed is true on disk — no marked-done-but-not, no do
 
 ### Closed in this pass
 
-- **`260717-1740` (shared)** — pre-existing README drift (agent count / test count / rule-file count). All three items verified fixed (`README.md:3` "16 agents"; `# 30 tests` annotation gone; "exactly one rule file" replaced). The E-rest plan (line 58) flagged it closable once E-rest landed. `_o_`→`_c_`.
+- **`260717-1740_*_preexisting-readme-drift-agent-count-test-count-rule-file-count.md` (shared)** — pre-existing README drift (agent count / test count / rule-file count). All three items verified fixed (`README.md:3` "16 agents"; `# 30 tests` annotation gone; "exactly one rule file" replaced). The E-rest plan (line 58) flagged it closable once E-rest landed. `_o_`→`_c_`.
 
 ### Expected deferral (not a discrepancy)
 

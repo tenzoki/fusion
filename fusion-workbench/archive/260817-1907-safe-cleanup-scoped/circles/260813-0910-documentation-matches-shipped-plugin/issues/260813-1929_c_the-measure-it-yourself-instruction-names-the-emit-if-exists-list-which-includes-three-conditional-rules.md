@@ -30,7 +30,7 @@ The indentation is exactly what the enumeration lint keys on, and it says so at 
  *  makes the always-on set parseable without a shell interpreter. */
 ```
 
-The plan carried the word (`planning/260813-1820_o_…:116`, "the five files that `bin/fusion-rules` emits unindented") and the step-2 history carried it (`history/260813-1915-coder-…:84`, "the six paths `bin/fusion-rules coder` emits"). It was lost only in the shipped sentence.
+The plan carried the word (`260813-1820_*_…:116`, "the five files that `bin/fusion-rules` emits unindented") and the step-2 history carried it (`260813-1915-coder-…:84`, "the six paths `bin/fusion-rules coder` emits"). It was lost only in the shipped sentence.
 
 ## Scope
 

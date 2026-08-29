@@ -29,7 +29,7 @@ New defects filed: 2, both in this Circle's issue store.
 
 ## The plan
 
-`260816-1915_c_the-compliance-guard-becomes-observation-only.md` — every one of the 18 tasks
+`260816-1915_*_the-compliance-guard-becomes-observation-only.md` — every one of the 18 tasks
 landed. Four markers were stale and are corrected: steps **7b** (`6890ea2`) and **15**
 (`9ae7974`) carried no `[DONE]`, the amendment's **step 16** (`5763550`) carried none at all, and
 the header still read `Approved`. The file is now `**Status:** Complete` and its marker is `_c_`.
@@ -45,14 +45,14 @@ plan's own `## Reconciliation Log`.
 
 ## Issues closed on verified evidence (3)
 
-- **`260816-2123`** — the `CLAUDE.md` citation lint. Closed on the remedy the record itself
+- **`260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`** — the `CLAUDE.md` citation lint. Closed on the remedy the record itself
   recommended and the user chose: the curator pass ran inside the Circle as step 16. Verified by
   running the gate, not by reading the diff — 34 cases green.
-- **`260816-2317`** — the dangling set that grew to four at step 7b, and the Layout row that went
+- **`260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`** — the dangling set that grew to four at step 7b, and the Layout row that went
   false with it. Closed on both halves: the two new paths are gone *and* the row was rewritten
   rather than repaired at its paths, which is the half no lint can see. Each of the four false
   prose statements was checked individually at `CLAUDE.md:30`.
-- **`260817-1032`** — the growth baselines. Closed because its own `## What was done instead` is
+- **`260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`** — the growth baselines. Closed because its own `## What was done instead` is
   what landed: `TEST_LINE_BASELINE` moved alone, and
   `hooks/lib/__tests__/surface-growth-bound.test.ts:112-181` carries the argument and cites the
   record by path at `:174`.
@@ -86,14 +86,14 @@ omission: the reviewers filed cleanly.
 
 ## New defects (2)
 
-- **`260817-1417_o_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`**
+- **`260817-1417_*_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`**
   The plan's `## Where this Circle stops` names this Circle's review pass as a precondition of the
   tag. Turn 3 had no review pass. `bin/fusion-review-coverage --since 3d41d4a` reports
   `uncovered=9`; six touch shipped files, 35 files between them, and `v10.0.0` points at one of
   the six. This is **not** the coverage-policy question — that is answered
   (`shared/decisions/260815-2109_a_*`, options 3 then 1, coverage advisory) and was followed here.
   It is the plan's own clause, unmet and unrecorded until now.
-- **`260817-1417_o_one-commit-in-this-circles-range-is-written-in-german-while-the-artifact-language-is-en.md`**
+- **`260817-1417_*_one-commit-in-this-circles-range-is-written-in-german-while-the-artifact-language-is-en.md`**
   `9ae7974` is written in German. The project's artifact language is `en`, and
   `rules/fusion-workbench-conventions.md` `## Project language` names commit messages as the
   worked case that settled the rule. One of 21 in this range. Low; not rewritable, since the
@@ -103,11 +103,11 @@ omission: the reviewers filed cleanly.
 
 Both are `_a_` and unimplemented, and both were load-bearing for this pass:
 
-- `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+- `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
   — its option 3, the filter of the uncovered set to shipped-file commits, is not in
   `bin/fusion-review-coverage`, so this pass split the nine by hand. Its own text predicted that
   an unfiltered number "will be argued with every time it fires, and will lose".
-- `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+- `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
   — renaming the plan `_p_` → `_c_` leaves 33 workbench citations naming a marker it no longer
   carries. Five of the 33 were already stale at `_o_` before this pass, so the rot predates the
   rename. No lint breaks: `reference-resolution-lint.test.ts` scans the plugin's shipped text and
@@ -121,5 +121,5 @@ favour, recorded here so the re-measurement has something to read.
 ## Coherence
 
 The three-edge verdict is written to the orchestrator's session history file,
-`circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`
+`260816-1841-orchestrator-session.md`
 `## Coherence`, not here.

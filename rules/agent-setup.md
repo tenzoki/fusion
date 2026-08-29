@@ -1,6 +1,6 @@
 # Agent Setup Contract
 
-**Provenance:** circles/260718-1924-v5x-overhaul
+**Provenance:** 260718-1924-v5x-overhaul
 
 This rule is the single authoring home for what every agent's Setup step means. Your
 prompt's Setup runs three bootstrap commands in order: `fusion-workbench-root` (locate
@@ -51,7 +51,7 @@ If a profile you expect is absent, note the absence (in your history file if you
 and proceed.
 
 The full user-facing style contract, `user-facing-output.md`, is emitted only to the agents
-whose output the user reads directly (gate 260827-0910). If you did not receive it, your
+whose output the user reads directly (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). If you did not receive it, your
 report's audience is the orchestrator that dispatched you: lead with the outcome, keep the
 `Verification:` line where your prompt mandates one, and skip decorative structure — a
 report is data for a dispatcher, not a page for a reader.

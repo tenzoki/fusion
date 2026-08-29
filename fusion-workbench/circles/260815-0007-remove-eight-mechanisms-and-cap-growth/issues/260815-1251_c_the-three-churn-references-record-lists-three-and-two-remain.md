@@ -2,7 +2,7 @@
 
 ---
 
-`260815-1206_o_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md` is open and
+`260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md` is open and
 names three surviving churn references. Its third, `skills/help/SKILL.md:106`, was struck by
 `04ea182` eleven minutes after the record was filed. The record was not annotated, so a reader
 acting on it goes looking for a line that is not there and, more importantly, cannot tell from the
@@ -12,10 +12,10 @@ record which of the three are still work.
 
 **Severity:** Low — one append to one record.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1251-coderev-turn-2-build-churn-and-stash.md`)
+**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`260815-1251-coderev-turn-2-build-churn-and-stash.md`)
 **Owner:** whoever next touches the record; the fix is an append, not a transition
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1206_o_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`
-**Cross-references:** `issues/260815-0803_o_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md` — the same `.gitignore` block now carries two stale exceptions
+**Affects:** `260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`
+**Cross-references:** `260815-0803_*_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md` — the same `.gitignore` block now carries two stale exceptions
 
 **Verified 2026-08-15 at HEAD `5d29b6d`.** `grep -rniI churn skills/help/SKILL.md` returns nothing.
 
@@ -46,12 +46,12 @@ gives the mechanism for exactly this: append below the existing content. This re
 note rather than a `Resolved:` footer and a `_c_` rename, since two thirds of it is live.
 
 It is also the third time in two Turns that this Circle has produced a record whose subject moved
-under it, which is the class `shared/issues/260810-0819` tracks and which the two Turn-1 reviews
+under it, which is the class `260810-0819` tracks and which the two Turn-1 reviews
 both named as the Circle's dominant defect shape.
 
 ## What it would take
 
-Append to `260815-1206_o_…`:
+Append to `260815-1206_*_…`:
 
 ```
 ---
@@ -63,17 +63,17 @@ Leave the marker `_o_`.
 
 ## Related
 
-- `260815-1206_o_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`
-- `260815-0803_o_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md` —
+- `260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`
+- `260815-0803_*_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md` —
   the same `.gitignore` block, filed by `ontorev` in Turn 1; it now carries **two** stale
   exceptions, and step 11 adds a third when `bin/fusion-state-drift` goes
-- `history/260815-1217-ontocoder-step5-churn-configuration-leaves.md`
+- `260815-1217-ontocoder-step5-churn-configuration-leaves.md`
 
 ---
 
 Resolved: step 9 performed the append this record prescribed, and widened it by one. The note
-appended to `260815-1206_o_…` records item 3's resolution in `04ea182` as asked, and item 2's
+appended to `260815-1206_*_…` records item 3's resolution in `04ea182` as asked, and item 2's
 resolution in step 9 itself, which rewrote the plugin description for the domain values and dropped
 the `churn detection` clause in the same edit — the sequencing both records asked for. Item 1
-(`.gitignore:39`) stands, with the reason it is being held for one sweep, so `260815-1206_o_…` keeps
+(`.gitignore:39`) stands, with the reason it is being held for one sweep, so `260815-1206_*_…` keeps
 its `_o_` marker.

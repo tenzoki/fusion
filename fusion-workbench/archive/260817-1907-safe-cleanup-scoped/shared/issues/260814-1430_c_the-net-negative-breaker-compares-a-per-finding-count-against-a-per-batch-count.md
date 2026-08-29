@@ -43,8 +43,8 @@ name says.
 
 **Affects:** `agents/orchestrator.md` Step 3d, the Net-negative progress row.
 **Cross-references:** this Circle's Turn log in
-`circles/260801-1244-curator/_t_circle.md`; the Turn-3 review
-`circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`.
+`260801-1244-curator`; the Turn-3 review
+`260814-1419-coderev-curator-turn-3.md`.
 
 ---
 **Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). The claim holds. Stays open.**
@@ -64,7 +64,7 @@ its name says, and it is a stronger statement than "the threshold is set too low
 
 This Circle's own numbers are the worked case and the record states them correctly: 3/7, 2/3, 3/6,
 with every Turn's findings closed by the next Turn's single task. Verified against the Turn log in
-`circles/260801-1244-curator/_t_circle.md` and against `agentstate.yaml`'s `work_queue`, where T5
+`260801-1244-curator` and against `agentstate.yaml`'s `work_queue`, where T5
 carries "The seven Turn-1 review findings" and T6 "The three Turn-2 review findings" as one entry
 each.
 
@@ -74,7 +74,7 @@ in one sentence, and separating them matters for whoever fixes it. The compariso
 is a design fault in `agents/orchestrator.md:600`. The check not being performed at a Turn boundary
 where its condition held is an execution fault of this session, and it is the same shape as the
 Turn-3 bookkeeping gap filed as
-`circles/260801-1244-curator/issues/260814-1450_o_the-turn-3-bookkeeping-says-no-review-ran-in-the-commit-that-landed-the-review.md`.
+`260814-1450_*_the-turn-3-bookkeeping-says-no-review-ran-in-the-commit-that-landed-the-review.md`.
 Fixing the metric will not make the check run.
 
 **`inference:`** the record's candidate 1, filed against closed both per finding, is the shape that

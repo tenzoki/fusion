@@ -4,9 +4,9 @@ Two installed copies report the same version and differ in which bin/ helpers th
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** analyst, running the measurement commissioned by `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
+**Filed by:** analyst, running the measurement commissioned by `260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
 **Affects:** `.claude-plugin/plugin.json`, `bin/fusion-prose-metric`, the release process in `CLAUDE.md` `## Release process`
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 3, which hit this and worked around it; `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`, a different gap in the same program
+**Cross-references:** `260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 3, which hit this and worked around it; `260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`, a different gap in the same program
 
 ---
 
@@ -36,7 +36,7 @@ Two consequences, and the second is the one that outlives this program.
 
 **A record that names a helper cannot say which installations can run it.** The
 measurement protocol at
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`
+`260820-2354-prose-register-measurement-protocol.md`
 makes `bin/fusion-prose-metric` binding: "It is the authoritative count. No hand count and
 no `grep` line substitutes for it, in either window." A session running from an installed
 copy at 10.4.0 cannot obey that sentence and has nothing to check against, because the
@@ -73,9 +73,9 @@ Three routes, and they are not exclusive.
 **Verified at HEAD `084c626`** by the four commands in the list above.
 
 ---
-Also seen: 260822-0026 by orchestrator — reached the same root nine minutes earlier from the
+Also seen: 260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md by orchestrator — reached the same root nine minutes earlier from the
 briefing's own aside, and filed as
-`shared/issues/260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`.
+`260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`.
 That record is now closed in favour of this one, which checks each fact separately and clears
 the installer. Nothing from it is lost; its remedy was the same, to cut a release under
 `CLAUDE.md` `## Release process` and check that step's four version surfaces together with the
@@ -91,9 +91,9 @@ resolves to the `-en` variant because the requested language's file is absent. V
 between the installed copy and the work tree.
 
 This paragraph exists because folding two records into one dropped it. The closed record
-`shared/issues/260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`
+`260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`
 carried it, this record did not, and the closure note asserted that nothing was lost. Found by
-`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`.
+`260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`.
 
 **Consequence for the remedy: it does not change.** One release closes both halves. What changes is
 the case for cutting one, because a helper nothing calls is a weaker argument than a helper every

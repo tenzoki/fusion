@@ -4,9 +4,9 @@
 
 **Severity:** Low — same pathological filename shape as its parent, and the same reachability argument bounds it
 **Domain:** code
-**Filed by:** orchestrator, from a finding the T8 executor reported outside the files it was scoped to (session `260810-0844`, Turn 4)
+**Filed by:** orchestrator, from a finding the T8 executor reported outside the files it was scoped to (session `260810-0844-orchestrator-session.md`, Turn 4)
 **Affects:** `bin/fusion-plane` — `JQ_REBUILD_MAP`, where it applies `stable_key` to a key extracted from a Plane issue body
-**Cross-references:** commit `205ae06` (which bound the other two derivations to a recorded map format); `shared/issues/260810-0458_o_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md` (the parent)
+**Cross-references:** commit `205ae06` (which bound the other two derivations to a recorded map format); `260810-0458_*_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md` (the parent)
 
 ---
 

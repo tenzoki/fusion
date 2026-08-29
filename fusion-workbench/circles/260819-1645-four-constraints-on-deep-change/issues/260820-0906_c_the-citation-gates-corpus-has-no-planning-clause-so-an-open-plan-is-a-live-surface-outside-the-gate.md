@@ -3,8 +3,8 @@ The citation gate's corpus has no `planning/` clause, so an open plan is a live 
 ---
 
 **Domain:** code
-**Filed by:** reconciler (reconciliation 260820-0830, HEAD `04db0b0`)
-**Related:** `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md` — the same constant, the opposite direction
+**Filed by:** reconciler (reconciliation 260820-0830-reconciliation.md, HEAD `04db0b0`)
+**Related:** `260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md` — the same constant, the opposite direction
 
 ---
 

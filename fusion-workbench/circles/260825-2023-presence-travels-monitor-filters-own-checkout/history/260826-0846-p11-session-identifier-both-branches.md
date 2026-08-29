@@ -6,12 +6,12 @@
 **Checkout:** 5e8248d7
 **Status:** Complete
 **Task:** P-11, Turn 2, step 11 of
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
 
 ## What the step asked
 
 Two independent conditionals, each on its own measured answer, from
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`.
+`260825-2214-can-a-hook-obtain-the-session-identifier.md`.
 Both came back positive, so both branches were taken.
 
 ## Branch 2 — `session_id` on the guard log's rows
@@ -90,7 +90,7 @@ and how `<ID>` is extended, the field in the event schema block, and a sentence 
 
 The plan's note reasoned that a resumed session keeps its history file while receiving a fresh
 `session_id`, so the field might buy little. The correction is
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0805_*_the-resumption-measurement-answers-for-claude-codes-resume-and-the-plan-asked-about-fusions.md`,
+`260826-0805_*_the-resumption-measurement-answers-for-claude-codes-resume-and-the-plan-asked-about-fusions.md`,
 and it runs the other way. A fusion resume is not `claude --resume`: it is a NEW Claude Code
 session that finds `agentstate.yaml` and carries on with `session.history_file` held fixed. So
 two processes share one `history_file` and carry two `session_id` values. The two fields do not
@@ -121,9 +121,9 @@ Three, all from the same cause: the step's file scope had no room for the surfac
 branches touched. Line and byte budget were not the constraint in any of the three — 36 hook-test
 lines and 431 `agents/` bytes went unspent.
 
-- `260826-0846_o_a-fourth-sessionstart-command-lands-and-four-prose-sites-still-say-there-are-three.md`
-- `260826-0847_o_the-session-id-row-assertion-sits-in-the-state-load-suite-because-that-was-the-only-permitted-file.md`
-- `260826-0848_o_the-fourth-sessionstart-command-is-asserted-by-nothing-and-its-own-suite-warns-about-exactly-that.md`
+- `260826-0846_*_a-fourth-sessionstart-command-lands-and-four-prose-sites-still-say-there-are-three.md`
+- `260826-0847_*_the-session-id-row-assertion-sits-in-the-state-load-suite-because-that-was-the-only-permitted-file.md`
+- `260826-0848_*_the-fourth-sessionstart-command-is-asserted-by-nothing-and-its-own-suite-warns-about-exactly-that.md`
 
 ## Not done, deliberately
 

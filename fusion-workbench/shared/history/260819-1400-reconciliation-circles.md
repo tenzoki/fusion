@@ -75,13 +75,13 @@ mechanism is not a precondition*).
 
 | Record | Live or abandoned | Why |
 |---|---|---|
-| `260817-1505` the curator and its skill still say a guard configuration can deny a write | **Live — the obligation the `_b_` is made of** | This is the one unmet clause of the Directive. `agents/curator.md:212` and `skills/curate/SKILL.md:110` are byte-unchanged and neither file has been opened since the closure, across four releases. Every other Directive clause verifies at HEAD. |
-| `260816-2320` two of the write trace's four tools reach no integration case | **Live, and the one that most binds a deep change** | `MultiEdit`/`NotebookEdit`/`notebook_path` appear in the test tree once, as matcher entries. The `guard_allow` row is now the released product's only output on the write path, named to users as covering all four tools. `guard-harness.ts` was edited twice since without the four cases being added. |
-| `260817-1507` the Turn-budget helper's authoritative header scopes its stderr to dropped keys | **Live** | `bin/fusion-turn-budget:13-15` unchanged. Its two siblings were widened by `01932d6` and kept the widening through a later rewrite; this is the one left behind, and `CLAUDE.md` designates it authoritative. |
-| `260817-1508` the archive skill names three retired event types and omits both live ones | **Live, and now a second miss** | `skills/archive/SKILL.md:136` unchanged. `06ab15b` opened the file two days after closure from another direction and stopped short of the same line, as `1fb3f32` had. |
-| `260816-2319` the `answer`-site case cannot fail on the violation its describe names | **Live, cheapest of the set** | Unchanged; no commit has touched the file. The remedy is a comment, and the record already contains the `inference:`-marked reasoning it would state. |
-| `260817-1509` no test pins the repeat-to-the-user mandate | **Live, preventive, lowest priority** | `turn-budget-lint.test.ts` still returns zero hits for `diagnostic`/`stderr`/`repeat`. The prompt text at HEAD is correct; nothing holds it correct. |
-| `260817-1502` a sub-agent left renames staged and the next commit absorbed them | **Live, widest blast radius** | A defect in fusion's own commit protocol, not in a run. Filed twice independently and both filings open. Its remedy is undecided among three options, one of which changes what sub-agents may do — so it wants a decision record before a fix. |
+| `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` the curator and its skill still say a guard configuration can deny a write | **Live — the obligation the `_b_` is made of** | This is the one unmet clause of the Directive. `agents/curator.md:212` and `skills/curate/SKILL.md:110` are byte-unchanged and neither file has been opened since the closure, across four releases. Every other Directive clause verifies at HEAD. |
+| `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md` two of the write trace's four tools reach no integration case | **Live, and the one that most binds a deep change** | `MultiEdit`/`NotebookEdit`/`notebook_path` appear in the test tree once, as matcher entries. The `guard_allow` row is now the released product's only output on the write path, named to users as covering all four tools. `guard-harness.ts` was edited twice since without the four cases being added. |
+| `260817-1507_*_the-turn-budget-helpers-authoritative-header-still-scopes-its-stderr-to-dropped-keys.md` the Turn-budget helper's authoritative header scopes its stderr to dropped keys | **Live** | `bin/fusion-turn-budget:13-15` unchanged. Its two siblings were widened by `01932d6` and kept the widening through a later rewrite; this is the one left behind, and `CLAUDE.md` designates it authoritative. |
+| `260817-1508_*_the-archive-skills-event-log-description-names-three-retired-event-types-and-omits-both-live-ones.md` the archive skill names three retired event types and omits both live ones | **Live, and now a second miss** | `skills/archive/SKILL.md:136` unchanged. `06ab15b` opened the file two days after closure from another direction and stopped short of the same line, as `1fb3f32` had. |
+| `260816-2319_*_the-answer-site-case-in-hook-fail-open-cannot-fail-on-the-violation-its-describe-block-names.md` the `answer`-site case cannot fail on the violation its describe names | **Live, cheapest of the set** | Unchanged; no commit has touched the file. The remedy is a comment, and the record already contains the `inference:`-marked reasoning it would state. |
+| `260817-1509_*_no-test-pins-the-repeat-to-the-user-mandate-that-already-shipped-narrow-once.md` no test pins the repeat-to-the-user mandate | **Live, preventive, lowest priority** | `turn-budget-lint.test.ts` still returns zero hits for `diagnostic`/`stderr`/`repeat`. The prompt text at HEAD is correct; nothing holds it correct. |
+| `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` a sub-agent left renames staged and the next commit absorbed them | **Live, widest blast radius** | A defect in fusion's own commit protocol, not in a run. Filed twice independently and both filings open. Its remedy is undecided among three options, one of which changes what sub-agents may do — so it wants a decision record before a fix. |
 | `260817-1417` one commit in the range is written in German | **Repair abandoned by construction; the convention question is live and unowned** | `9ae7974` is published under three tags and will not be rewritten; all 38 commits since are English. What stays open is whether anything should catch the next one, which is a decision misfiled as a defect — see below. |
 
 ### Is anything the Closure note claims now false?
@@ -91,12 +91,12 @@ terminal and **nothing in it was edited**. Four things a reader should not take 
 
 1. **Two citations no longer resolve, and one of them is load-bearing.** The Grounding snapshot
    names three decisions *"this Circle executes"*. One of them,
-   `shared/decisions/260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`,
+   `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`,
    is not in the live store — it was archived on **2026-08-17**, the same day the Circle closed,
    by the `260817-1907-safe-cleanup-scoped` pass, and now sits at
-   `archive/260817-1907-safe-cleanup-scoped/shared/decisions/260809-1224_i_…`. It is cited three
+   `archive/260817-1907-safe-cleanup-scoped/260809-1224_*_…`. It is cited three
    times in the record. The `## Dependencies` lineage citation
-   `circles/260801-1244-guard-bash-inspection` was archived in the same pass.
+   `260801-1244-guard-bash-inspection` was archived in the same pass.
 2. **The activation proposal asserts something that stopped being true a day later.** It states
    *"Dependencies: all closed … Each was resolved to an existing directory"* and names the three,
    one of which no longer resolves. That was a measurement taken on 2026-08-16 and correct then;
@@ -106,11 +106,11 @@ terminal and **nothing in it was edited**. Four things a reader should not take 
    `hooks/lib/__tests__/sentence-identifier-containment.test.ts` was added in v10.1.0. The suite
    was not run in this pass, so the pass/fail half is not re-asserted either way.
 4. **"Six defects stay open by user decision" undercounts the store, and one stamp is ambiguous.**
-   Eight records are open. `260817-1502` is named elsewhere in the note (Artifact point 3), but
+   Eight records are open. `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` is named elsewhere in the note (Artifact point 3), but
    `260817-1417` (German commit) is named nowhere in the closure note — and the `## Turn log`
    writes *"Filed as `260817-1417`, closed in Turn 4"* against the bare stamp, which two records in
    this store carry. A reader resolving that citation lands on the closed twin
-   (`260817-1417_c_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`)
+   (`260817-1417_*_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`)
    and concludes the stamp is disposed of.
 
 Everything else in the note verifies: `hooks/guard.ts` is 223 lines and reaches no verdict on any
@@ -129,18 +129,18 @@ never edited, which removes every closed Circle from any migration set"*). Do no
 
 Four things, in the order they would bite.
 
-1. **The guard's only remaining product is untested on half its inputs.** `260816-2320`. Any change
+1. **The guard's only remaining product is untested on half its inputs.** `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`. Any change
    to `extractFilePath` or the `answer` call around it is verified by a suite that exercises `Edit`
    and Bash and nothing else, while four tools are documented as covered.
-2. **The one unreached Directive clause is still unreached.** `260817-1505`. If a deep change
+2. **The one unreached Directive clause is still unreached.** `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`. If a deep change
    rewrites agent prompts, these two sentences are already known-wrong and already scoped; fixing
    them there costs nothing and closes the `_b_`'s stated shortfall.
-3. **The staged-index defect will fire during the change itself.** `260817-1502`. Reconcilers and
+3. **The staged-index defect will fire during the change itself.** `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md`. Reconcilers and
    coders stage renames as ordinary work; the orchestrator's next commit absorbs them. This pass
    used plain `mv` throughout for exactly that reason. A long session with many sub-agent dispatches
    is the condition, not the exception.
 4. **The growth bounds are the only mechanism pricing additions to shipped text, and a baseline
-   raise is undetectable.** `260815-1942`, in the sibling Circle. A deep change that adds prompt or
+   raise is undetectable.** `260815-1942_*_nothing-detects-a-raised-growth-baseline-and-the-only-bound-on-one-is-a-comment.md`, in the sibling Circle. A deep change that adds prompt or
    rule text meets these bounds; the way out of a red bound is a cut, and nothing distinguishes a
    cut from a raised baseline in a diff.
 
@@ -158,7 +158,7 @@ Every path citation in all eleven `_S_circle.md` records was resolved against th
 not resolve, in three classes:
 
 **Marker drift (11).** A citation written with a literal marker whose target has since transitioned
-— `shared/decisions/260807-1515_o_…` now `_i_`, `shared/backlog/260811-0826_o_…` now `_c_`, and nine
+— `260807-1515_*_…` now `_i_`, `260811-0826_*_…` now `_c_`, and nine
 more. The correct form is the wildcard `_*_`; `rules/fusion-workbench-conventions.md` `## Marker
 globs` explains why the underscore makes it safe. Three open records in the Circle stores already
 carry this class (`260814-1419`, `260815-0804`, `260815-1247`) and all three stay open.
@@ -172,7 +172,7 @@ the two passes it took to satisfy the *shipped-text* citation lint; the workbenc
 was never in scope.
 
 **Wrong store (1).** `circles/260815-0007-…/_c_circle.md` cites
-`shared/issues/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`.
+`260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`.
 The record exists, in `shared/decisions/`, at `_s_`.
 
 **Why no gate sees any of this.** `hooks/lib/__tests__/reference-resolution-lint.test.ts` scans the
@@ -190,7 +190,7 @@ One record, surfaced rather than moved. A relocation between stores is the user'
 vocabulary changes with the store (`_o_/_p_/_c_/_d_` → `_o_/_a_/_i_/_d_/_s_`), and this pass does
 not perform it.
 
-- `circles/260816-1741-guard-becomes-observation-only/issues/260817-1417_o_one-commit-in-this-circles-range-is-written-in-german-while-the-artifact-language-is-en.md`
+- `260817-1417_*_one-commit-in-this-circles-range-is-written-in-german-while-the-artifact-language-is-en.md`
   — its own `## What to do` reads *"Nothing to this commit. What is worth deciding is whether
   anything should catch the next one"*, then names two candidate answers and chooses neither. That
   is decide-and-record, not go-fix-it. Under the Origin Rule it would land in that Circle's own
@@ -198,8 +198,8 @@ not perform it.
 
 Two further records are defects whose *remedy* needs a decision first, and are correctly filed as
 defects because each states a measured malfunction. Named here so nobody works them by picking an
-option out of a defect record: `260817-1502` (three remedies, one of which changes what sub-agents
-may do) and `260815-1633_o_eight-shipped-surfaces…` (its open question — is a code comment in scope
+option out of a defect record: `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` (three remedies, one of which changes what sub-agents
+may do) and `260815-1633_*_eight-shipped-surfaces…` (its open question — is a code comment in scope
 for a presentational collapse — is unanswered).
 
 ---
@@ -220,7 +220,7 @@ which a sibling reconciler held. The three below are stated in filable form.
    one `_o_`; `_b_circle.md` `## Turn log` Turn 3 cites the bare stamp. Severity: Low. Scope: the
    citation grammar in `rules/fusion-workbench-conventions.md` and `helpers/citation-scan.ts`.
 3. **A session history file left at `**Status:** In progress` after the session ended.**
-   `shared/history/260815-2147-orchestrator-session.md:5`. Found while closing
+   `260815-2147-orchestrator-session.md:5`. Found while closing
    `circles/260801-1244-curator/issues/260814-2017_*`, whose part 1 was the same class on a
    different file. Severity: Low. Scope: `shared/history/`.
 
@@ -242,7 +242,7 @@ file** — this session's history is closed and committed.
   the archive sweep and seen by no gate.
 - **Artifact↔Directive** — the eleven Circles' Directives are all terminal and none is contradicted
   by the tree at HEAD. One Directive clause remains deliberately unreached
-  (`260816-1741-guard-becomes-observation-only`, record `260817-1505`), which is what its Bounded
+  (`260816-1741-guard-becomes-observation-only`, record `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`), which is what its Bounded
   Closure is for, and four releases have shipped over it since without it being taken. Commits
   `d0f13fa..e435f03` move consistently with the closed Directives; none is orthogonal or contrary.
 - **Grounding↔Directive** — 4 active decisions across the Circle stores (`_o_`×3, `_a_`×1). None
@@ -250,7 +250,7 @@ file** — this session's history is closed and committed.
   (`circles/260801-1244-curator/decisions/260814-1915_*`, cited by `260814-1850`, `260814-2022` and
   `260814-2017` as their closing condition). One is answered and unrealised, with its operative half
   — the obligation on whoever deletes a Circle to annotate the surviving references — written into
-  no rule file, prompt or skill (`circles/260801-1244-guard-rules-write/decisions/260805-1548_a_…`).
+  no rule file, prompt or skill (`260805-1548_*_…`).
 
 **Rebalance recommendation:** `revise Grounding`
 

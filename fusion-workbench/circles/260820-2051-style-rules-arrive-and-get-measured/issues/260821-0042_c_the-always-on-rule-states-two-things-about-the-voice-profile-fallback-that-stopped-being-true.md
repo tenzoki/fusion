@@ -11,7 +11,7 @@ history line this rule asks for", where the rule asks for no history line at all
 
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260801-1244-curator/issues/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`
+**Cross-references:** `260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`
 
 ## How it surfaced
 

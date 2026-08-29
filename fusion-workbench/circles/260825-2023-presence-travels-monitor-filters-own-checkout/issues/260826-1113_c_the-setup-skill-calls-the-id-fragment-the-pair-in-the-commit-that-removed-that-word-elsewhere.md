@@ -18,11 +18,11 @@ field. A `session_start` short one key is not detectable afterwards — an absen
 degradation, indistinguishable from a hook that printed no line.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`
+`260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`
 (R-14, the same defect one file over, closed by the same commit);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`
+`260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`
 (R-10, the edit that wrote the sentence);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1112_*_the-setup-skill-points-at-the-orchestrator-prompt-with-an-unrooted-path-the-body-forbids.md`
+`260826-1112_*_the-setup-skill-points-at-the-orchestrator-prompt-with-an-unrooted-path-the-body-forbids.md`
 (the same sentence's other defect: the pointer that would correct this one is unreachable in a
 consuming project).
 
@@ -58,6 +58,6 @@ second costs bytes on a bounded surface; the first does not, but only works once
 rooted (see the cross-referenced record).
 
 ---
-Resolved: 260827-2020 by coder. `skills/setup/SKILL.md` Step 0i says "the identity fragment `<ID>`", states no count, points at both bullets of the rooted `$FUSION_SRC/agents/orchestrator.md` Setup step 2, and carries the one instruction the skill needed: the second bullet extends `<ID>` with the `session_id` a SessionStart hook printed, and no line means no key.
+Resolved: 260827-2020-coder-setup-skill-steps-5-18b-c4.md by coder. `skills/setup/SKILL.md` Step 0i says "the identity fragment `<ID>`", states no count, points at both bullets of the rooted `$FUSION_SRC/agents/orchestrator.md` Setup step 2, and carries the one instruction the skill needed: the second bullet extends `<ID>` with the `session_id` a SessionStart hook printed, and no line means no key.
 
 Revised: 260827-2103 by coder (Circle 260826-1613 Turn 2, issue `260827-2042_*_step-0i-points-at-both-bullets…`). The Resolved note above describes a two-bullet shape orchestrator Setup step 2 does not have: one bullet ("Who, which checkout, which session") defines `<ID>` and already carries `session_id`; the next is the Turn budget. Step 0i now points at that one bullet.

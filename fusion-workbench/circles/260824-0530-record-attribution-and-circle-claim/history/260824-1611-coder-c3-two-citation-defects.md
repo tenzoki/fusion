@@ -8,7 +8,7 @@ Both findings were the same shape: a pointer that resolves and does not carry wh
 
 ## Defect 1 — the override call sites cited a section that defines no override
 
-`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_both-override-call-sites-cite-a-section-that-does-not-define-the-sentence-they-must-write.md`
+`260824-1538_*_both-override-call-sites-cite-a-section-that-does-not-define-the-sentence-they-must-write.md`
 
 `skills/next/SKILL.md` Step 6.1 and `skills/setup/SKILL.md` Step 0i both sent the run to
 `agents/orchestrator.md` `## Circle head fields` for the claim field's `Overridden ` sentence, which
@@ -24,7 +24,7 @@ twice in one paragraph, so both trailing duplicates went.
 
 ## Defect 2 — the filing rule named the identity helper bare
 
-`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_the-filing-rule-names-the-identity-helper-with-no-root-no-guard-and-no-branch-for-its-absence.md`
+`260824-1538_*_the-filing-rule-names-the-identity-helper-with-no-root-no-guard-and-no-branch-for-its-absence.md`
 
 `rules/fusion-workbench-conventions.md` `### Who filed it` now names
 `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`, states the `[ -x ]` guard beside it, and adds a third

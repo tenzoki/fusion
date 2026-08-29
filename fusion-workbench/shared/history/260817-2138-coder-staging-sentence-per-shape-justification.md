@@ -7,8 +7,8 @@
 **Dispatched by:** the user, top-level (task T2)
 **Domain:** code
 **Task:** Fix two findings from the review of `82a860d..bd2db5c`, both from the same incident, in one
-change: `shared/issues/260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`
-(M1, the shipped sentence) and `shared/issues/260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md`
+change: `260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`
+(M1, the shipped sentence) and `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md`
 (L1, the source comment above it). No commit; leave the tree for the cleanup pipeline.
 
 ---
@@ -99,4 +99,4 @@ row of it.
 - `fusion-workbench/shared/issues/260817-2130_c_*.md` (Resolved note, `_o_` -> `_c_`)
 - `fusion-workbench/shared/issues/260817-2132_c_*.md` (Resolved note, `_o_` -> `_c_`)
 
-`260817-2131` (the lint gate) was out of scope and stays open. Nothing was staged or committed.
+`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the lint gate) was out of scope and stays open. Nothing was staged or committed.

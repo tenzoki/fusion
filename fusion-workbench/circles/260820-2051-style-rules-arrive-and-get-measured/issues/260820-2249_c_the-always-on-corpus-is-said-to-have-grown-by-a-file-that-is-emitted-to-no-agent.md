@@ -7,7 +7,7 @@ file is emitted to no agent, and the commit that created it made the always-on s
 
 ---
 **Found by:** shaper, in-Circle clarification run for
-`circles/260820-2051-style-rules-arrive-and-get-measured`, 2026-08-20.
+`260820-2051-style-rules-arrive-and-get-measured`, 2026-08-20.
 **Owner:** `coder` for the two record edits. No shipped file is wrong.
 **Severity:** Low-Medium. Nothing is broken today. The cost is that the denominator the pending
 measurement will be judged against is stated in the wrong direction, on the one record whose whole
@@ -15,9 +15,9 @@ remaining content is that measurement.
 **Filed in the active Circle** per the Origin Rule: the Circle's Directive is what caused this to be
 read, and one of the two carriers is the Circle's own Grounding snapshot.
 **Cross-references:**
-`shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 (its 260819-1400 reconciliation carries the claim);
-`shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
+`260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
 (the same fault in the same measurement, one file earlier).
 
 ## What the two records say
@@ -27,7 +27,7 @@ The reconciliation dated 260819-1400 on the decision record states, under *the d
 and `bin/fusion-rules` emits it", and concludes that "the repaired fraction is smaller today than
 when the caution was written".
 
-`circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md` `## Grounding snapshot`
+`260820-2051-style-rules-arrive-and-get-measured` `## Grounding snapshot`
 repeats it: "`rules/workbench-tracking.md` has been added to the emitted set since".
 
 ## What is true
@@ -85,7 +85,7 @@ State the corpus as its derivation in both, per `260816-1345`.
 ## What must not be done instead
 
 Emitting `rules/workbench-tracking.md` to make the claim true. Decision
-`shared/decisions/260816-1707_i_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`
+`260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`
 settled that it is emitted to nobody, and the emission is what the file's whole cost argument rests on.
 
 ---
@@ -93,12 +93,12 @@ Resolved: both live carriers this record names now carry a dated correction, app
 inverted claim rather than replacing it, which is what the fix direction asked for. Commit
 `b8b8f42`, plan step 15.
 
-- `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:148`
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:148`
   states the 260819-1400 growth clause as inverted, with the evidence:
   `grep -c workbench-tracking bin/fusion-rules` returns 0, and `b200902` moved text out of the
   emitted set, its own commit message recording the always-on set falling 98 874 to 95 458 bytes per
   dispatch.
-- `circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md:158` states the same for the
+- `260820-2051-style-rules-arrive-and-get-measured:158` states the same for the
   Grounding snapshot's copy of the clause.
 
 Both also carry the correction this record's own "Why this is worth a record" paragraph implies: the
@@ -110,4 +110,4 @@ Re-verified at HEAD `247abfe`: `grep -c workbench-tracking bin/fusion-rules` ret
 `bin/fusion-rules coder` emits the same six paths it did at filing time. Nothing was made true by
 emitting the file, which is what this record's "What must not be done instead" forbids.
 
-Closed by reconciler 260821-0410; log `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.
+Closed by reconciler 260821-0410; log `260821-0416-reconciliation.md`.

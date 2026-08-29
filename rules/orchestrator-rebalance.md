@@ -1,12 +1,12 @@
 # Orchestrator — rare-flow procedures
 
-**Provenance:** Partitioned out of `agents/orchestrator.md` per decision `shared/decisions/260827-1210_*_do-the-rare-orchestrator-flows-stay-in-every-sessions-context.md`; the sections' own history is that file's.
+**Provenance:** Partitioned out of `agents/orchestrator.md` per decision `260827-1210_*_do-the-rare-orchestrator-flows-stay-in-every-sessions-context.md`; the sections' own history is that file's.
 
 Read on the trigger the orchestrator's stub names, never speculatively. Each section below is the authoritative text the stub points at, verbatim from the prompt it left.
 
 ### Rebalance Gate
 
-When a Coherence-related condition triggers (the two Coherence rows of the gate-rules table above — per-Turn drift finding, decision `260827-1310`; per-Circle verdict other than `coherent`, or `coherent` with recommendation `state Directive`), the gate replaces the standard Proceed/Skip/Defer/Modify with **two gates in sequence**, each inside the three-option cap of `rules/user-facing-output.md` `## Questions and gates` (decision `260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md`, option 2). The four moves of the Coherence model — its three edges and its termination — are all reachable, and every option carries its foreclosure line. The split follows the model's own order: destination first, then the path to it.
+When a Coherence-related condition triggers (the two Coherence rows of the gate-rules table above — per-Turn drift finding, decision `260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md`; per-Circle verdict other than `coherent`, or `coherent` with recommendation `state Directive`), the gate replaces the standard Proceed/Skip/Defer/Modify with **two gates in sequence**, each inside the three-option cap of `rules/user-facing-output.md` `## Questions and gates` (decision `260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md`, option 2). The four moves of the Coherence model — its three edges and its termination — are all reachable, and every option carries its foreclosure line. The split follows the model's own order: destination first, then the path to it.
 
 **Gate 1 — does the Directive stand?** Three options, always all three:
 
@@ -21,7 +21,7 @@ When a Coherence-related condition triggers (the two Coherence rows of the gate-
 
 When the reconciler's recommendation names a move, say which gate and which option it maps to when you put Gate 1, and put every option regardless: a recommendation is an input to the question, never a reason to hide a branch (`rules/critical-stance.md` §4).
 
-The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn drift finding, decision `260827-1310`) and from Phase 3 (per-Circle reconciler verdict).
+The Rebalance gate is reachable from Phase 2 step 3c-bis (per-Turn drift finding, decision `260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md`) and from Phase 3 (per-Circle reconciler verdict).
 
 #### Rebalance bounding
 

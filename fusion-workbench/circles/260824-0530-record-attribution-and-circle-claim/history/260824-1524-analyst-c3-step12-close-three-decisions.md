@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-24 15:24
 **Agent:** analyst
-**Circle:** `circles/260824-0530-record-attribution-and-circle-claim/`
-**Plan:** `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 12
+**Circle:** `260824-0530-record-attribution-and-circle-claim`
+**Plan:** `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 12
 **Status:** Complete
 
 ## Scope
@@ -20,16 +20,16 @@ three; only the marker changed.
 
 | Record | `Implemented:` names | Marker |
 |---|---|---|
-| `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` | `3ba7a46`, `2b055a0`, `0a726b5`, `d34141c`, `12b56d1`, `9efe19f` | `_a_` to `_i_` |
-| `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md` | `2b055a0` | `_a_` to `_i_` |
-| `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` | `2b055a0` | `_a_` to `_i_` |
+| `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` | `3ba7a46`, `2b055a0`, `0a726b5`, `d34141c`, `12b56d1`, `9efe19f` | `_a_` to `_i_` |
+| `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md` | `2b055a0` | `_a_` to `_i_` |
+| `260807-0158_*_how-is-a-unique-record-filename-obtained.md` | `2b055a0` | `_a_` to `_i_` |
 
 Every hash was read against its own diff with `git show --stat` and, where the claim was about
 specific text, with `git show <hash> -- <path>`. None was inferred from a subject line.
 
 ## The third record's condition was met, and the check is stated
 
-`shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` set one condition for
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md` set one condition for
 itself and restated it in three reconciliations: it moves to `_i_` when the cite-by-full-filename
 rule lands in `rules/fusion-workbench-conventions.md` `## Filename Patterns`. It landed there in
 `2b055a0`, as one added paragraph, and that paragraph stands at HEAD in that section. Three further
@@ -41,18 +41,18 @@ half.
 ## One repair outside the three records, and why it is inside the bound
 
 The rename of `260807-0158` staled two citations that spell its old `_a_` marker, both in
-`shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
 at lines 10 and 27. `hooks/lib/__tests__/workbench-citation-lint.test.ts` failed on them, which is
 the gate working: that issue is `_o_` and therefore in the recomputed corpus.
 
 Both were re-pointed to the ratified wildcard form and nothing else in the file was touched. The
 obligation is the renaming party's by
-`shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
+`260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
 whose answer is that the lint is the whole mechanism and that a change renaming a record's marker
 carries the grep for the old name itself. The plan's acceptance forbids rewriting a pre-Circle
 record "for any other reason"; this is the reason, and the edit changes three characters in a marker
 position rather than a word of what the issue says. The precedent is
-`shared/history/260810-1205-reconciliation.md`, which describes the same operation as re-pointed
+`260810-1205-reconciliation.md`, which describes the same operation as re-pointed
 rather than rewritten.
 
 ## Verification
@@ -69,7 +69,7 @@ pass after it.
 - `260807-0158` carries a `**Status:** answered` head field. `rules/fusion-workbench-conventions.md`
   `## Decision Record Template` says to leave such a field exactly as it stands, including when
   transitioning the record. Left.
-- `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`
+- `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`
   is `_a_` with an `Answered:` line and an empty `Implemented:`, and its answer looks realised by
   `3ba7a46` (the helper's exit 4) and `2b055a0` (the two halt conditions in `### Who filed it`).
   It was not in this dispatch's scope and was not touched.

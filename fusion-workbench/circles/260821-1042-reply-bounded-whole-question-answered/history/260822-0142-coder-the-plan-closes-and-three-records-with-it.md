@@ -7,19 +7,19 @@
 **Task:** three records — repair the plan's marker-literal citations and close the plan; reconcile
 two figures for one quantity in a step log; dispose of a commit-message defect that cannot be fixed
 **Sources:**
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0116_*_the-head-room-correction-left-two-figures-for-one-quantity-in-adjacent-clauses.md`,
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0116_*_commit-e202016s-message-attributes-to-a-log-a-figure-the-log-never-carried.md`
+`260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
+`260822-0116_*_the-head-room-correction-left-two-figures-for-one-quantity-in-adjacent-clauses.md`,
+`260822-0116_*_commit-e202016s-message-attributes-to-a-log-a-figure-the-log-never-carried.md`
 
 ---
 
 ## Job 1: repair, then rename
 
-**The set was measured, not taken from the record.** `grep -rn '260821-1805_o_'` over the whole
+**The set was measured, not taken from the record.** `grep -rn '260821-1805_*_plan-reply-bounded-whole-question-answered.md'` over the whole
 workbench returned nineteen occurrences: sixteen in markdown and three in machine-written state.
 The record filed at 260821-2349 had counted fifteen across twelve files; the difference is one
 markdown occurrence added after it was filed, in
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md:20`.
+`260822-0019-orchestrator-session.md:20`.
 
 **Fourteen pointers were starred.** Marker position only, per
 `rules/fusion-workbench-conventions.md` `## Marker globs`; stamp, slug and extension untouched. One
@@ -35,11 +35,11 @@ either would have made the sentence read as a substitution of a token for itself
 They could not be treated the same way, because the citation gate's corpus reaches one and not the
 other:
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260821-2215-coderev-the-bounded-reply-circle.md:96`
+- `260821-2215-coderev-the-bounded-reply-circle.md:96`
   is a review. `inCorpus()` in `hooks/lib/__tests__/workbench-citation-lint.test.ts` admits Circle
   records, open issues, live decisions, live plans and `portfolio.md` — not reviews. It stands
   verbatim.
-- `shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md:81`
+- `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md:81`
   is an open shared issue and therefore judged. An inline code span buys no exemption — the scanner
   exempts a fenced block and a blockquote and nothing else at that level — so a verbatim `_o_` there
   would have gone red at the rename. It was rewritten in prose: the clause now names the marker
@@ -62,7 +62,7 @@ is the orchestrator's live state, and its `plan_file` now names a path that does
 the orchestrator's to correct and is named in the record's `Resolved:` note so it is not lost.
 
 **The verbosity record's half was withheld, as dispatched.**
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 keeps `_o_` and its two citations in the closed style Circle's spec were not touched, because they
 dangle only if that marker moves. The reason is stated in the `Resolved:` note: the rule-text half is
 closed and verified, nobody has observed whether a reply actually changed, and the after-measurement
@@ -70,7 +70,7 @@ that would answer it is defined and not run.
 
 ## Job 2: one clause, no new numbers
 
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md:108`
+`260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md:108`
 now reads "so none of the hook test suite's 11 lines of head-room, the figure that stood when this
 step ran, was spent." Both figures stand; the surrounding paragraph was rewrapped and nothing else
 moved.
@@ -84,7 +84,7 @@ two describe one instant.
 proposed clause also supplied the surface the 11 was computed against; the dispatch asked for one
 clause and no new numbers. So the reader is told the figures speak about different moments but
 cannot re-derive the 11. The reconciling surface still lives only in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`,
+`260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`,
 which the `Resolved:` note names so the trail exists in a record.
 
 ## Job 3: the disposition is the fix

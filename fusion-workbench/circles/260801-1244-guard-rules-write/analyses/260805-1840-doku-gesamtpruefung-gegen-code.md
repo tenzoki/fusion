@@ -27,19 +27,19 @@ Geprüft wurden: `README.md`, `README-agents.md`, `README-hooks.md`, `CLAUDE.md`
 | bin-Header, install.sh, Rest-Regeln, Templates | 120 | 12 |
 | **Gesamt** | **~530** | **46** |
 
-46 Einzelbefunde (36 verifiziert-falsch, 6 abgeleitet-falsch, 4 verdächtig), gefiled als **40 Issue-Records** in diesem Circle (`issues/260805-1840…` bis `260805-1842…`; gleichwurzelige Mehrfach-Fundstellen je ein Record). Fehlerquote rund 9 % der geprüften Aussagen.
+46 Einzelbefunde (36 verifiziert-falsch, 6 abgeleitet-falsch, 4 verdächtig), gefiled als **40 Issue-Records** in diesem Circle (`260805-1840…` bis `260805-1842…`; gleichwurzelige Mehrfach-Fundstellen je ein Record). Fehlerquote rund 9 % der geprüften Aussagen.
 
 ### Schweregrad hoch (8 Records)
 
 | Record | Kern |
 |---|---|
-| `260805-1840_o_ppd-leere-liste-steht-den-check-nicht-ab` | `protected-path-discipline.md:37-39` verspricht: leere deklarierte Liste steht den ganzen Check ab, "fail-closed included". Gemessen: Floor (`fusion-guard.json` selbst) und Fail-closed bleiben aktiv. In allen 16 Agenten jedes Konsumentenprojekts geladen. |
+| `260805-1840_*_ppd-leere-liste-steht-den-check-nicht-ab` | `protected-path-discipline.md:37-39` verspricht: leere deklarierte Liste steht den ganzen Check ab, "fail-closed included". Gemessen: Floor (`fusion-guard.json` selbst) und Fail-closed bleiben aktiv. In allen 16 Agenten jedes Konsumentenprojekts geladen. |
 | `…_o_agent-setup-fehlende-regeldatei-bricht-emission-ab` | `agent-setup.md:26` verspricht "missing files are skipped silently" — `bin/fusion-rules` bricht unter `set -e` bei fehlender Always-on-Datei mitten in der Emission ab (rc=1, ohne Meldung, mit Teilausgabe). Ausgeführt belegt. |
 | `…_o_readme-fusion-ref-beispiel-zeigt-auf-ungetaggte-version` | `README.md:26` nennt `FUSION_REF=tags/v5.3.0` — Tags beginnen bei v5.5.0; das Beispiel führt in einen 404. Einziger Befund, der eine Nutzer-Anleitung direkt bricht. |
 | `…_o_stash-manifest-neun-felder-bei-zehn` | `workbench-stash-and-lock.md` sagt dreimal "nine fields"; das eigene Schema im selben Dokument listet zehn. Wiederholung des bereits einmal korrigierten Fehlertyps. |
 | `…_o_konventionen-active-circle-nothing-else-touches-it` | "Nothing else touches it" für `.active-circle` — circle-stash, circle-pop und migrate schreiben oder löschen den Pointer. |
 | `…_o_konventionen-012-shape-verschweigt-fusion-rules-exit-3` | "same 0/1/2 exit shape" — `fusion-rules` hat selbst Exit 3 (malformes Manifest) mit anderer Bedeutung als `fusion-paths` Exit 3. |
-| `…_o_fusion-guard-template-beschreibt-top-level-merge-statt-leaf-merge` | Das an jede Konsumenten-Projektwurzel kopierte Template beschreibt die durch Entscheidung 260804-1630 ersetzte Merge-Semantik. |
+| `…_o_fusion-guard-template-beschreibt-top-level-merge-statt-leaf-merge` | Das an jede Konsumenten-Projektwurzel kopierte Template beschreibt die durch Entscheidung 260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md ersetzte Merge-Semantik. |
 | `…_o_readme-hooks-residual-walk-out-and-back-ist-geschlossen` | Die Residual-Liste führt `cd .. && cd project && rm rules/x.md` als offene Lücke — der Guard verweigert den Fall heute exakt. Auch der Forensik-Katalog trägt den stale Eintrag. |
 
 ### Schweregrad mittel (17 Records, Auswahl)
@@ -77,7 +77,7 @@ Die Guard-Doku ist in ihrer Substanz **präzise**: 226 von 229 ausgeführten Erl
 
 ## Filed Issues
 
-40 Records unter `circles/260801-1244-guard-rules-write/issues/260805-1840…`–`260805-1842…` (8 hoch, 17 mittel, 15 niedrig; Dateinamen benennen den Befund).
+40 Records unter `260805-1840…`–`260805-1842…` (8 hoch, 17 mittel, 15 niedrig; Dateinamen benennen den Befund).
 
 ## Sources
 

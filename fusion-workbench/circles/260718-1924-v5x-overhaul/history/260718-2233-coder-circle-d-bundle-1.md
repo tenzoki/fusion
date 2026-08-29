@@ -3,7 +3,7 @@
 **Date:** 2026-07-18
 **Status:** Complete
 **Circle:** 260718-1924-v5x-overhaul
-**Plan:** planning/260718-2150_p_plan-circle-d-agent-prompt-revision.md (§Bundle 1)
+**Plan:** 260718-2150_*_plan-circle-d-agent-prompt-revision.md (§Bundle 1)
 
 ## Task
 
@@ -37,7 +37,7 @@ all four, per the F1 split (pre-load bootstrap must stay inline).
 > `$OUT_REVIEW` is this session's durable record, and a history log would only
 > duplicate it.
 
-Per decision 260718-2150_a_reviewers-history-log-step: document the exception,
+Per decision 260718-2150_*_reviewers-history-log-step: document the exception,
 no `$OUT_HISTORY` step added. coder/ontocoder unaffected by F5.
 
 ## HYG-NO-REGRESS

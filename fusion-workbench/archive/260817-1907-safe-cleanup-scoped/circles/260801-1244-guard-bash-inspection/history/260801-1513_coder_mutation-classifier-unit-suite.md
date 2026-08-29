@@ -2,8 +2,8 @@
 
 **Date:** 260801-1513
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 3 only
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 3 only
 **Status:** Complete
 
 ## What was implemented
@@ -66,7 +66,7 @@ classifier**: `git worktree \` + newline + `add ../wt x` is allowed. `git switch
 `git checkout` survive only by accident, because the bare verb denies on its own.
 
 Verified by probe against both classifiers, not inferred. Filed as
-`issues/260801-1513_o_backslash-line-continuation-splits-a-command-and-hides-its-operands.md`.
+`260801-1513_*_backslash-line-continuation-splits-a-command-and-hides-its-operands.md`.
 Not fixed here: the fix is one branch in `stripData`, it widens both classifiers' deny
 surfaces, and blank-mode equivalence against the 84 git cases has to be re-checked — so it
 belongs at a gate, and step 3's remit is the test file.
@@ -100,8 +100,8 @@ a later change surfaces rather than hides:
 ## Files
 
 - `hooks/lib/__tests__/bash-mutation-guard.test.ts` — new
-- `.../issues/260801-1513_o_backslash-line-continuation-…md` — new
-- `.../planning/260801-1253_o_plan-guard-bash-inspection.md` — step 3 marked `[DONE]` with
+- `.../260801-1513_*_backslash-line-continuation-…md` — new
+- `.../260801-1253_*_plan-guard-bash-inspection.md` — step 3 marked `[DONE]` with
   the divergences and the finding
 
 `hooks/guard.ts` (step 5), `hooks/dist/` (step 8) and `.claude-plugin/plugin.json` (step 8)

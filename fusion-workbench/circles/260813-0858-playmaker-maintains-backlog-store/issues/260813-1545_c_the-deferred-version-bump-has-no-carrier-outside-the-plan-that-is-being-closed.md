@@ -4,14 +4,14 @@
 **Severity:** Medium — nothing is broken today; the release this Circle's work needs simply has nobody holding it
 **Domain:** code
 **Status:** open
-**Filed by:** reconciler (final reconciliation of session `shared/history/260813-0806-orchestrator-session.md`)
+**Filed by:** reconciler (final reconciliation of session `260813-0806-orchestrator-session.md`)
 **Affects:** `.claude-plugin/plugin.json`, and the four version surfaces `CLAUDE.md` `## Release process` enumerates
-**Cross-references:** `circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_*_the-playmaker-maintains-the-backlog-store.md` step 9; `circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md`; `shared/issues/260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
+**Cross-references:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` step 9; `260813-0910-documentation-matches-shipped-plugin`; `260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
 ---
 
 Step 9 of this Circle's plan, the bump from `8.1.0` to `8.2.0`, was deferred by the user at the
 Turn-3 release gate so that one release carries this Circle and
-`circles/260813-0910-documentation-matches-shipped-plugin/` together. The deferral is right. What
+`260813-0910-documentation-matches-shipped-plugin` together. The deferral is right. What
 is missing is the party that performs it once that condition is met.
 
 ## Where the obligation lives on disk, measured
@@ -27,7 +27,7 @@ A grep for `8.2.0` across the whole workbench returns exactly two hits:
 
 ## Why the documentation Circle does not carry it, contrary to the obvious assumption
 
-`circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md` `## Directive` says, under
+`260813-0910-documentation-matches-shipped-plugin` `## Directive` says, under
 *What this Circle is not*: "the four version surfaces all read 8.1.0" is one of three leads the
 survey investigated that "came back clean and stay closed", and "no step re-verifies them". Its
 title is *fusion's user-facing documentation agrees with the plugin at v8.1.0*.
@@ -84,9 +84,9 @@ v8.2.0 shipped on 2026-08-14, one day after this record was filed, and eleven fu
 
 1. *One live record names the bump as its own acceptance item.* Never written, and it stopped being needed: the bump landed in the ordinary release flow before any carrier was built. The failure this item guarded against did not occur.
 2. *Whoever performs it re-weighs `8.1.0 → 8.2.0` rather than carrying the number forward.* Satisfied by the release that happened — `8.2.0` is what shipped, and `CLAUDE.md` records the curator, this Circle's sibling work, as arriving at v8.2.0.
-3. *The documentation Circle's "What this Circle is not" clause about the four version surfaces is corrected or scoped.* **Moot.** `circles/260813-0910-documentation-matches-shipped-plugin/` reached Bounded Closure and was archived out of the live store on 2026-08-17 (`e59dea2`, `archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`). A terminal record inside a frozen store is history and is not edited; the clause it carries describes a premise that was true when it was written.
+3. *The documentation Circle's "What this Circle is not" clause about the four version surfaces is corrected or scoped.* **Moot.** `260813-0910-documentation-matches-shipped-plugin` reached Bounded Closure and was archived out of the live store on 2026-08-17 (`e59dea2`, `archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin`). A terminal record inside a frozen store is history and is not edited; the clause it carries describes a premise that was true when it was written.
 
-**One thing this closure does not claim.** The *shape* the record names — an obligation recorded only in the document about to be closed — was never fixed as a class. It is the same shape the Bounded Closure of `circles/260816-1741-guard-becomes-observation-only` re-measured two days later as *"a plan-stated precondition with no mechanism is not a precondition"*. This instance discharged itself; the class did not.
+**One thing this closure does not claim.** The *shape* the record names — an obligation recorded only in the document about to be closed — was never fixed as a class. It is the same shape the Bounded Closure of `260816-1741-guard-becomes-observation-only` re-measured two days later as *"a plan-stated precondition with no mechanism is not a precondition"*. This instance discharged itself; the class did not.
 
 ---
-Resolved: the deferred bump was performed. `v8.2.0` was tagged on 2026-08-14 (`cb30037`) and the manifest reads `10.3.0` at HEAD `e435f03`. Acceptance item 3 is moot — `circles/260813-0910-documentation-matches-shipped-plugin/` closed `_b_` and was archived on 2026-08-17 (`e59dea2`), so the clause that would have needed scoping now sits in a frozen store and is not edited.
+Resolved: the deferred bump was performed. `v8.2.0` was tagged on 2026-08-14 (`cb30037`) and the manifest reads `10.3.0` at HEAD `e435f03`. Acceptance item 3 is moot — `260813-0910-documentation-matches-shipped-plugin` closed `_b_` and was archived on 2026-08-17 (`e59dea2`), so the clause that would have needed scoping now sits in a frozen store and is not edited.

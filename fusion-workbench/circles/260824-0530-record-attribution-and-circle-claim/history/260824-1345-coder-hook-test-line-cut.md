@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 2026-08-24
-**Plan:** `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_o_c3-attribution-on-records-and-a-claim-on-the-circle.md`, unblocking step 8
+**Plan:** `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`, unblocking step 8
 
 ## Why
 
@@ -17,8 +17,8 @@ moves` asks for: a red bound comes down by a cut.
 
 This was that cut. **No baseline was edited**, and both of the open records the surface has standing
 against it are left open and un-pre-empted:
-`shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`, and
-`shared/decisions/260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`, which asks
+`260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`, and
+`260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`, which asks
 whether a comment line is the same kind of cost as a test line. This cut takes that second record's
 status quo as it stands — a line is a line — and is an instance of the argument it names for that
 position: a budget somebody has to spend is what makes the project decide whether a block of prose

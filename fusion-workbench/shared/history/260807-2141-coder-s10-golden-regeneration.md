@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Plan:** `shared/planning/260807-2024_o_two-language-declarations.md`, step S10
+**Plan:** `260807-2024_*_two-language-declarations.md`, step S10
 **Date:** 2026-08-07
 
 ## What was done

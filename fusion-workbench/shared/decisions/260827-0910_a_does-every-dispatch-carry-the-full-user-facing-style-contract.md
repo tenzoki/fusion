@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (direct session, conditioning-load work following `refactor/260827-0335-bookkeeping-cost-repair-plan.md`), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `rules/user-facing-output.md` (the contract whose audience this decides) · `bin/fusion-rules` (the emission list) · `rules/agent-setup.md` `## Voice profiles` (the replacement the non-audience carries) · `shared/decisions/260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md` (the same movement, one file earlier)
+**Cross-references:** `rules/user-facing-output.md` (the contract whose audience this decides) · `bin/fusion-rules` (the emission list) · `rules/agent-setup.md` `## Voice profiles` (the replacement the non-audience carries) · `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md` (the same movement, one file earlier)
 
 ---
 

@@ -6,7 +6,7 @@ Step 0i collapses `MULTIPLE-ACTIVE` to `head -1` and names one Circle arbitraril
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `skills/setup/SKILL.md:346-352`
-**Cross-references:** plan step 5 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `agents/playmaker.md`, which defines `MULTIPLE-ACTIVE` beside `MISSING-POINTER`; `skills/next/SKILL.md:120` renders both
+**Cross-references:** plan step 5 in `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `agents/playmaker.md`, which defines `MULTIPLE-ACTIVE` beside `MISSING-POINTER`; `skills/next/SKILL.md:120` renders both
 
 ---
 

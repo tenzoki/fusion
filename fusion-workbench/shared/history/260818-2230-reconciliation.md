@@ -1,9 +1,9 @@
-# Reconciliation — 260818-2230
+# Reconciliation — 260818-2230-reconciliation.md
 
 **Status:** Complete
 **Agent:** reconciler
 **Domain:** code
-**Session:** `shared/history/260818-2124-orchestrator-session.md`
+**Session:** `260818-2124-orchestrator-session.md`
 **Range verified:** `53b6862..8fa3286` (2 commits)
 **Active Circle:** none — every store resolved into `shared/`
 **Verdict:** review-needed (Artifact↔Grounding flagged)
@@ -44,14 +44,14 @@ no archived one, at `53b6862`:
 - 94 records: 51 in `shared/decisions/`, 43 across `circles/*/decisions/`. Exact match.
 - 40 headers not holding the template word the marker calls for, split 20 shared and 20 Circle.
   Exact match.
-- 44 under a whole-field comparison, which is the figure `shared/history/260818-2050-curator-run.md`
+- 44 under a whole-field comparison, which is the figure `260818-2050-curator-run.md`
   carries at its line 226. Exact match, and the four extra are the annotated headers the record
   names.
 - The breakdown reproduces row for row: 14 `_i_`/answered, 13 `_i_`/open, 8 `_a_`/open, 3
   `_d_`/open, 1 `_s_`/open, 1 outlier.
 
-**`260815-2312` is in the set.**
-`shared/decisions/260815-2312_i_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md:5`
+**`260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` is in the set.**
+`260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md:5`
 reads `**Status:** answered` under an `_i_` marker. Confirmed by direct read.
 
 **Two shipped surfaces define the decision-record vocabulary.**
@@ -76,12 +76,12 @@ three plausible candidates opened. `marker-format-lint.test.ts` asserts marker *
 - `diff -q` between the work tree copy and `~/.fusion/skills/cleanup/SKILL.md` reports identical.
 - `git log -S'print $NF "\t" --only' -- skills/cleanup/SKILL.md` returns nothing.
 - `git log -1 -- skills/cleanup/SKILL.md` is `381f6d8`, dated 260816-0040 — two days before the
-  record was filed at 260818-2104.
+  record was filed at 260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md.
 - `find ~/.claude ~/.fusion -name SKILL.md -path '*cleanup*'` returns one path, the installed copy.
   `~/.claude/plugins/marketplaces/` holds only `claude-plugins-official`; no `tenzoki-plugins`
   clone exists.
 
-Closing `260818-2104` as not reproducible is correct.
+Closing `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` as not reproducible is correct.
 
 **The session's scope constraint held exactly.**
 `git diff --name-only 53b6862..HEAD -- '*/decisions/*'` returns one path, the newly created record.
@@ -96,19 +96,19 @@ No pre-existing decision record was touched, which is what the user's Directive 
 ## Drift found
 
 **1. The correction note carries a false universal.** Filed as
-`shared/issues/260818-2227_o_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`
+`260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`
 (Medium). The `Resolved:` block of `260818-2104_c_*.md` and the message of commit `b3de0ba` both
 state that `--only` occurs in this repository at exactly one position. It occurs 112 times across 35
 tracked files, 37 of them across 14 files outside the workbench, five in `skills/cleanup/SKILL.md`
 itself where it is the skill's own documented flag. The claim the measurement supports is the
 narrower one about the broken `awk` form — and even that stood at two positions inside the record
 when the sentence was written, because the note's own pickaxe bullet at line 68 quotes it again.
-This is the class `260818-2210` was filed to name, committed inside the remedy for it.
+This is the class `260818-2210_*_a-defect-record-cites-a-verification-run-that-no-copy-of-the-code-it-names-can-produce.md` was filed to name, committed inside the remedy for it.
 
 **2. The decision record miscounts its own measurement in three places.** Filed as
-`shared/issues/260818-2228_o_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`
+`260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`
 (Low). The central measurement is exact; three counts *about* it are not. The 40 includes
-`circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_reviewers-history-log-step.md`, whose head
+`260718-2150_*_reviewers-history-log-step.md`, whose head
 reads `**Status:** _i_ (implemented — …)` and therefore agrees with its marker, so under the
 record's own exclusion rule the count of *disagreeing* headers is 39 with 5 correct-but-non-template
 rather than 4. "The trend across four measurements" is followed by five, all five of which trace to
@@ -119,9 +119,9 @@ since moved: at `8fa3286` the hook-test surface is 18 403 lines against a 17 875
 head-room is 1 972.
 
 **3. One citation went stale with the marker rename.** Not filed — it is an instance of the open
-question `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
-not a new class. `shared/history/260818-2110_coder_regenerate-rules-emission-golden.md:77` cites
-`shared/issues/260818-2104_o_…`, a path that stopped existing when this session renamed the marker
+question `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
+not a new class. `260818-2110_coder_regenerate-rules-emission-golden.md:77` cites
+`260818-2104_*_…`, a path that stopped existing when this session renamed the marker
 to `_c_`. It is a history file, so the citation records the path as it stood at the time; no gate
 reads it and `reference-resolution-lint.test.ts` passes.
 
@@ -156,7 +156,7 @@ None found this pass.
 ## Coherence
 
 The three-edge verdict for this session is written to
-`shared/history/260818-2124-orchestrator-session.md` `## Coherence`, which is where the orchestrator
+`260818-2124-orchestrator-session.md` `## Coherence`, which is where the orchestrator
 reads it. Aggregate: **review-needed**, Artifact↔Grounding flagged, recommendation *revise Artifact*.
 
 ---
@@ -164,7 +164,7 @@ reads it. Aggregate: **review-needed**, Artifact↔Grounding flagged, recommenda
 # Turn 2 — narrow verification of `b46756e`
 
 Dispatched to check one commit and nothing else: whether the corrections this reconciler asked for in
-`260818-2227` and `260818-2228` are correct. No workbench survey, no re-run of the Turn-1 pass, no
+`260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md` and `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` are correct. No workbench survey, no re-run of the Turn-1 pass, no
 plans opened. Every figure below was re-derived from git rather than read off the records.
 
 ## Verdict
@@ -181,10 +181,10 @@ than in the corrections themselves, and one of them is this reconciler's own fro
 | "five measurements", "fourteen files" | Holds |
 | Head-room 1 972 of 2 500, baseline 17 875, surface 18 403 at `8fa3286` | Holds, all three |
 | Decision record's marker and `**Status:**` untouched | Holds |
-| `260818-2104`: original bullet present and unedited, narrow claim correct | Holds |
-| `260818-2104`: 35 files, five occurrences, broken form at three positions | **Fails at `b46756e`**, holds at `8fa3286` |
-| `260818-2227` `Resolved:` note | Holds |
-| `260818-2228` `Resolved:` note | Point 1 overstates; points 2-4 and the closing re-measurement hold |
+| `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`: original bullet present and unedited, narrow claim correct | Holds |
+| `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`: 35 files, five occurrences, broken form at three positions | **Fails at `b46756e`**, holds at `8fa3286` |
+| `260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md` `Resolved:` note | Holds |
+| `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` `Resolved:` note | Point 1 overstates; points 2-4 and the closing re-measurement hold |
 | `260812-1232` correction note: 39/5/fourteen, record still open | Holds |
 
 ## What was re-derived
@@ -218,29 +218,29 @@ and the commit touches no other decision record.
 
 **The `--only` figures.** `git grep -c -- '--only'` returns 35 files at `8fa3286` and 37 at
 `b46756e`; the broken `awk` form stands at 3 positions at `8fa3286` and 9 at `b46756e`. Everything
-above the appended block in `260818-2104` is byte-identical between the two commits, and the quoted
+above the appended block in `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` is byte-identical between the two commits, and the quoted
 bullet is verbatim and is genuinely the last of the measurement list.
 
 ## Findings filed
 
-**`shared/issues/260818-2248_o_the-status-field-record-still-carries-three-figures-on-the-criterion-it-replaced.md`**
+**`260818-2248_*_the-status-field-record-still-carries-three-figures-on-the-criterion-it-replaced.md`**
 — the criterion is stated once at lines 57-62 and is the right one, but three figures elsewhere in
-`260818-2212` were not moved with it: line 66 closes the trend paragraph with "40 of 94 today"
+`260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md` were not moved with it: line 66 closes the trend paragraph with "40 of 94 today"
 against a table reading 39; line 105 argues option 2 from "40 records", a figure neither the stated
 criterion (39) nor option 2's own exact-word lint (44) produces; line 116 constrains from a "20/20"
-split the table now gives as 20/19. Consequently `260818-2228`'s `Resolved:` point 1, "stated once
+split the table now gives as 20/19. Consequently `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`'s `Resolved:` point 1, "stated once
 and used consistently", is half true — stated once holds, used consistently does not.
 
-**`shared/issues/260818-2249_o_the-only-correction-block-quotes-two-measurements-without-the-head-they-were-taken-at-and-both-are-false-at-the-commit-that-carries-them.md`**
-— the correction block on `260818-2104` states its figures in the present tense and names no HEAD,
+**`260818-2249_*_the-only-correction-block-quotes-two-measurements-without-the-head-they-were-taken-at-and-both-are-false-at-the-commit-that-carries-them.md`**
+— the correction block on `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` states its figures in the present tense and names no HEAD,
 while the reconciliation note directly above it names `8fa3286`. Both figures moved between that
 commit and the one the block ships in, and both moved *because the block was written*: 35 files → 37
-(the two added are `260818-2227` and this log), three positions → nine (six added by the same
+(the two added are `260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md` and this log), three positions → nine (six added by the same
 commit). At `8fa3286` both are exactly right. The record also carries a lines-versus-occurrences
 conflation: `git grep -c` counts matching lines, so "five occurrences in `skills/cleanup/SKILL.md`"
 is five lines against eight occurrences.
 
-**Owned.** The conflation did not originate in the block — it originated in `260818-2227`, which this
+**Owned.** The conflation did not originate in the block — it originated in `260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`, which this
 reconciler wrote at Turn 1. That record says `git grep -c` "returns 35 files summing to 112
 occurrences" when those counts sum to 87 and 112 is the `grep -o` figure, and it prints a 14-row
 table summing to 26 beneath the claim that it sums to 37. The second is visibly wrong on its own
@@ -248,7 +248,7 @@ page. The block inherited both from me and is the smaller error of the two.
 
 ## What this pass did not touch
 
-No marker was moved. Nothing in `260818-2212` was edited — the three stale figures are reported, not
+No marker was moved. Nothing in `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md` was edited — the three stale figures are reported, not
 corrected, because this is a tracking pass and the record is a live decision. No second `## Coherence`
-section was appended to `shared/history/260818-2124-orchestrator-session.md`; the Turn-1 verdict
+section was appended to `260818-2124-orchestrator-session.md`; the Turn-1 verdict
 stands and the orchestrator records the Turn-2 outcome in its own Phase 4 sections.

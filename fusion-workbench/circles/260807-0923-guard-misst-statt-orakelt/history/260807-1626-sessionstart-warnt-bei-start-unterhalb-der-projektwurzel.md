@@ -6,7 +6,7 @@
 **Anlass:** Nutzeranforderung im Chat — „Es macht keinen Sinn, aus einem Unterverzeichnis
 heraus zu starten in einem fusion Projekt. Eine deutliche Warnung wäre hilfreich."
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
+`260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
 (bleibt `_o_`; diese Arbeit schließt ihn nicht, sie macht seine Klasse hörbar)
 
 ---

@@ -3,9 +3,9 @@
 **Date:** 2026-08-04
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md`, Step 5
-**Closes:** `issues/260804-1607_c_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-1633_*_plan-c5b-remediation-and-ship.md`, Step 5
+**Closes:** `260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`
 **Baseline:** `c9bf59e` plus the uncommitted work of Steps 1 to 4. Not committed — the orchestrator commits after validation.
 
 **Voice profiles:** `bin/fusion-rules coder` emitted no `stilwerk/` path in this run, although
@@ -186,7 +186,7 @@ asks for.
 
 ## One finding, filed rather than fixed
 
-`issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`.
+`260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`.
 
 While backing up `bin/monitor` before the mutation runs, a `cp` into the scratch directory was
 denied fail-closed for an unresolvable `$SP` operand. Three follow-up probes, all through the
@@ -200,7 +200,7 @@ where it points.
 
 Two reasons this is filed and not fixed here. It is outside this step's scope, which is
 `bin/monitor` and its tests. And its first half is already argued and accepted in
-`260804-1604`, which says in as many words that `rules/**` degrades the same way from a
+`260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md`, which says in as many words that `rules/**` degrades the same way from a
 subdirectory and that this is arguably correct. What that record does not cover is the
 asymmetry, and it labels its own reachability *"inference, not measured against a real Claude
 Code session"* — this session is that measurement, which is the part worth recording.
@@ -213,6 +213,6 @@ Code session"* — this session is that measurement, which is the part worth rec
 |---|---|
 | `bin/monitor` | `guard_error` added to `WARNING_EVENT_TYPES`; `ERROR_EVENT_TYPES` and `MAX_ERRORS_RETURNED` added; the carve-outs collapsed into a `SUBSET_BUDGETS` table and `_read_warnings()` generalised over it; `.warning-row.failopen` CSS; the `renderWarnings()` level arm |
 | `hooks/lib/__tests__/monitor-warnings-panel.test.ts` | 5 cases in a new `describe`, plus `startMonitor`/`indexPage` split out of `dashboard` so the served page can be fetched from the same running binary |
-| `circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md` | Step 5 marked `[DONE]` with its completion block |
-| `circles/260801-1244-guard-rules-write/issues/260804-1607_o_→_c_…` | `Resolved:` note appended, marker closed |
-| `circles/260801-1244-guard-rules-write/issues/260804-2100_o_…` | new, the finding above |
+| `260804-1633_*_plan-c5b-remediation-and-ship.md` | Step 5 marked `[DONE]` with its completion block |
+| `260804-1607_*_→_c_…` | `Resolved:` note appended, marker closed |
+| `260804-2100_*_…` | new, the finding above |

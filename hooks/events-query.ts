@@ -89,7 +89,7 @@ function envValue(name: string): string | null {
  * what it says is that nothing is *owed*. The helper's own header devotes a
  * section to why those codes must stay distinguishable, and a per-branch switch
  * is how they stop being. Records:
- * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`.
+ * `260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`.
  */
 interface IdentityStatus {
   /** The code as the wrapper passed it through; `null` if none reached us. */

@@ -38,8 +38,8 @@ all three are retrospective:
 | Removed | Instruction content |
 |---|---|
 | "This is issue 260810-1205: two passes ran, their ranges did not tile …" | none |
-| "— issue 260811-1141 is what that cost when the instruction was unconditional." | none |
-| "This is issue 260811-0114: a queue rebuild and its history file sat in the working tree …" | none |
+| "— issue 260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md is what that cost when the instruction was unconditional." | none |
+| "This is issue 260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md: a queue rebuild and its history file sat in the working tree …" | none |
 
 Both clauses the motivating issue named as load-bearing survive verbatim in substance:
 
@@ -134,7 +134,7 @@ growth baseline moved and none needed to.
 
 **M1 — Medium — `hooks/lib/staging-drift.ts:649-653` + `dist/lib/staging-drift.js:550-554`.**
 The restated `git add` justification, measured false for `-A`, a directory argument and a glob.
-Detail and measurements above. → `shared/issues/260817-2130_o_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`
+Detail and measurements above. → `260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`
 
 ### Recurrence control
 
@@ -158,7 +158,7 @@ The cheap gate is on the **output**, not the source text. Both builders are expo
 through every branch and assert the returned string matches neither `/\b\d{6}-\d{4}\b/` nor
 `/\b[0-9a-f]{7,40}\b/`. Gating the output covers parts added later without anyone extending a
 list.
-→ `shared/issues/260817-2131_o_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`
+→ `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`
 
 ### Source-comment accuracy
 
@@ -167,12 +167,12 @@ The same file at `:27-29`, `agents/orchestrator.md:539` and the commit's own mes
 attribute it to a directory-wide `git add -u`. Pre-existing, untouched by `bd2db5c`, and filed
 only because it is the text directly above the function whose sentence was rewritten — it is the
 most likely source of M1, and correcting one without the other leaves the next editor the same
-trap. → `shared/issues/260817-2132_o_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md`
+trap. → `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md`
 
 ## Also checked, clean
 
 **No other fusion-internal reference in a model-facing string in either module.** Grepped both
-sources and both builds for `260810-1205`, `260811-0114`, `260811-1141`, `260811-1148`,
+sources and both builds for `260810-1205`, `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`, `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`, `260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md`,
 `260810-0710` and `f38f37d`. Every remaining hit is on a comment line — jsdoc or `//` — which is
 the fusion-developer surface the user's gate decision explicitly kept.
 
@@ -207,22 +207,22 @@ with M1 — same file, same reading, one commit.
 
 ## Reconciliation annotation — 260817-2207
 
-Reconciler, final pass of session `260817-2037`, at HEAD `307a696`
-(log `shared/history/260817-2207-reconciliation.md`). Findings only annotated, nothing rewritten.
+Reconciler, final pass of session `260817-2037-orchestrator-session.md`, at HEAD `307a696`
+(log `260817-2207-reconciliation.md`). Findings only annotated, nothing rewritten.
 
 - **M1** (`260817-2130`) — resolved in `6b6436d` and revised again in `307a696`. Verified by
   rendering `stagingSentence()` from the rebuilt `hooks/dist/lib/staging-drift.js`: each of the four
   forbidden shapes now reaches a clause, and `-A` is not the subject of the deletion mechanism.
   Record closed (`_c_`). Its `Resolved:` note, written after `6b6436d`, states a judgement that
   `307a696` reversed and carries no pointer to the reversal, which is filed as
-  `shared/issues/260817-2207_o_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
-- **M2** (`260817-2131`) — still open, by user decision at the Turn 1 gate rather than by oversight.
+  `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
+- **M2** (`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`) — still open, by user decision at the Turn 1 gate rather than by oversight.
   Verified that no output-assertion gate exists and that `reference-resolution-lint.test.ts` still
   registers both modules with `commentRe: TS_COMMENT_RE`. Evidence appended to that record,
   including a defect in this review's proposed gate: asserting "no bare short hash" over
   `coverageSentence()`'s uncovered branch fails by construction, because that branch emits the
   consuming project's own commit hashes.
-- **L1** (`260817-2132`) — resolved in `6b6436d`. Verified: the docstring above `stagingSentence()`
+- **L1** (`260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md`) — resolved in `6b6436d`. Verified: the docstring above `stagingSentence()`
   attributes `f38f37d` to a directory-wide `git add -u` and cites its agreement with
   `hooks/lib/staging-drift.ts:29` and `agents/orchestrator.md` Step 3b. Record closed (`_c_`).
 

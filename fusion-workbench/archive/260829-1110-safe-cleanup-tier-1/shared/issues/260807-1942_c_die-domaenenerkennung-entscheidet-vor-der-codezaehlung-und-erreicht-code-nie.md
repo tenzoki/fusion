@@ -6,8 +6,8 @@ Die Domänenerkennung entscheidet vor der Codezählung, deshalb kann ein Codepro
 **Domain:** code
 **Filed by:** consultant, nach einer Meldung aus dem konsumierenden Projekt KRK
 **Affects:** `agents/orchestrator.md:115-133` (Setup Schritt 5, Block "Detect workbench domain"), von dort weiter `agents/taskplanner.md`, `agents/reconciler.md`, `agents/planner.md`
-**Cross-references:** `fusion-workbench/shared/issues/260807-1943_*_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md` und `fusion-workbench/shared/issues/260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` — die beiden anderen Defekte aus derselben Prüfung, jeder mit eigener Korrektur
-**Belegquelle:** `/Users/k1/Projects/productive/krk/fusion-workbench/shared/history/260807-1934-orchestrator-session.md` `### Erkannte Arbeitsdomäne`
+**Cross-references:** `260807-1943_*_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md` und `260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` — die beiden anderen Defekte aus derselben Prüfung, jeder mit eigener Korrektur
+**Belegquelle:** `/Users/k1/Projects/productive/krk/260807-1934-orchestrator-session.md` `### Erkannte Arbeitsdomäne`
 
 ---
 
@@ -39,7 +39,7 @@ $ find . -maxdepth 2 -type f \( -name '*.go' -o -name '*.ts' -o -name '*.tsx' \
 Die Zählung bleibt bei null, obwohl `.rs` mitzählt. Die gemeldete Ursache erklärt den Ausgang
 also nicht einmal dann, wenn man sie unterstellt. Zwei andere Defekte erklären ihn, und beide
 sind hier gemessen: dieser hier, und die Tiefenschranke in der Schwesterakte
-`260807-1951_*`. Dieser Defekt allein hätte gereicht, denn `code_files`
+`260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md_*`. Dieser Defekt allein hätte gereicht, denn `code_files`
 wird gar nicht abgefragt, bevor `strategic` feststeht.
 
 ## Der Defekt
@@ -175,4 +175,4 @@ Two things settled while fixing it, written into the prompt rather than left her
 
 A gate holds the order: `hooks/lib/__tests__/domain-cascade-order-lint.test.ts` parses the cascade out of the prompt and fails if any `strategic`/`knowledge` branch rises above the first branch reading `code_files`, or if the `counted_by == "none"` branch sinks below one that reads a count. It is fed the pre-fix cascade as a negative case, so it is shown to fail on the defect rather than only to pass on the fix.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (task T3). Executor log: `shared/history/260810-0349-coder-domain-cascade-branch-order.md`.
+Session: `260810-0241-orchestrator-session.md` (task T3). Executor log: `260810-0349-coder-domain-cascade-branch-order.md`.

@@ -11,11 +11,11 @@ taken before that commit existed.
 **Severity:** Medium. The claim is false and it is the kind of claim a release reads.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md` `## Closure note`,
+`260825-2023-presence-travels-monitor-filters-own-checkout` `## Closure note`,
 final paragraph;
-`shared/issues/260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md`;
-`shared/issues/260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`;
-`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+`260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md`;
+`260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md`;
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 
 ## What was measured
 
@@ -57,10 +57,10 @@ re-measuring.
 **So the fault is not a wrong measurement. It is a measurement whose referent moved between
 the taking and the writing** — the same shape as the eight wrong counts this Circle closed
 on, applied to a claim rather than to a number, and by the same party in the same document.
-`260826-1305_*` records the eighth; this is the ninth and the first that is not a cardinality.
+`260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md_*` records the eighth; this is the ninth and the first that is not a cardinality.
 
 That widens the open question at
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`
+`260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`
 in a way its four options do not cover: all four address counts. A detector for count words,
 or a rule against stating cardinalities, reaches none of this sentence.
 
@@ -72,7 +72,7 @@ note, and there is nothing beside it to contradict it.
 
 Acceptance criterion 10 of the plan makes the coverage statement a **precondition on pushing a
 release tag**, filed after a tag went out over an unrun review pass
-(`shared/decisions/260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`).
+(`260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`).
 A false coverage claim in the closure note is exactly what that precondition exists to stop
 someone reading and believing.
 
@@ -111,4 +111,4 @@ the note is the specimen.
 named.
 
 ---
-Resolved: the review pass this record's close condition names has run. `circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-1330-coderev-the-last-uncovered-commit.md:3` declares `**Reviewed-range:** 7774d56..e66f7d5`, covering the one uncovered commit with all seven shipped files opened (commit `3f62a7d`). The closure note's false sentence stands unedited in the terminal `_b_` record, as the constraint in the active Circle's Grounding requires: the note is the specimen, the review is the repair. Verified by reconciler 260827-1528.
+Resolved: the review pass this record's close condition names has run. `260826-1330-coderev-the-last-uncovered-commit.md:3` declares `**Reviewed-range:** 7774d56..e66f7d5`, covering the one uncovered commit with all seven shipped files opened (commit `3f62a7d`). The closure note's false sentence stands unedited in the terminal `_b_` record, as the constraint in the active Circle's Grounding requires: the note is the specimen, the review is the repair. Verified by reconciler 260827-1528-reconciliation.md.

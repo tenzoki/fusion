@@ -66,7 +66,7 @@ is about to read this session's records as evidence.
 ## Suggested fix
 
 Rewrite the file in the `control:` shape at the next write point. Related and separately filed: the
-`work_queue` content defect, `260815-1631_o_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md`.
+`work_queue` content defect, `260815-1631_*_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md`.
 
 ---
 Resolved: the live file was rewritten in the shape `f45f76a` specified. The `progress:` block is now `control:` with its three non-count fields, and the comment above it names the records the removed counters are read from instead. The file is gitignored here, so it is live state rather than a record, and the orchestrator is its only writer.

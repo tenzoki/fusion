@@ -22,10 +22,10 @@ the artifact language.
 
 The correction is one clause — name an artifact kind that still carries the field, or drop the
 example and keep `**Domain:**`, which every record kind does still have. It is deliberately not made
-here: `260818-2212` names its change surface as two rule files and this passage is neither, so
+here: `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md` names its change surface as two rule files and this passage is neither, so
 folding it in would have made the realisation wider than the answer.
 
-Found by the executor of task T2 in session `260818-2301` and reported rather than acted on. No Circle
+Found by the executor of task T2 in session `260818-2301-orchestrator-session.md` and reported rather than acted on. No Circle
 active, so it goes to the shared store under the Origin Rule.
 
 ---

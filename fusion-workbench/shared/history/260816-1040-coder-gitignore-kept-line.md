@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Date:** 2026-08-16 10:40
-**Record:** 260816-0136 part 2 (edit 1, second pass)
+**Record:** 260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md part 2 (edit 1, second pass)
 
 ## What was wrong
 

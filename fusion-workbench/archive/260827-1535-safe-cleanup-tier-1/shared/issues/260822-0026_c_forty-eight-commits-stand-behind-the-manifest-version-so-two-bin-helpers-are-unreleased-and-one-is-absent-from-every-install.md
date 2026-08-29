@@ -4,7 +4,7 @@ Forty-eight commits stand behind the manifest version, so two `bin/` changes are
 
 **Severity:** Medium. Nothing is broken in this repository, where the work-tree preference hides the gap. Every consuming project is running a plugin whose `bin/` is missing a helper the shipped text documents as present.
 **Domain:** code
-**Filed by:** orchestrator, from the commission in `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`, which names the symptom and asks for a record if none exists
+**Filed by:** orchestrator, from the commission in `260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`, which names the symptom and asks for a record if none exists
 **Affects:** `.claude-plugin/plugin.json`, `bin/fusion-prose-metric`, `bin/fusion-rules`
 
 ---
@@ -52,7 +52,7 @@ Not a defect in `bin/fusion-prose-metric`, which works. Not a call for a guarded
 ---
 Resolved: closed as the thinner of two independent filings of one fact, not as fixed. An analyst
 running the commissioned measurement reached the same root at 00:35 and filed
-`shared/issues/260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`,
+`260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`,
 which carries everything this record has and three things it does not: each of the four facts
 checked individually rather than asserted together, the installer cleared by name
 (`install.sh:82` copies `bin` wholesale, so a default-ref install is unaffected and only a
@@ -70,8 +70,8 @@ and does not carry the second half of what this record measured: the 22 unreleas
 runs at every agent's Setup in every project while nothing calls the prose metric at all. The
 installed copy is missing that file's stderr fallback notice, verified by `diff` against the work
 tree. Found by the review at
-`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`
+`260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`
 and filed as
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0116_*_the-fold-of-the-version-gap-records-dropped-the-fusion-rules-half-and-the-closure-note-says-nothing-was-lost.md`.
+`260822-0116_*_the-fold-of-the-version-gap-records-dropped-the-fusion-rules-half-and-the-closure-note-says-nothing-was-lost.md`.
 The `fusion-rules` half is carried forward here rather than in the record this one points at, so the
 fold no longer drops it.

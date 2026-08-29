@@ -4,9 +4,9 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `skills/setup/SKILL.md:242`, `skills/next/SKILL.md:104` and `:160`
-**Cross-references:** commit `ff70d3a`; `skills/cleanup/SKILL.md:11, 122, 128` (the correct precedent); `shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (adjacent, different mechanism — do not merge)
+**Cross-references:** commit `ff70d3a`; `skills/cleanup/SKILL.md:11, 122, 128` (the correct precedent); `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (adjacent, different mechanism — do not merge)
 
 ---
 
@@ -52,10 +52,10 @@ nothing at all: no branches, no verdict table, no default.
 Verified at HEAD: the installed copy at `$FUSION_PLUGIN_ROOT` (`/Users/k1/.fusion`) contains **zero**
 occurrences of `The queue's ground`, and zero of `Drift check`. A session running `/fusion:setup` right
 now against the installed plugin resolves the citation to a file that does not carry the section, and
-— unlike the missing helper in `260810-0352`, which fails loudly with exit 127 — this one fails
+— unlike the missing helper in `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md`, which fails loudly with exit 127 — this one fails
 **silently**: a file is found, the heading is not, and the step is likely to be skipped or improvised.
 
-That is why this is filed separately from `260810-0352` rather than folded into it. That record is
+That is why this is filed separately from `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` rather than folded into it. That record is
 about a `bin/` helper invoked through `$FUSION_PLUGIN_ROOT` and its failure is an exit code; this is a
 prose citation with no root at all and its failure is silence. Item 2 of that record ("any future
 `bin/` helper a prompt calls inherits this") does not cover cross-file prompt citations.

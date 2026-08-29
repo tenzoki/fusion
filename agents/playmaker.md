@@ -194,7 +194,7 @@ Your backlog mandate is not the same on both dispatch paths. This is a rule to r
 
 A confirmation is held for one named operation, by the run that performs it. It is not a standing grant: you may not act on a confirmation given for a different entry, given in an earlier session, or inferred from the user having invoked a skill at all.
 
-Binding record: `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`, option 3, in Circle `circles/260813-0858-playmaker-maintains-backlog-store`. The filing-versus-maintenance boundary these operations sit inside is defined once, in `rules/fusion-workbench-conventions.md` `## Backlog entries`.
+Binding record: `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`, option 3, in Circle `260813-0858-playmaker-maintains-backlog-store`. The filing-versus-maintenance boundary these operations sit inside is defined once, in `rules/fusion-workbench-conventions.md` `## Backlog entries`.
 
 ### A confirmation carried by the dispatch prompt
 

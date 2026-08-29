@@ -3,12 +3,12 @@
 ---
 **Domain:** knowledge
 **Status:** open
-**Filed by:** orchestrator, at a user gate during the language-split work (session 260807-2020); found by the coder executing step S9 of the plan below
+**Filed by:** orchestrator, at a user gate during the language-split work (session 260807-2020-orchestrator-session.md); found by the coder executing step S9 of the plan below
 **Cross-references:**
 `agents/editor.md:16,62` (the two lines that read the declaration),
 `rules/fusion-workbench-conventions.md` `## Project language` (the authoring home for both declarations, rewritten in `def9d13`),
-`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (the answer that created the gap),
-`shared/planning/260807-2024_*_two-language-declarations.md` (the plan whose inventory missed this site)
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (the answer that created the gap),
+`260807-2024_*_two-language-declarations.md` (the plan whose inventory missed this site)
 
 ---
 
@@ -97,7 +97,7 @@ Deferred:
 Superseded by:
 
 ---
-Answered: user, session 260811-0752 (chat) — **Option 3, a per-deliverable declaration with no
+Answered: user, session 260811-0752-orchestrator-session.md (chat) — **Option 3, a per-deliverable declaration with no
 project default.** The `editor` requires the dispatching task to name the target language and fails
 loudly when none is given. Chosen on the ground the record itself said only the user could supply:
 this project's customer deliverables are not reliably in one language, so any project-wide default

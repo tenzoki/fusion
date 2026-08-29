@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `shared/analyses/260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`, `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+**Cross-references:** `260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`, `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
 
 ---
 
@@ -22,7 +22,7 @@
 Whatever form is chosen, the three citation gates and the archive skill's safety filter (`shared/issues/260828-0901_*`) must recognise it; a form the gate cannot read decays at the rate the method is used.
 
 ---
-Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, reconciliation note).
 
 ---
-Answered: shared/decisions/260828-0904_a_does-the-mandated-citation-form-include-the-store-segment.md — option 1, user 2026-08-28: the citation form is the storeless basename with the marker wildcarded, `YYMMDD-HHMM_*_<topic>.md`; the store segment is dropped, the wildcard stays.
+Answered: 260828-0904_*_does-the-mandated-citation-form-include-the-store-segment.md — option 1, user 2026-08-28: the citation form is the storeless basename with the marker wildcarded, `YYMMDD-HHMM_*_<topic>.md`; the store segment is dropped, the wildcard stays.

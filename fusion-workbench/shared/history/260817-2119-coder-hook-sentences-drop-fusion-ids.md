@@ -7,7 +7,7 @@
 **Dispatched by:** the user, top-level
 **Domain:** code
 **Task:** Implement the fix recorded in
-`shared/issues/260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md`
+`260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md`
 at the user's gate decision of 2026-08-17: keep only the instruction, drop the retrospective.
 No commit; leave the tree for the cleanup pipeline.
 
@@ -29,7 +29,7 @@ parts above were already project-neutral and were not touched.
 
 ### 2. `hooks/lib/staging-drift.ts` — `stagingSentence()`, two places
 
-The commit-message branch dropped "issue 260811-1141 is what that cost when the instruction
+The commit-message branch dropped "issue 260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md is what that cost when the instruction
 was unconditional" and kept the constraint it hung on: the class is decided by the file's name
 once every store has declined it, so a false positive can enter it, and deleting an authored
 file on a name match is not recoverable.
@@ -81,7 +81,7 @@ was regenerated with the documented flag, and its diff carries exactly the three
 cd hooks && npm test        # 35 files, 653 tests, exit 0
 ```
 
-Acceptance re-checked after the run. `grep -rn "260810-1205\|260811-0114\|260811-1141\|f38f37d"`
+Acceptance re-checked after the run. `grep -rn "260810-1205\|260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md\|260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md\|f38f37d"`
 over `hooks/lib/review-coverage.ts` and `hooks/lib/staging-drift.ts` returns eight lines, every
 one of them a comment; the same grep over the two modules in `hooks/dist/` returns six, likewise
 all comments. Both sentences were rendered from the rebuilt `dist/` with a synthetic report and

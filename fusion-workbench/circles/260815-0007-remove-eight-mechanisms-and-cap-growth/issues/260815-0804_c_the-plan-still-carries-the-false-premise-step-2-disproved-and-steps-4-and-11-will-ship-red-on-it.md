@@ -14,17 +14,17 @@ step 11 inherits the same trap by omission.
 orchestrator's Step 3b reverts the whole task on a red suite, so the cost is a discarded step rather
 than a bad merge.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`reviews/260815-0804-coderev-plane-mirror-removal.md`)
+**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`260815-0804-coderev-plane-mirror-removal.md`)
 **Owner:** `coder`, or `planner` on a re-dispatch
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:195` (step 4) and `:277` (step 11's file list)
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0742-coder-remove-plane-mirror-code-and-prose.md` `## What the plan did not predict` item 1, which states the correction and explicitly says *"Step 4 inherits the correction"*
+**Affects:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:195` (step 4) and `:277` (step 11's file list)
+**Cross-references:** `260815-0742-coder-remove-plane-mirror-code-and-prose.md` `## What the plan did not predict` item 1, which states the correction and explicitly says *"Step 4 inherits the correction"*
 
 **Verified 2026-08-15 at HEAD `7c12d6a`.** `git log -- <plan path>` returns one commit, `348f6db`.
 The plan has not been touched since it was written.
 
 ## The sentence, verbatim
 
-`planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:195`:
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:195`:
 
 > `CLAUDE.md`, enumeration half only: the `bin/fusion-churn-rank` row leaves the Layout table because
 > `derivable-enumerations-lint` does not read that table — but `README-hooks.md`'s `hooks/lib` file
@@ -74,4 +74,4 @@ narrative and genuinely G1's. Saying which of the three is which is the whole co
 ---
 Resolved: The plan was corrected in d1ae1c0: step 4 now says the bin/fusion-churn-rank Layout row is gate-forced and lands in its own commit, citing this record, and step 11 gained the matching CLAUDE.md bullet; both steps executed green and bin/ holds 12 files against 12 Layout rows.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

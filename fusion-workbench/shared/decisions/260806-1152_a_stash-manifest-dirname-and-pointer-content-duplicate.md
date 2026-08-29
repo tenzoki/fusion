@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Status:** open
-**Filed by:** reconciler (workbench-wide pass 260806-1152; the question was embedded in `archive/260817-1907-safe-cleanup-scoped/shared/issues/260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md` since 2026-07-17 and never filed separately)
+**Filed by:** reconciler (workbench-wide pass 260806-1152; the question was embedded in `archive/260817-1907-safe-cleanup-scoped/260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md` since 2026-07-17 and never filed separately)
 **Cross-references:** `rules/workbench-stash-and-lock.md` (ten-field manifest schema), `skills/circle-stash/SKILL.md`, `skills/circle-pop/SKILL.md`
 
 ---
@@ -26,7 +26,7 @@ The stash manifest carries both `original_circle_dirname` and `active_circle_con
 Old stashes must stay poppable either way (the `has_spec_plan` precedent: readers ignore unknown fields).
 
 ---
-Answered: user, session 260811-0752 (chat) — **Option 1, keep both fields.** They answer different
+Answered: user, session 260811-0752-orchestrator-session.md (chat) — **Option 1, keep both fields.** They answer different
 questions: `original_circle_dirname` says where the restored directory belongs,
 `active_circle_content` says what `.active-circle` literally held. They agree on every healthy
 workbench, and the case the manifest exists for is not a healthy one: on a corrupt or
@@ -38,7 +38,7 @@ Retired: `5d29b6d` (Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`,
 with `rules/workbench-stash-and-lock.md`, so the ten-field manifest whose two fields this answer
 keeps is written by nothing and there is no schema documentation to record the reason in. The
 answer stands; its subject does not. Marker stays `_a_` — the annotation is scoped to `_a_` as well
-as `_i_` by `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+as `_i_` by `260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
 (option 1, answered by the user 2026-08-20).
 
 ---
@@ -55,7 +55,7 @@ change, record the reason in the manifest schema documentation — can never be 
 `_a_` → `_i_` is unreachable.
 
 **No marker was moved, and the reason is that an open decision owns exactly this question.**
-`circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 asks what marks a decision whose implementation was deleted with no superseding decision to cite,
 and lists four candidate answers of which two (`_s_` widened, or a new `Retired:` annotation) would
 apply here. Renaming this record now would pre-empt that decision on the weakest evidence tier. This
@@ -69,7 +69,7 @@ that flag the Grounding↔Directive edge in this Circle's session-end Coherence 
 **Reconciliation 260815-2056 (reconciler, HEAD `bd07ee7`) — the open decision named in the note
 above has been answered, and it does not reach this record. Marker unchanged.**
 
-`circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 was answered by the user at this Circle's Rebalance gate: option 3, a `Retired:` annotation citing
 what removed the implementation, marker stays `_i_`. That answer was applied to twenty-five `_i_`
 records in this pass. It is **not** applied here, and the reason is the definition it landed with in
@@ -80,7 +80,7 @@ built is a citation a reader cannot resolve, and an annotation covering both cas
 questions, which is the ground option 2 was declined on there.
 
 The residual is filed as its own question rather than settled by stretching the annotation:
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+`260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — re-verified;
@@ -93,7 +93,7 @@ dangle. The answer — keep both fields, no schema change, record the reason in 
 documentation — has no surface left to land on, so `_a_` → `_i_` is unreachable by construction and
 not by anyone's omission.
 
-The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+The residual question this record was parked behind, `260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
 is **still `_o_`** at HEAD, four days after it was filed. Its recommendation is option 2 (a
 `Realisation-removed:` annotation, no rename) at low-to-moderate confidence, and its own
 `speculation:` paragraph proposes that if no third instance appears, option 4 — close it, leave the

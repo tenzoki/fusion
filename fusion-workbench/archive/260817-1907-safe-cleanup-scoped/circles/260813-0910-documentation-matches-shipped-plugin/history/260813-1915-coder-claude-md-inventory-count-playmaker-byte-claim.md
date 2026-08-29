@@ -1,10 +1,10 @@
 # Coder — CLAUDE.md: the `bin/` inventory, the deleted count, the playmaker clause, the byte claim
 
 **Status:** Complete
-**Date:** 260813-1915
+**Date:** 260813-1915-coder-claude-md-inventory-count-playmaker-byte-claim.md
 **Agent:** coder
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `planning/260813-1820_o_documentation-matches-shipped-plugin.md`, step 2 (now `[DONE]`)
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, step 2 (now `[DONE]`)
 **Files changed:** `CLAUDE.md` only, four edits.
 
 ## What each correction was checked against
@@ -33,8 +33,8 @@ Each row points at an authoring home rather than restating one:
 
 **`fusion-count-sources` confirmed undocumented, and the claim was checked rather than
 assumed.** `grep -rn "fusion-count-sources" --include='*.md'` outside `fusion-workbench/`
-returns nothing; inside the workbench it appears only in records (decisions `260809-1731`,
-`260810-0921`, `260810-1010`, `260810-1544`, the tasklist, three history files) and in this
+returns nothing; inside the workbench it appears only in records (decisions `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`,
+`260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`, `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`, `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`, the tasklist, three history files) and in this
 Circle's own plan. No shipped markdown describes it. Its row is therefore written from the
 header itself and says so, carrying the four things a reader needs: what it counts and for
 whom, the `KEY=value` output shape, the one-mechanism-no-fallback rule (`git ls-files`), and
@@ -48,7 +48,7 @@ The row shape `` | `bin/<name>` | … | `` is preserved exactly — step 3's par
 replaces it and no gate was added, per the Directive point that supersedes the survey's step
 A3. The surrounding sentence still carries its point: the workbench is git-tracked in this
 repository, and that tracked state is what
-`shared/issues/260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`
+`260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`
 reasoned from.
 
 The deletion is made legible so the next reader does not restore it. One added sentence names

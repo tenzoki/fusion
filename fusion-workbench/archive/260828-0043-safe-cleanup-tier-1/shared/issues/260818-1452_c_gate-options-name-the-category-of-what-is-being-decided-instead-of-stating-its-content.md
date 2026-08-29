@@ -6,7 +6,7 @@ Gate options name the category of what is being decided instead of stating its c
 **Domain:** code
 **Filed by:** user, reported from a consuming project
 **Affects:** `rules/user-facing-output.md` `## Questions and gates`
-**Cross-references:** `shared/issues/260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md` — the defect the quoted gate was about, and the reason the wording mattered
+**Cross-references:** `260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md` — the defect the quoted gate was about, and the reason the wording mattered
 
 ---
 

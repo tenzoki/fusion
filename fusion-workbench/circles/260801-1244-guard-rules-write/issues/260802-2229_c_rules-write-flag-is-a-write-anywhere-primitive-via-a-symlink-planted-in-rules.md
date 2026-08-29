@@ -4,13 +4,13 @@
 
 **Severity:** High
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 1 of `circles/260801-1244-guard-rules-write` (`c7f117b..HEAD`)
+**Filed by:** coderev, reviewing Turn 1 of `260801-1244-guard-rules-write` (`c7f117b..HEAD`)
 **Affects:** both guarded write surfaces — `hooks/guard.ts` CHECK 2 and `guardBashCommand` STEP 2
 **Cross-references:** `hooks/lib/rules-write-exemption.ts:88-103` (`canonicalise`, purely lexical),
 `hooks/lib/bash-mutation-guard.ts:417-440` (`MUTATION_VERBS`, the `ln` row),
 `hooks/guard.ts:495-524` (CHECK 2), `hooks/guard.ts:264-285` (the Bash `exempt` wiring),
-`circles/260801-1244-guard-rules-write/_t_circle.md` (criterion: the flag must not lift an active halt),
-`shared/planning/260801-1122_o_spec-normative-consolidation.md:275` (C5a)
+`260801-1244-guard-rules-write` (criterion: the flag must not lift an active halt),
+`260801-1122_*_spec-normative-consolidation.md:275` (C5a)
 
 ---
 
@@ -69,7 +69,7 @@ returns the empty state on the next call, so `haltActive` is false.
 Without the flag this route is closed: `rm fusion-workbench/.guard-state/escalation.json`
 denies on `fusion-workbench/.guard-state/**`, and `ln -s … rules/gs` denies on `rules/**`.
 **The flag is what opens it.** This interacts with
-`260802-2220_o_guard-bash-command-has-no-halt-check-so-the-halt-is-write-tool-only.md` but is
+`260802-2220_*_guard-bash-command-has-no-halt-check-so-the-halt-is-write-tool-only.md` but is
 not the same defect: even with a halt check added to `guardBashCommand`, the unhalted case
 (reaching `agents/**` and `hooks/config.json`) stands.
 
@@ -117,7 +117,7 @@ above. No fixture beyond `makeProject({ escalation: { haltActive: true } })` is 
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while probing the Directive's "and nothing
+Found in `260801-1244-guard-rules-write` while probing the Directive's "and nothing
 else" boundary for a third escape spelling beyond the two the Step 2 coder found. It is not a
 spelling — it is the layer below the spelling.
 

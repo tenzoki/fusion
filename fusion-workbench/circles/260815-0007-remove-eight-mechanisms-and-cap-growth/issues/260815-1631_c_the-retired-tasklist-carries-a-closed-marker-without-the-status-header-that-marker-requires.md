@@ -3,7 +3,7 @@ The retired tasklist carries `_c_` without the `**Status:** Complete` header the
 ---
 
 `dd312eb` moved `fusion-workbench/tasklist.md` to
-`fusion-workbench/shared/planning/260815-1524_c_retired-tasklist.md`. The placement is right and the
+`260815-1524_*_retired-tasklist.md`. The placement is right and the
 marker is defensible, but the file carries no `**Status:**` line at all, and its header still reads
 `**Open tasks:** 74` / `**Blocked:** 22` in a store fifteen shipped consumers scan.
 
@@ -83,4 +83,4 @@ find fusion-workbench -name '260815-1524*'
 The record's harm was that a `_c_`-marked planning file with no `**Status:**` header sat inside `$SCAN_PLANS`, which every plan-reading consumer scans. It was archived in `e59dea2` on 2026-08-17 and `$SCAN_PLANS` no longer resolves to it. The archived copy still lacks the header and still heads with `**Open tasks:** 74`; that is left exactly as it stands, because a frozen record is evidence rather than a live claim.
 
 ---
-Resolved: moot. `260815-1524_c_retired-tasklist.md` was archived out of `shared/planning/` in `e59dea2` on 2026-08-17, so no consumer scanning `$SCAN_PLANS` reaches it. The missing `**Status:**` header was never added; the file simply left the live store.
+Resolved: moot. `260815-1524_*_retired-tasklist.md` was archived out of `shared/planning/` in `e59dea2` on 2026-08-17, so no consumer scanning `$SCAN_PLANS` reaches it. The missing `**Status:**` header was never added; the file simply left the live store.

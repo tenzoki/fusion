@@ -36,7 +36,7 @@ without saying that this very program prints it too.
 `config.diagnostics` verbatim — every entry, whatever its class. Nothing constrains it to drops, and
 nothing should. But a maintainer reading either doc surface would be entitled to conclude the
 contract is drops-only, and a future narrowing of that loop would look like it was honouring the
-documented contract. That is the same mechanism-versus-record gap that produced `260816-2318`.
+documented contract. That is the same mechanism-versus-record gap that produced `260816-2318_*_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`.
 
 **Severity:** Medium. Scope: `bin/fusion-turn-budget` (shipped executable header, designated
 authoritative by `CLAUDE.md`) and `hooks/turn-budget.ts` (the module docstring behind it). No
@@ -50,8 +50,8 @@ classes rather than the class. Name the retired file explicitly as the one that 
 - `bin/fusion-turn-budget:14-16`, `hooks/turn-budget.ts:31-38`, `:52-57`, `:92-94`
 - `hooks/lib/config.ts:230-258` (readLayer), `:391-427` (validateLayer), `:463-475` (retired files)
 - `agents/orchestrator.md:132` (the widened wording to reuse)
-- `circles/260816-1741-guard-becomes-observation-only/issues/260816-2318_c_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
-- `circles/260816-1741-guard-becomes-observation-only/issues/260816-2124_c_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`
+- `260816-2318_*_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
+- `260816-2124_*_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`
   (the same header, lines 39-41; its fix did not reach lines 14-16)
 
 ---
@@ -79,7 +79,7 @@ Still narrower than what the loader returns, and still the surface `CLAUDE.md` d
 
 The two siblings widened by `01932d6` — `agents/orchestrator.md:132` and `skills/setup/SKILL.md:292`, both now reading "every diagnostic the configuration loader returned" — have since been rewritten again in other respects and both kept the widened wording. This header is the one member of the set still describing the old contract, and it is the only one a reader is *sent to*.
 
-**Live obligation, low cost, and the cost of leaving it is asymmetric.** The loop at `hooks/turn-budget.ts:92-94` writes `config.diagnostics` verbatim, every entry whatever its class, and nothing constrains it to drops. A maintainer reading the authoritative header would be entitled to conclude the contract is drops-only; a future narrowing of that loop would then look like it was honouring a documented contract while silencing the retired-file advisory, which is the costliest line the program prints. That is the same mechanism-versus-record gap `260816-2318` recorded and had fixed.
+**Live obligation, low cost, and the cost of leaving it is asymmetric.** The loop at `hooks/turn-budget.ts:92-94` writes `config.diagnostics` verbatim, every entry whatever its class, and nothing constrains it to drops. A maintainer reading the authoritative header would be entitled to conclude the contract is drops-only; a future narrowing of that loop would then look like it was honouring a documented contract while silencing the retired-file advisory, which is the costliest line the program prints. That is the same mechanism-versus-record gap `260816-2318_*_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md` recorded and had fixed.
 
 The remedy named in the record is unchanged and is one paragraph: widen `bin/fusion-turn-budget:13-15` and `hooks/turn-budget.ts:52-57` to the antecedent-and-examples shape `agents/orchestrator.md:132` already uses, and name the retired file explicitly as the diagnostic that is not a drop.
 

@@ -5,9 +5,9 @@
 **Status:** open
 **Filed by:** coder, implementing plan Step 3
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` (recommendation 3, which this record carries so the issue's other two halves can be taken by Step 7),
-`circles/260801-1244-guard-rules-write/decisions/260804-1323_i_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md` (`## The second question` — where the `checkout HEAD` inertness argument was made and where the claim that the two spellings now agree was recorded),
-`circles/260801-1244-guard-rules-write/planning/260804-1633_*_plan-c5b-remediation-and-ship.md` (Step 3, which assigns `260804-1348` to a code pass that cannot take it without breaching the Circle's own no-new-allow constraint),
+`260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` (recommendation 3, which this record carries so the issue's other two halves can be taken by Step 7),
+`260804-1323_*_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md` (`## The second question` — where the `checkout HEAD` inertness argument was made and where the claim that the two spellings now agree was recorded),
+`260804-1633_*_plan-c5b-remediation-and-ship.md` (Step 3, which assigns `260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` to a code pass that cannot take it without breaching the Circle's own no-new-allow constraint),
 `hooks/lib/bash-mutation-guard.ts` — `isGitRestoreSourceFlag`, the `restore` row, `GIT_CHECKOUT_INERT_TREEISH`, `gitCheckoutWrites`
 
 ---
@@ -23,7 +23,7 @@ leaving the file alone. The second denies.
 Should `restore` learn the same exception?
 
 Measured, real guard subprocess, one fresh project per case, and pinned in the unit
-suite as `MEASURES: checkout and restore still disagree at HEAD (260804-1348, open)`:
+suite as `MEASURES: checkout and restore still disagree at HEAD (260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md, open)`:
 
 ```
 ALLOW   git checkout HEAD -- rules/x.md
@@ -52,7 +52,7 @@ discrimination to a `positionalModel`-style hook.
 command in this Circle. Every Turn has held the line that no command newly allows and
 no path protected today becomes unprotected, and the plan restates it as one of three
 constraints inherited by every step. A step cannot take that decision on the plan's
-authority; `260804-1323` had to argue `checkout HEAD`'s inertness from measurement, and
+authority; `260804-1323_*_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md` had to argue `checkout HEAD`'s inertness from measurement, and
 `--source=HEAD` needs the same argument made for it rather than inherited by analogy.
 
 ## Options
@@ -65,7 +65,7 @@ authority; `260804-1323` had to argue `checkout HEAD`'s inertness from measureme
      silently. An agent that meets the deny has a documented way through that is one
      spelling away (`git checkout HEAD -- <path>`), and it is the spelling the rule file
      already promises everywhere.
-   - Cons: the guard treats one operation two ways, which is `260804-1026`'s original
+   - Cons: the guard treats one operation two ways, which is `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md`'s original
      complaint surviving at exactly the spelling the revert promise is about. A reader
      who knows the two commands are equivalent meets a deny with no cause visible in it.
 2. **Teach `restore` the same `HEAD` inertness**, by moving its discrimination off
@@ -75,7 +75,7 @@ authority; `260804-1323` had to argue `checkout HEAD`'s inertness from measureme
      reading either rule file would expect.
    - Cons: it newly allows `git restore --source=HEAD <protected>` and
      `git restore -s HEAD <protected>`. "Inert" has to be argued for `--source=HEAD` the
-     way `260804-1323` argued it for `checkout HEAD` — and the argument has a wider
+     way `260804-1323_*_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md` argued it for `checkout HEAD` — and the argument has a wider
      surface here, because `-s`, `--source` and `--source=` are three spellings and the
      set of tree-ish spellings denoting the current commit is already documented as OPEN
      (`@`, `HEAD~0`, `HEAD^0`, `refs/heads/<branch>` all deny on the `checkout` row, on
@@ -88,12 +88,12 @@ authority; `260804-1323` had to argue `checkout HEAD`'s inertness from measureme
 
 ## Constraints
 
-- Whatever is chosen, the false claim has to go. `decisions/260804-1323` says the
+- Whatever is chosen, the false claim has to go. `260804-1323` says the
   `checkout` model "makes the two spellings of one operation agree" and
   `rules/protected-path-discipline.md:89` says "Now they agree". Both are falsified by
   the `HEAD` row and are corrected by Step 7 either way.
 - Option 2 is a security-boundary widening and belongs at the Human Gate, not in a
-  coder step. The plan's Step 3 assigns `260804-1348` to a code pass; that assignment is
+  coder step. The plan's Step 3 assigns `260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` to a code pass; that assignment is
   wrong for this half of the issue and is recorded as such on the issue.
 - The pinning tests exist under either answer. They assert the CURRENT verdicts and cite
   this record, so option 2 lands as a deliberate test flip rather than a silent one.
@@ -106,7 +106,7 @@ command the reader is already told is always allowed; the cost of option 2 is th
 Circle's one invariant, spent on an ergonomic gain, in a Circle whose ship is gated on
 five security-boundary questions already. If option 2 is wanted, it is a clean first
 step for a later Circle, where the inertness argument can be made at the length
-`260804-1323` needed.
+`260804-1323_*_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md` needed.
 
 ---
 Answered:
@@ -145,4 +145,4 @@ Answered: this record, `## Answer` — user chose option 1; the asymmetry costs 
 Implemented: 98c9363 — option 1 is documentation-only, and the sentence landed: the `restore`/`checkout` asymmetry is stated where a reader meets it, with the allowed spelling named in as many words (`git checkout HEAD -- <paths>`) in `rules/protected-path-discipline.md`'s git-row section and `README-hooks.md:180`; the unit suite pins the divergence with a `MEASURES:` case. Walked `_a_` → `_i_` by the reconciler at the final Circle reconciliation 260805-2323.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md), completed by `fa2f00b` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the asymmetry is gone because both sides of it are. The classifier that treated `git checkout HEAD -- <paths>` as inert was deleted by `ba7ccda`, taking the `MEASURES:` unit case that pinned the divergence; the sentence this documentation-only answer landed in `rules/protected-path-discipline.md` went with the rule file at `fa2f00b`, and `README-hooks.md` no longer names either spelling.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md), completed by `fa2f00b` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — the asymmetry is gone because both sides of it are. The classifier that treated `git checkout HEAD -- <paths>` as inert was deleted by `ba7ccda`, taking the `MEASURES:` unit case that pinned the divergence; the sentence this documentation-only answer landed in `rules/protected-path-discipline.md` went with the rule file at `fa2f00b`, and `README-hooks.md` no longer names either spelling.

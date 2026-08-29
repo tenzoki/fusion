@@ -19,21 +19,21 @@ Two candidate resolutions:
 
 The choice is a design call, not a bug fix, because option 2 is defensible: unbounded read scope has its own cost. What is not defensible is the current state, where the exclusion is invisible and its effect grows silently.
 
-Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, fourth thin spot).
+Filed by: analyst, from `260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, fourth thin spot).
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/fusion-paths` emits no `SCAN_ARCHIVE` or equivalent, and `rules/fusion-workbench-conventions.md` documents `archive/` as a store without stating a read-scope exclusion. Neither candidate resolution was taken. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/fusion-paths` emits no `SCAN_ARCHIVE` or equivalent, and `rules/fusion-workbench-conventions.md` documents `archive/` as a store without stating a read-scope exclusion. Neither candidate resolution was taken. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 **Reconciliation 260819-1400** (reconciler, domain `code`, HEAD `e435f03`; log
-`shared/history/260819-1400-reconciliation-shared-issues.md`). Reproduces, and the premise it was
+`260819-1400-reconciliation-shared-issues.md`). Reproduces, and the premise it was
 filed on has stopped being hypothetical. `grep -in archive bin/fusion-paths` is still empty — no
 `SCAN_*` key resolves into `archive/`, and no decision states the exclusion. What changed is the other
 side: the store is no longer empty. `e59dea2` (260817-1912) ran the archive step for the first time in
 the repository's history and moved real content under
 `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/` — a `MANIFEST.md`, six `shared/planning/`
 records, `shared/decisions/` and `shared/issues/` records, and the rolled guard log. The sibling record
-`260816-1050` drew exactly this distinction ("that record assumes the store fills up over time; this
+`260816-1050_*_the-guard-logs-preservation-half-has-never-run-and-the-archive-store-has-no-commit-in-the-repositorys-history.md` drew exactly this distinction ("that record assumes the store fills up over time; this
 one measures that it never has") and is now closed on its own half.
 
 **The severity moves with it.** Until 260817 an agent reading only `$SCAN_*` missed nothing, because
@@ -45,4 +45,4 @@ citation resolves for no reader following it at the path written. Marker stays o
 is unchanged, but it is now a live gap rather than a latent one.
 
 ---
-Resolved: referred (decision) — whether `archive/` and terminal Circles' stores enter any scan set, or the exclusion is written down, is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md
+Resolved: referred (decision) — whether `archive/` and terminal Circles' stores enter any scan set, or the exclusion is written down, is the decision's question; 260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md

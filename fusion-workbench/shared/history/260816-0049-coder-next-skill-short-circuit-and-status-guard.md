@@ -6,8 +6,8 @@
 
 ## Source records
 
-- `circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_c_the-explicit-form-of-fusion-next-skips-the-confirmation-relay-and-no-step-says-so.md`
-- `shared/issues/260811-2148_c_the-next-skills-status-guard-and-its-sed-action-ask-different-questions-so-a-valueless-field-is-skipped-silently.md`
+- `260813-1545_*_the-explicit-form-of-fusion-next-skips-the-confirmation-relay-and-no-step-says-so.md`
+- `260811-2148_*_the-next-skills-status-guard-and-its-sed-action-ask-different-questions-so-a-valueless-field-is-skipped-silently.md`
 
 Both renamed `_o_` → `_c_` with a `Resolved:` note appended.
 

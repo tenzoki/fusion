@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-03 22:40
 **Agent:** coderev
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 5
+**Circle:** `260801-1244-guard-rules-write`, Turn 5
 **Scope:** `cb2c8ad..HEAD` (`9aacab5`), excluding `fusion-workbench/` — 6 files, 506 added lines
 **Suite at review time:** `vitest run` — 1182 passed, 24 files, green
 **Shells measured:** bash 3.2.57 and zsh 5.9. The `Bash` tool's shell in this session is
@@ -83,7 +83,7 @@ tests only the first:
 ```
 
 Eleven measured rows, all denying at `cb2c8ad` and allowing at HEAD, all with the real shell
-writing the file, are in `issues/260803-2236_o_…`. Filed **High**, as a regression.
+writing the file, are in `260803-2236_*_…`. Filed **High**, as a regression.
 
 The disclosed residual states the direction backwards — "an over-deny under zsh", history
 `## Residuals` item 2, and `command-word.ts:114-116`. So do
@@ -153,7 +153,7 @@ and the surviving mismatch becomes load-bearing again:
 
 Identical at `cb2c8ad`, so this is pre-existing rather than caused here — but it is the
 counterexample to the recipe this Turn wrote, and the recipe is where it should have been
-caught. Filed **High** as `issues/260803-2237_o_…`, with the discriminating control (the same
+caught. Filed **High** as `260803-2237_*_…`, with the discriminating control (the same
 five segments with a *modelled* `pushd ..` agree with bash and are untouched).
 
 ### 4. Did anything from the previous four commits move? — No, and the costs are the ones stated
@@ -208,14 +208,14 @@ teach the model to follow a `cd` it previously ignored.
 
 | # | Severity | Kind | Finding |
 |---|---|---|---|
-| `260803-2236` | High | **regression** at `9aacab5` | `runsBuiltins` is stored against a program name; `command` is inert in zsh and `time` is inert under four spellings, so eleven wrapper-mediated commands that denied at `cb2c8ad` now allow while the real shell writes the protected file |
-| `260803-2238` | High | pre-existing, undocumented | the model assumes every `cd` **succeeds**; after any separator other than `&&` the shell runs the next segment from where it never left, so `cd nonexistent; rm rules/x.md` allows and deletes |
+| `260803-2236_*_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md` | High | **regression** at `9aacab5` | `runsBuiltins` is stored against a program name; `command` is inert in zsh and `time` is inert under four spellings, so eleven wrapper-mediated commands that denied at `cb2c8ad` now allow while the real shell writes the protected file |
+| `260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md` | High | pre-existing, undocumented | the model assumes every `cd` **succeeds**; after any separator other than `&&` the shell runs the next segment from where it never left, so `cd nonexistent; rm rules/x.md` allows and deletes |
 
 ### Theme: the give-up mechanism is stated over values and not over shape
 
 | # | Severity | Kind | Finding |
 |---|---|---|---|
-| `260803-2237` | High | pre-existing since `a79ff1a` | `unmodelled()` zeroes the stack's values but preserves its depth, so `pushd -n DIR` leaves bash one entry deeper; an absolute `cd` re-proves the cwd and a later `popd` collects the mismatch |
+| `260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md` | High | pre-existing since `a79ff1a` | `unmodelled()` zeroes the stack's values but preserves its depth, so `pushd -n DIR` leaves bash one entry deeper; an absolute `cd` re-proves the cwd and a later `popd` collects the mismatch |
 
 All three were measured through the real guard subprocess, one fresh project per row, with
 the real-shell effect asserted and no deny reading `[HALTED]`.
@@ -257,22 +257,22 @@ zsh, and then reasoned about in the wrong direction.
 
 ## Recommended sequencing
 
-**Release blocker for any claim about the protected-path boundary:** `260803-2236`. It is a
+**Release blocker for any claim about the protected-path boundary:** `260803-2236_*_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md`. It is a
 regression, it is live in the shell that actually runs the commands, and it is the cheapest
 of the three to close — drop `runsBuiltins` from `command` and `time` (leaving `builtin`,
 which no spelling and no shell disagrees about), or drop the whole modelled-wrapper path.
 Inverting the assertion at `bash-mutation-guard.test.ts:645` and correcting the four
 documents goes in the same commit.
 
-**Same priority, independent:** `260803-2237`. Small, contained (`unmodelled` plus one branch
+**Same priority, independent:** `260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md`. Small, contained (`unmodelled` plus one branch
 in `popd`), and it costs nothing measurable.
 
-**Needs a decision, not a repair:** `260803-2238`. Direction 1 (degrade after a non-`&&`
+**Needs a decision, not a repair:** `260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md`. Direction 1 (degrade after a non-`&&`
 separator) costs `cd build; rm out.js`, which agents genuinely write. It should get a
 decision record before any code moves.
 
 **Still open, unchanged by this Turn:** `260803-1835` (a redirection after an unmodellable
-`cd`). This Turn narrowed its entrance set, as the history claims; `260803-2236` widens it
+`cd`). This Turn narrowed its entrance set, as the history claims; `260803-2236_*_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md` widens it
 again by the same routes until it is closed.
 
 ---
@@ -311,10 +311,10 @@ in four shipped places.
 **What it is not closed against:**
 
 - a directory builtin behind a wrapper the table calls builtin-capable when the running shell
-  or the written spelling disagrees (`260803-2236`, live, regression);
+  or the written spelling disagrees (`260803-2236_*_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md`, live, regression);
 - a stack whose depth the model and the shell disagree about, once an absolute `cd` re-proves
-  the working directory (`260803-2237`, live, pre-existing);
-- a `cd` that **fails**, on any separator the shell does not condition on (`260803-2238`,
+  the working directory (`260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md`, live, pre-existing);
+- a `cd` that **fails**, on any separator the shell does not condition on (`260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md`,
   live, pre-existing, on no residual list);
 - and — by nature, not by omission — every construct that hides a `cd` from a textual reader:
   `eval "cd rules"`, an alias or shell function named `cd`, a `cd` inside a `source`d script,
@@ -333,7 +333,7 @@ It is not true yet.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — the regression this review found is closed at HEAD `cc012fc`. Verified independently, not read off the fix log.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — the regression this review found is closed at HEAD `cc012fc`. Verified independently, not read off the fix log.**
 
 The review's central finding was that `9aacab5` made eleven measured rows allow that previously denied. Those eleven rows are nine distinct command texts (rows 6/7 and 8/9 are one text each, measured in bash and in zsh; the classifier is shell-agnostic). Each was run through `classifyBashMutation` at four commits, with `hooks/lib` materialised out of git read-only at each:
 
@@ -349,8 +349,8 @@ The review's central finding was that `9aacab5` made eleven measured rows allow 
 | DENY | allow | DENY | DENY | `'time' cd build && rm rules/x.md` |
 | DENY | allow | DENY | DENY | `"time" cd build && rm agents/coder.md` |
 
-The review's measurement reproduces exactly. `048f3db` closed eight of the nine; the ninth, the redirect spelling, closed in `c9c44a3` with `issues/260803-1835`.
+The review's measurement reproduces exactly. `048f3db` closed eight of the nine; the ninth, the redirect spelling, closed in `c9c44a3` with `260803-1835`.
 
-**The closure did not restore the defect `9aacab5` was written to fix.** All eight rows of `issues/260803-2038`'s own measurement table deny at HEAD, including the redirect spelling `command cd rules && echo pwned > x.md` that briefly re-allowed at `048f3db`. The mechanism changed — the rows now deny by give-up (`unknownCwdReason`) rather than by modelling — and the discriminating controls confirm the give-up did not become a blanket: `cd rules && rm x.md` denies with the *protected-path* reason, `cd build && rm out.js` still allows, and `rm -rf node_modules`, `rm -rf dist`, `pushd build && rm out.js` are all untouched.
+**The closure did not restore the defect `9aacab5` was written to fix.** All eight rows of `260803-2038`'s own measurement table deny at HEAD, including the redirect spelling `command cd rules && echo pwned > x.md` that briefly re-allowed at `048f3db`. The mechanism changed — the rows now deny by give-up (`unknownCwdReason`) rather than by modelling — and the discriminating controls confirm the give-up did not become a blanket: `cd rules && rm x.md` denies with the *protected-path* reason, `cd build && rm out.js` still allows, and `rm -rf node_modules`, `rm -rf dist`, `pushd build && rm out.js` are all untouched.
 
 **One thing this review could not have known and which the record should carry.** `048f3db`, the commit that closed the regression this review found, was itself never reviewed. Turn 7's review used it as the *baseline* (`048f3db..c9c44a3`), which measures what came after it, not what it did. Turn 8's commit `cc012fc` was never reviewed either, because the session hit its max-Turns circuit breaker in the same commit. Two of the session's five code commits carry no independent review.

@@ -2,7 +2,7 @@ The curator prompt is the one prose agent that does not enumerate its long-form 
 ---
 `rules/user-facing-output.md:11` states, of the long-form writing profile: "Each long-form-prose agent's prompt enumerates which of its outputs the writing profile governs." Nine of the ten prose agents do. `agents/curator.md` does not, and it receives `default-voice-en.yaml` all the same, so the profile arrives with no statement of what it governs.
 ---
-**Found by:** curator, survey run `circles/260801-1244-curator/history/260814-1332-curator-run.md` (candidate C08)
+**Found by:** curator, survey run `260814-1332-curator-run.md` (candidate C08)
 **Owner:** `coder` — the fix is in an agent prompt, which the curator's remit excludes.
 
 **Verified 2026-08-14 at HEAD `ae21c87`:**
@@ -27,7 +27,7 @@ The curator prompt is the one prose agent that does not enumerate its long-form 
 
 ---
 
-**Resolved 2026-08-21 (coder, plan step 17 of `circles/260820-2051-style-rules-arrive-and-get-measured`). Working tree at HEAD `abdf1ad`; the orchestrator commits.**
+**Resolved 2026-08-21 (coder, plan step 17 of `260820-2051-style-rules-arrive-and-get-measured`). Working tree at HEAD `abdf1ad`; the orchestrator commits.**
 
 `agents/curator.md` `## Output Style` now opens with the `Long-form prose vs short-form` block, in the shape the other seven prose prompts carry. It names the run file's prose sections and the decision records the curator files as long-form, and the gate prompt, the survey report and the chat summary as short-form. The parenthetical that every sibling carries is kept, with its structured-artifact examples narrowed to the ledger entries and commit messages, which are the structured artifacts this agent actually writes.
 

@@ -2,16 +2,16 @@
 
 **Date:** 2026-08-20
 **Mode:** in-Circle clarification, dispatched by the orchestrator
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
 **HEAD read:** `a5b73da`
-**Output:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_o_spec-style-rules-arrive-and-get-measured.md`
+**Output:** `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
 
 ## What was read
 
 The Circle record, the answered decision
-`shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
 all sixteen defect records named in the dispatch, the recommendations and findings 1, 9 and 10 of
-`shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`, `rules/user-facing-output.md`,
+`260816-0740-rhetorical-register-of-agent-output.md`, `rules/user-facing-output.md`,
 `rules/critical-stance.md`, `bin/fusion-rules`, `skills/setup/SKILL.md` Steps 0b, 0d and 0f, and the
 two growth-bound test files with their baseline maps.
 
@@ -33,7 +33,7 @@ two growth-bound test files with their baseline maps.
 and this Circle's own Grounding snapshot both state that it was added to the emitted set and that the
 corpus therefore grew. The commit that created it moved text out of an emitted file, so the corpus
 shrank. Filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_o_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
+`260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
 
 ## Clarification channel
 

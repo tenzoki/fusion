@@ -5,7 +5,7 @@ The after-run's records-per-session arm names a join between transcripts and ses
 **Severity:** High
 **Domain:** code
 **Filed by:** coderev, reviewing `084c626..dbf259a`
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 6, and the `C3 -.-> F4` edge of the flowchart in that section
+**Affects:** `260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 6, and the `C3 -.-> F4` edge of the flowchart in that section
 **Cross-references:** section 1 of the same report, which defines the records-per-session command; `fusion-workbench/orchestrator-events.jsonl`, the source that lacks the key
 
 ---
@@ -73,7 +73,7 @@ and its flowchart.
 ---
 
 Resolved: route 2 of the three the record names, extended with what route 3 asked for. Section 6 of
-`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`
+`260822-0035-three-before-figures-and-the-after-measurement-defined.md`
 now states that the records-per-orchestrator-session arm carries **no priming restriction at all**,
 that both its sides are whole-corpus and therefore compare to each other, and that the after value
 will include primed sessions with an upward bias whose size is not measurable. The `C3 -.-> F4`

@@ -13,9 +13,9 @@ The plan contains neither marker, anywhere.
 fifteen-step plan on a Turn budget of 12. Reconstructing progress today means reading three history
 entries and three commit messages.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`reviews/260815-0804-coderev-plane-mirror-removal.md`)
+**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`260815-0804-coderev-plane-mirror-removal.md`)
 **Owner:** `coder`, per step; the obligation is the executing agent's
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+**Affects:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`
 
 **Verified 2026-08-15 at HEAD `7c12d6a`.**
 

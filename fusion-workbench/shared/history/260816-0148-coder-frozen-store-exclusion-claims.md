@@ -7,9 +7,9 @@
 ## Task
 
 Three filed defects about one paragraph and its copies:
-`shared/issues/260816-0058` (the conventions count four consumers where three remain),
-`shared/issues/260816-0135` (the same falsified claim at `agents/playmaker.md:61`),
-`shared/issues/260816-0136` (the tracked-workbench split's declared scope reaches two
+`260816-0058` (the conventions count four consumers where three remain),
+`260816-0135` (the same falsified claim at `agents/playmaker.md:61`),
+`260816-0136` (the tracked-workbench split's declared scope reaches two
 legacy stores that neither of its groups classifies).
 
 ## What was measured first
@@ -22,7 +22,7 @@ At `3a0408a` + working tree:
 - `skills/log-activity/SKILL.md:82` — excludes `archive/`, `stashes/`, `stilwerk/`,
   `.migration-v2-backup/` by path. Still true.
 - `skills/archive/SKILL.md:96` — names `stashes/` (not `.migration-v2-backup/`; that gap
-  is `260816-0025`, a separate record).
+  is `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`, a separate record).
 - `agents/playmaker.md:61` — names `archive/`, `.migration-v2-backup/`, `stashes/`.
 
 So: three consumers exclude `stashes/` by path, and "all but the archive skill exclude
@@ -44,7 +44,7 @@ deciding question — whether a tracked workbench has an opinion about a frozen 
 answered by **classifying**, not by silence: a frozen store follows `archive/` and is
 simply tracked, which puts it out of the split for the same reason the artifact
 directories are out of it. Scope and membership now match against the layout tree *and*
-against the sentence, which was the discrepancy `260816-0136` measured.
+against the sentence, which was the discrepancy `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md` measured.
 
 **`agents/playmaker.md:61`** — the parenthetical now separates the two consumers instead of
 claiming both carry the same `find` exclusions.
@@ -97,12 +97,12 @@ Targeted green: `rules-emission-golden.test.ts` 15/15 after regeneration,
 ## Records
 
 - `260816-0058` → `_c_`, Resolved appended.
-- `260816-0135` → `_c_`, Resolved appended.
-- `260816-0136` → `_p_`, **part 1 only**. Its part 2 (`.gitignore:67` — drop `tasklist.md`,
+- `260816-0135_*_playmakers-frozen-store-bullet-repeats-the-falsified-claim-about-setups-find-and-is-outside-the-filed-record.md` → `_c_`, Resolved appended.
+- `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md` → `_p_`, **part 1 only**. Its part 2 (`.gitignore:67` — drop `tasklist.md`,
   add `.fusion-setup`) is outside the permitted file set and is still open.
 
 ## Left open
 
-- `.gitignore:67`'s stale comment (`260816-0136` part 2).
-- `260816-0025` — the archive skill's never-archive list omits `.migration-v2-backup/`.
+- `.gitignore:67`'s stale comment (`260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md` part 2).
+- `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md` — the archive skill's never-archive list omits `.migration-v2-backup/`.
   The same measurement applies; its table needs the same correction.

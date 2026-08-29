@@ -22,7 +22,7 @@ Archiv-Store gar nicht erreichen — er wurde also ausserhalb der Enumeration ge
 "`/fusion:archive` target". Was ein eingefrorener Store für einen Leser bedeutet, stand
 nirgends. Zwei Konsumenten haben die Lücke unterschiedlich gefüllt, und beide falsch:
 
-- `/fusion:setup` (Befund `260805-1435`, behoben in `ec0561a`) las `archive/` und
+- `/fusion:setup` (Befund `260805-1435_*_setup-sperrt-sich-selbst-aus-weil-die-klammer-sonde-eingefrorene-stores-mitliest.md`, behoben in `ec0561a`) las `archive/` und
   `.migration-v2-backup/` und schloss aus 1146 eingefrorenen Klammer-Marker-Dateien, die
   workbench stehe im alten Format. Es verweigerte dauerhaft.
 - Playmaker las denselben Store und schrieb seinen Inhalt in ein lebendes Briefing.
@@ -41,7 +41,7 @@ für spätere Leser bedeutet.
 **Nicht mitbeantwortet.** Ob irgendein Konsument je einen aufgelösten *Lesepfad* in
 `archive/` bekommen soll — etwa ein Reconciler, der superseded decisions sehen muss —
 ist eine andere Frage und bleibt offen; sie steht in diesem Repository als
-`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` und nennt genau
+`260801-1020_*_scan-keys-never-reach-the-archive-store.md` und nennt genau
 zwei Kandidaten, von denen dieser Fix nur den einen berührt: die Ausschluss-Regel für
 Scans über den lebenden Stand. Ein künftiger `SCAN_ARCHIVE` bleibt möglich.
 
@@ -64,7 +64,7 @@ Byte-Ratchet in `hooks/lib/__tests__/rules-emission-golden.test.ts` pinnt jede R
 auf den gemessenen Höchststand und lässt kein zusätzliches Byte in einer immer geladenen
 Regeldatei zu. Selbst die kürzeste Fassung (rund 60 Bytes als Ergänzung der vorhandenen
 Kommentarzeilen im Layout-Baum) hätte die Suite gebrochen. Aufgenommen als
-`decisions/260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`.
+`260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`.
 
 Damit steht die Regel an zwei Orten als Prosa (`skills/setup/SKILL.md` aus `ec0561a`,
 `agents/playmaker.md` aus dieser Charge) und nirgends als Konvention. Der nächste
@@ -80,5 +80,5 @@ Nicht angefasst: `skills/setup/SKILL.md` behält seine Ausschlüsse und seine Pr
 über ein geteiltes Verzeichnis bereitgestellt und nur lesend genutzt wurden
 (`260803-1412-playmaker-user-fusion-next.md`, `260803-1840-playmaker-direct-dispatch.md`).
 Niemand hat den Punkt als Befund gemeldet; er stand als Beobachtung im Protokoll
-`circles/260801-1244-guard-rules-write/history/260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
+`260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
 (Punkt 2). Die beobachteten Läufe liegen im konsumierenden Projekt, nicht hier.

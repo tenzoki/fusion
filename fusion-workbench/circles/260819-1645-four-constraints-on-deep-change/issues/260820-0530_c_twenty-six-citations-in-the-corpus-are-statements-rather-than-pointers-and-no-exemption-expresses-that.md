@@ -18,11 +18,11 @@ is the step the four repair steps existed to enable.
 **Filed by:** `coder`, at plan step 8c
 **Owner:** whoever executes step 9
 **Affects:** `hooks/lib/__tests__/helpers/citation-scan.ts` (the exemption list in `scanCitationTokens`);
-`circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md` step 9
-**Cross-references:** `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+`260819-2016_*_four-constraints-on-deep-change.md` step 9
+**Cross-references:** `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 (option 1, answered: zero dangling, recomputed, no baseline);
 `rules/circle-records.md` `### Citation form in the portfolio` (the pointer-versus-statement test);
-`circles/260801-1244-curator/issues/260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md`
+`260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md`
 (the same distinction, filed as a defect a week earlier and carrying seven of the 26 itself)
 
 **Measured 2026-08-20 at HEAD `46133dc`** with the repair corpus assembled from the tree, in both
@@ -103,16 +103,16 @@ Named by file and line count rather than by token, deliberately: writing the tok
 
 | record | violations | lines |
 |---|---|---|
-| `circles/260801-1244-curator/issues/260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md` | 7 | 18, 19, 21, 22, 24, 25, 26 |
-| `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` | 4 | 24, 25, 26, 72 |
-| `shared/issues/260816-0119_*_the-lints-newly-widened-surface-still-stops-at-hooks-lib-tests-where-real-citations-have-gone-stale.md` | 3 | 29, 31, 54 |
-| `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` | 3 | 12, 17, 77 |
-| `shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md` | 2 | 102 (two tokens on one line) |
-| `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md` | 2 | 17, 18 |
-| `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md` | 2 | 65 (two tokens on one line) |
-| `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md` | 1 | 5 |
-| `shared/issues/260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md` | 1 | 112 |
-| `shared/issues/260818-0715_*_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md` | 1 | 75 |
+| `260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md` | 7 | 18, 19, 21, 22, 24, 25, 26 |
+| `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` | 4 | 24, 25, 26, 72 |
+| `260816-0119_*_the-lints-newly-widened-surface-still-stops-at-hooks-lib-tests-where-real-citations-have-gone-stale.md` | 3 | 29, 31, 54 |
+| `260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` | 3 | 12, 17, 77 |
+| `260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md` | 2 | 102 (two tokens on one line) |
+| `260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md` | 2 | 17, 18 |
+| `260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md` | 2 | 65 (two tokens on one line) |
+| `260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md` | 1 | 5 |
+| `260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md` | 1 | 112 |
+| `260818-0715_*_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md` | 1 | 75 |
 
 Twenty-four were left by steps 5 and 7 and are listed in their history logs. Two are step 8c's, in
 the `circle-record` class the grammar learned at step 8b, and are the last two lines of the table

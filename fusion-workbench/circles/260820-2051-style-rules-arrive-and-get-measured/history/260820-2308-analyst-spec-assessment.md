@@ -2,10 +2,10 @@
 
 **Date:** 2026-08-20 23:08
 **Type:** Risk / Feasibility assessment of a draft specification
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
 **HEAD read:** `a5b73da`
 **Dispatched by:** orchestrator, on the user's behalf, non-interactive
-**Output:** `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`
+**Output:** `260820-2308-assessment-of-the-style-rules-spec.md`
 
 ## What was read
 
@@ -24,7 +24,7 @@ and `stilwerk/default-voice-en.yaml`.
 - The prose-agent set: eight agents at `bin/fusion-rules:193`, seven carrying the enumeration.
 - The three profile stations: work tree and installed copy byte-identical for all four files today.
 - The hook-test inventory: 20 259 lines by `wc -l`, smallest test file 51 lines.
-- The state of `circles/260819-1645-four-constraints-on-deep-change`: closed, in `5faed26`.
+- The state of `260819-1645-four-constraints-on-deep-change`: closed, in `5faed26`.
 
 ## What was found
 

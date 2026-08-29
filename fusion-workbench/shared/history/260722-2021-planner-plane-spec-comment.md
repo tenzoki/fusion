@@ -2,8 +2,8 @@
 
 **Date:** 2026-07-22 20:21
 **Agent:** planner
-**Input spec:** `shared/planning/260722-1943_o_spec-plane-spec-comment.md`
-**Output plan:** `shared/planning/260722-2021_o_plan-plane-spec-comment.md`
+**Input spec:** `260722-1943_*_spec-plane-spec-comment.md`
+**Output plan:** `260722-2021_*_plan-plane-spec-comment.md`
 
 ## What was planned
 
@@ -30,7 +30,7 @@ code + its vitest lint guards).
   `…/issues/<id>/comments/<comment_id>/`; list uses `?per_page=100`.
 - **Note placement**: `COMMENTS_SKIPPED` counter folded into the STATUS line like `LABELS_SKIPPED`.
 - **Decision record** placement: `circles/260719-1536-plane-mirror-integration/decisions/` per
-  the Origin Rule (continuation of decision 260719-2313).
+  the Origin Rule (continuation of decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md).
 
 ## Notes
 

@@ -1,7 +1,7 @@
 # Code review — C4 Turn 2: the session identifier, the cut, and the templates that carry identity
 
 **Reviewed-range:** `b11bec6..72a9561`
-**Not-opened:** `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260826-0715-cut-candidates-for-two-growth-bounded-surfaces.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0141-coder-p4-setup-skill-session-start-fields.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0148-coder-p9-readers-repair-authored-once.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0150-coder-c4-turn-1-review-closures-events-query.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0150-coder-p7-monitor-reads-its-own-checkout.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0155-coder-reference-baseline-reapproved-after-wave.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0208-coder-p5-one-turn-count-four-sites.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0748-coder-r3-three-bare-stamp-citations.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0800-coder-c1-four-cuts-for-two-growth-bounds.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0815-coder-p10-tests-for-events-query-and-the-monitor-window.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-0846-p11-session-identifier-both-branches.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0132_*_the-turns-exit-4-has-two-causes-and-the-authoritative-header-names-one.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0133_*_a-turn-start-line-with-no-readable-timestamp-is-dropped-from-the-count-and-reported-nowhere.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0134_*_other-checkouts-counts-two-different-sets-depending-on-the-exit-code-and-its-comment-describes-one.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0137_*_the-party-sort-is-not-total-and-the-comment-beside-it-claims-it-is.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0138_*_the-party-line-is-unescaped-tab-separated-and-a-tab-or-newline-in-a-person-value-breaks-it.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0139_*_three-citations-added-in-this-range-name-a-record-by-its-bare-stamp-a-day-after-the-rule-forbade-it.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0140_*_the-new-setup-step-2-identity-call-moves-a-halt-from-first-filing-to-setup-and-nothing-says-so.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0154_*_the-reference-pin-shaped-a-comment-away-from-naming-a-path-and-the-vagueness-is-the-gates-doing.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0158_*_a-staging-list-built-by-a-shell-pipeline-over-git-status-is-the-directory-sweep-the-rule-forbids.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0805_*_the-resumption-measurement-answers-for-claude-codes-resume-and-the-plan-asked-about-fusions.md`, `fusion-workbench/circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`, `fusion-workbench/shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+**Not-opened:** `260826-0715-cut-candidates-for-two-growth-bounded-surfaces.md`, `260826-0141-coder-p4-setup-skill-session-start-fields.md`, `260826-0148-coder-p9-readers-repair-authored-once.md`, `260826-0150-coder-c4-turn-1-review-closures-events-query.md`, `260826-0150-coder-p7-monitor-reads-its-own-checkout.md`, `260826-0155-coder-reference-baseline-reapproved-after-wave.md`, `260826-0208-coder-p5-one-turn-count-four-sites.md`, `260826-0748-coder-r3-three-bare-stamp-citations.md`, `260826-0800-coder-c1-four-cuts-for-two-growth-bounds.md`, `260826-0815-coder-p10-tests-for-events-query-and-the-monitor-window.md`, `260826-0846-p11-session-identifier-both-branches.md`, `260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md`, `260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md`, `260826-0132_*_the-turns-exit-4-has-two-causes-and-the-authoritative-header-names-one.md`, `260826-0133_*_a-turn-start-line-with-no-readable-timestamp-is-dropped-from-the-count-and-reported-nowhere.md`, `260826-0134_*_other-checkouts-counts-two-different-sets-depending-on-the-exit-code-and-its-comment-describes-one.md`, `260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`, `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`, `260826-0137_*_the-party-sort-is-not-total-and-the-comment-beside-it-claims-it-is.md`, `260826-0138_*_the-party-line-is-unescaped-tab-separated-and-a-tab-or-newline-in-a-person-value-breaks-it.md`, `260826-0139_*_three-citations-added-in-this-range-name-a-record-by-its-bare-stamp-a-day-after-the-rule-forbade-it.md`, `260826-0140_*_the-new-setup-step-2-identity-call-moves-a-halt-from-first-filing-to-setup-and-nothing-says-so.md`, `260826-0154_*_the-reference-pin-shaped-a-comment-away-from-naming-a-path-and-the-vagueness-is-the-gates-doing.md`, `260826-0158_*_a-staging-list-built-by-a-shell-pipeline-over-git-status-is-the-directory-sweep-the-rule-forbids.md`, `260826-0805_*_the-resumption-measurement-answers-for-claude-codes-resume-and-the-plan-asked-about-fusions.md`, `260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`, `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
 
 Every source file in the range was opened, the four compiled artifacts the Turn 1 pass carried
 included. The unopened set is the record layer: eleven history entries written by this Circle's own
@@ -11,7 +11,7 @@ opened because a finding turns on their enumeration, and the analysis was read o
 
 **Reviewer:** coderev, Kai Stalmann <ks@qantr.com>
 **Reviewed:** 2026-08-26
-**Plan:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, steps 4 through 11
+**Plan:** `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, steps 4 through 11
 
 ## The Turn 1 carried list, discharged
 
@@ -55,7 +55,7 @@ where every one of the Turn 1 review's discharges lives, the High one included �
 **H-1. The fourth `session_start` emit template was created in this range and left out of the `<ID>`
 conversion.** `c2be6f8` added `\"person\":\"<PERSON>\",\"checkout\":\"<CHECKOUT>\"` unconditionally to
 `skills/setup/SKILL.md:483`. `753932b`, two commits later, replaced the two literal fields with `<ID>`
-at `agents/orchestrator.md:235`, `:953` and `:1322`, and closed `260826-0136` stating "all three emit
+at `agents/orchestrator.md:235`, `:953` and `:1322`, and closed `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md` stating "all three emit
 templates". No `<ID>` fragment is defined anywhere in the skill body: Step 0i (`:346-355`) reads the
 identity and Step 5 (`:480`) cites the orchestrator's rule in prose, beside a template that cannot
 execute it — which is verbatim what the closed record said was wrong with the other three.
@@ -65,13 +65,13 @@ that carries the session's identity. An unresolved half yields `"person":""`, wh
 tolerate (`hooks/lib/events-query.ts:104` drops an empty-string field), or the literal `<PERSON>`
 placeholder, which they do not — it parses as a person and counts as a party. The unresolved half is
 the ordinary state of an install one release behind
-(`shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`).
+(`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`).
 
 The same Circle already filed the same shape once, against the Turn count:
 `260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
 records that a count taken over `agents/orchestrator.md` missed the `/fusion:setup` rendering of one
 procedure. It has now happened twice, in one Circle, on two different edits. Record:
-`issues/260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`.
+`260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`.
 **Severity: High.**
 
 **M-1. A fifth Turn-count definition site.** `agents/reconciler.md:21` defines the Turn count as
@@ -82,7 +82,7 @@ do not derive it again anywhere", and `bin/fusion-rules` emits that prompt to no
 orchestrator while this one loads on every reconciler dispatch. The closed record enumerated four
 sites across two files; `grep -rn turn_start agents/ skills/ rules/` returns the fifth in one command.
 Record:
-`issues/260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`.
+`260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`.
 **Severity: Medium.**
 
 ### Theme 2 — the tests landed on the half that was already provable
@@ -108,7 +108,7 @@ missing `agentstate.yaml`" among the clauses to cover; it lives at `hooks/events
 and is asserted nowhere. The test file's header carries a deliberate-exclusion note
 (`fusion-events.test.ts:13-16`) naming two other things — the wrapper's identity-exit mapping and a
 two-checkout manual pass — so a reader takes that note as the complete list. Record:
-`issues/260826-0906_*_the-events-query-entry-point-carries-every-turn-1-fix-and-is-exercised-by-nothing.md`.
+`260826-0906_*_the-events-query-entry-point-carries-every-turn-1-fix-and-is-exercised-by-nothing.md`.
 **Severity: High.**
 
 **M-2. The monitor's whole-file parse is the repair, and a three-line fixture cannot see it.**
@@ -119,7 +119,7 @@ then take the last `MAX_EVENTS`. The two new cases
 (`bin/monitor:47`). Restoring the pre-change `lines[-MAX_EVENTS:]` slice passes both. Deleting the
 sort at `:1306` passes both. Taking the window before the sort instead of after passes both. The
 filter itself — the one property the cases do assert, in both directions — is well covered. Record:
-`issues/260826-0906_*_the-monitors-whole-file-parse-is-the-repair-and-a-three-line-fixture-cannot-see-it.md`.
+`260826-0906_*_the-monitors-whole-file-parse-is-the-repair-and-a-three-line-fixture-cannot-see-it.md`.
 **Severity: Medium.**
 
 ### Theme 3 — documentation that fell behind the same commit that changed it
@@ -131,14 +131,14 @@ filter itself — the one property the cases do assert, in both directions — i
 neither: `:140` says it arrives on the SessionStart line `hooks/session-id.ts` prints. In the same
 section, `:1322` still calls `<ID>` "the pair" when `:139-140` define it as up to three fields.
 Record:
-`issues/260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`.
+`260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`.
 **Severity: Low.**
 
 **L-2. One of the three harness properties the cut removed does not hold by consequence.** See the
 verdict on the cut below. `c649556` says "Both properties now hold by consequence"; the removed case
 asserted three, in its own comment, and the **replace** half is asserted by nothing that survives.
 Record:
-`issues/260826-0906_*_one-of-the-three-harness-properties-the-cut-removed-does-not-hold-by-consequence.md`.
+`260826-0906_*_one-of-the-three-harness-properties-the-cut-removed-does-not-hold-by-consequence.md`.
 **Severity: Low.**
 
 ### Theme 4 — a family property, measured here
@@ -150,7 +150,7 @@ says which figure was missing. `grep -l "stdout.on\|EPIPE" hooks/*.ts hooks/lib/
 nothing, so no program under `hooks/` handles it — a family shape, not a defect this Circle
 introduced. **The reachability is narrow and is stated in the record rather than implied:** each
 subcommand makes exactly one `process.stdout.write`, so `| head -N` does not reach it. Record:
-`issues/260826-0906_*_the-event-query-program-dies-with-an-unhandled-epipe-when-its-reader-closes-stdout-first.md`.
+`260826-0906_*_the-event-query-program-dies-with-an-unhandled-epipe-when-its-reader-closes-stdout-first.md`.
 **Severity: Low.**
 
 ## The two claims in `c649556`, verified rather than accepted
@@ -224,10 +224,10 @@ Stated so the next pass does not re-derive it.
   as visible as prose can make it: `hooks/session-id.ts:22-39` names `additionalContext` as the
   unmeasured channel and says not to switch to it, `:41-52` says why one process cannot carry both
   channels, and the measurement it cites
-  (`analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`, finding (b)) reads the
+  (`260825-2214-can-a-hook-obtain-the-session-identifier.md`, finding (b)) reads the
   `hook_success` attachments from both ends. `session-start.ts` writing `{}` cannot leak into model
   context, because a recognised JSON object empties `content` — which is the same mechanism the
-  measurement records. What is missing is a gate, and `260826-0848` says so precisely.
+  measurement records. What is missing is a gate, and `260826-0848_*_the-fourth-sessionstart-command-is-asserted-by-nothing-and-its-own-suite-warns-about-exactly-that.md` says so precisely.
 - **`setEventSession` is set before the first emit on both hooks.** `guard.ts:144` sits after the
   parse and before the diagnostic loop at `:180`; `tracker.ts:444` sits after the parse and before
   both `bestEffort` measurements. A run that never reaches the parse writes rows with the key absent,
@@ -250,7 +250,7 @@ Stated so the next pass does not re-derive it.
   measured split on the assertion.
 - **The cut arithmetic.** Hook-test lines 20 375 → 20 113 at `c649556` (−262), then +166 at `46de871`
   and +70 at `72a9561`, landing at 20 349 — below the starting figure, so the decision's "equal
-  number of lines, same Turn" (`decisions/260825-2140_*_where-do-c4s-hook-test-lines-come-from…`,
+  number of lines, same Turn" (`260825-2140_*_where-do-c4s-hook-test-lines-come-from…`,
   option 2) is satisfied with room to spare.
 - **Citation form.** No backticked bare stamp appears on any added non-workbench line in the range.
   `d751534` repaired the three the prior pass found and explicitly declined to sweep the older ones
@@ -282,9 +282,9 @@ that pass singled out as the only copy a reader gets, are now accurate.
 
 **Three things the executors filed against themselves are better than anything I would have written
 about them.** `260826-0846` (four prose sites still counting three SessionStart commands, plus
-`hooks-wiring.test.ts:93`), `260826-0847` (the `session_id` row assertion parked in the state-load
-suite) and `260826-0848` (nothing pins the wiring, nothing pins the channel) are accurate, correctly
-severed and correctly reasoned. I add one clause to `260826-0848`'s fix direction and no record:
+`hooks-wiring.test.ts:93`), `260826-0847_*_the-session-id-row-assertion-sits-in-the-state-load-suite-because-that-was-the-only-permitted-file.md` (the `session_id` row assertion parked in the state-load
+suite) and `260826-0848_*_the-fourth-sessionstart-command-is-asserted-by-nothing-and-its-own-suite-warns-about-exactly-that.md` (nothing pins the wiring, nothing pins the channel) are accurate, correctly
+severed and correctly reasoned. I add one clause to `260826-0848_*_the-fourth-sessionstart-command-is-asserted-by-nothing-and-its-own-suite-warns-about-exactly-that.md`'s fix direction and no record:
 spawning the built module is the *only* form available, because `sessionIdLine` is exported at
 `hooks/session-id.ts:71` while `:94` runs `main()` at module load and `main()` awaits
 `process.stdin`, so an importing test would hang. `session-start.ts` exports `subdirectoryWarning` on
@@ -295,7 +295,7 @@ the same terms and its suite spawns too, so this is house style rather than a ne
 1. **H-2, before the Circle closes.** The `scope=` key is what plan stop-condition 5 rests on, and
    nothing holds the helper to emitting it. Two cases close the load-bearing part.
 2. **H-1, before the Circle closes.** One template and one fragment definition, and it makes the
-   already-closed `260826-0136` true.
+   already-closed `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md` true.
 3. **M-1 and M-2, cleanup within the Circle.** M-1 is one sentence. M-2 is one fixture, and it needs
    the same cut-in-the-same-Turn arrangement H-2 does, so take them together.
 4. **L-1, any time.** Two clauses in one paragraph.

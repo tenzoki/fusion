@@ -3,7 +3,7 @@
 ---
 **Status:** closed
 **Filed by:** analyst
-**Cross-references:** fusion-workbench/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md, fusion-workbench/decisions/260706-1902[o]-consultant-chat-longform-boundary.md
+**Cross-references:** 260706-1902-user-facing-agents-garbled-language-rootcause.md, 260706-1902[o]-consultant-chat-longform-boundary.md
 ---
 
 ## Symptom
@@ -31,7 +31,7 @@ Edit `agents/consultant.md:166`: move "Conversation-mode answers" from the long-
 
 No change needed to `bin/fusion-rules` (already emits both profiles to the consultant) or to `rules/user-facing-output.md` (already correct). Single-agent, single-line fix.
 
-Depends on the boundary decision in `fusion-workbench/decisions/260706-1902[o]-consultant-chat-longform-boundary.md` (expanded-on-request chat answers: chat-voice or long-form).
+Depends on the boundary decision in `260706-1902[o]-consultant-chat-longform-boundary.md` (expanded-on-request chat answers: chat-voice or long-form).
 
 ## Verification
 

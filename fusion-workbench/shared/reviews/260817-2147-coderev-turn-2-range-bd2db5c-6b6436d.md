@@ -5,7 +5,7 @@
 **Not-opened:** none
 
 Carried scope: none. `bin/fusion-review-coverage` reports `carried=none` from
-`shared/reviews/260817-2130-coderev-turn-1-range-82a860d-bd2db5c.md`, which declared its
+`260817-2130-coderev-turn-1-range-82a860d-bd2db5c.md`, which declared its
 `**Not-opened:**` field explicitly — a recorded absence, not a missing declaration. All eight
 files the commit touched were opened, not only the three the dispatch scoped.
 
@@ -69,7 +69,7 @@ forbidden by the list, and reaches no clause; the failure it does have — over-
 attributed to a closed pair, "`-A` and a directory argument", which does not contain it.
 
 The implementer's reasoning for this is recorded in
-`shared/history/260817-2138-coder-staging-sentence-per-shape-justification.md`: the quoted form is
+`260817-2138-coder-staging-sentence-per-shape-justification.md`: the quoted form is
 "already accounted for by the over-staging routing", and naming both forms "would have cost a
 clause to say that one of them is a case already covered". Judged: it does not hold, on the
 implementer's own argument two paragraphs later. That same record justifies *keeping* the unquoted
@@ -101,7 +101,7 @@ against each named sibling:
   `git add -u fusion-workbench/shared/issues/`" and "The cause is the directory-wide `-u`".
   Agrees, including the count of three.
 
-The behavioural observation `260817-2132` asked to keep ("an agent told files were missed reaches
+The behavioural observation `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md` asked to keep ("an agent told files were missed reaches
 for `git add -A`") survives, now with the correct consequence attached to it. `agents/orchestrator.md`
 was correctly left untouched.
 
@@ -127,7 +127,7 @@ carry the new comment; `hooks/dist/lib/staging-drift.js:552-558` carries the new
 asserts any part of the changed wording beyond that probe, so nothing was silently loosened.
 
 The standing question of whether anything should *assert* this identity is already an answered
-decision, `shared/decisions/260816-0719_a_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`.
+decision, `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`.
 Not refiled.
 
 ## Findings by theme
@@ -139,7 +139,7 @@ The sentence claims each way of loosening the shape fails on its own, then enume
 covering three of its four forbidden names in full and the fourth only in its unquoted form. A
 quoted pathspec glob over-stages, and the over-staging clause names a closed pair it is not in.
 Detail and measurement above.
-→ `shared/issues/260817-2147_o_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md`
+→ `260817-2147_*_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md`
 
 ### One sentence, three copies, two corrected
 
@@ -150,10 +150,10 @@ The first clause is word for word the formulation `bd2db5c` removed from the emi
 then replaced with per-shape justifications. It ranges over all four loosenings and is false for
 three of them, by the same measurement. Softening it: `-u` is named in the same clause, so a reader
 who checks meets the correct mechanism at once, and it is a shell comment that reaches no consuming
-session. It is filed anyway on `260817-2132`'s own stated ground — correcting one copy and not the
+session. It is filed anyway on `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md`'s own stated ground — correcting one copy and not the
 other leaves the next editor the same trap — and because the head of the file it wraps
 (`hooks/lib/staging-drift.ts:33-36`) never made the claim, so this copy is now the odd one of three.
-→ `shared/issues/260817-2147_o_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md`
+→ `260817-2147_*_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md`
 
 ## Also checked, clean
 
@@ -164,15 +164,15 @@ accounts for. It was four before this commit too.
 **No new fusion-internal identifier entered either builder.** Grepped both sources and both builds
 for the `YYMMDD-HHMM` record shape and for bare short hashes in string literals: the only
 identifier-shaped tokens are `f38f37d` on comment lines, which is the fusion-developer surface the
-user's gate at `260817-2110` explicitly kept. The gate that would make this durable is still open
-as `260817-2131` and was correctly left out of scope.
+user's gate at `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` explicitly kept. The gate that would make this durable is still open
+as `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` and was correctly left out of scope.
 
 **No test surface moved.** No file under `hooks/lib/__tests__/` was touched, so the 2 500-line hook
 test bound and the three other growth bounds are untouched and no golden needed regenerating. The
 implementer's record states "no baseline was edited", and the diff confirms it — the commit's only
 non-workbench files are the three under review.
 
-**The two closed records carry conforming resolution notes.** `260817-2130` and `260817-2132` each
+**The two closed records carry conforming resolution notes.** `260817-2130` and `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md` each
 gained a `Resolved:` line and moved `_o_` → `_c_`, which is the issue-file annotation the conventions
 mandate (`rules/fusion-workbench-conventions.md` `### Issue files`). `260817-2130`'s note states the
 quoted-glob decision plainly rather than hiding it, which is why Finding 1 could be checked at all.
@@ -195,15 +195,15 @@ Neither finding blocks a release, and neither is urgent. Finding 1 is the one wo
 next version bump: it costs six words in one string plus a rebuild, and it is the last thing standing
 between this sentence and a claim that survives the check it invites. Finding 2 rides along with it
 if the wrapper is convenient, or waits — it reaches no user. The durable answer to all four findings
-across the two passes is the output gate already filed as `260817-2131`, which would catch neither of
+across the two passes is the output gate already filed as `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`, which would catch neither of
 these two directly but is the mechanism that stops the family recurring by hand-inspection alone.
 
 ---
 
 ## Reconciliation annotation — 260817-2207
 
-Reconciler, final pass of session `260817-2037`, at HEAD `307a696`
-(log `shared/history/260817-2207-reconciliation.md`). Findings only annotated, nothing rewritten.
+Reconciler, final pass of session `260817-2037-orchestrator-session.md`, at HEAD `307a696`
+(log `260817-2207-reconciliation.md`). Findings only annotated, nothing rewritten.
 
 - **Finding 1** (`260817-2147`, the completeness gap) — resolved in `307a696`. Verified by rendering
   `stagingSentence()` from the rebuilt `hooks/dist/lib/staging-drift.js`: the over-staging clause
@@ -216,7 +216,7 @@ Reconciler, final pass of session `260817-2037`, at HEAD `307a696`
 
 This pass's counter-argument prevailed over the judgement recorded one Turn earlier in
 `260817-2130`'s `Resolved:` note, and that earlier record carries no pointer to the reversal. Filed
-as `shared/issues/260817-2207_o_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
+as `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
 
 The review's declared `**Reviewed-range:**` matches what it opened: `bin/fusion-review-coverage`
 reports `not-opened=none covers=1` for this file. `307a696` was left uncovered by user decision at

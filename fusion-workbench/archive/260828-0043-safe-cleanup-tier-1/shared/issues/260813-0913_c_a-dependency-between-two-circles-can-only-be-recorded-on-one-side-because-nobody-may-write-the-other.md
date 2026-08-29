@@ -11,11 +11,11 @@ invisible from the other, which is exactly the failure `## Dependencies` exists 
 
 ## How it surfaced
 
-In session `shared/history/260813-0806-orchestrator-session.md`, two anticipated Circles were
+In session `260813-0806-orchestrator-session.md`, two anticipated Circles were
 created in sequence:
 
-- `circles/260813-0858-playmaker-maintains-backlog-store/`
-- `archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`
+- `260813-0858-playmaker-maintains-backlog-store`
+- `archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin`
 
 The second depends on the first: three documents describe the playmaker's backlog role, and that
 role is about to change, so certain paragraphs wait. The documentation Circle's record names the
@@ -88,9 +88,9 @@ record.
 
 ## Immediate state, for whoever picks this up
 
-`circles/260813-0858-playmaker-maintains-backlog-store/_*_circle.md` currently names the
+`260813-0858-playmaker-maintains-backlog-store` currently names the
 documentation Circle as a relationship in prose without citing its record
-(`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`, which was live under
+(`archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin`, which was live under
 `circles/` when this was written). One line, once a writer exists.
 
 ---
@@ -115,7 +115,7 @@ activated on 260813 at 09:33 and was `_t_circle.md` when this was written; it is
 now, and a later pass has since rewritten `:91` to the wildcard form.
 The observation is unaffected — its `## Dependencies` section still names the documentation Circle
 in prose without citing its record
-(`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`), exactly as
+(`archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin`), exactly as
 this record says. Cite the record as `*_circle.md` when this is picked up; the marker will have
 moved again by then.
 
@@ -126,7 +126,7 @@ a dependency described in prose with no resolvable target, which is the failure 
 predicted, now observed on the pair it was filed about.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md:28` still forbids touching an existing Circle in anticipated mode, `agents/orchestrator.md` contains the word Dependencies zero times, and the playmaker-s write set is still the three appended sections. The concrete instance is now permanently broken: `circles/260813-0858-playmaker-maintains-backlog-store/_c_circle.md:95-96` still says the sibling directory name is to be added by the orchestrator once it exists, and the Circle closed without it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md:28` still forbids touching an existing Circle in anticipated mode, `agents/orchestrator.md` contains the word Dependencies zero times, and the playmaker-s write set is still the three appended sections. The concrete instance is now permanently broken: `260813-0858-playmaker-maintains-backlog-store:95-96` still says the sibling directory name is to be added by the orchestrator once it exists, and the Circle closed without it. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 **Citation correction 260820-0530** (coder, plan step 8c). The closing section's citation of the
@@ -140,4 +140,4 @@ of what the pointer used to spell and stays literal. The record has since closed
 
 
 ---
-Resolved: referred (decision) — who writes the reverse `## Dependencies` edge is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_who-writes-the-circle-record-fields-that-no-current-party-may-write.md
+Resolved: referred (decision) — who writes the reverse `## Dependencies` edge is the decision's question; 260824-2013_*_who-writes-the-circle-record-fields-that-no-current-party-may-write.md

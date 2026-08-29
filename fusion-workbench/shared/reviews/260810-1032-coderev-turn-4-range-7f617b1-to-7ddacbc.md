@@ -12,7 +12,7 @@
 **Suite state at review time:** the three in-scope test files are **green**, 134 passed,
 38 s. `npx tsc --noEmit` on `hooks/` is clean. `hooks/dist/clear-halt.js` is byte-identical
 to a fresh `tsc` build of `hooks/clear-halt.ts`.
-**Prior review:** `shared/reviews/260810-0939-coderev-turn-3-range-18b6094-to-a7c2b03.md`
+**Prior review:** `260810-0939-coderev-turn-3-range-18b6094-to-a7c2b03.md`
 
 ---
 
@@ -55,8 +55,8 @@ against the stale map the rebuild was asked to replace.
 
 All five in `shared/issues/` with `_o_` markers, timestamp `260810-1032`. Checked against
 the open records first; none duplicates one, and the four the dispatch named as already
-filed or already decided (`260810-0918`, `260810-1030`, `260810-0947`, decision
-`260810-1010`) are not re-filed.
+filed or already decided (`260810-0918`, `260810-1030_*_the-comments-fixture-seam-is-undocumented-in-usage-the-way-fixture-was.md`, `260810-0947_*_the-circle-stash-exclusion-test-describes-a-mechanism-and-a-code-shape-that-no-longer-exist.md`, decision
+`260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`) are not re-filed.
 
 ---
 
@@ -112,7 +112,7 @@ both directions — `startsWith` did not match a removed line either, so there i
 behaviour to regress.
 
 The four spellings the author reported as still escaping are recorded as decision
-`260810-1010` and are deliberately not re-filed here.
+`260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md` and are deliberately not re-filed here.
 
 ### `e39b3fe` — the post-clear check
 
@@ -152,7 +152,7 @@ reconcile POST duplicates of issues already on the board, which is the outcome t
 exists to prevent, and then reports `ok`. The `|| true` predates this range; what the range
 adds is the written claim that the two paths are one implementation, and a doc that now
 recommends `push --rebuild-map` for "when you want the push". Filed:
-`shared/issues/260810-1032_o_push-rebuild-map-swallows-a-failed-rebuild-and-reconciles-against-the-stale-map.md`
+`260810-1032_*_push-rebuild-map-swallows-a-failed-rebuild-and-reconciles-against-the-stale-map.md`
 
 ### Medium
 
@@ -166,7 +166,7 @@ function above puts every "we could not tell" answer at `EXIT_DEFERRED`. And eve
 `EXIT_CONFIG`/`EXIT_DEFERRED` return through `:1875` skips the `STATUS:` printf at
 `:1876`, so the run ends on an `err` line with an empty stdout — alone among the eight
 terminal `STATUS:` lines in the `map` family. Filed:
-`shared/issues/260810-1032_o_map-rebuild-has-a-third-outcome-neither-usage-nor-the-doc-names-and-it-ends-without-a-status-line.md`
+`260810-1032_*_map-rebuild-has-a-third-outcome-neither-usage-nor-the-doc-names-and-it-ends-without-a-status-line.md`
 
 ### Low
 
@@ -177,7 +177,7 @@ a key dropped for having no `id` that the current map already holds also lands i
 which is false for exactly that entry. Measured; for a `seed`-origin entry it would
 additionally print a re-bind command for a binding that was never lost that way. One `-
 ($skipped | map(.key))` closes it. Filed:
-`shared/issues/260810-1032_o_the-new-skipped-guard-makes-one-entry-report-twice-and-the-orphan-line-says-the-opposite.md`
+`260810-1032_*_the-new-skipped-guard-makes-one-entry-report-twice-and-the-orphan-line-says-the-opposite.md`
 
 **L2 — `map --rebuild <key>` silently ignores the key and replaces the whole map.**
 `cmd_map:1893` captures the positional, `:1925-1932` dispatches on mutators first, so
@@ -185,7 +185,7 @@ additionally print a re-bind command for a binding that was never lost that way.
 something everywhere else (`map <key>`, `map --forget <key>`), so the spelling invites the
 mistake. Measured: the named key was the one entry the run destroyed, exit 0, no note.
 `--prune` and `--migrate` share the shape; one check covers all three. Filed:
-`shared/issues/260810-1032_o_map-rebuild-silently-ignores-a-positional-key-and-replaces-the-whole-map-instead.md`
+`260810-1032_*_map-rebuild-silently-ignores-a-positional-key-and-replaces-the-whole-map-instead.md`
 
 **L3 — `clear-halt`'s "still halted, nothing arrived" branch points the human at a list it
 never printed.** `clear-halt.ts:213-217` and `:224-227`: when `arrived` is empty and
@@ -203,7 +203,7 @@ is false, and CHECK 1 returns without saving. It is reachable from a hand-edited
 externally-written state file, since `coerceState` reads any truthy `haltActive`, and from
 any third writer added later. The branch is untested: the suite's two concurrent cases
 produce `arrived > 0` in both. Filed:
-`shared/issues/260810-1032_o_clear-halts-still-halted-with-nothing-arrived-branch-points-the-human-at-a-list-it-never-printed.md`
+`260810-1032_*_clear-halts-still-halted-with-nothing-arrived-branch-points-the-human-at-a-list-it-never-printed.md`
 
 ---
 
@@ -296,6 +296,6 @@ there is no urgency — but it is untested, and the fix is rewording two `consol
 lines.
 
 **Carried forward, not re-filed:** the suite-total instability (`260810-0918`), the
-undocumented `--comments-fixture` (`260810-1030`), the circle-stash test's stale comments
-(`260810-0947`), and the extension-parse residual, which is a decision
-(`260810-1010`) and stays one.
+undocumented `--comments-fixture` (`260810-1030_*_the-comments-fixture-seam-is-undocumented-in-usage-the-way-fixture-was.md`), the circle-stash test's stale comments
+(`260810-0947_*_the-circle-stash-exclusion-test-describes-a-mechanism-and-a-code-shape-that-no-longer-exist.md`), and the extension-parse residual, which is a decision
+(`260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`) and stays one.

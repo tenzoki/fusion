@@ -1,6 +1,6 @@
-# Reconciliation — session `260810-1646`, final pass
+# Reconciliation — session `260810-1646-orchestrator-session.md`, final pass
 
-**Date:** 260811-0108
+**Date:** 260811-0108-reconciliation.md
 **Domain:** code
 **Range verified:** `5ef92eb..e2a34f0` (18 commits)
 **Active Circle:** none — everything resolved to `shared/`
@@ -34,12 +34,12 @@ longer exist; those are claims about shipped files, and the shipped files were r
 
 - `bin/monitor:1256-1270` — platform dispatch (`open` / `xdg-open`), `command -v` guard,
   `sleep 0.5 2>/dev/null || sleep 1 || true`, `BROWSER_GAP` as one report site with the reason as
-  data, `|| true` on the `echo`. Closes `260810-1558`, `260810-1918_c_sleep-0-5…`,
-  `260810-1918_c_…launcher-goes-silent…`.
+  data, `|| true` on the `echo`. Closes `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md`, `260810-1918_*_sleep-0-5…`,
+  `260810-1918_*_…launcher-goes-silent…`.
 - `agents/orchestrator.md:425` — `git commit -F` inside the `with` wrapper; `:419-422` — the staging
   rule stated as a shape ("every path passed to `git add` is one you wrote out yourself"), with
   `f38f37d` named as the measured case; `:420` — which directory the pathspecs are relative to.
-  Closes four `260810-1918_c_*` and `260810-2110_c_moving-git-add…`.
+  Closes four `260810-1918_c_*` and `260810-2110_*_moving-git-add…`.
 - `skills/commit/SKILL.md:96-100` — heredoc at column 0 with `<<'FUSION_MSG_EOF'` and the reason
   written above it. Closes two records.
 - `agents/bugfixer.md:33,39,142` — all three now say Step 3b.
@@ -47,9 +47,9 @@ longer exist; those are claims about shipped files, and the shipped files were r
   on disk, matching the claim), `holes[0]` carries the bare-word probe with both cost numbers,
   `excluded` carries `docs/*.md` (fires), `CLAUDE.md` (clean, named as uncovered rather than
   exempt), `README-hooks.md` (clean). `domain-cascade.test.ts:823-947` runs every probe and compares
-  `README-hooks.md` byte-for-byte. Closes three `260810-2110_c_*` and `260810-1918_c_…second-domain-cascade…`.
+  `README-hooks.md` byte-for-byte. Closes three `260810-2110_c_*` and `260810-1918_*_…second-domain-cascade…`.
 - `domain-cascade.test.ts:364-369` — the helper's exit is branched on, `0` → `git-ls-files`,
-  `2` → `counted_by === "none"`, both asserting `code`. Closes `260810-1918_c_…live-cascade-test…`.
+  `2` → `counted_by === "none"`, both asserting `code`. Closes `260810-1918_*_…live-cascade-test…`.
 - `state-drift-detection-lint.test.ts:210-236` — 27 `SKIP_LICENCES` entries, each with its own
   witness `example`; `:712` rejects an empty `Drift when` cell by name. Closes two records.
 - `reference-resolution-lint.test.ts:260-267` — `ROOT_VARS` carries `FUSION_SRC: true` and the
@@ -62,18 +62,18 @@ longer exist; those are claims about shipped files, and the shipped files were r
 
 None reopens a record. Each is annotated on the record itself.
 
-1. **Stale line anchors, same session.** `260810-2029_c_*` and `260810-2110_c_…seven-citations…`
+1. **Stale line anchors, same session.** `260810-2029_c_*` and `260810-2110_*_…seven-citations…`
    both cite `skills/setup/SKILL.md:220,238,239,254,260` / `skills/next/SKILL.md:115,121,185`. At
    HEAD those are `setup:222,240,241,256,262` / `next:117,122,187` — every anchor moved two lines
    when `c714d8c` landed, four commits after the measurement. **The count of eight is correct**; only
    the anchors are wrong. Same-session instance of open record `260808-0030`.
 2. **A closed record whose last words say the work is not done.**
-   `260810-1918_c_the-citation-rooting-reached-two-of-three-skills…` has its Turn-3 resolution note
+   `260810-1918_*_the-citation-rooting-reached-two-of-three-skills…` has its Turn-3 resolution note
    appended *above* the Turn-2 note's closing paragraph, so the file ends on
    "**Half 2 (not done).**" Half 2 is done — verified at `skills/setup/SKILL.md:23` and
    `skills/next/SKILL.md:24`. The stale paragraph also prescribes `$FUSION_PLUGIN_ROOT` where Turn 3
    deliberately wrote `$FUSION_SRC`, with its reason stated. Preserved, dated by annotation.
-3. **A decision note overtaken four commits later.** `260810-1822_i_`'s Answered note says the two
+3. **A decision note overtaken four commits later.** `260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md`'s Answered note says the two
    skills "reach it through `$FUSION_PLUGIN_ROOT`". `63deec1` moved both to `$FUSION_SRC`. The
    decision itself (option 1, leave the procedure in the prompt) is unaffected and
    `Implemented: 89b13f1` is accurate.
@@ -87,19 +87,19 @@ at HEAD, none missing, none duplicated, none untracked. Checked by extracting ev
 `(stamp, slug)` pair from `git log --name-status -M 5ef92eb..HEAD` over both stores and resolving each
 against the working tree with `find`.
 
-- The `f38f37d` repair holds: `260810-0501`, `260810-0502`, `260810-0503` are all present as `_c_`.
+- The `f38f37d` repair holds: `260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`, `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` are all present as `_c_`.
 - The seven-record mis-rename and its revert left no trace: the twelve records in flight at that
   moment are each present once, and the Turn-2 review independently confirmed byte-prefix identity.
-- The three body-only modifications to open records (`260810-1135`, `260810-2025`, `260810-1820`)
+- The three body-only modifications to open records (`260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`, `260810-2025_*_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`, `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`)
   are pure insertions — 22, 60 and 74 lines, no deletions.
 
 **Two artefacts are outside git**, found independently and filed as
-`260811-0114_o_the-queue-rebuild-and-its-history-file-never-entered-a-commit…`:
+`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit…`:
 
 - `fusion-workbench/tasklist.md` — the **17:23 rebuild against `5ef92eb`** is uncommitted. The last
   commit touching the file is `8b2a206`, the v7.2.0 release *before* the session, whose copy is the
   14:34 / `430d73a` build. 1409 insertions of difference, unstaged across eighteen commits.
-- `fusion-workbench/shared/history/260810-1723-tasklist-update.md` — untracked.
+- `260810-1723-tasklist-update.md` — untracked.
 
 Neither is gitignored; `rules/fusion-workbench-conventions.md` puts `tasklist.md` in the **records**
 group a tracked workbench tracks. A `git checkout -- fusion-workbench/` would have silently restored
@@ -129,13 +129,13 @@ Reported, not corrected — `agentstate.yaml` is session state, not a tracking f
 
 ## 3. The two decisions
 
-**`260810-1822` — `_i_` confirmed.** `agents/orchestrator.md:632` carries `#### Reading a queue`; the
+**`260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md` — `_i_` confirmed.** `agents/orchestrator.md:632` carries `#### Reading a queue`; the
 presence checks are live at `skills/setup/SKILL.md:263` (which also reports the healthy case) and
 `skills/next/SKILL.md:124`, each naming the resolved copy. Option 1 required no further change, so
 answer and realisation being one commit is correct. Terminal; not reopened.
 
-**`260810-2032` — `_a_`, and correctly still `_a_`.** The sequencing constraint holds on disk:
-`shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` carries
+**`260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` — `_a_`, and correctly still `_a_`.** The sequencing constraint holds on disk:
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` carries
 `_o_` and is queued as task 2. No baseline pin exists in `state-drift-detection-lint.test.ts`; the
 file's header at `:92-104` names the pin as the answer and records the sequencing as the reason it
 has not landed. The blacklist that shipped instead is present and witnessed (27 entries). This is
@@ -153,24 +153,24 @@ Not written — `tasklist.md` is `taskplanner`'s alone. Accuracy measured by res
 
 **Two are stale — closed on disk, still `[ ] open` in the queue:**
 
-- **Task 1** "Take the shell out of the commit-message path" — `260810-1535_c_` (closed `a7d02da`).
+- **Task 1** "Take the shell out of the commit-message path" — `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md` (closed `a7d02da`).
 - **Task 5** "Give the two skills' cross-file citation a root they can actually resolve" —
-  `260810-0501_c_` (closed `89b13f1`).
+  `260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md` (closed `89b13f1`).
 
 **Coverage.** 42 of the 53 currently-open shared records are named in the queue (40 open queued
 entries plus the two `Close without work` items, now closed by this pass). **Ten open records are not
 in the queue** — every one of them filed after 17:23, so this is build-age, not a queue defect:
-`260810-1820`, `260810-2024`, `260810-2025`, `260810-2027`, `260810-2030`, three `260810-2110_o_*`,
-`260810-2149`, `260810-2200`. Plus the three filed by this pass. The queue's own header is honest
+`260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`, `260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`, `260810-2025_*_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`, `260810-2027_*_the-monitors-browser-gap-line-has-no-executable-gate.md`, `260810-2030`, three `260810-2110_o_*`,
+`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`, `260810-2200_*_the-cleanup-skill-says-the-cascade-gate-scans-prompts-and-skill-bodies-and-it-now-scans-rules-too.md`. Plus the three filed by this pass. The queue's own header is honest
 about its scope and its build HEAD.
 
 **The two `Close without work` entries are now closed**, which the queue explicitly left to the
 reconciler. Both re-verified rather than carried:
 
-- `260717-0031` → `_c_`. All four scope questions settled in `path-literal-lint.test.ts` — item 1 at
+- `260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md` → `_c_`. All four scope questions settled in `path-literal-lint.test.ts` — item 1 at
   `:186` with the decision in the comment beside it, item 2 at `:39-45`, item 3 in the path-shape
   matcher, item 4 dissolved and replaced by the live key-subset check.
-- `260717-0115` → `_c_`. `ls -d fusion-workbench/*/` returns `archive/ circles/ shared/ stilwerk/` —
+- `260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md` → `_c_`. `ls -d fusion-workbench/*/` returns `archive/ circles/ shared/ stilwerk/` —
   no pre-v4 type folder remains — and `skills/setup/SKILL.md:41` refuses a pre-v4 workbench before
   the `mkdir`, citing this record at `:45` as the reason the ordering matters.
 
@@ -194,7 +194,7 @@ Active Grounding (`_o_` + `_a_` decisions) across all paths: **15**.
 Shared open defect records moved 47 → 53 over the session and this pass: 26 closed, 31 filed by the
 session, 2 closed and 3 filed here. Of the 53, **22 name `coderev` as their filer**.
 
-The one open plan is `shared/planning/260801-1122_o_spec-normative-consolidation.md`, whose own header
+The one open plan is `260801-1122_*_spec-normative-consolidation.md`, whose own header
 reads "Final. All twelve decisions are answered … Nothing is pending on the user" — a spec awaiting
 execution, not an unfinished document. Marker left as `_o_`, correctly.
 
@@ -204,17 +204,17 @@ execution, not an unfinished document. Marker left as `_o_`, correctly.
 
 All in `shared/issues/`:
 
-1. `260811-0109_o_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`
+1. `260811-0109_*_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`
    — `63deec1` rooted setup and next through `$FUSION_SRC`; `skills/cleanup/SKILL.md` (six citations)
    and `skills/help/SKILL.md` (five) still cite the install. In this repository the helpers read the
    work tree, so those two hand a reader two versions of one file. The sharpest case is
    `skills/cleanup/SKILL.md:125`, which routes the domain decision into the installed
    `agents/orchestrator.md`. Raises the call-site count in `260810-2030` from two to four.
-2. `260811-0109_o_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md` — the Turn-1
+2. `260811-0109_*_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md` — the Turn-1
    review's table sums to 10 and says "Ten findings, ten records filed"; eleven were filed and
    eleven labelled findings exist (Low is 6, not 5), and `M3` names two of them. Reproduction of
    queued task 37, one day later, in the next review.
-3. `260811-0114_o_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`
+3. `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`
    — section 2 above.
 
 ## Misfiled — should be a decision
@@ -224,8 +224,8 @@ None found. Every open record in `shared/issues/` this pass touched resolves to 
 
 ## Records annotated, markers unchanged
 
-`260810-1918_c_the-citation-rooting-reached-two-of-three-skills…`, `260810-2029_c_…seven-citations…`,
-`260810-1822_i_…queue-ground-procedure…`, `260810-2032_a_…drift-checks-four-sentences…`, and both
+`260810-1918_*_the-citation-rooting-reached-two-of-three-skills…`, `260810-2029_*_…seven-citations…`,
+`260810-1822_*_…queue-ground-procedure…`, `260810-2032_*_…drift-checks-four-sentences…`, and both
 review files in range.
 
 ---

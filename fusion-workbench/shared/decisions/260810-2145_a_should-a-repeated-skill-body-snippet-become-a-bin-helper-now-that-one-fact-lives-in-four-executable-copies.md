@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (on the Turn-2 and Turn-3 executors' proposals)
-**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`; `shared/issues/260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`; `shared/issues/260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`
+**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`; `260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`; `260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`
 
 ---
 
@@ -78,7 +78,7 @@ behaviour.
 - The `queue-check: UNAVAILABLE` and `UNRESOLVED (FUSION_PLUGIN_ROOT is unset)` reports must survive
   any refactor. An unresolvable root has to be named, never silently empty.
 - Skills are not served by `bin/fusion-rules`, so a rule file is not a route here. That was settled
-  this session in decision `260810-1822`.
+  this session in decision `260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md`.
 
 ## Recommendation
 
@@ -100,7 +100,7 @@ Deferred:
 Superseded by:
 
 ---
-Answered: user, session 260811-0752 (chat) — **Option 1.** `bin/fusion-source-root` prints the
+Answered: user, session 260811-0752-orchestrator-session.md (chat) — **Option 1.** `bin/fusion-source-root` prints the
 source root and the four skill-body copies become four calls. Follows the record's recommendation:
 the executable duplicate is the one that can diverge in behaviour without anyone reading the files,
 and this session paid for exactly that failure once, when a correction reached two copies and left
@@ -113,18 +113,18 @@ Implemented (option 1 only — **the marker stays `_a_`, deliberately**): `bin/f
 now owns the source-root criterion; the four executable copies across `skills/setup/SKILL.md`
 and `skills/next/SKILL.md` are guarded calls to it, and `skills/cleanup/SKILL.md` and
 `skills/help/SKILL.md` were moved onto the same root in the same change, closing
-`archive/260817-1907-safe-cleanup-scoped/shared/issues/260811-1733_*_…` and `shared/issues/260811-0109_*_…`. `grep -rn
+`archive/260817-1907-safe-cleanup-scoped/260811-1733_*_…` and `260811-0109_*_…`. `grep -rn
 'fusion-plugin-cwd' agents/ skills/ rules/` is empty. Suite green, 1293 passed.
 
 **Why this record is not `_i_`.** It bundles two questions, and only the first is answered.
 Option 2's second half — a helper or a documented home for the **domain capture** — is held in
 reserve by this very answer ("a separate call to be made once the first has proved itself"), and
-it is still carried by `shared/issues/260810-2110_*_the-domain-capture-one-liner-is-now-copied-
+it is still carried by `260810-2110_*_the-domain-capture-one-liner-is-now-copied-
 into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md` and by `tasklist.md`
 task 41. `_i_` is terminal, so marking it would close a record whose second half nobody has
 decided.
 
-That is the reasoning `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-
+That is the reasoning `260810-1544_*_should-prompt-called-bin-helpers-get-one-
 guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` was written out of,
 applied to itself: a decision record bundling separable questions cannot be tracked, because its
 state is not a single value, and the repair is to split rather than to pick a marker that lies
@@ -154,7 +154,7 @@ divergence, and it is still open.
 *A citation in the note above no longer resolves.* That note holds the second half open partly on
 "`tasklist.md` task 41". The persisted task list was removed on 2026-08-15 (`dd312eb`), so the
 outstanding work is now carried only by
-`shared/issues/260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`,
+`260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`,
 which is still `_o_` at HEAD and whose own title now over-counts by one.
 
 **What binds a deep change.** The source-root half is settled and load-bearing: any new skill body

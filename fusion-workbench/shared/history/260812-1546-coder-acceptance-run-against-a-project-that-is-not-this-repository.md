@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Dispatched by:** orchestrator
-**Plan:** `shared/planning/260812-1232_p_remove-the-protected-path-half-of-the-compliance-guard.md`, step 10
+**Plan:** `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, step 10
 
 ---
 
@@ -80,7 +80,7 @@ Six innocuous `Bash` calls, three from the root and three from `sub/deep`, again
 valid configuration: `events.jsonl` stayed at its previous line count and `escalation.json` compared
 byte-identical. The counter half was measured later, with a real deny in flight rather than in the
 abstract: two decision-governed denies took `consecutiveBlocks` to 2, three `Bash` calls left it at
-2, and the next deny took it to 3 and raised the halt. That is issue `260707-0750`'s property,
+2, and the next deny took it to 3 and raised the halt. That is issue `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md`'s property,
 measured on the block source that survives.
 
 **The "emits nothing" half is conditional and the condition now has a live trigger.** The
@@ -209,7 +209,7 @@ write tool call blocked`. That distinction is what `guard-halt-event.test.ts` ke
 
 Neither is a failure of a check. Both are things the run measured that no record carries.
 
-**`shared/issues/260812-1546_o_check-3-the-guards-only-remaining-block-source-allows-from-any-subdirectory-and-nothing-tests-it.md`.**
+**`260812-1546_*_check-3-the-guards-only-remaining-block-source-allows-from-any-subdirectory-and-nothing-tests-it.md`.**
 The same configuration, the same absolute `file_path`, three working directories: the root blocks,
 `<root>/src` allows, `<root>/sub/deep` allows. `guard.categoryPaths` is matched against a
 cwd-anchored spelling, so a project-relative glob only matches from the root. The behaviour is
@@ -222,7 +222,7 @@ holds for churn and for the warning, and neither asks the question of a verdict.
 tracking record, `260804-2100`, is about the protected list and is correctly described as moot, which
 leaves the class itself untracked at the moment it reached the only check that can still block.
 
-**`shared/issues/260812-1546_o_the-record-of-the-floors-loss-does-not-say-the-file-it-stopped-defending-arms-the-last-block-source.md`.**
+**`260812-1546_*_the-record-of-the-floors-loss-does-not-say-the-file-it-stopped-defending-arms-the-last-block-source.md`.**
 `hooks/lib/config.ts:125-133` records the loss as "nothing in the guard defends this file from an
 agent", bounded by the file being git-tracked. True, and understated: that file is what arms CHECK 3.
 Measured in three steps — governed write blocks, the agent rewrites `categorySensitivity` to `low`
@@ -238,7 +238,7 @@ Stated so the green is read for what it is.
 
 - **The plugin's own repository is untested by construction and stays that way.** The write-tool
   stand-down still fires here, and this run says nothing about whether it should — that is the open
-  decision `260812-1232_o_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`.
+  decision `260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`.
 - **No real Claude Code session was driven.** The hooks were spawned exactly as `hooks.json` spawns
   them, with the envelopes it sends, and that is a faithful reproduction of the hook contract rather
   than of the client. A permissions-layer or matcher change in Claude Code would not show up here.
@@ -248,7 +248,7 @@ Stated so the green is read for what it is.
   already-configured project.
 - **The two real consuming projects were not touched** beyond a read of `krk`'s event log for the
   anchor above. The scratch-copy rule for a destructive-shaped verification is
-  `260810-1820`.
+  `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`.
 
 ## Housekeeping
 

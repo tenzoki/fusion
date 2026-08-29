@@ -6,7 +6,7 @@
 **Checkout:** 5e8248d7
 **Date:** 2026-08-26 02:08
 **Circle:** 260825-2023-presence-travels-monitor-filters-own-checkout
-**Plan:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md` step 5
+**Plan:** `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md` step 5
 
 ## What the four sites now say
 
@@ -81,7 +81,7 @@ and only its golden moved. Neither baseline was touched.
 - `surface-growth-bound.test.ts`: golden regenerated with `UPDATE_SURFACE_GOLDEN=1`; the diff is
   exactly the two files above and their two totals.
 - `workbench-citation-lint.test.ts` was red on arrival over a record this task did not write:
-  `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0158_*_a-staging-list-built-by-a-shell-pipeline-over-git-status-is-the-directory-sweep-the-rule-forbids.md`
+  `260826-0158_*_a-staging-list-built-by-a-shell-pipeline-over-git-status-is-the-directory-sweep-the-rule-forbids.md`
   cited the `_o_` spelling of an issue that had since gone `_c_`. There the spelling **is** the
   datum — the record's subject is that exactly that filename was staged for deletion — so per the
   gate's own instruction the filename moved into a fenced code block rather than being corrected to
@@ -89,9 +89,9 @@ and only its golden moved. Neither baseline was touched.
 
 ## Records closed
 
-- `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
+- `260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
   — `Resolved:` note appended, marker `_o_` -> `_c_`.
-- `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+- `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
   — already `_c_` with `Resolved: referred (C4)`. A second note was appended **beside** it, not over
   it, so the record says both where the work went and where it landed. The note also records that
   this record's own proposed direction, finding the last `session_start` and counting after it, was

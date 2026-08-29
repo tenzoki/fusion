@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-02
 **Agent:** coderev
-**Circle:** `circles/260801-1244-rule-provenance-header`
+**Circle:** `260801-1244-rule-provenance-header`
 **Scope:** `e8988d9..HEAD` excluding `fusion-workbench/`. 12 paths, 385 insertions, 0 deletions. Commits `929dbf5`, `c2c2a04`, `de9d5aa`, `482e9c3`, `cac3726`.
-**Governing documents read:** `planning/260802-1103_o_spec-rule-provenance-header.md`, `planning/260802-1131_o_plan-rule-provenance-header.md`.
+**Governing documents read:** `260802-1103_*_spec-rule-provenance-header.md`, `260802-1131_*_plan-rule-provenance-header.md`.
 
 ## Summary
 
@@ -43,16 +43,16 @@ Stated because the review's value depends on knowing what was checked rather tha
 
 **All four Circle citations**, each checked for causation and not only for existence:
 
-- `agent-setup.md` → `circles/260718-1924-v5x-overhaul`. The Circle's own plan states it:
-  `planning/260718-2150_c_plan-circle-d-agent-prompt-revision.md:65`, "Decision: create
+- `agent-setup.md` → `260718-1924-v5x-overhaul`. The Circle's own plan states it:
+  `260718-2150_*_plan-circle-d-agent-prompt-revision.md:65`, "Decision: create
   `rules/agent-setup.md`, a new always-on plugin rule". Introducing commit `046453e`
   2026-07-18 22:29, after the Circle's 19:24 stamp.
 - `context-manifest.md`, `context-lean-claude-md.md` → same Circle. Introducing commit
   `4620837` 19:49, message "(v5.x Circle B)"; the Circle carries
-  `history/260718-1741-coder-circle-b-context-mechanism.md`.
-- `protected-path-discipline.md` → `circles/260801-1244-guard-bash-inspection`.
+  `260718-1741-coder-circle-b-context-mechanism.md`.
+- `protected-path-discipline.md` → `260801-1244-guard-bash-inspection`.
   Introducing commit `3806a49` 2026-08-01 18:38; the Circle carries
-  `history/260801-1836_coder_documentation-and-agent-rule.md`, two minutes earlier.
+  `260801-1836_coder_documentation-and-agent-rule.md`, two minutes earlier.
 
 Both cited Circle directories exist and carry `_c_circle.md`.
 
@@ -87,12 +87,12 @@ section by heading. Criterion 3 is met on content; see finding 5 for how it is a
 **1. `gatedFiles()` does not recurse, and the next Circle shards this corpus. Medium.**
 `provenance-header-lint.test.ts:77-82`. `readdirSync` without `{ recursive: true }` reads
 one level, so a file at `rules/<subdir>/<name>.md` is absent from the set, carries no
-header, and leaves the corpus test green. `circles/260801-1244-curator/_a_circle.md:54`
+header, and leaves the corpus test green. `260801-1244-curator:54`
 names this gate as the check the conventions-file shards must pass and calls the partition
 "the first real exercise of that gate". The shard shape is not settled anywhere. Also
 latent: no `withFileTypes` filter, so a directory named `*.md` reaches `readFileSync` and
 throws `EISDIR` instead of failing with the gate's message.
-Filed: `issues/260802-1250_o_provenance-gate-does-not-recurse-so-rules-shards-would-escape-it.md`
+Filed: `260802-1250_*_provenance-gate-does-not-recurse-so-rules-shards-would-escape-it.md`
 
 ### Theme 2: the conventions section against its host
 
@@ -103,25 +103,25 @@ the plugin's `rules/` and, per `:586`, a consuming project's `./rules/` and
 `.claude/rules/`. Neither the scope nor the enumeration covers it. `CLAUDE.md`'s layout-table
 row carries the same stale list. Relocation is not the fix: spec criteria 1 and 8 require
 the section here. The lede is what is stale.
-Filed: `issues/260802-1251_o_conventions-lede-scope-excludes-the-new-provenance-section.md`
+Filed: `260802-1251_*_conventions-lede-scope-excludes-the-new-provenance-section.md`
 
 **3. `Binding decision:` is now formally defined, and both pre-existing instances cite dead
 paths. Medium.** `:588` promotes the form from habit to named mechanism. `:328` cites
-`decisions/260716-1910_i_...` (a pre-v4 root type-folder path; the record lives at
+`260716-1910_*_...` (a pre-v4 root type-folder path; the record lives at
 `circles/260716-1847-workbench-umbau/decisions/...`). `:688` cites
-`decisions/260519-1100_a_circle-stash-pop-design.md`, which exists nowhere under the
+`260519-1100_*_circle-stash-pop-design.md`, which exists nowhere under the
 workbench. The new note at `:592` uses the correct `shared/decisions/` prefix, so the file
 now shows one mechanism in two inconsistent shapes, two of them dead. The spec's
 "dead citations go uncaught" limitation covers the header and the gate, not two known-dead
 notes in the file that defines the form.
-Filed: `issues/260802-1252_o_binding-decision-formalised-while-both-existing-instances-are-dead.md`
+Filed: `260802-1252_*_binding-decision-formalised-while-both-existing-instances-are-dead.md`
 
 **4. The "runs to line 8" rationale is false in the commit that states it. Low.**
 `rules/fusion-workbench-conventions.md:573` and `provenance-header-lint.test.ts:47-49` both
 say, in the present tense, that the corpus's longest opening blockquote runs to line 8 in
 `context-manifest.md`. Step 1 of this same plan inserted two lines above it; `grep -n '^>'`
 now ends at line 10. The reasoning is sound, the arithmetic as printed is unverifiable.
-Filed: `issues/260802-1253_o_the-line-8-blockquote-rationale-is-false-in-the-commit-that-states-it.md`
+Filed: `260802-1253_*_the-line-8-blockquote-rationale-is-false-in-the-commit-that-states-it.md`
 
 ### Theme 3: test-assertion quality
 
@@ -134,7 +134,7 @@ anchor rejection at `:189`. Second, `expect(at + 1).toBeGreaterThan(HEADER_WINDO
 `:219` asserts that a style rule's quoted example sits below line 10 of a real file. Move
 the example up and the test fails while the gate stays correct. The position rule is
 already proven properly at `:300-329`.
-Filed: `issues/260802-1254_o_the-corpus-prose-test-asserts-a-fact-about-the-corpus-not-about-the-gate.md`
+Filed: `260802-1254_*_the-corpus-prose-test-asserts-a-fact-about-the-corpus-not-about-the-gate.md`
 
 **6. Five message assertions interpolate `HEADER_WINDOW` on both sides. Low.** `:161`,
 `:239`, `:253`, `:274`, `:295` compare a template literal against its own substring, so
@@ -145,7 +145,7 @@ all three siblings use plain literals in every `toContain`
 (`path-literal-lint.test.ts:241-243`, `marker-format-lint.test.ts:182-184`,
 `glob-nomatch-lint.test.ts:136`). `:161` is also misplaced, asserting on `report()` inside
 the describe block about the window fixture.
-Filed: `issues/260802-1255_o_five-message-assertions-interpolate-header-window-on-both-sides.md`
+Filed: `260802-1255_*_five-message-assertions-interpolate-header-window-on-both-sides.md`
 
 ### Theme 4: the template
 
@@ -154,7 +154,7 @@ Filed: `issues/260802-1255_o_five-message-assertions-interpolate-header-window-o
 instructs "fill in every `<bracketed placeholder>`" that carries no angle brackets. The
 second added sentence at `:8` states the resulting hazard ("it is easy to read past")
 rather than removing it. One-line fix: write it bracketed, delete the patch sentence.
-Filed: `issues/260802-1256_o_template-placeholder-opts-out-of-the-templates-own-fill-in-convention.md`
+Filed: `260802-1256_*_template-placeholder-opts-out-of-the-templates-own-fill-in-convention.md`
 
 ## Cross-cutting observations
 
@@ -167,7 +167,7 @@ text scan: every coupling to real content buys a maintenance obligation, and the
 couplings this Turn added are the two weakest assertions in the file.
 
 **Findings 2 and 3 both land on `fusion-workbench-conventions.md` and both belong to
-`circles/260801-1244-curator`.** That Circle's remit is reconciling normative surfaces
+`260801-1244-curator`.** That Circle's remit is reconciling normative surfaces
 against what actually happened, and its C9 rewrites this file wholesale. Applying the lede
 fix and the citation fixes here means doing them twice. Sequencing note below.
 
@@ -201,18 +201,18 @@ Nothing here blocks the Circle from closing. No finding is a release blocker.
 
 ---
 
-**Reconciliation annotation, 260802-1413 (reconciler). Findings' disposition verified against the tree at `b568ad9`; no finding text altered.**
+**Reconciliation annotation, 260802-1413-reconciliation.md (reconciler). Findings' disposition verified against the tree at `b568ad9`; no finding text altered.**
 
 Seven issues came out of this review. Four are closed on verified evidence, three remain `_o_` by explicit user decision rather than oversight.
 
 | Issue | State | Verified |
 |---|---|---|
-| `260802-1250` gate does not recurse | `_c_` | Confirmed fixed in `cc004fc`. `gatedFilesUnder` at `provenance-header-lint.test.ts:105-118` now uses `readdirSync(dir, { recursive: true, withFileTypes: true })`, filters `isFile()`, and builds `rel` via `relative()`. |
-| `260802-1251` conventions lede scope | `_c_` | Confirmed fixed in `7703330`. `rules/fusion-workbench-conventions.md:5` reads "and for the rule files those agents load" and lists provenance headers as a ninth subject. |
-| `260802-1253` line-8 rationale false | `_c_` | Confirmed fixed at both sites. Test comment `:59-69` and conventions prose both now state the measured bound (lede runs 5 to 10, after-lede header would land at 12, margin zero). |
-| `260802-1254` corpus-prose test | `_c_` | Confirmed. The corpus-reading assertion is gone; `:318` carries a comment recording what stood there and why it was removed. |
-| `260802-1252` dead `Binding decision:` links | `_o_` | Still live, re-verified. `:328` uses a pre-v4 root path; `find fusion-workbench -name '*260519-1100*'` returns nothing for `:688`. Cross-referenced to `circles/260801-1244-curator`. |
-| `260802-1255` interpolated assertions | `_o_` | Still live. All five sites still interpolate `HEADER_WINDOW` on both sides: `:267`, `:348`, `:362`, `:383`, `:404`. |
-| `260802-1256` template placeholder | `_o_` | Still live. `templates/investigator-capture-layout.md:3` carries the unbracketed placeholder and `:7` the "easy to read past" sentence. |
+| `260802-1250_*_provenance-gate-does-not-recurse-so-rules-shards-would-escape-it.md` gate does not recurse | `_c_` | Confirmed fixed in `cc004fc`. `gatedFilesUnder` at `provenance-header-lint.test.ts:105-118` now uses `readdirSync(dir, { recursive: true, withFileTypes: true })`, filters `isFile()`, and builds `rel` via `relative()`. |
+| `260802-1251_*_conventions-lede-scope-excludes-the-new-provenance-section.md` conventions lede scope | `_c_` | Confirmed fixed in `7703330`. `rules/fusion-workbench-conventions.md:5` reads "and for the rule files those agents load" and lists provenance headers as a ninth subject. |
+| `260802-1253_*_the-line-8-blockquote-rationale-is-false-in-the-commit-that-states-it.md` line-8 rationale false | `_c_` | Confirmed fixed at both sites. Test comment `:59-69` and conventions prose both now state the measured bound (lede runs 5 to 10, after-lede header would land at 12, margin zero). |
+| `260802-1254_*_the-corpus-prose-test-asserts-a-fact-about-the-corpus-not-about-the-gate.md` corpus-prose test | `_c_` | Confirmed. The corpus-reading assertion is gone; `:318` carries a comment recording what stood there and why it was removed. |
+| `260802-1252_*_binding-decision-formalised-while-both-existing-instances-are-dead.md` dead `Binding decision:` links | `_o_` | Still live, re-verified. `:328` uses a pre-v4 root path; `find fusion-workbench -name '*260519-1100*'` returns nothing for `:688`. Cross-referenced to `260801-1244-curator`. |
+| `260802-1255_*_five-message-assertions-interpolate-header-window-on-both-sides.md` interpolated assertions | `_o_` | Still live. All five sites still interpolate `HEADER_WINDOW` on both sides: `:267`, `:348`, `:362`, `:383`, `:404`. |
+| `260802-1256_*_template-placeholder-opts-out-of-the-templates-own-fill-in-convention.md` template placeholder | `_o_` | Still live. `templates/investigator-capture-layout.md:3` carries the unbracketed placeholder and `:7` the "easy to read past" sentence. |
 
 The review's own accuracy holds up. Every finding it made was reproducible from its stated evidence, and the four closures each required a change the review had specified rather than a reinterpretation of it.

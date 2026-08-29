@@ -3,8 +3,8 @@
 **Date:** 2026-08-15
 **Agent:** ontocoder
 **Status:** Complete
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
-**Plan step:** 3 of `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Plan step:** 3 of `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`
 **Dispatched by:** orchestrator
 
 ---
@@ -93,17 +93,17 @@ Deletions:
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/rebuild-issues.json`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/seed-issue.json`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/plane.config.yaml`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/circles/260719-1536-demo-circle/_t_circle.md`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/circles/260719-1536-demo-circle/decisions/260719-1603_a_answered.md`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/circles/260719-1536-demo-circle/decisions/260719-1604_i_implemented.md`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/circles/260719-1536-demo-circle/issues/260719-1600_o_open-issue.md`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/circles/260719-1536-demo-circle/issues/260719-1601_c_closed-issue.md`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/circles/260719-1536-demo-circle/issues/260719-1602_d_dropped-issue.md`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/shared/decisions/260719-1701_o_shared-decision.md`
-- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/shared/issues/260719-1700_o_shared-issue.md`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1536-demo-circle`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1603_*_answered.md`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1604_*_implemented.md`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1600_*_open-issue.md`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1601_*_closed-issue.md`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1602_*_dropped-issue.md`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1701_*_shared-decision.md`
+- `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/plane/workbench/260719-1700_*_shared-issue.md`
 
 Added:
 
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0751-ontocoder-remove-plane-data-files-and-fixtures.md`
+- `/Users/k1/Projects/productive/fusion/260815-0751-ontocoder-remove-plane-data-files-and-fixtures.md`
 
 Nothing else was touched. No code, no prompt, no prose, no commit.

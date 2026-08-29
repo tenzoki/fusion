@@ -10,7 +10,7 @@ loads on every dispatch. The Circle is closing over an unreviewed change to ship
 ---
 **Verified, not reported.** `bin/fusion-review-coverage` at HEAD `41c224c`: `commits=25`,
 `reviews=5`, `uncovered=3`, `verdict=uncovered`, with the three commits named. The newest review,
-`circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`, declares
+`260814-1850-coderev-curator-turn-4.md`, declares
 `**Reviewed-range:** 0301909..d5b71f1`, which stops one commit before `6d433c2`.
 `git show --stat 9f4cdac` shows the three shipped files above among its changes.
 
@@ -21,7 +21,7 @@ finished and re-entered at Phase 3, so the Turn's step 3c incremental review was
 than deferred. Nothing in the resume path notices that the Turn it re-enters never had its review.
 
 **What is and is not already covered.** The measurement exists and works — that was
-`shared/issues/260810-1205_c_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`,
+`260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`,
 closed by building this helper. What is missing is that nothing acts on the measurement at a
 boundary where acting is still cheap. `CLAUDE.md` states deliberately that the helper "is **not** a
 release gate", and this record does not propose making it one: the narrower gap is that a resume
@@ -40,7 +40,7 @@ which re-enters at Phase 3 has no step that asks whether the Turn it is skipping
 Taking 2 without 1 closes the Circle over unreviewed rule text. Taking 1 without 2 leaves the next
 resumed session in the same place.
 
-**Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
+**Filed by:** reconciler, session `260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the uncovered commits
 are this Circle's own work.
 
@@ -49,9 +49,9 @@ are this Circle's own work.
 record stays open until the artifact exists.**
 
 A `coderev` Turn-5 pass over `d5b71f1..41c224c` was running concurrently with this reconciliation.
-It has filed two High findings — `shared/issues/260814-2022_o_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`
-and `circles/260801-1244-curator/issues/260814-2022_o_ten-citations-that-bf9553f-staled-still-stand-and-six-of-them-are-in-the-table-the-fix-corrected.md`
-— both of which cite `circles/260801-1244-curator/reviews/260814-2022-coderev-curator-turn-5.md`
+It has filed two High findings — `260814-2022_*_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`
+and `260814-2022_*_ten-citations-that-bf9553f-staled-still-stand-and-six-of-them-are-in-the-table-the-fix-corrected.md`
+— both of which cite `260814-2022-coderev-curator-turn-5.md`
 as their review file.
 
 **That file is not on disk yet.** `ls` over the reviews directory returns five files, the newest
@@ -75,7 +75,7 @@ record names was not harmless — the unreviewed commit did carry a defect, and 
 find it.
 
 ---
-Resolved: the range is covered. `circles/260801-1244-curator/reviews/260814-2022-coderev-curator-turn-5.md`
+Resolved: the range is covered. `260814-2022-coderev-curator-turn-5.md`
 landed at 20:31 and `bin/fusion-review-coverage` now reports `commits=25`, `reviews=6`,
 `uncovered=0`, `verdict=covered` — the closing condition this record set for itself, checked by
 running the helper rather than by observing that a reviewer had been active. The one remaining
@@ -84,7 +84,7 @@ tracked separately as `shared/issues/260811-1145_o_*`.
 
 **Closed on the first candidate fix only.** The review was run over the uncovered range and it found
 a real defect there — ten stale line-number citations in shipped documentation, filed as
-`circles/260801-1244-curator/issues/260814-2022_o_ten-citations-that-bf9553f-staled-still-stand-and-six-of-them-are-in-the-table-the-fix-corrected.md`,
+`260814-2022_*_ten-citations-that-bf9553f-staled-still-stand-and-six-of-them-are-in-the-table-the-fix-corrected.md`,
 which is open and is now the live half of this. The second candidate fix is **not** done and does not
 belong to this record any more: nothing in the resume path asks whether the Turn it re-enters at
 Phase 3 was reviewed, so the next resumed session reaches the same state. Refiled as the durable

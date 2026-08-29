@@ -2,12 +2,12 @@
 
 **Date:** 2026-07-19 22:08
 **Agent:** shaper (reshape of an existing `_a_` Circle — not activation, not new-Circle creation)
-**Circle reshaped:** `circles/260719-1536-plane-mirror-integration/_a_circle.md` (marker kept `_a_` anticipated)
+**Circle reshaped:** `260719-1536-plane-mirror-integration` (marker kept `_a_` anticipated)
 
 ## What triggered this
 
 The user decided, after reading the feasibility analysis
-(`shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md`), that Plane's
+(`260719-2141-plane-mirror-martin-convergence-feasibility.md`), that Plane's
 role becomes **variant (b) — bounded bridge**, not the pure one-way mirror the Circle's
 Directive described. The task was to fold that decision cleanly into the Circle record and
 record the decision. Core direction was already settled, so no user clarification round was
@@ -29,7 +29,7 @@ needed.
    (now `_a_`), and the still-open concurrency decision as a pre-activation blocker.
 
 3. **Circle record `## Dependencies`** — added the OPEN concurrency decision
-   (`260719-2141_o_concurrency-worktree-slots-vs-single-active-circle.md`) as a blocker the
+   (`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`) as a blocker the
    planner must resolve before activation: verify whether Martin's worktree slots are
    independent `pwd`-anchored workbenches or share one (the `.active-circle` / `.guard-state`
    race hazard).
@@ -38,7 +38,7 @@ needed.
    — Status `open` → `answered`; `Answered:` trailer filled (cites the reshaped Circle record +
    the analysis; records "user chose (b) bounded bridge"); marker renamed `_o_` → `_a_`.
 
-5. **Concurrency decision** `260719-2141_o_concurrency-worktree-slots-vs-single-active-circle.md`
+5. **Concurrency decision** `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`
    — left OPEN (`_o_`) on purpose. The planner resolves it.
 
 6. **Circle marker** — kept `_a_` (anticipated). No `mv` to `_t_`, no `.active-circle` write.

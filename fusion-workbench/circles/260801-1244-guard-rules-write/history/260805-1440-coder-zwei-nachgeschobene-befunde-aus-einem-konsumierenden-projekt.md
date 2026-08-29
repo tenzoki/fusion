@@ -35,7 +35,7 @@ nicht Teil des Repositories). Sieben Faelle, acht Assertions, alle gruen: der ge
 kippt von `OLD=1` auf `OLD=0`, Klammer-Marker im lebenden `shared/` und in einem lebenden
 Circle liefern weiter `OLD=1`, Sonde 1 und Sonde 2 feuern unveraendert.
 
-Details: `circles/260801-1244-guard-rules-write/issues/260805-1435_c_setup-sperrt-sich-selbst-aus-weil-die-klammer-sonde-eingefrorene-stores-mitliest.md`
+Details: `260805-1435_*_setup-sperrt-sich-selbst-aus-weil-die-klammer-sonde-eingefrorene-stores-mitliest.md`
 
 ## Befund 2 — die REPLACE-Marker im Plane-Template
 
@@ -55,7 +55,7 @@ Vorher geprueft, ob die Marker Verhalten beruehren — sie tun es nicht. `clean_
 prueft nur auf Nicht-Leere, `/fusion:setup` kopiert die Datei einmal und liest sie nie
 (`skills/setup/SKILL.md:144`), und kein Test behauptet etwas ueber die Platzhalterwerte.
 
-Details: `circles/260801-1244-guard-rules-write/issues/260805-1436_c_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md`
+Details: `260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md`
 
 ## Geaendert
 

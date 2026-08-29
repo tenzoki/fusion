@@ -1,4 +1,4 @@
-# Playmaker Run — 260816-1822
+# Playmaker Run — 260816-1822-playmaker-user-fusion-next.md
 
 **Trigger:** `user-fusion-next`
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:**` line)
@@ -19,7 +19,7 @@
 | `_s_` superseded | 1 |
 | `_d_` deferred | 0 |
 
-The anticipated one is `circles/260816-1741-guard-becomes-observation-only`, shaped at 260816-1742.
+The anticipated one is `260816-1741-guard-becomes-observation-only`, shaped at 260816-1742.
 It is the first non-terminal Circle in the store since 260815-2115; the two preceding refreshes
 found the portfolio wholly terminal.
 
@@ -30,7 +30,7 @@ all three lineage Circles closed, and the Turn-budget question its own record na
 plan was answered by the user at 260816-1742.
 
 An `## Activation proposal` section was appended to
-`circles/260816-1741-guard-becomes-observation-only/_a_circle.md`. The record's marker was not
+`260816-1741-guard-becomes-observation-only`. The record's marker was not
 renamed and `.active-circle` was not written; both are the user's or the orchestrator's commit.
 
 ## Warnings emitted to the portfolio
@@ -45,13 +45,13 @@ renamed and `.active-circle` was not written; both are the user's or the orchest
 - The recommended Circle's Grounding states its Turn-budget decision is unanswered; the record
   carries the answered marker since 260816-1742. Stale in the direction that understates readiness.
 - The deferral chain blocking the second backlog entry rests on
-  `shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
+  `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
   and roughly half of that record is moot: `hooks/lib/__tests__/queue-ground-lint.test.ts` was
   removed on 2026-08-15 with the persisted work queue. Verified by directory listing at HEAD. The
   sibling file it also names is still present, so the record is not wholly moot.
 - Six open decision records across the workbench, one in `shared/` and five in terminal Circles;
   none cited by the recommended Circle's Grounding. The previously flagged
-  `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+  `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
   has since been answered and was dropped from the list.
 - Open defect volume: 92 open in `shared/issues/` against 243 closed; 67 open across Circle issue
   stores against 271 closed.
@@ -74,7 +74,7 @@ Distinct ideas found inside the live entries: 2, one per entry. Duplicate groups
 to `## Warnings` as defect- or decision-shaped: 0 from the entries themselves; the two findings in
 `## Warnings` that touch the store are pre-existing records, not entry content.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — its evidence
+**Top-ranked entry:** `260814-1733_*_bounded-executor-dispatches.md` — its evidence
 is on disk and already split by analysis into an adopted half and a refuted half, and no record
 stands in its way.
 
@@ -86,7 +86,7 @@ split, merged, closed or deferred.
 or deferral, and therefore holds nothing back for want of a confirmation. Each live entry states
 one idea and can be promoted whole; the two remain distinct ideas despite citing the same analysis;
 both ideas are live. The previous run's withdrawal of the standing deferral proposal on
-`shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md` stands, and this run's finding about
+`260814-1733_*_attach-the-rule-to-the-act.md` stands, and this run's finding about
 the shortened deferral chain strengthens it: deferring would cost the user two later acts where
 leaving the entry open costs one.
 

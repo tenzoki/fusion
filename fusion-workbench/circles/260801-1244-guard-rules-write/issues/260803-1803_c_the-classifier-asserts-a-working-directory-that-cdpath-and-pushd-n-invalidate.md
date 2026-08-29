@@ -4,15 +4,15 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** analyst, task T4-1 of `circles/260801-1244-guard-rules-write`
+**Filed by:** analyst, task T4-1 of `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only; the write-tool surface has
 no working-directory model and is unaffected)
 **Cross-references:**
-`issues/260803-1431_o_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`
+`260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`
 (the same defect, third known entrance, and the fix proposed there covers these two if it is
 taken at its general form),
-`analyses/260803-1803-guard-path-model-root-cause.md` (the analysis that found these),
-`decisions/260803-1803_o_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`
+`260803-1803-guard-path-model-root-cause.md` (the analysis that found these),
+`260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`
 (the residual this issue does not close),
 `hooks/lib/bash-mutation-guard.ts:1227-1239` (`firstDirArg`), `:1245-1308` (`applyDirEffect`),
 `:1133-1144` (`resolveDir`), `:24` (the leading-assignment skip in `findCommandWord`),
@@ -120,7 +120,7 @@ Not decided here, but the two entrances have one fix and it is already on the ta
 Taken at its general form, that closes all three entrances at once: **invert `firstDirArg` from
 a blanket flag skip to an allow-list of the flags the classifier actually models, and yield
 `CWD_UNKNOWN` for anything else, including a `CDPATH` assignment ahead of a bare-word `cd`.**
-The reasoning is in `analyses/260803-1803-guard-path-model-root-cause.md`.
+The reasoning is in `260803-1803-guard-path-model-root-cause.md`.
 
 `CWD_UNKNOWN` already exists, already means "the shell's location cannot be computed", and
 already produces a fail-closed deny with a diagnosable reason. Measured on the same harness:
@@ -159,12 +159,12 @@ fresh project per row: three denials halt the guard and mask everything after.
 
 ## Origin
 
-`circles/260801-1244-guard-rules-write`, task T4-1, while testing whether `cd -P` is the last
+`260801-1244-guard-rules-write`, task T4-1, while testing whether `cd -P` is the last
 entrance into the class that has now been found four times in this Circle. It is not.
 
 ---
 
-## Resolved — reconstructed by reconciliation 260804-1021, because the file was created already closed
+## Resolved — reconstructed by reconciliation 260804-1021-reconciliation.md, because the file was created already closed
 
 This file was added to the tracker in `a79ff1a` **already carrying the `_c_` marker**, so it has no open-to-closed transition and no `Resolved` section. That is not wrong — the analyst measured it and the same commit fixed it — but a reader arriving at a closed issue with no closure evidence cannot tell a real fix from a marker set by hand. The evidence is recorded here.
 
@@ -173,6 +173,6 @@ This file was added to the tracker in `a79ff1a` **already carrying the `_c_` mar
 - The `pushd -n` half, and the whole unmodelled-flag family, closed in `a79ff1a`: `applyDirEffect` allow-lists the `cd` / `pushd` forms it models and yields the unknown-directory state for everything else. Verified by measurement, not by reading: `pushd -n docs && echo hi > notes.txt` denies at HEAD with the unknown-working-directory reason.
 - The ambient-`CDPATH` half closed in `b85f6a0`: a non-empty `CDPATH` in the guard's environment makes a bare-word `cd` yield the unknown-directory state, while anchored operands (`./x`, `../x`, `.`, `..`, `/abs/x`) stay exactly modelled.
 
-**The bound the fix does not reach is recorded and is not a gap in this closure.** `b85f6a0` reads the *hook process's* environment, a frozen snapshot of Claude Code's launch environment, not the shell the `Bash` tool spawns. The two agree when Claude Code was started from a shell that sourced the user's profile and diverge on a GUI, IDE-host or service-manager launch. That was found and closed as its own issue (`260803-2040_c_`), is stated at `ambientCdpathIsSet`, and is written into both shipped documents and into the trailing `Bound recorded` note of `decisions/260803-1803_i_`.
+**The bound the fix does not reach is recorded and is not a gap in this closure.** `b85f6a0` reads the *hook process's* environment, a frozen snapshot of Claude Code's launch environment, not the shell the `Bash` tool spawns. The two agree when Claude Code was started from a shell that sourced the user's profile and diverge on a GUI, IDE-host or service-manager launch. That was found and closed as its own issue (`260803-2040_*_the-ambient-cdpath-check-reads-the-hooks-environment-not-the-shell-the-command-runs-in.md`), is stated at `ambientCdpathIsSet`, and is written into both shipped documents and into the trailing `Bound recorded` note of `260803-1803_*_`.
 
-**What this issue set in motion is larger than what it closed.** Its `## Origin` says it was found "while testing whether `cd -P` is the last entrance into the class that has now been found four times in this Circle. It is not." The class was met three more times after this file was written (Turns 5, 6 and 7) and two entrances are still open at HEAD (`260804-0836_o_`, `260804-0837_o_`). The finding was right; the count in its own last sentence is now seven, not four.
+**What this issue set in motion is larger than what it closed.** Its `## Origin` says it was found "while testing whether `cd -P` is the last entrance into the class that has now been found four times in this Circle. It is not." The class was met three more times after this file was written (Turns 5, 6 and 7) and two entrances are still open at HEAD (`260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md`, `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`). The finding was right; the count in its own last sentence is now seven, not four.

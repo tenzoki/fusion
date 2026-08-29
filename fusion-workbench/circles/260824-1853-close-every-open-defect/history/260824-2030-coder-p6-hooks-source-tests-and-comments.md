@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-08-24
 **Agent:** coder
-**Plan:** `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 6
+**Plan:** `260824-1905_*_plan-close-every-open-defect.md` step 6
 **Records closed:** 20 (triage rows 10, 18, 27, 28, 40, 42, 49, 50, 62, 109, 123, 124, 142, 154, 162, 167, 168, 175, 209, 212), each `_o_` -> `_c_` with a `Resolved: fixed` note naming the verifying command.
 
 ## Budget

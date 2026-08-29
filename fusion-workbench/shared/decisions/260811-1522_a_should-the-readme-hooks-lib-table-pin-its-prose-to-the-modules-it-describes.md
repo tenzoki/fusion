@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** open
-**Filed by:** coder, while closing `archive/260817-1907-safe-cleanup-scoped/shared/issues/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`
-**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/shared/issues/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the drift that raised the question); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that watches the table's rows for existence and not for content); `hooks/lib/domain-cascade.ts` `describeReach()` + `README-hooks.md` `## How far the domain-cascade reach gate reaches` (the working precedent); `shared/issues/260811-1141_c_…` (the fix whose four synchronised edits missed the fifth site)
+**Filed by:** coder, while closing `archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`
+**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the drift that raised the question); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that watches the table's rows for existence and not for content); `hooks/lib/domain-cascade.ts` `describeReach()` + `README-hooks.md` `## How far the domain-cascade reach gate reaches` (the working precedent); `260811-1141_*_…` (the fix whose four synchronised edits missed the fifth site)
 
 ---
 
@@ -84,14 +84,14 @@ Deferred:
 Superseded by:
 
 ---
-Answered: user, session 260811-0752 (chat) — **Option 1, generate every row from its module.** Each
+Answered: user, session 260811-0752-orchestrator-session.md (chat) — **Option 1, generate every row from its module.** Each
 `hooks/lib/*.ts` exports a one-line description and the table is generated from them, the way
 `describeReach()` already pins the domain-cascade paragraph. Drift becomes impossible rather than
 detectable.
 
 The record is explicit that the retrofit across roughly 25 rows was not measured, and that stands
 as the known cost of this answer rather than being argued away. This choice is consistent with the
-answer given to `260810-1635` in the same sitting: the general rule adopted there is that a claim
+answer given to `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` in the same sitting: the general rule adopted there is that a claim
 lives in one place and is cited from the others, and generating this table from the modules is that
 rule applied to the surface where the drift was actually measured twice. Option 3, pinning only the
 rows that restate a code decision, would have left the boundary between pinned and unpinned rows as

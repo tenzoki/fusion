@@ -32,9 +32,9 @@ The Turn-1 finding that motivated this change (`260810-1918`) assumed a verbatim
 assumption holds is the question that decides which of the two fixes is right, and it was not asked.
 
 **Cross-references.** `skills/commit/SKILL.md:70-112`;
-`shared/issues/260810-1918_c_the-commit-skills-heredoc-example-is-indented-so-a-verbatim-copy-never-terminates.md`.
+`260810-1918_*_the-commit-skills-heredoc-example-is-indented-so-a-verbatim-copy-never-terminates.md`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 
@@ -56,4 +56,4 @@ substitute, and those are the two lines an agent reproduces as it found them, le
 included. The terminator is the line that has to be at column 0, so the fence stays at column 0 and
 the document structure moved around it.
 
-**Resolved by:** coder, session `260810-1646`, Turn 3.
+**Resolved by:** coder, session `260810-1646-orchestrator-session.md`, Turn 3.

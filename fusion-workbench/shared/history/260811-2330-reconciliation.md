@@ -2,10 +2,10 @@
 
 **Agent:** reconciler
 **Domain:** code
-**Session reconciled:** `260811-0752` (five Turns, exited Phase 2 on the Max-Turns circuit breaker)
+**Session reconciled:** `260811-0752-orchestrator-session.md` (five Turns, exited Phase 2 on the Max-Turns circuit breaker)
 **Range:** `7785330..31746d1`, 37 commits
 **Active Circle:** none — every store resolved to `shared/`
-**Coherence verdict:** `review-needed`, written to `shared/history/260811-0752-orchestrator-session.md` `## Coherence`
+**Coherence verdict:** `review-needed`, written to `260811-0752-orchestrator-session.md` `## Coherence`
 
 ---
 
@@ -28,7 +28,7 @@ Nothing was renamed. Every marker on disk was already correct.
 written at `agents/orchestrator.md:871`, against `fusion-workbench/tasklist.md` and an absent
 `.active-circle`: `G=none`, `AC=none`, row 1 of the ground table.
 
-**The check is trustworthy at that site, and record `260811-1915` says otherwise because it read
+**The check is trustworthy at that site, and record `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md` says otherwise because it read
 the wrong copy.** There are two derivations of the queue head in one prompt:
 
 - `agents/orchestrator.md:871`, the `#### Reading a queue` snippet the ground table and
@@ -40,11 +40,11 @@ the wrong copy.** There are two derivations of the queue head in one prompt:
 
 Verified at `9f84254`, the HEAD in force at the 19:00 resume: line 747 already carried the fixed
 form and line 705 the old one. So the `STALE` verdict this session recorded at Setup and repeated
-into `260811-1915` could not have come from the canonical snippet.
+into `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md` could not have come from the canonical snippet.
 
 The record stays open — its second witness (`260811-1425`, transferred from a consuming project)
 is against the surviving copy and is unaffected — and is annotated with the measurement. This is
-also the divergence `260810-0511` predicted, now realised and costing one false measurement inside
+also the divergence `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md` predicted, now realised and costing one false measurement inside
 one day; that record is annotated too. Queue entry 29 closes both at once by deleting the second
 copy rather than patching it.
 
@@ -57,27 +57,27 @@ decision behind them. **No entry contradicts its record.** What the queue is mis
 corrections — a rebuild, which is the taskplanner's job at the next session's Phase 1.
 
 **One defect in the queue, filed rather than fixed** (the reconciler does not edit `tasklist.md`):
-`shared/issues/260811-2330_*_the-work-queue-carries-eighty-one-literal-marker-citations-and-three-are-already-dead.md`.
+`260811-2330_*_the-work-queue-carries-eighty-one-literal-marker-citations-and-three-are-already-dead.md`.
 81 record citations use a literal marker against 7 in the ratified wildcard form, and three are
-already dead — including task 1's citation of `shared/decisions/260806-0015_i_zitierform-fuer-workbench-records.md`,
+already dead — including task 1's citation of `260806-0015_*_zitierform-fuer-workbench-records.md`,
 which is the record that ratified the wildcard form and has never lived in `shared/`. The citation
 lint's surface (`hooks/lib/__tests__/reference-resolution-lint.test.ts:118-155`) never reads
 anything under `fusion-workbench/`, so nothing was going to catch it.
 
 ## 2. Decision records — measurement reproduced, stub half repaired
 
-**`260811-2146`'s measurement reproduces exactly at HEAD: `total=67 mismatched=34 stub=12`.** No
+**`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`'s measurement reproduces exactly at HEAD: `total=67 mismatched=34 stub=12`.** No
 decision record was touched after the review commit `e3da397`, so nothing has moved.
 
 **The 34 needs one qualification.** It compares the `**Status:**` field against the marker's
 vocabulary word by exact equality. Five of the 34 already state the right word and carry a trailing
 parenthetical about a past correction (`implemented (corrected from 'open' by reconciliation
-260804-1021…)`). **The substantive disagreement is 29 of 67, not 34.** That matters for the lint the
+260804-1021-reconciliation.md…)`). **The substantive disagreement is 29 of 67, not 34.** That matters for the lint the
 record's acceptance criteria ask for: written to exact equality, it fails five records that earlier
 reconciliation passes deliberately annotated.
 
 **The 29 were not touched**, per the record's own instruction and `agents/orchestrator.md:288` —
-the disagreements are the evidence for `260802-0920`, which asks whether the field should exist.
+the disagreements are the evidence for `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`, which asks whether the field should exist.
 
 **The stub half is done.** Thirteen unfilled `<set when status moves to _X_>` lines stood above a
 filled annotation of the same kind, across nine records; all 13 are gone, along with the wholly
@@ -85,8 +85,8 @@ unfilled blocks carrying most of them (32 placeholder lines in total). Three rec
 placeholder on purpose — `Deferred:` and `Superseded by:` lines on records that were never deferred
 or superseded state nothing false and are not contradicted by anything beside them. The issues side
 had exactly one instance of the same shape, an empty `Resolved:` in
-`shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-…`; it is gone with them. Acceptance
-criterion 2 of `260811-2146` is met.
+`260810-1730_*_die-erzeugung-von-portfolio-md-…`; it is gone with them. Acceptance
+criterion 2 of `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md` is met.
 
 ## 3. The records this session closed — 53, every one with a note that cites something real
 
@@ -105,14 +105,14 @@ a commit. Every path citation resolves to a file, with four exceptions, all repa
 
 | Citation | Disposition |
 |---|---|
-| `shared/decisions/260811-1534_o_…` in `circles/260801-1244-guard-rules-write/issues/260805-1859_c_…` | stale marker — rewritten to the wildcard form |
-| `shared/decisions/260810-0710_o_…` in `shared/issues/260810-1205_c_seven-of-sixteen-commits…` (twice) | stale marker — rewritten to the wildcard form |
-| `shared/decisions/260811-1522_o_…` in `shared/issues/260811-1413_c_readme-hooks-still-describes…` | stale marker — rewritten to the wildcard form |
-| `shared/history/260810-1907-reconciliation.md` in `shared/issues/260810-1730_c_die-erzeugung-von-portfolio-md-…` | **not a defect here** — the record was transferred from a consuming project and the citation is into *that* project's workbench. Left as written. |
+| `260811-1534_*_…` in `260805-1859_*_…` | stale marker — rewritten to the wildcard form |
+| `260810-0710_*_…` in `260810-1205_*_seven-of-sixteen-commits…` (twice) | stale marker — rewritten to the wildcard form |
+| `260811-1522_*_…` in `260811-1413_*_readme-hooks-still-describes…` | stale marker — rewritten to the wildcard form |
+| `260810-1907-reconciliation.md` in `260810-1730_*_die-erzeugung-von-portfolio-md-…` | **not a defect here** — the record was transferred from a consuming project and the citation is into *that* project's workbench. Left as written. |
 
-**The two transferred records both closed correctly.** `260810-1730` in `b53c7dd`, `260811-0932` in
+**The two transferred records both closed correctly.** `260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md` in `b53c7dd`, `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md` in
 `282ef42`, each with a `Resolved:` note naming the commit's substance and the verification run.
-The third transferred finding was merged into `260811-1915` as a second witness rather than filed
+The third transferred finding was merged into `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md` as a second witness rather than filed
 twice, which is right, and is the only part of that record still standing after the measurement in
 section 1.
 
@@ -124,9 +124,9 @@ section 1.
   `tinypool`. One file's 14 tests never reported.
 - Run 2 — 52 files, **1349 tests, exit 0**.
 
-**Green.** The crash is the load-sensitive class already recorded as `260810-1135`, `260811-1409`
+**Green.** The crash is the load-sensitive class already recorded as `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`, `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`
 and `260810-0918`, not a new failure. It is worth one thing beyond that, and it is written into
-`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself…`: it
+`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself…`: it
 happened with **no** parallel executors, so at least one instability of this suite survives the
 removal of cross-executor concurrency entirely. That removes option 4's remaining claim
 (serialising executors leaves vitest's own workers running concurrently inside each invocation) and
@@ -135,16 +135,16 @@ decision keeps its `_o_` marker; only evidence was added.
 
 ## 5. Other records reconciled
 
-- `shared/planning/260801-1122_o_spec-normative-consolidation.md` — untouched by this session and
+- `260801-1122_*_spec-normative-consolidation.md` — untouched by this session and
   out of the Directive's scope by the queue's own statement of ground; marker stays `_o_`. A new
   Reconciliation Log entry records that its C5 sections now describe a **deleted** mechanism rather
   than a merely historical one: `hooks/lib/command-word.ts`, `shell-parse.ts` and
   `git-branch-guard.ts` do not exist, and `hooks/guard.ts` names the mutation classifier only in
   three retirement comments. The curator capability itself is unaffected. Three of the spec's four
-  Circles are closed; `circles/260801-1244-curator` is still `_a_` and its agent does not exist.
-- `shared/reviews/260811-2152-coderev-turn-4-range-b261d83-951c809.md` — disposition table appended:
+  Circles are closed; `260801-1244-curator` is still `_a_` and its agent does not exist.
+- `260811-2152-coderev-turn-4-range-b261d83-951c809.md` — disposition table appended:
   6 of 10 findings closed, all in Turn 5, in the order the review recommended.
-- `shared/reviews/260811-2309-coderev-turn-5-orchestrator-loop-and-bookkeeping-machinery.md` —
+- `260811-2309-coderev-turn-5-orchestrator-loop-and-bookkeeping-machinery.md` —
   disposition appended: 8 of 8 open, none worked, because the loop exited in the same commit that
   filed them. Its release recommendation was re-verified rather than taken on trust.
 
@@ -152,7 +152,7 @@ decision keeps its `_o_` marker; only evidence was added.
 
 Four things this pass found and did not fix, because they are not the reconciler's to fix:
 
-1. **The session history file is incomplete.** `shared/history/260811-0752-orchestrator-session.md`
+1. **The session history file is incomplete.** `260811-0752-orchestrator-session.md`
    has no Turn 5 entry, its head still reads `**Status:** In progress`, and its `## Session result`
    block still says "Turn 3 closed. Phase 3 reconciliation not run." That is the orchestrator's
    Phase 4 work and is expected to be outstanding at this point; it is named here so it is not
@@ -160,10 +160,10 @@ Four things this pass found and did not fix, because they are not the reconciler
    reconciler owns.
 2. **`bugreports/` at the repository root is untracked, unignored, and consumed.** It holds the
    three findings the user transferred from the KRK project plus `krk-meldungen.txt`. All three
-   have been dealt with (two closed in the store, one merged into `260811-1915`). It is outside
+   have been dealt with (two closed in the store, one merged into `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`). It is outside
    `fusion-workbench/`, no convention names it, and `git add -A` would commit it.
 3. **The 29 decision records whose `**Status:**` disagrees with their marker** — the user's call,
-   per `260811-2146`.
+   per `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`.
 4. **The uncommitted tree.** This pass touched 21 workbench files and added 2 (this log and the
    new record), all unstaged; `orchestrator-events.jsonl` is modified by the hooks, not by this
    pass. The staging check at Cleanup will name them.

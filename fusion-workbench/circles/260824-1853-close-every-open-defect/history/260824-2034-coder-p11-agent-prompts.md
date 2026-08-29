@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-24
 **Agent:** coder
-**Plan:** `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 11
+**Plan:** `260824-1905_*_plan-close-every-open-defect.md` step 11
 **Status:** Complete
 
 ## What was done
@@ -29,4 +29,4 @@ Fifteen defect records closed by edits to eleven agent prompts, and the plan's s
 
 ## Records closed (all `_o_` → `_c_`)
 
-shared/issues: 260812-1152, 260817-1613, 260817-1836, 260819-2227, 260820-1133, 260820-1755, 260822-1226, 260822-2050, 260823-1446. Circles: 260807-0952 (guard-misst-statt-orakelt), 260813-1545 ×2 and 260813-1617 (playmaker-maintains-backlog-store), 260815-1943 (remove-eight-mechanisms), 260817-1505 (guard-becomes-observation-only).
+shared/issues: 260812-1152_*_an-analysis-of-another-project-recorded-no-head-and-turned-a-three-day-old-snapshot-into-a-claim-about-now.md, 260817-1613, 260817-1836, 260819-2227_*_a-plan-step-can-state-a-narrow-reading-that-does-not-exist-as-a-half-measure-and-nothing-asks.md, 260820-1133_*_the-playmaker-writes-the-portfolio-citing-a-history-file-it-has-not-written-yet.md, 260820-1755_*_five-agent-prompts-tell-a-top-level-run-it-holds-askuserquestion-and-a-headless-one-does-not.md, 260822-1226, 260822-2050_*_the-portfolio-generator-spelled-a-marker-again-and-the-citation-died-at-the-next-transition.md, 260823-1446. Circles: 260807-0952_*_ontocoder-kann-keinen-entscheidungssatz-ablegen.md (guard-misst-statt-orakelt), 260813-1545 ×2 and 260813-1617_*_the-prompt-says-originates-three-times-where-the-conventions-lead-now-says-files.md (playmaker-maintains-backlog-store), 260815-1943_*_the-curators-applied-text-carries-two-characters-the-approved-text-did-not.md (remove-eight-mechanisms), 260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md (guard-becomes-observation-only).

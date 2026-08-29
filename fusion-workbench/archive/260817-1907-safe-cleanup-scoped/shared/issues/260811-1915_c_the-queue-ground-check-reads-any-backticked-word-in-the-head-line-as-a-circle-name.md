@@ -46,7 +46,7 @@ had they landed first.
 
 ---
 Also seen: 260811-1425 by the orchestrator of the KRK project, transferred here by the user on
-260811-2010 as `bugreports/260811-1425_o_die-pruefung-der-warteschlange-liest-einen-circle-pfad-aus-der-prosa-ihrer-kopfzeile.md`.
+260811-2010-coder-commit-message-path-allow-list.md as `bugreports/260811-1425_o_die-pruefung-der-warteschlange-liest-einen-circle-pfad-aus-der-prosa-ihrer-kopfzeile.md`.
 Same expression, the **other** alternative, and an earlier and more damaging witness than the one
 above — so this record is the merge of the two rather than a second filing (the duplicate-filing
 step queue task 27 is building would have produced exactly this append).
@@ -111,13 +111,13 @@ written in `agents/orchestrator.md` misreports it as stale"), which is where it 
 This does not weaken the finding: the KRK witness (`260811-1425`) is against the same expression
 and the Phase 4 copy still carries it. It changes what has to be fixed — one copy, not two.
 
-**And that is exactly the failure `260810-0511` predicted.** That record says the queue-head
+**And that is exactly the failure `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md` predicted.** That record says the queue-head
 derivation is written twice in one file which calls one of them canonical. The two copies have now
 in fact diverged, and the divergence produced a false measurement in a review record within one
 day. Fixing the surviving copy by *deleting* it in favour of a citation (queue entry 29) closes
 both records; patching it in place leaves the duplication that caused this.
 
-Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+Reconciled by `reconciler`, `260811-2330-reconciliation.md`.
 
 ---
-Resolved: moot, not fixed. The queue-ground apparatus, both copies of its head-line parse, went with the persisted task list in `dd312eb` (Circle `260815-0007-...`, step 10). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: the `grep -oE 'circles/[A-Za-z0-9._-]+|...'` expression this record and its sibling `260814-2205` were both about appears in no prompt or skill body.
+Resolved: moot, not fixed. The queue-ground apparatus, both copies of its head-line parse, went with the persisted task list in `dd312eb` (Circle `260815-0007-...`, step 10). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: the `grep -oE 'circles/[A-Za-z0-9._-]+|...'` expression this record and its sibling `260814-2205_*_the-queue-ground-parse-reads-a-backticked-token-out-of-the-prose-that-follows-the-word-none.md` were both about appears in no prompt or skill body.

@@ -2,13 +2,13 @@
 
 **Date:** 2026-08-14
 **Agent:** coder
-**Circle:** `circles/260801-1244-curator`
+**Circle:** `260801-1244-curator`
 **Turn:** 6
 **Status:** Complete
 
 ## What was asked
 
-Task T11, from `shared/issues/260814-2022_o_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`,
+Task T11, from `260814-2022_*_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`,
 option 1 of the three that record offers: compare this repository's root `fusion-guard.json`
 with `templates/fusion-guard.json` with the project-configurable keys stripped from both
 sides, so the drift check keeps the prose and the structure and admits the one key the file

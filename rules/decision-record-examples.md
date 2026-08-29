@@ -18,7 +18,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 ---
 **Domain:** code
 **Filed by:** shaper, Ada Lovelace <ada@example.com>
-**Cross-references:** issues/260430-1900_o_rag-sanitisation.md
+**Cross-references:** 260430-1900_*_rag-sanitisation.md
 
 ---
 
@@ -80,7 +80,7 @@ Append to body of `260501-1430_i_vector-store-pick.md`:
 
 ```markdown
 ---
-Superseded by: decisions/261107-0915_i_vector-store-revisit.md — sqlite-vss replaced with pgvector after first customer crossed 5M vectors. Original choice was correct for the constraints known at v1; superseded by scale change.
+Superseded by: 261107-0915_*_vector-store-revisit.md — sqlite-vss replaced with pgvector after first customer crossed 5M vectors. Original choice was correct for the constraints known at v1; superseded by scale change.
 ```
 
 Rename: `260501-1430_i_vector-store-pick.md` → `260501-1430_s_vector-store-pick.md`.

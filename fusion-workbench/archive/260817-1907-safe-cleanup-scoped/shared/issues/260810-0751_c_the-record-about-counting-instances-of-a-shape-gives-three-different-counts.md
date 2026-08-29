@@ -4,9 +4,9 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
-**Affects:** `shared/issues/260810-0710_o_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`; commit `8d66265`'s message
-**Cross-references:** `shared/issues/260810-0506_o_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
+**Affects:** `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`; commit `8d66265`'s message
+**Cross-references:** `260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`
 
 ---
 
@@ -18,11 +18,11 @@ seven lines:
 
 - *"**It is the third instance of one shape tonight**, and that is the reason to read the three
   together rather than patch each"*
-- the list underneath it has **two** bullets — `260810-0506`, and this record
-- *"**Both** arrived in Turn 1 of session `260810-0241`"*
+- the list underneath it has **two** bullets — `260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`, and this record
+- *"**Both** arrived in Turn 1 of session `260810-0241-orchestrator-session.md`"*
 
 `8d66265`'s commit message, filing the same record, says *"It is the **second** instance of the
-shape tonight, after `260810-0506`"* — which matches the list and the "Both", and contradicts the
+shape tonight, after `260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`"* — which matches the list and the "Both", and contradicts the
 record's own opening.
 
 ## Why a miscount here is worth a record
@@ -46,6 +46,6 @@ one exists that this reviewer did not find.
 
 Resolved: the target record now says "second" and "the two" in its opening, which is what its list, its "Both" and `8d66265`'s message already said. A dated correction note was appended above the existing `Resolved:` line rather than editing the record silently; the record stays closed.
 
-Counted against the tree rather than taken from this record: `ac68437` touches exactly two prompt files, `agents/orchestrator.md` and `skills/next/SKILL.md`, replacing one trailing guard in each with an explicit `if`; two records were filed for the shape that night (`260810-0506` and `260810-0710`) and a search of every issue store for the shape's own vocabulary returns those two and this one. No third instance was filed in that range, so the number is two.
+Counted against the tree rather than taken from this record: `ac68437` touches exactly two prompt files, `agents/orchestrator.md` and `skills/next/SKILL.md`, replacing one trailing guard in each with an explicit `if`; two records were filed for the shape that night (`260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md` and `260810-0710`) and a search of every issue store for the shape's own vocabulary returns those two and this one. No third instance was filed in that range, so the number is two.
 
 One thing this correction did not do, because it would change what the record counts: the corpus-wide count is a different question. A scan of `agents/*.md` and `skills/*/SKILL.md` for a guard in final position finds further live sites today, at least three of them genuine (`skills/circle-stash/SKILL.md` 7.2 and 7.7, `skills/circle-pop/SKILL.md` 7.4). That is evidence for the record's still-open third question and is reported to the orchestrator as an adjacent finding, not folded into a count scoped to one Turn.

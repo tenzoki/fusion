@@ -3,7 +3,7 @@
 **Agent:** coder
 **Date:** 2026-07-19 14:36
 **Circle:** 260718-1924-v5x-overhaul
-**Plan:** planning/260719-1416_p_plan-circle-e-rest-docs-cleanup-v5-close.md (Turn 2, steps 2–5)
+**Plan:** 260719-1416_*_plan-circle-e-rest-docs-cleanup-v5-close.md (Turn 2, steps 2–5)
 **Status:** Complete
 
 ## What I did
@@ -36,7 +36,7 @@ Applied the plan's per-file staleness audit to five docs. Verified each stale re
 - Rule-set description cross-checked against `bin/fusion-rules` source, not memory.
 
 ## Issue filed (out-of-scope defect)
-- issues/260719-1436_o_claude-md-seven-prose-agents-stale-count.md — CLAUDE.md line 47 says "seven prose agents"; `bin/fusion-rules` `IS_PROSE_AGENT` now lists nine (adds conceptrev, editor). Not in the Turn 2 audit; left for Turn 3's sweep.
+- 260719-1436_*_claude-md-seven-prose-agents-stale-count.md — CLAUDE.md line 47 says "seven prose agents"; `bin/fusion-rules` `IS_PROSE_AGENT` now lists nine (adds conceptrev, editor). Not in the Turn 2 audit; left for Turn 3's sweep.
 
 ## Files changed
 - README-agents.md

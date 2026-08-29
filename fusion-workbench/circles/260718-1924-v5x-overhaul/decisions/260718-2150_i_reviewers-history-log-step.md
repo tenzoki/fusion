@@ -1,11 +1,11 @@
 # Decision: should the three reviewers carry a session-history-log step?
 
-**Status:** _i_ (implemented — reviewer edits realising the ruling landed in Circle D, session 260718-2110)
+**Status:** _i_ (implemented — reviewer edits realising the ruling landed in Circle D, session 260718-2110-orchestrator-session.md)
 **Date:** 2026-07-18 21:50
 **Circle:** `260718-1924-v5x-overhaul`
 **Raised by:** planner (Circle D per-Circle planning pass)
 **Rubric dimension:** R5 (Output-Style correctness) — the history-log step must resolve to a *decided* state, not stay ambiguous.
-**Corresponds to:** Finding F5 in `analyses/260718-1929-agent-coordination-analysis.md`.
+**Corresponds to:** Finding F5 in `260718-1929-agent-coordination-analysis.md`.
 
 ## The question
 
@@ -54,10 +54,10 @@ Circle-D plan. If it is still open when those bundles execute, those specific R5
 edits defer (`defer-with-reason`) until the user rules.
 
 ---
-Answered: user ruling at the Circle D plan gate (session 260718-2110), option "document the exception". Each reviewer prompt (coderev, ontorev, conceptrev) gets a one-line sentence stating it writes no separate session-history entry because its `$OUT_REVIEW` file is its durable record. Realises in Circle D Bundles 1 and 2 (R5 cells). See plan `planning/260718-2150_c_plan-circle-d-agent-prompt-revision.md` §"The F5 decision".
+Answered: user ruling at the Circle D plan gate (session 260718-2110-orchestrator-session.md), option "document the exception". Each reviewer prompt (coderev, ontorev, conceptrev) gets a one-line sentence stating it writes no separate session-history entry because its `$OUT_REVIEW` file is its durable record. Realises in Circle D Bundles 1 and 2 (R5 cells). See plan `260718-2150_*_plan-circle-d-agent-prompt-revision.md` §"The F5 decision".
 
 ---
-Implemented: 2026-07-19 (reconciliation, session 260718-2110). The "document the exception" sentence landed on disk in all three reviewers:
+Implemented: 2026-07-19 (reconciliation, session 260718-2110-orchestrator-session.md). The "document the exception" sentence landed on disk in all three reviewers:
 - `agents/coderev.md:69` and `agents/ontorev.md:62` — commit `ee65560` (Circle D Bundle 1).
 - `agents/conceptrev.md:32` — commit `f55eb7a` (Circle D Bundle 2).
 Each reads "You write no separate session-history entry … a history log would only duplicate it." Marker transitioned `_a_`→`_i_`. Verified against the live tree, not the plan header.

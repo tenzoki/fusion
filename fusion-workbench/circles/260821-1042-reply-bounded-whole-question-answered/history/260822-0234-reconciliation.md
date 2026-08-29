@@ -4,9 +4,9 @@
 **HEAD:** `05b46f2`. **Session anchor:** `084c626`. Eleven commits in the range.
 **Working tree:** two machine-written files modified (`fusion-workbench/.fusion-setup`,
 `fusion-workbench/orchestrator-events.jsonl`); nothing else.
-**Scope:** final pass before `circles/260821-1042-reply-bounded-whole-question-answered` closes,
+**Scope:** final pass before `260821-1042-reply-bounded-whole-question-answered` closes,
 plus the three-edge Coherence verdict written into
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`
+`260822-0019-orchestrator-session.md`
 `## Coherence`.
 
 ## Counts
@@ -25,7 +25,7 @@ reason checked below.
 
 ## What was verified against the tree
 
-**The plan's closure is earned.** `planning/260821-1805_c_plan-reply-bounded-whole-question-answered.md`
+**The plan's closure is earned.** `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 carries `**Status:** Complete`, six `[DONE]` steps and the `_c_` marker, and all three agree with
 the tree. Each step was re-checked at HEAD rather than inherited from the 260821-2349 pass, because
 eleven commits landed between them. The per-step table is in that file's `## Reconciliation Log`.
@@ -54,28 +54,28 @@ files), `746ae4d` −8 / −10.
 **The version-gap figures.** `git rev-list --count v10.4.0..084c626` returns 48, the manifest still
 reads `10.4.0`, `git diff --stat v10.4.0..HEAD -- bin/fusion-rules` shows 22 lines, and
 `bin/fusion-prose-metric` is absent from the installed plugin's `bin/`. All four claims in
-`shared/issues/260822-0035_*_two-installed-copies-...` and in commits `c53a903` and `055585f` hold.
+`260822-0035_*_two-installed-copies-...` and in commits `c53a903` and `055585f` hold.
 
 ## The three records that stay open, checked one by one
 
-**`issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-...` — properly open.** Its figure
+**`260821-2204_*_a-growth-bound-lost-half-its-head-room-...` — properly open.** Its figure
 of 15 lines reproduces at HEAD. What it now holds is not an unapplied fix but a statement the
 closure note has to make, and it survives the Circle to say so. Annotated with the re-measurement
 and with the fact that nothing tonight touched `hooks/`.
 
-**`decisions/260821-2004_*_what-happens-to-the-directive-...` — properly open, and the
+**`260821-2004_*_what-happens-to-the-directive-...` — properly open, and the
 non-answer was the right call.** No answer exists in any analysis, plan or decision store, so the
-marker is correct rather than stale. Detail under "Decision 260821-2004" below.
+marker is correct rather than stale. Detail under "Decision 260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md" below.
 
 **The four profile findings in `shared/issues/` — all four properly open.**
-`260822-0115` (the German profile names one referent three ways), `260822-0118` (`AI04` denotes two
-different rules across the two profile families), `260822-0119` (the prose metric's worked exhibit
-reports six em-dashes in a file carrying four) and `260822-0120` (a German blacklist entry bans a
+`260822-0115_*_the-german-chat-profile-names-the-referent-three-ways-where-the-english-names-it-once.md` (the German profile names one referent three ways), `260822-0118_*_ai04-denotes-two-different-rules-in-the-two-profiles-a-prose-agent-loads-together.md` (`AI04` denotes two
+different rules across the two profile families), `260822-0119_*_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md` (the prose metric's worked exhibit
+reports six em-dashes in a file carrying four) and `260822-0120_*_the-german-blacklist-forbids-an-ordinary-connective-where-the-english-forbids-a-discourse-marker.md` (a German blacklist entry bans a
 working connective). Each carries severity, affected lines, routes it declines to choose between,
 and a provenance paragraph; none has a fix in the tree. Three are pre-existing and correctly shared.
 One is not: see "One placement question" below.
 
-## Decision 260821-2004: the deliberate non-answer
+## Decision 260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md: the deliberate non-answer
 
 **I agree it should not have been answered, and the recorded reason is weaker than the available
 one.** The reason in `agentstate.yaml` task T5 is that answering freezes a normative answer into a
@@ -87,7 +87,7 @@ marker after its Circle closes. So the stated ground does not carry the conclusi
 The conclusion holds on a ground the Circle's own Grounding already records. The answer binds every
 future Circle whose planner writes a plan of this shape; option 1 additionally spends bytes in
 `rules/circle-records.md`, inside the always-on set with 3 509 bytes left; and
-`circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md` `## Grounding snapshot`
+`260821-1042-reply-bounded-whole-question-answered` `## Grounding snapshot`
 records that a decision of exactly this class, filed open and answered by an orchestrator in an
 unattended run, was **overturned by the user on 2026-08-21**. One reversal of the same class inside
 the Grounding of the Circle now asked to repeat it is the argument.
@@ -102,7 +102,7 @@ If Phase 4 does not name it, option 3 of that record has been taken by default r
 
 **Agreed, and the reason is recorded in the record itself**, which is where a later reader will
 find it: the 260821-2349 reconciliation note in
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 gives both halves at length, and Turn 2 of tonight's session log states it again. It is not held
 only in a session log or a chat reply.
 
@@ -113,7 +113,7 @@ position.
 
 **One claim in that note is now too weak and was corrected in place.** It says re-running the frozen
 baseline "is one command". Running it is; reading the result is not. Section 7 of
-`analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` sets the
+`260822-0035-three-before-figures-and-the-after-measurement-defined.md` sets the
 requirement at twenty unprimed sessions from a measured design effect of 1.56, and puts ten points
 of movement at about 110. The price of waiting is now known rather than assumed.
 
@@ -123,30 +123,30 @@ Eleven commit messages, eight agent logs and one session log were checked. **Eve
 the eleven commit messages reproduces.** The byte deltas, the 48-commit version gap, the 22 lines of
 `bin/fusion-rules`, the 20 360-line surface and its 15 lines of head-room, the three respelled
 citations in `05b46f2`, the dated correction note now standing in the briefing at
-`analyses/260822-0010-...md:52`. Nothing was presented as checked that was not.
+`260822-0010-...md:52`. Nothing was presented as checked that was not.
 
 Three discrepancies were found, all in the session log rather than in the commits, and all filed as
-`issues/260822-0234_o_the-session-log-stops-one-commit-and-one-turn-short-and-its-head-still-says-the-directive-is-unresolved.md`:
+`260822-0234_*_the-session-log-stops-one-commit-and-one-turn-short-and-its-head-still-says-the-directive-is-unresolved.md`:
 the eleventh commit `05b46f2` (its own trailer reads `Turn: 4`) appears nowhere in the log; `## Turn 3`
 says three review findings closed where its three commits closed five; and the head still reads
 `**Directive:** (not yet resolved)` although Turn 1 resolved it.
 
 **One transient inconsistency that resolved itself and is recorded here rather than filed.**
-`c964062` renamed `260822-0116_o_the-fold-of-the-version-gap-records-...` to `_c_` in a commit that
+`c964062` renamed `260822-0116_*_the-fold-of-the-version-gap-records-...` to `_c_` in a commit that
 changed **zero bytes** of that record and did not carry its fix; the fix and the `Resolved:` note
 landed one commit later in `055585f`. The end state at HEAD is correct. It is the same
 marker-ahead-of-the-tree class this Circle has caught repeatedly, at its smallest size.
 
 **Review coverage.** `bin/fusion-review-coverage --since 084c626` reports 11 commits, 3 reviews,
 6 uncovered, verdict `uncovered`. Filtering to commits touching shipped files, which is option 3 of
-`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 and is not implemented in the helper, leaves **one**: `746ae4d`, which edits the two shipped
 `stilwerk/chat-voice-*.yaml`. Under option 1 of that same record, in force since 2026-08-16,
 coverage is advisory and the closure note names the gap. It should name that commit.
 
 ## One placement question, raised and not acted on
 
-`shared/issues/260822-0118_*_ai04-denotes-two-different-rules-...` sits in the shared store. Its
+`260822-0118_*_ai04-denotes-two-different-rules-...` sits in the shared store. Its
 load-bearing half was **caused by this Circle**: `git log -S'Mechanical enumeration' --
 stilwerk/chat-voice-en.yaml` returns exactly one commit, `1daf063`, inside this Circle, and it is
 what widened chat `AI04` from the three-part figure to enumeration generally, which is what made the
@@ -160,23 +160,23 @@ would bury it. The origin is recorded on the record instead.
 
 ## What was not touched
 
-`shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`, per the Circle's
+`260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`, per the Circle's
 own scope. The four review files, per the no-rewrite rule; four of their pointer citations now name
 markers that have moved, all four inside review files, which sit outside the citation gate's corpus
-and are already covered as a class by `shared/issues/260818-1637_*_no-gate-resolves-a-path-line-citation-...`
-and `shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-...`.
+and are already covered as a class by `260818-1637_*_no-gate-resolves-a-path-line-citation-...`
+and `260811-2105_*_circle-records-carry-the-same-silent-citation-form-...`.
 
 ## Records written or annotated
 
 | File | What |
 |---|---|
-| `circles/260821-1042-.../planning/260821-1805_c_plan-...md` | reconciliation entry: per-step verification, the six stopping criteria, the four bounds |
-| `circles/260821-1042-.../issues/260821-2204_o_a-growth-bound-...md` | re-measured at HEAD, confirmed open |
-| `circles/260821-1042-.../decisions/260821-2004_o_what-happens-...md` | confirmed open, the non-answer endorsed on a corrected ground |
-| `circles/260821-1042-.../issues/260822-0234_o_the-session-log-stops-...md` | **new** — the three session-log discrepancies |
-| `shared/issues/260812-0253_o_agents-answer-a-question-...md` | stays open; the "one command" claim corrected |
-| `shared/issues/260822-0118_o_ai04-denotes-two-different-rules-...md` | Origin Rule note, no move |
-| `shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` | `Also seen:` — this Circle's `## Turn log` is empty and about to go terminal |
+| `circles/260821-1042-.../260821-1805_*_plan-...md` | reconciliation entry: per-step verification, the six stopping criteria, the four bounds |
+| `circles/260821-1042-.../260821-2204_*_a-growth-bound-...md` | re-measured at HEAD, confirmed open |
+| `circles/260821-1042-.../260821-2004_*_what-happens-...md` | confirmed open, the non-answer endorsed on a corrected ground |
+| `circles/260821-1042-.../260822-0234_*_the-session-log-stops-...md` | **new** — the three session-log discrepancies |
+| `260812-0253_*_agents-answer-a-question-...md` | stays open; the "one command" claim corrected |
+| `260822-0118_*_ai04-denotes-two-different-rules-...md` | Origin Rule note, no move |
+| `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md` | `Also seen:` — this Circle's `## Turn log` is empty and about to go terminal |
 
 ## One thing this pass broke and repaired before finishing
 

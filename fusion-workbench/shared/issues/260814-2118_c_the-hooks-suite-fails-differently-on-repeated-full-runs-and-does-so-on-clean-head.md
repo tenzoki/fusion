@@ -4,7 +4,7 @@ The hooks suite fails differently on repeated full runs, and does so on clean HE
 Three consecutive full runs of `cd hooks && npm test` produced three different failure sets, all of them in the lock and halt-reaping harnesses, and all of them passing when the same files are run in isolation. The behaviour was measured on clean HEAD, so it is not caused by any working-tree change. It makes "the suite is green" an unreliable statement, which matters because the release process's step 0 and every task's acceptance criterion rest on it.
 
 ---
-**Found by:** `coder`, during task T12 of Turn 6, session `260813-2345` (resumed 260814-2009), Circle `260801-1244-curator`. Reported in `circles/260801-1244-curator/history/260814-2110-coder-turn-6-ten-citations-and-five-under-named-rows.md`.
+**Found by:** `coder`, during task T12 of Turn 6, session `260813-2345-orchestrator-session.md` (resumed 260814-2009), Circle `260801-1244-curator`. Reported in `260814-2110-coder-turn-6-ten-citations-and-five-under-named-rows.md`.
 **Owner:** `coder`.
 **Severity:** Medium — no shipped behaviour is wrong, but the instrument that decides whether shipped behaviour is wrong is unreliable.
 **Affects:** `hooks/lib/__tests__/legacy-halt-clearing.test.ts`, `hooks/lib/__tests__/clear-halt-concurrent-halt.test.ts`, `hooks/lib/__tests__/fusion-commit-lock.test.ts`.
@@ -31,7 +31,7 @@ Both harnesses spawn real processes against real directories, so under full-suit
 
 ## Why this is not already covered
 
-`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md` asks the neighbouring question and is still open. That record asks whether the suite is *meant* to run concurrently with itself and who would serialise it if not. This record adds the measurement that answers half of it empirically: run concurrently with itself, it currently produces false failures on unmodified source. The decision record is the place the fix is chosen; cite this one from it.
+`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md` asks the neighbouring question and is still open. That record asks whether the suite is *meant* to run concurrently with itself and who would serialise it if not. This record adds the measurement that answers half of it empirically: run concurrently with itself, it currently produces false failures on unmodified source. The decision record is the place the fix is chosen; cite this one from it.
 
 ## What a fix would have to establish
 
@@ -52,7 +52,7 @@ Three agents, three trees, three different failure shapes, and one of them a fil
 
 ---
 
-## Measurement added 260815-0850 — bugfixer
+## Measurement added 260815-0850-bugfix-legacy-halt-clearing-flake.md — bugfixer
 
 **Marker unchanged (`_o_`).** Nothing is fixed here. This separates the three shapes the record
 already holds side by side, because they do not share a cause and a repair aimed at one leaves
@@ -95,7 +95,7 @@ artifact under them is gone.
 ### The other two shapes are unchanged and are other causes
 
 - `fusion-commit-lock.test.ts` — reproduced 4 of 4 under CPU saturation. Genuine wall-clock
-  assumption, already `shared/issues/260810-1135_*_…`. This is the one direction 2 is about.
+  assumption, already `260810-1135_*_…`. This is the one direction 2 is about.
 - A file that never runs (`Errors 1 error`, `48 passed (49)`) — the reconciler already measured
   this with nothing else in flight (`260811-2009`, evidence of 260811-2330: `Error: Worker
   exited unexpectedly` from tinypool). Not the build race and not a timing budget.
@@ -116,11 +116,11 @@ or serialising runs in the checkout — are options 2 and 1 of `260811-2009`, wh
 
 ---
 
-## Measurement added 260815-1133 — coder, step P-3b of Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`
+## Measurement added 260815-1133-coder-hooks-suite-concurrency-safety.md — coder, step P-3b of Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`
 
 **Marker unchanged (`_o_`).** Two of the three shapes this record holds are closed. The third
 is not, and it is why this record stays open. Full account:
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1133-coder-hooks-suite-concurrency-safety.md`.
+`260815-1133-coder-hooks-suite-concurrency-safety.md`.
 
 ### Closed: the shared build output
 
@@ -134,7 +134,7 @@ dispatch's deterministic reproduction (`vitest run legacy-halt-clearing` with a 
 
 ### Closed: the timing budgets
 
-`260810-1135` and `260811-1409` are both closed with their own evidence sections. Two changes
+`260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` and `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md` are both closed with their own evidence sections. Two changes
 between them: each wait now ends on an observable event rather than a budget, and
 `hooks/vitest.config.mjs` caps one run at half the machine's cores, because at one worker per
 core three concurrent suites made a bash script take 9.5 s to reach its first `mkdir`.
@@ -177,13 +177,13 @@ in the following half hour was wrong by a factor of three to four, in a directio
 correct change look like a fourfold regression. Check `uptime` and the process table before
 believing a timing measurement on this suite.
 
-Also seen: 260816-0713 by coderev — one full-suite run at `f77633f` failed `monitor-warnings-panel.test.ts` "a terminal on stdout still gets the dashboard opened for it" (`http://localhost:PORT` where the pin expects `http://127.0.0.1:PORT`); two later full runs and an isolated run of that file were green, and the same file was green in a full run at `3a0408a`. So the flake now reaches a file this range touched (`94683c9`).
+Also seen: 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md by coderev — one full-suite run at `f77633f` failed `monitor-warnings-panel.test.ts` "a terminal on stdout still gets the dashboard opened for it" (`http://localhost:PORT` where the pin expects `http://127.0.0.1:PORT`); two later full runs and an isolated run of that file were green, and the same file was green in a full run at `3a0408a`. So the flake now reaches a file this range touched (`94683c9`).
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Two of three failure shapes are closed and the third is not. The shared-`dist/` build race is fixed: `hooks/scripts/build.mjs` and `run-tests.mjs` now build into a private staging directory and swap it in with a rename rather than removing and rebuilding in place. The commit-lock timing-budget failures are recorded closed on their own evidence. The third shape, the monitor-warnings worker dying under concurrent full-suite load, is still open on the record-s own latest entry (260816-0713, reproduced at `f77633f`) and was not reproduced in sequential runs, which is consistent with its documented low rate rather than evidence against it. Marker stays open on the third shape alone.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). Two of three failure shapes are closed and the third is not. The shared-`dist/` build race is fixed: `hooks/scripts/build.mjs` and `run-tests.mjs` now build into a private staging directory and swap it in with a rename rather than removing and rebuilding in place. The commit-lock timing-budget failures are recorded closed on their own evidence. The third shape, the monitor-warnings worker dying under concurrent full-suite load, is still open on the record-s own latest entry (260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md, reproduced at `f77633f`) and was not reproduced in sequential runs, which is consistent with its documented low rate rather than evidence against it. Marker stays open on the third shape alone.
 
 ---
 Also seen: 260824 by coder (C3 step 2) — `lib/__tests__/guard-state-shape.test.ts` "still reports the gap, and repairs the file instead of failing again" failed on the first full run and passed alone and on three subsequent full runs. The test spawns its own temporary project and read nothing that step wrote, which is one more instance of the load-sensitivity this record describes rather than a new fault.
 
 ---
-Resolved: referred (decision) — two of three failure shapes are fixed above, and the load-sensitivity residual, the monitor-warnings worker dying under concurrent full-suite load, is named in the decision; shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md
+Resolved: referred (decision) — two of three failure shapes are fixed above, and the load-sensitivity residual, the monitor-warnings worker dying under concurrent full-suite load, is named in the decision; 260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md

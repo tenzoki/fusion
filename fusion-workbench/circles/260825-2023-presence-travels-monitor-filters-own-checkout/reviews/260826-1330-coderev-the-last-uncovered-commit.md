@@ -1,7 +1,7 @@
 # Code review — the last uncovered commit, the one that corrected the Circle's own counts
 
 **Reviewed-range:** `7774d56..e66f7d5`
-**Not-opened:** `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1132-reconciliation.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0136_c_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260825-2140_i_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-0141-coderev-c4-the-event-log-reader-and-the-writer-on-every-line.md`, `fusion-workbench/circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-0910-coderev-c4-turn-2-the-session-identifier-the-cut-and-the-four-templates.md`, `fusion-workbench/shared/issues/260825-1250_o_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`
+**Not-opened:** `260825-2123-orchestrator-session.md`, `260826-1132-reconciliation.md`, `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`, `260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`, `260826-0141-coderev-c4-the-event-log-reader-and-the-writer-on-every-line.md`, `260826-0910-coderev-c4-turn-2-the-session-identifier-the-cut-and-the-four-templates.md`, `260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`
 **Reviewer:** coderev, Kai Stalmann <ks@qantr.com>
 **Checkout:** 5e8248d7
 **Date:** 2026-08-26 13:30
@@ -60,7 +60,7 @@ content is the instruction not to perform one.
 **One reader is neither counted nor a counterexample.** `agents/curator.md:111` reads the event log
 as corroborating evidence and applies no scoping. It does not falsify a sentence that counts
 appliers. It was already found and deliberately left open in the resolution note of
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`,
+`260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`,
 so it is cross-referenced here rather than refiled.
 
 ### 2. The two-quantity repair at five sites — both numbers correct, all five texts agree
@@ -140,15 +140,15 @@ Measured, not inferred: a fabricated dangling record citation in a comment in
 
 The pinned number is right and the "contributes nothing" conclusion is right. What is wrong is the
 reason, written expressly so the next re-approver would not have to re-derive it. Filed as
-`shared/issues/260826-1330_*_the-citation-pin-note-says-hooks-dist-is-scanned-records-only-and-it-is-not-scanned-at-all.md`.
+`260826-1330_*_the-citation-pin-note-says-hooks-dist-is-scanned-records-only-and-it-is-not-scanned-at-all.md`.
 
 ### Medium, outside the reviewed range — `npm test` is red at HEAD
 
 `hooks/lib/__tests__/workbench-citation-lint.test.ts` fails at `69e7e5a` on one dangling citation in
-`shared/issues/260826-1305_o_…md:59`, where the C4 cardinality decision's slug is spelled `how-should`
+`260826-1305_*_…md:59`, where the C4 cardinality decision's slug is spelled `how-should`
 instead of `how-does`. Line 15 of the same file spells it correctly. The record was added by
 `312b1ff`, two commits after the one reviewed here, so `e66f7d5` itself was green. Filed as
-`shared/issues/260826-1331_*_npm-test-is-red-at-head-on-a-one-word-slug-drift-in-the-record-that-reports-the-eighth-count.md`.
+`260826-1331_*_npm-test-is-red-at-head-on-a-one-word-slug-drift-in-the-record-that-reports-the-eighth-count.md`.
 
 ### Low, outside the reviewed range — the layout tree's consumer column omits `bin/fusion-events`
 
@@ -157,7 +157,7 @@ file, the consumers bound to it at a fixed root-relative path, and the paragraph
 column's purpose is what breaks on a move. `hooks/events-query.ts` binds
 `fusion-workbench/orchestrator-events.jsonl` (`:56`, read at `:192`) and
 `fusion-workbench/agentstate.yaml` (`:328-336`) with no fallback, and appears beside neither. Filed as
-`shared/issues/260826-1332_*_the-layout-trees-consumer-column-omits-the-event-log-reader-this-circle-built.md`.
+`260826-1332_*_the-layout-trees-consumer-column-omits-the-event-log-reader-this-circle-built.md`.
 
 ## One observation, deliberately not filed
 
@@ -179,11 +179,11 @@ does not justify one.
 
 ## Recommended sequencing
 
-1. `260826-1331` first, and before anything else lands: the suite is red for everybody until the slug
+1. `260826-1331_*_npm-test-is-red-at-head-on-a-one-word-slug-drift-in-the-record-that-reports-the-eighth-count.md` first, and before anything else lands: the suite is red for everybody until the slug
    is fixed, and one edit fixes it.
 2. `260826-1330` whenever the test file is next open. Correcting the sentence adds no path or heading
    token, so the pin does not move.
-3. `260826-1332` when someone is next editing `rules/fusion-workbench-conventions.md`. It moves both
+3. `260826-1332_*_the-layout-trees-consumer-column-omits-the-event-log-reader-this-circle-built.md` when someone is next editing `rules/fusion-workbench-conventions.md`. It moves both
    the always-on rule budget and the citation pin, so it should not ride alone.
 
 ## What was not opened, and why
@@ -197,8 +197,8 @@ surrounding context where they are not.
 Six of the thirteen workbench records were opened. Whole: the two `260826-1127` issue records and the
 Z-2 coder history. Through the diff plus a direct read of the clause in question: the planning file's
 corrected acceptance criterion 6 and its reconciliation log, and the `Resolved:` note appended to
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`.
-Partially: `reviews/260826-1116-coderev-turn-3-the-count-corrections.md`, header and summary only,
+`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`.
+Partially: `260826-1116-coderev-turn-3-the-count-corrections.md`, header and summary only,
 read to match this file's format and not for its findings.
 
 The seven named in `**Not-opened:**` above were left, and the reason is budget rather than judgement

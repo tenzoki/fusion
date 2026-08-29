@@ -3,7 +3,7 @@
 **Date:** 2026-08-13 09:11
 **Agent:** shaper (anticipated-circle mode)
 **Status:** Complete
-**Produced:** `circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md`
+**Produced:** `260813-0910-documentation-matches-shipped-plugin`
 
 ## The draft
 
@@ -15,15 +15,15 @@ backlog entry was promoted or closed by this run.
 
 ## What was read
 
-- `shared/analyses/260813-0828-documentation-staleness-survey.md` — fifteen findings, four
+- `260813-0828-documentation-staleness-survey.md` — fifteen findings, four
   work groups, three clean leads, and the survey's own `## What I did not check` list.
-- `shared/issues/260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
+- `260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
   — acceptance conditions and the `## Withdrawn claim` section.
-- `shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`
+- `260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`
   (verdict and question sections).
-- `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md` — the dependency
+- `260813-0858-playmaker-maintains-backlog-store` — the dependency
   Circle, including its own `## Dependencies` note asking for this Circle's directory name.
-- `shared/decisions/260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md`
+- `260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md`
   (head and options 1).
 
 Measured directly in this session, for the Directive's deferred-passage list and the

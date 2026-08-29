@@ -7,7 +7,7 @@
 
 ## What was read
 
-The Circle record's Directive and Grounding snapshot; the five `260828-0904_a_*` decisions; issues `260828-0828_*`, `260828-0900_*`, `260828-0901_*`, `260828-0907_*`; the analysis `260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md` (Findings 4 and 5); the grammar `hooks/lib/__tests__/helpers/citation-scan.ts` and the three gates; `skills/archive/SKILL.md` filter 3; `hooks/lib/__tests__/helpers/growth-bound.ts` and the two bound tests; `bin/fusion-staging-drift` and `hooks/staging-drift.ts` as the helper shape; `skills/cleanup/SKILL.md` Steps 3 and 8; `rules/circle-records.md` head-field and citation-form sections.
+The Circle record's Directive and Grounding snapshot; the five `260828-0904_a_*` decisions; issues `260828-0828_*_fusion-citation-bookkeeping-defect-report.md_*`, `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, `260828-0901_*_the-archive-safety-filter-greps-the-literal-basename-and-cannot-match-the-wildcard-citation-form-the-rule-mandates.md_*`, `260828-0907_*`; the analysis `260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md` (Findings 4 and 5); the grammar `hooks/lib/__tests__/helpers/citation-scan.ts` and the three gates; `skills/archive/SKILL.md` filter 3; `hooks/lib/__tests__/helpers/growth-bound.ts` and the two bound tests; `bin/fusion-staging-drift` and `hooks/staging-drift.ts` as the helper shape; `skills/cleanup/SKILL.md` Steps 3 and 8; `rules/circle-records.md` head-field and citation-form sections.
 
 ## What was measured, all at `dfd567c4`
 
@@ -19,9 +19,9 @@ The Circle record's Directive and Grounding snapshot; the five `260828-0904_a_*`
 
 ## What was written
 
-- Plan: `circles/260828-2342-citation-form-drops-store-segment/planning/260829-1226_o_citation-form-drops-store-segment.md`, 12 steps in three commits, every step `coder`. No step produces a strategic deliverable, so `analyst` is unused; no step touches structured data, so `ontocoder` is unused.
-- Decision: `circles/260828-2342-citation-form-drops-store-segment/decisions/260829-1225_o_which-path-shaped-tokens-does-the-storeless-form-reach-beyond-a-record-citation.md`, filed because the five answered decisions leave three path-shaped token classes unnamed and the workbench gate judges all three; the plan proceeds on option 1 and names the option-2 fallback at steps 2 and 4.
-- No issue filed: every defect met was already on file (`260828-0900_*`, `260828-0901_*`, `260828-0907_*`).
+- Plan: `260829-1226_*_citation-form-drops-store-segment.md`, 12 steps in three commits, every step `coder`. No step produces a strategic deliverable, so `analyst` is unused; no step touches structured data, so `ontocoder` is unused.
+- Decision: `260829-1225_*_which-path-shaped-tokens-does-the-storeless-form-reach-beyond-a-record-citation.md`, filed because the five answered decisions leave three path-shaped token classes unnamed and the workbench gate judges all three; the plan proceeds on option 1 and names the option-2 fallback at steps 2 and 4.
+- No issue filed: every defect met was already on file (`260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, `260828-0901_*_the-archive-safety-filter-greps-the-literal-basename-and-cannot-match-the-wildcard-citation-form-the-rule-mandates.md_*`, `260828-0907_*`).
 
 ## Two things the next reader should know
 

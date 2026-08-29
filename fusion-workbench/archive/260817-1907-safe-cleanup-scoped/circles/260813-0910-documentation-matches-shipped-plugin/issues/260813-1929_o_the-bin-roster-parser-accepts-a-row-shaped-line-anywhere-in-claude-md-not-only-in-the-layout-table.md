@@ -47,4 +47,4 @@ Slice `CLAUDE.md` to the `## Layout` section before matching — from the `## La
 Filed by: coderev (review of Circle Turn 1, range `6590cd5..79ec7bb`, commit `79ec7bb`).
 
 ---
-Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `derivable-enumerations-lint.test.ts:453` matches `^| \`bin/…\` |` over the whole file and is called as `documentedRows(read("CLAUDE.md"))` at `:482` and `:493` — no `## Layout` slice. The check itself is sound: `ls bin | wc -l` = 15 and the parser finds 15 rows, both directions agreeing.
+Reconciled: 260813-2258-reconciliation.md — Still open, re-verified at HEAD `c0e4219`: `derivable-enumerations-lint.test.ts:453` matches `^| \`bin/…\` |` over the whole file and is called as `documentedRows(read("CLAUDE.md"))` at `:482` and `:493` — no `## Layout` slice. The check itself is sound: `ls bin | wc -l` = 15 and the parser finds 15 rows, both directions agreeing.

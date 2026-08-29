@@ -37,7 +37,7 @@ no dotfiles, so it matches nothing on almost every iteration.
 ## Impact
 
 - **Migration is the dangerous case.** An abort mid-migration leaves the workbench split
-  across two layouts — precisely the failure `260717-0115[o]` documents and the whole
+  across two layouts — precisely the failure `260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md` documents and the whole
   refuse-then-migrate design exists to prevent. Here the collision-safe / idempotent design
   saved it (re-running under bash completed cleanly, 0 losses), but only because a human
   noticed the abort and re-ran correctly. An unattended orchestrator following the skill
@@ -86,5 +86,5 @@ Fixed in commit `4d0d32b` (fix(skills,agents): harden shell globs against zsh no
 All 14 vulnerable sites converted to `find`-driven `while read` loops; counter-mutating loops
 use process substitution `< <(find …)`; a new `glob-nomatch-lint.test.ts` gate guards against
 reintroducing raw `.[!.]*`. Verified under zsh 5.9; 196 hooks tests green; plugin validate
-passed. Planned in `260717-1918_c_...` (now closed). Site 12 (cleanup) was simplified by the
+passed. Planned in `260717-1918_*_...` (now closed). Site 12 (cleanup) was simplified by the
 v5.0.0 marker change — the escaped-bracket case-filter became a plain underscore `find`.

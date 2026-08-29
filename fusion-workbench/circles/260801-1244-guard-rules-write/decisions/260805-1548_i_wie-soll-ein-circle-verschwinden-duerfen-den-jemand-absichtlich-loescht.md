@@ -69,7 +69,7 @@ dokumentierter Weg — nur sein Ende ist ungeregelt.
 ## Constraints
 
 - Der Marker sitzt am Record, nicht am Verzeichnis (`rules/circle-records.md`, bindende
-  Entscheidung `260716-1910_i_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`).
+  Entscheidung `260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`).
   Jede Antwort, die einen Marker als Träger benutzt, muss sagen, wo dieser Marker nach
   dem Verschwinden noch zu lesen ist.
 - `_c_`, `_b_`, `_s_`, `_d_` sind terminal; ein Rückweg nach `_a_`/`_t_` ist untersagt.
@@ -105,7 +105,7 @@ und hat damit Option 2 in anderer Verpackung.
 **Herkunft.** Aufgenommen aus den Session-Protokollen eines konsumierenden Projekts, die
 über ein geteiltes Verzeichnis bereitgestellt und nur lesend genutzt wurden. Niemand hat
 den Punkt als Befund gemeldet; er stand als Beobachtung im Protokoll
-`circles/260801-1244-guard-rules-write/history/260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
+`260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
 (Abschnitt "Beobachtungen aus den Protokollen, ohne eigenen Record", Punkt 1) und wurde
 mit diesem Record erstmals als offene Frage geführt. Der beobachtete Circle liegt im
 konsumierenden Projekt, nicht hier.
@@ -159,7 +159,7 @@ Answered: dieser Record, `## Antwort` — Nutzerentscheidung; gelöscht heißt w
 
 **One constraint of the question has since expired.** It rested partly on `docs/plane-setup.md` recommending the throwaway Circle as documented practice ("Push on a throwaway Circle first"). That file went with the Plane mirror on 2026-08-15 and `ls docs/` no longer holds it, so the pattern is no longer documented anywhere. **This does not moot the answer** — the answer is about deletion in general, and a user may delete a Circle for any reason — but it removes the urgency the question was filed with, and a reader should not go looking for that document.
 
-**This pass measured the cost the answer accepts, and it is real.** Six citations from live Circle records were broken by the `260817-1907` archive sweep, which is the neighbouring operation to deletion and preserves the target; deletion preserves nothing. Nothing detected those six. See `shared/history/260819-1400-reconciliation-circles.md` `## Dangling citations`.
+**This pass measured the cost the answer accepts, and it is real.** Six citations from live Circle records were broken by the `260817-1907` archive sweep, which is the neighbouring operation to deletion and preserves the target; deletion preserves nothing. Nothing detected those six. See `260819-1400-reconciliation-circles.md` `## Dangling citations`.
 
 ---
 Implemented: `rules/circle-records.md:67` `### Deletion is outside the vocabulary, and the annotation sits on the references` — the operative half of this answer is written down. It states that a deliberately deleted Circle leaves no directory, record or marker; that the vocabulary's lack of a seventh letter is deliberate, because a marker on a deleted file holds nothing; and that the obligation therefore sits on the surviving references, since an instruction inside the object cannot survive the object.
@@ -169,7 +169,7 @@ The annotation is a stated literal, `Deliberately deleted YYMMDD: Circle \`<stam
 The reachability residual this record's closing paragraph raised is stated in the new section rather than closed: `rules/circle-records.md` is emitted to `orchestrator`, `playmaker` and `shaper` only, so a human deleting a Circle by hand reads none of it, and a `/fusion:circle-delete` skill remains an open question.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **marker stays `_i_`;
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **marker stays `_i_`;
 the implementation is on disk and the record's own citations are not.** The `Implemented:` block
 above resolves: `rules/circle-records.md:67` carries the section, `:97` the literal form and `:103`
 the worked example, and the example annotates the very Circle this record was filed about. Verified
@@ -181,4 +181,4 @@ form was written for and was not applied to; the other two name files in another
 the record says on the same line and which the scanner cannot see. They went unrepaired because the
 `_a_` → `_i_` transition in `ad7ffed` took this record out of the citation gate's corpus in the same
 commit that armed the work. Filed as
-`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0906_*_the-deletion-annotation-form-was-not-applied-to-the-surviving-reference-of-the-circle-it-uses-as-its-worked-example.md`.
+`260820-0906_*_the-deletion-annotation-form-was-not-applied-to-the-surviving-reference-of-the-circle-it-uses-as-its-worked-example.md`.

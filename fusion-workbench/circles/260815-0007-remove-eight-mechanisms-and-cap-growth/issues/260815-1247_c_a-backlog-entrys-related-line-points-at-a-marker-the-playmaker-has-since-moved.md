@@ -2,20 +2,20 @@
 
 ---
 
-`shared/backlog/260814-2312_c_collapse-the-eight-admin-commands-into-three-entry-points.md` names its
-sibling as `shared/backlog/260814-1733_p_radical-simplification.md`. That entry is now `_c_`, so the
+`260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md` names its
+sibling as `260814-1733_*_radical-simplification.md`. That entry is now `_c_`, so the
 citation resolves to nothing. Its sibling cites the same store with a `_*_` stem and does not break.
 
 ---
 
 **Severity:** Low — one dangling citation between two entries in one directory.
 **Domain:** data
-**Filed by:** `ontorev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1247-ontorev-turn-2-structured-data.md`)
+**Filed by:** `ontorev`, reviewing `7c12d6a..5d29b6d` (`260815-1247-ontorev-turn-2-structured-data.md`)
 **Owner:** `ontocoder`
-**Affects:** `fusion-workbench/shared/backlog/260814-2312_c_collapse-the-eight-admin-commands-into-three-entry-points.md:6`
+**Affects:** `260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md:6`
 
 **Verified 2026-08-15 at HEAD `5d29b6d`.** The store holds five entries; no
-`260814-1733_p_radical-simplification.md` exists.
+`260814-1733_*_radical-simplification.md` exists.
 
 ## The two forms, in one directory
 
@@ -41,8 +41,8 @@ here it moves whenever the ranking changes.
 
 ## Not a defect
 
-The closure note in `260811-0826_c_observations.md` — *"Split: became
-`260814-1733_o_radical-simplification.md`, …"* — names three entries at their `_o_` names and two of them
+The closure note in `260811-0826_*_observations.md` — *"Split: became
+`260814-1733_*_radical-simplification.md`, …"* — names three entries at their `_o_` names and two of them
 have moved since. That line is a historical statement about what the split produced and stays true. Only
 the `**Related:**` pointer above is live.
 
@@ -50,13 +50,13 @@ the `**Related:**` pointer above is live.
 
 Rewrite the one `**Related:**` citation in the `_*_` stem form. Whether the convention should say so for
 every marker-bearing citation is the open question deferred by
-`issues/260815-0804_o_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`,
+`260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`,
 and it now has a third store's worth of evidence behind it.
 
 ## Related
 
-- `issues/260815-0804_o_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`
-- `issues/260815-1247_o_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md`
+- `260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`
+- `260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md`
 
 ---
 

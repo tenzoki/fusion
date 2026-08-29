@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Scope:** `hooks/guard.ts`, `hooks/lib/{paths,rules-write-exemption,bash-mutation-guard,fs-locator}.ts` + tests
 **Tests:** 973 passed (baseline 871, +102)
 **`hooks/dist/`:** left at HEAD, as instructed. `npm test` runs `tsc` first and rebuilds it; it was reverted after each run.

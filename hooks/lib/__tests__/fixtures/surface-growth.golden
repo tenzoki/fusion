@@ -17,34 +17,36 @@
   coder.md 9649
   coderev.md 8141
   consultant.md 14329
-  curator.md 34414
+  curator.md 34554
   editor.md 13635
   ontocoder.md 13262
   ontorev.md 7094
-  orchestrator.md 148672
-  planner.md 19635
-  playmaker.md 41168
+  orchestrator.md 150287
+  planner.md 19725
+  playmaker.md 41160
   reconciler.md 21131
-  shaper.md 29010
+  shaper.md 29057
   taskplanner.md 14070
-  total 406757
+  total 408641
 
 [skills bytes]
-  archive/SKILL.md 26350
+  archive/SKILL.md 26364
   cadence/SKILL.md 17185
-  cleanup/SKILL.md 23735
+  cleanup/SKILL.md 23794
   commit/SKILL.md 6298
-  curate/SKILL.md 12327
+  curate/SKILL.md 12398
   direct/SKILL.md 10613
-  help/SKILL.md 17008
+  help/SKILL.md 17127
   log-activity/SKILL.md 13482
   memo/SKILL.md 12244
-  migrate/SKILL.md 26630
-  next/SKILL.md 27593
-  setup/SKILL.md 46881
-  total 240346
+  migrate/SKILL.md 26620
+  next/SKILL.md 27601
+  setup/SKILL.md 46639
+  total 240365
 
 [hook-tests lines]
+  archive-filter-key.test.ts 40
+  citation-sweep.test.ts 45
   commit-message-path.test.ts 315
   committed-dist.test.ts 332
   config.test.ts 809
@@ -55,6 +57,7 @@
   domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 168
+  fusion-citation-check.test.ts 70
   fusion-commit-lock.test.ts 424
   fusion-count-sources.test.ts 442
   fusion-events.test.ts 251
@@ -82,7 +85,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 486
-  reference-resolution-lint.test.ts 990
+  reference-resolution-lint.test.ts 995
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
   rules-emission-golden.test.ts 1150
@@ -92,5 +95,5 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
-  workbench-citation-lint.test.ts 376
-  total 19418
+  workbench-citation-lint.test.ts 405
+  total 19607

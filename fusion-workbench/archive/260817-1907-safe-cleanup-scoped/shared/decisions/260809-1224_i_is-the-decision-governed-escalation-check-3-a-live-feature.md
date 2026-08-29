@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** `shared/analyses/260809-1101-guard-support-layer.md` (finding 2, recommendation C5); `hooks/lib/config.ts`; `hooks/config.json`; `hooks/lib/paths.ts`
+**Cross-references:** `260809-1101-guard-support-layer.md` (finding 2, recommendation C5); `hooks/lib/config.ts`; `hooks/config.json`; `hooks/lib/paths.ts`
 
 ---
 
@@ -76,22 +76,22 @@ safe and option 3 becomes unnecessary. If one does, option 2 is forced.
 Until then, recommendation C5 stays blocked and no code on this path is touched.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — re-opened on its own trigger (measurement of 2026-08-12 is zero); option 1, retired: remove CHECK 3 and its four configuration keys. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — re-opened on its own trigger (measurement of 2026-08-12 is zero); option 1, retired: remove CHECK 3 and its four configuration keys. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. No answer exists on disk, and none could have arisen from this session.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. No answer exists on disk, and none could have arisen from this session.**
 
 Searched for an answer across `shared/analyses/`, `shared/planning/`, `shared/decisions/` and the six commits `451a07e..fb262d8`. The support-layer analysis that raised the question states the same constraint the record does — no consuming project's configuration is visible from this tree — and the defect round touched none of the four files the question is about: `hooks/lib/config.ts`, `hooks/config.json` and `hooks/lib/paths.ts` are absent from the diff, and the configuration surface (`findRelevantDecisions`, `sensitivityLevel`, `guard.categoryPaths`, `guard.categorySensitivity`, `guard.defaultSensitivity`, `decisions`) is unchanged and still inert on shipped defaults.
 
-The blocking step is unchanged and is not a code step: read `fusion-guard.json` from each consuming project the user has, `unite` first. Recommendation C5 of `shared/analyses/260809-1101-guard-support-layer.md` stays blocked behind it.
+The blocking step is unchanged and is not a code step: read `fusion-guard.json` from each consuming project the user has, `unite` first. Recommendation C5 of `260809-1101-guard-support-layer.md` stays blocked behind it.
 
 ---
 Deferred: until someone measures whether any reachable consuming project has populated the check's
-configuration surface. User, session 260811-0752 (chat).
+configuration surface. User, session 260811-0752-orchestrator-session.md (chat).
 
 **Trigger, so this is a deferral and not a shelf.** Re-open when a measurement exists over the
 consuming projects this developer can reach: does any of them populate `decisions` or the rest of
@@ -105,4 +105,4 @@ Nothing is blocked meanwhile: the check is inert either way, and its cost is the
 surface it advertises, not any behaviour.
 
 ---
-Implemented: `2f624ca` (plan step P-2) and `fab8a4b` (P-7a) — option 1, retired. `2f624ca` deleted CHECK 3 from `hooks/guard.ts` together with `emitBlockEvent`, `shouldEscalate` and `block`, and the hook now emits `{}` on every leaf. `fab8a4b` deleted the configuration surface this record names — the keys `decisions`, `guard.categoryPaths`, `guard.categorySensitivity` and `guard.defaultSensitivity`, with `sensitivityLevel`, `findRelevantDecisions`, the `Sensitivity` and `Decision` types and the sensitivity validators — and `6890ea2` (P-7b) removed the two files that declared them, `hooks/config.json` and `hooks/config.example.json`. The deferral's own re-open trigger was met by the zero measured on 2026-08-12 and tabled in `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`, which is why this record moves to `_i_` rather than back to `_d_`. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
+Implemented: `2f624ca` (plan step P-2) and `fab8a4b` (P-7a) — option 1, retired. `2f624ca` deleted CHECK 3 from `hooks/guard.ts` together with `emitBlockEvent`, `shouldEscalate` and `block`, and the hook now emits `{}` on every leaf. `fab8a4b` deleted the configuration surface this record names — the keys `decisions`, `guard.categoryPaths`, `guard.categorySensitivity` and `guard.defaultSensitivity`, with `sensitivityLevel`, `findRelevantDecisions`, the `Sensitivity` and `Decision` types and the sensitivity validators — and `6890ea2` (P-7b) removed the two files that declared them, `hooks/config.json` and `hooks/config.example.json`. The deferral's own re-open trigger was met by the zero measured on 2026-08-12 and tabled in `260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`, which is why this record moves to `_i_` rather than back to `_d_`. Plan: `260816-1915_*_the-compliance-guard-becomes-observation-only.md`.

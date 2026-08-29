@@ -9,13 +9,13 @@
 
 ## Task
 
-Produce the implementation plan for the curator Circle from `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md`, settling the ten questions the spec's `## Open for Planner` section left to the planner, and planning C10 against the answered arming decision rather than against the open question two surfaces still describe.
+Produce the implementation plan for the curator Circle from `260814-0738_*_spec-curator.md`, settling the ten questions the spec's `## Open for Planner` section left to the planner, and planning C10 against the answered arming decision rather than against the open question two surfaces still describe.
 
 ## Inputs read
 
 - The spec, in full.
-- The two lag defects filed in the Circle, `260814-0813` (the record's stale title and Dependencies) and `260814-0828` (the Grounding and the spec still calling the arming question open).
-- The answered decision `260814-0738_a_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`, treated as binding over the spec's `## User Decisions Pending`, as the defect instructs.
+- The two lag defects filed in the Circle, `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md` (the record's stale title and Dependencies) and `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md` (the Grounding and the spec still calling the arming question open).
+- The answered decision `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`, treated as binding over the spec's `## User Decisions Pending`, as the defect instructs.
 - The Circle record's `## Directive`, `## Grounding snapshot` and `## Dependencies`. The title was not read as scope.
 - `hooks/lib/__tests__/rules-emission-golden.test.ts` in full, including its doctrine header, `RULE_BASELINE`, `ROLES` and the three hard gates.
 - `bin/fusion-rules`, `bin/fusion-paths`, `hooks/lib/__tests__/path-literal-lint.test.ts`, `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`, and the agent and skill enumerations in `context-manifest.test.ts` and `fusion-paths.test.ts`.
@@ -41,8 +41,8 @@ The decision corpus stood at 82 when the spec measured it a day earlier and at 8
 
 ## What was produced
 
-- **The plan**, `circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md`. Five implementation steps, every one assigned to `coder`, plus a validation run for C11 that is deliberately not an executor step. Three Mermaid diagrams: the gate-crossing architecture, the growth-bound decomposition, and the step dependency graph.
-- **One decision record**, `circles/260801-1244-curator/decisions/260814-0845_o_are-the-sixteen-agent-claims-corrected-or-derived-away.md`. Whether the thirty-two "sixteen agents" claims are corrected in place or restructured so the count is not written down. Filed rather than settled in the plan because it binds every future agent addition, and because the project's own derive-over-correct doctrine speaks against the reflex answer.
+- **The plan**, `260814-0845_*_plan-curator.md`. Five implementation steps, every one assigned to `coder`, plus a validation run for C11 that is deliberately not an executor step. Three Mermaid diagrams: the gate-crossing architecture, the growth-bound decomposition, and the step dependency graph.
+- **One decision record**, `260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`. Whether the thirty-two "sixteen agents" claims are corrected in place or restructured so the count is not written down. Filed rather than settled in the plan because it binds every future agent addition, and because the project's own derive-over-correct doctrine speaks against the reflex answer.
 
 ## The ten spec questions, as settled
 

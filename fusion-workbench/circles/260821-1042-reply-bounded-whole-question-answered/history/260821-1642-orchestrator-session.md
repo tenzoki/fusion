@@ -1,4 +1,4 @@
-# Orchestrator Session — 260821-1642
+# Orchestrator Session — 260821-1642-orchestrator-session.md
 
 **Directive:** An agent's answer is bounded as a whole and it answers the question that was put.
 Taken from the Circle record's `## Directive`, which holds prose because `**Active spec/plan:**`
@@ -8,7 +8,7 @@ reads `(none yet)`.
 
 ## Setup snapshot
 
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`, activated this session
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`, activated this session
 from anticipated to active via `/fusion:next`.
 **Workbench:** `/Users/k1/Projects/productive/fusion/fusion-workbench`
 **Git HEAD at start:** `e764637`
@@ -16,7 +16,7 @@ from anticipated to active via `/fusion:next`.
 **Domain:** code
 
 This is the second session in this chat. The first ran with no Circle active and resolved every
-store to `shared/`; it is recorded at `shared/history/260821-1219-orchestrator-session.md` and
+store to `shared/`; it is recorded at `260821-1219-orchestrator-session.md` and
 did the curator pass on the normative surfaces. This session begins where that one left the tree,
 with the Circle now active, so every `OUT_*` resolves into the Circle and every `SCAN_*` carries
 the Circle store and the shared one.
@@ -46,7 +46,7 @@ should start.
    before a closure note can land.
 
 Two further items are portfolio-wide and unrelated to this Circle: three decision records exist
-twice because an unexpanded wildcard entered a filename (filed `260821-0430`, open), and
+twice because an unexpanded wildcard entered a filename (filed `260821-0430_*_three-decision-records-were-split-in-two-by-an-unexpanded-wildcard-and-their-implemented-notes-are-detached.md`, open), and
 `portfolio.md` cannot meet the em-dash ceiling because four of its em-dashes are forms other
 shipped surfaces mandate.
 
@@ -89,7 +89,7 @@ regenerates both goldens over whatever the superseded regeneration left, and the
   untouched when the Circle moved it from 21 lines of head-room to 15); 6 reviewer issues stay open,
   4 in the Circle and 2 in `shared/`, each re-verified rather than assumed; 4 commits (`a5e2cc5`,
   `1daf063`, `c8f0c74`, `9a68760`) and 15 `**Not-opened:**` paths are covered by no review, which
-  `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+  `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
   makes the user's call and the user made knowingly.
 - Artifact↔Directive: all 12 commits from `e764637` move toward the Directive and none is orthogonal
   to it, verified clause by clause in `rules/user-facing-output.md` (`:53` the reply answers what was
@@ -99,8 +99,8 @@ regenerates both goldens over whatever the superseded regeneration left, and the
   no growth bound stand closer to failing than at the anchor, and it is not meetable by anything the
   Circle still has to do.
 - Grounding↔Directive: 6 decisions in the Circle, 5 consistent with the Directive and 1 open by
-  design (`260821-2004`, whose subject is the `**Active spec/plan:**` field that is still `(none
-  yet)` — the record and the decision agree rather than conflict); `260821-1801` moved to implemented
+  design (`260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, whose subject is the `**Active spec/plan:**` field that is still `(none
+  yet)` — the record and the decision agree rather than conflict); `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md` moved to implemented
   this pass; 3 decisions in `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/` are
   settled elsewhere and never transitioned, which is Grounding drift outside this Circle's reach.
 
@@ -118,13 +118,13 @@ record declines to argue against. The criterion is unmet either way. Only the cl
 turns on the difference.
 
 **Two obligations that outlive the closure, both filed.** The plan is `**Status:** Complete` and
-still carries `_o_`, and `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+still carries `_o_`, and `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 is still open. Neither marker can move alone: 17 citations spell the two `_o_` markers literally and
 7 of them sit inside the corpus `hooks/lib/__tests__/workbench-citation-lint.test.ts` recomputes on
 every run. Measured by renaming, running the gate, and reverting; both go red. Filed as
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
+`260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
 Whether the verbosity record may be called closed at all is argued in the reconciliation appended to
 it and is the user's to answer: its rule-text half is closed and verified, and no one has looked at
 whether a reply changed.
 
-Full pass: `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2349-reconciliation.md`.
+Full pass: `260821-2349-reconciliation.md`.

@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner
-**Cross-references:** `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md` (the sibling question, about corpus membership rather than token class); `hooks/lib/__tests__/helpers/citation-scan.ts` (`GATE_KINDS`, `partition()`); `hooks/lib/__tests__/reference-resolution-lint.test.ts`; `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`
+**Cross-references:** `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md` (the sibling question, about corpus membership rather than token class); `hooks/lib/__tests__/helpers/citation-scan.ts` (`GATE_KINDS`, `partition()`); `hooks/lib/__tests__/reference-resolution-lint.test.ts`; `260819-2016_*_four-constraints-on-deep-change.md`
 
 ---
 
@@ -106,7 +106,7 @@ Superseded by:
 Retired:
 
 ---
-Answered: circles/260819-1645-four-constraints-on-deep-change/history/260819-2006-orchestrator-session.md — user chose at the same gate that the gate **reads the `stamp-name` class**. `GATE_KINDS` is extended, so the repair scope and the gate scope coincide at 242 tokens rather than diverging at 209, and step 8's 33 tokens are held by the same mechanism as the rest. The alternative, repairing them and leaving them unheld, would have reproduced this Circle's own subject at smaller scale.
+Answered: 260819-2006-orchestrator-session.md — user chose at the same gate that the gate **reads the `stamp-name` class**. `GATE_KINDS` is extended, so the repair scope and the gate scope coincide at 242 tokens rather than diverging at 209, and step 8's 33 tokens are held by the same mechanism as the rest. The alternative, repairing them and leaving them unheld, would have reproduced this Circle's own subject at smaller scale.
 
 **One consequence neither answer states on its own, recorded here because it falls between them.** Both callers share `GATE_KINDS`, so extending it moves the pinned counts of the existing `hooks/lib/__tests__/reference-resolution-lint.test.ts`. That gate keeps its count pins — the corpus answer's "no baseline" governs the new gate only — so its `BASELINE` will need a re-approval **with the note its own convention requires**, naming the class extension as the cause. A bumped constant with no note is the silent raise that gate exists to catch, and this session has already had to repair one such omission.
 

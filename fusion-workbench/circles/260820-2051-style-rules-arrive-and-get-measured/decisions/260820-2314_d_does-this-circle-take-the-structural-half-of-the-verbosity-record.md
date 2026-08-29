@@ -3,13 +3,13 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`
+**Cross-references:** `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `260820-2308-assessment-of-the-style-rules-spec.md`
 
 ---
 
 ## Question
 
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 has two halves. The opening-sentence half is served by the capability that gives the fact-first
 requirement a test. The structural half is that `rules/user-facing-output.md` prescribes relocating
 material to a Details block and states no total budget for a reply, so nothing bounds the whole.

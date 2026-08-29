@@ -66,7 +66,7 @@ install shape — currently unknown.
   recurred in this session, which is what surfaced the residual gap).
 
 ---
-Resolved (260709, session 260709-0816): Root cause found and fixed. The SessionStart hook wrote the echo payload in SINGLE quotes, so the literal `${CLAUDE_PLUGIN_ROOT}` landed in `$CLAUDE_ENV_FILE` and was re-expanded at Bash-tool-source time (where CLAUDE_PLUGIN_ROOT is empty) to `export FUSION_PLUGIN_ROOT=` — clobbering the launcher's correct value to empty. This affected BOTH the launcher path (empty override) and the marketplace/--plugin-dir path.
+Resolved (260709, session 260709-0816-orchestrator-session.md): Root cause found and fixed. The SessionStart hook wrote the echo payload in SINGLE quotes, so the literal `${CLAUDE_PLUGIN_ROOT}` landed in `$CLAUDE_ENV_FILE` and was re-expanded at Bash-tool-source time (where CLAUDE_PLUGIN_ROOT is empty) to `export FUSION_PLUGIN_ROOT=` — clobbering the launcher's correct value to empty. This affected BOTH the launcher path (empty override) and the marketplace/--plugin-dir path.
 
 Fix (commit 7f72dfe): expand CLAUDE_PLUGIN_ROOT at hook time (double quotes) + `[ -n ... ]` empty-guard:
   [ -n "${CLAUDE_PLUGIN_ROOT}" ] && echo "export FUSION_PLUGIN_ROOT=${CLAUDE_PLUGIN_ROOT}" >> "$CLAUDE_ENV_FILE" || true

@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Directive:** Fix the three review findings against `### The record counts are computed, not tallied` in `agents/orchestrator.md` as one unit — `shared/issues/260811-1406` (High), `260811-1407` (Medium), `260811-1412` (Low), all three against the twenty lines commit `7749845` added as task 28.
+**Directive:** Fix the three review findings against `### The record counts are computed, not tallied` in `agents/orchestrator.md` as one unit — `260811-1406` (High), `260811-1407_*_the-record-counts-block-reads-shell-variables-a-fresh-bash-call-never-has-and-calls-the-result-a-fusion-bug.md` (Medium), `260811-1412_*_the-orchestrator-prompt-ships-the-bash-tool-runs-zsh-as-fact-to-every-consuming-project.md` (Low), all three against the twenty lines commit `7749845` added as task 28.
 **Files changed:** `/Users/k1/Projects/productive/fusion/agents/orchestrator.md`; `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/record-counts-measurement.test.ts` (new); the three source records.
 **Verification:** `cd hooks && npm test` — 49 files, 1270 tests, exit 0.
 
@@ -102,6 +102,6 @@ literal was rewritten to name the issue store instead.
 ## Out of scope
 
 The other five findings from the same review, and the deferred decision
-`shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
+`260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
 about a shared chassis for the measurement modules. No fourth module was built here either; the
 block is still one shell block over data already on disk.

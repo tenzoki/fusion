@@ -6,13 +6,13 @@ The activation chain hands off to a parent thread that is the same thread, so th
 **Domain:** code
 **Filed by:** orchestrator, after doing exactly what the step describes and then stopping
 **Affects:** `skills/next/SKILL.md` `### 6.5 — Chain into a fresh orchestrator session`; `agents/orchestrator.md` `## MANDATORY — Read This First`
-**Cross-references:** `shared/decisions/260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md` (the same seam, asked from the other side and answered by measurement rather than by assumption)
+**Cross-references:** `260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md` (the same seam, asked from the other side and answered by measurement rather than by assumption)
 
 ---
 
 ## What happened
 
-Circle `circles/260823-0023-settle-what-travels-between-checkouts/` was activated through
+Circle `260823-0023-settle-what-travels-between-checkouts` was activated through
 `/fusion:next <dirname>` on 260823. The rename, the pointer and the dashboard placeholder all
 landed. The orchestrator then printed Step 6.5's message, which says a fresh session begins and the
 orchestrator now runs Setup, and stopped. No Setup ran. `agentstate.yaml` was absent, the session

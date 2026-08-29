@@ -7,7 +7,7 @@
 **Filed by:** coderev (review of `e3da397..a6b4928`, Turn 5)
 **Affects:** `agents/orchestrator.md:972`, `agents/orchestrator.md:974`
 **Cross-references:**
-`shared/issues/260811-2142_c_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md`
+`260811-2142_*_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md`
 
 ---
 

@@ -4,7 +4,7 @@
  * The computation is `lib/review-coverage.ts`; this is one of its two callers.
  * The other is `hooks/tracker.ts`, which runs it unasked when a review file
  * lands under a reviews store. Read that module's header for the defect
- * (issue `260810-1205` — seven commits reached a pushed tag unreviewed while
+ * (issue `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` — seven commits reached a pushed tag unreviewed while
  * the session reported one) and for why the ranges had to be mandated in
  * `agents/coderev.md` and `agents/ontorev.md` before anything could read them.
  *
@@ -25,10 +25,10 @@
  *   uncovered=7
  *   verdict=uncovered
  *     uncovered 7785330 chore(workbench): the reconciler's annotations land
- *     review shared/reviews/260810-2110-…md range=da8c9db..b3cc034 not-opened=none covers=5
- *     review shared/reviews/260731-2247-…md range=(none recorded) … UNUSABLE (no **Reviewed-range:** line)
+ *     review 260810-2110-…md range=da8c9db..b3cc034 not-opened=none covers=5
+ *     review 260731-2247-…md range=(none recorded) … UNUSABLE (no **Reviewed-range:** line)
  *   carried=agents/orchestrator.md, skills/next/SKILL.md
- *   carried-from=shared/reviews/260810-2110-…md
+ *   carried-from=260810-2110-…md
  *
  * `carried=` is the acceptance criterion's second half: the files the last
  * review declared it did not open, which are the next dispatch's scope rather
@@ -45,10 +45,10 @@
  * **Finding an uncovered range is not an error exit**, and the reason is the
  * one the deleted session-state drift reader established: its predecessor
  * handed a verdict to an exit code and cried wolf on its commonest path (issue
- * `260810-0710`), and a check whose status is ignored is the failure it exists
+ * `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`), and a check whose status is ignored is the failure it exists
  * to catch arriving one level up. Nor is it a release gate — whether a release
  * may go out over an uncovered range is an unfiled decision belonging beside
- * `shared/decisions/260810-0710_*_…`, and this program blocks nothing.
+ * `260810-0710_*_…`, and this program blocks nothing.
  */
 
 import {
@@ -130,7 +130,7 @@ function main(argv: string[]): number {
   );
 
   // Commit by commit, never a count. The session that produced issue
-  // `260810-1205` reported one unreviewed commit where there were seven.
+  // `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` reported one unreviewed commit where there were seven.
   for (const c of report.uncovered) out.push(renderUncovered(c));
   for (const r of report.reviews) out.push(renderReview(r));
 

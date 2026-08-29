@@ -4,10 +4,10 @@ Two CLAUDE.md inventory rows went stale and neither lint gate can see them
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** ontorev, review of `9a7da8e..7c12d6a` (structured-data half), review file `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-0803-ontorev-plane-structured-data-removal.md`
+**Filed by:** ontorev, review of `9a7da8e..7c12d6a` (structured-data half), review file `260815-0803-ontorev-plane-structured-data-removal.md`
 **Owner:** `coder`
 **Affects:** `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`; evidenced by `CLAUDE.md:51` (the `templates/` row) and `CLAUDE.md:52` (the `docs/` row)
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` line 6 (the `**Decidability:**` line) and line 173 (which routes the `docs/` row to gate G1); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0751-ontocoder-remove-plane-data-files-and-fixtures.md` `## Findings the plan did not predict`; `shared/issues/260811-2239_*_five-shipped-bin-helpers-have-no-claude-md-layout-row-and-the-table-says-nothing-about-being-a-selection.md`.
+**Cross-references:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` line 6 (the `**Decidability:**` line) and line 173 (which routes the `docs/` row to gate G1); `260815-0751-ontocoder-remove-plane-data-files-and-fixtures.md` `## Findings the plan did not predict`; `260811-2239_*_five-shipped-bin-helpers-have-no-claude-md-layout-row-and-the-table-says-nothing-about-being-a-selection.md`.
 
 ---
 

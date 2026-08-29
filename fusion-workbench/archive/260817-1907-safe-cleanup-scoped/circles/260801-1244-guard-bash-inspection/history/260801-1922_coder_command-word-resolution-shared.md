@@ -1,11 +1,11 @@
 # coder — the two High review findings closed: one shared command-word resolver
 
 **Date:** 2026-08-01 19:22
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Review:** `reviews/260801-1905-coderev-guard-bash-inspection.md`
+**Circle:** `260801-1244-guard-bash-inspection`
+**Review:** `260801-1905-coderev-guard-bash-inspection.md`
 **Issues:**
-`issues/260801-1857_c_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`,
-`issues/260801-1858_c_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`
+`260801-1857_*_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`,
+`260801-1858_*_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`
 **Status:** Complete
 
 Both findings are the same defect in two spellings: a word in command position that the

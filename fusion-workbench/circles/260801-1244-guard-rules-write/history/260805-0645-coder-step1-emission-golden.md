@@ -3,8 +3,8 @@
 **Date:** 2026-08-05
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 1
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 1
 **Baseline:** `c9bf59e` plus the uncommitted `hooks/dist` rebuild already in the working tree. Not committed — the orchestrator commits after validation.
 
 **Voice profiles:** `bin/fusion-rules coder` emitted no `stilwerk/` path, although
@@ -12,7 +12,7 @@
 `CLAUDE.md` carries no `**Language:**` line, so the documented default is `en`; the dispatch
 asked for a German report, so I read `chat-voice-de.yaml` directly and applied it to the chat
 report. The same emission gap is recorded in
-`history/260804-2100-coder-step5-guard-error-on-the-dashboard.md`; it is a standing observation
+`260804-2100-coder-step5-guard-error-on-the-dashboard.md`; it is a standing observation
 about the helper, not a finding of this session.
 
 ---

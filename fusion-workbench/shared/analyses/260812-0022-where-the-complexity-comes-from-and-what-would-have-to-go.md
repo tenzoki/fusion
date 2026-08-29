@@ -55,13 +55,13 @@ with fusion since 2 August: 261 commits, 286 issue records, 6 Circles, plugin v7
 It is the only live consuming project reachable from this machine.
 
 **Read but not re-derived.** The prior analysis
-`circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`,
+`260805-1830-zweck-nutzung-und-stand-des-plugins.md`,
 which answered the "does fusion serve its purpose" question on 5 August and whose findings on
 context cost, agent usage and the guard's false-alarm balance stand. Its findings are cited, not
 repeated. The open record
-`shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
+`260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
 and the decision it realises,
-`shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`.
+`260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`.
 
 **Not measurable from here.** Whether users of consuming projects experience failures. No channel
 records that, which is itself finding 3 below. The second consuming project, cocreator, no longer
@@ -257,7 +257,7 @@ that happening.
 command's text, which files the command would write. The question is undecidable, the project
 proved it, and the fix was to change the question: measure the protected paths before and after the
 call instead of predicting them. The evidence for the change is unusually good.
-`circles/260804-1205-shell-reachability-model/_s_circle.md` records five holes in an approved
+`260804-1205-shell-reachability-model` records five holes in an approved
 design, the worst of them verified to delete a protected file in both shells. In the live consuming
 project, the classifier produced **50 blocks over six days and every one was a false alarm**: each
 named a variable, a tilde, a glob, a scratch directory or the project's own unprotected source
@@ -328,7 +328,7 @@ waste.
 | Mechanism | Weight | Evidence of a real catch | Verdict |
 |---|---|---|---|
 | Protected-path measurement (post-v6) | `protected-snapshot` 802 + `guard` 693 lines | Zero firings in krk since 7 Aug against 50 false alarms from its predecessor in the six days before. Its value is the friction it stopped costing. | **Keep.** The redesign is proven. |
-| `coderev` | one prompt, 13,218 bytes | 159 of 272 attributed records. Found the class that led to decision `260810-1635`. | **Keep.** It is the project's only working sensor. |
+| `coderev` | one prompt, 13,218 bytes | 159 of 272 attributed records. Found the class that led to decision `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`. | **Keep.** It is the project's only working sensor. |
 | Human Gate / `user_gate` | prompt text | 14 firings in krk, every one a substantive product decision recorded in the history. | **Keep.** |
 | Issue and decision discipline | conventions rule | Every number in this report came from a file rather than from memory. That is the capability. | **Keep.** |
 | Circle container | `circle-records.md`, resolver | krk runs 6 Circles; 12 here. Actively used in both. | **Keep.** |
@@ -336,8 +336,8 @@ waste.
 | Escalation halt | `escalation` 410 lines | `haltActive: false`, `consecutiveBlocks: 0` in krk. No halt ever raised there. Halts have been raised here, all by the deleted classifier. | Weak. Retain as the guard's tail. |
 | Churn and cross-file counters | `churn` 785 + `churn-rank` 131 + `bin` 66 lines; 227 KB and 162 KB of state | **16,097 firings in krk over ten days. Zero halts, zero records, zero user actions.** They are the largest writers to an 18 MB event log. | **No evidence of a catch, at very high cost.** |
 | State drift | 765 lines + 1,846 test lines + 64 bin | 7 firings here, 7 in krk. **Every firing is about `agentstate.yaml` disagreeing with git.** The file holds counters an agent is asked to maintain by hand in prompt text, and the module exists to notice that the hand slipped. | Catches a real thing that only exists because a prompt asks an agent to keep a counter by hand. |
-| Staging drift | 741 + 613 + 76 | 1 firing here, recovered in the next commit. Its events go to a log nothing reads, filed as `260811-1143`. | One catch, no reader. |
-| Review coverage | 715 + 953 + 75 | 1 report. Same unread log. Its own scanning scope is already a filed defect (`260811-1145`). | No evidence of a catch. |
+| Staging drift | 741 + 613 + 76 | 1 firing here, recovered in the next commit. Its events go to a log nothing reads, filed as `260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`. | One catch, no reader. |
+| Review coverage | 715 + 953 + 75 | 1 report. Same unread log. Its own scanning scope is already a filed defect (`260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`). | No evidence of a catch. |
 | Turn budget | 91 + 374 + 59 | Born 11 Aug. Its own introduction produced four open records the same night. | Too new to judge; net negative so far. |
 | Domain parameter | `domain-cascade` 992 + 1,146 test lines + copies in four skill bodies | Of 534 valid recorded uses across both projects, 515 are `code`, 12 `data`, 6 `knowledge`, **1 `strategic`**. The heuristic misclassified a Cargo workspace as `strategic` in krk and was corrected by hand. | Two of four values are near-dead. |
 | Plane mirror | `bin/fusion-plane` 2,503 + test 2,827 lines, skill 10,444 B, doc 24,755 B, template 8,922 B | **Zero successful pushes, ever, in either project.** `.plane-map.json` is `{}`. All 31 outbox entries deferred: 17 "Plane unreachable", 14 "PLANE_API_KEY absent". | **No evidence of any use at all.** |
@@ -385,7 +385,7 @@ observer, so nothing else competes for the intake.
 **The dominant class is structural, not careless.** A mechanism written in TypeScript is described
 in a rule file, a prompt, a README table, a docstring, a template comment and CLAUDE.md. Changing
 the mechanism obliges six separate edits and offers six chances to miss one. The project's answer,
-recorded in decision `260810-1635` and realised as issue `260811-1734`, is correct and should
+recorded in decision `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` and realised as issue `260811-1734`, is correct and should
 proceed. It is also a one-time win: it reduces the multiplier, not the number of claims and not the
 rate at which claims are created.
 
@@ -410,7 +410,7 @@ supports the first and third, and reframes the second.
 - *Prompts as executable specification.* Supported, and it is the root cause of the largest defect
   class. `agents/orchestrator.md` at 164,716 bytes now contains embedded shell programs, including
   a block the prompt itself calls "the canonical implementation" of a queue-head parser, against
-  which defects are filed as code (`260810-0511`, `260811-1915`). A program in a prompt has no
+  which defects are filed as code (`260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`, `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`). A program in a prompt has no
   parser, no type check and no test, and the project keeps adding programs to it.
 - *Review finding defects faster than they are fixed.* True of the appearance, false of the
   substance. The closure ratio is 91 percent and the median lag is zero days. Reviews are not
@@ -520,10 +520,10 @@ Stated plainly, because the conclusions are strong.
 - `fusion-workbench/shared/issues/` and the twelve `circles/*/issues/` stores: 443 records, read by
   filename, marker and body; 90 read in full.
 - `fusion-workbench/shared/decisions/` and the Circle decision stores: 71 records. Read in full:
-  `260810-1635_a_where-does-the-obligation-sit…`, `260807-0825_i_should-the-guard-predict-shell-writes-or-enforce-them`.
-- `circles/260804-1205-shell-reachability-model/_s_circle.md`, closure note.
-- `circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`.
-- `circles/260801-1244-guard-bash-inspection/issues/260805-1830_c_alle-17-guard-blocks-…`.
+  `260810-1635_*_where-does-the-obligation-sit…`, `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them`.
+- `260804-1205-shell-reachability-model`, closure note.
+- `260805-1830-zweck-nutzung-und-stand-des-plugins.md`.
+- `260805-1830_*_alle-17-guard-blocks-…`.
 - `fusion-workbench/orchestrator-events.jsonl`, 45 sessions.
 - `/Users/k1/Projects/productive/krk/fusion-workbench/`: 286 issues, 6 Circles, `orchestrator-events.jsonl`,
   and `.guard-state/events.jsonl` at 18 MB and 37,186 events.

@@ -74,11 +74,11 @@ They joined `## Questions and gates` at `:87` and `:95`. Read against the sectio
 
 **They contradict nothing in the file directly. One of them is ambiguous about something the file caps six lines later, and the ambiguity decides whether there is a contradiction.**
 
-`:95` reads "Carry it in the `AskUserQuestion` option `description` field, or on the option's own line when the gate is plain chat text." Either the foreclosure is appended to the option's existing line, costing nothing, or it takes a line of its own per option. `:101` caps a gate prompt at "≤ 8 lines including the question and the option list" and `:107` says "Do not relax the cap", with no escape, because the option list cannot be moved to Details. Under the second reading a four-option chat gate needs nine lines. The user was told the cost is "roughly one line per option" (`shared/history/260816-1251-curator-run.md:332`), so the approval was given against the second reading, and the text does not say it.
+`:95` reads "Carry it in the `AskUserQuestion` option `description` field, or on the option's own line when the gate is plain chat text." Either the foreclosure is appended to the option's existing line, costing nothing, or it takes a line of its own per option. `:101` caps a gate prompt at "≤ 8 lines including the question and the option list" and `:107` says "Do not relax the cap", with no escape, because the option list cannot be moved to Details. Under the second reading a four-option chat gate needs nine lines. The user was told the cost is "roughly one line per option" (`260816-1251-curator-run.md:332`), so the approval was given against the second reading, and the text does not say it.
 
 **A related hole on the branch the clause prefers.** `## Length:103` caps the option **label** at four lines and says nothing about `description`. The clause's preferred branch therefore writes mandatory content into the one field no cap governs.
 
-**On the disputed cap itself, the disclosure to the user names the wrong number as in force.** The run file says the dispute is between `rules/user-facing-output.md:99` at 8 lines and "the always-on chat profile, which says 6". `bin/fusion-rules` emits `./fusion-workbench/stilwerk/chat-voice-de.yaml`, whose C04 at `:41` reads 8 and 12. The 6 lives in `stilwerk/chat-voice-de.yaml:41`, the shipped copy that nothing emits, which is the separate open defect `260814-1419_o_the-shipped-chat-voice-profiles-changed-…`. So the two always-on surfaces agree at 8. The user's conclusion is unaffected, since the arithmetic fails at 8 too; the ledger entry for an override taken outside the evidence rules is not.
+**On the disputed cap itself, the disclosure to the user names the wrong number as in force.** The run file says the dispute is between `rules/user-facing-output.md:99` at 8 lines and "the always-on chat profile, which says 6". `bin/fusion-rules` emits `./fusion-workbench/stilwerk/chat-voice-de.yaml`, whose C04 at `:41` reads 8 and 12. The 6 lives in `stilwerk/chat-voice-de.yaml:41`, the shipped copy that nothing emits, which is the separate open defect `260814-1419_*_the-shipped-chat-voice-profiles-changed-…`. So the two always-on surfaces agree at 8. The user's conclusion is unaffected, since the arithmetic fails at 8 too; the ledger entry for an override taken outside the evidence rules is not.
 
 **On the override itself, the record is honest and I have no criticism of it.** Section 9 of the run file states that neither entry carries an evidence tier, that none was assigned retroactively, what the user saw before approving, and, in its closing line, that the curator did not observe the gate and is relaying what the apply dispatch reported. That last qualification is what makes the one inaccuracy above correctable rather than contested. The curator's three substantive departures from the record's proposed wording are also right: cutting the "menu without prices" aphorism, declining to assert what an external schema documents, and adding the anti-restatement sentence.
 
@@ -109,11 +109,11 @@ The nine records land correctly. Two checks are worth recording.
 
 **The corpus figures in the progress note are exact.** Re-measured at HEAD with the record's own command over its own seven files: 22 871 words, 340 em-dashes, 14.8 per 1000, against the table's 22 763 and 372 at 16.3. The record's decision to stay `_o_` is right, and its warning that a null result from the falsification measurement must not be read as falsifying finding 10 is the most valuable sentence in it.
 
-**The decision record's header disagrees with its own filename.** `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` carries the `_a_` marker and `**Status:** open` at `:5`. The template at `rules/fusion-workbench-conventions.md:491` mandates the field and `## State Markers — decisions` mandates the marker. This is not a new fault: re-measured across the whole workbench, **39 of 100 decision records disagree** (13 `_i_`/answered, 12 `_i_`/open, 9 `_a_`/open, 4 `_d_`/open, 1 `_s_`/open), and `4921026` made it 40. Three records carry a hand-correction inside the field itself, which is evidence the drift recurs and hand-correction does not hold it. No test file mentions `Status`; `marker-format-lint.test.ts` scopes to `agents/` and `skills/` and never reads the workbench. Appended to the existing open record rather than filed fresh.
+**The decision record's header disagrees with its own filename.** `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` carries the `_a_` marker and `**Status:** open` at `:5`. The template at `rules/fusion-workbench-conventions.md:491` mandates the field and `## State Markers — decisions` mandates the marker. This is not a new fault: re-measured across the whole workbench, **39 of 100 decision records disagree** (13 `_i_`/answered, 12 `_i_`/open, 9 `_a_`/open, 4 `_d_`/open, 1 `_s_`/open), and `4921026` made it 40. Three records carry a hand-correction inside the field itself, which is evidence the drift recurs and hand-correction does not hold it. No test file mentions `Status`; `marker-format-lint.test.ts` scopes to `agents/` and `skills/` and never reads the workbench. Appended to the existing open record rather than filed fresh.
 
 ## Cross-cutting observations
 
-**The register defect and the citation-staleness defect are the same defect seen twice.** `52b8665` shifted every line below `:87` by two, and three citations went stale in one session, two of them inside one file. `shared/history/260816-1251-curator-run.md:288` records the curator noticing that an analysis cited the gate cap as `:101` when "it is at `:99` at this HEAD", and the commit that same run produced moved it back to `:101`. A correction made obsolete by its own change is the cleanest demonstration `260808-0030_o_` will ever get.
+**The register defect and the citation-staleness defect are the same defect seen twice.** `52b8665` shifted every line below `:87` by two, and three citations went stale in one session, two of them inside one file. `260816-1251-curator-run.md:288` records the curator noticing that an analysis cited the gate cap as `:101` when "it is at `:99` at this HEAD", and the commit that same run produced moved it back to `:101`. A correction made obsolete by its own change is the cleanest demonstration `260808-0030_o_` will ever get.
 
 **Three of the five findings are about a record's account of itself, not about the code.** The token count nobody can reproduce, the inverted capitalisation claim, the wrong cap named as in force. Each is small; together they are the pattern `rules/critical-stance.md` §3 names, an unchecked claim carried in the position a checked one would occupy. Every one of them appears in a durable record rather than only in a commit message, which is where it costs something, because a commit message is read once and an open issue is read as a starting state.
 
@@ -132,16 +132,16 @@ Nothing here blocks a release.
 
 **Defects filed** (all in `fusion-workbench/shared/issues/`):
 
-- `260816-1330_o_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` — Low-Medium, `coder`
-- `260816-1330_o_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` — Medium, `curator`
-- `260816-1330_o_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md` — Low, `coder`
-- `260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` — Low, `curator` or `reconciler`
-- `260816-1330_o_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` — Low, `coder`
+- `260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` — Low-Medium, `coder`
+- `260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` — Medium, `curator`
+- `260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md` — Low, `coder`
+- `260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` — Low, `curator` or `reconciler`
+- `260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` — Low, `coder`
 
 **Appended to existing open records** rather than refiled, per the duplicate check:
 
-- `260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`
-- `260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+- `260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`
+- `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
 
 **Commands run:** seven-way tokenisation and character-inventory comparison of the two file versions in Python; `git show`/`git diff` over the three commits; `npm test` in `hooks/` (764 passed); `bin/fusion-review-coverage --since b18a8cf`; a marker-versus-`Status` sweep over all 100 non-archived decision records.
 
@@ -157,5 +157,5 @@ reproducible by any of nine counts; exactly ten capitals are gained and none los
 prescribed four; and the markup inventory is byte-stable across the change. `rules/user-facing-output.md`
 at HEAD is correct. The one class of fault this review carries is its own line citations: nine of the
 fourteen into that file are off by one to three lines, recorded as an instance on
-`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
 and corrected on the two records where a fixer would act on them.

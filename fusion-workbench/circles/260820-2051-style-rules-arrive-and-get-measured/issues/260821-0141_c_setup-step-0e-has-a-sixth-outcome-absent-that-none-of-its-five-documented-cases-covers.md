@@ -22,11 +22,11 @@ Two reachable triggers, neither exotic:
 **Verified at HEAD `7832553`** by reading `skills/setup/SKILL.md:186-233` and `:161-175`.
 
 ---
-**Found by:** coderev, review of `7135a19..7832553`, review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
+**Found by:** coderev, review of `7135a19..7832553`, review file `260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
 **Owner:** `coder`.
 **Severity:** High. A missing profile is the loudest thing this step can detect and the one thing it says nothing about.
 **Direction, not a prescription.** The cheapest cut that restores completeness is to name `absent` as a sixth case with its own report line, since the step already computes it. Whether it should also *act* — re-copy a missing `$d` from Step 0d's source, or refuse the whole step when `$g` is missing — is a separate question the author should answer rather than inherit from this record.
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0140_*_setup-step-0e-reads-fusion-src-which-does-not-survive-the-fresh-shell-every-bash-call-gets.md`.
+**Cross-references:** `260821-0140_*_setup-step-0e-reads-fusion-src-which-does-not-survive-the-fresh-shell-every-bash-call-gets.md`.
 
 ---
 Resolved: `absent` is gone, and the two triggers this record separated are now two cases rather than one token. The guard is split in the branch order:

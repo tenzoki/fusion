@@ -1,9 +1,9 @@
-# Coder run 260821-0322: plan steps 15 and 16
+# Coder run 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md: plan steps 15 and 16
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
-**Plan:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, steps 15 and 16
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
+**Plan:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, steps 15 and 16
 **HEAD read against:** `86edaac`, working tree clean for every file measured
 
 ## What was done
@@ -16,7 +16,7 @@ acceptance names and which step 15 is held to as well.
 derivation, the unindented `emit_if_exists` calls in `bin/fusion-rules` plus the unconditional
 `emit_voice_profile "chat-voice" "$CHAT_LANG"` call, and each names `CLAUDE.md` separately as
 always-on prose an agent holds that no helper emits and whose prose this Circle does not repair,
-per `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+per `260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
 option 3. The inverted `rules/workbench-tracking.md` claim is corrected in the two places it stood
 live, the decision record's 260819-1400 reconciliation and this Circle's own Grounding snapshot.
 
@@ -53,11 +53,11 @@ that the cap it prices against is no longer in dispute.
 
 ## What was deliberately not done
 
-`shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` is untouched;
+`260816-0740-rhetorical-register-of-agent-output.md` is untouched;
 `git status --porcelain` over it returns nothing.
 
 The uncorrected copy of the token-count sentences in the progress note on
-`shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+`260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
 still stands. Plan step 16's file set names the 260816-1330 record and not that one, and step 15's
 note on that file corrects the always-on set rather than the token count. The step-16 note records
 the residual and where it stands.

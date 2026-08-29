@@ -33,8 +33,8 @@ filename. The forms found in the wild:
 - the **wildcard marker** `_*_`, which is the mandated form and resolves correctly
 - the **pre-v4 bracket form** `260717-1918[o]`, thirteen occurrences, a marker syntax retired in
   v4
-- an **ellipsis truncation** — `archive/260817-1907-safe-cleanup-scoped/shared/planning/260809-1229_*_…:366,412`,
-  `shared/planning/260807-2024_*_…`, `shared/planning/260801-1122…:301`
+- an **ellipsis truncation** — `archive/260817-1907-safe-cleanup-scoped/260809-1229_*_…:366,412`,
+  `260807-2024_*_…`, `260801-1122…:301`
 - a `fusion-workbench/` **prefix** on an otherwise workbench-relative path
 - a Circle-relative `planning/…` prefix
 - a **bare timestamp stem** in prose, which is ambiguous: `260812-1232` names one plan, two
@@ -50,7 +50,7 @@ partly deliberate: the gate's own header records that class (c) resolves against
 repository's workbench and degrades to syntax-only when the workbench is absent, which is the
 fresh-clone case.
 
-**Related work.** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`
+**Related work.** `260812-1720_*_circle-first-placement-and-the-backlog-store.md`
 step 11 extracts the parser so it can be run over an arbitrary corpus and runs it over the
 workbench once, as a migration verifier, recording the pre-existing dangling count as a baseline.
 Whether it then becomes a standing gate is left open in that plan's `## Open Questions` and is
@@ -61,7 +61,7 @@ the question this record exists to keep alive.
 **Counted, 260812-2136.** The first piece of work this record named — "nothing has counted them"
 — is done. The parser was lifted into `hooks/lib/__tests__/helpers/citation-scan.ts` and run over
 all 1012 `.md` files in the workbench. Full table in
-`shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`
+`260812-1720_*_circle-first-placement-and-the-backlog-store.md`
 `## Reconciliation Log`; the two numbers this record was waiting for:
 
 - **4514 path-shaped citations** in the workbench, against a few dozen on the surface the gate
@@ -76,7 +76,7 @@ stores, 7 missing Circle directories.
 **And one question this record did not anticipate, which now blocks the standing-gate decision:
 517 of the 1104 stale markers are in `history/` files.** A session log that cited a record by
 the marker it carried that day was correct when it was written; the marker moved afterwards.
-A worked instance stands at `shared/history/260810-0819-reconciliation.md:310`, which lists four
+A worked instance stands at `260810-0819-reconciliation.md:310`, which lists four
 records by the open marker each carried that day and where at least one has since closed. Holding an
 append-only record to the wildcard-citation rule would demand rewriting history to keep a gate
 green, which is the wrong direction. Either `history/` is out of the standing gate's scope, or
@@ -85,10 +85,10 @@ per cent, so it comes first.
 
 Two grammar gaps found in the same run are filed separately, because they change the count in
 both directions:
-`shared/issues/260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
+`260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still walks the shipped tree only, and the gate-s own header documents the workbench exclusion as deliberate and still standing. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still walks the shipped tree only, and the gate-s own header documents the workbench exclusion as deliberate and still standing. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Resolved: moot — the workbench has been scanned by its own gate since 260819; `hooks/lib/__tests__/workbench-citation-lint.test.ts`, under `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
+Resolved: moot — the workbench has been scanned by its own gate since 260819; `hooks/lib/__tests__/workbench-citation-lint.test.ts`, under `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.

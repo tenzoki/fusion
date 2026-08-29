@@ -1,4 +1,4 @@
-# Orchestrator Session — 260731-2208
+# Orchestrator Session — 260731-2208-orchestrator-session.md
 
 **Directive:** Incorporate flight's cadence skill into fusion, bump to a new version, run the full release, commit and push
 **Mode:** custom
@@ -28,7 +28,7 @@
 | Git HEAD | `47c4398` |
 | Working tree | clean except untracked `fusion-workbench/` |
 | Open issues (`_o_`/`_p_`) | 7 (all in `shared/issues/`) |
-| Open plans (`_o_`/`_p_`) | 1 (`shared/planning/260722-1943_o_spec-plane-spec-comment.md`) |
+| Open plans (`_o_`/`_p_`) | 1 (`260722-1943_*_spec-plane-spec-comment.md`) |
 | Open decisions (`_o_`) | 0 |
 | Analyses | 6 |
 | Circles | 5 total, all closed-coherent (`_c_`); 0 anticipated, 0 active |
@@ -68,15 +68,15 @@ portfolio hint was not printed (opt-in behaviour preserved).
 
 Open issues in `shared/issues/`:
 
-1. `260707-1006_o_pin-bash-allow-path-no-writeguard-side-effects-with-test.md`
-2. `260716-1940_o_stale-bin-fu-exception-in-gitignore.md`
-3. `260717-0030_o_git-stash-include-untracked-can-sweep-the-stash-directory.md`
-4. `260717-0031_o_p8-lint-gate-scope-open-questions-from-conversions.md`
-5. `260717-0032_o_stash-manifest-field-count-says-nine-lists-ten.md`
-6. `260717-0107_o_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
-7. `260717-0115_o_live-workbench-split-across-two-layouts-during-conversion.md`
+1. `260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md`
+2. `260716-1940_*_stale-bin-fu-exception-in-gitignore.md`
+3. `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`
+4. `260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md`
+5. `260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md`
+6. `260717-0107_*_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
+7. `260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md`
 
-Open plan: `shared/planning/260722-1943_o_spec-plane-spec-comment.md`
+Open plan: `260722-1943_*_spec-plane-spec-comment.md`
 
 ## Session log
 
@@ -131,17 +131,17 @@ The port is faithful except in four respects, each forced by a fusion constraint
 
 Three issues filed by the reviewer, all open in `shared/issues/`, none release-blocking:
 
-1. `260731-2246_o_cadence-empty-key-expansion-writes-a-silently-empty-digest.md` (medium).
+1. `260731-2246_*_cadence-empty-key-expansion-writes-a-silently-empty-digest.md` (medium).
    The resolver keys are referenced as shell variables in executable blocks with nothing
    exporting them. An unset `$SCAN_HISTORY` yields zero iterations and exit 0, so the
    digest comes out empty and the run looks like a quiet week. Seven sibling skills share
    the pattern, so the fix belongs in the convention plus a non-empty assertion, not in an
    `export` per site.
-2. `260731-2246_o_cadence-churn-session-defined-two-ways-for-git-commits.md` (medium).
+2. `260731-2246_*_cadence-churn-session-defined-two-ways-for-git-commits.md` (medium).
    One git commit is a log unit at line 103, but a git-commit *day* is a session at line
    136. Ten commits in an afternoon score 10 or 1 depending on which sentence is read
    last. Inherited verbatim from the flight original.
-3. `260731-2246_o_cadence-frontmatter-unused-tools-and-oversized-description.md` (low).
+3. `260731-2246_*_cadence-frontmatter-unused-tools-and-oversized-description.md` (low).
    `Glob` and `Grep` are listed but unused, and the description is a 2.6x length outlier
    that sits in every session's routing context.
 
@@ -152,7 +152,7 @@ Also flagged by the reconciler, outside this session's scope:
 
 - The installed plugin at `~/.fusion` is still 5.5.1, so `/fusion:cadence` is released but
   not runnable in this project until the local pickup step is run.
-- Five of seven rows in `260717-0107_o_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
+- Five of seven rows in `260717-0107_*_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
   remain unsettled, the sharpest being `planner` promising to file issues with no resolved
   write path. The cadence skill neither fixes nor overlaps it.
 
@@ -203,7 +203,7 @@ sequenceDiagram
 
 ## Coherence
 
-<!-- RECONCILER-OWNED — appended by reconciler 260731-2324, domain `code`. Append-only; no other section of this file was touched. -->
+<!-- RECONCILER-OWNED — appended by reconciler 260731-2324-reconciliation.md, domain `code`. Append-only; no other section of this file was touched. -->
 
 **Verdict:** coherent
 
@@ -215,4 +215,4 @@ sequenceDiagram
 
 **Rebalance recommendation:** none
 
-**Note on scope:** the tracking drift reconciled in this pass predates the session — it is Plane-bridge bookkeeping from v5.5.0 and v5.6.0 that the `260723-0712` pass reached only partway. It is not a divergence between this session's artifact and its grounding, and it does not flag the Artifact↔Grounding edge. Two items sit outside reconciler write scope and are the orchestrator's: `agentstate.yaml` is stale (turn 1, 0 tasks done, 0 commits, all queued) and awaits the clean-exit delete, and this file's own header still reads "(none yet — Setup only)" / "Setup complete, idle" pending the final report. Full detail: `shared/history/260731-2324-reconciliation.md`.
+**Note on scope:** the tracking drift reconciled in this pass predates the session — it is Plane-bridge bookkeeping from v5.5.0 and v5.6.0 that the `260723-0712-reconciliation.md` pass reached only partway. It is not a divergence between this session's artifact and its grounding, and it does not flag the Artifact↔Grounding edge. Two items sit outside reconciler write scope and are the orchestrator's: `agentstate.yaml` is stale (turn 1, 0 tasks done, 0 commits, all queued) and awaits the clean-exit delete, and this file's own header still reads "(none yet — Setup only)" / "Setup complete, idle" pending the final report. Full detail: `260731-2324-reconciliation.md`.

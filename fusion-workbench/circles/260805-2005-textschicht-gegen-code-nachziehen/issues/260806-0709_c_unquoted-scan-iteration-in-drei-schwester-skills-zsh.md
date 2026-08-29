@@ -1,6 +1,6 @@
 # Three sibling skills still iterate `$SCAN_*` unquoted — the zsh mode the `shared_of` fix closed in archive stays open in cleanup, cadence and circle-stash
 
-**Filed by:** coderev (incremental review of commit `7ef2715`, Track 1 of `planning/260805-2353_p_plan-textschicht-gegen-code.md`)
+**Filed by:** coderev (incremental review of commit `7ef2715`, Track 1 of `260805-2353_*_plan-textschicht-gegen-code.md`)
 **Scope:** `skills/cleanup/SKILL.md`, `skills/cadence/SKILL.md`, `skills/circle-stash/SKILL.md` — cross-cutting, same defect class as the fixed `skills/archive/SKILL.md:51`
 **Severity:** Medium — silent under-reporting in an autonomous pipeline (cleanup), contingent on how the running agent realises the interpolation
 
@@ -23,7 +23,7 @@ Consequences per site:
 
 ## The contingency, stated honestly
 
-If the agent instead substitutes the resolved values **textually** into the block before running it (the house pattern per issue `shared/issues/260731-2246_o_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`), the two paths are separate words in the command text and the loop is correct in any shell. The defect fires only in variable-assignment mode. The archive fix chose a shell-neutral construct precisely so both modes work; these three sites work in one mode only. Not reproduced in a live skill run; the mechanism is verified in isolation (`zsh -c 'f(){ for p in $1; do echo "[$p]"; done; }; f "a b"'` → one iteration `[a b]`; measured 260806 during this review, same measurement as Gesamtreview finding `260805-1904`).
+If the agent instead substitutes the resolved values **textually** into the block before running it (the house pattern per issue `260731-2246_*_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`), the two paths are separate words in the command text and the loop is correct in any shell. The defect fires only in variable-assignment mode. The archive fix chose a shell-neutral construct precisely so both modes work; these three sites work in one mode only. Not reproduced in a live skill run; the mechanism is verified in isolation (`zsh -c 'f(){ for p in $1; do echo "[$p]"; done; }; f "a b"'` → one iteration `[a b]`; measured 260806 during this review, same measurement as Gesamtreview finding `260805-1904`).
 
 ## Distinction from the known finding
 

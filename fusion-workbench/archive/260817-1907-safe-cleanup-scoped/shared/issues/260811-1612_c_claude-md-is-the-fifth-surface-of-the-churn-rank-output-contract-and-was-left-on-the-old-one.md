@@ -7,9 +7,9 @@
 **Filed by:** coderev (Turn 3 review, range `7d9efc8..adaa545`)
 **Affects:** `CLAUDE.md:33` (the `bin/fusion-churn-rank` row)
 **Cross-references:**
-`shared/issues/260810-1632_c_the-churn-ranking-has-no-noise-filter-so-the-migration-promotes-dashboard-files-into-setups-top-ten.md` (the change that moved the contract);
-`shared/issues/260811-1413_c_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the same shape, closed earlier in this same Turn);
-`shared/history/260811-1550-coder-four-tracker-clustered-fixes.md:41-44` (the sweep's own surface enumeration, which does not include this file)
+`260810-1632_*_the-churn-ranking-has-no-noise-filter-so-the-migration-promotes-dashboard-files-into-setups-top-ten.md` (the change that moved the contract);
+`260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (the same shape, closed earlier in this same Turn);
+`260811-1550-coder-four-tracker-clustered-fixes.md:41-44` (the sweep's own surface enumeration, which does not include this file)
 
 ---
 
@@ -57,7 +57,7 @@ claims authority over the helper.
 
 The commit's own history file enumerates the surfaces it swept — *"all four surfaces that document it
 … plus two `README-hooks.md` rows"*. `CLAUDE.md` is outside that enumeration, which is the same
-mechanism that produced `260811-1413` (`README-hooks.md` outside `337c01b`'s file set) — the record
+mechanism that produced `260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` (`README-hooks.md` outside `337c01b`'s file set) — the record
 this very Turn closed two commits earlier.
 
 ## Suggested direction
@@ -65,7 +65,7 @@ this very Turn closed two commits earlier.
 Update the row to name both exclusions and all five keys. While there, consider whether the row
 should describe the output at all: `bin/fusion-churn-rank`'s own header is the authoritative usage
 block and the row could cite it instead of restating it, which is the question
-`shared/decisions/260811-1522_o_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
+`260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
 asks about the neighbouring table.
 
 ## Acceptance criteria
@@ -85,4 +85,4 @@ its own line so "deleted" and "not evidence" stay distinguishable. Verified afte
 the output keys are named in `bin/fusion-churn-rank` and `hooks/churn-rank.ts` only, plus
 `agents/orchestrator.md:126`, which was already on the five-key contract. Suite green on a quiet
 tree: 50 files, 1301 tests, exit 0. Commit: see the Turn-4 log in
-`shared/history/260811-0752-orchestrator-session.md`.
+`260811-0752-orchestrator-session.md`.

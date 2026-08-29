@@ -5,8 +5,8 @@ The briefing's contamination grep marks 49 of 72 transcripts primed, because the
 **Severity:** High
 **Domain:** code
 **Filed by:** analyst, running the measurement that briefing commissions
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`, `## The contamination rule, stated once`
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 4, which carries the corrected test; `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`, the protocol the exclusion comes from
+**Affects:** `260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`, `## The contamination rule, stated once`
+**Cross-references:** `260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 4, which carries the corrected test; `260820-2354-prose-register-measurement-protocol.md`, the protocol the exclusion comes from
 
 ---
 
@@ -42,7 +42,7 @@ whole file contents, and a `grep` over the file reads all of them.
 ## The correction, already made
 
 Section 4 of
-`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`
+`260822-0035-three-before-figures-and-the-after-measurement-defined.md`
 narrows the surface to human prompts and agent replies before applying the pattern, using
 `.origin.kind=="human"` on `user` records, which is the same field the baseline's reading C
 already uses to find human prompts. On that surface `user-facing-output` matches 5

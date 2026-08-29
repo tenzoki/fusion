@@ -3,7 +3,7 @@
 **Date:** 2026-08-22 22:19
 **Type:** Feasibility
 **Status:** Complete
-**Requested by:** orchestrator, as the single measuring task of Circle `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
+**Requested by:** orchestrator, as the single measuring task of Circle `260822-1921-measure-what-two-checkouts-share`
 
 ## Verdict
 
@@ -21,7 +21,7 @@ Two normative statements were measured false along the way. They are stated in `
 
 ## Question
 
-Does N checkouts of one project produce N isolated workbench states, or do they share one? The whole multi-user arrangement rests on that fact and nobody had ever measured it. `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` rested its option 1 on the assumption and said it "must be verified before relying on it". `shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` closes by calling the arrangement chosen but not proven. This report is what resolves that sentence.
+Does N checkouts of one project produce N isolated workbench states, or do they share one? The whole multi-user arrangement rests on that fact and nobody had ever measured it. `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` rested its option 1 on the assumption and said it "must be verified before relying on it". `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` closes by calling the arrangement chosen but not proven. This report is what resolves that sentence.
 
 ## Scope
 
@@ -114,7 +114,7 @@ OUT_ANALYSIS=shared/analyses
 SCAN_ISSUES=shared/issues
 ```
 
-The same command in the origin tree emits `CIRCLE=circles/260822-0900-scratch-circle` and Circle-scoped targets. The clone holds `circles/260822-0900-scratch-circle/_t_circle.md`, whose marker says active. The marker travels and the pointer does not, by construction, because `.active-circle` is class L. That is the correct behaviour for isolation and it leaves a question nobody has answered: what an orchestrator in the second checkout should do with a `_t_` record it never activated. Filed as an open decision, below.
+The same command in the origin tree emits `CIRCLE=260822-0900-scratch-circle` and Circle-scoped targets. The clone holds `260822-0900-scratch-circle`, whose marker says active. The marker travels and the pointer does not, by construction, because `.active-circle` is class L. That is the correct behaviour for isolation and it leaves a question nobody has answered: what an orchestrator in the second checkout should do with a `_t_` record it never activated. Filed as an open decision, below.
 
 `bin/fusion-paths` exits 0 in that state and names targets whose directories do not exist. It is not a fault: the resolver names where a write goes, and the writer creates the directory.
 
@@ -164,7 +164,7 @@ Four nested placements were built and probed:
 | `P-untracked/.worktree-ui/wt-1` (worktree, ignored workbench) | no | **`P-untracked`, the parent** |
 | `P-tracked/wt-nested` (worktree of the tracked project) | yes | itself |
 
-**Where it leaks, it leaks completely.** `bin/fusion-paths analyst` run in `P-untracked/.worktree-ui/wt-1` printed `WORKBENCH=/private/tmp/fusion-c1-measure/P-untracked/fusion-workbench` and `CIRCLE=circles/260822-0900-scratch-circle`. The nested tree therefore inherits the parent's active Circle and writes every issue, decision, analysis and history file into the parent's stores. A second nested slot, `wt-2`, resolved to the same workbench, so two slots share one `agentstate.yaml`, one `.guard-state/`, one `.session-marker` and one `.commit-lock/`.
+**Where it leaks, it leaks completely.** `bin/fusion-paths analyst` run in `P-untracked/.worktree-ui/wt-1` printed `WORKBENCH=/private/tmp/fusion-c1-measure/P-untracked/fusion-workbench` and `CIRCLE=260822-0900-scratch-circle`. The nested tree therefore inherits the parent's active Circle and writes every issue, decision, analysis and history file into the parent's stores. A second nested slot, `wt-2`, resolved to the same workbench, so two slots share one `agentstate.yaml`, one `.guard-state/`, one `.session-marker` and one `.commit-lock/`.
 
 Two of those shared surfaces were probed directly, and the contrast with the sibling case is instructive:
 
@@ -210,7 +210,7 @@ So the honest answer to the fourth question is: **a push conflict on a Circle re
 
 ### 7. Supplementary: the one file the spec calls the whole merge question
 
-Not asked by the Directive, measured because it costs one command and because `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` is open and its option 1 rests on an untested claim.
+Not asked by the Directive, measured because it costs one command and because `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` is open and its option 1 rests on an untested claim.
 
 Both trees appended one line to `orchestrator-events.jsonl` and pushed. Result: `KONFLIKT (Inhalt)`, `UU`, conflict markers inside a machine-written log. Exactly as that record predicts.
 
@@ -251,18 +251,18 @@ Result: `Merge made by the 'ort' strategy`, clean status, and both lines present
 
 ## Recommendations
 
-1. **Orchestrator, next task as planned**: write the addendum to `shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` resolving its closing sentence, citing this report. The sentence to replace is the one saying the arrangement is chosen but not proven. State the precondition from `## Implications` rather than a bare "isolated".
-2. **Whoever answers `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`**: section 7 above is the measurement its option 1 lacked. Both the benefit and the ordering cost are confirmed. It is not appended to that record here, because this pass writes only its own report and the records it files.
+1. **Orchestrator, next task as planned**: write the addendum to `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` resolving its closing sentence, citing this report. The sentence to replace is the one saying the arrangement is chosen but not proven. State the precondition from `## Implications` rather than a bare "isolated".
+2. **Whoever answers `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`**: section 7 above is the measurement its option 1 lacked. Both the benefit and the ordering cost are confirmed. It is not appended to that record here, because this pass writes only its own report and the records it files.
 3. **Planner or coder, when C2 runs**: the defect filed below has to be settled before several checkouts each run Setup, because it is a tracked file that conflicts on a one-line diff.
 4. **Nothing to do about the nested case.** The user decided at shaping that it is documented and nothing more. Section 5 is that documentation.
 
 ## Filed Issues
 
-- `circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_o_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md` — `.fusion-setup` is classified as written once and tracked, and Setup overwrites it on every run with a checkout-specific `setup_pwd`.
+- `260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md` — `.fusion-setup` is classified as written once and tracked, and Setup overwrites it on every run with a checkout-specific `setup_pwd`.
 
 ## Filed Decisions
 
-- `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md` — the `_t_` marker travels and `.active-circle` does not, so a second checkout holds an active-marked Circle with no local activation.
+- `260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md` — the `_t_` marker travels and `.active-circle` does not, so a second checkout holds an active-marked Circle with no local activation.
 
 ## Sources
 
@@ -286,12 +286,12 @@ Read:
 - `bin/fusion-commit-lock` header
 - `skills/setup/SKILL.md` Step 0 (layout probe, `mkdir -p`, marker write, `.asset-provenance` stamping)
 - `.gitignore` of this repository, `fusion-workbench/` block
-- `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` and `## The state partition`
-- `shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`
-- `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`
-- `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
-- `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
-- `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
+- `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` and `## The state partition`
+- `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`
+- `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`
+- `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+- `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
+- `260822-1921-measure-what-two-checkouts-share`
 
 ## Open Questions
 

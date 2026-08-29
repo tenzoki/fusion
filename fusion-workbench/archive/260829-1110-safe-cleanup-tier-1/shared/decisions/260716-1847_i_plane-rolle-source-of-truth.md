@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper
-**Cross-references:** `circles/260716-1847-workbench-umbau/planning/260716-1847_*_spec-plane-integration-und-workbench-struktur.md`, `shared/decisions/260716-1847_*_offline-verhalten-bei-plane-ausfall.md`
+**Cross-references:** `260716-1847_*_spec-plane-integration-und-workbench-struktur.md`, `260716-1847_*_offline-verhalten-bei-plane-ausfall.md`
 
 ---
 
@@ -46,10 +46,10 @@ Wir empfehlen Option 1 als ersten Schritt, sofern der Nutzer Plane primär zum M
 Die Empfehlung steht unter einem Vorbehalt, den nur der Nutzer auflösen kann: wenn er erwartet, in Plane selbst Status zu ziehen und zu kommentieren und dass fusion das aufnimmt, dann trägt Option 1 nicht, und die Frage lautet Option 3 oder gar nicht.
 
 ---
-Answered: circles/260716-1847-workbench-umbau/history/260716-1800-orchestrator-session.md — Option 1 (Spiegel, Push-only). Der Nutzer hat am Spec-Gate 2026-07-16 "Nur mitlesen" gewählt: er und andere lesen den Stand in Plane mit, gearbeitet wird weiter in fusion. fusion schreibt nach Plane und liest nie zurück. Damit ist der Vorbehalt der Empfehlung aufgelöst — der Nutzer will Plane nicht als Arbeitsinstrument, sondern zum Mitlesen und Abstimmen. Die Datei-als-Wahrheit-Haltung und die Offline-Fähigkeit zählen folglich zu den geschützten Kernfeatures und bleiben unverändert. Option 3 (beidseitiger Abgleich) bleibt ein möglicher späterer Ausbau, ohne dass Option 1 dafür verworfen werden müsste.
-Implemented: `982336f` — `bin/fusion-plane` is the push-only mirror the answer chose. Verified 260731-2324 (reconciler): the header states "push-only, idempotent mirror of the fusion work queue into a Plane project" (`bin/fusion-plane:2`); the subcommand set is `push / seed / map / states / doctor / plan` (`:1501-1544`) with no continuous read-back path; the map/state writes go one way. The later bounded seeding read (`seed`, `bd62bf1`) refines this decision rather than overturning it — see `shared/decisions/260719-2141_i_plane-rolle-push-only-vs-bounded-readback-martin.md`, which says so explicitly. Shipped in v5.5.0.
+Answered: 260716-1800-orchestrator-session.md — Option 1 (Spiegel, Push-only). Der Nutzer hat am Spec-Gate 2026-07-16 "Nur mitlesen" gewählt: er und andere lesen den Stand in Plane mit, gearbeitet wird weiter in fusion. fusion schreibt nach Plane und liest nie zurück. Damit ist der Vorbehalt der Empfehlung aufgelöst — der Nutzer will Plane nicht als Arbeitsinstrument, sondern zum Mitlesen und Abstimmen. Die Datei-als-Wahrheit-Haltung und die Offline-Fähigkeit zählen folglich zu den geschützten Kernfeatures und bleiben unverändert. Option 3 (beidseitiger Abgleich) bleibt ein möglicher späterer Ausbau, ohne dass Option 1 dafür verworfen werden müsste.
+Implemented: `982336f` — `bin/fusion-plane` is the push-only mirror the answer chose. Verified 260731-2324-reconciliation.md (reconciler): the header states "push-only, idempotent mirror of the fusion work queue into a Plane project" (`bin/fusion-plane:2`); the subcommand set is `push / seed / map / states / doctor / plan` (`:1501-1544`) with no continuous read-back path; the map/state writes go one way. The later bounded seeding read (`seed`, `bd62bf1`) refines this decision rather than overturning it — see `260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md`, which says so explicitly. Shipped in v5.5.0.
 Deferred:
 Superseded by:
 
 ---
-Retired: `d0ddabb` + `7c12d6a` (Schritte 2 und 3 von circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — die Push-only-Rolle war die Rolle des Spiegels, und der Spiegel ist entfernt. Die Antwort bleibt richtig fuer die Zeit, in der sie galt; ein Zielsystem, dem gegenueber die workbench fuehrend waere, gibt es nicht mehr.
+Retired: `d0ddabb` + `7c12d6a` (Schritte 2 und 3 von 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md) — die Push-only-Rolle war die Rolle des Spiegels, und der Spiegel ist entfernt. Die Antwort bleibt richtig fuer die Zeit, in der sie galt; ein Zielsystem, dem gegenueber die workbench fuehrend waere, gibt es nicht mehr.

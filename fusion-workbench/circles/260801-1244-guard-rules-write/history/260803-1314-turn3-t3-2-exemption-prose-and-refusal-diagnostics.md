@@ -2,14 +2,14 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Closes:**
-`issues/260802-2213_c_rules-write-detail-says-a-protected-rule-paths-for-a-multi-path-list.md` (Low),
-`issues/260802-2231_c_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` (Low),
-`issues/260802-2333_c_the-exemption-docstring-says-canonicalise-is-shared-with-the-protection-check-…` (Medium),
-`issues/260802-2332_c_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-…` (Medium),
-`issues/260803-1252_c_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-…` (Medium, T3-1's sibling)
-**Files:** `decisions/260803-1314_o_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`
+`260802-2213_*_rules-write-detail-says-a-protected-rule-paths-for-a-multi-path-list.md` (Low),
+`260802-2231_*_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md` (Low),
+`260802-2333_*_the-exemption-docstring-says-canonicalise-is-shared-with-the-protection-check-…` (Medium),
+`260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-…` (Medium),
+`260803-1252_*_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-…` (Medium, T3-1's sibling)
+**Files:** `260803-1314_*_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`
 **Scope touched:** `hooks/lib/rules-write-exemption.ts`, `hooks/guard.ts`,
 `hooks/lib/bash-mutation-guard.ts`,
 `hooks/lib/__tests__/{rules-write-exemption,guard-rules-write-integration,guard-bash-wiring}.test.ts`
@@ -22,11 +22,11 @@ Step 10 owns them and they were left alone.
 ## The shape the four findings turned out to have
 
 Three of the four are prose and one is behaviour, but they are not four independent edits.
-Findings 4 (`260802-2332`) and its T3-1 sibling (`260803-1252`) are the same defect arriving
+Findings 4 (`260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md`) and its T3-1 sibling (`260803-1252_*_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-and-names-a-file-that-is-writable.md`) are the same defect arriving
 from two gates: with the flag set, the agent is refused and told nothing that distinguishes
 the refusal from the flag being unset. One mechanism closes both, and building two would have
 been the "pile of point-solutions" the critical-stance rule names. Finding 3
-(`260802-2333`) is prose about a split that the same mechanism has to respect, so it was
+(`260802-2333_*_the-exemption-docstring-says-canonicalise-is-shared-with-the-protection-check-which-is-the-split-it-must-not-invite-unifying.md`) is prose about a split that the same mechanism has to respect, so it was
 written after the code rather than before it.
 
 ## Finding 1 — the plural article (`260802-2213`)
@@ -42,7 +42,7 @@ The two existing assertions checked that the paths were joined and never looked 
 sentence around them, which is exactly how the defect survived Step 4's own measurement. They
 now compare the whole string, and a third asserts `"a protected rule paths"` never appears.
 
-## Finding 2 — the stated exempt boundary (`260802-2231`), re-measured first
+## Finding 2 — the stated exempt boundary (`260802-2231_*_stated-exempt-boundary-is-narrower-than-the-implemented-one-for-whole-subtree-deletes.md`), re-measured first
 
 The issue predicted its own rows would still hold after gate 0. **They do, with one row
 changed**, and the change is a spelling rather than a reach. Real guard subprocess, one
@@ -97,11 +97,11 @@ bare directory node is out of reach. The reach is additionally pinned by unit ca
 the prose is falsifiable rather than merely present.
 
 The issue's two adjacent questions are Step 6's and were not answered here. Filed as
-`decisions/260803-1314_o_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`
+`260803-1314_*_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`
 rather than decided in a docstring, because closing the issue would otherwise take the
 question with it.
 
-## Finding 3 — `canonicalise` is not shared (`260802-2333`)
+## Finding 3 — `canonicalise` is not shared (`260802-2333_*_the-exemption-docstring-says-canonicalise-is-shared-with-the-protection-check-which-is-the-split-it-must-not-invite-unifying.md`)
 
 All three recommendations taken, in gate 1's paragraph:
 
@@ -120,7 +120,7 @@ All three recommendations taken, in gate 1's paragraph:
   copied from the issue:** the measured `rm -rf rules/` row above denies with the flag set,
   which is only true if the predicate strips the separator for itself.
 
-## Finding 4 — the refusal nobody could read (`260802-2332` + `260803-1252`)
+## Finding 4 — the refusal nobody could read (`260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md` + `260803-1252_*_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-and-names-a-file-that-is-writable.md`)
 
 Direction 1, extended to gate 0, one mechanism for both.
 
@@ -171,7 +171,7 @@ test BEFORE gate 0's spelling test, although the numbering has it the other way.
 text and both refuse, so the boolean cannot change; what changes is which refusal is reported.
 Without the reorder, `Edit x/../agents/coder.md` with the flag set would answer "the flag does
 not cover `..` spellings", which is true, useless, and reads as an invitation to try again
-without the `..` — the precise thing `260803-1252`'s closing constraint forbids. Gate 0 still
+without the `..` — the precise thing `260803-1252_*_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-and-names-a-file-that-is-writable.md`'s closing constraint forbids. Gate 0 still
 runs strictly above the FILESYSTEM gate, which is the ordering that is load-bearing, and a
 case pins that separately.
 
@@ -193,7 +193,7 @@ around a deny, which is the failure `rules/protected-path-discipline.md` exists 
 The boundary is documented in the docstring instead, and T3-7 owns the user-facing half.
 Recorded here so it is a decision rather than an oversight.
 
-**Direction 2 of `260802-2332`** (narrow the hard-link test to a link crossing the boundary),
+**Direction 2 of `260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md`** (narrow the hard-link test to a link crossing the boundary),
 for the reason the issue gives: there is no portable way to enumerate an inode's other names
 short of walking the tree.
 
@@ -231,9 +231,9 @@ green at 1047.
    `Edit rules/up/../agents/coder.md` reports `rules/agents/coder.md`, which does not exist.
    Left open deliberately: that string is what the protection side matched, and changing it
    would make the deny reason and the protected-list match disagree. What changed is that the
-   reader is no longer left with only that string. Recorded in `260803-1252`'s resolution note
+   reader is no longer left with only that string. Recorded in `260803-1252_*_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-and-names-a-file-that-is-writable.md`'s resolution note
    as the half that stays open, on the same ground as
-   `260803-1251_o_fs-locator-collapses-dotdot-lexically-…`.
+   `260803-1251_*_fs-locator-collapses-dotdot-lexically-…`.
 2. **The bare-directory deny has no note**, by the decision above.
 3. **The note costs a second run of the gates on the deny path** — one `lstat` and up to three
    `realpath` calls, on a call that was going to stop anyway. Not measured in time; the

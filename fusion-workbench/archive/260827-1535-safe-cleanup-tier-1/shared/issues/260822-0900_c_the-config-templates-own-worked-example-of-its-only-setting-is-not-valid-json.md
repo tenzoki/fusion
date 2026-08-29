@@ -6,7 +6,7 @@ The config template's worked example of its only setting is not valid JSON, and 
 **Domain:** code
 **Filed by:** orchestrator, from a user report on a consuming project
 **Affects:** `templates/fusion.json` and the root `fusion.json`, the `_turnBudget` and `_retired` notes
-**Cross-references:** `shared/issues/260822-0849_*_the-dashboard-poll-swallows-every-failure-so-a-dead-page-keeps-showing-its-last-warnings-forever.md`, met in the same report; `hooks/lib/config.ts` `readLayer`, which produces the advisory
+**Cross-references:** `260822-0849_*_the-dashboard-poll-swallows-every-failure-so-a-dead-page-keeps-showing-its-last-warnings-forever.md`, met in the same report; `hooks/lib/config.ts` `readLayer`, which produces the advisory
 
 ---
 
@@ -84,7 +84,7 @@ worse failure than a placeholder, because no amount of correcting the documented
 **The advisories are dated 2026-08-17T12:10 and the project's file was last written 2026-08-21.**
 So the cause was fixed four days before the user asked, and what they were looking at was the
 append-only log doing its job. That part is
-`shared/issues/260822-0849_*_the-dashboard-poll-swallows-every-failure-so-a-dead-page-keeps-showing-its-last-warnings-forever.md`
+`260822-0849_*_the-dashboard-poll-swallows-every-failure-so-a-dead-page-keeps-showing-its-last-warnings-forever.md`
 and the standing dismissal defect, not this record.
 
 ---

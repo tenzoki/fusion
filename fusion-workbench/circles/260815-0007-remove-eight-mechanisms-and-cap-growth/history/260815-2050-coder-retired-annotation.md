@@ -3,7 +3,7 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Source:** `circles/260801-1244-curator/decisions/260814-1332_a_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` (option 3, answered by the user at the Rebalance gate)
+**Source:** `260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` (option 3, answered by the user at the Rebalance gate)
 **HEAD at start:** `bd07ee7`
 
 ## What this step did

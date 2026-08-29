@@ -1,4 +1,4 @@
-# Playmaker Session — 260825-1844
+# Playmaker Session — 260825-1844-playmaker-user-fusion-next.md
 
 **Trigger:** `user-fusion-next` (dispatch prompt carried `**Domain:** code` and nothing else, which is the `/fusion:next` Step 3 briefing form; no `agentstate.yaml` exists, so a Phase 4 orchestrator dispatch is ruled out)
 **Filed by:** playmaker, Kai Stalmann <ks@qantr.com>
@@ -34,10 +34,10 @@ deferral was performed.
 **Top-ranked anticipated Circle: none.** No record carries `_a_`, so Step 3 had nothing to rank and
 no `## Activation proposal` was appended to any record.
 
-**Top-ranked backlog entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`
+**Top-ranked backlog entry:** `260814-1733_*_bounded-executor-dispatches.md`
 (rank 1 of 2, `_p_`). It ranks first because its analysis is on disk and already narrows the idea;
 shaping it needs one narrowing question rather than fresh investigation. Rank 2,
-`shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md` (`_o_`), gained material evidence this
+`260814-1733_*_attach-the-rule-to-the-act.md` (`_o_`), gained material evidence this
 run but stays second because a user act precedes shaping it.
 
 ## Backlog counts
@@ -57,20 +57,20 @@ run but stays second because a user act precedes shaping it.
 cost this run nothing. Two candidate operations were considered and rejected on merit rather than on
 the missing confirmation:
 
-- A **deferral** of `shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md` stood as an
+- A **deferral** of `260814-1733_*_attach-the-rule-to-the-act.md` stood as an
   unperformed proposal from 260814 until the previous run withdrew it. It is not reinstated: the
   condition the deferral waited on is now met in full, verified below.
 - A **merge** of that same entry with the defect record
-  `shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`
+  `260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`
   was considered and rejected. The defect belongs in the issue store; restating it as a backlog entry
   would be filing, which no agent may do (`rules/fusion-workbench-conventions.md` `## Backlog entries`).
 
 ## Deferred decision verified
 
-`shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
 carries `_d_`, deferred until three lint records are settled. All three are settled, which is sharper
 than the previous run could state: `shared/issues/260810-0503_*` and `shared/issues/260810-0510_*`
-carry `_c_` in the live store, and `260810-0502` resolves outside it, closed, under the
+carry `_c_` in the live store, and `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md` resolves outside it, closed, under the
 `260817-1907` archive sweep. Reviving the decision is the user's act and nothing blocks it.
 
 ## Warnings emitted to the portfolio

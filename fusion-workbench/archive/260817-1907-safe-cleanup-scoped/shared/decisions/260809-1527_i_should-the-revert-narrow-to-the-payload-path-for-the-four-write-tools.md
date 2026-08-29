@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** `shared/planning/260809-1229_*_plan-five-severe-guard-defects.md` (Step 5, and Open Questions item 1); `shared/issues/260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`; `shared/analyses/260809-1103-guard-enforced-policies.md`
+**Cross-references:** `260809-1229_*_plan-five-severe-guard-defects.md` (Step 5, and Open Questions item 1); `260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`; `260809-1103-guard-enforced-policies.md`
 
 ---
 
@@ -15,7 +15,7 @@ any path whose fingerprint moved. It cannot tell who moved it. A human editor
 saving a file, a file watcher, a build, or a second Claude session are
 indistinguishable from the agent inside that window, so the guard today reverts
 a human's concurrent work and halts the session for it. That is defect
-`260809-1107`, and it is the failure the before-fingerprint was introduced to
+`260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`, and it is the failure the before-fingerprint was introduced to
 prevent, arriving from the other side.
 
 One distinction *is* decidable. For the four write tools (`Write`, `Edit`,
@@ -103,7 +103,7 @@ Superseded by:
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — `_i_` confirmed. All four implementation obligations are demonstrable in the tree at HEAD `fb262d8`, not only in the `Implemented:` line.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — `_i_` confirmed. All four implementation obligations are demonstrable in the tree at HEAD `fb262d8`, not only in the `Implemented:` line.**
 
 1. *Narrowing applies to the four write tools only; `Bash` reverts everything.* `narrowingTarget` returns `null` unless `input.tool_name` is in `WRITE_TOOLS = ["Write", "Edit", "MultiEdit", "NotebookEdit"]` (`hooks/tracker.ts:285-286`, `:86`). A `null` spare makes the narrowing branch at `:515` unreachable, so every changed path takes `restorePath`.
 2. *A spared path is still preserved, reported and recorded.* `preserve` runs before the branch, for every violation without exception (`hooks/tracker.ts:508-513`); the `left-in-place` outcome carries `preserved` and `sparedBy` (`:518-523`); the `guard_block` loop emits one event per changed path with the comment naming this obligation (`:535-543`); `describe` renders the spared case at `:335`.
@@ -115,4 +115,4 @@ Obligation 2 carries one implementation detail the record did not ask for and th
 The record stays `_i_`. `_i_` is terminal; if the exposure named in its own Cons is ever measured, that is a new decision superseding this one, not a reopening.
 
 ---
-Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — the revert this record narrowed no longer exists. The before-and-after fingerprint in `guard.ts`, the write-back in `tracker.ts` job 1 and `hooks/lib/reverted-copy.ts` all went with the protected-path half, and with them the OBLIGATION 4 test that pinned the narrowing. Nothing is reverted, so there is no scope left to draw.
+Retired: `60c9cd8` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — the revert this record narrowed no longer exists. The before-and-after fingerprint in `guard.ts`, the write-back in `tracker.ts` job 1 and `hooks/lib/reverted-copy.ts` all went with the protected-path half, and with them the OBLIGATION 4 test that pinned the narrowing. Nothing is reverted, so there is no scope left to draw.

@@ -3,7 +3,7 @@
 **Date:** 2026-08-22 12:26
 **Type:** Gap
 **Status:** Complete
-**Requested by:** orchestrator, step 1 of `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+**Requested by:** orchestrator, step 1 of `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 
 ## The hook test suite does not clear 500 lines. Read this before anything else.
 
@@ -33,7 +33,7 @@ and nothing else on this surface comes close.
 Removing it is not a restatement cut. No other shipped file authors those attributions, and this
 project has written down twice that a finding living only in a log is a defect. So the choice is
 filed rather than taken, as
-`shared/decisions/260822-1229_o_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
+`260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
 with four options and no recommendation. Gate A is where it is answered.
 
 **What follows from that.** With the log left alone, the hook test surface clears neither 500 nor
@@ -162,7 +162,7 @@ and I did not build the helper to check it.
 
 - Step 3 and step 4 each need one attribution block above the re-approved
   `reference-resolution-lint` pin. Recent blocks in that file run three to twelve lines each.
-- `shared/issues/260816-0133_*_…` prescribes a ten-line test, and the plan's step 4 names it as a
+- `260816-0133_*_…` prescribes a ten-line test, and the plan's step 4 names it as a
   `skills/` cut candidate. It is not one. See the filed issue below.
 
 ---
@@ -227,7 +227,7 @@ dispatch rather than moving inside it.
 |---|---|---|---|---|---|---|
 | R1 | `coderev.md:67-135` and `ontorev.md:60-121`, the reviewer contract: the two mandated header fields, the worked before/after, the `bin/fusion-review-coverage` self-check, the final-review shape | **about 8 500** net of one pointer in each prompt | How a reviewer records what it opened and what it did not | a new `rules/review-contract.md` emitted to `coderev` and `ontorev` | `restatement` | needs `bin/fusion-rules` (a new emission arm), `rules-emission-golden.test.ts` `ROLES` (its role-coverage assertion is HARD), and `review-coverage-mandate.test.ts:70`, whose `REVIEWER_PROMPTS` pins the two fields in the prompts themselves. **All three are outside step 3's stated Files list.** |
 | R2 | The `**Domain:**` parameter-parsing block in `playmaker.md:34-36`, `reconciler.md:41-43`, `taskplanner.md:36-38` | about 800 (two of three copies) | How to parse the dispatch parameter and what to do when it is absent | a shared rule, or `README-agents.md` `## Dispatch parameters` if agents could read it, which they cannot | `restatement` | `domain-cascade.test.ts` and `domain-cascade-order-lint.test.ts` both read these blocks |
-| R3 | The sub-agent `AskUserQuestion` note in `analyst.md:45`, `bugfixer.md:42`, `curator.md:247`, `planner.md:72`, `shaper.md:132` | about 1 800 net | A dispatched sub-agent does not hold `AskUserQuestion` and returns the blocking question to its dispatcher | nowhere; would need a new rule | `restatement` | already the subject of `shared/issues/260820-1755_o_five-agent-prompts-tell-a-top-level-run-it-holds-askuserquestion-and-a-headless-one-does-not.md`, which should be settled first |
+| R3 | The sub-agent `AskUserQuestion` note in `analyst.md:45`, `bugfixer.md:42`, `curator.md:247`, `planner.md:72`, `shaper.md:132` | about 1 800 net | A dispatched sub-agent does not hold `AskUserQuestion` and returns the blocking question to its dispatcher | nowhere; would need a new rule | `restatement` | already the subject of `260820-1755_*_five-agent-prompts-tell-a-top-level-run-it-holds-askuserquestion-and-a-headless-one-does-not.md`, which should be settled first |
 
 **R1 alone takes the surface to 15 165 bytes, clearing 10 362 with 4 803 to spare.** R2 and R3
 together with the deletions reach 9 265 and still fall short.
@@ -315,7 +315,7 @@ instruction, which is behaviour rather than reference.
 
 `skills/help/SKILL.md:101-109` holds five "Coming from a vN install" paragraphs totalling
 **3 147 bytes**, one per release since v9. Option 2 of
-`shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`
+`260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`
 caps the section at the last N releases with one standing pointer at `docs/`. At N = 2 that removes
 1 684 bytes and adds roughly 500 for the missing v10.5 paragraph plus about 180 for the standing
 line, so **step 6 lands at about minus 1 004 bytes rather than plus 1 100**.
@@ -325,7 +325,7 @@ alone nearly covers and S1 plus S2 clears with 2 164 to spare.
 
 ### One of the plan's three named candidates yields nothing here
 
-`shared/issues/260816-0133_*_…` (the three byte-identical bracket probes) explicitly forbids the cut
+`260816-0133_*_…` (the three byte-identical bracket probes) explicitly forbids the cut
 step 4 assumes: *"Do not try to factor the expression into a shared file… the pinned-duplication
 shape is the right one here."* Its fix is a ten-line test. Discharging it yields **zero bytes** on
 `skills/` and **costs about ten lines** on the hook test surface. Filed as an issue.
@@ -381,7 +381,7 @@ proposed.
 ## Recommendations
 
 1. **Take the ledger to Gate A with the hook-test finding first.** The user has one decision to make
-   before anything else: `shared/decisions/260822-1229_o_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`.
+   before anything else: `260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`.
    Nothing on that surface moves without it.
 2. **Ask at the same gate whether row R1 is in scope.** If yes, step 3's Files list has to name
    `bin/fusion-rules`, a new `rules/review-contract.md`, `rules-emission-golden.test.ts` and
@@ -390,24 +390,24 @@ proposed.
 3. **Bring Gate B forward, or at least decide it before step 4 sizes itself.** Option 2 turns step 6
    from a 1 100-byte cost into roughly a 1 000-byte saving and drops step 4's target by half.
 4. **Route the three filed issues.** All three are plan-level or prompt-level corrections rather than
-   code. `260822-1226` goes to `coder` or to a later Circle; `260822-1227` and `260822-1228` are for
+   code. `260822-1226` goes to `coder` or to a later Circle; `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md` and `260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md` are for
    the orchestrator to apply to the plan before dispatching steps 4 and 8.
 5. **Do not open the always-on rule core.** No target was set, the room is the most expensive in the
    plugin, and the one question worth asking there is an audience decision that needs its own record.
 
 ## Filed Issues
 
-- `shared/issues/260822-1226_o_the-executor-report-contract-cites-bugfixer-as-its-author-and-bugfixer-defines-a-different-shape.md` — `coder.md:73` and `ontocoder.md:92` cite `agents/bugfixer.md` as the author of the four-field executor report; bugfixer defines a different, weaker shape and sits outside the gate that pins it.
-- `shared/issues/260822-1227_o_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md` — the bracket-probe record prescribes a test and forbids factoring, so it yields zero `skills/` bytes and costs hook-test lines.
-- `shared/issues/260822-1228_o_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md` — the record step 8 targets is already `_c_` and already carries the prescribed note.
+- `260822-1226_*_the-executor-report-contract-cites-bugfixer-as-its-author-and-bugfixer-defines-a-different-shape.md` — `coder.md:73` and `ontocoder.md:92` cite `agents/bugfixer.md` as the author of the four-field executor report; bugfixer defines a different, weaker shape and sits outside the gate that pins it.
+- `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md` — the bracket-probe record prescribes a test and forbids factoring, so it yields zero `skills/` bytes and costs hook-test lines.
+- `260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md` — the record step 8 targets is already `_c_` and already carries the prescribed note.
 
 ## Filed Decisions
 
-- `shared/decisions/260822-1229_o_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md` — four options, no recommendation, and the load-bearing question for the hook test surface.
+- `260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md` — four options, no recommendation, and the load-bearing question for the hook test surface.
 
 ## Sources
 
-- `fusion-workbench/shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` (read in full)
+- `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` (read in full)
 - `hooks/lib/__tests__/helpers/growth-bound.ts` (the instrument and its `## Re-baselining` rule)
 - `hooks/lib/__tests__/surface-growth-bound.test.ts:1-628` (three baseline maps, three head-room constants, the arming log, the `files()` readers)
 - `hooks/lib/__tests__/rules-emission-golden.test.ts:17-459` (`RULE_BASELINE`, the movement log, the four assertion classes)
@@ -417,7 +417,7 @@ proposed.
 - `bin/fusion-source-root:1-45` (the header that authors row S1's claim)
 - `rules/user-facing-output.md` `## Style anti-patterns apply to everything`, `## Effort estimates`, `## Self-review before sending`; `rules/agent-setup.md` `## Voice profiles`
 - `agents/orchestrator.md:27-220`, `:251-305`, `:1342-1344`; all fifteen `agents/*.md`; all twelve `skills/*/SKILL.md`
-- `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`, `260810-2110_o_…`, `260816-0133_o_…`, `260822-0946_o_…`; `shared/decisions/260810-1635_a_…`, `260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`; `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_c_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`
+- `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`, `260810-2110_*_…`, `260816-0133_*_…`, `260822-0946_*_…`; `260810-1635_*_…`, `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`; `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`
 - `CLAUDE.md` (the stand-down history behind row H4; the Setup-skipped failure behind the orchestrator section)
 
 ### Measurement commands
@@ -431,17 +431,17 @@ proposed.
 
 ## Open Questions
 
-- [ ] Where does the `reference-resolution-lint` attribution log live? Filed as `shared/decisions/260822-1229_o_…`. Gate A decides; the hook test surface depends on it entirely.
+- [ ] Where does the `reference-resolution-lint` attribution log live? Filed as `260822-1229_*_…`. Gate A decides; the hook test surface depends on it entirely.
 - [ ] Is relocation row R1 in scope for step 3, given that it reaches three files the step does not name and does not reduce reviewer context? Not filed as a decision, because it is a scope question for Gate A rather than a standing choice for the project.
 - [ ] Why does my exact-sentence measurement of `skills/*/SKILL.md` report 6 788 bytes where the plan reports 12 022? Both are floors and neither is load-bearing for the ledger, which was built by reading. The discrepancy is recorded rather than resolved.
 - [ ] Row H5's 40 lines is the one estimate in the hook-test ledger. Building the helper is the only way to settle it, and that is step 2's work.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). `## Scope` opens "Measured at HEAD `370bfc5`". The tree this ledger
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). `## Scope` opens "Measured at HEAD `370bfc5`". The tree this ledger
 read was `faac921`: `370bfc5` is the session's start anchor, and two commits stood between them,
 `4a58be1` (plan step 8's closure of a growth-bound record, appended note and `_o_` to `_c_` rename)
 and `faac921` (the multi-user spec and the C0 plan). Both touch workbench records alone; every shipped
 surface is byte-identical at the two anchors, so no measurement here moves. What the misdating cost is
-the defect `shared/issues/260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`,
+the defect `260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`,
 which reported `4a58be1`'s own effect as a pre-existing state. Filed as
-`shared/issues/260822-1556_*_the-cut-ledger-states-a-head-anchor-two-commits-behind-where-it-ran.md`.
+`260822-1556_*_the-cut-ledger-states-a-head-anchor-two-commits-behind-where-it-ran.md`.

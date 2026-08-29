@@ -15,7 +15,7 @@ behind a branch a removed container can no longer enter.
 that would keep it cannot express this case. Nothing is broken at runtime; what is lost is the one notice
 a consuming project would have received.
 **Domain:** data
-**Filed by:** `ontorev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1247-ontorev-turn-2-structured-data.md`)
+**Filed by:** `ontorev`, reviewing `7c12d6a..5d29b6d` (`260815-1247-ontorev-turn-2-structured-data.md`)
 **Owner:** `ontocoder` for the configuration surface and the template notes; the loader half is `coder`'s
 and is also reachable by `coderev`, which reviewed `hooks/lib/config.ts` in parallel — see *Overlap* below.
 **Affects:**
@@ -100,7 +100,7 @@ independently, merge the two rather than fixing them twice; the configuration-su
 Three things, and they are separable:
 
 1. Decide whether `churn` is retired or removed, on a stated basis rather than on an unverifiable count.
-   This is a decision record, not an executor's call — it is the same question `260804-1630`'s successor
+   This is a decision record, not an executor's call — it is the same question `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`'s successor
    answered for `protectedPaths`.
 2. If retired, the lookup has to reach a container `CONTAINER_LEAF_RULES` no longer knows, and the
    template's `_what` / `_override` notes stop saying "the one that exists today" and "ONE KEY IS RETIRED".
@@ -110,9 +110,9 @@ Three things, and they are separable:
 
 ## Related
 
-- `issues/260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md` — the
+- `260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md` — the
   other three surfaces step 4's and step 5's lists did not name.
-- `shared/issues/260812-0843_*_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md`
+- `260812-0843_*_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md`
   — the standing question about the whole configuration surface.
 
 

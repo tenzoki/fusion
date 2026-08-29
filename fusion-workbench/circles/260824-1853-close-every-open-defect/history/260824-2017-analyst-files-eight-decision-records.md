@@ -25,7 +25,7 @@ Mapping short name to record:
 
 ## Verification
 
-`cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts`: 1 failed, 9 passed. The one failure lists four dangling citations, none in the eight new records (zero hits for `260824-2013` in the output). All four are stale-marker citations of records another executor renamed `_o_` to `_c_` in this same session (untracked new names at the time of the run: `260814-0828`, `260805-2323`, `260812-1720`, `260814-1419`). Those are step 2's renames and step 4's repair territory, not this step's; no record outside the eight was edited here.
+`cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts`: 1 failed, 9 passed. The one failure lists four dangling citations, none in the eight new records (zero hits for `260824-2013` in the output). All four are stale-marker citations of records another executor renamed `_o_` to `_c_` in this same session (untracked new names at the time of the run: `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`, `260805-2323`, `260812-1720`, `260814-1419`). Those are step 2's renames and step 4's repair territory, not this step's; no record outside the eight was edited here.
 
 ## Not done, by instruction
 

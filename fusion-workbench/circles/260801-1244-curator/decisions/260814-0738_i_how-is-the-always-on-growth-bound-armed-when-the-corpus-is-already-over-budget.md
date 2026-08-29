@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper (portfolio-activation mode)
-**Cross-references:** `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md` C10; `hooks/lib/__tests__/rules-emission-golden.test.ts`; `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+**Cross-references:** `260814-0738_*_spec-curator.md` C10; `hooks/lib/__tests__/rules-emission-golden.test.ts`; `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
 
 ---
 
@@ -19,7 +19,7 @@ The question must be answered before the planner plans C10, because the acceptan
 ## Options
 
 1. **Re-baseline once at the moment of arming, then bound growth from there.** The baseline map is re-set from the corpus as this Circle leaves it, the bound applies to everything after, and the 2026-08-14 overshoot is written into the file as text so the standing cleanup request survives the number moving.
-   - Pros: it is what rate-bounding means, and it matches the finding in `shared/analyses/260812-0022-...` that the binding constraint is the rate of addition rather than the size of the system. It keeps the compaction work out of scope, as the user directed on 2026-08-14. It arms green.
+   - Pros: it is what rate-bounding means, and it matches the finding in `260812-0022-...` that the binding constraint is the rate of addition rather than the size of the system. It keeps the compaction work out of scope, as the user directed on 2026-08-14. It arms green.
    - Cons: it overrides a position recorded in `hooks/lib/__tests__/rules-emission-golden.test.ts`, which states that the baseline moves at exactly one moment, after somebody has done the cleanup the report asked for. A reader of that file who has not read this record will read the arming re-baseline as the silent raise the file warns against.
 
 2. **Cut the always-on set back under budget first, then arm at the existing baseline.** Roughly 11 KB has to come out of the five always-on files, most of it from `rules/fusion-workbench-conventions.md`, which grew 17 249 bytes since the cut.
@@ -46,7 +46,7 @@ The argument for overriding the recorded position is that the rule was written f
 Confidence, labelled per `rules/critical-stance.md`: the measurements are verified, having been produced by running the test on 2026-08-14. The reading of the instrument's intent is inference from the comments in that file, not a position the user has stated. The judgement that option 2 conflicts with the user's 2026-08-14 direction is inference from the retirement of C9, not a statement the user made about C10.
 
 ---
-Answered: shared/history/260813-2345-orchestrator-session.md § User decisions recorded this session, item 5 — option 1, re-baseline once at arming; the 2026-08-14 overshoot is written into the file as text so the standing cleanup request survives the number moving. Answered by the user on 2026-08-14 at an orchestrator gate, having been shown that this overrides the recorded position in rules-emission-golden.test.ts.
+Answered: 260813-2345-orchestrator-session.md § User decisions recorded this session, item 5 — option 1, re-baseline once at arming; the 2026-08-14 overshoot is written into the file as text so the standing cleanup request survives the number moving. Answered by the user on 2026-08-14 at an orchestrator gate, having been shown that this overrides the recorded position in rules-emission-golden.test.ts.
 Implemented: 5c843e6 — the five core entries in RULE_BASELINE re-set once at the arming, each carrying an inline comment naming the event; the three role-specific entries keep their 2026-08-05 figures. The cut log gains a dated arming entry stating that no bytes were removed and reproducing the per-role overshoot as text, so the standing cleanup request survives the number moving. RELEASE_CAP and DRIFT_CEILING untouched. The bound was falsified live against an always-on file and a role-specific one before being accepted.
 Deferred:
 Superseded by:

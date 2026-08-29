@@ -34,7 +34,7 @@ The shaper consumes `_o_` or `_p_` (`agents/shaper.md:57` ff.). Nothing produces
 
 ## Why it is filed now rather than left as the open question it was
 
-`shared/decisions/260812-2043_a_who-writes-the-recommended-marker-on-a-backlog-entry.md` asked
+`260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` asked
 who writes `_p_`, offered four options, and recommended declining the one that gives the write to
 the playmaker. The user answered it in this session by choosing exactly that option and widening
 it: the playmaker is to perform full maintenance — marker renames across `_o_`/`_p_`/`_c_`/`_d_`,
@@ -71,10 +71,10 @@ All of them, or the change is half-made and the derived key set will contradict 
 ## Not in scope
 
 Whether `taskplanner` and `$TASKLIST` retire into the backlog. That is option 4 of
-`shared/decisions/260812-0254_a_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
+`260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
 and the user left it undecided in both directions.
 
 ---
 Resolved: Landed in b995049: bin/fusion-paths playmaker now emits OUT_BACKLOG, agents/playmaker.md names the write, the conventions file's "Backlog entries" section names the playmaker as the sole _p_ writer, and the no-filing bound survives — all four acceptance items met.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

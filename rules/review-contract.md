@@ -1,6 +1,6 @@
 # The Review Contract
 
-**Provenance:** shared/decisions/260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md
+**Provenance:** 260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md
 
 **This document is the single authoring home** of what a review file contains: the mandated
 header fields, the per-topic working files, and the final consolidated review. `bin/fusion-rules`
@@ -42,7 +42,7 @@ A pass that opened everything in a real range, and one that did not:
 **Not-opened:** `agents/orchestrator.md`, `skills/next/SKILL.md`, `skills/archive/SKILL.md`
 ```
 
-**Why this is mandated and not left to your judgement.** Reviewers already state their scope — the problem is that they each state it differently. Ten `coderev` files in one store carried four spellings of the range (`**Range:**`, `**Scope:**`, `**Scope reviewed:**`, `**Scope as dispatched:**`), several carried none, and the filenames disagreed too. So nothing could read them, and nothing did: in session `260810-0844` two passes ran, their ranges did not tile the session's range, and **seven code-bearing commits reached a pushed release tag with no reviewer having opened them** while the session's own report said one. The record is `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`, in fusion's own workbench.
+**Why this is mandated and not left to your judgement.** Reviewers already state their scope — the problem is that they each state it differently. Ten `coderev` files in one store carried four spellings of the range (`**Range:**`, `**Scope:**`, `**Scope reviewed:**`, `**Scope as dispatched:**`), several carried none, and the filenames disagreed too. So nothing could read them, and nothing did: in session `260810-0844-orchestrator-session.md` two passes ran, their ranges did not tile the session's range, and **seven code-bearing commits reached a pushed release tag with no reviewer having opened them** while the session's own report said one. The record is `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`, in fusion's own workbench.
 
 **The `**Not-opened:**` field is the one that has already failed once.** The `0939` pass of that session declared, correctly and in its own header, that three named files "were not opened" because concurrent tasks held them — and those were exactly the files two of the unreviewed commits changed. The reviewer did its job. The sentence went into a file and stopped there. Written in the mandated form it does not stop: `bin/fusion-review-coverage` reads it, the orchestrator adds it to the next dispatch's scope, and the PostToolUse hook names it back to whoever is holding the session the moment your file lands.
 

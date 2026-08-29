@@ -4,8 +4,8 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Unclaimed
-**Active spec/plan:** circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md
-**Active session history:** circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md
+**Active spec/plan:** 260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md
+**Active session history:** 260825-2123-orchestrator-session.md
 
 ---
 
@@ -15,15 +15,15 @@ See `**Active spec/plan:**` above. The cited spec or plan states the Directive i
 
 ## Grounding snapshot
 
-**This Circle is C4 of the multi-user specification**, `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C4`, and it is the last of the five. C0 through C3 have run: the four bounded surfaces have head-room, the isolation premise is verified, the four-class state partition is settled with a union merge driver on the event log, and every record template now carries a person alongside the agent. The specification's own sequence diagram makes the dependency explicit, namely that C3 must exist first because presence needs an identity to attribute a line to.
+**This Circle is C4 of the multi-user specification**, `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C4`, and it is the last of the five. C0 through C3 have run: the four bounded surfaces have head-room, the isolation premise is verified, the four-class state partition is settled with a union merge driver on the event log, and every record template now carries a person alongside the agent. The specification's own sequence diagram makes the dependency explicit, namely that C3 must exist first because presence needs an identity to attribute a line to.
 
-**The identity mechanism already exists and is not re-decided here.** `bin/fusion-identity` prints `PERSON=` in git's own `Name <email>` form and `CHECKOUT=` as eight hex characters minted once into `fusion-workbench/.checkout-id`, with a six-code exit table that separates the two halves. The user answered the identity question on 260824 against the option set in `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`: attribution takes the git identity, and the claim takes the git identity plus the locally minted checkout identifier. The specification's own text still names `$USER` in one acceptance criterion and its Constraints section; that half is stale and the decision record overrides it. This Circle inherits the answered form and introduces no second identity source.
+**The identity mechanism already exists and is not re-decided here.** `bin/fusion-identity` prints `PERSON=` in git's own `Name <email>` form and `CHECKOUT=` as eight hex characters minted once into `fusion-workbench/.checkout-id`, with a six-code exit table that separates the two halves. The user answered the identity question on 260824 against the option set in `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`: attribution takes the git identity, and the claim takes the git identity plus the locally minted checkout identifier. The specification's own text still names `$USER` in one acceptance criterion and its Constraints section; that half is stale and the decision record overrides it. This Circle inherits the answered form and introduces no second identity source.
 
 **The event log is the only file in the workbench that two checkouts both write.** `rules/workbench-tracking.md` classifies it as class R2 and declares a union merge driver for it, which `/fusion:setup` installs per checkout. The union merge is what makes presence travel at all, and it is also what broke the readers below, so the same commit that bought the transport created the work this Circle finishes.
 
-**Two referred defects are this Circle's inputs and were both closed with the referral, not with a fix.** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` measured four false readings on the running dashboard after a real two-checkout merge: the status label read `Session complete` while the reading checkout was working, the ETA collapsed to a dash for as long as the other checkout's clock was ahead, the paired-duration average changed with the interleaving, and the last-N-events window held the other checkout's lines while the reading session's own running task fell outside it. That record also established, by measurement, that sorting by `ts` does not repair this and makes the status label worse: no ordering of lines that carry no session or checkout identity can separate one session from another. It named a fork, which the user has now answered by choosing the identity-on-the-line direction over reading live state from an untracked file. `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` carries the second half of the same finding, namely that a window depending on file order does not survive the merge.
+**Two referred defects are this Circle's inputs and were both closed with the referral, not with a fix.** `260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` measured four false readings on the running dashboard after a real two-checkout merge: the status label read `Session complete` while the reading checkout was working, the ETA collapsed to a dash for as long as the other checkout's clock was ahead, the paired-duration average changed with the interleaving, and the last-N-events window held the other checkout's lines while the reading session's own running task fell outside it. That record also established, by measurement, that sorting by `ts` does not repair this and makes the status label worse: no ordering of lines that carry no session or checkout identity can separate one session from another. It named a fork, which the user has now answered by choosing the identity-on-the-line direction over reading live state from an untracked file. `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` carries the second half of the same finding, namely that a window depending on file order does not survive the merge.
 
-**The Turn count is the third referred input.** `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` records two definitions of one figure inside `agents/orchestrator.md`: the resume snippet counts every `turn_start` in the whole file, while the derivation table defines the same number as the events since this session's `session_start`. They already disagree on any project with more than one session, and several checkouts widen the gap. The session-scoped definition is the one documented twice and is the one that survives.
+**The Turn count is the third referred input.** `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` records two definitions of one figure inside `agents/orchestrator.md`: the resume snippet counts every `turn_start` in the whole file, while the derivation table defines the same number as the events since this session's `session_start`. They already disagree on any project with more than one session, and several checkouts widen the gap. The session-scoped definition is the one documented twice and is the one that survives.
 
 **The emit sites are few and are all in one prompt.** `agents/orchestrator.md` Setup step 8 appends `session_start` with a `history_file` field, which the prompt names as the session's identity in a log where a resume appends a second such line, and the Observability section fixes the event vocabulary and the single-`echo`-append convention. `session_end` is emitted at the clean-exit step. Adding two fields is an edit to that vocabulary and to those emit sites, not a new mechanism.
 
@@ -39,15 +39,15 @@ See `**Active spec/plan:**` above. The cited spec or plan states the Directive i
 
 ## Turn log
 
-- Turn 1 (session 260825-2123): commits `73ca11c`..`b11bec6`; Coherence verdict not recorded, the session was interrupted before its Turn boundary; session history: `circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`
-- Turn 2 (session 260825-2123, resumed 260826-0447): commits `7ae6aae`..`8fb42ce`; Coherence verdict `ok`, three edges, Artifact↔Directive read as partially toward on two named counterexamples since removed; session history: same file
+- Turn 1 (session 260825-2123-orchestrator-session.md): commits `73ca11c`..`b11bec6`; Coherence verdict not recorded, the session was interrupted before its Turn boundary; session history: `260825-2123-orchestrator-session.md`
+- Turn 2 (session 260825-2123-orchestrator-session.md, resumed 260826-0447): commits `7ae6aae`..`8fb42ce`; Coherence verdict `ok`, three edges, Artifact↔Directive read as partially toward on two named counterexamples since removed; session history: same file
 - Turn 3 (same session): commits `6deeb33`..`bb5d92f`; Coherence verdict `review-needed` at Phase 3, `revise Artifact` taken, then `review-needed` again at the confirmation pass with `revise Grounding` taken; session history: same file
 
 **The Turn log was empty until closure and is written here in one act, from `fusion-workbench/orchestrator-events.jsonl` rather than from memory.** That is the failure `shared/issues/260801-2038_*` was filed on, met a seventh time by the Circle that spent three Turns on counts it also failed to keep. Nothing measures a frozen Turn log since the state-file counters were removed on 2026-08-15.
 
-## Activation proposal (playmaker run 260825-2051)
+## Activation proposal (playmaker run 260825-2051-playmaker-direct-dispatch.md)
 
-**Proposed for activation** as the next Circle, at the ranking made 260825-2051. It is the only
+**Proposed for activation** as the next Circle, at the ranking made 260825-2051-playmaker-direct-dispatch.md. It is the only
 anticipated record in the portfolio, and both Step-3 signals are clean rather than merely
 uncontested.
 
@@ -57,7 +57,7 @@ directory whose record carries `_c_`, so nothing this Circle rests on is still m
 **Unresolved decisions cited in the Grounding snapshot: none.** Every record the snapshot cites
 resolves against the live store. The identity question it inherits carries `_i_`, and the three
 defect records it names as inputs carry `_c_`. The one citation carrying `_o_` is
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, the specification this
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, the specification this
 Circle is capability C4 of, and an open specification is the expected state for the last capability
 of five rather than a blocker.
 
@@ -67,8 +67,8 @@ records were filed into `shared/issues/` on 260825. None of them binds this Dire
 in any agent's scan set while no Circle is active. Activating this Circle brings its own store into
 scope and leaves the stranded ones where they are.
 
-**Run identifier:** playmaker session `260825-2051`, logged at
-`shared/history/260825-2051-playmaker-direct-dispatch.md`.
+**Run identifier:** playmaker session `260825-2051-playmaker-direct-dispatch.md`, logged at
+`260825-2051-playmaker-direct-dispatch.md`.
 
 **No marker was renamed and `.active-circle` was not written.** The user commits this proposal via
 `/fusion:next`, or the orchestrator does at a Phase 4 activation.
@@ -92,7 +92,7 @@ tracked.
 All eleven plan steps are `[DONE]` and the plan is closed. All ten clauses of
 `## Where this Circle stops` were put to the user at the Phase-4 gate and all ten
 were answered *holds*. Session history:
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`.
+`260825-2123-orchestrator-session.md`.
 
 **The Bounded-Closure Artifact is a measurement the Directive did not ask for.**
 Seven counts stated in this Circle's own prose about its own mechanism were false
@@ -116,7 +116,7 @@ blind to all of it. So the pattern is not carelessness in one Circle and it is
 not fixable by another pass: the eighth would find the eighth.
 
 That is recorded as an open question rather than corrected an eighth time:
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`,
+`260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`,
 four options, no recommendation, and the empty recommendation says why. The user
 chose that route at the Rebalance gate over correcting the word.
 
@@ -134,7 +134,7 @@ obvious clean implementation, was **not** measured and deliberately not used.
 **Sixteen defect records stay open and are the follow-on Circle's inheritance.**
 Five need hook-test lines the surface does not have; the growth bound stands at
 20 349 of 20 375 and the analyst's reserve of further cut candidates is unspent.
-Two await a user direction call (`260826-0154`, `260826-0158`). The rest are the
+Two await a user direction call (`260826-0154_*_the-reference-pin-shaped-a-comment-away-from-naming-a-path-and-the-vagueness-is-the-gates-doing.md`, `260826-0158_*_a-staging-list-built-by-a-shell-pipeline-over-git-status-is-the-directory-sweep-the-rule-forbids.md`). The rest are the
 Turn 3 review's findings, the confirmation pass's seventh count, and the
 resumption-conflation record. None falsifies a Directive clause, which is why
 none blocked closure.

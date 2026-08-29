@@ -4,10 +4,10 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** `coderev`, review of `5d29b6d..518926d`, review file `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`
+**Filed by:** `coderev`, review of `5d29b6d..518926d`, review file `260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`
 **Owner:** `coder`
 **Affects:** `README-agents.md:185`, `skills/help/SKILL.md:103`, `bin/fusion-rules:408`, `bin/fusion-rules:437`
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1403-coder-fold-investigator-into-analyst.md` (`## Judgements the step's file list did not pre-authorise` item 5, and `## What the twice-corrected step still missed`); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` `describe("enumeration lint: agent counts stated as closed numbers")`
+**Cross-references:** `260815-1403-coder-fold-investigator-into-analyst.md` (`## Judgements the step's file list did not pre-authorise` item 5, and `## What the twice-corrected step still missed`); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` `describe("enumeration lint: agent counts stated as closed numbers")`
 
 ---
 

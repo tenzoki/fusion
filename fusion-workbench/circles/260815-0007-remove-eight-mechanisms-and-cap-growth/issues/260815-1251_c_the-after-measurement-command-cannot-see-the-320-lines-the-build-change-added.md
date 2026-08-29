@@ -12,10 +12,10 @@ Circle produced.
 
 **Severity:** Medium — the Circle's own closure criterion is a before-and-after measurement, and this one overstates by 320 lines.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1251-coderev-turn-2-build-churn-and-stash.md`)
+**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`260815-1251-coderev-turn-2-build-churn-and-stash.md`)
 **Owner:** `coder` at step 14, or `planner` if the annotation is written into step 14 first
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:142-166` (step 1's block), `:330-334` (step 14)
-**Cross-references:** `issues/260815-1247_o_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md` (`ontorev`) — why the plan has no step that added these lines
+**Affects:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:142-166` (step 1's block), `:330-334` (step 14)
+**Cross-references:** `260815-1247_*_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md` (`ontorev`) — why the plan has no step that added these lines
 
 **Verified 2026-08-15 at HEAD `5d29b6d`.**
 
@@ -67,9 +67,9 @@ a number nobody can reconcile against the tree is the thing that criterion exist
 
 ## Related
 
-- `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 1 (line 142), step 14
+- `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 1 (line 142), step 14
   (line 330)
-- `history/260815-1133-coder-hooks-suite-concurrency-safety.md` — the run that added the three files
+- `260815-1133-coder-hooks-suite-concurrency-safety.md` — the run that added the three files
 - `_t_circle.md` `## Closure criterion` — the before-and-after measurement
 
 ---

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-21
 **Agent:** coder
-**Circle:** circles/260821-1042-reply-bounded-whole-question-answered
+**Circle:** 260821-1042-reply-bounded-whole-question-answered
 **Turn:** 2
 **Status:** Complete
 
@@ -11,11 +11,11 @@
 Two findings in `rules/user-facing-output.md`, in the same region and against one budget of
 82 bytes.
 
-- Finding A2, `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
+- Finding A2, `260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
   (Medium): C06's new clause, one formulation per claim, lives only on the chat profile's
   whitelist, and the absent-profile fallback at `rules/user-facing-output.md:32` covers the
   blacklist only. The user decided route 1, move it into the rule file.
-- Finding 2, `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2251_*_the-rules-blacklist-gloss-names-three-part-lists-while-ai04-now-governs-enumeration.md`
+- Finding 2, `260821-2251_*_the-rules-blacklist-gloss-names-three-part-lists-while-ai04-now-governs-enumeration.md`
   (Low): the blacklist gloss at `:18` named three-part lists while AI04 was renamed
   "Mechanical enumeration" and now governs the shape rather than the count.
 
@@ -57,7 +57,7 @@ Three choices inside it are worth recording.
 *A bullet, not an appended sentence.* The rule file's bolded lead-in is its lookup surface,
 the way `name:` is the profile's. Appending the second habit to the first bullet would
 reproduce in the rule file exactly the defect
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
+`260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
 filed against the profile, one day after it was filed. Two adjacent bullets also show the
 reader the distinction that record draws: `One name per thing` fails by variation, and this
 one fails by repetition.
@@ -90,7 +90,7 @@ Per edit: the gloss minus 5, the bullet plus 85.
 
 - **The voice profiles were not opened.** Their budget is separate and neither budget paid
   the other. The four files are byte-for-byte as the previous task left them.
-- **No test was added and no gate was built.** `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- **No test was added and no gate was built.** `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   authorises none until its own measurement runs, and this task did not run it.
 - **No heading was renamed, added or removed.** Verified with
   `diff <(git show e764637:rules/user-facing-output.md | grep '^#') <(grep '^#' rules/user-facing-output.md)`,
@@ -101,7 +101,7 @@ Per edit: the gloss minus 5, the bullet plus 85.
   `git diff --stat -- <path>` and single-path `git show e764637:<path>` reads.
 - **No directory-wide substitution in the issue store.** The two records were appended to and
   renamed one at a time, each named in full. No other file under `issues/` was opened for
-  writing, and `260821-2202` was left exactly as it stands.
+  writing, and `260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md` was left exactly as it stands.
 
 ## The citation pin did not move, and no head-room was spent
 
@@ -113,7 +113,7 @@ path.
 
 **So no attribution comment was owed and none was written.** All 11 lines of the hook test
 suite's head-room named in the dispatch survive this task, and
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`
+`260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`
 is neither closed nor worsened.
 
 ## Golden regenerated
@@ -152,7 +152,7 @@ that. The residual is the plan's own: an instruction placed at the writer is ove
 task pressure.
 
 One record is left open by design and is named here so it is not mistaken for an oversight.
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
+`260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
 held its C06 half open pending the answer to finding A2. That answer is now given, and the
 answer keeps the profile clause where it is, so the rename that record proposes is now
 unblocked. It is a profile edit, which this task was forbidden to make, so the record stays
@@ -164,5 +164,5 @@ Both issue records were closed `_o_` -> `_c_` with a `Resolved:` note, edited on
 
 - `/Users/k1/Projects/productive/fusion/rules/user-facing-output.md`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/rules-emission.golden`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_c_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2251_c_the-rules-blacklist-gloss-names-three-part-lists-while-ai04-now-governs-enumeration.md`
+- `/Users/k1/Projects/productive/fusion/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
+- `/Users/k1/Projects/productive/fusion/260821-2251_*_the-rules-blacklist-gloss-names-three-part-lists-while-ai04-now-governs-enumeration.md`

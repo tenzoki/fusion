@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260804-1205-shell-reachability-model`
+**Circle:** `260804-1205-shell-reachability-model`
 **Plan step:** 2 (follow-up to the second diagram evaluation)
 **Committed:** nothing — the user asked for measurement plus a fix, no commit.
 
@@ -43,7 +43,7 @@ stack and `spanIsPipelineElement`.
 The design question the evaluation posed — does the subshell fact reach every segment of a
 compound element, or only the segment the operator touches — is answered by neither, and
 the answer is forced rather than chosen. Recorded in
-`decisions/260807-0250_i_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md`
+`260807-0250_*_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md`
 with the three shell rows that force each clause. In short: the fact is a property of the
 ELEMENT and lands at its closing boundary; the interior keeps its ordinary edges because
 inside the subshell the directory change is real (`{ cd rules; rm x.md; } | cat` deletes
@@ -83,10 +83,10 @@ byte for byte and keep their relative order, and the file only grows.
 
 ## Filed
 
-- `decisions/260807-0250_i_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md`
-- `issues/260807-0251_o_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
+- `260807-0250_*_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md`
+- `260807-0251_*_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
   — must land before step 3
-- `issues/260807-0252_o_joinerfacts-claims-a-pessimism-for-the-pipe-row-that-the-row-itself-does-not-carry.md`
+- `260807-0252_*_joinerfacts-claims-a-pessimism-for-the-pipe-row-that-the-row-itself-does-not-carry.md`
   — no live hole, but step 3's table author is the one who would be misled
 
 ## Files touched

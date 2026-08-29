@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Source:** `fusion-workbench/shared/issues/260810-0458_o_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md`
+**Source:** `260810-0458_*_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md`
 **Verification:** `cd hooks && npm test` — exit 0 (39 files, 1040 tests)
 
 ## What was wrong

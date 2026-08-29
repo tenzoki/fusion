@@ -39,7 +39,7 @@
 # wired into `npm test`. A file 30x over the ceiling exits 0, the same as a file
 # under it. The precedent is the pair of reporting programs that already carry
 # this rule, bin/fusion-staging-drift and bin/fusion-review-coverage, whose
-# headers give the reason (issue 260810-0710): a check that hands its verdict to
+# headers give the reason (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md): a check that hands its verdict to
 # an exit code teaches its reader to ignore that code. The verdict column is for
 # a human, and the decision about what to do with an `over` belongs to whoever
 # reads it.
@@ -121,7 +121,7 @@
 # authority is this program. Every figure in this paragraph is as of revision
 # fac97f4, the commit that wrote it; the corpus has been edited since and a
 # reader who re-runs the comparison at HEAD gets different numbers (issue
-# 260822-0119 records the drift, and that 617 did not reproduce at fac97f4
+# 260822-0119_*_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md records the drift, and that 617 did not reproduce at fac97f4
 # either, where the program read 614). Measured then against that table over
 # the six files `fusion-rules coder` emits, all six em-dash counts and five of
 # the six word counts reproduced exactly. The sixth was chat-voice-de.yaml,

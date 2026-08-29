@@ -26,7 +26,7 @@ The guard's stated intent (`hooks/lib/self-detect.ts:3-9`) is to stop agents mod
 
 Two candidate resolutions, both one-line: add `.claude/rules/**` to `protectedPaths`, or state deliberately why the two roots are treated differently and document it in `README-hooks.md`. The first appears correct; the second is only right if there is a reason nobody has written down.
 
-Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 3).
+Filed by: analyst, from `260801-1020-normative-surface-drift-gap-analysis.md` (Question 3).
 
 ---
 Resolved (260809-1942, coder — marker left at `_p_`, the dispatch withheld the rename; the
@@ -38,8 +38,8 @@ resolutions. `.claude/rules/**` now sits next to `rules/**` on the shipped
 the shipped documents or the workbench records argues that the two rule roots should be
 treated differently. What exists says the opposite, twice: the analysis this record was
 filed from calls it "a defect surfaced while checking this"
-(`shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`, Question 3), and the
-answered decision `shared/decisions/260801-1020_i_may-any-fusion-writer-touch-rules.md`
+(`260801-1020-normative-surface-drift-gap-analysis.md`, Question 3), and the
+answered decision `260801-1020_*_may-any-fusion-writer-touch-rules.md`
 records it under Constraints as a defect that "should be fixed independently", noting that
 fixing it narrows the appeal of trimming `protectedPaths`. `hooks/lib/rules-write-exemption.ts`
 carried `.claude/rules/**` in `RULE_DIR_PATTERNS` from the day the flag shipped, naming this
@@ -68,4 +68,4 @@ the entry itself; `README-hooks.md` now says so under "Per-project configuration
 
 One statement was made false and is filed rather than absorbed, per the queue's scope note:
 `rules/protected-path-discipline.md:11` enumerates the shipped list as eight entries
-(`shared/issues/260809-1942_o_protected-path-discipline-enumerates-the-shipped-list-and-now-omits-one-entry.md`).
+(`260809-1942_*_protected-path-discipline-enumerates-the-shipped-list-and-now-omits-one-entry.md`).

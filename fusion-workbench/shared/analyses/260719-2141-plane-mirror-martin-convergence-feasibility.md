@@ -157,17 +157,17 @@ D1 does not need to be overturned, and should not be. The user's protected invar
 
 None. Two decision records filed instead (the open choices are "decide and record", not "go fix it"):
 
-- `shared/decisions/260719-2141_o_plane-rolle-push-only-vs-bounded-readback-martin.md` — does the mirror stay push-only or gain a bounded seeding read to converge with Martin? Refines (does not edit) D1.
-- `shared/decisions/260719-2141_o_concurrency-worktree-slots-vs-single-active-circle.md` — how does a Martin-style multi-story user run fusion, given single-active-Circle + no concurrency lock?
+- `260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md` — does the mirror stay push-only or gain a bounded seeding read to converge with Martin? Refines (does not edit) D1.
+- `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` — how does a Martin-style multi-story user run fusion, given single-active-Circle + no concurrency lock?
 
 ## Sources
 
 - `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md` (primary — verified running integration): Plane sync mechanism `:62-119`, `states/` runtime resolution `:66-69`, issue-links + `sequence_id` lookup `:104-119`, worktree slots `:138-165`, lifecycle Backlog→Done `:71-136`, the two skills `/new-fe-feature` `:146-159` and `/finish-fe-feature` `:121-136`.
-- `circles/260719-1536-plane-mirror-integration/_a_circle.md` — anticipated Circle, Directive `:12-14`, known Plane facts `:26`.
-- `circles/260716-1847-workbench-umbau/planning/260716-1847_o_spec-plane-integration-und-workbench-struktur.md` — C3/C4 `:98-119`, Pages-unreachable + rate-limit constraints `:66,:121-128`, Open for Planner `:138-146`.
-- `shared/decisions/260716-1847_a_plane-rolle-source-of-truth.md` — D1 answered "mirror / push-only" `:44-49`.
-- `shared/decisions/260716-1847_a_offline-verhalten-bei-plane-ausfall.md` — D3 "keep working, rebuild from files, never silent" `:25-27,:52`.
-- `circles/260716-1847-workbench-umbau/decisions/260716-1847_a_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` — D4 two Circles.
+- `260719-1536-plane-mirror-integration` — anticipated Circle, Directive `:12-14`, known Plane facts `:26`.
+- `260716-1847_*_spec-plane-integration-und-workbench-struktur.md` — C3/C4 `:98-119`, Pages-unreachable + rate-limit constraints `:66,:121-128`, Open for Planner `:138-146`.
+- `260716-1847_*_plane-rolle-source-of-truth.md` — D1 answered "mirror / push-only" `:44-49`.
+- `260716-1847_*_offline-verhalten-bei-plane-ausfall.md` — D3 "keep working, rebuild from files, never silent" `:25-27,:52`.
+- `260716-1847_*_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` — D4 two Circles.
 - `rules/fusion-workbench-conventions.md` — Circle markers `:298-347`, single-active-Circle pointer `:62`; `CLAUDE.md` — no concurrency lock, advisory single orchestrator.
 
 ## Open Questions

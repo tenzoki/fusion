@@ -57,7 +57,7 @@ reasoning `260801-2038` records about prompt-only fixes.
    loses to task pressure, which is how this happened.
 3. **Accept that a release may go out over an unreviewed range, and say so.**
    That is already an open question and it has a home:
-   `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+   `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
    is the same shape one layer up. If the answer there is yes, this record closes
    as intended behaviour rather than as a defect.
 
@@ -70,7 +70,7 @@ The review's findings, when they arrive, belong in a follow-up release; this
 record is about the ordering, not about whatever the review turns out to say.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `CLAUDE.md` `## Release process` step 0 still carries only the validate gate, the smoke test and the guard-testing caution. `bin/fusion-review-coverage` exists but its own header states it is not a release gate, so it names the gap rather than closing it. The same failure recurred at v10.0.0, tracked in `circles/260816-1741-guard-becomes-observation-only/issues/260817-1417_*_the-release-went-out-over-a-turn-…`. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `CLAUDE.md` `## Release process` step 0 still carries only the validate gate, the smoke test and the guard-testing caution. `bin/fusion-review-coverage` exists but its own header states it is not a release gate, so it names the gap rather than closing it. The same failure recurred at v10.0.0, tracked in `260817-1417_*_the-release-went-out-over-a-turn-…`. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Resolved: fixed — release step 0 now says to run `bin/fusion-review-coverage --since <previous tag>` and state the result before tagging, advisory per `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` option 1; `CLAUDE.md:87`
+Resolved: fixed — release step 0 now says to run `bin/fusion-review-coverage --since <previous tag>` and state the result before tagging, advisory per `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` option 1; `CLAUDE.md:87`

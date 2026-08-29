@@ -1,8 +1,8 @@
 # ontocoder: repair dangling citations after the marker moves (plan steps 3 and 5 follow-up)
 
 **Status:** Complete
-**Circle:** circles/260824-1853-close-every-open-defect
-**Plan:** circles/260824-1853-close-every-open-defect/planning/260824-1905_p_plan-close-every-open-defect.md
+**Circle:** 260824-1853-close-every-open-defect
+**Plan:** 260824-1905_*_plan-close-every-open-defect.md
 
 ## What was done
 
@@ -10,10 +10,10 @@
 
 | File | Line(s) |
 |---|---|
-| `circles/260801-1244-rule-provenance-header/_c_circle.md` | 34 |
-| `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md` | 455, 461, 509, 513, 515 |
-| `shared/issues/260819-0822_*_the-fifth-source-root-call-site-drops-the-diagnostic-four-siblings-carry-and-reopens-a-closed-defect.md` | 66 |
-| `shared/issues/260822-0119_*_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md` | 9 |
+| `260801-1244-rule-provenance-header` | 34 |
+| `260820-2249_*_spec-style-rules-arrive-and-get-measured.md` | 455, 461, 509, 513, 515 |
+| `260819-0822_*_the-fifth-source-root-call-site-drops-the-diagnostic-four-siblings-carry-and-reopens-a-closed-defect.md` | 66 |
+| `260822-0119_*_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md` | 9 |
 
 The lint named nothing that was not a stale-marker citation.
 

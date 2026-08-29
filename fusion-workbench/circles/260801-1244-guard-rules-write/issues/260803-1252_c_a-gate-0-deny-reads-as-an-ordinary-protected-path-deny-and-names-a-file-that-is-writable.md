@@ -4,11 +4,11 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coder, closing `260802-2330` (T3-1) in `circles/260801-1244-guard-rules-write`
+**Filed by:** coder, closing `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` (T3-1) in `260801-1244-guard-rules-write`
 **Affects:** `hooks/guard.ts` CHECK 2 (the deny reason), `guardBashCommand` STEP 2 (same),
 `rules/protected-path-discipline.md` and `README-hooks.md` (the agent-facing explanation)
 **Cross-references:** `hooks/lib/rules-write-exemption.ts` `## Gate 0`,
-`260802-2330_c_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`,
+`260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`,
 `rules/git-branch-discipline.md` (the rule written to prevent exactly this failure)
 
 ---
@@ -84,7 +84,7 @@ not read as "spell it differently and it will go through", which is what the gua
 protected-path discipline is written against.
 
 ---
-Resolved: candidate direction 1, by the same mechanism that closed `260802-2332` — one
+Resolved: candidate direction 1, by the same mechanism that closed `260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md` — one
 diagnostic serving both gates, filed as T3-2 rather than split. The exemption now reports
 WHICH gate refused (`rulesWriteRefusal`), and each surface appends the matching sentence to
 its deny reason.
@@ -118,6 +118,6 @@ planted `rules/up`), because that is the path the protection side matched and re
 would mean the deny reason and the protected-list match disagree. What changed is that the
 reader is no longer left with only that string: the refusal sentence tells them a `..` was
 the cause. Whether the deny should name the kernel-resolved target is a protection-side
-question, on the same ground as `260803-1251_o_fs-locator-collapses-dotdot-lexically-…`.
+question, on the same ground as `260803-1251_*_fs-locator-collapses-dotdot-lexically-…`.
 
-Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
+Session: `260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`

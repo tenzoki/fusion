@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** 10 · `I:260811-1734c`
-**Closes:** `shared/issues/260811-1712_c_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
+**Closes:** `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
 **Baseline:** `bb9d66d`
 
 ## What was wrong

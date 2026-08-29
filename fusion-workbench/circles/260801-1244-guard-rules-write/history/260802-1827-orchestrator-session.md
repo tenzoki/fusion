@@ -1,6 +1,6 @@
-# Orchestrator Session — 260802-1827
+# Orchestrator Session — 260802-1827-orchestrator-session.md
 
-**Directive:** A consuming project can permit rule-file writes on purpose, for one session, and see every write that happened only because it did. `FUSION_ALLOW_RULES_WRITE` exempts the project's rule directories and the `retired/` destination inside them, and nothing else; setting it does not turn the guard off and does not clear an active halt; every exempted write emits a `guard_advisory` event and a `clear`-level escalation entry. Alongside the flag, the guard stops sharing one protected-path list across every project on an install: it reads a git-tracked configuration at the project root first, then the plugin's `hooks/config.json`, then the in-code defaults, merging per top-level key. A hardcoded floor keeps the configuration file itself protected regardless of what it says. (Source: `circles/260801-1244-guard-rules-write/_t_circle.md` `## Directive`; capabilities C5a and C5b of `shared/planning/260801-1122_o_spec-normative-consolidation.md`.)
+**Directive:** A consuming project can permit rule-file writes on purpose, for one session, and see every write that happened only because it did. `FUSION_ALLOW_RULES_WRITE` exempts the project's rule directories and the `retired/` destination inside them, and nothing else; setting it does not turn the guard off and does not clear an active halt; every exempted write emits a `guard_advisory` event and a `clear`-level escalation entry. Alongside the flag, the guard stops sharing one protected-path list across every project on an install: it reads a git-tracked configuration at the project root first, then the plugin's `hooks/config.json`, then the in-code defaults, merging per top-level key. A hardcoded floor keeps the configuration file itself protected regardless of what it says. (Source: `260801-1244-guard-rules-write` `## Directive`; capabilities C5a and C5b of `260801-1122_*_spec-normative-consolidation.md`.)
 **Mode:** custom (Circle Directive with a Final spec, no implementation plan yet)
 **Status:** In progress
 
@@ -12,7 +12,7 @@
 | Plugin version | 5.8.0 |
 | Git HEAD at start | c7f117b |
 | Domain | `code` |
-| Active Circle | `circles/260801-1244-guard-rules-write` (activated 260802-1827) |
+| Active Circle | `260801-1244-guard-rules-write` (activated 260802-1827-orchestrator-session.md) |
 | Circle stores | created at Setup — the Circle held only its record |
 | Predecessor | `260801-1244-rule-provenance-header`, closed coherent at `060859b` earlier today |
 | Dependency | `260801-1244-guard-bash-inspection`, closed. Met. |

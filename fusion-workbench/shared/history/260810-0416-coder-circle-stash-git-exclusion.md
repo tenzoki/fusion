@@ -116,6 +116,6 @@ Both belong in the deliberate regeneration at the end of the session.
   `_o_` marker, which `reference-resolution-lint` fails once the record closes. Rewritten to
   the `_*_` wildcard form, and the sentence's tense follows the record's state.
 - `fusion-workbench/tasklist.md` (task 5 closed)
-- `fusion-workbench/shared/issues/260717-0030_c_git-stash-include-untracked-can-sweep-the-stash-directory.md` (resolved, `_o_` → `_c_`)
+- `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md` (resolved, `_o_` → `_c_`)
 
 Not committed — the orchestrator stages and commits.

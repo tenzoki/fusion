@@ -5,8 +5,8 @@ All three Turn-log ranges drop their own first commit, which is the range-spelli
 **Severity:** Medium
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 4 (`a2a18f9..2ec2bc2`)
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/_t_circle.md:60-62` (`## Turn log`), all three entries
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1318-coderev-c2-turn-2.md:10`, where the identical fault was caught and corrected inside this Circle; `shared/issues/260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`, the record behind the `**Reviewed-range:**` mandate that fixed the same class for review files
+**Affects:** `260823-0023-settle-what-travels-between-checkouts:60-62` (`## Turn log`), all three entries
+**Cross-references:** `260823-1318-coderev-c2-turn-2.md:10`, where the identical fault was caught and corrected inside this Circle; `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`, the record behind the `**Reviewed-range:**` mandate that fixed the same class for review files
 
 ---
 
@@ -36,7 +36,7 @@ The corrected spellings tile exactly: 10 + 6 + 3 = 19 = `git rev-list --count 3e
 
 ## This is a repeat, inside the same Circle
 
-`reviews/260823-1318-coderev-c2-turn-2.md:10`:
+`260823-1318-coderev-c2-turn-2.md:10`:
 
 > the dispatch named the span `e41393e..b8a4c1a` and listed `e41393e` among its six commits. Written that way the exclusive-from form leaves `e41393e` untiled, and `bin/fusion-review-coverage` reports it uncovered. The header therefore spells the same six commits as `2f1e3a6..b8a4c1a`.
 
@@ -76,4 +76,4 @@ detail over-counts by one, in the same direction the Turn log used to. It is a m
 string in an append-only log, not a tracking claim, and nothing reads it for a total. Recorded here
 rather than filed.
 
-Closed by reconciler, second Coherence pass, 260823-2130.
+Closed by reconciler, second Coherence pass, 260823-2130-reconciliation.md.

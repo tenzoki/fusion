@@ -3,7 +3,7 @@
 **Date:** 2026-08-15 00:07
 **Agent:** shaper (anticipated-circle mode)
 **Status:** Complete
-**Circle created:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/`
+**Circle created:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
 
 ---
 
@@ -12,18 +12,18 @@
 Two backlog entries, promoted together on the user's instruction because the second declares
 itself a sub-step of the first in its own `**Related:**` line:
 
-- `shared/backlog/260814-1733_*_radical-simplification.md` — the user's twice-asked question of
+- `260814-1733_*_radical-simplification.md` — the user's twice-asked question of
   whether fusion has become a token- and time-eating monster that only circles itself, and along
   which axis it could be radically simplified.
-- `shared/backlog/260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md` —
+- `260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md` —
   the measured observation that the eight administrative names are two entry points and six
   components, three of which are already steps of `cleanup` while also carrying their own slash
   name.
 
 Both were single-idea entries, so both were promoted whole and closed at Circle creation: marker
 renamed to `_c_`, one `Promoted:` line appended to each, in the same command as the creation. The
-two neighbouring entries, `260814-1733_o_attach-the-rule-to-the-act.md` and
-`260814-1733_o_bounded-executor-dispatches.md`, were left untouched.
+two neighbouring entries, `260814-1733_*_attach-the-rule-to-the-act.md` and
+`260814-1733_*_bounded-executor-dispatches.md`, were left untouched.
 
 ## Clarification
 
@@ -54,7 +54,7 @@ and that the skill body's *no per-step confirmation gates* sentence becomes fals
 rewritten. That much is recorded as settled in the Grounding snapshot. What they do not determine
 is whether the gate blocks the run or files a ledger for later approval, and both readings satisfy
 every answer given. That residual is filed as an open decision inside the Circle,
-`decisions/260815-0007_o_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`,
+`260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`,
 cited from `## Dependencies`, with a recommendation carried at low confidence and the fact that
 would decide it named as not established.
 
@@ -63,14 +63,14 @@ would decide it named as not established.
 The armed growth bound was found on disk and is not in either analysis. Commit `5c843e6` of
 2026-08-14 armed a failing bound over the always-on rule corpus in
 `hooks/lib/__tests__/rules-emission-golden.test.ts`, under decision
-`circles/260801-1244-curator/decisions/260814-0738_i_...`. Lever (a) is therefore an extension of
+`260814-0738_*_...`. Lever (a) is therefore an extension of
 a working instrument to three uncovered surfaces, not a fresh build, and the Grounding says so.
 Without that, the Circle would have re-specified an arming that already happened.
 
 Two open records were identified as retired rather than answered by this Circle's removals and
 are cited in `## Dependencies`:
-`shared/issues/260810-0326_*_setup-must-seed-claude-settings...` (closed by folding `unlock` into
-Setup) and `shared/issues/260812-0254_*_should-the-investigator-get-case-folders...` (moot once
+`260810-0326_*_setup-must-seed-claude-settings...` (closed by folding `unlock` into
+Setup) and `260812-0254_*_should-the-investigator-get-case-folders...` (moot once
 the investigator folds into the analyst).
 
 The count was also corrected. The first analysis numbers its list 1 to 8 and `conceptrev` was
@@ -80,8 +80,8 @@ reader does not correct the number in the wrong direction.
 
 ## Artifacts
 
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_a_circle.md`
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_o_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`
+- `260815-0007-remove-eight-mechanisms-and-cap-growth`
+- `260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`
 - the six artifact subdirectories
 - both backlog entries closed with a `Promoted:` line
 

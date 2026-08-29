@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** reconciler
-**Cross-references:** `circles/260816-1741-guard-becomes-observation-only/issues/260817-1417_c_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md` (the case, closed on its own option 2, with this half explicitly undischarged); `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` (the adjacent answered question: coverage is advisory, and its option 3 is unimplemented)
+**Cross-references:** `260817-1417_*_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md` (the case, closed on its own option 2, with this half explicitly undischarged); `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` (the adjacent answered question: coverage is advisory, and its option 3 is unimplemented)
 
 ---
 
@@ -85,18 +85,18 @@ question has no partial answer standing in for it either. Marker stays `_o_`.
 unanswered. Searched: no analysis in `shared/analyses/` addresses plan-stated preconditions — the
 one report this session added is on identifier containment; no planning file names
 `## Where this Circle stops` as a subject; no other decision record answers it. The adjacent
-`260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` is still
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` is still
 answered-but-unrealised — its option 3, filtering the uncovered set to commits touching shipped
 files, is absent from `hooks/lib/review-coverage.ts` at HEAD, which this session's own
 `verdict=uncovered` over `f3a3565` demonstrates. Marker stays `_o_`.
-Log: `shared/history/260818-0814-reconciliation.md`.
+Log: `260818-0814-reconciliation.md`.
 
 ---
-Answered: shared/history/260818-2301-orchestrator-session.md — user chose option 2 (2026-08-18), with option 1's honesty applied to it: the orchestrator reads `## Where this Circle stops` aloud at Phase 4, before the closure transition, and asks whether each clause holds; `agents/planner.md` states in that section that the human at this gate is the whole of the enforcement. No parser, no structured field, no new shipped mechanism. Option 3 stays available if option 2 is measured and misses.
+Answered: 260818-2301-orchestrator-session.md — user chose option 2 (2026-08-18), with option 1's honesty applied to it: the orchestrator reads `## Where this Circle stops` aloud at Phase 4, before the closure transition, and asks whether each clause holds; `agents/planner.md` states in that section that the human at this gate is the whole of the enforcement. No parser, no structured field, no new shipped mechanism. Option 3 stays available if option 2 is measured and misses.
 
 **Realisation fork, answered by the user 2026-08-18 in the same session.** Both option texts above
 assume `agents/planner.md` already carries a `## Where this Circle stops` section to amend. It does
-not (`shared/issues/260818-2343_o_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md`).
+not (`260818-2343_*_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md`).
 Asked which realisation the answer means, the user chose to **add the section to the plan output
 format** and then amend it as option 2 describes, rather than making the Phase-4 step conditional on
 a section a plan may or may not carry. Every plan therefore carries the section, and the Phase-4
@@ -106,4 +106,4 @@ step always has something to read.
 Implemented: `agents/planner.md` and `agents/orchestrator.md` — the plan output format gained `## Where this Circle stops`, with a paragraph beside the `**Decidability:**` one stating that nothing reads the section mechanically and naming the measured failure; `### Phase 4 — Portfolio sync` gained step 2b, which reads the section aloud clause by clause and asks the user before the closure rename, emitting the existing `gate_hit` / `gate_response` rather than a new event type. The realisation fork recorded above was taken as the user chose it: the section is part of the template, so the Phase-4 step always has something to read. Cost 2 571 bytes of the 6 640 head-room on `agents/`.
 
 ---
-**Reconciliation 260819-0840** (reconciler, domain `code`, HEAD `83488e9`). The `Implemented:` note verifies. `agents/planner.md:131` carries `## Where this Circle stops` in the plan output format, and `:160` is the paragraph beside the `**Decidability:**` one, stating "**Nothing reads it mechanically.**" and "Its whole enforcement is a human answering the orchestrator's question at Phase 4" — option 1's honesty applied to option 2, as the answer specifies. `agents/orchestrator.md:865` is Phase 4 step 2b, placed before the closure rename at step 3, with the four-way do-nothing antecedent added in `06ab15b`; `:867` fixes the reason string at `Circle stop conditions` and one `gate_response` per clause, so option 3's trigger measurement is a grep over the append-only event log. No new event type was added. One residue is filed and open: `agents/planner.md:160` extends the section to plans with no Circle active, whose only stated reader is a Phase 4 that runs solely on a Circle closure (`shared/issues/260819-0828_o_the-stopping-section-is-made-mandatory-for-plans-whose-only-stated-reader-never-runs.md`). Marker stays `_i_`. Log: `shared/history/260819-0840-reconciliation.md`.
+**Reconciliation 260819-0840-reconciliation.md** (reconciler, domain `code`, HEAD `83488e9`). The `Implemented:` note verifies. `agents/planner.md:131` carries `## Where this Circle stops` in the plan output format, and `:160` is the paragraph beside the `**Decidability:**` one, stating "**Nothing reads it mechanically.**" and "Its whole enforcement is a human answering the orchestrator's question at Phase 4" — option 1's honesty applied to option 2, as the answer specifies. `agents/orchestrator.md:865` is Phase 4 step 2b, placed before the closure rename at step 3, with the four-way do-nothing antecedent added in `06ab15b`; `:867` fixes the reason string at `Circle stop conditions` and one `gate_response` per clause, so option 3's trigger measurement is a grep over the append-only event log. No new event type was added. One residue is filed and open: `agents/planner.md:160` extends the section to plans with no Circle active, whose only stated reader is a Phase 4 that runs solely on a Circle closure (`260819-0828_*_the-stopping-section-is-made-mandatory-for-plans-whose-only-stated-reader-never-runs.md`). Marker stays `_i_`. Log: `260819-0840-reconciliation.md`.

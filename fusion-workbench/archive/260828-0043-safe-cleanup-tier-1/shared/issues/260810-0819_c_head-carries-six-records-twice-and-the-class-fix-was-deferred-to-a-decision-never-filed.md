@@ -4,9 +4,9 @@
 
 **Severity:** Medium (no data loss on disk; the git-tracked workbench is internally contradictory, and a marker glob at HEAD returns the wrong open set — 52 instead of 46)
 **Domain:** code
-**Filed by:** reconciler, Phase 3 pass of orchestrator session `260810-0241`
+**Filed by:** reconciler, Phase 3 pass of orchestrator session `260810-0241-orchestrator-session.md`
 **Affects:** commits `c923935`, `3df0c17`, `dd50efd`; `fusion-workbench/shared/issues/`; any consumer that reads the workbench out of git rather than off disk
-**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-1941_*_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md` (the same defect, closed 260807 for three records); `shared/history/260810-0819-reconciliation.md`
+**Cross-references:** `archive/260817-1907-safe-cleanup-scoped/260807-1941_*_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md` (the same defect, closed 260807 for three records); `260810-0819-reconciliation.md`
 
 ---
 
@@ -17,12 +17,12 @@ staged, the old one was not. HEAD therefore carries six records under two names 
 
 | Record | `_c_` twin added by |
 |---|---|
-| `260810-0456_…fusion-plane-dry-run-rewrites-the-map…` | `c923935` |
-| `260810-0457_…rebuild-map-drops-a-colliding-plane-uuid…` | `c923935` |
-| `260810-0500_…the-queue-retirement-writes-through-unchecked-resolver-values…` | `3df0c17` |
-| `260810-0743_…map-put-reports-success-on-a-failed-write…` | `dd50efd` |
-| `260810-0744_…map-view-s-cache-and-cleanup-die-in-the-subshell…` | `dd50efd` |
-| `260810-0750_…an-unreadable-record-yields-an-empty-plane-comment…` | `dd50efd` |
+| `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md_…fusion-plane-dry-run-rewrites-the-map…` | `c923935` |
+| `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md_…rebuild-map-drops-a-colliding-plane-uuid…` | `c923935` |
+| `260810-0500_*_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md_…the-queue-retirement-writes-through-unchecked-resolver-values…` | `3df0c17` |
+| `260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md_…map-put-reports-success-on-a-failed-write…` | `dd50efd` |
+| `260810-0744_*_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md_…map-view-s-cache-and-cleanup-die-in-the-subshell…` | `dd50efd` |
+| `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md_…an-unreadable-record-yields-an-empty-plane-comment…` | `dd50efd` |
 
 Measured at HEAD `dd50efd`:
 
@@ -73,7 +73,7 @@ The first command prints the six duplicated stems; the second shows six unstaged
       left standing for a third recurrence.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). The instance is gone and the class is not. `git ls-tree -r --name-only HEAD -- fusion-workbench/shared/issues | grep -c _o_` and `ls fusion-workbench/shared/issues | grep -c _o_` agree at HEAD, so no record is carried twice. The class fix is still absent: `rules/fusion-workbench-conventions.md` `## State Markers` still says only "State change = `mv` (rename)" with no `git mv` or stage-both-halves convention, and no decision record on marker-rename staging exists in any decision store. This pass reproduced the failure mode while making its own renames — two marker renames show as a delete plus an untracked file in `git status`, not as renames. Marker stays open on the class.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). The instance is gone and the class is not. `git ls-tree -r --name-only HEAD -- fusion-workbench/shared/issues | grep -c _o_` and `ls fusion-workbench/shared/issues | grep -c _o_` agree at HEAD, so no record is carried twice. The class fix is still absent: `rules/fusion-workbench-conventions.md` `## State Markers` still says only "State change = `mv` (rename)" with no `git mv` or stage-both-halves convention, and no decision record on marker-rename staging exists in any decision store. This pass reproduced the failure mode while making its own renames — two marker renames show as a delete plus an untracked file in `git status`, not as renames. Marker stays open on the class.
 
 ---
-Resolved: referred (decision) — the instance is gone at HEAD, and the class, how a marker rename is performed and staged and by whom, is the decision's question that 260807-1941 deferred; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md
+Resolved: referred (decision) — the instance is gone at HEAD, and the class, how a marker rename is performed and staged and by whom, is the decision's question that 260807-1941 deferred; 260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md

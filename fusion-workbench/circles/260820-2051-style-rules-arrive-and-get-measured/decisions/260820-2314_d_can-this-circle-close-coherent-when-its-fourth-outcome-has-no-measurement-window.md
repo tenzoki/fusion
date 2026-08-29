@@ -3,14 +3,14 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`
+**Cross-references:** `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `260820-2308-assessment-of-the-style-rules-spec.md`
 
 ---
 
 ## Question
 
 The Circle's Directive names four outcomes. The fourth is that
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 comes to carry a measured number where it has carried an untested inference since 2026-08-16.
 
 The measurement compares a pre-repair window of session prose against a post-repair window. Its own

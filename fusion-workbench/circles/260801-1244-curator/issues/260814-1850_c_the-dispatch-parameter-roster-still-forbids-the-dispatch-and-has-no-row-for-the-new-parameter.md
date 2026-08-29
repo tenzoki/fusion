@@ -61,7 +61,7 @@ the corpus. `npm test` is green at HEAD (49 files, 1 030 tests).
 
 **Scope.** `README-agents.md` only. Executor: `coder`.
 
-**Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+**Filed by:** coderev, review `260814-1850-coderev-curator-turn-4.md`.
 
 ---
 Resolved: 9f4cdac. Both cells in `README-agents.md` `## Dispatch parameters` now name the

@@ -4,9 +4,9 @@ The C05 cut traded self-contained text for citations on a surface no gate reads,
 
 **Severity:** Medium
 **Domain:** data
-**Filed by:** ontorev, reviewing step 4 of plan `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Filed by:** ontorev, reviewing step 4 of plan `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Affects:** `stilwerk/chat-voice-en.yaml:46-54`, `stilwerk/chat-voice-de.yaml:47-55`, and both `fusion-workbench/stilwerk/` copies
-**Cross-references:** `shared/issues/260818-1637_o_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md` — a different hole in the same gate, about `:N` suffixes rather than about which files are read
+**Cross-references:** `260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md` — a different hole in the same gate, about `:N` suffixes rather than about which files are read
 
 ---
 
@@ -75,7 +75,7 @@ One of three, and they are mutually exclusive on the spelling:
    bare filename is not a path and the gate has nothing left to resolve.
 
 ---
-Also seen: 260821-2210 by coderev — reached the same finding independently from the shipped-rule side; `surface()` in `hooks/lib/__tests__/reference-resolution-lint.test.ts` walks no `.yaml`, so the four C05 pointers and C04's older `## Length` pointer are the only citations this Circle added that no gate resolves. No second record filed.
+Also seen: 260821-2210-ontorev-two-register-habits-in-the-four-chat-voice-profiles.md by coderev — reached the same finding independently from the shipped-rule side; `surface()` in `hooks/lib/__tests__/reference-resolution-lint.test.ts` walks no `.yaml`, so the four C05 pointers and C04's older `## Length` pointer are the only citations this Circle added that no gate resolves. No second record filed.
 
 ---
 **Reconciliation 260821-2349** (reconciler, HEAD `9a68760`). **Confirmed open, unchanged, and all
@@ -131,7 +131,7 @@ tests, exit 0. The `reference-resolution-lint` baseline `{ paths: 1258, anchors:
 116 }` is unmoved, which is the expected result of removing tokens from a surface it never walked.
 
 **Route 2 is not taken and is now partly moot.** This Circle's decision
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md`
+`260821-1108_*_which-surfaces-may-this-circle-change.md`
 puts `hooks/` out of scope, and the hook test suite has 15 lines of head-room against its growth
 bound. Extending `surface()` to walk `stilwerk/*.yaml` remains the right long-term answer for the
 **profiles as a surface**, but no longer for these tokens: a bare filename is not a path and the
@@ -139,4 +139,4 @@ gate would have nothing to resolve. What route 2 would still buy is the guarante
 pointer added to a profile cannot go ungated. That belongs in a later Circle as its own record.
 
 ---
-Revised by: `circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0117_c_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md` — the argument above covered both anchors and reaches only C05's; C04's `## Length` is restored, so the "no `"##` token survives" half of the verification above no longer describes the tree. C05's removal, the bare-filename respelling and every other property verified above stand unchanged.
+Revised by: `260822-0117_*_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md` — the argument above covered both anchors and reaches only C05's; C04's `## Length` is restored, so the "no `"##` token survives" half of the verification above no longer describes the tree. C05's removal, the bare-filename respelling and every other property verified above stand unchanged.

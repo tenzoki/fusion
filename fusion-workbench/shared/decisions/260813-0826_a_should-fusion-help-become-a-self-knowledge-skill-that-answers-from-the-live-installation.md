@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (raised by the user)
-**Cross-references:** `skills/help/SKILL.md`; a defect record about the user-facing documentation lagging two releases and still describing a removed guard, cited here at the stamp `260813-0825` — no file with that slug has ever existed and the intended target is not recoverable, measured in `circles/260801-1244-curator/history/260814-1332-curator-run.md` and re-filed as a defect on 2026-08-19; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules`
+**Cross-references:** `skills/help/SKILL.md`; a defect record about the user-facing documentation lagging two releases and still describing a removed guard, cited here at the stamp `260813-0825` — no file with that slug has ever existed and the intended target is not recoverable, measured in `260814-1332-curator-run.md` and re-filed as a defect on 2026-08-19; `bin/fusion-source-root`; `bin/fusion-paths`; `bin/fusion-rules`
 
 ---
 
@@ -84,7 +84,7 @@ to the user's questions.
   the drift it exists to remove; it must call the helper and report, never paraphrase.
 - **A `bin/` helper may be absent from an installed copy.** Every prompt-called helper is guarded
   with `[ -x ]` and reports rather than failing (decision
-  `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…`,
+  `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…`,
   part b). A measuring help skill multiplies those call sites and inherits that obligation at each.
 - **`allowed-tools` is currently `[Read, Bash, Glob]`.** Options 2 and 3 stay inside it; nothing
   here needs a write tool, and the skill must not acquire one.
@@ -103,7 +103,7 @@ a question that is partly measurable.** Deciding that needs the analyst pass thi
 alongside, not an argument here.
 
 ---
-Answered: shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md `## Verdict` — the seam is statable and option 3 is implementable, but this record cut it at the wrong granularity. Classified by *question*, 17 of 47 land in the middle and the split fails `rules/critical-stance.md` §4; classified by *the assertion an answer is made of*, all 17 decompose, the middle is empty, and three named residuals each carry a one-sentence rule. The analysis adds a third tier this record was missing — text quoted from the artifact whose own behaviour it describes — which is what makes "what does the playmaker do" look mixed when it is not. It also parts company with this record's motivation: staleness is the weaker argument and one of its two measurements is a false positive, while the stronger argument, coverage, is one this record never made — 20 of the 47 questions are about the user's own installation, which shipped prose cannot answer at any freshness. Cost: four new guarded call sites, about 72 lines, taking the help body from 119 to roughly 191. Implementation is not yet planned; no Circle carries this.
+Answered: 260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md `## Verdict` — the seam is statable and option 3 is implementable, but this record cut it at the wrong granularity. Classified by *question*, 17 of 47 land in the middle and the split fails `rules/critical-stance.md` §4; classified by *the assertion an answer is made of*, all 17 decompose, the middle is empty, and three named residuals each carry a one-sentence rule. The analysis adds a third tier this record was missing — text quoted from the artifact whose own behaviour it describes — which is what makes "what does the playmaker do" look mixed when it is not. It also parts company with this record's motivation: staleness is the weaker argument and one of its two measurements is a false positive, while the stronger argument, coverage, is one this record never made — 20 of the 47 questions are about the user's own installation, which shipped prose cannot answer at any freshness. Cost: four new guarded call sites, about 72 lines, taking the help body from 119 to roughly 191. Implementation is not yet planned; no Circle carries this.
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker

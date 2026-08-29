@@ -1,10 +1,10 @@
 # Concept Evaluation: Implementation Plan — the shell reachability model (confirmation pass)
 
 **Date:** 2026-08-07 01:58
-**Target:** `fusion-workbench/circles/260804-1205-shell-reachability-model/planning/260806-2353_o_plan-shell-reachability-model.md` (revised 260807-0130)
+**Target:** `260806-2353_*_plan-shell-reachability-model.md` (revised 260807-0130-planner-plan-repair-after-conceptrev.md)
 **Verdict:** tangled
 **Diagrams evaluated:** 3  |  **Validation:** by-tool (`npx @mermaid-js/mermaid-cli`, all three blocks rendered)
-**Supersedes:** `reviews/260807-0002-conceptrev-plan-shell-reachability-model.md`
+**Supersedes:** `260807-0002-conceptrev-plan-shell-reachability-model.md`
 
 ## Verdict
 
@@ -180,6 +180,6 @@ S4 needs `{ cd build; } | cat && rm out.js` as its own denying case beside the
 
 **Reconciliation 260807-1515 (reconciler, Domain `code`) — Anmerkung, keine Änderung am Befund.**
 
-Der geprüfte Plan ist seit dieser Reconciliation `planning/260806-2353_c_plan-shell-reachability-model.md` mit Status `Superseded`: sein Gegenstand, der statische Klassifizierer, ist mit `ba7ccda` gelöscht und der Circle trägt seit 260807-0923 den Marker `_s_`. Die hier festgehaltenen Diagramm-Befunde sind damit nicht widerlegt, sondern gegenstandslos.
+Der geprüfte Plan ist seit dieser Reconciliation `260806-2353_*_plan-shell-reachability-model.md` mit Status `Superseded`: sein Gegenstand, der statische Klassifizierer, ist mit `ba7ccda` gelöscht und der Circle trägt seit 260807-0923-guard-misst-statt-orakelt den Marker `_s_`. Die hier festgehaltenen Diagramm-Befunde sind damit nicht widerlegt, sondern gegenstandslos.
 
-Ein Ergebnis dieser Prüfkette hat den Circle überlebt und ist die Begründung des Nachfolgers: die zweite Bewertung und die daran anschließende Messung fanden fünf Löcher im bereits genehmigten Entwurf, und diese Kette ist als Belegmaterial in `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` eingegangen. Aus derselben Erfahrung stammt der MECE-Abschnitt in `rules/critical-stance.md` (Commit `327d0b6`).
+Ein Ergebnis dieser Prüfkette hat den Circle überlebt und ist die Begründung des Nachfolgers: die zweite Bewertung und die daran anschließende Messung fanden fünf Löcher im bereits genehmigten Entwurf, und diese Kette ist als Belegmaterial in `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` eingegangen. Aus derselben Erfahrung stammt der MECE-Abschnitt in `rules/critical-stance.md` (Commit `327d0b6`).

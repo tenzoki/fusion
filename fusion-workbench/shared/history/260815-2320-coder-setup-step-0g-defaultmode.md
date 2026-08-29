@@ -3,7 +3,7 @@
 **Stamp:** 260815-2320
 **Agent:** coder
 **Status:** Complete
-**Source record:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_c_setup-step-0g-silently-replaces-a-project-s-existing-defaultmode.md`
+**Source record:** `260815-1633_*_setup-step-0g-silently-replaces-a-project-s-existing-defaultmode.md`
 **Files changed:** `skills/setup/SKILL.md`
 
 ## What the defect was

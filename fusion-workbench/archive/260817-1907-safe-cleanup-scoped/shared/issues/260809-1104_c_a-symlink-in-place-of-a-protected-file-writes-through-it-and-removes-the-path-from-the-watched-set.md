@@ -7,7 +7,7 @@
 **Filed by:** analyst, during the guard-enforced-policies analysis
 **Affects:** `hooks/lib/protected-snapshot.ts` (`enumerateProtected`, `fingerprint`, `restore`), `hooks/tracker.ts` (`measureProtectedPaths`)
 **Cross-references:**
-`fusion-workbench/shared/analyses/260809-1103-guard-enforced-policies.md` §Findings 2c-1 (the measurement),
+`260809-1103-guard-enforced-policies.md` §Findings 2c-1 (the measurement),
 `rules/protected-path-discipline.md` `## The route to the file does not matter` (the claim this falsifies),
 `hooks/lib/protected-snapshot.ts:182-197` (the symlink boundary the module does state, which covers enumeration and not the restore)
 
@@ -100,14 +100,14 @@ as `modified` rather than as deleted or as unchanged; `enumerateProtected` keeps
 symlinked *files* in the watched set and still skips symlinked *directories*
 (the cycle argument, restated in the module header); `restore` unlinks a link at
 the final component and opens with `O_NOFOLLOW`, and refuses outright when any
-parent component resolves elsewhere (`260809-1231`). Pinned by the symlink cases
+parent component resolves elsewhere (`260809-1231_*_the-restore-writes-through-a-symlinked-parent-directory-which-the-final-component-check-does-not-cover.md`). Pinned by the symlink cases
 in `hooks/lib/__tests__/protected-snapshot-integration.test.ts`, all driven
 through the real hooks against a project root outside this repository, with the
 victim file's content asserted unchanged so none can pass vacuously. The last
 criterion is discharged by step 6 of
-`shared/planning/260809-1229_*_plan-five-severe-guard-defects.md`, which rewrote
+`260809-1229_*_plan-five-severe-guard-defects.md`, which rewrote
 `rules/protected-path-discipline.md` from conceding this open gap to stating
 what the measurement compares and why — without re-claiming that no gaps exist.
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — closure confirmed against the tree, not against the note above.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — closure confirmed against the tree, not against the note above.**
 All six acceptance criteria verified at HEAD `fb262d8`. Criteria 1-5: `fingerprint` calls `lstatSync` and returns `LINK_PREFIX + readlinkSync(abs)` for a link (`hooks/lib/protected-snapshot.ts:396-398`); `restore` recreates a link with `symlinkSync` (`:546-548`), unlinks a link at the final component and opens with `constants.O_NOFOLLOW ?? 0` (`:600`, `:620`), and refuses when `realpathSync(dirname(abs))` diverges from the lexical parent under a realpath-resolved root (`:579-580`). Six cases in `hooks/lib/__tests__/protected-snapshot-integration.test.ts` under "a symbolic link does not carry a protected path out of the set" all pass, including the following-tool-call watched-set case and the literal-entry pair. Criterion 6: `rules/protected-path-discipline.md` no longer claims an absence of holes; it states what the measurement compares and adds "Read that as a claim about the question being asked, not as a promise about the machinery asking it." Suite at this HEAD: 33 files, 1078 tests, exit 0.

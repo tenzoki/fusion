@@ -7,13 +7,13 @@
 **Filed by:** coderev (incremental review of `6b94e17..HEAD`)
 **Affects:** `hooks/guard.ts:350-368` — `guardBashCommand` STEP 1: `recordBlock` → `saveEscalation` → `emitBlockEvent` → `block(...)`
 **Cross-references:**
-`fusion-workbench/shared/issues/260809-1825_o_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` — same defect, whose **Affects** names CHECK 1, CHECK 2 and CHECK 3 only, and whose acceptance criteria list the halt, the protected path and the decision-governed path
+`260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` — same defect, whose **Affects** names CHECK 1, CHECK 2 and CHECK 3 only, and whose acceptance criteria list the halt, the protected path and the decision-governed path
 
 ---
 
 ## What is wrong
 
-`260809-1825` states the shape correctly: a record about a decision stands ahead
+`260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` states the shape correctly: a record about a decision stands ahead
 of the decision, so a `saveEscalation` throw discards a deny that was already
 made. It enumerates three sites, all inside `main`'s write-tool path.
 
@@ -23,7 +23,7 @@ documents in three places as running unconditionally, including in the plugin's
 own repository.
 
 Because the enumeration drives the fix and the acceptance criteria, a change
-that satisfies `260809-1825` as written would leave the branch deny failing
+that satisfies `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` as written would leave the branch deny failing
 open.
 
 ## Measured
@@ -43,11 +43,11 @@ exit=0
 ```
 
 `{}` is the allow. The Edit-of-a-protected-path case in the same run reproduces
-`260809-1825` exactly, which is what identifies the two as one defect.
+`260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` exactly, which is what identifies the two as one defect.
 
 ## Suggested direction
 
-Fix with `260809-1825` rather than separately — same reordering, one more site.
+Fix with `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` rather than separately — same reordering, one more site.
 Extend that record's **Affects** and acceptance criteria to cover
 `guardBashCommand` STEP 1, and close this one against it.
 
@@ -61,7 +61,7 @@ found later.
 
 - [x] With `.guard-state/` unwritable, `Bash` with `git switch main` still emits
       `{"decision":"block", …}` and exits 0.
-- [x] `260809-1825` names this site, or this record is closed by the commit that
+- [x] `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` names this site, or this record is closed by the commit that
       closes it.
 
 ---
@@ -73,7 +73,7 @@ are the reconciler's.
   answers `{"decision":"block","reason":"fusion policy: agents never switch git branches…"}`
   at HEAD, against `{}` at `f9c4214^`. Code at `hooks/guard.ts:381-392`; pinned by
   `hooks/lib/__tests__/hook-fail-open.test.ts:290-309`.
-- Criterion 2 — CONFIRMED by its second disjunct. `260809-1825`'s body was never edited to name
+- Criterion 2 — CONFIRMED by its second disjunct. `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md`'s body was never edited to name
   this site, but one commit closed all three records, which is what the criterion offered as the
   alternative. The first disjunct is not met and does not need to be.
 

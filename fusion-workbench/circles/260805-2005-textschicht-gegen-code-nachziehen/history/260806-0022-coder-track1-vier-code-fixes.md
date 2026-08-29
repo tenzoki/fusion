@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-06
 **Agent:** coder
-**Plan:** `planning/260805-2353_p_plan-textschicht-gegen-code.md`, Track 1 (steps 4, 5, 6, 7)
+**Plan:** `260805-2353_*_plan-textschicht-gegen-code.md`, Track 1 (steps 4, 5, 6, 7)
 **Status:** Complete
 
 ## What was done
@@ -30,7 +30,7 @@ All four Track 1 fixes executed in order, each with its falsifier checked before
 - Fix: the whole-tree probe's broad `-name '*[[]*[]]*.md'` stays as cheap prefilter, piped through `grep -E '\[[oatcibspd]\]-[^/]*$'` — the executor's exact set. The three frozen-store exclusions untouched. Prose paragraph added stating the probe-consistency rule.
 - Probe-consistency also applied inside migrate: its survey `REFORMAT` count and its executor candidate list gained the identical filter, so the proposal never counts a rename the pass would silently skip; one sentence added to migrate's Step-4 notes.
 - Verified in a scratch workbench with the probe line extracted verbatim from the edited skill, under zsh and bash: `notes [draft].md` → OLD=0; `260101-1200[o]-topic.md` → OLD=1; marker file only under `archive/` → OLD=0; migrate's narrowed survey counts 1 of the 2 bracket files.
-- Residual found and filed: the two files still differ in *scope* (setup probes the whole tree; migrate reformats only `shared/` + `circles/` depth ≥ 2) — `issues/260806-0022_o_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`.
+- Residual found and filed: the two files still differ in *scope* (setup probes the whole tree; migrate reformats only `shared/` + `circles/` depth ≥ 2) — `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`.
 
 ### Step 7 — garbled awk message (`bin/fusion-rules`)
 
@@ -51,7 +51,7 @@ All four Track 1 fixes executed in order, each with its falsifier checked before
 - `skills/setup/SKILL.md` — bracket-probe filter + probe-shape prose
 - `skills/migrate/SKILL.md` — same filter on survey + executor candidate list, one prose sentence
 - `hooks/lib/__tests__/context-manifest.test.ts` — 4 regression tests (28 → 32 in that file)
-- `planning/260805-2353_p_plan-textschicht-gegen-code.md` — steps 4–7 marked [DONE]
-- `issues/260806-0022_o_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — new (scope residual)
+- `260805-2353_*_plan-textschicht-gegen-code.md` — steps 4–7 marked [DONE]
+- `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — new (scope residual)
 
 Source issues deliberately left open — the plan's step 17 closes them in one bookkeeping pass.

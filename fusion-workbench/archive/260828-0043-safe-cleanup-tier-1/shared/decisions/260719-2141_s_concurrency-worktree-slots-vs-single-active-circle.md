@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md (the analysis that raised this), archive/260817-1907-safe-cleanup-scoped/shared/decisions/260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md (the sibling D1-refinement), circles/260719-1536-plane-mirror-integration/_c_circle.md (the Circle this affects), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (the workflow — worktree slots `:138-165`)
+**Cross-references:** 260719-2141-plane-mirror-martin-convergence-feasibility.md (the analysis that raised this), archive/260817-1907-safe-cleanup-scoped/260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md (the sibling D1-refinement), 260719-1536-plane-mirror-integration (the Circle this affects), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (the workflow — worktree slots `:138-165`)
 
 ---
 
@@ -37,19 +37,19 @@ Martin runs **N parallel fixed worktree slots** (`.worktree-ui/wt-1..3`), one pe
 `inference:` **Option 1** is the clean near-term answer — keep worktree slots as Martin's concurrency mechanism and do not make fusion own cross-slot concurrency — **conditional on verifying** that N parallel slots actually get N isolated `pwd`-anchored workbench states rather than sharing one at a common parent. That verification is a small, concrete task for the planner and must precede any reliance on this option. If the isolation does not hold, the choice narrows to Option 2 (a large separate Circle) or Option 3 (accept the limit). Option 2 is out of scope for the Plane Circle and should not be folded into it. This decision is genuinely the user's: it depends on how the user intends a multi-story user to run fusion, which the analysis cannot infer.
 
 ---
-Answered: user decision (session 260719-1632) — **Option 3: fusion does not support concurrency.** fusion stays single-active-Circle with no concurrency lock. The Plane bridge (C3 push-only mirror + C4 offline + one bounded seeding-read) is delivered; parallelism is explicitly out of scope. A multi-story user runs one active Circle at a time; parallel worktree slots remain the user's own mechanism outside fusion's guarantees (the advisory single-orchestrator warning applies). No worktree-isolation verification is needed — Option 1 is not relied upon. This removes the pre-activation blocker on the Plane Circle (`archive/260817-1907-safe-cleanup-scoped/circles/260719-1536-plane-mirror-integration/_c_circle.md`).
+Answered: user decision (session 260719-1632-orchestrator-session.md) — **Option 3: fusion does not support concurrency.** fusion stays single-active-Circle with no concurrency lock. The Plane bridge (C3 push-only mirror + C4 offline + one bounded seeding-read) is delivered; parallelism is explicitly out of scope. A multi-story user runs one active Circle at a time; parallel worktree slots remain the user's own mechanism outside fusion's guarantees (the advisory single-orchestrator warning applies). No worktree-isolation verification is needed — Option 1 is not relied upon. This removes the pre-activation blocker on the Plane Circle (`archive/260817-1907-safe-cleanup-scoped/260719-1536-plane-mirror-integration`).
 Implemented:
 Deferred:
 Superseded by:
 
 ---
-Reconciliation 260731-2324 (reconciler, domain `code`) — **stays `_a_` deliberately; not promoted to `_i_`.** The answer chosen was Option 3, "fusion does not support concurrency", whose realisation is the *absence* of a concurrency mechanism. There is no commit that implements a non-feature, so the `_i_` transition — which the vocabulary defines as "code or data on disk now reflects the decision", cited by hash or `path:line` — has nothing to cite. The surfaces that express the answer (`bin/fusion-session-mark`'s advisory marker, `/fusion:setup` Step 0d's running/stale warning, and the "Single orchestrator per project (advisory)" paragraph in `CLAUDE.md`) all predate this decision and were not written to satisfy it.
+Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **stays `_a_` deliberately; not promoted to `_i_`.** The answer chosen was Option 3, "fusion does not support concurrency", whose realisation is the *absence* of a concurrency mechanism. There is no commit that implements a non-feature, so the `_i_` transition — which the vocabulary defines as "code or data on disk now reflects the decision", cited by hash or `path:line` — has nothing to cite. The surfaces that express the answer (`bin/fusion-session-mark`'s advisory marker, `/fusion:setup` Step 0d's running/stale warning, and the "Single orchestrator per project (advisory)" paragraph in `CLAUDE.md`) all predate this decision and were not written to satisfy it.
 
-Left open as a judgement call for the user rather than resolved by the reconciler, because `_i_` is terminal and promoting on absence-of-evidence is the wrong direction to be wrong in. Two defensible outcomes: promote to `_i_` citing the three pre-existing advisory surfaces as the realisation, or leave `_a_` permanently on the view that a no-op answer never reaches implementation. Nothing downstream is blocked either way — the pre-activation blocker this decision removed on `archive/260817-1907-safe-cleanup-scoped/circles/260719-1536-plane-mirror-integration/_c_circle.md` is long since cleared (that Circle is `_c_`).
+Left open as a judgement call for the user rather than resolved by the reconciler, because `_i_` is terminal and promoting on absence-of-evidence is the wrong direction to be wrong in. Two defensible outcomes: promote to `_i_` citing the three pre-existing advisory surfaces as the realisation, or leave `_a_` permanently on the view that a no-op answer never reaches implementation. Nothing downstream is blocked either way — the pre-activation blocker this decision removed on `archive/260817-1907-safe-cleanup-scoped/260719-1536-plane-mirror-integration` is long since cleared (that Circle is `_c_`).
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — marker
-unchanged at `_a_`; the 260731-2324 judgement stands and now has a second instance.**
+unchanged at `_a_`; the 260731-2324-reconciliation.md judgement stands and now has a second instance.**
 
 The answer is still the standing answer: fusion is single-active-Circle and has no concurrency
 lock. The three advisory surfaces the earlier note named are all present and none was written for
@@ -59,7 +59,7 @@ a mutex around `git add`/`git commit` and is workbench-anchored, which is real s
 one operation, not of sessions; it does not realise this answer either.
 
 The class this record opened now has a second member:
-`shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
+`260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
 answered option 1 ("nothing new"). Both are answers whose realisation is an absence, and both are
 therefore uncitable under `rules/fusion-workbench-conventions.md` `### Decision files`. Deciding the
 class once would settle both; deciding them one at a time will not stop a third arriving.
@@ -72,7 +72,7 @@ root-anchored single-writer state, and the only guard is a warning the user may 
 **Reconciliation 260822-1556 (reconciler, domain `code`, HEAD `9f65463`) — marker unchanged at
 `_a_`, and this record now stands against a Directive it forbids.**
 
-*What changed around it.* `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
+*What changed around it.* `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
 was written and approved by the user on 2026-08-22 and specifies exactly the arrangement this
 record's Option 2 sketched and its Option 3 refused: several checkouts, git as transport, true
 parallelism. The spec's C1 names the supersession of this record as its own work
@@ -93,9 +93,9 @@ decision recording the reframed answer, then `Superseded by:` here and `_a_` →
 reader of this record is reading the rule that is still in force.
 
 ---
-Superseded by: shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md
+Superseded by: 260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md
 — the user reversed this answer on 260822 and specified the opposite in
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, approved at a gate. Option 3,
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, approved at a gate. Option 3,
 "fusion does not support concurrency", no longer states the project's position; option 2, which this
 record judged "almost certainly a separate Circle of its own", is what was chosen, and the estimate
 held — the specification defines five.
@@ -109,5 +109,5 @@ rests on the same unverified fact and makes measuring it the first step of its s
 this record's own condition being honoured rather than waived.
 
 The supersession is written now rather than at that Circle, on the user's choice at the Rebalance gate
-of session 260822-1009, because leaving it standing meant the project's Grounding forbade what its
+of session 260822-1009-orchestrator-session.md, because leaving it standing meant the project's Grounding forbade what its
 approved specification requires.

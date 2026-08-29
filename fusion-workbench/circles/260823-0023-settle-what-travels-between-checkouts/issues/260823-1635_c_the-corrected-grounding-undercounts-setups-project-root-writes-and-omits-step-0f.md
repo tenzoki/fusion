@@ -5,8 +5,8 @@ The corrected Grounding undercounts Setup's writes outside the workbench, and om
 **Severity:** Medium
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 4 (`a2a18f9..2ec2bc2`)
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/_t_circle.md:30` (`## Grounding snapshot`), and the same undercount in three further places listed below
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, the record this correction closes; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`, the deadline this record inherits; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`, why no agent may perform the repair
+**Affects:** `260823-0023-settle-what-travels-between-checkouts:30` (`## Grounding snapshot`), and the same undercount in three further places listed below
+**Cross-references:** `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, the record this correction closes; `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`, the deadline this record inherits; `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`, why no agent may perform the repair
 
 ---
 
@@ -42,16 +42,16 @@ The shipped text names two prior steps; the Grounding names one.
 
 This is not one sentence. It originates in the planner's `## Current State` and was carried forward by every pass that read it:
 
-1. `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md:43` — "Step 0g already writes two files at the project root".
+1. `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md:43` — "Step 0g already writes two files at the project root".
 2. The same plan, `:224` — "`## Current State` records that Step 0g already had two."
-3. `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, the `Resolved:` note added by `2ec2bc2` — "so the merge driver is the third such write rather than the first".
-4. `shared/issues/260823-1446_*_the-rebalance-recommendation-maps-from-the-flagged-edge-and-has-no-case-for-a-grounding-that-states-a-false-fact.md` — "Step 0g already wrote two files at the project root before the Circle was shaped, and `skills/setup/SKILL.md:319`, written during this Circle, now says so in the shipped text." That record cites `:319` as its evidence, and `:319` names Step 0f.
+3. `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, the `Resolved:` note added by `2ec2bc2` — "so the merge driver is the third such write rather than the first".
+4. `260823-1446_*_the-rebalance-recommendation-maps-from-the-flagged-edge-and-has-no-case-for-a-grounding-that-states-a-false-fact.md` — "Step 0g already wrote two files at the project root before the Circle was shaped, and `skills/setup/SKILL.md:319`, written during this Circle, now says so in the shipped text." That record cites `:319` as its evidence, and `:319` names Step 0f.
 
 ## Why this is worth stopping the closure for
 
 Not because anything is broken. Nothing was built on either the false claim or the corrected one, and the merge-driver step is correct.
 
-Because the window closes. `## Grounding snapshot` is Grounding-Stand only while the record carries `_a_` or `_t_` (`rules/circle-records.md:65`), `agents/shaper.md:28` makes mode 3 its only writer, and `260823-1455_*` records that mode 3 halts on exactly this case. The rename to `_c_` makes the sentence permanent, which is the argument `2ec2bc2`'s own commit message makes for having done the correction by hand at all. A correction that arrives one commit before the deadline and is wrong by one is the same deadline, unmet.
+Because the window closes. `## Grounding snapshot` is Grounding-Stand only while the record carries `_a_` or `_t_` (`rules/circle-records.md:65`), `agents/shaper.md:28` makes mode 3 its only writer, and `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md_*` records that mode 3 halts on exactly this case. The rename to `_c_` makes the sentence permanent, which is the argument `2ec2bc2`'s own commit message makes for having done the correction by hand at all. A correction that arrives one commit before the deadline and is wrong by one is the same deadline, unmet.
 
 ## Verified
 
@@ -83,4 +83,4 @@ the corrected sentence is complete as well as true. Both steps predate the Circl
 arrived in `92db96a` (2026-08-16) and Step 0g in `1e29572` (2026-08-15), against a record created
 2026-08-23.
 
-Closed by reconciler, second Coherence pass, 260823-2130.
+Closed by reconciler, second Coherence pass, 260823-2130-reconciliation.md.

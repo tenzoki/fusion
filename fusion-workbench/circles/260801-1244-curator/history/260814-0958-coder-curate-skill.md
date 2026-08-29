@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Circle:** 260801-1244-curator
-**Plan:** `circles/260801-1244-curator/planning/260814-0845_*_plan-curator.md`, step 3
+**Plan:** `260814-0845_*_plan-curator.md`, step 3
 **Verification:** `cd hooks && npm test` — exit 0, 49 files, 1024 tests; `bin/fusion-paths curate` — exit 0, zero bytes on stderr
 
 ---
@@ -37,7 +37,7 @@ The apply dispatch passes the three parameters in the order `agents/curator.md` 
 
 Both were falsified by this change, and both sit in `README-agents.md`.
 
-- The `## Dispatch parameters` preamble said every `Passed by` cell was read against "all sixteen `skills/*/SKILL.md` bodies". There are seventeen now. The figure was removed rather than refreshed — "every `skills/*/SKILL.md` body" — following the decision `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, answered option 2, which step 2 applied to the agent-count claims of the same shape.
+- The `## Dispatch parameters` preamble said every `Passed by` cell was read against "all sixteen `skills/*/SKILL.md` bodies". There are seventeen now. The figure was removed rather than refreshed — "every `skills/*/SKILL.md` body" — following the decision `260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, answered option 2, which step 2 applied to the agent-count claims of the same shape.
 - `## Inheritance model` said "For the other 15:", against a fleet of seventeen agents of which one declares a `tools:` allowlist. Step 2 corrected the five claims a lint re-derives and this one is not among them, so it was still standing. Now "For the rest:", figure removed for the same reason.
 
 ## What was deliberately not done

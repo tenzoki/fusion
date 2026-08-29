@@ -6,7 +6,7 @@ Zu tun: den Halbsatz "and through the shell alike" durch eine Formulierung erset
 
 Ausführer: ontocoder (`.json`).
 ---
-Gefunden in Schritt 5 des Plans `260807-0931_o_plan-guard-misst-statt-orakelt.md`, beim Durchsehen der Zusicherungen zum Selbstschutz-Boden. Die zwei Zusicherungen in `guard-rules-write-integration.test.ts`, die den Boden gegen `rm fusion-guard.json` und gegen ein zweites `cp` der Vorlage prüften, sind in Schritt 5 gefallen, weil sie ein PreToolUse-Verdikt behaupteten, das es nicht mehr gibt; gedeckt ist der Boden weiter durch `protected-snapshot-integration.test.ts` (`still protects fusion-guard.json itself under a declared empty list`, `reverts a protected file that was deleted`).
+Gefunden in Schritt 5 des Plans `260807-0931_*_plan-guard-misst-statt-orakelt.md`, beim Durchsehen der Zusicherungen zum Selbstschutz-Boden. Die zwei Zusicherungen in `guard-rules-write-integration.test.ts`, die den Boden gegen `rm fusion-guard.json` und gegen ein zweites `cp` der Vorlage prüften, sind in Schritt 5 gefallen, weil sie ein PreToolUse-Verdikt behaupteten, das es nicht mehr gibt; gedeckt ist der Boden weiter durch `protected-snapshot-integration.test.ts` (`still protects fusion-guard.json itself under a declared empty list`, `reverts a protected file that was deleted`).
 
 Warum nicht in Schritt 5 behoben: `.json` gehört ontocoder, und die Datei steht in keiner Dateiliste von Schritt 6 — sie würde sonst still zwischen zwei Schritten hindurchfallen. `/fusion:setup` sät die Vorlage in jedes Konsumprojekt, der Satz wird dort also gelesen.
 

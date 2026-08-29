@@ -7,7 +7,7 @@ A sub-agent left renames staged and the orchestrator's next commit absorbed them
 correspondence between a commit's message and its contents, which is the only record of why a
 change was made.
 **Cross-references:** `agents/orchestrator.md` Step 3b step 4 (the staging shape) and step 5 (the
-held command); issue `260811-0114` (the staging-drift check, which measures the opposite failure)
+held command); issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` (the staging-drift check, which measures the opposite failure)
 
 ---
 
@@ -16,7 +16,7 @@ held command); issue `260811-0114` (the staging-drift check, which measures the 
 At Turn 4 of Circle `260816-1741-guard-becomes-observation-only` the orchestrator committed the
 shaper's correction to `_t_circle.md` plus two issue renames, naming five paths explicitly and
 absolutely, exactly as Step 3b step 4 requires. The resulting commit `dbbad70` carries **seven**
-files. Four were never named: the renames of `260816-2123`, `260816-2317`, `260817-1032` and the
+files. Four were never named: the renames of `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`, `260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`, `260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md` and the
 plan `260816-1915`.
 
 All four had been renamed earlier in the session by the `reconciler`, which staged them and then
@@ -35,7 +35,7 @@ absorbed by a parallel committer. Neither addresses a **dirty index inherited fr
 dispatched earlier in the same session**. The orchestrator's own command was correct and the
 outcome was still wrong, which means the defect is in the protocol, not in the execution.
 
-The staging-drift check (`bin/fusion-staging-drift`, issue `260811-0114`) measures records that
+The staging-drift check (`bin/fusion-staging-drift`, issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`) measures records that
 reach **no** commit. This is the mirror case: records that reach a commit that was not about them.
 Nothing measures it.
 
@@ -70,12 +70,12 @@ plus four:
 | Path | Status | Named by the message? |
 |---|---|---|
 | `_t_circle.md` | `M` | yes |
-| `260816-1917_c_…test-list…` | `R065` | yes ("Closes both `260816-1917_*` records") |
-| `260816-1917_c_…text-surface-list…` | `R052` | yes |
-| `260816-2123_c_…dangling-citations…` | `R100` | **no** |
-| `260816-2317_c_…citation-set-grew…` | `R100` | **no** |
-| `260817-1032_c_…bounded-surfaces…` | `R100` | **no** |
-| `260816-1915_c_…observation-only.md` (plan) | `R100` | **no** |
+| `260816-1917_*_…test-list…` | `R065` | yes ("Closes both `260816-1917_*` records") |
+| `260816-1917_*_…text-surface-list…` | `R052` | yes |
+| `260816-2123_*_…dangling-citations…` | `R100` | **no** |
+| `260816-2317_*_…citation-set-grew…` | `R100` | **no** |
+| `260817-1032_*_…bounded-surfaces…` | `R100` | **no** |
+| `260816-1915_*_…observation-only.md` (plan) | `R100` | **no** |
 
 So the four unnamed renames are exactly as this record says. What it does not say is that the two
 *named* renames carry a second author's content: the `R065`/`R052` similarity indices are below 100
@@ -92,9 +92,9 @@ another agent, landing under a message that describes only the shaper's half.
 2. Every one of the seven paths is a tracking file of this Circle. No code, no data, no file
    outside `fusion-workbench/` rode along.
 3. All four renames are **correct changes**, re-verified against the tree rather than against the
-   first pass's claims: `260816-2123` (`reference-resolution-lint` green inside a whole-suite pass,
-   35 files / 653 tests, no dangling path in `CLAUDE.md`), `260816-2317` (`CLAUDE.md:30` rewritten,
-   heading now `` `fusion.json` + `templates/fusion.json` ``), `260817-1032`
+   first pass's claims: `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md` (`reference-resolution-lint` green inside a whole-suite pass,
+   35 files / 653 tests, no dangling path in `CLAUDE.md`), `260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md` (`CLAUDE.md:30` rewritten,
+   heading now `` `fusion.json` + `templates/fusion.json` ``), `260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`
    (`hooks/lib/__tests__/surface-growth-bound.test.ts:163-181` carries the argument and moves
    `TEST_LINE_BASELINE` alone), and the plan (all 16 implementation steps plus the amendment's step
    16 carry `[DONE]`; header reads `**Status:** Complete`).
@@ -103,10 +103,10 @@ another agent, landing under a message that describes only the shaper's half.
 --quiet` both exit 0, `git status --porcelain --untracked-files=all` is empty, and
 `git rev-list --left-right --count origin/main...HEAD` is `0 0`.
 
-**This is a re-filing.** `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`
-filed the same defect on 2026-08-16 from session 260815-2147, commit `a19c867`, with the same
+**This is a re-filing.** `260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`
+filed the same defect on 2026-08-16 from session 260815-2147-orchestrator-session.md, commit `a19c867`, with the same
 mechanism, the same reading of why Step 3b steps 4 and 5 do not reach it, and the same citation of
-`260811-0114`. It was not found before this record was written. Both are now cross-annotated; they
+`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`. It was not found before this record was written. Both are now cross-annotated; they
 are one defect and want merging, with this record's three-option remedy kept.
 
 ---
@@ -124,11 +124,11 @@ Step 3b step 4 still states the staging shape as a list of explicitly named path
 **Live obligation, and the one with the widest blast radius of the eight.** Two reasons, and neither is about `dbbad70`:
 
 1. **It is a defect in fusion's own commit protocol, not in a run.** The orchestrator's command was correct and the outcome was wrong, so every future session reproduces it whenever a sub-agent stages before the orchestrator commits. Reconcilers stage renames by construction — this very pass performs renames, and does them with plain `mv` **precisely because of this record**.
-2. **It is filed twice and both filings are live.** `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md` states the same defect from a different session and a different commit (`a19c867`). Both records still carry `_o_`. The merge the second pass called for has not happened, and it cannot happen here: that record is in the shared store, which this pass does not touch.
+2. **It is filed twice and both filings are live.** `260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md` states the same defect from a different session and a different commit (`a19c867`). Both records still carry `_o_`. The merge the second pass called for has not happened, and it cannot happen here: that record is in the shared store, which this pass does not touch.
 
 **What it needs is a decision, and that is why it will not close by being worked.** The record says so itself — *"Undecided, and deliberately left open rather than proposed as a fix"* — and one of its three options (forbid sub-agents from staging at all) changes what several agent prompts are allowed to do. Whoever takes it should file the decision record first and let the fix follow it, rather than picking an option inside a defect record.
 
 **Nothing here disputes that the repository is intact.** Re-verified at HEAD: `git diff --cached --quiet` and `git diff --quiet` both exit 0 for the paths this Circle touched, and both halves of every one of the four absorbed renames are in the history (`bee46e7` carries the content edits `dbbad70` left behind).
 
 ---
-Resolved: fixed — closes with `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`: option 1 of this record (assert the index against the list before staging, unstage and report the surplus) is in Step 3b step 5; the class question stays in `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md`; agents/orchestrator.md:621
+Resolved: fixed — closes with `260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md`: option 1 of this record (assert the index against the list before staging, unstage and report the surplus) is in Step 3b step 5; the class question stays in `260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md`; agents/orchestrator.md:621

@@ -1,6 +1,6 @@
 # Migration converts Circle files to directories but leaves their record fields pointing at the old flat layout
 
-**Filed:** 260716-1958
+**Filed:** 260716-1958_*_migration-leaves-circle-record-fields-dangling.md
 **Severity:** Medium-High
 **Domain:** code
 **Filed by:** coderev
@@ -26,12 +26,12 @@ after (commit `6d4a88d`):
 **Active session history:** <filename inside this Circle's history/, or "(none yet)">
 ```
 
-So a pre-v4 record carries a workbench-relative path — `planning/260716-1910[p]-plan-foo.md`
+So a pre-v4 record carries a workbench-relative path — `260716-1910[p]-plan-foo.md`
 — written under the old semantics. After migration:
 
-- the file it names now lives at `shared/planning/260716-1910[p]-plan-foo.md`;
+- the file it names now lives at `260716-1910[p]-plan-foo.md`;
 - the field is now read under the new semantics as "filename inside this Circle's
-  `planning/`", i.e. `circles/<dir>/planning/260716-1910[p]-plan-foo.md`.
+  `planning/`", i.e. `circles/<dir>/260716-1910[p]-plan-foo.md`.
 
 Both readings resolve to nothing. The value is wrong twice over — as a path, and as a
 filename.

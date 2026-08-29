@@ -34,7 +34,7 @@ left behind.
 
 **H1 — a false heredoc opener blanks real commands.** High.
 `hooks/lib/shell-parse.ts:376`. Issue
-`260809-2044_o_a-false-heredoc-opener-blanks-real-commands-…`.
+`260809-2044_*_a-false-heredoc-opener-blanks-real-commands-…`.
 
 `69a2d00` changed an unquoted-delimiter body from *code* to *blanked except its
 substitutions*. Right for a body; wrong when the region was never a body.
@@ -54,7 +54,7 @@ EOF
 
 Both `DENY` before, both `allow` at HEAD. With the switch replaced by
 `touch RAN`, `bash 3.2` and `zsh 5.9` both create the marker — the blanked line
-is executed. The `260809-1111` case the commit was written for still allows, and
+is executed. The `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` case the commit was written for still allows, and
 `$(git switch main)` in a body still denies, so the fix's own target is intact.
 
 Blast radius is the git branch policy alone. The protected paths are measured,
@@ -71,7 +71,7 @@ the top-level handlers.
 
 **M1 — the churn half runs before the reply.** Medium.
 `hooks/tracker.ts:717-721`. Issue
-`260809-2045_o_the-churn-half-still-runs-before-the-reply-…`.
+`260809-2045_*_the-churn-half-still-runs-before-the-reply-…`.
 
 `9bf7ca1` removed one *cause* of the swallowed halt message (the `as` cast in
 `loadChurn`). The structure that made it fatal is untouched: `respond(measured)`
@@ -82,19 +82,19 @@ told nothing.
 
 **M2 — the git branch deny is a fourth fail-open site.** Medium.
 `hooks/guard.ts:350-368`. Issue
-`260809-2046_o_the-git-branch-deny-is-a-fourth-fail-open-site-…`.
+`260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-…`.
 
-Open record `260809-1825` states this defect correctly and enumerates three
+Open record `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` states this defect correctly and enumerates three
 sites, all on the write-tool path. `guardBashCommand` STEP 1 has the same
 sequence and guards the one policy fusion documents as unconditional. Measured
 with `.guard-state/` at `0555`: `Bash git switch main` returns `{}`. A fix that
-satisfies `260809-1825` as written would leave it.
+satisfies `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` as written would leave it.
 
 ### Documentation drift
 
 **M3 — three shipped documents still promise ping-back detection.** Medium.
 `docs/philosophy.md:17`, `docs/working-model.md:81`, `skills/help/SKILL.md:84`.
-Issue `260809-2047_o_three-shipped-documents-still-describe-ping-back-…`.
+Issue `260809-2047_*_three-shipped-documents-still-describe-ping-back-…`.
 
 `c353196`'s code removal is complete — module, tests, config keys, event types,
 monitor membership and render branch all gone, and a repository-wide search
@@ -105,7 +105,7 @@ attributes a halt to churn, which was never true.
 
 **L1 — README-hooks describes the seam's callers as they stood two commits
 earlier.** Low. `README-hooks.md:176`. Issue
-`260809-2048_o_readme-hooks-says-escalation-keeps-its-own-load-and-save-…`.
+`260809-2048_*_readme-hooks-says-escalation-keeps-its-own-load-and-save-…`.
 
 `9bf7ca1` wrote "`escalation.ts` and `protected-snapshot.ts` still keep their
 own"; `5f2cd56` folded escalation into the seam. Both source headers record the
@@ -115,7 +115,7 @@ change correctly, so the user-facing document is the one that disagrees.
 
 **L2 — clear-halt discards a halt raised inside its own window.** Low.
 `hooks/lib/escalation.ts:287`, from `hooks/clear-halt.ts:87-88`. Issue
-`260809-2049_o_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-…`.
+`260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-…`.
 
 The "newly raised" test cannot separate the halt the human is clearing from an
 unrelated one raised in the meantime. The second is written away while its
@@ -164,14 +164,14 @@ L2 above.
 ## Cross-cutting observations
 
 - **One ordering defect, four sites, two records.** M1, M2 and open record
-  `260809-1825` are the same sentence — a record about a decision standing ahead
+  `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` are the same sentence — a record about a decision standing ahead
   of the decision — at four call sites across both hooks. `lib/fail-open.ts`
   fixed it at the top level and states the argument in full; nothing has yet
   applied that argument inside `main` on either side. These should be closed
   together, by one change, or the enumeration will go stale again.
 - **The fixes reached the instance more often than the class.** `9bf7ca1` fixed
   one cause of a swallowed halt message rather than the ordering that made the
-  cause fatal. `260809-1825` names three sites rather than the shape. The Turn's
+  cause fatal. `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` names three sites rather than the shape. The Turn's
   own quality is high; what recurs is a scope drawn around what was measured.
 - **`c353196` is the clean counter-example.** Its code removal is complete in
   every surface a search can find. What it missed is three documents no search
@@ -185,7 +185,7 @@ regression inside the window this Turn opened; it should not ship in a tagged
 release. The fix is contained (`#` comments in `stripData` covers the plausible
 shape) and the acceptance criteria are in the issue.
 
-**Before the next guard change.** M1 + M2, closed with `260809-1825` as one
+**Before the next guard change.** M1 + M2, closed with `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` as one
 change across all four sites. Doing them separately is what produced two records
 for one defect in the first place.
 
@@ -211,9 +211,9 @@ Checked and correct, recorded so the next pass does not re-derive them:
 
 ## Cross-references — open records this review does not refile
 
-- `260809-1825_o_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` — extended by M2.
-- `260809-1942_o_protected-path-discipline-enumerates-the-shipped-list-and-now-omits-one-entry.md` — the `.claude/rules/**` omission.
-- `260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` — the surviving `thrashingScore` reader in `agents/orchestrator.md:113` and `skills/setup/SKILL.md:226` sits on top of this.
+- `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` — extended by M2.
+- `260809-1942_*_protected-path-discipline-enumerates-the-shipped-list-and-now-omits-one-entry.md` — the `.claude/rules/**` omission.
+- `260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` — the surviving `thrashingScore` reader in `agents/orchestrator.md:113` and `skills/setup/SKILL.md:226` sits on top of this.
 
 ---
 
@@ -224,12 +224,12 @@ says about it, re-derived rather than read off the closing commits.
 
 | Finding | Record | Disposition at HEAD |
 |---|---|---|
-| H1 — false heredoc opener | `260809-2044` | Closed by `6fae676`. See the note below. |
-| M1 — churn half before the reply | `260809-2045` | Closed by `f9c4214`. See the note below. |
-| M2 — branch deny is a fourth fail-open site | `260809-2046` | Closed by `f9c4214`. See the note below. |
-| M3 — three shipped documents promise ping-back | `260809-2047` | **CONFIRMED fixed** by `97d5846`, both criteria re-derived at HEAD. One site the review did not reach survives — see below. |
-| L1 — README-hooks describes the seam's callers stale | `260809-2048` | **CONFIRMED fixed** by `97d5846`, both criteria re-derived at HEAD. |
-| L2 — clear-halt discards a halt in its own window | `260809-2049` | Correctly still `_o_`. The review's own sequencing put it under "cleanup, any time"; nothing in Turn 2 touched it. |
+| H1 — false heredoc opener | `260809-2044_*_a-false-heredoc-opener-blanks-real-commands-so-a-branch-switch-in-the-blanked-region-is-allowed.md` | Closed by `6fae676`. See the note below. |
+| M1 — churn half before the reply | `260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md` | Closed by `f9c4214`. See the note below. |
+| M2 — branch deny is a fourth fail-open site | `260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-and-is-not-in-the-open-records-scope.md` | Closed by `f9c4214`. See the note below. |
+| M3 — three shipped documents promise ping-back | `260809-2047_*_three-shipped-documents-still-describe-ping-back-detection-as-a-live-guard-feature.md` | **CONFIRMED fixed** by `97d5846`, both criteria re-derived at HEAD. One site the review did not reach survives — see below. |
+| L1 — README-hooks describes the seam's callers stale | `260809-2048_*_readme-hooks-says-escalation-keeps-its-own-load-and-save-two-commits-after-it-stopped.md` | **CONFIRMED fixed** by `97d5846`, both criteria re-derived at HEAD. |
+| L2 — clear-halt discards a halt in its own window | `260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md` | Correctly still `_o_`. The review's own sequencing put it under "cleanup, any time"; nothing in Turn 2 touched it. |
 
 **M3's removal was one site short, and the review's own cross-cutting observation predicted the
 shape of the miss.** "A removal checklist that ends at `grep` ends one step early" holds one
@@ -239,7 +239,7 @@ exclude from both metrics". There is no second metric; the constant has one read
 (`hooks/tracker.ts:674`, the churn path). It says "ping-back", not "cross-file", so neither the
 identifier sweep in `c353196` nor the prose sweep in `97d5846` — which searched the three
 *documents* — would have found it. Filed as
-`shared/issues/260809-2252_o_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`.
+`260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md`.
 
 Everything else this review recorded under "Not findings" was re-checked and holds. In
 particular `hooks/dist/` is still byte-identical to a fresh `npm run build` at HEAD (the build

@@ -47,7 +47,7 @@ The fallback binds and serves — the arm is not broken — but `localhost` over
 the banner still names `localhost` with no qualification.
 
 **Why the record's own reasoning does not cover this.** The history entry
-`shared/history/260815-2306-coder-monitor-localhost-unreachable.md` calls the fallback "Worse than
+`260815-2306-coder-monitor-localhost-unreachable.md` calls the fallback "Worse than
 dual-stack, identical to today". Identical to today is the whole point: today is the state the
 record was filed against. What made that state a defect was not the missing IPv6 socket on its own
 but the pairing of a missing socket with a printed name that claims it, and the fallback keeps the

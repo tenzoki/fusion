@@ -1,6 +1,6 @@
 # Coder: Bundle B step 16, the layout tree's consumer column
 
-**Dispatch:** step 16 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md`, record `shared/issues/260826-1332_*_the-layout-trees-consumer-column-omits-the-event-log-reader-this-circle-built.md`.
+**Dispatch:** step 16 of `260827-1756_*_repair-the-twenty-open-defect-records.md`, record `260826-1332_*_the-layout-trees-consumer-column-omits-the-event-log-reader-this-circle-built.md`.
 **HEAD at start:** 3cb2cba. **Status:** Complete.
 
 ## What changed

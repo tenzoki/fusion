@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-08-19
 **Agent:** coder
-**Task:** Step 6 of `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md` — correct every `wrong-store` citation in the repair corpus to where the record actually is.
+**Task:** Step 6 of `260819-2016_*_four-constraints-on-deep-change.md` — correct every `wrong-store` citation in the repair corpus to where the record actually is.
 **HEAD at start:** `ad7ffed`
 
 ## Corpus
@@ -48,7 +48,7 @@ path with the store segment alone and no `shared/`, which is a path that does no
 
 So there is no true path that clears this class, and the honest repair is the one that helps a
 reader and leaves the count where it is. It is filed as
-`circles/260819-1645-four-constraints-on-deep-change/issues/260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md`,
+`260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md`,
 with the two available fix shapes stated and neither chosen. It matters before step 9: the gate that
 step arms raises `wrong-store` as a violation, so on this corpus it opens red on forty citations that
 are already correct.
@@ -58,12 +58,12 @@ between stores or into a Circle, one was a store correction inside `shared/`.
 
 ## The three left for step 7, named
 
-- `circles/260801-1244-curator/issues/260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md:39` — the token `shared/planning/260801-1122` resolves to two candidates, a `shared/history/` file and an archived planning record. The store word in the citation points at the second, but that is a judgement and the dispatch's bound is explicit: do not pick between candidates.
-- `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md:31` — the same token, truncated, with the same two candidates.
-- `circles/260801-1244-curator/issues/260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md:77` — the wrong path **is** the statement. The line reads "Decision `260815-2109` cites this record as … No such path exists", and correcting the quoted path deletes what the sentence reports. This is the pointer-versus-statement test in `rules/circle-records.md` `### Citation form in the portfolio`, applied to a store instead of a marker, and it is the rule step 5 used for its own nineteen leaves.
+- `260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md:39` — the token `260801-1122` resolves to two candidates, a `shared/history/` file and an archived planning record. The store word in the citation points at the second, but that is a judgement and the dispatch's bound is explicit: do not pick between candidates.
+- `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md:31` — the same token, truncated, with the same two candidates.
+- `260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md:77` — the wrong path **is** the statement. The line reads "Decision `260815-2109` cites this record as … No such path exists", and correcting the quoted path deletes what the sentence reports. This is the pointer-versus-statement test in `rules/circle-records.md` `### Citation form in the portfolio`, applied to a store instead of a marker, and it is the rule step 5 used for its own nineteen leaves.
 
   One consequence, stated rather than hidden: this pass **fixed** the citation that line complains
-  about, in `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md:7`.
+  about, in `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md:7`.
   The observation is now historical, and the paragraph's closing sentence, "One correction that
   belongs to whoever picks this up", names work that is done. Rewriting that prose is beyond
   correcting a citation and is handed to step 7 with the token.

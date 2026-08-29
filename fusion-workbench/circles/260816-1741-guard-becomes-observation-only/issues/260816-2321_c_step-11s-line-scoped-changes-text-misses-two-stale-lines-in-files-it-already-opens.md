@@ -49,8 +49,8 @@ instrument that lets a file be edited and a line in it left alone.
 developer-facing comment.
 
 **Cross-references:**
-- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 11
-- `circles/260816-1741-guard-becomes-observation-only/reviews/260816-2135-coderev-the-guard-stops-deciding-turn-1.md` `## Cross-cutting observations` 2
+- `260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 11
+- `260816-2135-coderev-the-guard-stops-deciding-turn-1.md` `## Cross-cutting observations` 2
 - `hooks/lib/config.ts:4-18`, `:99-103`, `:344-345`
 
 ---

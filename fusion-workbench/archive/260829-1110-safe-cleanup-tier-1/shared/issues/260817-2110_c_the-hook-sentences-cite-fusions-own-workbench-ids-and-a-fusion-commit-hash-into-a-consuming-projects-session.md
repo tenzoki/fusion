@@ -4,8 +4,8 @@ The hook sentences cite fusion's own workbench ids and a fusion commit hash into
 
 `coverageSentence()` in `hooks/lib/review-coverage.ts:695` and `stagingSentence()` in
 `hooks/lib/staging-drift.ts:642,648` close with a retrospective on the fusion incident that
-motivated each check, naming fusion's own defect records (`260810-1205`, `260811-0114`,
-`260811-1141`) and one fusion commit hash (`f38f37d`). Those sentences are handed back to
+motivated each check, naming fusion's own defect records (`260810-1205`, `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`,
+`260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`) and one fusion commit hash (`f38f37d`). Those sentences are handed back to
 the model in **every** project the plugin runs in. In a consuming project none of the four
 identifiers resolves: the records do not exist in that workbench, and the hash names no
 object in that repository, or worse, an unrelated one.
@@ -34,8 +34,8 @@ Three emission sites, all in model-facing sentence builders:
 | Site | Foreign reference |
 |---|---|
 | `hooks/lib/review-coverage.ts:695` | `260810-1205` |
-| `hooks/lib/staging-drift.ts:642` | `260811-1141` |
-| `hooks/lib/staging-drift.ts:648` | `260811-0114`, `f38f37d` |
+| `hooks/lib/staging-drift.ts:642` | `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` |
+| `hooks/lib/staging-drift.ts:648` | `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`, `f38f37d` |
 
 `hooks/lib/domain-cascade.ts:528` names two records in a `CascadeError` and is **not** in
 scope: that module is reached only from the lint tests, so its text never enters a
@@ -62,13 +62,13 @@ User gate, 2026-08-17: keep only the instruction. The retrospective on fusion's 
 incident leaves the emitted sentence entirely; the identifiers stay in the source comments,
 where the reader is a fusion developer. All three sites plus the commit hash are in scope.
 
-**Cross-references:** `shared/issues/260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` — same class, a plugin-repo-shaped surface shipping to every consumer.
+**Cross-references:** `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` — same class, a plugin-repo-shaped surface shipping to every consumer.
 
 ---
 Resolved: The retrospective clause left all three emitted sentences; only the instruction
 remains. `coverageSentence()` (`hooks/lib/review-coverage.ts`) now closes on the two
 role-addressed instructions alone. `stagingSentence()` (`hooks/lib/staging-drift.ts`) keeps
-the not-recoverable constraint on the commit-message class without `260811-1141`, and its
+the not-recoverable constraint on the commit-message class without `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`, and its
 closing part keeps the full staging instruction and the `git add -A` prohibition, whose
 justification is now what loosening the shape *does* — it stages the deletions of renamed
 records, adds nothing in their place, and takes those records out of HEAD — instead of the

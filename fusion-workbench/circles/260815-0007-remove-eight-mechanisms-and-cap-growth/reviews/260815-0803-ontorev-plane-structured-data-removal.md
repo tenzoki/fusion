@@ -2,7 +2,7 @@
 
 **Sender:** ontorev
 **Reviewed-range:** `9a7da8e..7c12d6a`
-**Not-opened:** `agents/orchestrator.md`, `bin/fusion-plane`, `docs/plane-setup.md`, `docs/working-model.md`, `README.md`, `README-agents.md`, `skills/cleanup/SKILL.md`, `skills/seed-from-plane/SKILL.md`, `skills/setup/SKILL.md`, `hooks/dist/lib/staging-drift.d.ts`, `hooks/dist/lib/staging-drift.js`, `hooks/lib/__tests__/churn-key-anchor.test.ts`, `hooks/lib/__tests__/churn.test.ts`, `hooks/lib/__tests__/domain-cascade.test.ts`, `hooks/lib/__tests__/fusion-plane.test.ts`, `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, `hooks/lib/__tests__/review-coverage.test.ts`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_a_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0029_a_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0029_a_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0007-shaper-remove-eight-mechanisms-and-cap-growth.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0029-planner-remove-eight-mechanisms-and-cap-growth.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0729-coder-before-measurement.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0742-coder-remove-plane-mirror-code-and-prose.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-0029_o_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`, `fusion-workbench/shared/backlog/260814-1733_c_radical-simplification.md`, `fusion-workbench/shared/backlog/260814-2312_c_collapse-the-eight-admin-commands-into-three-entry-points.md`, `fusion-workbench/shared/history/260814-2306-orchestrator-session.md`
+**Not-opened:** `agents/orchestrator.md`, `bin/fusion-plane`, `docs/plane-setup.md`, `docs/working-model.md`, `README.md`, `README-agents.md`, `skills/cleanup/SKILL.md`, `skills/seed-from-plane/SKILL.md`, `skills/setup/SKILL.md`, `hooks/dist/lib/staging-drift.d.ts`, `hooks/dist/lib/staging-drift.js`, `hooks/lib/__tests__/churn-key-anchor.test.ts`, `hooks/lib/__tests__/churn.test.ts`, `hooks/lib/__tests__/domain-cascade.test.ts`, `hooks/lib/__tests__/fusion-plane.test.ts`, `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, `hooks/lib/__tests__/review-coverage.test.ts`, `260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`, `260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`, `260815-0029_*_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`, `260815-0007-shaper-remove-eight-mechanisms-and-cap-growth.md`, `260815-0029-planner-remove-eight-mechanisms-and-cap-growth.md`, `260815-0729-coder-before-measurement.md`, `260815-0742-coder-remove-plane-mirror-code-and-prose.md`, `260815-0029_*_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md`, `260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`, `260814-1733_*_radical-simplification.md`, `260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md`, `260814-2306-orchestrator-session.md`
 
 **Date:** 2026-08-15
 **Scope:** the structured data of the six-commit range. Prompts, prose and TypeScript were dispatched to `coderev` in parallel and are the reason for most of the not-opened list above.
@@ -72,28 +72,28 @@ The plan still says fourteen at line 180, which is filed as the Low finding beca
 ### High
 
 **H1 — The layout-tree record is live under two names in two Circles, and the closed copy lost its body.**
-`circles/260801-1244-curator/issues/260814-1419_o_three-plane-files-…md` (28 lines) and `circles/260719-1536-plane-mirror-integration/issues/260814-1419_c_three-plane-files-…md` (3 lines) are the same record. `d0ddabb` wrote the second as a new file rather than renaming the first, put it in a Circle that closed in July, and reduced it to an empty title line, a `---` and a `Resolved:` note. `507dbc6` repaired the identical fault for the sibling record `shared/issues/260810-0410` one commit later and did not reach this pair. Three rules are broken at once: the `mv`-only marker transition, the Origin Rule, and the issue-file format. `shared/issues/260810-0819_*_head-carries-six-records-twice-…` already records the class; this is the seventh instance.
-Filed: `issues/260815-0803_o_the-layout-tree-record-is-live-under-two-names-in-two-circles-and-the-closed-copy-lost-its-body.md`
+`260814-1419_*_three-plane-files-…md` (28 lines) and `260814-1419_*_three-plane-files-…md` (3 lines) are the same record. `d0ddabb` wrote the second as a new file rather than renaming the first, put it in a Circle that closed in July, and reduced it to an empty title line, a `---` and a `Resolved:` note. `507dbc6` repaired the identical fault for the sibling record `260810-0410` one commit later and did not reach this pair. Three rules are broken at once: the `mv`-only marker transition, the Origin Rule, and the issue-file format. `260810-0819_*_head-carries-six-records-twice-…` already records the class; this is the seventh instance.
+Filed: `260815-0803_*_the-layout-tree-record-is-live-under-two-names-in-two-circles-and-the-closed-copy-lost-its-body.md`
 
 **H2 — Seven open defect records name the deleted Plane mirror, and neither removal step owns a record sweep.**
 Every one carries `_o_` and names, in its `**Affects:**` line or its title, a path that is gone: four cite `bin/fusion-plane` (one of them three line numbers into it), one cites `hooks/lib/__tests__/fusion-plane.test.ts:1494`, one cites `docs/plane-setup.md`, and one asks for a live-instance verification of a helper that no longer exists. Steps 2 and 3 name no record in their file lists, while step 8 does name the one the investigator fold retires, so the obligation exists in the Circle's reasoning and reached one of the fifteen steps. Three consumers read open-marker counts before this Circle closes, including the closure measurement and the defect-rate argument in the Circle's own Grounding.
-Filed: `issues/260815-0803_o_seven-open-defect-records-name-the-deleted-plane-mirror-and-neither-removal-step-owns-a-record-sweep.md`
+Filed: `260815-0803_*_seven-open-defect-records-name-the-deleted-plane-mirror-and-neither-removal-step-owns-a-record-sweep.md`
 
 ### Medium
 
 **M1 — Two CLAUDE.md inventory rows went stale and neither lint gate can see them.**
 `CLAUDE.md:51` still lists `plane.config.yaml` among the files `/fusion:setup` seeds from `templates/`, and `:52` still lists `plane-setup.md` under `docs/`. Both rows declare themselves derivable from the tree in their own text. `reference-resolution-lint` cannot see them because both write a bare filename rather than a path, and `derivable-enumerations-lint` has no check for either row although it covers the `bin/` roster in the same table. The plan's `**Decidability:**` line rests the whole sweep on those two gates and its `## Approach` split routes every documentation edit by *"does `npm test` assert it?"*, so an unasserted row that nobody routes by hand falls into neither half. The `docs/` row was routed to gate G1 at plan line 173; the `templates/` row was not, which is why it is still there. The finding is the gate gap, not the two rows.
-Filed: `issues/260815-0803_o_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`
+Filed: `260815-0803_*_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md`
 
 **M2 — `.gitignore:30` still carries `!bin/fusion-plane`.**
 The exception list differs from `bin/` in exactly that one entry, in one direction. The block's own WARNING at `.gitignore:14-20` states the obligation, the failure mode and that nothing checks it. Inert at runtime, and the list is the only written record of which helpers ship.
-Filed: `issues/260815-0803_o_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md`
+Filed: `260815-0803_*_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md`
 
 ### Low
 
 **L1 — The plan's step 3 says fourteen fixture files; the tree held fifteen.**
 Recorded by the executing ontocoder in its history entry, which is the one place `## Issue and Decision Filing — MANDATORY` says a defect may not live. Step 14 and the Closure arithmetic read the plan, which still says fourteen at line 180.
-Filed: `issues/260815-0803_o_the-plans-step-3-file-list-says-fourteen-fixture-files-and-the-tree-held-fifteen.md`
+Filed: `260815-0803_*_the-plans-step-3-file-list-says-fourteen-fixture-files-and-the-tree-held-fifteen.md`
 
 ---
 
@@ -114,7 +114,7 @@ Recorded so a later pass does not re-derive them.
 ## Recommended sequencing
 
 1. **H1**, before anything else touches the record store. It is a three-command repair and every marker scan run before it is wrong.
-2. **H2**, in the same pass. The seven closures follow the shape `shared/issues/260810-0410_c_…md` already uses, and H1's fix establishes which shape that is.
+2. **H2**, in the same pass. The seven closures follow the shape `260810-0410_*_…md` already uses, and H1's fix establishes which shape that is.
 3. **M2**, one deleted line, no dependency.
 4. **L1**, one edited figure in the plan, and it should land before step 14 rather than after it.
 5. **M1** last of the five and before step 4. It adds two checks to a test file, and it is the only one of the five that prevents recurrence rather than repairing an instance. The two stale rows it is evidenced by belong to the curator at gate G1 and are not part of this fix.

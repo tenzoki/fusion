@@ -1,9 +1,9 @@
-# Orchestrator Session — 260804-1407
+# Orchestrator Session — 260804-1407-orchestrator-session.md
 
 **Directive:** Build C5b — plan Steps 6, 7 and 8. The project-level `fusion-guard.json` loader, the template and this repository's own copy, and the `/fusion:setup` seeding. This is the half of the Circle's Directive that has never been started.
 **Mode:** plan
 **Status:** In progress
-**Predecessor session:** `circles/260801-1244-guard-rules-write/history/260804-1243-orchestrator-session.md`
+**Predecessor session:** `260804-1243-orchestrator-session.md`
 
 ## Why this, now
 
@@ -13,7 +13,7 @@ said plainly what the record showed: C5b appears in no issue store, is visible o
 line of the plan file, and a Coherence verdict cannot be clean against a Directive whose
 second half was never built. The user chose to build it.
 
-Deliberately not in this session: `260804-1344` and `260804-1345`, the two High fail-opens
+Deliberately not in this session: `260804-1344_*_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md` and `260804-1345_*_git-checkout-treeish-dash-dash-dot-overwrites-the-whole-protected-list-and-allows.md`, the two High fail-opens
 still open in the shell classifier. They gate plan Step 10, the ship, and not this work.
 
 ## What makes these three steps awkward
@@ -80,9 +80,9 @@ caught by measurement rather than by review.
 
 ## Decisions
 
-`260802-1912` moved to implemented, realised exactly as answered. Its residual turned out
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` moved to implemented, realised exactly as answered. Its residual turned out
 wider than the record bounded it — the narrowing also drops `fusion-workbench/.guard-state/**`,
-so the reach is the escalation machinery — filed at `260804-1427`.
+so the reach is the escalation machinery — filed at `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`.
 
 `260803-1314` was deliberately not answered in code and its status changed anyway. Before
 Step 6 no project could declare a `protectedPaths` list, so whether the rules-write exemption
@@ -95,7 +95,7 @@ the record.
 **Complete.** C5b is built and the Circle's Directive now has both halves. Not done, and named
 so the next session does not have to re-derive it: plan Step 9 (documentation, whose scope has
 changed twice), plan Step 10 (the rebuild and version bump that makes any of this live), the
-two High fail-opens in the shell classifier (`260804-1344`, `260804-1345`) which gate Step 10,
+two High fail-opens in the shell classifier (`260804-1344_*_the-git-option-walk-stops-at-an-unknown-options-value-so-a-c-behind-it-is-invisible.md`, `260804-1345_*_git-checkout-treeish-dash-dash-dot-overwrites-the-whole-protected-list-and-allows.md`) which gate Step 10,
 and decision `260803-1314`, which Step 6 made consequential.
 
 No review was run over these three commits. That is the next thing, not an omission to

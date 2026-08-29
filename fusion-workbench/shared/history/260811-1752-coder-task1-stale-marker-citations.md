@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Started:** 260811-1752
+**Started:** 260811-1752-coder-task1-stale-marker-citations.md
 **Task:** `fusion-workbench/tasklist.md` task 1 (`T1`), the queue's gate
 **Active Circle:** none (`.active-circle` absent; every `OUT_*` resolved into `shared/`)
 
@@ -13,8 +13,8 @@
 citations. Commit `1064fec` answered twelve decision records and moved their markers
 `_o_ → _a_/_d_`; two shipped source files still named the old marker:
 
-- `hooks/lib/reverted-copy.ts:32` → `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_…_integritaet-des-eskalationsspeichers.md`, now `_a_`
-- `hooks/lib/review-coverage.ts:78` → `shared/decisions/260810-0710_…_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, now `_d_`
+- `hooks/lib/reverted-copy.ts:32` → `260807-0945_…_integritaet-des-eskalationsspeichers.md`, now `_a_`
+- `hooks/lib/review-coverage.ts:78` → `260810-0710_…_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, now `_d_`
 
 Both were rewritten to the ratified wildcard form (`_*_`, decision `260806-0015`), which cites the
 marker *position* rather than a state that changes. The lint's own fix message names that form.
@@ -30,7 +30,7 @@ eleven hits. Ten are correct as they stand: four files illustrate the marker voc
 `agents/playmaker.md`, `skills/migrate/SKILL.md`) and the lint exempts them by pattern.
 
 The eleventh was real and already stale: **`hooks/review-coverage.ts:52`** cited
-`shared/decisions/260810-0710_o_…` for a record that moved to `_d_` before this session. Fixed in
+`260810-0710_*_…` for a record that moved to `_d_` before this session. Fixed in
 the same pass.
 
 It was green because the lint's `surface()` walks `hooks/lib/` and stops
@@ -51,7 +51,7 @@ filed, not fixed.
 
 ## Bookkeeping
 
-- Filed `shared/issues/260811-1755_o_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` — the recurrence is now twice in one session with the same cause, which makes it a pattern; the record also carries the measured surface gap and the two follow-ups (widen the surface; decide whether the rename→citation obligation can sit anywhere).
+- Filed `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` — the recurrence is now twice in one session with the same cause, which makes it a pattern; the record also carries the measured surface gap and the two follow-ups (widen the surface; decide whether the rename→citation obligation can sit anywhere).
 - Ticked task 1 in `fusion-workbench/tasklist.md`. The queue's gate is open — executors behind it no longer report `blocked` on a failure they did not cause.
 
 ## Verification

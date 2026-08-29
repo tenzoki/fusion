@@ -4,8 +4,8 @@
 **Date:** 260816-0058
 **Agent:** coder
 **Source records:**
-- `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1631_c_setups-resume-summary-still-asks-for-diverging-rows-that-no-step-produces.md`
-- `fusion-workbench/circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_c_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`
+- `260815-1631_*_setups-resume-summary-still-asks-for-diverging-rows-that-no-step-produces.md`
+- `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`
 
 **Files changed:** `skills/setup/SKILL.md` (-60 B), `skills/migrate/SKILL.md` (+7 B). Net -53 B on the `skills/` growth-bounded surface.
 
@@ -73,8 +73,8 @@ The probe was verified empirically on a fixture workbench rather than by reading
 | Fixture | Probe at HEAD | Narrowed probe |
 |---|---|---|
 | Bracket files only under `archive/`, `stashes/`, `.migration-v2-backup/`, at the workbench root, and a flat `circles/notes[o]-unparsable.md` | `OLD=1`, naming `circles/notes[o]-unparsable.md` | `OLD=0` |
-| Plus `shared/issues/260101-0000[o]-live.md` | — | `OLD=1`, naming it |
-| Plus `circles/260101-0000-x/issues/260101-0000[p]-live.md` | — | `OLD=1`, naming it |
+| Plus `260101-0000[o]-live.md` | — | `OLD=1`, naming it |
+| Plus `260101-0000[p]-live.md` | — | `OLD=1`, naming it |
 | Genuine pre-v4 `circles/260716-1847[t]-umbau.md` | — | `OLD=1` through the Circle-file probe |
 
 The first row is the deadlock reproducing at HEAD and closing under the fix; the last three confirm
@@ -85,6 +85,6 @@ nothing live stopped being detected.
 `rules/fusion-workbench-conventions.md:64` counts setup among four consumers that exclude `stashes/`
 by path, and setup no longer excludes by path at all. `rules/` was outside this task's permitted file
 set. Filed as
-`fusion-workbench/shared/issues/260816-0058_o_the-conventions-still-count-setup-among-the-consumers-that-exclude-stashes-by-path.md`,
+`260816-0058_*_the-conventions-still-count-setup-among-the-consumers-that-exclude-stashes-by-path.md`,
 which also names the standing instruction in that sentence that must survive the correction, and the
-sibling record `260816-0025_o_...` whose table carries the same row.
+sibling record `260816-0025_*_...` whose table carries the same row.

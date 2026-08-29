@@ -6,7 +6,7 @@ The `.gitignore` comment still describes the two-group split its authoring home 
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `.gitignore:64-68`
-**Cross-references:** plan step 2 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `rules/workbench-tracking.md`
+**Cross-references:** plan step 2 in `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `rules/workbench-tracking.md`
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-02
 **Mode:** in-Circle clarification
-**Circle:** `circles/260801-1244-rule-provenance-header`
+**Circle:** `260801-1244-rule-provenance-header`
 **Status:** paused, awaiting four user answers. No spec written yet.
 
 ## What was done
@@ -27,8 +27,8 @@ All ten rule files were read at the head, `git log --diff-filter=A` was run per 
 
 ## Artifacts
 
-- Corrected: `circles/260801-1244-rule-provenance-header/_t_circle.md` `## Grounding snapshot`. No other section touched.
-- Filed: `circles/260801-1244-rule-provenance-header/decisions/260802-1018_o_what-a-rule-file-with-no-recoverable-record-cites.md`, open. The fourth question, which the spec does not cover.
+- Corrected: `260801-1244-rule-provenance-header` `## Grounding snapshot`. No other section touched.
+- Filed: `260802-1018_*_what-a-rule-file-with-no-recoverable-record-cites.md`, open. The fourth question, which the spec does not cover.
 
 ## Next
 

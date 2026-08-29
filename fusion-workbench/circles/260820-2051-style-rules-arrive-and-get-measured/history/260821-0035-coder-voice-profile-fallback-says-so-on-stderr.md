@@ -10,7 +10,7 @@
 
 ## What was asked
 
-Step 4 of `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md`:
+Step 4 of `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`:
 make `emit_voice_profile` in `bin/fusion-rules` announce on standard error that it fell back to the
 English variant of a profile family, leave standard output untouched, append the cases to the
 existing `hooks/lib/__tests__/rules-voice-profile.test.ts`, and carry the decision record's
@@ -44,7 +44,7 @@ four cases stay disjoint and complete:
 *detectable*, which is what the mechanism change owes. Whether the agent then writes the history line
 stays an instruction-following obligation, and this project has documented such obligations as
 overridable under load. The comment says so and says not to read the notice as compliance
-(`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_is-the-voice-profile-fallback-capability-in-scope-given-116-lines-of-hook-test-head-room.md`).
+(`260820-2314_*_is-the-voice-profile-fallback-capability-in-scope-given-116-lines-of-hook-test-head-room.md`).
 
 **Two cases appended to `hooks/lib/__tests__/rules-voice-profile.test.ts`**, no new file. A prose
 agent in a `de/de` project missing `chat-voice-de.yaml` gets `[CHAT_EN, WRITE_DE]` on standard output
@@ -79,7 +79,7 @@ records that, and its six lines are part of the +39 counted above.
 
 ## What this does not close, and it is half the record
 
-`circles/260801-1244-curator/issues/260814-1332_o_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`
+`260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`
 stays open. The helper-side half is done: the record's option 1 is exactly what landed, and the event
 is now detectable. The rule-side half is not, and it is outside this step's file list.
 
@@ -106,5 +106,5 @@ says this and names the edit that would close it.
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/rules-voice-profile.test.ts`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/reference-resolution-lint.test.ts`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/surface-growth.golden`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md` (step 4 marked `[DONE]`)
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260801-1244-curator/issues/260814-1332_o_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md` (note appended, stays open)
+- `/Users/k1/Projects/productive/fusion/260820-2324_*_plan-style-rules-arrive-and-get-measured.md` (step 4 marked `[DONE]`)
+- `/Users/k1/Projects/productive/fusion/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md` (note appended, stays open)

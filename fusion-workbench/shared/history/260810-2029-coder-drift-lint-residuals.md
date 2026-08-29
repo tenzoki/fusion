@@ -1,7 +1,7 @@
 # coder — drift-lint residuals (empty condition cell, skip-licence coverage)
 
 **Status:** Complete
-**Task:** `R:260810-1918-drift-lint-residuals`, Turn 2 of session `260810-1646`
+**Task:** `R:260810-1918-drift-lint-residuals`, Turn 2 of session `260810-1646-orchestrator-session.md`
 **File owned:** `hooks/lib/__tests__/state-drift-detection-lint.test.ts` (the only file changed)
 **Records:** `shared/issues/260810-1813_p_*` (Finding 1), `shared/issues/260810-1918_p_*` (Finding 2)
 
@@ -59,7 +59,7 @@ Three changes:
 
 Built in `scratchpad/driftgate/` — a copy of `agents/orchestrator.md` plus a copy of the test,
 laid out so `pluginRoot` resolves into the scratch tree. The real prompt was never mutated
-(decision `260810-1820`), which matters here because four executors were writing in this tree
+(decision `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`), which matters here because four executors were writing in this tree
 at the time.
 
 - Baseline: the unmutated scratch copy passes, 16 tests.

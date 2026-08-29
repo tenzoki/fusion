@@ -3,7 +3,7 @@
 **Status:** Complete
 **Dispatched by:** orchestrator
 **Circle:** none active (shared store)
-**Source:** `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 9
+**Source:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 9
 **Range measured:** `370bfc5..77b9a02` (the session's start commit to HEAD)
 
 This step changes no shipped file. It produces the figures the orchestrator's closure note will
@@ -111,7 +111,7 @@ Net 290 lines removed. Total 20 363 to 20 073 against an unchanged floor of 17 8
 | `7c9e3f1` | step 7, the prose-metric test | 20 073 | 302 |
 
 The cut itself was 501 lines, most of it the `BASELINE` pin's re-approval log moving out of
-`reference-resolution-lint.test.ts` into `shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`
+`reference-resolution-lint.test.ts` into `260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`
 (427 lines out of that one file), with 29 lines coming back into `helpers/citation-scan.ts` as the
 shared walk that nine files had been reimplementing.
 
@@ -141,10 +141,10 @@ git show 370bfc5:<file> | awk '<slice>' > a; awk '<slice>' < <file> > b; diff -q
 **1. Each of the four defects is closed, and `cd hooks && npm test` exits 0 at the commit that
 closes each. Yes.** The four records carry the `_c_` marker, verified by filename. The four closing
 commits each reported exit 0 in their step history: `4a58be1` (defect 4, history
-`shared/history/260822-1215-coder-close-the-growth-bound-record-on-a-verified-disposition.md`),
-`7c9e3f1` (defect 3, `shared/history/260822-1425-coder-plan-c0-step-7-prose-metric-test.md`),
+`260822-1215-coder-close-the-growth-bound-record-on-a-verified-disposition.md`),
+`7c9e3f1` (defect 3, `260822-1425-coder-plan-c0-step-7-prose-metric-test.md`),
 and `6781814` for defects 1 and 2
-(`shared/history/260822-1450-coder-c0-steps-5-and-6-two-defects-on-the-skills-surface.md`). The
+(`260822-1450-coder-c0-steps-5-and-6-two-defects-on-the-skills-surface.md`). The
 per-commit exits are read from those reports, not re-run here: re-running them would need a
 checkout of each commit, which this step is not permitted to take. Exit 0 at HEAD is verified by
 this step's own run.
@@ -159,7 +159,7 @@ Tripped once, caught by review, repaired.** This is not an unbroken yes. The ste
 `c2ad89c` moved a claim in `skills/cleanup/SKILL.md` and `skills/help/SKILL.md` to a header that did
 not hold it, which is exactly the failure this clause exists to catch. The review caught it and
 filed
-`shared/issues/260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`.
+`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`.
 `620e737` repaired it by putting the rationale into the helper header the two pointers were already
 claiming carried it, and `77b9a02` repaired a further four claims the same session had written that
 turned out to be false. Both records are closed. The clause holds at HEAD; it did not hold
@@ -167,7 +167,7 @@ continuously through the Circle.
 
 **5. Nothing was added to any bounded surface beyond the four defect fixes. No.** There is a filed
 record saying this clause has no true answer,
-`shared/issues/260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`,
+`260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`,
 and the measurement agrees with it and finds one more instance than it names.
 
 Additions to a bounded surface that are not one of the four defect fixes:
@@ -196,11 +196,11 @@ The note is the orchestrator's at Phase 4.
 
 **7. The Circle also stops validly without meeting the three head-room clauses if the Gate A ledger
 did not clear a target. Not the path taken.** The ledger did report a shortfall:
-`shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md` opens by saying the hook test
+`260822-1226-cut-ledger-for-three-bounded-surfaces.md` opens by saying the hook test
 suite yields about 83 lines against a target of 500 from restatement and superseded rows alone, and
 that the only route to the target was a decision rather than a cut. The user answered that decision
 at Gate A in favour of moving the re-approval log
-(`shared/decisions/260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
+(`260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
 option 2, now `_i_`), the Circle proceeded, and all three head-room clauses are met. The clause is
 inapplicable rather than false.
 
@@ -210,18 +210,18 @@ All four carry the closed marker.
 
 | Defect | Record |
 |---|---|
-| 1. Step 0e's unguarded blocks and unreported outcome | `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` |
-| 2. The v10.5 note missing from `/fusion:help` | `shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md` |
-| 3. No test for `bin/fusion-prose-metric` | `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` |
-| 4. The growth-bound record whose stopping criterion could not be met | `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` |
+| 1. Step 0e's unguarded blocks and unreported outcome | `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` |
+| 2. The v10.5 note missing from `/fusion:help` | `260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md` |
+| 3. No test for `bin/fusion-prose-metric` | `260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` |
+| 4. The growth-bound record whose stopping criterion could not be met | `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` |
 
 Six further defects were opened and closed inside the range, all of them review findings:
-`shared/issues/260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`,
-`shared/issues/260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`,
-`shared/issues/260822-1506_*_setups-exit-code-sentence-ends-in-a-colon-introducing-a-list-that-was-cut.md`,
-`shared/issues/260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`,
-`shared/issues/260822-1506_*_the-help-caps-standing-line-makes-three-claims-about-docs-and-none-of-the-three-resolves.md`,
-`shared/issues/260822-1506_*_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`.
+`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`,
+`260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`,
+`260822-1506_*_setups-exit-code-sentence-ends-in-a-colon-introducing-a-list-that-was-cut.md`,
+`260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`,
+`260822-1506_*_the-help-caps-standing-line-makes-three-claims-about-docs-and-none-of-the-three-resolves.md`,
+`260822-1506_*_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`.
 
 ## Records this Circle opened and left open
 
@@ -229,41 +229,41 @@ Named rather than counted, so the closure note can point at them.
 
 **Open defects (`_o_`), twelve:**
 
-- `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
-- `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
-- `shared/issues/260822-1154_*_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`
-- `shared/issues/260822-1226_*_the-executor-report-contract-cites-bugfixer-as-its-author-and-bugfixer-defines-a-different-shape.md`
-- `shared/issues/260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`
-- `shared/issues/260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
-- `shared/issues/260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
-- `shared/issues/260822-1506_*_the-prose-metric-counts-a-bare-em-dash-as-a-prose-word-and-only-the-test-says-so.md`
-- `shared/issues/260822-1506_*_the-prose-metric-test-pins-every-header-rule-except-the-two-the-header-calls-limits.md`
-- `shared/issues/260822-1506_*_the-v9-upgrade-notes-preamble-calls-six-checks-optional-and-check-2-describes-a-silent-behaviour-change.md`
-- `shared/issues/260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`
-- `shared/issues/260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
+- `260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
+- `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+- `260822-1154_*_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`
+- `260822-1226_*_the-executor-report-contract-cites-bugfixer-as-its-author-and-bugfixer-defines-a-different-shape.md`
+- `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`
+- `260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
+- `260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
+- `260822-1506_*_the-prose-metric-counts-a-bare-em-dash-as-a-prose-word-and-only-the-test-says-so.md`
+- `260822-1506_*_the-prose-metric-test-pins-every-header-rule-except-the-two-the-header-calls-limits.md`
+- `260822-1506_*_the-v9-upgrade-notes-preamble-calls-six-checks-optional-and-check-2-describes-a-silent-behaviour-change.md`
+- `260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`
+- `260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
 
 **Open decisions (`_o_`), four:**
 
-- `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
-- `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
-- `shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
-- `shared/decisions/260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`
+- `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+- `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
+- `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
+- `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`
 
 **Answered but not implemented (`_a_`), two:**
 
-- `shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`
-- `shared/decisions/260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md`
+- `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`
+- `260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md`
 
 **Answered and implemented (`_i_`), one:**
-`shared/decisions/260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`.
+`260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`.
 
 **Live planning records, two**, both still `_o_` and the orchestrator's to transition:
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` and
-`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`.
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` and
+`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`.
 
 ## One observation for the orchestrator
 
-`shared/decisions/260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md`
+`260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md`
 carries the answered marker and an unfilled `Implemented:` stub, but its answer (option 1, move the
 contract to `rules/`) was realised in `181dd8a`. The marker looks one transition behind. This step
 did not rename it: the record belongs to step 3's work, and step 9 changes no file but its own log.
@@ -285,10 +285,10 @@ Two scratch scripts and one extracted tree under the session scratchpad
 the repository or the workbench except this file.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `agents/*.md` paragraph assigns both reviewer prompts' whole
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The `agents/*.md` paragraph assigns both reviewer prompts' whole
 reduction, 9 504 bytes, to `rules/review-contract.md`. The relocation is 8 894 bytes, the figure the
 step-3 history and the decision record carry; the other 610 are the two reviewer prompts' share of the
 five-claim cut (305 each), since the five claims stood in all fifteen prompts and not in thirteen.
 The following sentence should read "the remaining 5 459 bytes across the other thirteen prompts".
 The totals are unaffected: 14 963 cut, `agents/*.md` at 16 601 bytes of head-room either way. Filed as
-`shared/issues/260822-1556_*_the-closure-measurement-assigns-610-bytes-of-the-five-claim-cut-to-the-reviewer-contract-relocation.md`.
+`260822-1556_*_the-closure-measurement-assigns-610-bytes-of-the-five-claim-cut-to-the-reviewer-contract-relocation.md`.

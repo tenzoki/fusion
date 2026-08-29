@@ -2,8 +2,8 @@
 
 **Agent:** coder
 **Date:** 2026-08-21 03:16
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
-**Plan:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, steps 13 and 14
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
+**Plan:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, steps 13 and 14
 **Status:** Complete
 
 ## What was done
@@ -14,13 +14,13 @@ Four hunks in one file, `rules/user-facing-output.md`, kept separable so the two
 
 **Hunk A, `## Self-review before sending: the readability gate`, point 1.** The fact-first requirement gains its failure condition in one sentence: an opening sentence fails when the fact it stands in for was available to the writer and the sentence names the significance of that fact instead of the fact. Two sentences follow it. One says the writer holds what decides the case and nothing outside the writer can check it, which is the decidability position `## Constraints` of the spec requires and is also why no check is proposed. The other says the factual form is usually no longer than the form it replaces, so the clause is not licence against `## Length`. The demonstration is one `Not X → Y` sub-bullet in the form the neighbouring clauses in `## Vocabulary` and `## Questions and gates` already use.
 
-**Hunk B, `## Style anti-patterns apply to everything`, after "Answer, don't validate".** The correctio test from recommendation 3 of `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`, in one sentence: naming the rejected term earns its place when the reader would otherwise have assumed it. Two sub-bullets demonstrate it, the failing case from the analysis's own reduction and the one instance of five that earned its place. The marker pair in the second is glossed inline, because `## Vocabulary` forbids unexplained marker syntax in body prose.
+**Hunk B, `## Style anti-patterns apply to everything`, after "Answer, don't validate".** The correctio test from recommendation 3 of `260816-0740-rhetorical-register-of-agent-output.md`, in one sentence: naming the rejected term earns its place when the reader would otherwise have assumed it. Two sub-bullets demonstrate it, the failing case from the analysis's own reduction and the one instance of five that earned its place. The marker pair in the second is glossed inline, because `## Vocabulary` forbids unexplained marker syntax in body prose.
 
 **One sample of the two was used, and the reason is that the other has no recoverable fact.** The Circle record quotes two: "Schritt 8 hat etwas gefunden, das mehr wert ist als seine eigene Arbeit", whose factual form the record supplies, and "Zwei Türen, die niemand bewacht hätte", whose factual form appears nowhere in the tree. Writing an "after" for the second would have meant inventing the number it stands in for and putting the invention into a normative file as a worked example. The first sample carries the demonstration alone.
 
 ### Step 14, two hunks
 
-**Hunk C, `## Questions and gates`.** The existing foreclosure bullet said to carry the foreclosure "on the option's own line when the gate is plain chat text", which is reading (a) of `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-a-foreclosure-clause-cost-its-own-line-and-what-caps-the-description-field.md`, the reading that record rejects. It now says "on a line of its own beneath the option". Two bullets follow: the foreclosure takes its own line and is never folded back onto the option's line to buy a line against a cap, and a plain-text gate carries at most three options. The second carries the arithmetic written out, one line of question stem plus three option lines plus three foreclosure lines, seven against the cap of eight in `## Length`, with the fourth-option escape the record names.
+**Hunk C, `## Questions and gates`.** The existing foreclosure bullet said to carry the foreclosure "on the option's own line when the gate is plain chat text", which is reading (a) of `260820-2314_*_does-a-foreclosure-clause-cost-its-own-line-and-what-caps-the-description-field.md`, the reading that record rejects. It now says "on a line of its own beneath the option". Two bullets follow: the foreclosure takes its own line and is never folded back onto the option's line to buy a line against a cap, and a plain-text gate carries at most three options. The second carries the arithmetic written out, one line of question stem plus three option lines plus three foreclosure lines, seven against the cap of eight in `## Length`, with the fourth-option escape the record names.
 
 **Hunk D, `## Length`.** A new bullet caps the `AskUserQuestion` option `description` field at 2 lines. It is an addition to the section, not a relaxation of anything in it: every existing number stands unchanged.
 
@@ -45,6 +45,6 @@ The one mark is unchanged and unchanged in place: it sits inside the canonical a
 
 ## What was not done
 
-No check, no lint, no test asserts either clause. The answered decision `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` makes the measurement a precondition for the gate question, and this Circle registers the measurement without having run it. Both clauses are writer-applied tests.
+No check, no lint, no test asserts either clause. The answered decision `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` makes the measurement a precondition for the gate question, and this Circle registers the measurement without having run it. Both clauses are writer-applied tests.
 
 Nothing was committed. The two steps are separable by hunk, and the commit split is the orchestrator's.

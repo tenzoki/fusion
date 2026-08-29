@@ -28,7 +28,7 @@ Two costs, and the second is the one that matters:
 
 ## Why the ordering was chosen, as far as the record shows
 
-`shared/history/260811-2205-coder-unresolved-turn-budget-check-in.md` states the placement as "after the circuit-breaker table, before Step 3e" without giving a reason for the *before*. The circuit-breaker half is clearly right — a tripped breaker must exit without asking. The Step 3e half looks like it inherited that ordering rather than being decided.
+`260811-2205-coder-unresolved-turn-budget-check-in.md` states the placement as "after the circuit-breaker table, before Step 3e" without giving a reason for the *before*. The circuit-breaker half is clearly right — a tripped breaker must exit without asking. The Step 3e half looks like it inherited that ordering rather than being decided.
 
 ## Fix direction
 
@@ -42,4 +42,4 @@ This composes with the Revise-Artifact hole filed alongside it: if the check-in 
 - The prompt states which of Step 3d, Step 3e and Step 3c-bis the gate sits relative to, and why that position and not the neighbouring one.
 
 ---
-Resolved: Fixed by the same move as `260811-2304`: the gate sits at the start of a Turn, after Step 3e has already decided whether another Turn is entered. `agents/orchestrator.md:655` carries the reasoning explicitly — "on the Turn that empties the queue, Step 3e exits to Phase 4 whatever the user answered, so a Continue there would be collected, logged, and then not acted on. At the start of a Turn both faults go at once." The discarded-answer case this record measured can no longer occur. Verified by reconciliation pass 260817-1836 at HEAD `2552586`.
+Resolved: Fixed by the same move as `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md`: the gate sits at the start of a Turn, after Step 3e has already decided whether another Turn is entered. `agents/orchestrator.md:655` carries the reasoning explicitly — "on the Turn that empties the queue, Step 3e exits to Phase 4 whatever the user answered, so a Continue there would be collected, logged, and then not acted on. At the start of a Turn both faults go at once." The discarded-answer case this record measured can no longer occur. Verified by reconciliation pass 260817-1836 at HEAD `2552586`.

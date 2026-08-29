@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Dispatched by:** orchestrator
-**Plan:** `shared/planning/260812-1232_p_remove-the-protected-path-half-of-the-compliance-guard.md`, step 6
+**Plan:** `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, step 6
 
 ---
 
@@ -112,7 +112,7 @@ looking for.
   halt, and CHECK 3, the decision-governed check — neither of which was ever its reason, and one
   of which (CHECK 3) is inert in every shipped layer, so standing it down is currently standing
   down nothing. It cites
-  `shared/decisions/260812-1232_o_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+  `260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
   and says in as many words that the branch's continued existence is not that record's answer.
 - **`guard.ts` Bash branch** — Bash reached this hook for the before-fingerprint and for nothing
   else. It now allows immediately. The comment also records the cost that got worse: a halted
@@ -137,7 +137,7 @@ and `tracker.ts` that cited deleted test files or described the fingerprint as a
 ### One case-folding claim inherited a falsified premise
 
 `paths.ts` `matchesAny` now carries the only path match in the guard. The deferred decision
-`circles/260801-1244-guard-rules-write/decisions/260804-1632_d_should-findrelevantdecisions-fold-case-…`
+`260804-1632_*_should-findrelevantdecisions-fold-case-…`
 rests on two grounds, and the second — "this is CHECK 3, not CHECK 2; `guard.protectedPaths` is
 matched folded and is unaffected either way" — has no other side left. The docstring says so and
 says the record is the user's to re-open. The behaviour is unchanged. The plan predicted this in
@@ -228,6 +228,6 @@ Three things, and the second is the one that would have stopped this step.
 
 ## For the reconciler, when step 10 is done
 
-`circles/260801-1244-guard-rules-write/issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
+`260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
 is open and its subject was deleted today. It is not in the plan's closing list. `session-start.ts`
 cites it and says it is moot; nothing has closed it.

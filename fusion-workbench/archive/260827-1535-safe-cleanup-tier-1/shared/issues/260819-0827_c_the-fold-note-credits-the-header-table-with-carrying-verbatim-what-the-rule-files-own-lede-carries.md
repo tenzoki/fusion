@@ -52,8 +52,8 @@ reading `rules/workbench-tracking.md:7` and `rules/fusion-workbench-conventions.
 verbatim carrier and to say the paragraph was merged rather than removed. Text only, in a closed
 record.
 
-Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
+Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301-orchestrator-session.md`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
 
 ---
-Resolved: fixed — a `Revised by:` line on the closed record names `rules/workbench-tracking.md` as the verbatim carrier and says the paragraph was merged; shared/issues/260819-0042_*_the-move-turned-an-adjacent-duplicate-enumeration-of-the-root-entries-into-a-cross-file-one.md:67
+Resolved: fixed — a `Revised by:` line on the closed record names `rules/workbench-tracking.md` as the verbatim carrier and says the paragraph was merged; 260819-0042_*_the-move-turned-an-adjacent-duplicate-enumeration-of-the-root-entries-into-a-cross-file-one.md:67

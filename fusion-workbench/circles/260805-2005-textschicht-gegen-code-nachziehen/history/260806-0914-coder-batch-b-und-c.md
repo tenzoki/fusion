@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-06
 **Agent:** coder
-**Plan:** `circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_p_plan-textschicht-gegen-code.md`, steps 11 and 12 (both marked [DONE])
+**Plan:** `260805-2353_*_plan-textschicht-gegen-code.md`, steps 11 and 12 (both marked [DONE])
 **Status:** Complete
 
 ## What was done

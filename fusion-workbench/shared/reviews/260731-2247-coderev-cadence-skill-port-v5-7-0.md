@@ -33,7 +33,7 @@ between calls. Verified: the gathering loop under empty expansion produces no ou
 **exits 0**, and `mkdir -p "$WORKBENCH/$OUT_MEMO"` becomes `mkdir -p "/"`, which succeeds.
 This is the house pattern (seven sibling skills do the same), but cadence is the first
 consumer where the slip is silent and self-consistent rather than loud. Filed:
-`shared/issues/260731-2246_o_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`.
+`260731-2246_*_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`.
 
 **Checked and correct** — the items the brief asked about specifically:
 
@@ -64,7 +64,7 @@ says one git *commit* is a log unit; `:136` says a session is one git-commit *da
 citing step 4 as its authority. Ten commits in an afternoon score 10 or 1 depending on
 which sentence is read last, and git is usually the highest-volume source, so this decides
 list 3's ranking. Inherited verbatim from flight (`:91` vs `:126`), not introduced here.
-Filed: `shared/issues/260731-2246_o_cadence-churn-session-defined-two-ways-for-git-commits.md`.
+Filed: `260731-2246_*_cadence-churn-session-defined-two-ways-for-git-commits.md`.
 
 ### Frontmatter and packaging
 
@@ -72,7 +72,7 @@ Filed: `shared/issues/260731-2246_o_cadence-churn-session-defined-two-ways-for-g
 `skills/cadence/SKILL.md:4` and `:2`. The body uses `find` (arguing for it explicitly) and
 Read. The description is 2.5x the next-longest skill's and sits in every session's context,
 against fusion's own lean-context convention. Filed:
-`shared/issues/260731-2246_o_cadence-frontmatter-unused-tools-and-oversized-description.md`.
+`260731-2246_*_cadence-frontmatter-unused-tools-and-oversized-description.md`.
 
 **Frontmatter parses.** No `: ` occurs inside the description value, so the unquoted plain
 scalar is safe — the `CLAUDE.md`-documented breakage does not apply. Three keys parse
@@ -156,20 +156,20 @@ follow-up work.
 
 ---
 
-## Reconciliation annotation — 260731-2324 (reconciler, domain `code`)
+## Reconciliation annotation — 260731-2324-reconciliation.md (reconciler, domain `code`)
 
 Findings re-verified against the tree at `17730b8`. All three confirmed; all three remain open in `shared/issues/` with reconciliation evidence appended to each. No finding was resolved between the review and this pass, and none should have been — the release was already out.
 
 | Finding | Status | Issue file |
 |---|---|---|
-| M1 — empty key expansion writes a silently empty digest | confirmed open | `shared/issues/260731-2246_o_cadence-empty-key-expansion-writes-a-silently-empty-digest.md` |
-| M2 — churn "session" defined two ways for git | confirmed open | `shared/issues/260731-2246_o_cadence-churn-session-defined-two-ways-for-git-commits.md` |
-| L1 — unused tools in `allowed-tools`, oversized description | confirmed open | `shared/issues/260731-2246_o_cadence-frontmatter-unused-tools-and-oversized-description.md` |
+| M1 — empty key expansion writes a silently empty digest | confirmed open | `260731-2246_*_cadence-empty-key-expansion-writes-a-silently-empty-digest.md` |
+| M2 — churn "session" defined two ways for git | confirmed open | `260731-2246_*_cadence-churn-session-defined-two-ways-for-git-commits.md` |
+| L1 — unused tools in `allowed-tools`, oversized description | confirmed open | `260731-2246_*_cadence-frontmatter-unused-tools-and-oversized-description.md` |
 
 Independently re-checked and agreed, with the evidence:
 
 - **Version hygiene coherent across all four surfaces.** `.claude-plugin/plugin.json` 5.7.0; marketplace clone at `96d2d65 chore(fusion): bump to 5.7.0`; `install.sh:27` pin example `tags/v5.7.0`; git tag `v5.7.0` present.
-- **Tests green.** `npm test` from `hooks/` — 316 passed, 12 files (run 260731-2324), matching the review's count.
+- **Tests green.** `npm test` from `hooks/` — 316 passed, 12 files (run 260731-2324-reconciliation.md), matching the review's count.
 - **`bin/fusion-paths cadence`** emits `WORKBENCH`, `OUT_MEMO`, `SCAN_HISTORY` and nothing else, exit 0.
 - **The three documentation statements in `rules/fusion-workbench-conventions.md` are accurate** against the skill as it stands — the `Cadence digest` row (`$OUT_MEMO`, `cadence-<username>.md`, no state marker) matches `skills/cadence/SKILL.md:144`; the append-vs-overwrite paragraph matches `:150`; the widened no-marker sentence is consistent.
 

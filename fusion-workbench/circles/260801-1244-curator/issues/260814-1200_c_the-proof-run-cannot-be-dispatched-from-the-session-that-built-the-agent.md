@@ -17,7 +17,7 @@ version now, the work tree having been bumped to 8.2.0 in `6ba9d77`.
 **This is not a defect in the Circle's work.** The agent is registered correctly and was proved
 loadable: Turn 2 ran a headless dispatch against `--plugin-dir <repo>` with permissions enabled, the
 curator replied, and a control dispatch of a deliberately unlisted agent was refused by name
-(`circles/260801-1244-curator/reviews/260814-1128-coderev-curator-turn-2.md`). What cannot reach it
+(`260814-1128-coderev-curator-turn-2.md`). What cannot reach it
 is *this* session.
 
 **It is the standing release gap arriving at the one moment it costs something.** `portfolio.md`
@@ -42,7 +42,7 @@ and which does reach the agent, at the cost of running outside the orchestrator'
 **Filed in the Circle's store** per the Origin Rule: it arose from executing this Directive, at the
 step the Directive itself names.
 
-**Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+**Filed by:** orchestrator, session `260813-2345-orchestrator-session.md`.
 
 ---
 **Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). The instance is cleared; the

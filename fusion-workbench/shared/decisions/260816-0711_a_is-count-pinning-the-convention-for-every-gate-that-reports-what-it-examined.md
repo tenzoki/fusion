@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** reconciler
-**Cross-references:** `shared/issues/260810-2149_c_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` (the closure that deferred this question and filed no successor); `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the first application); `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` (the third)
+**Cross-references:** `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` (the closure that deferred this question and filed no successor); `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the first application); `hooks/lib/__tests__/reference-resolution-lint.test.ts` `BASELINE` (the third)
 
 ---
 
@@ -22,7 +22,7 @@ the surface did not quietly shrink?" differently:
 - `hooks/lib/__tests__/surface-growth-bound.test.ts` pins a per-file byte inventory in a golden
   fixture, regenerated behind a flag that fails on purpose.
 
-`260810-2149`'s closure explicitly declined to generalise: *"whether count-pinning becomes a
+`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`'s closure explicitly declined to generalise: *"whether count-pinning becomes a
 convention for every gate that reports what it examined remains open; this is the third application,
 which is the point at which the record says the answer stops being obvious, and it should be settled
 as its own decision rather than inherited from this fix."* No such decision was filed. This record is
@@ -52,10 +52,10 @@ that filing, not a new question.
 
 ## Constraints
 
-- Whatever is chosen must not turn re-approval into a reflex. `260815-2322` is open on the adjacent
+- Whatever is chosen must not turn re-approval into a reflex. `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md` is open on the adjacent
   cost: a fixture that goes stale on every edit already forces one re-approval per Turn and had to be
   explained in every dispatch of this session.
-- It must not widen any assertion back into a floor. That is the defect `260810-2149` closed and it
+- It must not widen any assertion back into a floor. That is the defect `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` closed and it
   is named in that gate's own failure text.
 - Three applications exist; a fourth should not land before this is answered, or the answer will be
   inherited from whichever shape the fourth author happened to copy.
@@ -68,7 +68,7 @@ the strongest of the three at HEAD — the cascade's probe assertion has cost no
 — but "cost nothing yet" over one session is not evidence about a convention.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 2: probe-assertion is the convention, count-pinning the fallback where no probe exists. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 2: probe-assertion is the convention, count-pinning the fallback where no probe exists. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:

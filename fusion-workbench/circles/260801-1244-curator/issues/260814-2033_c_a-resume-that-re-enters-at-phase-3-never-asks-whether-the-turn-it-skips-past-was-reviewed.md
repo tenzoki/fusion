@@ -35,11 +35,11 @@ takes its range start from `session.git_head_at_start` in `agentstate.yaml`, whi
 has read by that point.
 
 **How this record came to exist separately.** It is the second of the two candidate fixes in
-`circles/260801-1244-curator/issues/260814-2017_c_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`.
+`260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`.
 That record's subject was one uncovered range, and the range was covered at 20:31. This is the half
 that outlives it.
 
-**Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
+**Filed by:** reconciler, session `260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the miss happened while
 running this Circle, in this Circle's own last Turn.
 

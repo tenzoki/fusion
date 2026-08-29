@@ -5,14 +5,14 @@ The wildcard record's claim that every other Circle record spells a hard marker 
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 4 (`a2a18f9..2ec2bc2`)
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`, `## What is wrong`
+**Affects:** `260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`, `## What is wrong`
 **Cross-references:** `rules/circle-records.md:274` (`### Citation form in a Circle record's head field`), the rule that record produced and which stands correct
 
 ---
 
 ## What is wrong
 
-`260823-1408_*` argues for the new rule partly from this:
+`260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md_*` argues for the new rule partly from this:
 
 > Every other Circle record in the live tree spells a hard marker in that field, so the next writer follows the template and re-creates the fault
 
@@ -46,4 +46,4 @@ The record is `_c_` and its rule shipped, so the cheapest correct action is to l
 If it is amended: replace the sentence with the count, not with a hedge. "Seven of the thirteen Circle records that cite a plan spell a hard marker" says the same thing about the template's pull and is checkable.
 
 ---
-Resolved: moot — the closed record's rule is right and this record stands as the correction beside it; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`.
+Resolved: moot — the closed record's rule is right and this record stands as the correction beside it; `260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`.

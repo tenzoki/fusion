@@ -1,7 +1,7 @@
 # P-9: the `stilwerk/` profiles, shipped and workbench copies
 
 **Agent:** ontocoder
-**Source:** `circles/260824-1853-close-every-open-defect/planning/260824-1905_p_plan-close-every-open-defect.md`, step 9; triage rows 94, 97, 98, 100, 187, 188
+**Source:** `260824-1905_*_plan-close-every-open-defect.md`, step 9; triage rows 94, 97, 98, 100, 187, 188
 **Status:** Complete
 
 ## What changed

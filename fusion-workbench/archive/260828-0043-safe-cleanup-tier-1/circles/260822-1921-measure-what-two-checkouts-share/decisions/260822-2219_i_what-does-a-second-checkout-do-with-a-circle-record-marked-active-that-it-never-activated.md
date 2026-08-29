@@ -4,9 +4,9 @@
 **Domain:** code
 **Filed by:** analyst, C1 isolation measurement
 **Cross-references:**
-`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md` (the measurement that raised it, `## Findings` section 3);
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (class L of its state partition, which puts `.active-circle` in the group that never travels, and answer 4, which limits cross-checkout visibility to presence);
-`shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` (the arrangement this is a consequence of);
+`260822-2219-what-two-checkouts-of-one-project-actually-share.md` (the measurement that raised it, `## Findings` section 3);
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (class L of its state partition, which puts `.active-circle` in the group that never travels, and answer 4, which limits cross-checkout visibility to presence);
+`260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` (the arrangement this is a consequence of);
 `rules/circle-records.md` (the state vocabulary the `_t_` marker belongs to);
 `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` (the closed writer set of `.active-circle`)
 
@@ -48,7 +48,7 @@ This is genuinely the user's, because it trades a split store for one Directive 
 ---
 Answered:
 ---
-Answered: circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md `## Grounding snapshot`
+Answered: 260823-0023-settle-what-travels-between-checkouts `## Grounding snapshot`
 — user decision at the shaping gate of `/fusion:direct`, 260823: **`/fusion:setup` reports the state and
 offers activation as the user's own act.** It informs; it does not act.
 
@@ -62,7 +62,7 @@ with 4 661 bytes of head-room that three of this Circle's changes now draw from,
 nothing. A second checkout can still activate a Circle the first one holds; what changes is that the
 person sees it first.
 
-Realisation belongs to `circles/260823-0023-settle-what-travels-between-checkouts/`.
+Realisation belongs to `260823-0023-settle-what-travels-between-checkouts`.
 Implemented:
 Deferred:
 Superseded by:
@@ -82,7 +82,7 @@ record's fourth constraint required of any answer that adds a writer.
 chooses.
 
 The answer itself is the user's, given at the shaping gate of `/fusion:direct` and recorded in
-`circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md` `## Grounding snapshot`. It is
+`260823-0023-settle-what-travels-between-checkouts` `## Grounding snapshot`. It is
 cited where it lives rather than copied here.
 
 The cost stands as the gate stated it. The gate informs and prevents nothing: a second checkout can

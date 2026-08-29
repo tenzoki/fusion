@@ -1,4 +1,4 @@
-# Orchestrator Review Session — 260806-1139
+# Orchestrator Review Session — 260806-1139-orchestrator-review-session.md
 
 **Directive:** Intensive Reconciliation + tiefe technische Review: sicherstellen, dass die Implementierung (Delta seit v5.9.2, 20 Commits `4a8fea0..cde5319`) der Intention entspricht; konsolidierter Report.
 **Mode:** review
@@ -31,7 +31,7 @@ Intentionsquellen: Circle-Directive Textschicht, Entscheidungen D1–D3 wie vom 
 
 ## Reconciliation (workbench-weit)
 
-- **Circle-Datensätze:** 4 von 11 widersprachen ihrem Marker; 3 korrigiert, 1 bewusst als dokumentiertes Exemplar von Issue `260802-0920_*` belassen. Das Muster (Status-Feld hinkt bei jeder Schließung) ist am Issue mit frischer Evidenz annotiert — Kandidat: Status-Feld abschaffen, der Marker trägt die Information.
+- **Circle-Datensätze:** 4 von 11 widersprachen ihrem Marker; 3 korrigiert, 1 bewusst als dokumentiertes Exemplar von Issue `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md_*` belassen. Das Muster (Status-Feld hinkt bei jeder Schließung) ist am Issue mit frischer Evidenz annotiert — Kandidat: Status-Feld abschaffen, der Marker trägt die Information.
 - **Issues:** 20 Stichproben geschlossener Records gegen HEAD — **0 Falschschließungen**. 6 überholte Opens geschlossen (Fixes waren gelandet). Alle verbleibenden Opens verifiziert echt offen; Routen real.
 - **Entscheidungen (40):** kein `_o_`, alle 7 `Implemented:`-Hashes existieren; ~45 markerverfallene Zitate in 20 Akten auf Wildcard-Form; 1 neue Entscheidungsakte gefilt (Stash-Manifest-Redundanz).
 - **Pläne:** 1 Status-Widerspruch korrigiert, 3 Alt-Pläne in geschlossenen Circles evidenzbasiert geschlossen; die Shared-Spec bleibt korrekt offen (Curator-Kapazitäten).
@@ -41,11 +41,11 @@ Intentionsquellen: Circle-Directive Textschicht, Entscheidungen D1–D3 wie vom 
 
 1. CLAUDE.md-Lücke (Medium, s.o.) — ein kleiner Coder-Pass, sinnvoll vor dem nächsten Release.
 2. Zwei unbeeigenete Residuen brauchen einen Owner: `260803-1352_*` (Guard-Advisory-Clamp, live re-verifiziert an `hooks/guard.ts:565,593`) und `260806-0022_*` (Setup-Sonde vs. migrate-Baumabdeckung).
-3. Issue `260802-0920_*`: Vorschlag Status-Feld-Abschaffung liegt am Record.
+3. Issue `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md_*`: Vorschlag Status-Feld-Abschaffung liegt am Record.
 4. Portfolio-Empfehlung unverändert: `260804-1205-shell-reachability-model` via `/fusion:next`.
 
 ## Referenzen
 
-- Reconciliation-Log: `shared/history/260806-1152-reconciliation.md`
-- Review-Record: `shared/reviews/260806-1154-coderev-implementation-vs-intention-textschicht-delta.md`
+- Reconciliation-Log: `260806-1152-reconciliation.md`
+- Review-Record: `260806-1154-coderev-implementation-vs-intention-textschicht-delta.md`
 - Buchführungs-Commit: `2e2e4db`

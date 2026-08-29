@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Closes:** `issues/260802-2330_c_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` (Critical)
+**Circle:** `260801-1244-guard-rules-write`
+**Closes:** `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` (Critical)
 **Scope touched:** `hooks/lib/rules-write-exemption.ts`, `hooks/guard.ts`,
 `hooks/lib/bash-mutation-guard.ts`, `hooks/lib/__tests__/{rules-write-exemption,guard-rules-write-integration,guard-bash-wiring}.test.ts`
 **Tests:** 1009 passed (baseline 973, +36)
@@ -158,7 +158,7 @@ spelled" does not work, because the locator un-spells it — and closing it is n
 `resolve` is doing three jobs in `absolute()` (`..`, `.`, repeated separators), and changing
 it changes what `isStrictlyInside` compares and what `hasHardLinks` lstats for every path, to
 fix a class gate 0 already closes. Filed rather than done, per the brief:
-`issues/260803-1251_o_fs-locator-collapses-dotdot-lexically-one-call-above-the-resolver-that-was-audited.md`.
+`260803-1251_*_fs-locator-collapses-dotdot-lexically-one-call-above-the-resolver-that-was-audited.md`.
 
 ## Test coverage
 
@@ -205,13 +205,13 @@ Two existing assertions changed, both correctly:
 ## Residuals, measured not assumed
 
 1. **`realFsLocator.absolute()`'s lexical collapse.** Unreachable from the exemption (gate 0
-   refuses every `..` before `locate` is called). Filed as `260803-1251_o_…` with both
+   refuses every `..` before `locate` is called). Filed as `260803-1251_*_…` with both
    mismatch counts.
 2. **A gate-0 deny is undiagnosable.** With the flag set, `Edit rules/retired/../x.md` reports
    `Protected path: rules/x.md cannot be modified directly` — naming a file the same flag
    *does* let the agent write, with nothing about the spelling. That is the exact shape the
    protected-path discipline was written to prevent: an agent that cannot explain a deny
-   rephrases. Filed as `260803-1252_o_…`, with the smaller sibling (a deny through a planted
+   rephrases. Filed as `260803-1252_*_…`, with the smaller sibling (a deny through a planted
    link names the collapsed `rules/agents/coder.md`, also not the file) recorded in the same
    record.
 3. **`spellingWalksUp` is `/`-separated only.** Correct for this codebase — `paths.ts` is

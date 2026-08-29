@@ -4,11 +4,11 @@
 **Range:** `430d73a..HEAD`, 6 commits, 36 files changed (+2713 / −50). 22 in-scope files;
 the 14 under `fusion-workbench/` skipped as instructed.
 **Origin:** No Circle active (`.active-circle` absent) — filed to `shared/`.
-**Prior review:** `shared/reviews/260810-1032-coderev-turn-4-range-7f617b1-to-7ddacbc.md`
+**Prior review:** `260810-1032-coderev-turn-4-range-7f617b1-to-7ddacbc.md`
 
 **Suite state at review time:** green. `cd hooks && npm test` → 40 files, 1072 tests,
 82.4 s, exit 0. No re-run needed: the known wall-clock case in `fusion-commit-lock.test.ts`
-(record `260810-1135`) passed first time.
+(record `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`) passed first time.
 
 **Build state:** `npx tsc --outDir /tmp/fusion-dist-check` from `hooks/`, then
 `diff -r /tmp/fusion-dist-check dist` → **identical**. The committed `hooks/dist/` is a
@@ -114,7 +114,7 @@ added in `25c5454`, one commit **before** `26ea3c3` taught the orchestrator prom
 
 **Finding 1 — Medium. `hooks/tracker.ts:770-771`: the comment that justifies asking cwd was
 falsified by the same commit.**
-Record: `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`
+Record: `260810-1632_*_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md`
 
 The comment reads *"Churn is keyed on paths relativized against `process.cwd()`, so cwd is
 the directory it must ask about."* `hooks/tracker.ts:680` now reads
@@ -136,7 +136,7 @@ rewrite the comment to a reason that holds. Leaving the comment is the one optio
 
 **Finding 2 — Low. `hooks/lib/churn.ts:529-561`: the ranking has no noise filter, so the
 migration promotes dashboard files into Setup's top ten.**
-Record: `shared/issues/260810-1632_o_the-churn-ranking-has-no-noise-filter-so-the-migration-promotes-dashboard-files-into-setups-top-ten.md`
+Record: `260810-1632_*_the-churn-ranking-has-no-noise-filter-so-the-migration-promotes-dashboard-files-into-setups-top-ten.md`
 
 `rankThrashing` excludes absent files and nothing else. `TRACKER_NOISE_FILES`
 (`hooks/tracker.ts:123-128`) names four surfaces the write path refuses to count. The
@@ -156,7 +156,7 @@ in `rankThrashing`, counted separately from `absent`.
 ### Prompt-called helpers
 
 **Finding 3 — Low. `agents/orchestrator.md` Setup Step 5 documents exit 2 and not exit 3.**
-Record: `shared/issues/260810-1632_o_setup-documents-churn-rank-exit-2-and-not-the-exit-3-that-this-repos-own-build-cycle-produces.md`
+Record: `260810-1632_*_setup-documents-churn-rank-exit-2-and-not-the-exit-3-that-this-repos-own-build-cycle-produces.md`
 
 `bin/fusion-churn-rank:49-52` exits 3 when `hooks/dist/churn-rank.js` is absent. The `[ -x ]`
 guard `26ea3c3` added does not cover it — the wrapper is present and executable; the build
@@ -168,7 +168,7 @@ sentence in the same paragraph closes it; do not add a cascade branch.
 ### Test harness
 
 **Finding 4 — Low. The pty case has no path for a machine that cannot allocate one.**
-Record: `shared/issues/260810-1632_o_the-pty-case-in-the-monitor-suite-has-no-path-for-a-machine-that-cannot-allocate-one.md`
+Record: `260810-1632_*_the-pty-case-in-the-monitor-suite-has-no-path-for-a-machine-that-cannot-allocate-one.md`
 
 `os.openpty()` in `PTY_RUNNER` is unguarded and `startMonitor` attaches no `error` listener,
 so a container without `/dev/ptmx` produces two 15-second `monitor did not come up`
@@ -192,7 +192,7 @@ Stated because a review that only lists defects hides the shape of the range.
 - **`2679589`'s gate is the right discriminator.** `[[ -t 1 && -z "${MONITOR_NO_BROWSER:-}" ]]`
   is an `if` condition, so `set -euo pipefail` (`bin/monitor:7`) does not act on it, and
   the non-interactive path now never calls `open` at all — which incidentally removes the
-  larger half of the exposure open record `260810-1558` describes. The three new cases
+  larger half of the exposure open record `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md` describes. The three new cases
   assert on a marker file rather than on the script's text, so a decoy `-t 1` in a comment
   would not satisfy them.
 - **`7c4dfb2`'s documented Plane key matches the code.** `docs/plane-setup.md:271-278` claims
@@ -223,7 +223,7 @@ below it now contradicts; finding 2 is a read path that never learned about a co
 the write path already had. In both cases the executable half moved and the surrounding
 statement did not. This is the third consecutive Turn in this session's reviews to name
 that class — `260810-1032` found it in `bin/fusion-plane`'s "no second implementation"
-comment, and the two open records `260809-2252` and `260809-2258` are the same thing in
+comment, and the two open records `260809-2252` and `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md` are the same thing in
 `README-hooks.md` and the noise-list comment. It is worth a decision about where the
 obligation sits, rather than a fifth issue record.
 
@@ -246,6 +246,6 @@ output — which is where the attention was not.
 2. Finding 2 (Low) — the noise filter in `rankThrashing`. Small, and it improves the first
    thing the orchestrator reads at every Setup.
 3. Finding 3 (Low) — one sentence in `agents/orchestrator.md`. Fold it into whatever
-   answers the open decision `260810-1544`, which asks the general form of the same question.
+   answers the open decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`, which asks the general form of the same question.
 4. Finding 4 (Low) — test diagnosability. Do it when someone next runs the suite off this
    machine, not before.

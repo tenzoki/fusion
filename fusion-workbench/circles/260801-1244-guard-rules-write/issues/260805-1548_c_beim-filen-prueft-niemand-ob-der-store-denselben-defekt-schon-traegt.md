@@ -3,8 +3,8 @@ Beim Filen prüft niemand, ob der Store denselben Defekt schon trägt
 ---
 
 Derselbe Defekt wurde in einem konsumierenden Projekt zweimal gefiled, 21 Stunden
-auseinander: `260801-0113_o_setup-pre-v4-detector-scans-archive-and-migration-backup.md`
-und `260801-2257_c_fusion-setup-pre-v4-check-false-positive-on-archive.md`. Die
+auseinander: `260801-0113_*_setup-pre-v4-detector-scans-archive-and-migration-backup.md`
+und `260801-2257_*_fusion-setup-pre-v4-check-false-positive-on-archive.md`. Die
 Zusammenlegung machte später ein Reconciler von Hand. Der meldende Store hielt zum
 Zeitpunkt der zweiten Meldung 64 offene Issues — das ist keine Ausnahmesituation, sondern
 der Normalzustand eines Projekts, das die Filing-Pflicht ernst nimmt.
@@ -58,7 +58,7 @@ im beobachteten Fall auch, nur 21 Stunden später als nötig.
 Dieser Record ist selbst nach der entworfenen Regel gefiled: die offenen Issues in
 `circles/260801-1244-guard-rules-write/issues/` und `shared/issues/` wurden vor dem
 Schreiben aufgelistet. Ein verwandter, aber anderer Befund kam dabei zum Vorschein
-(`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`, zitiert vom
+(`260801-1020_*_scan-keys-never-reach-the-archive-store.md`, zitiert vom
 Playmaker-Record derselben Charge); kein Duplikat. Der Schritt kostete eine
 Verzeichnisauflistung und fand etwas — das ist der Beleg, den die Regel braucht.
 
@@ -85,7 +85,7 @@ kopieren wäre genau die Duplikation, gegen die die Single-Authoring-Home-Regel 
 
 Die Frage, die daraus folgt — was passieren soll, wenn ein Befund Regeltext verlangt und
 kein ehrlicher Schnitt danebenliegt — ist aufgenommen als
-`decisions/260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`.
+`260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`.
 Dieser Befund bleibt offen, bis sie beantwortet ist.
 
 ---
@@ -93,13 +93,13 @@ Dieser Befund bleibt offen, bis sie beantwortet ist.
 **Herkunft.** Aufgenommen aus den Session-Protokollen eines konsumierenden Projekts, die
 über ein geteiltes Verzeichnis bereitgestellt und nur lesend genutzt wurden. Niemand hat
 den Punkt als Befund gemeldet; er stand als Beobachtung im Protokoll
-`circles/260801-1244-guard-rules-write/history/260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
+`260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
 (Punkt 3). Die beiden doppelt gefileten Records liegen im konsumierenden Projekt, nicht
 hier.
 
 ---
 
-**Resolved: 260816-0112 by coder.** Der Absatz steht in
+**Resolved: 260816-0112-coder-duplicate-check-before-filing.md by coder.** Der Absatz steht in
 `rules/fusion-workbench-conventions.md`, `## Issue and Decision Filing — MANDATORY`, vor
 dem NEVER-Block, mit allen drei Eigenschaften: `ls` nur über Namen, `Also seen:`-Zeile bei
 Treffer ohne zweiten Record und ohne Markerwechsel, und die ausdrückliche Gegenrichtung
@@ -107,7 +107,7 @@ Treffer ohne zweiten Record und ohne Markerwechsel, und die ausdrückliche Gegen
 dass nichts geschrieben wurde). Kosten: +490 Bytes auf einer immer geladenen Regeldatei.
 
 Der Blocker ist weg: der Ratchet aus
-`decisions/260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`
+`260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`
 ist implementiert — die immer geladene Regelmenge wird weiter gemessen, blockt aber nicht
 mehr, sondern meldet innerhalb eines Head-rooms. Ein Schnitt an fremdem Regeltext war
 damit nicht nötig.
@@ -117,4 +117,4 @@ Namensabgleichs (derselbe Defekt in ähnlichen Worten wird gefangen, in anderen 
 verfehlt; der Reconciler bleibt der Auffang) und die ausführliche Fassung von
 "Zustand und Zuständigkeit bleiben unangetastet".
 
-Protokoll: `shared/history/260816-0112-coder-duplicate-check-before-filing.md`
+Protokoll: `260816-0112-coder-duplicate-check-before-filing.md`

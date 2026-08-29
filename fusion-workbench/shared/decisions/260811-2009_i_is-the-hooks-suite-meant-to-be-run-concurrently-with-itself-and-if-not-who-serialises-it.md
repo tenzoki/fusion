@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator
-**Cross-references:** `shared/issues/260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` (queue task 37); `shared/issues/260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md` (queue task 38); `shared/issues/260810-1820_o_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md` (queue task 40); `agents/coder.md` `### Report shape`
+**Cross-references:** `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` (queue task 37); `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md` (queue task 38); `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md` (queue task 40); `agents/coder.md` `### Report shape`
 
 ---
 
@@ -85,7 +85,7 @@ the user's trade to make, not the orchestrator's.
 
 ---
 
-## Evidence added 260811-2330 — reconciler, final reconciliation of session `260811-0752`
+## Evidence added 260811-2330 — reconciler, final reconciliation of session `260811-0752-orchestrator-session.md`
 
 **Marker unchanged (`_o_`).** No answer is recorded here; this adds one measurement that narrows
 the option space.
@@ -120,11 +120,11 @@ untouched by this and remains the only option that addresses the intra-run case 
 file, and run 2 named no slow or failing file, so which of the 52 died is not established from
 these two runs. Whoever takes this up should reproduce with `--pool=forks --no-file-parallelism`
 or `--reporter=verbose` before costing option 2, rather than assuming it is one of the two
-already-recorded timing cases (`260810-1135`, `260811-1409`).
+already-recorded timing cases (`260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`, `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`).
 
 ---
 
-## Evidence added 260815-0850 — bugfixer, investigating `shared/issues/260814-2118_o_…`
+## Evidence added 260815-0850-bugfix-legacy-halt-clearing-flake.md — bugfixer, investigating `260814-2118_*_…`
 
 **Marker unchanged (`_o_`).** No option is chosen here. This adds a deterministic reproduction of
 **case 2** and one measurement that separates it from the load-sensitive cases it has been
@@ -176,6 +176,6 @@ case 2 was first seen). It would have moved the suite toward green without movin
 trustworthy, which this record's Constraints section forbids.
 
 ---
-Answered: shared/history/260814-2306-orchestrator-session.md:198 — Option 2: make the suite safe to run concurrently. Each run gets its own build output or the build stops deleting before it writes, and the two wall-clock-bound cases wait on something observable. The verification contract and the executor prompts are unchanged. Answered by the user after a bugfix dispatch reproduced the cause deterministically.
+Answered: 260814-2306-orchestrator-session.md:198 — Option 2: make the suite safe to run concurrently. Each run gets its own build output or the build stops deleting before it writes, and the two wall-clock-bound cases wait on something observable. The verification contract and the executor prompts are unchanged. Answered by the user after a bugfix dispatch reproduced the cause deterministically.
 
 Implemented: 332267a — the build compiles into a private staging directory and replaces `hooks/dist/` file by file with `rename(2)`; the two cases that launch or copy a compiled artifact read their own run's build through `FUSION_TEST_DIST`; a run is capped at half the machine's cores. Measured 6 of 6 red before, 12 of 12 green after, at two parallel runs with an eight-second offset.

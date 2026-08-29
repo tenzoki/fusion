@@ -1,4 +1,4 @@
-# Playmaker run 260719-2054 — orchestrator-phase4
+# Playmaker run 260719-2054-playmaker-orchestrator-phase4.md — orchestrator-phase4
 
 **Status:** Complete
 **Trigger:** orchestrator-phase4 (portfolio refresh after `260719-1536-brest-unite-co-creator-conversion` closed `_c_` and `.active-circle` was cleared)
@@ -30,7 +30,7 @@
 
 ## Records written
 
-- Appended `## Activation proposal` (reaffirmation for this run) to `circles/260719-1536-plane-mirror-integration/_a_circle.md` — recommendation unchanged; new board fact recorded (sibling brest now `_c_`, so plane is the sole anticipated Circle).
+- Appended `## Activation proposal` (reaffirmation for this run) to `260719-1536-plane-mirror-integration` — recommendation unchanged; new board fact recorded (sibling brest now `_c_`, so plane is the sole anticipated Circle).
 
 ## Portfolio regenerated
 

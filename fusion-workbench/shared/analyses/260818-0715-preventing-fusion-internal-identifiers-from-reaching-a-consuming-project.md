@@ -45,7 +45,7 @@ can hold the whole surface, and what fusion should build, if anything.
 project's session or its user: the compiled hooks, the `bin/` helpers, `agents/`, `skills/`,
 the rule corpus `bin/fusion-rules` emits, `stilwerk/`, `templates/`, `docs/` and the READMEs.
 The existing gate `hooks/lib/__tests__/reference-resolution-lint.test.ts`. The four growth
-bounds. The open record `260817-2131` and its reconciliation note.
+bounds. The open record `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` and its reconciliation note.
 
 **Out of scope.** We did not edit any source file. We did not survey consuming projects, and
 we hold no measurement of how any consuming project other than the reported one has read the
@@ -206,9 +206,9 @@ the fix.
 | `coverageSentence`, uncovered | FOREIGN: `260810-1205` | clean, 4 input hashes echoed |
 | `coverageSentence`, carried | FOREIGN: `260810-1205` | clean |
 | `coverageSentence`, both | FOREIGN: `260810-1205` | clean, 5 input identifiers echoed |
-| `stagingSentence`, record | FOREIGN: `260811-0114`, `f38f37d` | clean |
-| `stagingSentence`, commit-message | FOREIGN: `260811-1141`, `260811-0114`, `f38f37d` | clean |
-| `stagingSentence`, both | FOREIGN: `260811-1141`, `260811-0114`, `f38f37d` | clean |
+| `stagingSentence`, record | FOREIGN: `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`, `f38f37d` | clean |
+| `stagingSentence`, commit-message | FOREIGN: `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`, `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`, `f38f37d` | clean |
+| `stagingSentence`, both | FOREIGN: `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`, `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`, `f38f37d` | clean |
 
 Sensitivity is total on the incident, and specificity is total on the branch the record's own
 proposal would have failed. That is a measured result, not a projection.
@@ -303,7 +303,7 @@ makes gates get switched off.
 **1. Build the containment gate, in the set form and not the shape form.** One test file under
 `hooks/lib/__tests__/`, a registry naming `coverageSentence` and `stagingSentence`, synthetic
 reports driving all six branches, and one assertion per branch that the output's identifier set
-is contained in the input's. Route to `coder`, against record `260817-2131`. The record's own
+is contained in the input's. Route to `coder`, against record `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`. The record's own
 recommendation must be corrected in the same change, because a gate written to its letter reddens
 on its first run.
 
@@ -315,7 +315,7 @@ remembers" into "the suite says so".
 the two sides, says why the static surface is deliberately ungated, and says where a provenance
 citation belongs when the reader is a fusion developer. Emitted to no agent, on the
 `rules/rule-file-provenance.md` precedent, so it is charged to no growth bound and to no dispatch.
-It is also the only surface that covers `260807-2153`, the open sibling one layer up, where a rule
+It is also the only surface that covers `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`, the open sibling one layer up, where a rule
 file's *statement* rather than its identifiers is written from the plugin repository's position.
 Route to `shaper` first if the two records should be answered together, otherwise to `coder`.
 
@@ -347,16 +347,16 @@ calls about text that sits on the safe side of the criterion, and neither is mea
 
 ## Filed Issues
 
-- `fusion-workbench/shared/issues/260818-0715_o_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md`
-- `fusion-workbench/shared/issues/260818-0715_o_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`
+- `260818-0715_*_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md`
+- `260818-0715_*_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`
 
 ---
 
 ## Sources
 
-- `fusion-workbench/shared/issues/260817-2131_o_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`, including the reconciliation note of 260817-2207
-- `fusion-workbench/shared/issues/260817-2110_c_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the incident, with the user's verbatim report)
-- `fusion-workbench/shared/issues/260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (the open sibling)
+- `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`, including the reconciliation note of 260817-2207
+- `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the incident, with the user's verbatim report)
+- `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (the open sibling)
 - `hooks/lib/review-coverage.ts:673-703` (`coverageSentence`), `hooks/lib/staging-drift.ts:621-670` (`stagingSentence`)
 - `hooks/tracker.ts:315-336`, `:400-420`, `:481-485` (the single funnel to `additionalContext`)
 - `hooks/lib/domain-cascade.ts:528`; importers verified to be `hooks/lib/__tests__/domain-cascade.test.ts:21` and `domain-cascade-order-lint.test.ts:11` only
@@ -375,5 +375,5 @@ calls about text that sits on the safe side of the criterion, and neither is mea
 
 - [ ] Should `agents/orchestrator.md:811,866` keep the identifier? Static, on the safe side of the criterion, and the only prompt site inside an instruction about what to tell the user. Filed; the user's call.
 - [ ] Should the four format-example sites use a fabricated Circle name instead of a real one? Filed; low severity and one word each.
-- [ ] Should the convention rule and record `260807-2153` be answered by one text? They are the same class one layer apart, and answering them separately risks two rules stating the same boundary differently.
+- [ ] Should the convention rule and record `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` be answered by one text? They are the same class one layer apart, and answering them separately risks two rules stating the same boundary differently.
 - [ ] Is there any composed channel we have not enumerated? Our list is derived from reading the hook entrypoints and the `bin/` scripts, not from an instrumented session.

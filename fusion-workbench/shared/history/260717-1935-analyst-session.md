@@ -39,6 +39,6 @@ clear. Reset via `node hooks/dist/clear-halt.js` if a clean baseline is wanted.
 
 ## Output
 
-- Analysis: `fusion-workbench/shared/analyses/260717-1935-branch-switch-guard-live-miss-root-cause.md`
+- Analysis: `260717-1935-branch-switch-guard-live-miss-root-cause.md`
 - Recommended (not filed): an issue in `shared/issues/` to track the harness hook-invocation
   reliability gap + a live re-probe to disambiguate transient vs persistent.

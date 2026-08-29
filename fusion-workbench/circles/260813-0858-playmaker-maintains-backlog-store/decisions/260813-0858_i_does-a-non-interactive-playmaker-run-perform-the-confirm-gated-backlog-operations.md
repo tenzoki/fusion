@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** shaper (anticipated-circle mode)
-**Cross-references:** `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md`; `shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`; `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`; `agents/playmaker.md` `## Who dispatches playmaker`
+**Cross-references:** `260813-0858-playmaker-maintains-backlog-store`; `260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`; `260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`; `agents/playmaker.md` `## Who dispatches playmaker`
 
 ---
 
@@ -64,7 +64,7 @@ answer is rarely, the proposal-return path is machinery built for a case that do
 arrive.
 
 ---
-Answered: shared/history/260813-0806-orchestrator-session.md `## Decision answered — the Phase 4 mandate is marker renames, and it is written down` — **option 3**. A non-interactive Phase 4 run ranks, regenerates the portfolio and renames markers; splitting, merging and closing are left to the interactive path, and `agents/playmaker.md` states that as a deliberate split of the mandate by dispatch path. Answered by the user in the session that opened this Circle's Turn 3.
+Answered: 260813-0806-orchestrator-session.md `## Decision answered — the Phase 4 mandate is marker renames, and it is written down` — **option 3**. A non-interactive Phase 4 run ranks, regenerates the portfolio and renames markers; splitting, merging and closing are left to the interactive path, and `agents/playmaker.md` states that as a deliberate split of the mandate by dispatch path. Answered by the user in the session that opened this Circle's Turn 3.
 
 Option 2 was declined on the evidence the record itself asked for. It framed the question as whether a Phase 4 run would find backlog work often enough to justify a proposal-return path, and the measurement is: ten Circle closures across the project's life, therefore roughly ten Phase 4 dispatches, against a backlog store created one day earlier (`dec40bb`, 2026-08-12) holding a single entry. Not one of those ten dispatches could have met backlog work, because the store did not exist for nine of them. That is a weak basis for building machinery and a sufficient one for not building it — and the asymmetry is the point: option 3 is reversible at the cost of one prompt paragraph if Phase 4 runs turn out to meet real work, whereas a return protocol built now would have to be maintained through every future change to an agent whose stated value is being advisory and cheap.
 
@@ -77,7 +77,7 @@ Superseded by:
 
 **Late addition, 260813-1548 — the mandate is stated three times, and the lint holds two.** The
 concurrent `coderev` pass over `b995049` filed
-`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-phase-4-mandate-is-stated-a-third-time-in-the-prompt-and-the-new-lint-holds-only-two-of-the-three.md`:
+`260813-1545_*_the-phase-4-mandate-is-stated-a-third-time-in-the-prompt-and-the-new-lint-holds-only-two-of-the-three.md`:
 the Phase 4 sentence also appears verbatim at `agents/playmaker.md:229` under `## Dispatch
 sources`, which no case in the lint reads. **`_i_` still stands** — this record's answer was that
 the mandate be *stated* in the prompt in the description's words, and it is, on all three surfaces.

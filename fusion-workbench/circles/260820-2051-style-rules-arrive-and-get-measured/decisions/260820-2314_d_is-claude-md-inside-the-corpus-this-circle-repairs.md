@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`
+**Cross-references:** `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `260820-2308-assessment-of-the-style-rules-spec.md`
 
 ---
 
@@ -17,7 +17,7 @@ growth bound.
 
 Two things turn on this. The repair's premise is that a model follows the register of its conditioning
 text, and the excluded file is nearly half of that text. And a live record,
-`shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`,
+`260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`,
 states its fix direction as a derivation that **includes** `CLAUDE.md`.
 
 ## Options

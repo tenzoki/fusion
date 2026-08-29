@@ -3,7 +3,7 @@
 ---
 **Severity:** Medium
 **Domain:** code
-**Filed by:** user, via orchestrator, session 260811-0752
+**Filed by:** user, via orchestrator, session 260811-0752-orchestrator-session.md
 **Affects:** `agents/orchestrator.md:362`, `:366`, `:685`, `:847`, `:849`, `:922`, `:1073`; `templates/fusion-guard.json` (the per-project configuration surface that does not carry it)
 **Cross-references:** `skills/circle-stash/SKILL.md:126,131` (a consumer that already reads the value from `agentstate.yaml` rather than assuming it); `hooks/lib/config.ts` (the per-leaf merge this would reuse)
 
@@ -39,7 +39,7 @@ Three consequences, in increasing order of cost:
 2. **The number is stated, not read.** `:847` already calls 5 a *default*, which implies a source
    that can override it. No such source exists, so the word is currently false.
 3. **Seven copies of one fact.** This is exactly the class the decision
-   `shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`
+   `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`
    was answered on in this same session: a claim lives in one place and is cited from the others,
    because what is stated once cannot go stale in seven places at once. Changing the budget today
    means finding all seven.

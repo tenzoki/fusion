@@ -8,9 +8,9 @@
 
 ## What was planned
 
-Capability C4 of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, read against
+Capability C4 of `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, read against
 the active Circle record, which governs where the two disagree. The plan is
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`:
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`:
 eleven steps, ten to `coder` and one to `analyst`, no `ontocoder` step because the capability touches
 no structured data file.
 
@@ -46,9 +46,9 @@ declares it. Both are filed.
 
 ## Records filed
 
-- `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
-- `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md`
-- `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`
+- `260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
+- `260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md`
+- `260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`
 
 The decision blocks step 10 and nothing else. Steps 1 through 9 touch no hook-test line, so the
 capability can be built and read while it stands open.

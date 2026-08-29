@@ -1,4 +1,4 @@
-# Playmaker run 260826-1705 (direct dispatch)
+# Playmaker run 260826-1705-playmaker-direct-dispatch.md (direct dispatch)
 
 **Status:** Complete
 **Filed by:** playmaker, Kai Stalmann <ks@qantr.com>, checkout 5e8248d7
@@ -88,7 +88,7 @@ Grounding already states, so none was appended.
 - Duplicate groups found: 0. The two live ideas do not overlap.
 - Items handed to `## Warnings` as defect- or decision-shaped: 0.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`. Its narrowing is
+**Top-ranked entry:** `260814-1733_*_bounded-executor-dispatches.md`. Its narrowing is
 argued on disk and no act by anyone has to precede shaping it.
 
 **Backlog writes performed:** none. Both markers on disk already matched this run's ranking, so
@@ -100,7 +100,7 @@ for want of a confirmation this run.
 
 ## Ranking note the portfolio carries and this log records
 
-The second-place entry, `shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`, gained a second
+The second-place entry, `260814-1733_*_attach-the-rule-to-the-act.md`, gained a second
 reason to stay in second place this run, and it is stronger than the one the previous run recorded.
 Its own blocker is a deferred decision the user must revive by hand. On top of that, the anticipated
 Circle's first capacity answers a narrower instance of exactly this entry's thesis. Shaping the entry
@@ -110,7 +110,7 @@ answer at higher resolution.
 ## Output
 
 - Portfolio regenerated: `fusion-workbench/portfolio.md`
-- Circle records written: `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_a_circle.md` (`## Activation proposal` appended)
+- Circle records written: `260826-1613-cardinality-answered-cut-once-nineteen-cleared` (`## Activation proposal` appended)
 
 ---
-Correction 260827: the warning name `stranded-records-in-terminal-circles` above encoded a mechanism `bin/fusion-paths` does not have. No `SCAN_*` key ever carried another Circle's store, so closing a Circle removed nothing and activation brought nothing back. The 260827-1637 run (`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1637-playmaker-direct-dispatch.md`) retired the name and stated the true reading under `records-reachable-only-under-their-terminal-circle`. The lines above stay as written. Per `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/issues/260826-1903_*_the-false-scan-set-claim-also-stands-in-the-portfolio-and-in-the-history-log-as-a-warning-name.md`.
+Correction 260827: the warning name `stranded-records-in-terminal-circles` above encoded a mechanism `bin/fusion-paths` does not have. No `SCAN_*` key ever carried another Circle's store, so closing a Circle removed nothing and activation brought nothing back. The 260827-1637-playmaker-direct-dispatch.md run (`260827-1637-playmaker-direct-dispatch.md`) retired the name and stated the true reading under `records-reachable-only-under-their-terminal-circle`. The lines above stay as written. Per `260826-1903_*_the-false-scan-set-claim-also-stands-in-the-portfolio-and-in-the-history-log-as-a-warning-name.md`.

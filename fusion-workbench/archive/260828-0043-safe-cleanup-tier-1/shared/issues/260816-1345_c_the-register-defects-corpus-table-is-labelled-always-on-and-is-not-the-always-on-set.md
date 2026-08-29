@@ -2,8 +2,8 @@ The register defect's corpus table is labelled "always-on context" and is not th
 
 ---
 The measurement that motivates the whole register repair,
-`shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` finding 10 and the table copied
-into `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
+`260816-0740-rhetorical-register-of-agent-output.md` finding 10 and the table copied
+into `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
 totals seven files under the label "total always-on context". Two of the seven memberships are wrong.
 
 `rules/design-diagrams.md` is not always-on. `bin/fusion-rules:412-414` guards it with
@@ -30,7 +30,7 @@ always-on in fact (5 rules + chat         22959      326       14.1
 
 The direction of the finding is unaffected. Both numbers are more than fourteen times the stated
 ceiling of 1 per 1000. What is affected is the baseline a later pass compares against, and there is
-a later pass by construction: `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+a later pass by construction: `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 was answered option 4, whose whole content is a falsification measurement run against a corpus
 number. Its `Answered:` note already reasons from "a 2563-word repair inside a 22 763-word corpus",
 so the wrong denominator is carried into the decision that will be re-opened with it.
@@ -60,9 +60,9 @@ measurement's stated scope.
 measurement will be judged against is measured over the wrong files, on a decision whose recommendation
 turns on whether that number moves.
 **Filed in the shared store** per the Origin Rule: no Circle is active.
-**Cross-references:** `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
-(carries the table); `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
-(carries the denominator into the answer); `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`
+**Cross-references:** `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+(carries the table); `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+(carries the denominator into the answer); `260816-0740-rhetorical-register-of-agent-output.md`
 finding 10 (the original measurement); `bin/fusion-rules:383-414`.
 
 **Verified at HEAD `dd560ab`:**
@@ -79,11 +79,11 @@ fi
 ```
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The mislabelled table still stands inside `260816-0740_*_…em-dash-ceiling…md`, still listing `design-diagrams.md` (conditional, guarded at `bin/fusion-rules:412-414`) and still omitting the chat voice profile (unconditional, `:397`). Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The mislabelled table still stands inside `260816-0740_*_…em-dash-ceiling…md`, still listing `design-diagrams.md` (conditional, guarded at `bin/fusion-rules:412-414`) and still omitting the chat voice profile (unconditional, `:397`). Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-**Correction appended 260821-0322** (coder, plan step 15 of
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+**Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md** (coder, plan step 15 of
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
 Appended beneath the fix direction rather than replacing it, because the sentence that was
 imprecise is the evidence that it was imprecise.
 
@@ -100,7 +100,7 @@ fix direction above folds it into the derivation ("plus `CLAUDE.md`"), and the d
 not produce it: no helper emits `CLAUDE.md`, Claude Code loads it as project instructions. It is
 therefore named separately, as always-on prose an agent holds that no helper emits. Its prose was
 not repaired in this Circle, by
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+`260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
 option 3, which is the record that reconciled this issue's demand with the repair's scope.
 
 **What the corrected set measures now.** Measured at HEAD `86edaac` with `bin/fusion-prose-metric`,
@@ -122,13 +122,13 @@ different regions, so the figures differ for two independent reasons and neither
 ---
 Resolved: the fix direction this record states, "state the set as the derivation rather than as a
 list that goes stale on the next emission change", landed on all four live carriers in commit
-`b8b8f42` (plan step 15 of `circles/260820-2051-style-rules-arrive-and-get-measured`). Each
+`b8b8f42` (plan step 15 of `260820-2051-style-rules-arrive-and-get-measured`). Each
 carries a dated correction appended beneath the claim it corrects, so the mislabelled table survives
 as the evidence that the set was never derived and no reader can now take it as current:
-`shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:140`,
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:140`,
-`circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md:117`, and this record itself
-at its `Correction appended 260821-0322` block.
+`260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:140`,
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:140`,
+`260820-2051-style-rules-arrive-and-get-measured:117`, and this record itself
+at its `Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md` block.
 
 Re-verified at HEAD `247abfe`: the derivation is stated as the unindented `emit_if_exists` calls
 in `bin/fusion-rules` plus the unconditional `emit_voice_profile "chat-voice"` call; both halves
@@ -145,4 +145,4 @@ That is this record's own fault class recurring inside the Circle that repaired 
 separately.
 
 Closed by reconciler 260821-0410; log
-`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.
+`260821-0416-reconciliation.md`.

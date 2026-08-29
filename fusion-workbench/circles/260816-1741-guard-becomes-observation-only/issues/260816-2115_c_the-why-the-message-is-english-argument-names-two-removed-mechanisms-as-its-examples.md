@@ -60,7 +60,7 @@ it must take the rule's half in the same commit or leave both.
 ---
 Resolved: Both halves landed in one change, as the record required. The curator's
 gated pass took `rules/fusion-workbench-conventions.md` (run log
-`circles/260816-1741-guard-becomes-observation-only/history/260817-0845-curator-run.md`,
+`260817-0845-curator-run.md`,
 ledger entries L17 and L18): the exempt-surfaces bullet now illustrates itself with
 the configuration advisories and the measurement notices, and the worked-case
 sentence drops the count instead of re-measuring it. `hooks/session-start.ts`

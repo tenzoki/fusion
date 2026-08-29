@@ -1,8 +1,8 @@
-# Playmaker run — 260813-2326
+# Playmaker run — 260813-2326-playmaker-direct-dispatch.md
 
 **Agent:** playmaker
 **Trigger:** direct-dispatch (user, after the `_t_` → `_b_` rename on
-`circles/260813-0910-documentation-matches-shipped-plugin/`)
+`260813-0910-documentation-matches-shipped-plugin`)
 **Domain bias:** `code` (parsed from the dispatch prompt's `**Domain:** code` line)
 **Status:** Complete
 **HEAD at run:** `431805b`
@@ -30,9 +30,9 @@ Top-ranked `_a_` Circle: `260801-1244-curator` — the only anticipated Circle i
 first by default rather than by comparison, and still not proposed for activation because two
 load-bearing measurements in its Grounding snapshot are falsified.
 
-A `## Activation proposal (playmaker run 260813-2326)` section was appended to
-`circles/260801-1244-curator/_a_circle.md`, beside the sections from runs 260807-1646 and
-260813-0007 rather than replacing either. No marker was renamed and `.active-circle` was not
+A `## Activation proposal (playmaker run 260813-2326-playmaker-direct-dispatch.md)` section was appended to
+`260801-1244-curator`, beside the sections from runs 260807-1646-playmaker-direct-dispatch.md and
+260813-0007-playmaker-direct-dispatch.md rather than replacing either. No marker was renamed and `.active-circle` was not
 written.
 
 ## Backlog
@@ -48,7 +48,7 @@ written.
 | Handed to `## Warnings` as defect-shaped | 1 (`operations-take-unbearably-long`) |
 | Handed to `## Warnings` as decision-shaped | 0 |
 
-Top-ranked entry: `shared/backlog/260811-0826_*_observations.md`, recommended **to split first**
+Top-ranked entry: `260811-0826_*_observations.md`, recommended **to split first**
 rather than to shape, because promoting it whole would make one Circle of all 13 ideas. Its top
 idea is `bounded-dispatches-and-re-injected-context`, ranked there because it rests entirely on
 records already on disk.
@@ -106,7 +106,7 @@ Read off the tree rather than carried forward.
 
 | Subject | Value |
 |---|---|
-| `rules/fusion-workbench-conventions.md` | 51 920 bytes, 24 second-level headings (unchanged since run 260813-1756) |
+| `rules/fusion-workbench-conventions.md` | 51 920 bytes, 24 second-level headings (unchanged since run 260813-1756-playmaker-direct-dispatch.md) |
 | Always-on rule emission | 93 819 bytes over the five always-on files plus this project's chat profile; 86 466 of it shipped rule text |
 | `/Users/k1/.fusion/agents/playmaker.md` | 27 597 bytes, 0 occurrences of `OUT_BACKLOG` |
 | `agents/playmaker.md` (work tree) | 39 155 bytes, 4 occurrences of `OUT_BACKLOG` |
@@ -115,6 +115,6 @@ Read off the tree rather than carried forward.
 ## Files written
 
 - `fusion-workbench/portfolio.md` — regenerated in full.
-- `fusion-workbench/circles/260801-1244-curator/_a_circle.md` — one appended
+- `260801-1244-curator` — one appended
   `## Activation proposal` section.
 - This file.

@@ -1,7 +1,7 @@
 # Concept Evaluation: Implementation Plan "Die Textschicht des Plugins gegen den Code nachziehen"
 
 **Date:** 2026-08-05 23:59
-**Target:** `circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_o_plan-textschicht-gegen-code.md`
+**Target:** `260805-2353_*_plan-textschicht-gegen-code.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 1  |  **Validation:** by-tool (mmdc 11.16.0)
 

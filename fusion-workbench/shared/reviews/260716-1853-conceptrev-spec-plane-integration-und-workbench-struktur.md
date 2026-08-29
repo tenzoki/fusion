@@ -1,7 +1,7 @@
 # Concept Evaluation: Spec — Plane-Anbindung und Umstrukturierung der workbench
 
 **Date:** 2026-07-16 18:53
-**Target:** `fusion-workbench/planning/260716-1847[o]-spec-plane-integration-und-workbench-struktur.md`
+**Target:** `260716-1847[o]-spec-plane-integration-und-workbench-struktur.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 1  |  **Validation:** by-tool (mmdc, exit 0)
 
@@ -37,7 +37,7 @@ Not applicable — the verdict is not `tangled`. The design is sound; the graph 
 
 **Reconciliation annotation — 260817-1836, reconciler, domain `code`.** The subject of this review
 no longer exists. The Plane mirror was removed on 2026-08-15 in Circle
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
+`260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
 `bin/` (`ls bin/` at HEAD `2552586` lists twelve helpers and none of them is it), the
 `plane.config.yaml` template left `templates/`, and the only surviving mention of the bridge in
 shipped text is the migration note `docs/upgrading-to-v9.md`. The findings below are preserved as

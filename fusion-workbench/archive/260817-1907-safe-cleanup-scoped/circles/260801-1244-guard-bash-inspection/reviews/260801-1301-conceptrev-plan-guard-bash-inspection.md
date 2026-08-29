@@ -1,7 +1,7 @@
 # Concept Evaluation: Implementation Plan — guard inspects Bash for file mutation (C5c)
 
 **Date:** 2026-08-01 13:01
-**Target:** `fusion-workbench/circles/260801-1244-guard-bash-inspection/planning/260801-1253_o_plan-guard-bash-inspection.md`
+**Target:** `260801-1253_*_plan-guard-bash-inspection.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 3  |  **Validation:** by-tool (mmdc 
 `/opt/homebrew/bin/mmdc`, all three render)
@@ -172,7 +172,7 @@ table. The three testing layers have no interconnection worth a graph.
 
 ## Reconciliation annotation — 260801-2029 (reconciler)
 
-The plan this evaluated is now `_c_` (renamed to `260801-1253_c_plan-guard-bash-inspection.md`); the `**Target:**` path above no longer resolves. Left uncorrected, since a review records what it read.
+The plan this evaluated is now `_c_` (renamed to `260801-1253_*_plan-guard-bash-inspection.md`); the `**Target:**` path above no longer resolves. Left uncorrected, since a review records what it read.
 
 Two of the three diagrams held against the code that was built. Diagram 2, the control flow, is faithful to `hooks/guard.ts` at HEAD `9ab5a2a`. Diagram 3's step DAG was executed edge for edge — all eight steps landed, none was cut, and the S3→S4 ordering it drew was honoured.
 

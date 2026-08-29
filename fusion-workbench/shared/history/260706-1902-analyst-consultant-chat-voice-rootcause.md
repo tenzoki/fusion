@@ -18,6 +18,6 @@ Fix direction: reclassify the consultant's Conversation-mode answers as chat-voi
 
 ## Artifacts
 
-- Report: `fusion-workbench/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`
-- Issue: `fusion-workbench/issues/260706-1902[o]-consultant-chat-misrouted-to-longform-voice.md`
-- Decision: `fusion-workbench/decisions/260706-1902[o]-consultant-chat-longform-boundary.md`
+- Report: `260706-1902-user-facing-agents-garbled-language-rootcause.md`
+- Issue: `260706-1902[o]-consultant-chat-misrouted-to-longform-voice.md`
+- Decision: `260706-1902[o]-consultant-chat-longform-boundary.md`

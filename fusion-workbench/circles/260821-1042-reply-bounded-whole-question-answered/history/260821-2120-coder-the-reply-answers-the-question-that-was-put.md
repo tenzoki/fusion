@@ -3,8 +3,8 @@
 **Date:** 2026-08-21
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
-**Plan step:** 3 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
+**Plan step:** 3 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Base commit:** `58aae9b`, plus step 2's uncommitted working tree
 
 ## What changed
@@ -29,7 +29,7 @@ Three things about that text are deliberate.
    spelling resolves and is the one `agents/planner.md:65` already uses. It also keeps an em-dash
    out of the file.
 3. **The worked contrast is the record's own.** It comes from
-   `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`,
+   `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`,
    where the question was where the acceptance criteria are, the answer the user wanted was a path
    and four section names, and the two defects found in passing were carried in the reply instead of
    being filed and named.
@@ -39,7 +39,7 @@ the contrast in 412 bytes and said "found on the way" twice, which is the restat
 Circle is naming elsewhere; the second says it once, in 378. The second is what landed.
 
 No heading was renamed, added or removed. No test was added and no gate was built, per
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.
 The clause lands unenforced, by decision.
 
 ## The byte delta, which step 5 must cover

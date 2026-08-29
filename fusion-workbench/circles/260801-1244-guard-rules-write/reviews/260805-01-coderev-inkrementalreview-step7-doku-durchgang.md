@@ -1,6 +1,6 @@
 # coderev — Inkrementalreview der Commits 21a72b7 + 373f5ed (Step-6-Template + Step-7-Doku-Durchgang)
 
-**Datum:** 260805-2248
+**Datum:** 260805-2248_*_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md
 **Scope:** Nur die in diesem Turn geänderten Sätze in `templates/fusion-guard.json`, `fusion-guard.json`, `rules/protected-path-discipline.md`, `README-hooks.md`, `CLAUDE.md` (Basis 4a8fea0). Die 260805er Gesamtreview-Befunde sind ausgenommen.
 
 ## Urteil
@@ -9,7 +9,7 @@ Ein neuer Befund, als Issue gefiled. Alles andere ist gegen Loader, Guard und Te
 
 ## Der Befund (hoch, neu gefiled)
 
-`issues/260805-2248_o_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md` — README-hooks.md:137 ("Advisory-only"-Zeile, in 373f5ed umgeschrieben) behauptet weiter, eine leere `protectedPaths`-Liste stehe den Shell-Check "fail-closed rule included" ab. Der im selben Satz ergänzte Floor hält die effektive Liste aber bei zwei Einträgen (`hooks/lib/config.ts:687-692`), und der Fail-closed-Pass hängt an der effektiven Liste (`hooks/lib/bash-mutation-guard.ts:3112` via `hooks/guard.ts:403`). Per Ausführung gegen den kompilierten Klassifizierer bestätigt: `mv $A $B` verweigert mit Floor-only-Liste, erlaubt mit leerer Liste. Schwester des offenen `260805-1840_o_ppd-leere-liste…` (nennt nur die Regeldatei); der Step-7-Durchgang hat den betroffenen PPD-Absatz angefasst, den bekannten Halbsatz dort aber ebenfalls behalten — bewusst außerhalb des Step-7-Scopes gelassen (History 260805-2233, "Not worked, per scope"), darum dort nicht refiled.
+`260805-2248_*_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md` — README-hooks.md:137 ("Advisory-only"-Zeile, in 373f5ed umgeschrieben) behauptet weiter, eine leere `protectedPaths`-Liste stehe den Shell-Check "fail-closed rule included" ab. Der im selben Satz ergänzte Floor hält die effektive Liste aber bei zwei Einträgen (`hooks/lib/config.ts:687-692`), und der Fail-closed-Pass hängt an der effektiven Liste (`hooks/lib/bash-mutation-guard.ts:3112` via `hooks/guard.ts:403`). Per Ausführung gegen den kompilierten Klassifizierer bestätigt: `mv $A $B` verweigert mit Floor-only-Liste, erlaubt mit leerer Liste. Schwester des offenen `260805-1840_*_ppd-leere-liste…` (nennt nur die Regeldatei); der Step-7-Durchgang hat den betroffenen PPD-Absatz angefasst, den bekannten Halbsatz dort aber ebenfalls behalten — bewusst außerhalb des Step-7-Scopes gelassen (History 260805-2233-coder-step7-remainder-documentation.md, "Not worked, per scope"), darum dort nicht refiled.
 
 ## Geprüft und gehalten (Belege)
 
@@ -28,5 +28,5 @@ Ein neuer Befund, als Issue gefiled. Alles andere ist gegen Loader, Guard und Te
 
 ## Nicht refiled (bekannt offen, nur zitiert)
 
-- `260805-1840_o_ppd-leere-liste-steht-den-check-nicht-ab.md` (PPD-Hälfte desselben Defekts; Circle 260805-2005).
-- `260805-1839_o_der-tracker-steht-im-plugin-repo-nur-dann-still-wenn-cwd-exakt-die-repo-wurzel-ist.md` — betrifft die `_inFusionsOwnSourceTree`-Aussage "has no effect" nur über den bekannten cwd-Rest.
+- `260805-1840_*_ppd-leere-liste-steht-den-check-nicht-ab.md` (PPD-Hälfte desselben Defekts; Circle 260805-2005).
+- `260805-1839_*_der-tracker-steht-im-plugin-repo-nur-dann-still-wenn-cwd-exakt-die-repo-wurzel-ist.md` — betrifft die `_inFusionsOwnSourceTree`-Aussage "has no effect" nur über den bekannten cwd-Rest.

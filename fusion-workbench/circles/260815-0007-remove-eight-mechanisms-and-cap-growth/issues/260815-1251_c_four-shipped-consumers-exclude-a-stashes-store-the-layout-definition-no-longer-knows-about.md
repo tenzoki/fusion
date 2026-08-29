@@ -12,7 +12,7 @@ lives only in a commit message.
 
 **Severity:** Low — nothing is broken today; what is missing is the written reason the four exclusions must stay.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1251-coderev-turn-2-build-churn-and-stash.md`)
+**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`260815-1251-coderev-turn-2-build-churn-and-stash.md`)
 **Owner:** `coder`, or the `curator` at gate G1 if it is treated as normative prose
 **Affects:** `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`; `skills/setup/SKILL.md:60,64,67`; `skills/log-activity/SKILL.md:82,89`; `skills/archive/SKILL.md:96`; `agents/playmaker.md:63`
 
@@ -69,10 +69,10 @@ writes.
 ## Related
 
 - `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`
-- `history/260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`
+- `260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`
 - `skills/setup/SKILL.md:60` — the measurement, and the deadlock it records
 
 ---
 Resolved: The asked-for sentence landed in e8052e7: rules/fusion-workbench-conventions.md now names stashes/ and .migration-v2-backup/ as legacy stores, says nothing shipped writes either, and cites all four exclusions on the frozen-content principle.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

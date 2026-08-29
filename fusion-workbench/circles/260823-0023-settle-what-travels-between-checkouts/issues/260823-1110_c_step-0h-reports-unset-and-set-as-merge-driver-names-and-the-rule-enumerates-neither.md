@@ -6,7 +6,7 @@ Step 0h reports `unset` and `set` as merge driver names, and the rule enumerates
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `skills/setup/SKILL.md:325`, `rules/workbench-tracking.md:51`
-**Cross-references:** plan step 3 and its `## Approach` diagram in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
+**Cross-references:** plan step 3 and its `## Approach` diagram in `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
 
 ---
 

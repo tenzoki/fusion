@@ -1,10 +1,10 @@
 # Two skill bodies lost the `[ -x ]` guard rationale to a header that does not carry it
 
 **Status:** closed
-**Filed by:** coderev, review `shared/reviews/260822-1421-coderev-c0-cut-only-circle.md`
+**Filed by:** coderev, review `260822-1421-coderev-c0-cut-only-circle.md`
 **Severity:** High
 **Scope:** `skills/cleanup/SKILL.md`, `skills/help/SKILL.md`
-**Commit:** `c2ad89c` (row S1 of `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`)
+**Commit:** `c2ad89c` (row S1 of `260822-1226-cut-ledger-for-three-bounded-surfaces.md`)
 
 ## What happened
 
@@ -44,7 +44,7 @@ header.
 Behaviour is unchanged: the `[ -x ]` guard is still in the shell block of both files
 (`skills/cleanup/SKILL.md:18`, `skills/help/SKILL.md:20`). What was removed is the reason, and the
 plan's own stopping clause covers exactly this case
-(`shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`,
+(`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`,
 `## Where this Circle stops`):
 
 > Every cut that landed carries, in the ledger or in its step report, either a named authoring home
@@ -91,7 +91,7 @@ The two line ranges this record cites in `bin/fusion-source-root` are the pre-fi
 39-45 are unmoved, the guard mention formerly at 76-79 is now at 87-89.
 
 ---
-Revised by: `shared/issues/260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`
+Revised by: `260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`
 — the `Resolved:` note's reason for not taking the second-order cut is false in both halves: the
 header does author the three-branch description (`bin/fusion-source-root:48-57`, added by the
 same commit), and `next` names no call site inside its own body. The defect this record closed

@@ -4,12 +4,12 @@
 
 **Severity:** Low — the net figure happens to be right, which is exactly what let the two errors survive; no decision was taken on the wrong number
 **Domain:** code
-**Filed by:** reconciler (final reconciliation of session `260810-0844`)
+**Filed by:** reconciler (final reconciliation of session `260810-0844-orchestrator-session.md`)
 **Affects:** `fusion-workbench/orchestrator-live.md` (`## Session result`), `agents/orchestrator.md` (the Turn-loop bookkeeping that produces those lines)
 **Cross-references:**
-`shared/issues/260810-0751_o_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md` (same class — a hand-kept count disagreeing with itself inside one record);
-`shared/issues/260810-0820_o_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md` (same class — a totals table against its own body);
-`shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the same bookkeeping surface failing in a coarser way)
+`260810-0751_*_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md` (same class — a hand-kept count disagreeing with itself inside one record);
+`260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md` (same class — a totals table against its own body);
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the same bookkeeping surface failing in a coarser way)
 
 ---
 
@@ -27,8 +27,8 @@ Counted from the disk and from git at `ed87d87`:
 | Figure | Reported | Measured | How measured |
 |---|---|---|---|
 | Records closed | 18 | **20** | 15 `_o_`→`_c_` renames in `git log --diff-filter=R -M 18b6094..HEAD -- shared/issues/`, plus 5 records added directly as `_c_` in `ed87d87` (filed and closed inside one uncommitted window, so git records no rename) |
-| Records filed | 13 | **15** | 15 files in `shared/issues/` whose stamp is `>= 260810-0844` |
-| Decisions filed | 3 | 3 | `260810-0920`, `260810-0921`, `260810-1010` — correct |
+| Records filed | 13 | **15** | 15 files in `shared/issues/` whose stamp is `>= 260810-0844-orchestrator-session.md` |
+| Decisions filed | 3 | 3 | `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`, `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`, `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md` — correct |
 | Reviews written | 2 | 2 | correct |
 | Open at start / end | 48 / 43 | 48 / 43 | correct |
 

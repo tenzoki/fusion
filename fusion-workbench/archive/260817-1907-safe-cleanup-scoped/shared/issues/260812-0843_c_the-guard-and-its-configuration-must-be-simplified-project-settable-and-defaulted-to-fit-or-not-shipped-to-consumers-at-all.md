@@ -13,10 +13,10 @@ for the first time in its 143-day life.
 **Severity:** high — this is the largest measured cost fusion imposes on a consumer
 **Affected:** `hooks/config.json`, `hooks/lib/config.ts`, `templates/fusion-guard.json`,
 `skills/setup/SKILL.md`, `hooks/guard.ts`, `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`
-**Cross-references:** `shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md`;
-`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`;
-`shared/issues/260812-0758_o_a-consuming-projects-guard-config-goes-stale-…`;
-`shared/issues/260812-0758_o_fusion-setup-is-gitignored-in-a-consumer-…`
+**Cross-references:** `260812-0303-the-largest-consumer-read-for-the-first-time.md`;
+`260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`;
+`260812-0758_*_a-consuming-projects-guard-config-goes-stale-…`;
+`260812-0758_*_fusion-setup-is-gitignored-in-a-consumer-…`
 
 ## The mechanism is enforced only where it is wrong
 
@@ -112,7 +112,7 @@ that design is not to be reopened.
 ## Not in scope
 
 The escalation counter and the churn thresholds live in the same file and have their own open
-questions (`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md`). They ride
+questions (`260812-0251-four-mechanisms-purpose-bindingness-and-cost.md`). They ride
 along in any edit to this file, but simplifying the protected-path half does not decide them.
 
 ---
@@ -171,11 +171,11 @@ filed by the agent that made it, so absence of a record is not absence of occurr
 reads every range as a diff, filed 159 of 272 attributed defects, and on 260811 caught a correction
 applied in one file and left standing in its neighbour. The sensor is capable of it and has never
 seen it. Accidental clobbering, the other thing the mechanism covers, is answered by git — while
-the write-back has itself destroyed a human's editor save during a tool call (`260809-1107`).
+the write-back has itself destroyed a human's editor save during a tool call (`260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`).
 
 **Scope of the removal is the protected-path half only.** The escalation counter and the churn
 apparatus live in the same configuration and are separately open
-(`shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md`). They are not
+(`260812-0251-four-mechanisms-purpose-bindingness-and-cost.md`). They are not
 decided here and must not be swept along.
 
 **What the removal has to establish rather than assume:** whether anything still blocks a tool call

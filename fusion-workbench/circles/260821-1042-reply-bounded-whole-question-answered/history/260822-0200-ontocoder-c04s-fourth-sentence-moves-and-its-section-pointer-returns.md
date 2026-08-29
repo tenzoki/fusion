@@ -5,10 +5,10 @@
 **Status:** Complete
 **Circle:** 260821-1042-reply-bounded-whole-question-answered
 **Source records:**
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0122_c_c04s-name-covers-three-of-its-four-sentences-and-the-fourth-belongs-to-c01.md`,
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0117_c_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md`
+`260822-0122_*_c04s-name-covers-three-of-its-four-sentences-and-the-fourth-belongs-to-c01.md`,
+`260822-0117_*_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md`
 **Review that filed both:**
-`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
+`260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
 
 ---
 
@@ -27,8 +27,8 @@ formulations, which C06 forbids.
 
 Route 2 (rename C04) was priced and declined at +14 English and +17 German against a per-file
 budget of net zero or less; paying it would have meant cutting a worked example, the trade
-`260821-2202` already refused for C06. Route 3 (cut the sentence outright) was declined because it
-would drop the German rendering, the reason `260821-2201` gave for keeping a profile echo at all.
+`260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md` already refused for C06. Route 3 (cut the sentence outright) was declined because it
+would drop the German rendering, the reason `260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md` gave for keeping a profile echo at all.
 
 **Finding 2, restore.** C04's deferral names its section again, as `under "## Length"` /
 `unter "## Length"` rather than the `, section "## Length",` form the record priced: 18 bytes in
@@ -85,7 +85,7 @@ The German C04 instruction also stopped wrapping raggedly, which the review note
 ## Records closed
 
 Both renamed `_o_` to `_c_` with `Resolved:` notes carrying the arithmetic and the reasoning.
-`260821-2204_c_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`
+`260821-2204_*_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`
 gained a `Revised by:` line and kept its marker and its original note: its resolution argued both
 anchors away together and verified that no `"##` token survived in either profile, and one does now.
 
@@ -97,12 +97,12 @@ clause was not checked.**
 The scope claim near line 71 says the shifted German line numbers reach only this Circle's own
 records and two review files. No survey produced that set. Six citations in three further records
 were reached, two of those records open at the time, and the repair is recorded in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0251_*_the-german-line-shift-moved-four-citations-in-three-further-records-and-neither-note-names-them.md`.
+`260822-0251_*_the-german-line-shift-moved-four-citations-in-three-further-records-and-neither-note-names-them.md`.
 
 The anchor claim near line 38 says the anchor removed from C05 was character-for-character that
 entry's own name field. That is exact in English and false in German, where the removed anchor was
 the English heading. Recorded in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0252_*_the-c04-c05-anchor-split-is-verified-in-english-and-asserted-for-german-where-its-premise-is-false.md`.
+`260822-0252_*_the-c04-c05-anchor-split-is-verified-in-english-and-asserted-for-german-where-its-premise-is-false.md`.
 
 Nothing else in this log was touched, and no figure in it moved. Both statements were correct about
 everything they measured; what failed in each is the sentence that generalised past the measurement.

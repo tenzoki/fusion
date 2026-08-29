@@ -3,14 +3,14 @@
 **Status:** Complete
 **Date:** 2026-08-19
 **Agent:** coder
-**Task:** Step 8 of `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`.
+**Task:** Step 8 of `260819-2016_*_four-constraints-on-deep-change.md`.
 **HEAD at start:** `86a9db8`
 
 ## The premise the step was written under had already changed
 
 The plan states that this step "buys no gate", because `scanRecordCitations` skips every hit whose
 kind is outside `GATE_KINDS` and `stamp-name` is outside it. The user has since answered
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+`260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
 the other way: the gate reads the class, `GATE_KINDS` is widened at step 9, and these repairs are
 held by the same mechanism as steps 5 to 7. Nothing about the repair itself changed; only what it is
 worth.
@@ -46,7 +46,7 @@ question is still open.
 **No deliberate literal was left in this class**, in either reading. The 24 that remain are step 7's
 `stale-marker` leaves, named individually in its log and untouched here. The six-hit gap between the
 readings is one `_a_` decision the narrow reading does not open,
-`shared/decisions/260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`.
+`260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`.
 
 **14 records edited**, 49 insertions against 41 deletions. No marker was transitioned, no plan step
 was marked, nothing was committed, no golden was regenerated and no pinned constant was written.
@@ -55,7 +55,7 @@ was marked, nothing was committed, no golden was regenerated and no pinned const
 
 The 33 was measured at HEAD `b91c01c` on 2026-08-19 at 20:16, before steps 4 to 7 ran. Three of them
 sit in
-`circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`,
+`260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`,
 which **step 4 of this same plan transitioned `_a_` → `_i_`**. An `_i_` decision is in neither corpus
 reading, so the file left the measured set with its three tokens still dead: one name from a
 consuming project and two playmaker run identifiers, each appearing exactly once, none of them
@@ -63,7 +63,7 @@ resolving anywhere in this workbench. 33 − 3 = 30, with no residual.
 
 They are **named and not repaired**, because that record is outside the repair corpus and outside
 this step's file set. They matter to whoever answers
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`:
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`:
 this is that question's own subject, arriving inside the plan that asked it. A marker move took three
 dead citations out of the gate's reach in the ordinary course of doing the work, and no mechanism
 noticed.
@@ -81,7 +81,7 @@ noticed.
   directories were verified on disk under `archive/260817-1907-safe-cleanup-scoped/circles/` before
   any edit, and each record's marker was read off the file rather than assumed.
 - **1 synthetic review filename inside a verbatim measurement block**, in
-  `shared/issues/260816-0719_*_review-sender-cannot-parse-the-per-topic-review-filename-both-reviewer-prompts-mandate.md`.
+  `260816-0719_*_review-sender-cannot-parse-the-per-topic-review-filename-both-reviewer-prompts-mandate.md`.
   The fourth row of that block used `260811-1145-conceptrev-y.md`, a name nothing on disk ever
   carried. It was replaced by a real file in the same store,
   `260807-2035-conceptrev-plan-two-language-declarations.md`, and the row was **re-measured rather
@@ -101,18 +101,18 @@ noticed.
   raised from, where the source is identifiable, and the label alone where the task bundled a
   batch. The identification of `I:260801-2038-frozen-state` is not inferred from its slug alone: the
   reconciliation note already inside the same decision record names
-  `shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` as that
+  `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` as that
   task's prerequisite, in the same sequencing argument.
 - **2 Circle names from a consuming project**, in
-  `shared/issues/260803-1837_*_no-route-turns-existing-pre-circle-work-into-a-circle.md:149-150`,
+  `260803-1837_*_no-route-turns-existing-pre-circle-work-into-a-circle.md:149-150`,
   whose own sentence says none of the five files it lists exists in this workbench. Repairing them as
   citations is impossible and deleting them removes the record's evidence, so the stamps and the
   slugs are both kept and are no longer written in this workbench's citation form — which is what the
   sentence was already saying about them.
 - **2 where the citation had somewhere better to live**: a mermaid node label in
-  `circles/260801-1244-curator/_c_circle.md:70`, where the full archive path would have been
+  `260801-1244-curator:70`, where the full archive path would have been
   unreadable and the prose four lines above now carries it, and the H1 title of
-  `shared/issues/260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`, whose house form
+  `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`, whose house form
   carries no code span, so the token was swallowing the sentence around it.
 
 **Treatment 3 — annotate as deliberately removed: 0.** No hit qualified, for the third pass running.
@@ -126,8 +126,8 @@ and is now in the text beside it, and no reference was lost.
 
 ## One adjacent correction, stated because it was not asked for
 
-`shared/issues/260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md:5` opened with
-`fusion-workbench/circles/260719-1536-plane-mirror-integration/_c_circle.md`, a live path for a Circle
+`260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md:5` opened with
+`260719-1536-plane-mirror-integration`, a live path for a Circle
 archived on 2026-08-17. It is corrected to the archive path with the move dated in the sentence.
 It was not a hit in any class — see the finding below — but the title repair above took the Circle's
 name out of the H1, which left that line as the only place the record identifies its own subject.
@@ -145,7 +145,7 @@ longer exists there**, across four archived Circles — 24 of them, plus this lo
 in the section above. Every one is silent to the scanner.
 
 **The sharpest instance is in one file with its own siblings.**
-`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` carries the
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` carries the
 same dead path three times. Step 7 repaired the two at `:40` and `:48`, because those were tokens the
 scanner reported. The one at `:7`, in the record's own `**Cross-references:**` field and spelled
 identically, was left — not by a judgement, but because no scan ever named it. Two of the 25 sit
@@ -153,7 +153,7 @@ inside the repair corpus; the rest are in history, analyses and planning, which 
 opens.
 
 This is adjacent to
-`circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`
+`260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`
 but is not the same defect. That record names the silence as the *reason the workaround is safe* —
 "it yields no token at all". This says what the same silence costs on the live form: the most natural
 way to cite a Circle is the one form the gate never judges, and step 9's gate will inherit that hole
@@ -190,5 +190,5 @@ files, 1 532 tokens.
 ```
 
 The count beside each file is the number of `stamp-name` hits repaired in it, not the number of
-edited lines: `shared/issues/260801-1020_*_…` carries one repaired hit plus the adjacent correction
+edited lines: `260801-1020_*_…` carries one repaired hit plus the adjacent correction
 above.

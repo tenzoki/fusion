@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260824-0530-record-attribution-and-circle-claim`
-**Plan:** `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`, step 6
+**Circle:** `260824-0530-record-attribution-and-circle-claim`
+**Plan:** `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`, step 6
 
 ## What was verified before writing
 
@@ -28,7 +28,7 @@ is why the rule text says the naming convention holds and only the citation form
   answered after the step was written. Exit 1, a git work tree with the identity unset, halts and
   files nothing. Exit 4, not a git work tree at all, files normally with the person half absent
   rather than empty. Binding record:
-  `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
+  `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
   option 2.
 - The same subsection states the precondition the identity answer names as its mitigation and says
   no code checks: one git identity per person across every machine. It sits where a reader of the

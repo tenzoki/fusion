@@ -63,7 +63,7 @@ ls LICENSE  → No such file or directory
 
 **Standing:** the loop still copies a `LICENSE` that has never existed, silently, behind its `[ -e ]` guard, while `.claude-plugin/plugin.json` declares `"license": "MIT"`. That mismatch is the distribution question the record names and no agent may answer it.
 
-**Filed twice.** `circles/260801-1244-guard-rules-write/issues/260805-1839_*_install-sh-will-eine-license-kopieren-die-das-repo-nicht-hat.md` states the same defect from the same measurement ten days earlier, in another Circle, and is also open at this pass. Both are cross-annotated; whoever fixes the line closes both.
+**Filed twice.** `260805-1839_*_install-sh-will-eine-license-kopieren-die-das-repo-nicht-hat.md` states the same defect from the same measurement ten days earlier, in another Circle, and is also open at this pass. Both are cross-annotated; whoever fixes the line closes both.
 
 ---
-Resolved: referred (decision) — the second-enumeration half is discharged above; whether fusion ships a LICENSE or the installer stops naming one is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_does-fusion-ship-a-license-file-or-does-the-installer-stop-naming-one.md
+Resolved: referred (decision) — the second-enumeration half is discharged above; whether fusion ships a LICENSE or the installer stops naming one is the decision's question; 260824-2013_*_does-fusion-ship-a-license-file-or-does-the-installer-stop-naming-one.md

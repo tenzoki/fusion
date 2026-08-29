@@ -3,9 +3,9 @@
 **Date:** 2026-08-09
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260809-1229_o_plan-five-severe-guard-defects.md`, Step 5
-**Binding decision:** `shared/decisions/260809-1527_a_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` (option 2, taken at the plan gate) — it **overrules** point 5 of the planned step
-**Closes (code half):** `shared/issues/260809-1107_o_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md` (High). Its specification half is Step 6.
+**Plan:** `260809-1229_*_plan-five-severe-guard-defects.md`, Step 5
+**Binding decision:** `260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` (option 2, taken at the plan gate) — it **overrules** point 5 of the planned step
+**Closes (code half):** `260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md` (High). Its specification half is Step 6.
 
 ---
 
@@ -158,7 +158,7 @@ None of the four is left open.
   false record.
 - Both Open Questions this step touched are answered in the plan: the narrowing
   (option 2, with the record cited) and the retention (count, not age).
-- `260809-1107` stays `_o_`. The plan holds all five issues open until Step 6,
+- `260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md` stays `_o_`. The plan holds all five issues open until Step 6,
   and this issue's first acceptance criterion — the third price in
   `rules/protected-path-discipline.md` — is Step 6's.
 
@@ -174,5 +174,5 @@ None of the four is left open.
   about this verification, which spawns the work-tree build through `tsx`.
 - **The copies live in `.guard-state/`, which an agent can delete.** Stated in the
   module rather than papered over: they protect against accident, which is the
-  case `260809-1107` describes, not against an agent that means to lose them. The
-  general form is the open decision `260807-0945_o_integritaet-des-eskalationsspeichers`.
+  case `260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md` describes, not against an agent that means to lose them. The
+  general form is the open decision `260807-0945_*_integritaet-des-eskalationsspeichers`.

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator
-**Cross-references:** `shared/decisions/260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` (the decision this discriminator was built to serve); `circles/260801-1244-curator/issues/260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies.md` (the defect record, with the reviewer's evidence); `circles/260801-1244-curator/history/260814-1910-coder-turn-5-four-review-findings.md` (the two probes)
+**Cross-references:** `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` (the decision this discriminator was built to serve); `260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies.md` (the defect record, with the reviewer's evidence); `260814-1910-coder-turn-5-four-review-findings.md` (the two probes)
 
 ---
 
@@ -63,7 +63,7 @@ and halts noisily. The silent direction remains unmeasured.
 
 - Whatever is chosen must keep the audit line's purpose intact: a mode-3 run that edits a Circle
   record's `## Directive` or `## Grounding snapshot` leaves evidence of who initiated it. Decision
-  `260813-0027` rests the orchestrator's whole permission on that evidence.
+  `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` rests the orchestrator's whole permission on that evidence.
 - A change to the contract touches `agents/shaper.md` and the roster in `README-agents.md` together.
   The Turn-5 finding that produced this record was exactly a roster left behind by a prompt change.
 - Do not resolve this by weakening the halt. A halt that warns instead of stopping restores the
@@ -91,7 +91,7 @@ to change.
 1. The record's recommendation rests on removing a dependency on undocumented harness behaviour. Since it was filed, this project has removed eight mechanisms for the related reason that they rested on inferences rather than facts — the write-path classifier, the git branch policy, the protected-path measurement. The self-test is the same shape at prompt level.
 2. Mode 3's contract has since gained a fourth parameter line (`**Scope:** directive-only | spec`, `agents/shaper.md:51`) whose own text says the run *cannot* decide it from what it holds and the dispatcher must state it. That is option 1's argument, already applied once to this same prompt, one parameter over.
 
-**What this record blocks.** Three open defects in this Circle name it as their closing condition or their carrier: `issues/260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies` (explicitly — "answering that decision is what closes this"), `issues/260814-2022_*_initiated-by-carries-quoted-user-dialogue-and-no-surface-bounds-it-to-one-line`, and `issues/260814-2017_*_the-newest-decision-record-carries-no-answered-implemented-footer-block…`, whose subject is this file. It is the highest-leverage unanswered question in this Circle's store.
+**What this record blocks.** Three open defects in this Circle name it as their closing condition or their carrier: `260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies` (explicitly — "answering that decision is what closes this"), `260814-2022_*_initiated-by-carries-quoted-user-dialogue-and-no-surface-bounds-it-to-one-line`, and `issues/260814-2017_*_the-newest-decision-record-carries-no-answered-implemented-footer-block…`, whose subject is this file. It is the highest-leverage unanswered question in this Circle's store.
 
 ---
 Answered: option 1 — `**Initiated by:**` is required on every mode-3 run and the self-test is deleted. Answered by the user 2026-08-20.

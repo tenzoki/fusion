@@ -4,8 +4,8 @@
 **Agent:** coder
 **Status:** Complete
 **Circle:** 260819-1645-four-constraints-on-deep-change
-**Plan:** `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md` step 1
-**Decision realised:** `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (option 2)
+**Plan:** `260819-2016_*_four-constraints-on-deep-change.md` step 1
+**Decision realised:** `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (option 2)
 **HEAD at start:** `b6869aa`
 
 ## What was implemented

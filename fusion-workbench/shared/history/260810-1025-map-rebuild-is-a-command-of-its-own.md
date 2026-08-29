@@ -3,9 +3,9 @@
 **Status:** Complete
 **Agent:** coder
 **Source records:**
-- `shared/issues/260810-0939_o_the-rebuild-map-refusal-tells-the-operator-to-run-a-live-push-to-obtain-a-dry-run.md`
-- `shared/issues/260810-0939_o_the-winner-subtraction-silences-a-real-collision-when-neither-entry-carries-an-id.md`
-- `shared/issues/260810-0939_o_the-fixture-seam-header-is-a-fifth-surface-and-still-names-the-spelling-the-refusal-rejects.md`
+- `260810-0939_*_the-rebuild-map-refusal-tells-the-operator-to-run-a-live-push-to-obtain-a-dry-run.md`
+- `260810-0939_*_the-winner-subtraction-silences-a-real-collision-when-neither-entry-carries-an-id.md`
+- `260810-0939_*_the-fixture-seam-header-is-a-fifth-surface-and-still-names-the-spelling-the-refusal-rejects.md`
 
 ---
 

@@ -44,7 +44,7 @@ current text, which closes nothing while reading as though it closed the class.
 `hooks/lib/__tests__/domain-cascade.test.ts:499-538`; `rules/agent-setup.md` `## Read every emitted path`;
 `README-hooks.md:179`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 Resolved: `rules/*.md` is in the file set, and the reason for every exclusion is now measured.

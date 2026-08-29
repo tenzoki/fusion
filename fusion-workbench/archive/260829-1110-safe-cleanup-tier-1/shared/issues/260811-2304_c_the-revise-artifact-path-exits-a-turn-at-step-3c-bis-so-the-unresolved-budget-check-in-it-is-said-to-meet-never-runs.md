@@ -7,7 +7,7 @@
 **Filed by:** coderev (review of `e3da397..a6b4928`, Turn 5)
 **Affects:** `agents/orchestrator.md:974`, `agents/orchestrator.md:976`
 **Cross-references:**
-`shared/issues/260811-2142_c_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md` (the finding `500f51f` closed; this is the same class of claim, one paragraph further down)
+`260811-2142_*_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md` (the finding `500f51f` closed; this is the same class of claim, one paragraph further down)
 
 ---
 
@@ -38,7 +38,7 @@ In the resolved case the same paragraph bounds the retries differently: "When th
 
 ## What this does and does not cost
 
-Stated with the confidence the evidence supports. The user is still asked something at every one of these boundaries — the Coherence gate at 3c-bis is itself an `AskUserQuestion`, and three of its four Rebalance options terminate the loop. So this is **not** a silent runaway. What is wrong is the sentence: it names a gate the path does not reach, and a reader (or a future editor) trusting it will believe the unresolved branch is covered where it is not. That is the same defect `260811-2142` was filed for, one paragraph further down the same section.
+Stated with the confidence the evidence supports. The user is still asked something at every one of these boundaries — the Coherence gate at 3c-bis is itself an `AskUserQuestion`, and three of its four Rebalance options terminate the loop. So this is **not** a silent runaway. What is wrong is the sentence: it names a gate the path does not reach, and a reader (or a future editor) trusting it will believe the unresolved branch is covered where it is not. That is the same defect `260811-2142_*_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md` was filed for, one paragraph further down the same section.
 
 ## Fix direction
 

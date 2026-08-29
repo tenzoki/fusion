@@ -1,14 +1,14 @@
-# Shaper — Directive correction at the Rebalance gate, 260802-1734
+# Shaper — Directive correction at the Rebalance gate, 260802-1734-shaper-directive-correction.md
 
 **Agent:** shaper (in-Circle clarification mode)
-**Circle:** `circles/260801-1244-rule-provenance-header` (`_t_`)
+**Circle:** `260801-1244-rule-provenance-header` (`_t_`)
 **Status:** Complete
 **Trigger:** user choice at the Rebalance gate, following the reconciler's `revise Directive` recommendation
 **Scope:** text corrections to `_t_circle.md` only. No spec, plan, code, issue, or decision touched. No Circle other than this one read for write purposes.
 
 ## Why this pass ran
 
-The reconciler's Coherence verdict at 260802-1413 was `review-needed` on the Artifact-to-Directive edge,
+The reconciler's Coherence verdict at 260802-1413-reconciliation.md was `review-needed` on the Artifact-to-Directive edge,
 and the flag was on the Directive's wording rather than on the work. Eight commits landed in
 `e8988d9..b568ad9`, all eight acceptance criteria were verified against the tree, and the suite is green
 at 780 tests. The user chose a bounded text correction over a re-shape.
@@ -47,10 +47,10 @@ After:
 The mechanism's claim is unchanged, because the mechanism was delivered in full: the convention is
 documented, ten files carry a header, the gate refuses a rule file without one. What the rewrite adds is
 the scope of the payoff, which the spec had already established and the Directive had not absorbed.
-The spec states it at `planning/260802-1103_c_spec-rule-provenance-header.md:165` and again at `:212`,
+The spec states it at `260802-1103_*_spec-rule-provenance-header.md:165` and again at `:212`,
 where the limitation is called permanent for this corpus rather than a day-one gap that later closes.
 
-This edit is the one that matters beyond bookkeeping. `circles/260801-1244-curator` depends on this
+This edit is the one that matters beyond bookkeeping. `260801-1244-curator` depends on this
 Circle hard and reads this Directive as its premise; the reconciler's phrasing was that the record
 "hands the curator Circle a premise stronger than what was built".
 
@@ -65,7 +65,7 @@ the snapshot itself opens by correcting.
 
 Three bullets added, one per Turn, in the format of the Circle record template in
 `rules/fusion-workbench-conventions.md` `## Circle record template`: commits, Coherence verdict, session
-history path, and a short sentence naming what the Turn did. All three Turns ran in session 260802-0848
+history path, and a short sentence naming what the Turn did. All three Turns ran in session 260802-0848-orchestrator-session.md
 and all three returned an `ok` verdict. The reconciler had recorded the empty section as state rather
 than filing it as an issue, because the session was still open at the time of that pass.
 
@@ -73,7 +73,7 @@ than filing it as an issue, because the session was still open at the time of th
 
 - **`**Status:** anticipated`** on line 5, which disagrees with the `_t_` marker on the filename. This is
   the originating instance of the skill defect filed at
-  `shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`. The
+  `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`. The
   reconciler left it uncorrected so the defect survives to be fixed at its source, and the user is
   keeping that.
 - **`## Closure note`.** The user owns it, and it belongs to the terminal-marker transition.
@@ -82,6 +82,6 @@ than filing it as an issue, because the session was still open at the time of th
 ## One observation, reported to the user rather than acted on
 
 Line 8 still reads `**Active session history:** (none yet)` after three Turns against
-`history/260802-0848-orchestrator-session.md`. That field is the orchestrator's at Phase 4, it sits
+`260802-0848-orchestrator-session.md`. That field is the orchestrator's at Phase 4, it sits
 outside the two sections this pass was asked to correct, and it is the same class of transition-time
 field-update miss as the `**Status:**` defect already filed. Left as found.

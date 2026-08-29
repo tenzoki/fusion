@@ -3,7 +3,7 @@
 **Date:** 2026-08-23
 **Agent:** coder
 **Circle:** `260823-0023-settle-what-travels-between-checkouts`
-**Source:** `circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1318-coderev-c2-turn-2.md`, all six findings
+**Source:** `260823-1318-coderev-c2-turn-2.md`, all six findings
 **Status:** Complete
 
 ---
@@ -21,7 +21,7 @@ costs. It fitted, at 170 bytes, so all six are closed.
 the finding does not name were resolving when it was filed and are pointers that die at their targets'
 next transition, and one of them was about to die in this very pass: the `**Plan:**` field at `:9`
 names the plan that item 3 renames. The other three are the one Turn 1 record still open, a citation of
-`shared/issues/260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`
+`260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`
 sharing line `:57`, and an elided `_c_` form at `:76` that a slug search does not find.
 
 The Turn 2 review was rewritten in the same pass, seven citations, six of them the `Record:` lines
@@ -30,13 +30,13 @@ have been the finding's own fault committed inside its repair, one Turn later.
 
 No corpus was widened. The second half of that record, whether a review file belongs in the citation
 gate, is a user's question under
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 and stays open.
 
 **2. Low. The false closure claim, in four files.** The four citations were rewritten to `_*_`. A
 tree-wide search for both decision records under every hard marker now returns nothing outside
 `archive/`. The claim's editable copy, in
-`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-1243-coder-two-decision-records-close-as-implemented.md`,
+`260823-1243-coder-two-decision-records-close-as-implemented.md`,
 carries an appended correction with the original sentence left standing, on the reasoning the
 `Revised by:` convention gives. The copy in `a76ee8f`'s commit message is not editable and stands
 uncorrected; that is stated in the closure note rather than glossed.

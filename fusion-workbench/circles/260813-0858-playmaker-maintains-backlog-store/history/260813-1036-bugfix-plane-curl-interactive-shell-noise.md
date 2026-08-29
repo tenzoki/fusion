@@ -92,6 +92,6 @@ Established for issue `260813-0828`:
 
 ## Unrelated Issues Found
 
-- `260813-1036_o_the-manual-fetch-command-fusion-plane-prints-breaks-the-same-way-plane-curl-just-stopped-breaking.md`
+- `260813-1036_*_the-manual-fetch-command-fusion-plane-prints-breaks-the-same-way-plane-curl-just-stopped-breaking.md`
   — `seed_defer_manual` (`bin/fusion-plane:2263`) prints a manual fetch command with the
   same `zsh -ic … | jq` shape. Printed, never executed, so out of scope for this fix.

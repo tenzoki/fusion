@@ -6,7 +6,7 @@ The `**Active spec/plan:**` field now carries a wildcard, and no rule authorises
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 3
 **Affects:** `rules/circle-records.md:135` (the template), `:164` (the worked example), `### Citation form in the portfolio` at `:250-268` (the scope of the wildcard rule)
-**Cross-references:** `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`, the binding decision, whose scope is shipped texts; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_the-plan-is-status-complete-with-every-step-done-and-still-carries-the-open-marker.md`, the rename that made the rewrite necessary
+**Cross-references:** `260806-0015_*_zitierform-fuer-workbench-records.md`, the binding decision, whose scope is shipped texts; `260823-1318_*_the-plan-is-status-complete-with-every-step-done-and-still-carries-the-open-marker.md`, the rename that made the rewrite necessary
 
 ---
 

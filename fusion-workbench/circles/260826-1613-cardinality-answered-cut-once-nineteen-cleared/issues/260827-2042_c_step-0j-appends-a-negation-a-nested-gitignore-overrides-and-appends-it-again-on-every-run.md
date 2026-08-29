@@ -4,7 +4,7 @@ Step 0j appends a negation a nested .gitignore overrides, and appends it again o
 `skills/setup/SKILL.md:370` repairs an excluded R2/R3 entry by appending `!fusion-workbench/<p>` to the root `.gitignore`. When the exclusion comes from `fusion-workbench/.gitignore` or `.git/info/exclude`, the root negation loses (the deeper file wins), `git check-ignore -q` still exits 0 on the next run, and the line is appended again, every run, while the Done report says the entry was repaired. Measured against a scratch repository: two runs, two identical negation lines, the file still excluded.
 ---
 **Filed by:** coderev, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md` (closed by this step); `shared/decisions/260825-1030_a_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`; commit `abb0238`
+**Cross-references:** `260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md` (closed by this step); `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`; commit `abb0238`
 
 ## Evidence
 

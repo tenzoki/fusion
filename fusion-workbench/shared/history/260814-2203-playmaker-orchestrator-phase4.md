@@ -1,4 +1,4 @@
-# Playmaker run 260814-2203 — orchestrator Phase 4
+# Playmaker run 260814-2203-playmaker-orchestrator-phase4.md — orchestrator Phase 4
 
 **Status:** Complete
 **Trigger:** `orchestrator-phase4` (portfolio sync after `260801-1244-curator` closed coherent)
@@ -36,12 +36,12 @@ groups found: 0. Items handed to `## Warnings` as defect- or decision-shaped: 1,
 "every operation is unbearably slow" observation, which is defect-shaped and covered on disk only
 by a record scoped to Setup.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_radical-simplification.md` — the only live idea
+**Top-ranked entry:** `260814-1733_*_radical-simplification.md` — the only live idea
 whose cited evidence is already on disk, so it can be shaped without commissioning new analysis.
 
 ### Backlog writes performed
 
-- Renamed `260814-1733_o_radical-simplification.md` → `260814-1733_p_radical-simplification.md`
+- Renamed `260814-1733_*_radical-simplification.md` → `260814-1733_*_radical-simplification.md`
   (open → recommended). The autonomous ranking rename; the previous run was a confirmed-operations
   dispatch and deliberately left the marker at open.
 
@@ -49,7 +49,7 @@ Nothing was created, split, merged, closed or deferred.
 
 ### Proposed and not performed
 
-- `defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
+- `defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
   — not performed because this run holds no confirmation naming that operation. Neither channel was
   available: a Phase-4 dispatch carries no `**Confirmed operations:**` block, and a non-interactive
   run has no path to the user.
@@ -62,9 +62,9 @@ the two entries citing the same analysis state distinct ideas, so a merge would 
 New this run:
 
 - `the-parent-spec-is-in-an-undecided-state-and-sits-above-everything` — all four Circles under
-  `shared/planning/260801-1122_*_spec-normative-consolidation.md` have delivered, the spec still
+  `260801-1122_*_spec-normative-consolidation.md` have delivered, the spec still
   carries the open marker, and whether it may close is the open decision
-  `shared/decisions/260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`.
+  `260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`.
   Surfaced, not answered.
 - `the-project-holds-no-anticipated-circle-and-no-active-one` — zero and zero, so `/fusion:next`
   has no candidate and the backlog is the only source of the next unit of work.

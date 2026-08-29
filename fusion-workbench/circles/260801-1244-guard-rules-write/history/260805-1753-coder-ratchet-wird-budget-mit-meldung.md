@@ -1,10 +1,10 @@
 # Session — der Regeltext-Ratchet wird ein Budget mit Meldung
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Datum:** 2026-08-05, 17:53
 **Status:** Complete
-**Dispatch:** Orchestrator, Umbau nach Nutzerentscheid zu `decisions/260805-1559_a_…`
+**Dispatch:** Orchestrator, Umbau nach Nutzerentscheid zu `260805-1559_*_…`
 
 ---
 
@@ -41,7 +41,7 @@ Was dabei herauskam:
 | ruhige Arbeit, 02.06. → 31.07. | 38 776 → 87 387 | rund **800 Byte/Tag**, in Schritten von 1 000–5 000 pro Commit |
 | der schlimmste Lauf, 01.08. → 04.08. | 87 387 → 145 144 | rund **14 400 Byte/Tag** |
 | schlimmster Einzeltag (03.08. → 04.08.) | 125 660 → 145 144 | **+19 484** |
-| eine befundgetriebene Ergänzung | — | **430 Byte** (gemessen in `260805-1559`) |
+| eine befundgetriebene Ergänzung | — | **430 Byte** (gemessen in `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`) |
 
 `GROWTH_BUDGET = 12 000` ist so gewählt, dass vier Eigenschaften gleichzeitig gelten:
 
@@ -50,7 +50,7 @@ Was dabei herauskam:
    Eigenschaft, an der der ganze Auftrag hängt: „in vier Tagen wieder auf 145 kB, ohne dass
    es jemandem auffällt" wird unmöglich.
 2. Es sind rund **24 befundgroße Ergänzungen**. Ehrliche Arbeit ist nie das, was es auslöst;
-   der Fall aus `260805-1559` (430 Byte) landet, ohne dass irgendwer irgendetwas kürzt.
+   der Fall aus `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` (430 Byte) landet, ohne dass irgendwer irgendetwas kürzt.
 3. Bei der ruhigen Rate wird es **alle zwei bis drei Wochen** fällig. Das ist das „von Zeit
    zu Zeit bereinigt" des Nutzers, nicht ein Dauerton.
 4. Die schlankste Rolle kann es **ganz ausgeben und liegt immer noch unter `RELEASE_CAP`**
@@ -117,7 +117,7 @@ sich, als solle auch das Golden Größen nicht mehr prüfen. Dagegen sprechen zw
 
 1. Das Golden hat **nie** blockiert. Was blockiert hat, war `ROLE_CAPS`. Eine Größenänderung
    kostet dort einen Regenerationslauf und **nie einen Schnitt** — der Weg, der in
-   `260805-1559` fehlte, ist damit offen. Ich habe genau das nachgespielt (§ 5, Fall A): die
+   `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` fehlte, ist damit offen. Ich habe genau das nachgespielt (§ 5, Fall A): die
    430-Byte-Ergänzung landet in vier Schritten, ohne dass irgendwo Text weicht.
 2. Nähme man die Größen aus dem Golden heraus, verrottet die Größenspalte still — und genau
    sie ist es, aus der beim nächsten Schnitt `RULE_BASELINE` neu geschnitten wird. Die
@@ -194,7 +194,7 @@ Kopie also die Kopie. Kontrolllauf vor jeder Manipulation: **7 grün, keine Meld
 
 | Fall | Eingriff | Beobachtet |
 |---|---|---|
-| **A** — befundgroße Ergänzung landet | +430 Byte in `fusion-workbench-conventions.md` | Golden fällt („Rule emission for 'analyst' changed"); nach `UPDATE_RULES_GOLDEN=1` **7 grün, keine Meldung**. Kein Schnitt nötig — der Fall aus `260805-1559`, jetzt landbar. |
+| **A** — befundgroße Ergänzung landet | +430 Byte in `fusion-workbench-conventions.md` | Golden fällt („Rule emission for 'analyst' changed"); nach `UPDATE_RULES_GOLDEN=1` **7 grün, keine Meldung**. Kein Schnitt nötig — der Fall aus `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`, jetzt landbar. |
 | **B** — eine Rolle über Budget, die anderen nicht | zusätzlich +8 000 in `protected-path-internals.md`, +5 000 in `critical-stance.md` | Meldung **nur** für `bugfixer, coder, coderev` (125 196, Budget 123 766), mit allen drei gewachsenen Dateien und Deltas, absteigend sortiert. Suite **grün**. |
 | **C** — Kernwachstum trifft alle | zusätzlich +9 000 in `user-facing-output.md` | Meldung für **alle sechs** Rollen, jede mit eigenem Boden und Budget, nach Überschreitung sortiert (schlimmste zuerst). Suite **grün**. |
 | **D** — Drift-Deckel | zusätzlich +11 000 in `git-branch-discipline.md` | Tor **fällt**: „`coder` loads 145 196, at or past the 145 144 drift ceiling … 52 over", für alle drei Agenten der Rolle. |
@@ -233,7 +233,7 @@ grown since the last cut:
 
 ## 6. Was ich bewusst nicht getan habe
 
-- **Die blockierte Ergänzung aus `260805-1559` nicht mitgelandet.** Sie ist jetzt möglich
+- **Die blockierte Ergänzung aus `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` nicht mitgelandet.** Sie ist jetzt möglich
   (Fall A beweist es), aber sie ist eine Konventionsänderung und gehört in einen eigenen
   Durchgang mit eigenem Bericht — nicht in einen Testumbau. Der Decision-Record steht
   entsprechend auf `_a_` und nennt sie als offenen Folgeschritt.

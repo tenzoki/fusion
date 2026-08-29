@@ -24,7 +24,7 @@ has moved.
 **Owner:** `coder`
 **Affects:** `hooks/lib/__tests__/workbench-citation-lint.test.ts:33-34`
 **Cross-references:**
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 (option 1, the decision the sentence is arguing from)
 
 **Verified 2026-08-20 at HEAD `bbfc912`:**
@@ -41,7 +41,7 @@ is a number somebody re-approves and this gate has none. The property is what th
 the count is what will go stale again on the sibling's next re-approval.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
 reproduces.** `hooks/lib/__tests__/workbench-citation-lint.test.ts:34` still reads "re-approved four
 times"; `grep -c 're-approved' hooks/lib/__tests__/reference-resolution-lint.test.ts` returns **14**.
 Marker unchanged.

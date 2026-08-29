@@ -27,7 +27,7 @@
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. Finding an unstaged record
 #      is NOT a non-zero exit, deliberately — same reason bin/fusion-review-coverage
-#      gives (issue 260810-0710).
+#      gives (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md).
 #   1  usage error.
 #   2  no fusion workbench above the working directory; nothing to check.
 #   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
@@ -37,7 +37,7 @@
 # ---------------------------------------------------------------------------
 # Why this exists
 #
-# Issue 260811-0114: the queue rebuild session 260810-1646 worked from — 2128
+# Issue 260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md: the queue rebuild session 260810-1646-orchestrator-session.md worked from — 2128
 # lines, 1409 insertions against the committed copy — and its companion history
 # file never entered a commit. They survived eighteen commits in the working
 # tree alone, where an ordinary `git checkout -- fusion-workbench/` would have

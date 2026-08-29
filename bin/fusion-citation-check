@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# fusion-citation-check — report every record citation in a consuming project
+# that the storeless citation grammar cannot resolve.
+#
+# Usage:
+#   fusion-citation-check [--undecidable]
+#
+# Output on stdout, one KEY=value per line, then one row per violation:
+#
+#   anchor=workbench-root
+#   root=.
+#   files=312
+#   tokens=1904
+#   judged=1211
+#   resolved=1180
+#   dangling=3
+#   store-prefixed=28
+#   undecidable=402
+#   exempt=291
+#   verdict=violations            # or clean
+#     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  …
+#
+# Corpus: every .md under fusion-workbench/ except archive/, stashes/ and
+# .migration-v2-backup/, plus CLAUDE.md, rules/*.md, .claude/rules/*.md and
+# docs/**/*.md at the project root, where present. The grammar is
+# hooks/lib/citation-scan.ts, the same one fusion's own gates run; the form it
+# reads is stated in rules/fusion-workbench-conventions.md "Filename Patterns".
+# `--undecidable` adds one row per bare stamp or ambiguous token, which reach
+# no verdict: a bare stamp names a minute, not a file.
+#
+# It decides nothing per line about pointer versus statement — a fenced code
+# block or a blockquote exempts a token, and that is the whole distinction.
+# It never rewrites: the one-shot rewriter is hooks/scripts/citation-sweep.mjs,
+# run by hand after reading its --dry-run census.
+#
+# Exit codes:
+#   0  the check ran. `verdict=` says what it found. A violation is NOT a
+#      non-zero exit, deliberately — same reason bin/fusion-review-coverage and
+#      bin/fusion-staging-drift give (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md).
+#   1  usage error.
+#   2  no fusion workbench above the working directory; nothing to check.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there is nothing to check" is an answer about the
+#      project, and a broken install must never be reported as one.
+#
+# The work is hooks/dist/citation-check.js, resolved relative to this script
+# rather than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree
+# each run their own build. A call site guards with [ -x ]: the installed copy
+# need not carry a helper added between releases (decision 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/citation-check.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-citation-check: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

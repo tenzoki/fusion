@@ -3,7 +3,7 @@
 **Date:** 2026-08-20
 **Status:** Partially Complete
 **Source:** In-Circle clarification dispatched by the orchestrator against the Directive of
-`circles/260820-2051-style-rules-arrive-and-get-measured`, with sixteen open defect records and one
+`260820-2051-style-rules-arrive-and-get-measured`, with sixteen open defect records and one
 answered decision named as the material.
 **Measured at:** HEAD `a5b73da`, 2026-08-20. Every figure below was produced during this shaping run
 and is reproducible by the commands named beside it.
@@ -16,7 +16,7 @@ replace it. The always-on rule corpus sits at or under the em-dash ceiling it st
 rule that does not count a file's own anti-examples as instances of the fault. The rule that owns
 the fact-first requirement states the condition under which an opening sentence fails, so a writer
 can apply it. And
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 carries a number produced by a protocol registered before the repair landed.
 
 ## Three causes, and the mechanism for each
@@ -75,7 +75,7 @@ The project has already met this exact problem and settled it once, on a differe
 citations read as broken because a record quoting somebody else's bad citation became a violation
 itself, and the answer was to exempt fenced content, defined in `fencedContentLines()` in
 `hooks/lib/__tests__/helpers/citation-scan.ts` against CommonMark
-(`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`).
+(`260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`).
 The same exemption is the right one here, and reusing its definition costs nothing.
 
 **The metric this Circle uses, and the number it must state.** A *prose em-dash* is an em-dash that
@@ -146,7 +146,7 @@ lands, including this repository's own.
 - Location: the project keeps its own copy, so a project can adapt its voice. Options 2, 3 and 4 of
   the user's draft are not pursued (Circle record, user decision 3).
 - A work-tree preference for `stilwerk/` is not the route, because it would require answering part
-  (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`,
+  (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`,
   which is deliberately unanswered (Circle record, user decision 3).
 - Scope is every copied asset, not the profiles alone (Circle record, user decision 4).
 - A refresh is offered, never performed without an answer. `skills/setup/SKILL.md` states the
@@ -230,7 +230,7 @@ it. Nothing here proposes a gate, and nothing here may propose one; see `## Cons
       the significance of that fact instead of the fact.
 - [ ] The clause is demonstrated with a before and after drawn from the two reported samples, in the
       same `Not X, Y` form the neighbouring clauses use. The pattern is the one
-      `shared/issues/260818-1452_c_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md`
+      `260818-1452_*_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md`
       established when it closed on 260818.
 - [ ] The clause states that the factual form is usually no longer than the form it replaces, so it
       cannot be read as licence against `## Length`.
@@ -272,7 +272,7 @@ contains no reference to `workbench-tracking` and `bin/fusion-rules coder` does 
 at HEAD `a5b73da`. The commit that created that file, `b200902`, moved text **out** of the conventions
 file and says so in its own message: the always-on set fell by 3 416 bytes. The claim is not merely
 wrong, it is inverted, and it makes the pending measurement's dose look weaker than it is. Filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
+`260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
 
 **Acceptance criteria:**
 - [ ] Each live record that names the always-on set states it as its derivation: the unindented
@@ -282,7 +282,7 @@ wrong, it is inverted, and it makes the pending measurement's dose look weaker t
 - [ ] The wrong `workbench-tracking` claim is corrected wherever it stands live, which at HEAD is the
       decision record's 260819 reconciliation and this Circle's own Grounding snapshot.
 - [ ] The unreproducible token count in the progress note on
-      `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+      `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
       is corrected: the identity is stated without a total, or with the tokenisation that produces
       one, and the capitalisation claim is stated in the direction the evidence shows, which is ten
       tokens gaining a capital and none losing one.
@@ -290,9 +290,9 @@ wrong, it is inverted, and it makes the pending measurement's dose look weaker t
       older tarball, is annotated as expired rather than repeated. Verified today: all four installed
       profiles are byte-identical with the work tree, so a copy from the installed plugin resolves the
       divergence now.
-- [ ] `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` is **not** edited. It is a
+- [ ] `260816-0740-rhetorical-register-of-agent-output.md` is **not** edited. It is a
       completed report.
-- [ ] `shared/history/260816-1251-curator-run.md` is **not** rewritten. The correction to the cap it
+- [ ] `260816-1251-curator-run.md` is **not** rewritten. The correction to the cap it
       names is an appended note.
 
 ### C7: The voice-profile fallback becomes visible to the agent that is told to record it
@@ -387,7 +387,7 @@ Three cheap strengthenings, each decidable:
       minimum number of files a window needs to be usable, and the threshold for the predicted fall.
 - [ ] The measurement runs against both windows and reports per-file rates, not only a total, so one
       outlier is visible.
-- [ ] `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- [ ] `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
       carries the resulting number and the protocol's path.
 - [ ] The record states in its own text that the number is an observation of a rate and not a
       controlled test of the causal claim, and names the confounds it does not remove.
@@ -413,13 +413,13 @@ Three things follow and each is binding.
 
 **No capability in this spec may add a hook test file.** The surface has 116 lines left. The smallest
 existing test file is 51 lines and the median is around 400. This kills option 2 of
-`shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
+`260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
 a divergence check implemented as a test, and it is one of two independent reasons C1 is a Setup step
 instead. The other is that a test would fail in this repository on a divergence a consuming project
 is entitled to have.
 
 **`agents/` at 2 259 bytes is tighter than this Circle was told.** The Grounding of the concurrent
-Circle `circles/260819-1645-four-constraints-on-deep-change` measures roughly 3 300. The difference
+Circle `260819-1645-four-constraints-on-deep-change` measures roughly 3 300. The difference
 is growth since that measurement, and `agents/orchestrator.md` carries 10 948 of the 15 741 already
 spent. Both Circles draw on this one budget. C8 costs about 800 bytes, taken from a sibling prompt of
 the same shape.
@@ -452,13 +452,13 @@ effect here. Sequence C1 early enough that the second write is the mechanism's o
 ## Out of Scope
 
 - **Any test or gate that measures a prose property.** Not authorised until C10 has run.
-- **`shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`.** Its stated
+- **`260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`.** Its stated
   cause was refuted by measurement on 260817: within-document em-dash compliance improves toward the
   end of a document, which is the opposite of decay with context depth. Its remaining remedy, attaching
   a rule to the act it governs, is gated on decision `260810-0710`, which is deferred. It is a
   dispatch-architecture question, not a style-rule question.
 - **The second half of
-  `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`.**
+  `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`.**
   See `## User Decisions Pending` question 5.
 - **`CLAUDE.md`'s own em-dash rate.** It is not emitted by `bin/fusion-rules` and is not part of the
   corpus this Circle repairs.
@@ -497,26 +497,26 @@ one is the decision that this Circle advances rather than closes.
 
 | Record | Cause | Resolved by | Note |
 |---|---|---|---|
-| `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` | RC3 | C3, C6 | Closes when the corpus is at the ceiling under the stated metric and the table's membership is a derivation. |
-| `shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` | RC3 | C3 | Its own proposed marks are the acceptance criterion. |
-| `shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` | RC3 | C3 | Same. |
-| `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md` | RC1 | C6 | The progress note is corrected; the commit message stands. |
-| `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md` | RC1 | C6 | Plus the inverted `workbench-tracking` claim found today. |
-| `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` | RC1 | C1, C2 | Its option 2 as a test is not affordable; C1 is the same mechanism as a Setup step. |
-| `shared/issues/260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` | RC1 | C1 | Its candidate 1 is a narrower version of what C1 does generally. |
-| `shared/issues/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` | RC1 | C2 | All three parts: the number, the de/en divergence, the trailing space. |
-| `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` | RC1 | C6 | Appended note on the run file, not a rewrite. |
-| `shared/issues/260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` | RC1 | C9 | Its item 2 lands unconditionally; item 1 is question 3 below. |
-| `circles/260801-1244-curator/issues/260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` | RC1 | C8 | About 800 bytes against 2 259 of head-room. |
-| `circles/260801-1244-curator/issues/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md` | RC2 | C7 | A §4 case: the mechanism moves, not the wording. Subject to question 6. |
-| `shared/issues/260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` | RC2 | C5, **in part** | The ambiguity is removable now; the two numbers are question 2. |
-| `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` | RC2 | C4, **in part** | C4 closes the opener half. The record's structural half, that the rule prescribes relocation and states no total budget, is question 5. |
-| `shared/issues/260818-1452_c_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md` | RC2 | **already closed** | Read for its pattern. Its resolution is the template C4 and C5 follow: a clause plus a demonstrated before and after, with the cost reported against the head-room. Not reopened. |
-| `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` | none of the three | **left open** | Cause refuted by measurement; remedy gated on a deferred decision. Out of scope, stated above. |
-| `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` | RC3 | C10 | Advanced, not necessarily closed. Its marker follows the three-outcome scheme in question 4. |
+| `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` | RC3 | C3, C6 | Closes when the corpus is at the ceiling under the stated metric and the table's membership is a derivation. |
+| `260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` | RC3 | C3 | Its own proposed marks are the acceptance criterion. |
+| `260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` | RC3 | C3 | Same. |
+| `260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md` | RC1 | C6 | The progress note is corrected; the commit message stands. |
+| `260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md` | RC1 | C6 | Plus the inverted `workbench-tracking` claim found today. |
+| `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` | RC1 | C1, C2 | Its option 2 as a test is not affordable; C1 is the same mechanism as a Setup step. |
+| `260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` | RC1 | C1 | Its candidate 1 is a narrower version of what C1 does generally. |
+| `260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` | RC1 | C2 | All three parts: the number, the de/en divergence, the trailing space. |
+| `260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md` | RC1 | C6 | Appended note on the run file, not a rewrite. |
+| `260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` | RC1 | C9 | Its item 2 lands unconditionally; item 1 is question 3 below. |
+| `260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` | RC1 | C8 | About 800 bytes against 2 259 of head-room. |
+| `260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md` | RC2 | C7 | A §4 case: the mechanism moves, not the wording. Subject to question 6. |
+| `260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` | RC2 | C5, **in part** | The ambiguity is removable now; the two numbers are question 2. |
+| `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` | RC2 | C4, **in part** | C4 closes the opener half. The record's structural half, that the rule prescribes relocation and states no total budget, is question 5. |
+| `260818-1452_*_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md` | RC2 | **already closed** | Read for its pattern. Its resolution is the template C4 and C5 follow: a clause plus a demonstrated before and after, with the cost reported against the head-room. Not reopened. |
+| `260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` | none of the three | **left open** | Cause refuted by measurement; remedy gated on a deferred decision. Out of scope, stated above. |
+| `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` | RC3 | C10 | Advanced, not necessarily closed. Its marker follows the three-outcome scheme in question 4. |
 
 One record is added by this spec:
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`,
+`260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`,
 resolved by C6.
 
 ## User Decisions Pending
@@ -596,7 +596,7 @@ The body above is the shaper's and is left unedited, because its reasoning is th
 follows. Where this section and the body disagree, **this section governs**. It records an assessment
 by `analyst` and eight decisions taken by the orchestrator while the user was away.
 
-Assessment: `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`.
+Assessment: `260820-2308-assessment-of-the-style-rules-spec.md`.
 Its verdict was that the design is right and no mechanism needs replacing. Every correction below is a
 claim, a number or a decision, not a design change.
 
@@ -651,11 +651,11 @@ unpicking the others. Stamp `260820-2314`.
 
 ## Reconciliation Log
 
-**260825-1241 (reconciler, domain `code`, HEAD `cfab17e`) — marker unchanged at `_o_`,
+**260825-1241-reconciliation.md (reconciler, domain `code`, HEAD `cfab17e`) — marker unchanged at `_o_`,
 `**Status:** Draft` → `Partially Complete`, and no acceptance criterion ticked.**
 
 *Why the header moves.* `Draft` is false against a Circle that was planned, executed and closed
-against this spec. `circles/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md`
+against this spec. `260820-2051-style-rules-arrive-and-get-measured`
 `## Closure note` records Bounded Closure on 260821 with three of the Directive's four outcomes
 reached, and the plan beside this file carries `_c_` with seventeen `[DONE]` steps.
 `Partially Complete` is the honest field value, on the closure note's own authority.
@@ -664,15 +664,15 @@ reached, and the plan beside this file carries `_c_` with seventeen `[DONE]` ste
 and 49 acceptance criteria, none of them marked, and at least C1's mechanism is demonstrably at HEAD
 (`skills/setup/SKILL.md` Step 0e, all five cases plus the two the sixth outcome was split into).
 Verifying 49 criteria against the tree is a reconciliation pass of its own, and this session's
-Directive is `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. Ticking them
+Directive is `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. Ticking them
 from the closure note rather than from the tree would be exactly the substitution
 `rules/critical-stance.md` §3 forbids. The gap is filed as
-`shared/issues/260825-1250_*_a-bounded-circle-holds-a-draft-spec-with-49-unreconciled-criteria-that-no-scan-reaches.md`,
+`260825-1250_*_a-bounded-circle-holds-a-draft-spec-with-49-unreconciled-criteria-that-no-scan-reaches.md`,
 which also records why no future scan reaches this file: the Circle is terminal, so no `SCAN_PLANS`
 the resolver emits names its store.
 
-*Two of its decision records were transitioned in this pass.* `decisions/260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
-and `decisions/260820-2324_*_where-does-the-copied-asset-provenance-record-live.md` both carried
+*Two of its decision records were transitioned in this pass.* `260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
+and `260820-2324_*_where-does-the-copied-asset-provenance-record-live.md` both carried
 `_o_` with empty annotation stubs while option 1 of each is on disk — `bin/fusion-source-root` in all
 three of Step 0e's bash blocks, and `fusion-workbench/.asset-provenance` with its layout-tree row and
 its R3 classification. Both are now `_i_`, citing `3464575` and `dc78da2`.

@@ -2,15 +2,15 @@
 
 **Date:** 2026-08-13
 **Agent:** shaper (anticipated-circle mode)
-**Result:** `circles/260813-0858-playmaker-maintains-backlog-store/`
+**Result:** `260813-0858-playmaker-maintains-backlog-store`
 
 ## The draft
 
 The draft was the user's own statement of the fix direction for
-`shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`:
+`260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`:
 give the playmaker full maintenance of the shared backlog store. It did **not** come from a
 backlog entry, so no entry was promoted and none was renamed. The single entry in the store,
-`shared/backlog/260811-0826_o_observations.md`, is a multi-idea dump that the playmaker's own
+`260811-0826_*_observations.md`, is a multi-idea dump that the playmaker's own
 rules already forbid recommending for shaping, and it was left untouched.
 
 ## Clarification
@@ -31,9 +31,9 @@ One round, four questions, all four answered by the user.
 
 ## What was written
 
-- `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md` — the anticipated Circle
+- `260813-0858-playmaker-maintains-backlog-store` — the anticipated Circle
   record, with the six artifact subdirectories beside it.
-- `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_o_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`
+- `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`
   — one deferred behavioural question. The confirmation gate from answer 1 has no channel on the
   orchestrator's Phase 4 dispatch path, and the user asked for no second round, so it was filed
   rather than put to him.

@@ -10,7 +10,7 @@
 
 ## What was asked
 
-Step 3 of `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md`:
+Step 3 of `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`:
 a stamping clause on `/fusion:setup` Step 0d, a new Step 0e that compares every asset Setup copies
 into the workbench against the shipped copy, the new root surface written into the layout tree and
 into the tracked/untracked split, and the `CLAUDE.md` correction the source question forces.
@@ -74,13 +74,13 @@ skill body rather than retyped.
 
 Also run against this repository's real workbench: both chat profiles come back
 `case0-unclassifiable`, which is the live instance of
-`shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`.
+`260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`.
 
 ## Records touched
 
 - Plan step 3 marked `[DONE]`.
-- `shared/issues/260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` closed, `_o_` → `_c_`.
-- `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` annotated, marker unchanged: the mechanism exists, the divergence closes at plan step 8.
+- `260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` closed, `_o_` → `_c_`.
+- `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md` annotated, marker unchanged: the mechanism exists, the divergence closes at plan step 8.
 - The spec's traceability table cited the closed issue with a literal `_o_`, which `workbench-citation-lint` reddened the moment the marker moved. That one row now spells `_*_`; the table's other rows were left as they are, since only this one dangled.
 
 ## Left open
@@ -88,7 +88,7 @@ Also run against this repository's real workbench: both chat profiles come back
 Both decisions the step was written against are still `_o_`. Neither was transitioned here — an open
 decision is the user's to answer, and the plan is written against the recommendation in each:
 
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_where-does-the-copied-asset-provenance-record-live.md` — option 1 built.
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md` — option 1 built.
+- `260820-2324_*_where-does-the-copied-asset-provenance-record-live.md` — option 1 built.
+- `260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md` — option 1 built.
 
-The narrow reading held. Nothing in it required widening part (c) of `260810-1544`.
+The narrow reading held. Nothing in it required widening part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`.

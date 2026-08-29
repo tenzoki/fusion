@@ -1,7 +1,7 @@
 # Concept Evaluation: Plan — remove eight mechanisms, collapse the administrative surface, extend the failing cap
 
 **Date:** 2026-08-15 00:44
-**Target:** `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+**Target:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mermaid-cli 11.16.0, both blocks rendered to SVG)
 

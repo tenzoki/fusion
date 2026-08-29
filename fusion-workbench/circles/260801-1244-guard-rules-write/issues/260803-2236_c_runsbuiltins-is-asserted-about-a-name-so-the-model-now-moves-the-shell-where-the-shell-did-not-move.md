@@ -4,7 +4,7 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coderev, Turn 5 incremental review of `circles/260801-1244-guard-rules-write`
+**Filed by:** coderev, Turn 5 incremental review of `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/command-word.ts`, `hooks/lib/bash-mutation-guard.ts` (Bash surface only)
 **Kind:** REGRESSION introduced by `9aacab5`. Every row below **denied** at `cb2c8ad` and **allows** at HEAD.
 **Cross-references:**
@@ -14,15 +14,15 @@
 `hooks/lib/bash-mutation-guard.ts:1782-1800` (the call site and the give-up);
 `hooks/lib/__tests__/bash-mutation-guard.test.ts:645` (the single assertion that pins the defect);
 `rules/protected-path-discipline.md:176-180`, `:381-382`; `README-hooks.md:122`, `:184`;
-`issues/260803-2038_c_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md`
+`260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md`
 (the issue this closes, and re-opens in the other direction);
-`history/260803-2220-turn5-t5-1-wrapper-walk-and-pushd-rotation.md` `## Residuals` item 2.
+`260803-2220-turn5-t5-1-wrapper-walk-and-pushd-rotation.md` `## Residuals` item 2.
 
 ---
 
 ## What is wrong
 
-The fix for `260803-2038` was right about the mechanism and right that walking wrappers
+The fix for `260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md` was right about the mechanism and right that walking wrappers
 unconditionally would open a hole. It guarded against the wrong half of the hole.
 
 `reachesBuiltin` decides whether the directory model treats `<wrapper> cd DIR` as a real
@@ -178,7 +178,7 @@ Turn's own before/after table did not test.
 
 ---
 
-## Resolved — task T6-1, `history/260803-2340-turn6-t6-1-wrapper-give-up-and-stack-depth.md`
+## Resolved — task T6-1, `260803-2340-turn6-t6-1-wrapper-give-up-and-stack-depth.md`
 
 **Direction taken: 2, the stricter one, plus a clause the issue did not name.**
 `runsBuiltins` is deleted from `WrapperSpec` and from all three rows. `reachesBuiltin` is

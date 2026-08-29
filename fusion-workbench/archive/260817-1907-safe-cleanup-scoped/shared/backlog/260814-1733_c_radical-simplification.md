@@ -1,8 +1,8 @@
 # Can fusion be radically simplified, and along which axis
 
 **Domain:** code
-**Filed by:** user (hand-written, 260811-0826), split out by playmaker 260814-1733
-**Related:** `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`, `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`
+**Filed by:** user (hand-written, 260811-0826_*_observations.md), split out by playmaker 260814-1733
+**Related:** `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`, `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`
 
 The user's closing question in the original dump, asked twice and in two forms: "Ist Fusion ein
 token- und zeitfressendes Monster geworden, das sich nur noch um sich selbst dreht?" and "Wie können
@@ -17,6 +17,6 @@ first move — derive the hand-maintained session counters from git and the even
 instead of maintaining them — and puts the saving at up to 28 percent of session time, 43 130 tokens
 out of every orchestrator Setup, and roughly 5 400 lines of drift machinery.
 
-Split from `shared/backlog/260811-0826_*_observations.md`.
+Split from `260811-0826_*_observations.md`.
 
-Promoted: circles/260815-0007-remove-eight-mechanisms-and-cap-growth — eight unused mechanisms leave the shipped plugin, the eight administrative names collapse to setup, cleanup and cadence, and a failing cap is extended to agents/, skills/ and the hook tests.
+Promoted: 260815-0007-remove-eight-mechanisms-and-cap-growth — eight unused mechanisms leave the shipped plugin, the eight administrative names collapse to setup, cleanup and cadence, and a failing cap is extended to agents/, skills/ and the hook tests.

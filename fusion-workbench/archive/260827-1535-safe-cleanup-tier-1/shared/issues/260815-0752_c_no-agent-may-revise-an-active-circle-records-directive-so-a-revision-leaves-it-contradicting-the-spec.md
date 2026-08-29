@@ -38,16 +38,16 @@ Option 3 is the only one that removes the duplication rather than assigning it a
 
 ## Worked instance
 
-Circle `circles/260814-1228-one-flow-mandate-to-process-control`, 2026-08-15. The Turn log entry for the revision records the gap and points here, which is the only mitigation available inside the current rules: the Turn log *is* a permitted orchestrator write, so the contradiction is at least declared beside the text that carries it.
+Circle `260814-1228-one-flow-mandate-to-process-control`, 2026-08-15. The Turn log entry for the revision records the gap and points here, which is the only mitigation available inside the current rules: the Turn log *is* a permitted orchestrator write, so the contradiction is at least declared beside the text that carries it.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md`-s portfolio-activation mode is still scoped to an anticipated Circle ahead of activation, and `agents/orchestrator.md:236` still permits exactly three Circle-record content writes, none of them a mid-Circle Directive revision. None of the three candidate answers was adopted. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md`-s portfolio-activation mode is still scoped to an anticipated Circle ahead of activation, and `agents/orchestrator.md:236` still permits exactly three Circle-record content writes, none of them a mid-Circle Directive revision. None of the three candidate answers was adopted. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: 2026-08-18, candidate answer **3 together with 1** — the plan
-`shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`,
+`260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`,
 all seven steps, from decision
-`shared/decisions/260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md`
+`260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md`
 (option 1). The duplication is removed rather than given a maintainer: a record's `## Directive`
 holds prose **if and only if** its `**Active spec/plan:**` reads `(none yet)`, and where the field
 cites a file the section carries a fixed pointer to the field
@@ -60,8 +60,8 @@ the record's independent statement of intent and never authors one.
 
 The `**Status:**` precedent this record cites as the shape of the failure is gone with it: the field
 was dropped from the template in the same change (decision
-`shared/decisions/260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`).
+`260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`).
 
-**The worked instance is not repaired, deliberately.** `circles/260814-1228-one-flow-mandate-to-process-control`
+**The worked instance is not repaired, deliberately.** `260814-1228-one-flow-mandate-to-process-control`
 is terminal, no migration converts an existing record, and converting that one would delete the
 evidence this record points at. The plan argues it under `**2. The transition.**`

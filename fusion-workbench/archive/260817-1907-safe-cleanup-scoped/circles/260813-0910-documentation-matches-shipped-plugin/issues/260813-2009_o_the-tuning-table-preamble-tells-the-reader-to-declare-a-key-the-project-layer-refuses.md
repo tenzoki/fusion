@@ -47,4 +47,4 @@ Say where the declaring happens without promising it for every row — most rows
 Filed by: coderev (review of Circle Turn 2, range `28f3029..5d51abd`, commit `5d51abd`).
 
 ---
-Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `README.md:104` (moved from `:105`) still reads "Declare the ones you want in your project's `fusion-guard.json`", and the `guard.enabled` row that follows still states the project layer may not set it.
+Reconciled: 260813-2258-reconciliation.md — Still open, re-verified at HEAD `c0e4219`: `README.md:104` (moved from `:105`) still reads "Declare the ones you want in your project's `fusion-guard.json`", and the `guard.enabled` row that follows still states the project layer may not set it.

@@ -1,4 +1,4 @@
-# Playmaker run 260821-1536: the board has a candidate again
+# Playmaker run 260821-1536-playmaker-direct-dispatch.md: the board has a candidate again
 
 **Status:** Complete
 **Agent:** playmaker
@@ -6,7 +6,7 @@
 **Domain bias:** `code`, parsed from the dispatch prompt's `**Domain:** code` first line
 **git HEAD at run:** `e764637`, working tree clean
 **Portfolio regenerated:** `portfolio.md`
-**Previous run:** `shared/history/260821-0426-playmaker-orchestrator-phase4.md`, HEAD `ff8d15e`
+**Previous run:** `260821-0426-playmaker-orchestrator-phase4.md`, HEAD `ff8d15e`
 
 ## Mandate held
 
@@ -45,7 +45,7 @@ pointer warning class applies.
 
 ## Top-ranked anticipated Circle
 
-`circles/260821-1042-reply-bounded-whole-question-answered`. It is the only candidate, so the
+`260821-1042-reply-bounded-whole-question-answered`. It is the only candidate, so the
 recommendation carries no comparison behind it.
 
 **One line:** no Circle dependencies, four scoping decisions answered before the Circle starts, and a
@@ -53,7 +53,7 @@ Grounding that gives the command behind every figure and retracts one of its own
 
 ## Activation proposal appended
 
-One, to `circles/260821-1042-reply-bounded-whole-question-answered/_a_circle.md`. The record's
+One, to `260821-1042-reply-bounded-whole-question-answered`. The record's
 marker was not touched and `.active-circle` was not written. The proposal records the run
 identifier, the proposed timestamp, the three readiness signals, the re-measured growth budgets, and
 the three open decisions the Grounding cites.
@@ -70,7 +70,7 @@ the three open decisions the Grounding cites.
 - Four open defects write into surfaces with no room, unchanged since the previous refresh.
 - Three decision records exist twice, the second copy of each carrying a literal asterisk where the
   marker letter belongs. Unchanged, verified present on this run, filed as
-  `shared/issues/260821-0430_*_three-decision-records-were-split-in-two-by-an-unexpanded-wildcard-and-their-implemented-notes-are-detached.md`.
+  `260821-0430_*_three-decision-records-were-split-in-two-by-an-unexpanded-wildcard-and-their-implemented-notes-are-detached.md`.
 - Three decisions the recommended Circle cites still read as open while its own answered records
   settle two of them and its Grounding states the user overturned the third.
 - The recommended Circle's record carries no `## Closure note` heading, so a closure has nowhere to
@@ -107,7 +107,7 @@ leftover still has no carrier, which the previous run reported and which has not
 | duplicate groups found | 0 |
 | handed to `## Warnings` as defect- or decision-shaped | 0 |
 
-**Top-ranked:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`. One line: still the
+**Top-ranked:** `260814-1733_*_bounded-executor-dispatches.md`. One line: still the
 only live idea shapeable today without a user act coming first, and the Circle shaped since the last
 refresh named its subject as adjacent and deliberately not taken, which sharpens the entry rather
 than absorbing it.

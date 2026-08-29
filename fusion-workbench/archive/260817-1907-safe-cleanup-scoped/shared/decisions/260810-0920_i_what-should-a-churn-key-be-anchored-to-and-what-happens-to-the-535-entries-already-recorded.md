@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** answered
-**Filed by:** orchestrator (session `260810-0844`, Turn 1 — triage of a defect record that states a decision precedes the fix)
-**Cross-references:** `shared/issues/260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` (the measurement); `shared/decisions/260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (measurement 7 saw one entry of this and called it a missing boundary); `hooks/tracker.ts` (the normalisation), `hooks/lib/churn.ts` (the map), `agents/orchestrator.md` and `skills/setup/SKILL.md` (the reader)
+**Filed by:** orchestrator (session `260810-0844-orchestrator-session.md`, Turn 1 — triage of a defect record that states a decision precedes the fix)
+**Cross-references:** `260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` (the measurement); `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (measurement 7 saw one entry of this and called it a missing boundary); `hooks/tracker.ts` (the normalisation), `hooks/lib/churn.ts` (the map), `agents/orchestrator.md` and `skills/setup/SKILL.md` (the reader)
 
 ---
 
@@ -81,7 +81,7 @@ The three parts are close to orthogonal; an answer picks one from each.
 - Churn is **observation-only** by construction (`README-hooks.md`). Nothing is enforced off this
   file, so no answer here can break the guard. This bounds the risk of every option and is the
   reason the decision can be taken without a migration rehearsal.
-- Decision `260809-2004` removed the lifetime *threshold comparison* from `analyzeChurn` but left
+- Decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` removed the lifetime *threshold comparison* from `analyzeChurn` but left
   `totalChanges` and `thrashingScore` untouched on purpose, because the Setup read wants the
   lifetime number. Any answer that decays or resets lifetime counts reopens that decision rather
   than extending it.
@@ -109,11 +109,11 @@ Reconciliation 260810-1205 (reconciler, domain `code`) — **stays `_o_`; awaiti
 
 The title is not wrong — it was right when written, and the growth is the measurement this decision exists to settle rather than a defect in the record. It is noted here so the answer is not scoped to a number that will have moved again by the time it is given: whatever is decided about the entries already recorded has to name a rule, not a count.
 
-`shared/issues/260809-2023_o_...` (the measurement) is unchanged and correctly still `_o_` — no code moved this session, by design.
+`260809-2023_*_...` (the measurement) is unchanged and correctly still `_o_` — no code moved this session, by design.
 
 ---
 
-## Answer (user, session 260810-0844)
+## Answer (user, session 260810-0844-orchestrator-session.md)
 
 **(a) The key is anchored to the workbench root.** `hooks/lib/workbench-root.ts` already resolves
 it and `hooks/lib/project-relative.ts` already does this shape of work for the guard, so the two
@@ -136,10 +136,10 @@ separate question this answer does not settle.
 against a rule, not a number.
 
 ---
-Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
+Answered: 260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844-orchestrator-session.md. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
 
 ---
 Implemented: 25c5454 — churnKey() anchors on the workbench root, reusing hooks/lib/workbench-root.ts and hooks/lib/project-relative.ts (part a). migrateChurnKeys() rewrites workbench-relative and this-checkout keys and drops entries naming other roots; two spellings of one file are merged by summing the counters, taking the later lastChange, and recomputing thrashingScore from the merged counters rather than combining two derived values (part b). rankThrashing() excludes absent files on the read path, once per Setup, while the map keeps every entry (part c). Measured on the live map: 590 entries in, 414 after re-anchoring, 191 absent excluded from the ranking, all ten top-ranked files existing where three of the top four did not. Part (c)'s accepted cost stands: the file still grows without bound, which this answer did not settle.
 
 ---
-Retired: `a69d56e` + `04ea182` (steps 4 and 5 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — the workbench-anchored churn key, the read-path exclusions this record's part (c) moved into `bin/fusion-churn-rank`, and `.guard-state/churn.json` itself are all removed. The 535 entries the question was partly about are no longer written or read by anything.
+Retired: `a69d56e` + `04ea182` (steps 4 and 5 of 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md) — the workbench-anchored churn key, the read-path exclusions this record's part (c) moved into `bin/fusion-churn-rank`, and `.guard-state/churn.json` itself are all removed. The 535 entries the question was partly about are no longer written or read by anything.

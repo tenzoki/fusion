@@ -1,4 +1,4 @@
-# Playmaker Run — 260813-2346
+# Playmaker Run — 260813-2346-playmaker-direct-dispatch.md
 
 **Trigger:** direct-dispatch
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:**` line)
@@ -28,7 +28,7 @@ decision record, but two load-bearing measurements in that Grounding are falsifi
 heuristic cannot see. A shaper pass in portfolio-activation mode is required before activation.
 
 No `## Activation proposal` section was appended. The record already carries three, the newest
-written at run 260813-2326, twenty minutes before this run, and nothing in the Circle's inputs moved
+written at run 260813-2326-playmaker-direct-dispatch.md, twenty minutes before this run, and nothing in the Circle's inputs moved
 between the two.
 
 ## Backlog
@@ -44,7 +44,7 @@ between the two.
 | Items handed to `## Warnings` as defect-shaped | 1 |
 | Items handed to `## Warnings` as decision-shaped | 0 |
 
-Top-ranked entry: `shared/backlog/260811-0826_*_observations.md`, recommended for splitting first
+Top-ranked entry: `260811-0826_*_observations.md`, recommended for splitting first
 rather than for shaping, because promoting it whole would make one Circle of all 13 ideas. Its top
 idea is `bounded-dispatches-and-re-injected-context`, ranked first because it rests entirely on
 records already on disk.
@@ -86,10 +86,10 @@ None. The scan ran against the one `_b_` Circle,
 `260813-0910-documentation-matches-shipped-plugin`, and found no non-terminal parent citing either
 its directory name or the Artifact its closure note names.
 
-## What moved since the previous run at 260813-2334
+## What moved since the previous run at 260813-2334-playmaker-direct-dispatch.md
 
 Twelve minutes. Two commits landed, `602fa1b` (the bounded Circle's closure note) and `d7786eb`
-(the session log), moving HEAD from `431805b`. An orchestrator session started at 260813-2345 and
+(the session log), moving HEAD from `431805b`. An orchestrator session started at 260813-2345-orchestrator-session.md and
 ran Setup without naming a goal. The two chat voice templates were edited in the working tree. All
 other inputs are byte-identical, checked rather than assumed: the backlog entry by content hash,
 the conventions file at 51 920 bytes across 24 second-level headings, and the installed-versus-tree

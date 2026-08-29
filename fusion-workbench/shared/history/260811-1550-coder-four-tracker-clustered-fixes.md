@@ -19,7 +19,7 @@ what it feeds. Four independent fixes, four source records, closed in place.
 ### Task 11 — `260809-2252`, the noise-list comment
 
 The `TRACKER_NOISE_FILES` header said the list excludes two metrics and named the ping-back
-tracker, which left with decision `260809-2004`. Corrected to one metric, and the word
+tracker, which left with decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`. Corrected to one metric, and the word
 "ping-back" is gone. The list's membership did not change and the "This list is not a
 protection statement" argument below the header is intact.
 
@@ -75,7 +75,7 @@ the oldest lines first, and those include the 99 `guard_block` / `guard_halt` / 
 events that are the enforcement audit trail — 0.6 % of the file. Tail-reading in `bin/monitor`
 loses the same evidence from the reader's side, because the panel caps each class separately
 and a fixed window can contain no `guard_halt` while the whole file does. Filed as
-`shared/decisions/260811-1534_o_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`,
+`260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`,
 four options, recommendation: archive rather than truncate.
 
 ## Files changed
@@ -116,8 +116,8 @@ the `noise=2` number above comes from.
 
 ## Filed while working
 
-- `shared/decisions/260811-1534_o_…guard-event-log…` — task 21's half (b).
-- `shared/issues/260811-1547_o_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md`
+- `260811-1534_*_…guard-event-log…` — task 21's half (b).
+- `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md`
   — `agents/orchestrator.md:192` justifies its append-only instruction with a skill that does
   not exist. Found by trying to cite the same claim in the decision record above, which is
   also how it propagates. The reference lint resolves path-shaped citations only, so the
@@ -128,7 +128,7 @@ the `noise=2` number above comes from.
 Every claim corrected here was grepped across `agents/`, `skills/`, `rules/`, `hooks/`,
 `bin/`, `docs/` and `README*.md`:
 
-- "ping-back" — three remaining mentions, all past-tense and all naming decision `260809-2004`.
+- "ping-back" — three remaining mentions, all past-tense and all naming decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`.
   Correct as they stand.
 - the churn-rank output keys — one other surface (`agents/orchestrator.md:126`), updated; the
   `skills/setup/SKILL.md` pointer and two `README-hooks.md` rows updated with it.

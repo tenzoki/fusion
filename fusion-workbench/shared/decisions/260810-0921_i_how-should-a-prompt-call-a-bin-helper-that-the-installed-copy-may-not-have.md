@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** answered
-**Filed by:** orchestrator (session `260810-0844`, Turn 1 — triage of a defect record that names three things to decide, not one)
-**Cross-references:** `shared/issues/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance); `shared/issues/260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` (the other half of the same gap); commit `2910cf6` (the call site); `CLAUDE.md` `## Conventions` (the work-tree preference and its stated residual)
+**Filed by:** orchestrator (session `260810-0844-orchestrator-session.md`, Turn 1 — triage of a defect record that names three things to decide, not one)
+**Cross-references:** `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance); `260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` (the other half of the same gap); commit `2910cf6` (the call site); `CLAUDE.md` `## Conventions` (the work-tree preference and its stated residual)
 
 ---
 
@@ -71,7 +71,7 @@ bitten. It will bite once per new helper from here on.
      fuzzier in exchange for closing a window that a release also closes.
 2. **Do not extend it.** The boundary stays where it is; the answer to a new helper is to release.
    - Cons: leaves the window open for however long a release takes, which today is fifteen
-     commits and counting (`260810-0508`).
+     commits and counting (`260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md`).
 
 ## Constraints
 
@@ -104,13 +104,13 @@ Superseded by:
 ---
 Reconciliation 260810-1205 (reconciler, domain `code`) — **stays `_o_`; awaiting the user.**
 
-Two citations in the header were re-pointed, not rewritten: `260810-0508` moved `_o_` → `_c_` in `ed87d87` and `260810-0939` (in the sibling record `260810-1010`) moved `_o_` → `_c_` in `7ddacbc`, so both are wildcarded to `_*_` on the precedent of `260807-0158_a_how-is-a-unique-record-filename-obtained.md`. The general problem is filed as `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
+Two citations in the header were re-pointed, not rewritten: `260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` moved `_o_` → `_c_` in `ed87d87` and `260810-0939` (in the sibling record `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`) moved `_o_` → `_c_` in `7ddacbc`, so both are wildcarded to `_*_` on the precedent of `260807-0158_*_how-is-a-unique-record-filename-obtained.md`. The general problem is filed as `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
 
-The half of the gap that `260810-0508` covered is closed — v7.1.0 shipped, and `git ls-tree v7.1.0 bin/` now contains `fusion-count-sources`, absent from `v7.0.0`. The half this decision covers is untouched: `agents/orchestrator.md` Setup Step 5 still calls the helper through `$FUSION_PLUGIN_ROOT` with no branch for its absence, so the recommendation in this record (report the absence in the cascade's own `counted_by=none` vocabulary) has not been taken.
+The half of the gap that `260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` covered is closed — v7.1.0 shipped, and `git ls-tree v7.1.0 bin/` now contains `fusion-count-sources`, absent from `v7.0.0`. The half this decision covers is untouched: `agents/orchestrator.md` Setup Step 5 still calls the helper through `$FUSION_PLUGIN_ROOT` with no branch for its absence, so the recommendation in this record (report the absence in the cascade's own `counted_by=none` vocabulary) has not been taken.
 
 ---
 
-## Answer (user, session 260810-0844)
+## Answer (user, session 260810-0844-orchestrator-session.md)
 
 **(a1) Tolerate and report.** Setup Step 5 catches the absence and reports it in the vocabulary
 the cascade already has: no measurement was taken, `counted_by=none`, the domain falls back to
@@ -129,9 +129,9 @@ session: the workaround had already been applied by hand before Setup ran, which
 measured at `ed87d87`.
 
 ---
-Answered: shared/history/260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
+Answered: 260810-0844-orchestrator-session.md `## Grounding revision` — recorded at the Rebalance gate, session 260810-0844-orchestrator-session.md. Not yet realised in code; the defect record it unblocks stays open until a commit implements it.
 
 ---
 Implemented: 26ea3c3 — option (a1), tolerate and report. agents/orchestrator.md Setup Step 5 guards the bin/fusion-count-sources call with [ -x ] and, when absent, prints the helper's own absent-count shape (counted_by=none) with the reason on stderr, exiting 0. The existing counted_by == "none" cascade branch from 31d8bb3 is reused, not duplicated, and a paragraph forbids giving the absent helper a branch of its own. Parts (b) — a uniform guarded-call convention for prompt-called helpers — and (c) — whether the work-tree preference extends to helper resolution — remain OPEN and were deliberately not touched; parts (b) and (c) have been split out into their own record so this one can carry a single state.
 
-Split: parts (b) and (c) moved to shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md — a decision record bundling separable questions cannot be tracked, because its state is not a single value. With those two carried elsewhere, this record's remaining scope is part (a1) alone, which 26ea3c3 realises.
+Split: parts (b) and (c) moved to 260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md — a decision record bundling separable questions cannot be tracked, because its state is not a single value. With those two carried elsewhere, this record's remaining scope is part (a1) alone, which 26ea3c3 realises.

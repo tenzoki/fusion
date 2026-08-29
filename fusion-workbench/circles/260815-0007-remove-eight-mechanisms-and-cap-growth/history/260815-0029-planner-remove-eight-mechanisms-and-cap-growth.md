@@ -3,7 +3,7 @@
 **Date:** 2026-08-15
 **Agent:** planner
 **Status:** Complete
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
 **Dispatched by:** user, with the Circle named on the dispatch prompt (`**Circle:**` parameter)
 
 ---
@@ -16,7 +16,7 @@ separate spec file. The dispatch named the answered decision on the `/fusion:cle
 
 ## What was produced
 
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`
 
 Fifteen executor steps and one user gate. Thirteen steps to `coder`, two to `ontocoder` (the
 structured-data tail of the Plane and churn removals), and the `CLAUDE.md` narrative pass as a
@@ -83,17 +83,17 @@ nothing notices a frozen Circle Turn log.
 
 **Decisions** (both block a step, both cited from the plan's Open Questions):
 
-- `decisions/260815-0029_o_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`
+- `260815-0029_*_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`
   — `agents/orchestrator.md:434` passes the extended executor set on a condition that item 7
   deletes. Blocks step 9. Recommended: pass it unconditionally and let the planner route, because
   the orchestrator decides it one phase before the plan that would answer it exists.
-- `decisions/260815-0029_o_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`
-  — the two choices `shared/issues/260810-0326_*_…` left open, one of which it explicitly calls a
+- `260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`
+  — the two choices `260810-0326_*_…` left open, one of which it explicitly calls a
   decision rather than an executor's call. Blocks step 12.
 
 **Defect:**
 
-- `issues/260815-0029_o_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md`
+- `260815-0029_*_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md`
   — the record's Dependencies bullet names a `shared/issues/` path for a file that is a decision
   record in `shared/decisions/`, and instructs "close it", which the decision vocabulary does not
   have. The correct transition is `_o_` → `_s_`, and the plan's step 8 performs that one.
@@ -130,7 +130,7 @@ A second planner run against the same plan file, dispatched after the user appro
 the gate on condition that the numbering contradictions be repaired. Nothing was re-derived and
 no measurement was re-taken; the plan's structure, step order, executor assignments and
 acceptance criteria are untouched. The inputs were the `conceptrev` review
-(`reviews/260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`, verdict
+(`260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`, verdict
 acceptable) and the three answers the user gave at the gate.
 
 **The numbering, which is why the user held execution.** Three sentences of prose disagreed with
@@ -210,9 +210,9 @@ Nothing was implemented, no executor was dispatched, no measurement was re-taken
 
 ### What the pass was given
 
-`issues/260815-0804_o_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`,
-plus `reviews/260815-0804-coderev-plane-mirror-removal.md` section B and
-`reviews/260815-0803-ontorev-plane-structured-data-removal.md`. The instruction named steps 4 and 11,
+`260815-0804_*_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`,
+plus `260815-0804-coderev-plane-mirror-removal.md` section B and
+`260815-0803-ontorev-plane-structured-data-removal.md`. The instruction named steps 4 and 11,
 asked that all eleven remaining steps be checked, and asked that the `**Decidability:**` claim be
 narrowed rather than the plan widened.
 
@@ -262,9 +262,9 @@ instruction would falsify the record of what was planned. Noted here instead.
 Narrowed to what the evidence supports, per `rules/critical-stance.md` §3, with no mechanism added
 and no work planned for the two uncovered classes. Decidable: path-shaped citations in shipped text.
 Not decidable: the workbench, which `reference-resolution-lint` does not scan
-(`shared/issues/260812-1720_*_…`; seven open records naming deleted Plane paths, tabulated in
-`issues/260815-0803_*_seven-open-defect-records-…`), and bare filenames in the `templates/`, `docs/`
-and `stilwerk/` inventory rows (`issues/260815-0803_*_two-claude-md-inventory-rows-…`). The count of
+(`260812-1720_*_…`; seven open records naming deleted Plane paths, tabulated in
+`260815-0803_*_seven-open-defect-records-…`), and bare filenames in the `templates/`, `docs/`
+and `stilwerk/` inventory rows (`260815-0803_*_two-claude-md-inventory-rows-…`). The count of
 those records is seven as verified in that issue at `7c12d6a`, not the nine the dispatch prompt
 named — the wider grep returns fifteen files, of which the extras are the review-filed records that
 legitimately name the deleted paths as their subject.
@@ -301,7 +301,7 @@ Steps 1 to 6 have landed and carry `[DONE]`; step 7 was held for this pass. The 
 
 ### 1. The inserted step exists in the plan now
 
-`issues/260815-1247_o_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md`
+`260815-1247_*_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md`
 
 Turn 2 inserted a prerequisite the plan never contained, dispatched it, and landed it as `332267a`,
 the largest commit of the Turn. It is written into `## Implementation Steps` as **step 3b**, marked
@@ -310,7 +310,7 @@ staging directory and replaces `hooks/dist/` file by file with `rename(2)`, `npm
 `scripts/run-tests.mjs` and hands two content-reading cases their own build through
 `FUSION_TEST_DIST`, the two wall-clock-bound cases became event-bound, and a run is capped at half
 the machine's cores. Measured 6 of 6 red before and 12 of 12 green after; both figures are in the
-step. Its binding record (`shared/decisions/260811-2009_i_…`) and its run record are cited there,
+step. Its binding record (`260811-2009_*_…`) and its run record are cited there,
 and so is the reason it belongs in this Circle at all: step 13 arms a growth bound whose value rests
 entirely on the suite failing on an add-back.
 
@@ -329,7 +329,7 @@ a reader counting the numbered list finds fifteen.
 
 ### 2. Step 11's file list caught up with Turn 2
 
-`issues/260815-1251_o_step-11s-file-list-predates-turn-2-which-re-pointed-two-suites-onto-the-measurement-step-11-deletes.md`
+`260815-1251_*_step-11s-file-list-predates-turn-2-which-re-pointed-two-suites-onto-the-measurement-step-11-deletes.md`
 
 `a69d56e` re-pointed two suites onto the state-drift measurement that step 11 deletes, seventeen
 hours after the step's file list was last corrected. Both are now in the list, and a new bullet says
@@ -364,7 +364,7 @@ the step claims no coverage of them.
 
 ### 3. The after-measurement is annotated, not re-cut
 
-`issues/260815-1251_o_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`
+`260815-1251_*_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`
 
 Step 14 gains a bullet naming `hooks/scripts/build.mjs` (205 lines), `hooks/scripts/run-tests.mjs`
 (48) and `hooks/vitest.config.mjs` (67), re-measured here at 320 lines together. It states that
@@ -376,7 +376,7 @@ counted.
 
 ### 4. The Decidability head reads seven
 
-`issues/260815-1251_o_the-plans-decidability-head-counts-eight-asserted-enumerations-and-seven-remain.md`
+`260815-1251_*_the-plans-decidability-head-counts-eight-asserted-enumerations-and-seven-remain.md`
 
 Step 6 deleted the stash-manifest field count with its subject. The head now names seven
 enumerations and no longer lists that check.
@@ -400,13 +400,13 @@ is unchanged apart from the inserted `3b`, and no step number moved.
 The two Low records were left alone, as instructed. Both are work for a later executor and neither
 belongs in a step of this plan:
 
-- `260815-1251_o_four-shipped-consumers-exclude-a-stashes-store-…` asks for one sentence under the
+- `260815-1251_*_four-shipped-consumers-exclude-a-stashes-store-…` asks for one sentence under the
   layout tree in `rules/fusion-workbench-conventions.md`, naming `stashes/` and
   `.migration-v2-backup/` as legacy stores nothing shipped creates any more. That is normative prose
   about the workbench layout carrying no path-shaped token and no asserted digit, which is the
   curator's at gate G1 by this plan's own criterion. It should be handed to the curator's ledger
   there, not given a step. Inside the Circle either way: step 6 created the condition.
-- `260815-1251_o_the-reference-lints-non-plugin-root-var-branch-lost-its-data-…` is outside the
+- `260815-1251_*_the-reference-lints-non-plugin-root-var-branch-lost-its-data-…` is outside the
   Circle. The Circle's Directive is removal and a growth bound; restoring a deleted test case for
   the `ROOT_VARS` skip branch adds a test, and step 13 arms a cap that a new test file then has to
   be baselined against. It is cheap and it is real, and it belongs to a later Circle or to a direct

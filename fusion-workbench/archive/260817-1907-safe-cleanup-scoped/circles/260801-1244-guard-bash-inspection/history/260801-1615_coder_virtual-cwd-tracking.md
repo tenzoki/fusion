@@ -1,9 +1,9 @@
 # Coder — virtual working directory tracking (plan step 4)
 
-**Date:** 260801-1615
+**Date:** 260801-1615_coder_virtual-cwd-tracking.md
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 4
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 4
 **Status:** Complete
 
 ## What was implemented
@@ -110,7 +110,7 @@ anywhere in its text. It is pinned by its own test block.
   rules/x.md)` allows; the same pair in separate segments is correctly independent.
 - **The `(…)` paren-subshell gap** — `(rm rules/x.md)` is ALLOWED, because `tokenize`
   leaves the parenthesis glued to the command word. Pre-dates this step; filed as
-  `issues/260801-1610_o_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`
+  `260801-1610_*_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`
   with two fix options and the note that both widen the deny surface, so they belong at a
   gate. Step 4 strips a leading `(` for the DIRECTORY builtins only, because the scoping
   requirement is unreachable otherwise, and deliberately does not extend that to the

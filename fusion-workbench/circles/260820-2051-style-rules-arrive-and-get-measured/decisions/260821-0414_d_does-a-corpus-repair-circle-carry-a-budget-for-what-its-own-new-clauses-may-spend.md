@@ -4,12 +4,12 @@ Does a Circle that repairs the always-on corpus carry a budget for what its own 
 **Domain:** code
 **Filed by:** reconciler
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
 (`## Risks & Mitigations`, the always-on row, and `## Where this Circle stops`, which names no
 byte figure in any of its eight clauses);
-`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0350-coder-the-final-state-is-measured.md`
+`260821-0350-coder-the-final-state-is-measured.md`
 (the measured outcome); `hooks/lib/__tests__/helpers/growth-bound.ts` (the instrument and the
-re-baselining rule); `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+re-baselining rule); `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
 (the record the repair half serves).
 
 ---
@@ -33,7 +33,7 @@ the spend, so nothing forced the question to be asked.
 It must be answered now rather than later because the head-room that absorbed it is nearly gone. At
 HEAD the four budgets stand at 3 566 bytes (always-on), 1 638 (`agents/`), **30** (`skills/`) and
 **32 lines** (hook tests). Two of the Circle's own open issues,
-`260821-0302` and `260821-0148`, both write into `skills/setup/SKILL.md`, and either turns the
+`260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` and `260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md`, both write into `skills/setup/SKILL.md`, and either turns the
 suite red on arrival. The next Circle inherits a tree where the ordinary act of fixing a filed defect
 is blocked.
 

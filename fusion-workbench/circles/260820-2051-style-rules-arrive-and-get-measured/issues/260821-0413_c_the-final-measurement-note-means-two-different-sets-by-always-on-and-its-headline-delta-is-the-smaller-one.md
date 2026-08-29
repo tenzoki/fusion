@@ -1,13 +1,13 @@
 The final-measurement note means two different sets by "always-on", and its headline delta is the smaller one
 
 ---
-Section 4 of `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0350-coder-the-final-state-is-measured.md` reports the Circle's
+Section 4 of `260821-0350-coder-the-final-state-is-measured.md` reports the Circle's
 always-on byte delta as **+2 138** over five rule files. Section 5 of the same note reports a corpus
 of six files and calls it "always-on total, as `bin/fusion-rules coder` emits it". Neither section
 says the two sets differ. What a `coder` dispatch actually gained is **+2 265**.
 
 ---
-**Found by:** reconciler, final reconciliation of `circles/260820-2051-style-rules-arrive-and-get-measured`, 260821-0413,
+**Found by:** reconciler, final reconciliation of `260820-2051-style-rules-arrive-and-get-measured`, 260821-0413,
 re-measuring the note's own figures independently.
 **Owner:** `coder`, which wrote the note. An appended clause, not a rewrite: the two figures are
 both correct for their own set and the note's section 4 header does name its set.
@@ -15,9 +15,9 @@ both correct for their own set and the note's section 4 header does name its set
 class the Circle was opened on, recurring inside the Circle's own closing artifact.
 **Filed in the active Circle** per the Origin Rule.
 **Cross-references:**
-`shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
+`260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
 (the same fault, one Circle earlier, closed by plan step 15 of this Circle);
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`
+`260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`
 (the same fault again, closed by the same step).
 
 ## Verified at HEAD `247abfe`
@@ -55,4 +55,4 @@ One appended clause on the note: that section 4's figure is the five plugin rule
 emitted set is six and gained +2 265, and that the bound reads the five. Nothing above it changes.
 
 ---
-Resolved: fixed — the note carries the appended clause, section 4 is the five rule files and the emitted set is six at +2 265; circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0350-coder-the-final-state-is-measured.md:343
+Resolved: fixed — the note carries the appended clause, section 4 is the five rule files and the emitted set is six at +2 265; 260821-0350-coder-the-final-state-is-measured.md:343

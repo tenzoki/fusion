@@ -4,7 +4,7 @@ The tracking rule says Setup offers to delete escalation.json, and Setup now off
 `rules/workbench-tracking.md:30` (commit `3fda829`, step 18a): "Nothing reads them, and `/fusion:setup` offers to delete `escalation.json`." `skills/setup/SKILL.md:429-443` (commit `abb0238`, step 18b, five commits later) probes and offers all three leftovers in one question. Two halves of one record, landed in one Circle, and the rule half describes the skill as it stood between them.
 ---
 **Filed by:** coderev, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260827-0315_*_the-guard-state-rule-accounts-for-one-inert-leftover-and-the-directory-holds-three.md` (the record both halves closed)
+**Cross-references:** `260827-0315_*_the-guard-state-rule-accounts-for-one-inert-leftover-and-the-directory-holds-three.md` (the record both halves closed)
 
 ## Fix direction
 
@@ -14,4 +14,4 @@ The tracking rule says Setup offers to delete escalation.json, and Setup now off
 
 The rule names the same set the skill's `rm -f` line removes.
 
-**Resolved:** 260827-2102, coder. `rules/workbench-tracking.md`: the sentence now says Setup offers to delete all three leftovers in one question, citing the setup skill's probe and commit `abb0238`; the set matches the skill's `rm -f` line. Emitted to no agent, unbounded; citation-token count 5 -> 5.
+**Resolved:** 260827-2102-coder-turn2-three-review-findings.md, coder. `rules/workbench-tracking.md`: the sentence now says Setup offers to delete all three leftovers in one question, citing the setup skill's probe and commit `abb0238`; the set matches the skill's `rm -f` line. Emitted to no agent, unbounded; citation-token count 5 -> 5.

@@ -4,7 +4,7 @@
 **Sender:** coderev
 **Reviewed-range:** `93388bc..c663a1f`
 **Not-opened:** none
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
 **Files as dispatched:** `docs/working-model.md`, `docs/philosophy.md`, `skills/help/SKILL.md`, `README-agents.md`
 
 ## Summary
@@ -85,10 +85,10 @@ anticipated-circle mode, which the orchestrator never dispatches (`agents/shaper
 "what the orchestrator dispatches in Phase 0b.1 today"). The document contradicts itself two lines
 above — `:24`, "Most sessions run a single Circle **implicitly**" — and so does `docs/philosophy.md:35`.
 The step's own history record wrote the entrance as "implicit from a request"
-(`history/260813-2150-coder-…:44-45`); the shipped prose promoted *implicit* to *created*. It is
+(`260813-2150-coder-…:44-45`); the shipped prose promoted *implicit* to *created*. It is
 also the one entrance of the three for which that record names no artifact read, in a step that
 opens by promising one per claim.
-Filed: `260813-2214_o_the-first-of-three-entrances-says-the-orchestrator-creates-the-circle-and-no-shipped-prompt-creates-one.md`.
+Filed: `260813-2214_*_the-first-of-three-entrances-says-the-orchestrator-creates-the-circle-and-no-shipped-prompt-creates-one.md`.
 
 **2. Medium — the entrance count is three and `/fusion:seed-from-plane` is a fourth.**
 `docs/working-model.md:28` and `:76`. That skill dispatches the same shaper mode with the same three
@@ -97,7 +97,7 @@ parameter lines (`skills/seed-from-plane/SKILL.md:85-94`) and produces the same 
 `/fusion:direct` as the mode's dispatcher where there are two. `README-agents.md:247` already lists
 the skill, and `README-agents.md:65`, `:67`, `:68` — written in the next commit — name it as the
 passer of exactly those three parameter lines.
-Filed: `260813-2214_o_the-entrance-count-is-three-and-seed-from-plane-is-a-fourth-dispatching-the-same-shaper-mode.md`.
+Filed: `260813-2214_*_the-entrance-count-is-three-and-seed-from-plane-is-a-fourth-dispatching-the-same-shaper-mode.md`.
 
 ### A true conclusion on a false premise
 
@@ -108,7 +108,7 @@ run, and `agents/playmaker.md:10` gives its four writes; resolved with this Circ
 `OUT_HISTORY=circles/<active>/history` — inside the active Circle, which is the directory the
 sentence is reassuring the reader about. The conclusion is right and `skills/next/SKILL.md:297`
 carries the argument that makes it right: the active Turn loop writes none of the playmaker's four.
-Filed: `260813-2214_o_the-portfolio-walkthrough-says-steps-1-to-4-write-nothing-outside-two-stores-and-the-playmaker-writes-three-more.md`.
+Filed: `260813-2214_*_the-portfolio-walkthrough-says-steps-1-to-4-write-nothing-outside-two-stores-and-the-playmaker-writes-three-more.md`.
 
 ### Defects introduced by the closure that fixed the roster
 
@@ -117,14 +117,14 @@ Filed: `260813-2214_o_the-portfolio-walkthrough-says-steps-1-to-4-write-nothing-
 (`skills/next/SKILL.md:153`); Step 3 (`:96-108`) makes one dispatch and says "No other parameters"
 at `:106`. The same column uses "Step 3" in its skill-step sense at `:60`, so both readings live in
 one table.
-Filed: `260813-2214_o_the-two-new-playmaker-rows-name-step-3-for-a-dispatch-that-step-5b-makes.md`.
+Filed: `260813-2214_*_the-two-new-playmaker-rows-name-step-3-for-a-dispatch-that-step-5b-makes.md`.
 
 **6. Low — the preamble's new termination clause.** `README-agents.md:54` states that
 `**Draft:**` and `**Confirmed operations:**` "both end at the next `**<Keyword>:**` line or at the
 end of the prompt". `agents/shaper.md:57` states it for the first; nothing in `agents/playmaker.md`
 states it for the second, and its "or at the end of the prompt" branch is unreachable for a block
 that `**Proposal source:**` always follows.
-Filed: `260813-2214_o_the-roster-preamble-states-a-value-termination-rule-for-confirmed-operations-that-the-playmaker-prompt-does-not-state.md`.
+Filed: `260813-2214_*_the-roster-preamble-states-a-value-termination-rule-for-confirmed-operations-that-the-playmaker-prompt-does-not-state.md`.
 
 ### Citation
 
@@ -133,7 +133,7 @@ Origin Rule near-verbatim and points at the section next door. `rules/fusion-wor
 is the rule's authoring home; `:134` carries the sentence's other half. `skills/help/SKILL.md:71`,
 edited the same Turn, cites the pair correctly. The citation lint resolves the section and cannot
 see that the section does not contain the claim.
-Filed: `260813-2214_o_the-origin-rule-sentence-in-working-model-is-cited-to-path-resolution-and-the-rule-is-authored-one-section-earlier.md`.
+Filed: `260813-2214_*_the-origin-rule-sentence-in-working-model-is-cited-to-path-resolution-and-the-rule-is-authored-one-section-earlier.md`.
 
 ## What was checked and found correct
 
@@ -180,7 +180,7 @@ choice point, not a defect, and its home is `$OUT_DECISION` (`rules/fusion-workb
 message.
 
 **Step 7's non-divergence — right, and recorded in the right place.** The absence is explicit:
-`history/260813-2150-coder-working-model-circle-first-flow-and-backlog.md:81`, "**Nothing in step
+`260813-2150-coder-working-model-circle-first-flow-and-backlog.md:81`, "**Nothing in step
 6's reading was found wrong**, so there is nothing to report as a divergence", with the specific
 lines that were re-used named at `:73-80`. A recorded absence is what this project asks for
 elsewhere (`**Not-opened:** none`, `**Active Circle:** none`), and this is one. Filing anything would
@@ -232,4 +232,4 @@ digit costs nothing.
 
 ---
 
-**Reconciled 260813-2258.** Six findings filed, all six closed in Turn 5's commit `c0e4219`, and each closure re-checked against the artifact at HEAD rather than against its note: `docs/working-model.md:28` (no entrance count, `/fusion:seed-from-plane` as item 3, and the orchestrator entrance replaced by "A request you hand the orchestrator creates no Circle"), `:80` (the Origin Rule cited to `## Origin Rule`, `## Path Resolution` kept only for the mid-run resolution), `:158` (the disjointness premise replacing the two-store one), `README-agents.md:54` (the two termination bounds stated separately) and `:61-62` (Step 5b, not Step 3). All six hold. **The commit that closed them is itself unreviewed** — `bin/fusion-review-coverage` reports `c0e4219` uncovered, and it is the only uncovered commit in the range that touches shipped files.
+**Reconciled 260813-2258-reconciliation.md.** Six findings filed, all six closed in Turn 5's commit `c0e4219`, and each closure re-checked against the artifact at HEAD rather than against its note: `docs/working-model.md:28` (no entrance count, `/fusion:seed-from-plane` as item 3, and the orchestrator entrance replaced by "A request you hand the orchestrator creates no Circle"), `:80` (the Origin Rule cited to `## Origin Rule`, `## Path Resolution` kept only for the mid-run resolution), `:158` (the disjointness premise replacing the two-store one), `README-agents.md:54` (the two termination bounds stated separately) and `:61-62` (Step 5b, not Step 3). All six hold. **The commit that closed them is itself unreviewed** — `bin/fusion-review-coverage` reports `c0e4219` uncovered, and it is the only uncovered commit in the range that touches shipped files.

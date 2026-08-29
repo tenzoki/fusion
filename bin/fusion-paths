@@ -138,7 +138,7 @@
 # between a human's belief about a prompt and the prompt's text — and it cost
 # the under-emission defect above to keep. The eleven known cases are recorded
 # as prompt-gap findings in
-# fusion-workbench/shared/issues/260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md
+# 260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md
 # so they survive this change rather than dissolving into it.
 #
 # Consequence for P-8's lint gate: under- and over-emission both leave its

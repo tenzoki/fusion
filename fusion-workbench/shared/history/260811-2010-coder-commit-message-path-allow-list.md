@@ -3,7 +3,7 @@
 **Agent:** coder
 **Date:** 260811 20:10
 **Status:** Complete
-**Tasks:** 14 (`I:260811-1149`), 15 (`I:260811-1611`) — one dispatch, in that order
+**Tasks:** 14 (`I:260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`), 15 (`I:260811-1611_*_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md`) — one dispatch, in that order
 **Files changed:** `hooks/lib/__tests__/commit-message-path.test.ts` (test only; no production change was needed)
 
 ---
@@ -75,7 +75,7 @@ by two lines while the record was open, and three executors were editing prompts
 ## A claim I withdrew after measuring it
 
 The control's first draft said in a comment that its non-emptiness assertion guards against the
-helper narrowing back from `hasCommitMessageName` to `classify` (the `260811-1410` regression).
+helper narrowing back from `hasCommitMessageName` to `classify` (the `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` regression).
 Mutation-tested: it does **not**. Both shipped lines name a root-anchored path no artifact store
 owns, so `classify` still calls it a `commit-message` and the scan stays non-empty. What catches
 that narrowing is the existing store-prescription negative control. The comment now states the

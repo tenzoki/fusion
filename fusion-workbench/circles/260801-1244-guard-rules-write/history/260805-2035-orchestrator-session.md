@@ -1,4 +1,4 @@
-# Orchestrator Session — 260805-2035
+# Orchestrator Session — 260805-2035-orchestrator-session.md
 
 **Directive:** (awaiting user request — session started via /fusion:setup)
 **Mode:** (not yet resolved)

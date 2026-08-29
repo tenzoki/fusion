@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, review of `7785330..cac41ef` (Turn 1)
 **Affects:** `hooks/lib/state-drift.ts:512-531`, `hooks/lib/review-coverage.ts:560-579`, `hooks/lib/staging-drift.ts:449-466`
-**Cross-references:** `hooks/lib/guard-state-file.ts` (the seam); decision `260811-1146_o_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`; commits `8a49fd5`, `afd7c2e`, `cac41ef`
+**Cross-references:** `hooks/lib/guard-state-file.ts` (the seam); decision `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`; commits `8a49fd5`, `afd7c2e`, `cac41ef`
 
 ---
 
@@ -71,9 +71,9 @@ and is filed as such; this record is the narrow one: an existing abstraction was
 
 ---
 
-**Resolved:** coder, session 260811-0752, task 2 of the queue. Subsumed by
-`shared/issues/260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`,
-which realised decision `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
+**Resolved:** coder, session 260811-0752-orchestrator-session.md, task 2 of the queue. Subsumed by
+`260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`,
+which realised decision `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
 option 2. The fix direction this record proposed was followed exactly, including the signature it
 suggested:
 
@@ -97,4 +97,4 @@ the seam builds the path.
 
 **Verification:** `cd hooks && npm test` — exit 0, 49 files, 1284 passed; plus a scratch project
 root exercising the round-trip, the throttling and three corrupted throttle files. Detail in
-`shared/history/260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`.
+`260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`.

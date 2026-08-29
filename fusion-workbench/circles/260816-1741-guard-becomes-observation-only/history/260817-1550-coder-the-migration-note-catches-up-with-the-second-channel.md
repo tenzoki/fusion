@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-08-17
 **Circle:** 260816-1741-guard-becomes-observation-only
-**Task:** fix issue `260817-1506` against the unshipped `01932d6` (goes out as v10.0.1)
+**Task:** fix issue `260817-1506_*_three-surfaces-say-the-retired-file-diagnostic-has-one-channel-and-the-orchestrator-fix-gave-it-two.md` against the unshipped `01932d6` (goes out as v10.0.1)
 
 ## What changed
 
@@ -39,7 +39,7 @@ clause was the counterfactual grammar wrapped round it, which said a Setup surfa
 Two further sites carry the same sentence and are correct as they stand.
 `hooks/lib/__tests__/hooks-wiring.test.ts:46` uses it to argue the Bash matcher must stay, because
 a project that never runs Setup has only the per-call channel — untouched by `01932d6`, and a hook
-test is a growth-bounded surface besides. Decision `260816-1916`'s recorded `Cons` line for option
+test is a growth-bounded surface besides. Decision `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`'s recorded `Cons` line for option
 1 says the advisory reaches a project through the monitor's warnings panel rather than as a
 sentence in the terminal; that is a record of what was weighed on 2026-08-16, not a live claim,
 and amending a decision record was outside this dispatch. Recommended to the orchestrator as a

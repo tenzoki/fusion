@@ -3,14 +3,14 @@
 **Status:** Complete
 **Agent:** coder
 **HEAD at start:** `084c626`
-**Task:** close issue `260821-2214`, the step 5 log that defends the hook-test growth
+**Task:** close issue `260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`, the step 5 log that defends the hook-test growth
 bound with a count taken over `lib/__tests__/*.test.ts`.
 
 ## What I changed
 
 One file, one clause, two lines.
 
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md`
+`260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md`
 lines 109-110 read:
 
     dispatch and it is untouched: the suite still measures 18 314 lines across
@@ -55,14 +55,14 @@ present tense has the arithmetic in front of them.
 
 Nothing else in that log was changed: no restructuring, no wording, no other figure. That
 is the bound step 6 stated when it corrected two figures in the step 2 log
-(`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md:225-240`).
+(`260821-2147-coder-the-corpus-is-measured.md:225-240`).
 
 No file under `hooks/` was edited. `git status --short hooks/` is empty, so none of the
 15 lines of head-room was spent on this task.
 
 ## Record closed
 
-`260821-2214_o_...` gained a `Resolved:` note and was renamed to `_c_` with a plain `mv`.
+`260821-2214_*_...` gained a `Resolved:` note and was renamed to `_c_` with a plain `mv`.
 Nothing was staged and nothing was committed.
 
 ## Verification

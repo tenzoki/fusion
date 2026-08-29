@@ -7,7 +7,7 @@ The conventions still count setup among the four consumers that exclude stashes/
 
 ## Context
 
-Filed while closing `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_c_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — the scope gap between setup's probe and migrate's reformat pass. The fix narrowed setup's probe to the union of trees migrate actually converts, which subsumes the three exclusions.
+Filed while closing `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — the scope gap between setup's probe and migrate's reformat pass. The fix narrowed setup's probe to the union of trees migrate actually converts, which subsumes the three exclusions.
 
 `rules/` was outside that task's permitted file set, so the sentence was left as it stands and filed here instead.
 
@@ -15,9 +15,9 @@ Filed while closing `circles/260805-2005-textschicht-gegen-code-nachziehen/issue
 
 **The correction is not merely arithmetic.** Setup dropped the exclusions because a positive tree bound made them unreachable, which is a stronger guarantee than the list it replaced: a fourth frozen store needs no fourth entry. If the sentence is rewritten to say "three consumers", it should also say that the fourth stopped needing the exclusion rather than lost it — otherwise the next reader restores the flags to make the count come out.
 
-**Related.** `shared/issues/260816-0025_o_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md` measures the same four consumers in a table and carries the `skills/setup/SKILL.md:60,67` row. That table needs the same correction, and the two records should be resolved together.
+**Related.** `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md` measures the same four consumers in a table and carries the `skills/setup/SKILL.md:60,67` row. That table needs the same correction, and the two records should be resolved together.
 
 **Route:** normative text over shipped behaviour — `curator`, or an `ontocoder`/`coder` pass that owns `rules/`.
 
 ---
-Resolved: `rules/fusion-workbench-conventions.md:64` now names the three consumers that exclude `stashes/` by path (`log-activity:82`, `archive:96`, `playmaker:61`) and states that `/fusion:setup` **stopped needing** its exclusions rather than losing them — it bounds its probe to the two live trees (`skills/setup/SKILL.md:67`), so every frozen store is outside it by construction and a fourth would need no fourth entry. The standing instruction survives, still citing `skills/setup/SKILL.md:60` for what dropping one of the remaining three costs. `260816-0025`'s table is a separate record and was not in this pass's file set.
+Resolved: `rules/fusion-workbench-conventions.md:64` now names the three consumers that exclude `stashes/` by path (`log-activity:82`, `archive:96`, `playmaker:61`) and states that `/fusion:setup` **stopped needing** its exclusions rather than losing them — it bounds its probe to the two live trees (`skills/setup/SKILL.md:67`), so every frozen store is outside it by construction and a fourth would need no fourth entry. The standing instruction survives, still citing `skills/setup/SKILL.md:60` for what dropping one of the remaining three costs. `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`'s table is a separate record and was not in this pass's file set.

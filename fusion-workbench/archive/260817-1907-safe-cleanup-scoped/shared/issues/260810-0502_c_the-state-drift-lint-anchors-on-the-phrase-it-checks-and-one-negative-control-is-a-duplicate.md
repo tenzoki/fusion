@@ -4,9 +4,9 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `hooks/lib/__tests__/state-drift-detection-lint.test.ts` — `CALL_POINTS[1]` (`:76`), `CALL_POINTS[3]` (`:78`), the fixtures at `:180-196`, the negative control at `:205-211`, the header claim at `:30-39` and `:68-73`
-**Cross-references:** commit `9bad4d6`; `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+**Cross-references:** commit `9bad4d6`; `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 
 ---
 
@@ -88,7 +88,7 @@ lines, and say plainly in the comment which lines are historical and which are c
 
 ---
 
-## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+## Reconciliation — `260810-0819`, session `260810-0241-orchestrator-session.md` Phase 3
 
 **Still accurate, and understated.** `hooks/lib/__tests__/state-drift-detection-lint.test.ts` has not
 been touched since `9bad4d6`; every line number cited above still lands on the text it describes.
@@ -120,10 +120,10 @@ matching a bare prefix.
 
 ---
 
-## Resolved in part — `260810-1812`, session `260810-1646` Turn 1 (coder, task `I:260810-0502-drift-lint`)
+## Resolved in part — `260810-1812-coder-drift-lint-anchors.md`, session `260810-1646-orchestrator-session.md` Turn 1 (coder, task `I:260810-0502-drift-lint`)
 
 `hooks/lib/__tests__/state-drift-detection-lint.test.ts` rewritten; no other file touched. History:
-`shared/history/260810-1812-coder-drift-lint-anchors.md`.
+`260810-1812-coder-drift-lint-anchors.md`.
 
 Five of the six claims are closed:
 
@@ -179,7 +179,7 @@ blacklist and cannot be otherwise, since whether prose instructs or forbids is n
 regex. It closes the four measured inversions, which are kept as a verbatim regression control, and
 does not close the class.
 
-Remainder, filed separately as `260810-1813_o_the-condition-table-test-accepts-a-row-whose-drift-when-cell-is-empty.md`:
+Remainder, filed separately as `260810-1813_*_the-condition-table-test-accepts-a-row-whose-drift-when-cell-is-empty.md`:
 §4's second claim, that the condition-table test accepts a row with an empty `Drift when` cell, was
 outside this task's acceptance and outside the executor's assigned line ranges.
 

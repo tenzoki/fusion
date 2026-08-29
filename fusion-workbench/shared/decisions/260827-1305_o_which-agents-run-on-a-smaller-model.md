@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (conditioning-load work; the last open lever of the 260827 optimisation round), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/analyses/260827-1305-does-agent-frontmatter-model-reach-the-dispatch.md` (the mechanism, measured: `model:` frontmatter is honoured, verified from transcripts) · `agents/reconciler.md` (the first candidate) · `refactor/260827-0335-bookkeeping-cost-repair-plan.md` (the audit that raised the lever)
+**Cross-references:** `260827-1305-does-agent-frontmatter-model-reach-the-dispatch.md` (the mechanism, measured: `model:` frontmatter is honoured, verified from transcripts) · `agents/reconciler.md` (the first candidate) · `refactor/260827-0335-bookkeeping-cost-repair-plan.md` (the audit that raised the lever)
 
 ---
 

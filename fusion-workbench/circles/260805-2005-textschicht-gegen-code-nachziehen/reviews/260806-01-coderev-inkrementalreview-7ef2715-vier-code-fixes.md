@@ -2,7 +2,7 @@
 
 **Reviewer:** coderev
 **Scope:** exactly the files changed in `7ef2715` (`git diff 66e4a69..7ef2715`): `skills/archive/SKILL.md`, `bin/fusion-rules`, `skills/setup/SKILL.md`, `skills/migrate/SKILL.md`, `hooks/lib/__tests__/context-manifest.test.ts`
-**Plan context:** `planning/260805-2353_p_plan-textschicht-gegen-code.md` Track 1 (steps S4–S7)
+**Plan context:** `260805-2353_*_plan-textschicht-gegen-code.md` Track 1 (steps S4–S7)
 **Verdict:** all four fixes are correct as shipped. One new cross-cutting issue filed (a residual of the S4 defect class in three sibling skills); no defect found in the changed lines themselves.
 
 ---
@@ -17,7 +17,7 @@ Verified empirically under both shells (this environment's Bash tool runs zsh):
 - The empty-derivation guard trips correctly (`PLANS:` → stderr message + exit 1) and passes correctly on non-empty values, in zsh. The `*:` case pattern cannot false-positive: no store path ends in a colon.
 - Plan step 4 said to check `skills/cleanup/SKILL.md` for an inherited copy — there is none; cleanup Step 4 delegates to the archive skill body by reference (`skills/cleanup/SKILL.md:115`), so it inherits the fix. `skills/circle-stash/SKILL.md:113` already used the command-substitution form.
 
-**Residual (new issue filed):** the zsh mechanism the fix's own comment names indicts three sibling lines that iterate `$SCAN_*` unquoted — `skills/cleanup/SKILL.md:67`, `skills/cadence/SKILL.md:88`, `skills/circle-stash/SKILL.md:228`. In variable-assignment mode they silently scan nothing under zsh (find error swallowed by `2>/dev/null`). Contingent on how the agent realises the interpolation; distinct from the known empty-expansion finding `260731-2246`, which covers the same sites' other failure mode. Filed as `issues/260806-0709_o_unquoted-scan-iteration-in-drei-schwester-skills-zsh.md`.
+**Residual (new issue filed):** the zsh mechanism the fix's own comment names indicts three sibling lines that iterate `$SCAN_*` unquoted — `skills/cleanup/SKILL.md:67`, `skills/cadence/SKILL.md:88`, `skills/circle-stash/SKILL.md:228`. In variable-assignment mode they silently scan nothing under zsh (find error swallowed by `2>/dev/null`). Contingent on how the agent realises the interpolation; distinct from the known empty-expansion finding `260731-2246`, which covers the same sites' other failure mode. Filed as `260806-0709_*_unquoted-scan-iteration-in-drei-schwester-skills-zsh.md`.
 
 ## S5 — `emit_if_exists` returns 0 on a missing file (`bin/fusion-rules:215-221`) — correct
 
@@ -29,7 +29,7 @@ Verified empirically under both shells (this environment's Bash tool runs zsh):
 
 - The grep filter `\[[oatcibspd]\]-[^/]*$` on the full find path is exactly "basename contains `[x]-` with `x` in the marker set" — the same condition `reformat_one`'s sed (`s/\[([oatcibspd])\]-/_\1_/g`, basename-only) converts. Tested against adversarial names: mid-name markers (`foo[t]-mid[x].md`), leading markers, `trail[c]-.md`, non-marker brackets (`notes [draft].md`), a marker in a directory component with a clean basename — grep selects exactly the four names sed changes, no wider, no narrower.
 - The filter is byte-identical at all three sites: setup probe, migrate survey `REFORMAT` count, migrate executor candidate list. Survey and executor can no longer disagree on the shape side.
-- The remaining **scope** mismatch (setup probes the whole tree minus frozen stores; migrate converts only `shared/` and `circles/` depth ≥ 2) is already filed as `issues/260806-0022_o_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — not re-reported.
+- The remaining **scope** mismatch (setup probes the whole tree minus frozen stores; migrate converts only `shared/` and `circles/` depth ≥ 2) is already filed as `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — not re-reported.
 - Pipeline mechanics checked: a no-match grep (exit 1) is harmless in both the `| wc -l` count and the `| head -1` probe (neither snippet sets `-e`/`pipefail`); the executor's `> "$RTMP"` empty-file case no-ops the loop.
 
 ## S7 — `\x27` → `\047` in the manifest awk (`bin/fusion-rules`, 8 sites) — correct

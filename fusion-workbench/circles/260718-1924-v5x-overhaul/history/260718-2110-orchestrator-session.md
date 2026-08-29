@@ -1,4 +1,4 @@
-# Orchestrator Session — 260718-2110
+# Orchestrator Session — 260718-2110-orchestrator-session.md
 
 **Directive:** Execute Circle D — per-agent prompt revision (fusion v5.x): audit all 16 prompts against Circle A's rubric, factor the duplicated Setup into a shared unit, apply findings F2/F3/F4/F5.
 **Mode:** plan (Circle D per-Circle plan, gated + approved)
@@ -43,7 +43,7 @@ Scope: **Circle D's Directive only** (audit all 16 prompts vs A's rubric; factor
 **Edges:**
 - Artifact↔Grounding: 9 / 9 acceptance criteria verified on disk (all 16 Setup pointers, F2×4, F5×3, F3/F4 conceptrev, orchestrator bespoke-retention + allowlist) / 0 drift items / 0 open coderev+ontorev issues (both D issues `_c_`). npm test 261-green; plugin validate passed.
 - Artifact↔Directive: all 9 commits `fdc0310..HEAD` move toward the Directive — `046453e` builds the F1 unit, `ee65560`/`f55eb7a`/`365b286`/`b5be37e`/`ff7da62`/`6bdf5ff` factor Setup per bundle and land F2/F3/F4/F5, `eecbd21` fixes the unit's history-file assumption, `1cc6d5f` bumps 5.2.0→5.3.0. None orthogonal or away.
-- Grounding↔Directive: 1 Circle-scoped decision consistent and now realised (`260718-2150_i_reviewers-history-log-step`, `_a_`→`_i_` this pass) / 0 conflicting. The 3 shared decisions are umbrella/other-scope, not in conflict with D's Directive.
+- Grounding↔Directive: 1 Circle-scoped decision consistent and now realised (`260718-2150_*_reviewers-history-log-step`, `_a_`→`_i_` this pass) / 0 conflicting. The 3 shared decisions are umbrella/other-scope, not in conflict with D's Directive.
 
 **Rebalance recommendation:** none
 
@@ -54,7 +54,7 @@ Scope: **Circle D's Directive only** (audit all 16 prompts vs A's rubric; factor
 | Turns | 4 |
 | Tasks resolved | 9 (B0, B1, agent-setup fix, B2, B3, B4, B5, B6, version bump) |
 | Tasks skipped/deferred | 0 |
-| Issues created (by reviewers) | 2 (both Low: 260718-2238, 260718-2353) |
+| Issues created (by reviewers) | 2 (both Low: 260718-2238_*_agent-setup-voice-profile-assumes-history-file.md, 260718-2353_*_planner-residual-unconditional-ask-line55.md) |
 | Issues resolved | 2 (both created + closed this session) |
 | Decisions answered (_o_→_a_) | 1 (F5 reviewers' history log) |
 | Decisions implemented (_a_→_i_) | 1 (F5, by reconciler at Phase 3) |
@@ -71,7 +71,7 @@ Scope: **Circle D's Directive only** (audit all 16 prompts vs A's rubric; factor
 - Coherence: ok
 
 ### Turn 2 — conceptrev + non-asking domain agents
-- Tasks: agent-setup.md fix (closes 260718-2238), B2 (conceptrev F4+F3+F5), B3 (taskplanner/reconciler/playmaker + playmaker desc)
+- Tasks: agent-setup.md fix (closes 260718-2238_*_agent-setup-voice-profile-assumes-history-file.md), B2 (conceptrev F4+F3+F5), B3 (taskplanner/reconciler/playmaker + playmaker desc)
 - Commits: eecbd21, f55eb7a, 365b286
 - Review: coderev GO — 0 issues
 - Coherence: ok
@@ -83,7 +83,7 @@ Scope: **Circle D's Directive only** (audit all 16 prompts vs A's rubric; factor
 - Coherence: ok
 
 ### Turn 4 — orchestrator LAST
-- Tasks: planner:55 F2 fix (closes 260718-2353) + B6 (orchestrator Setup; allowlist intact; smoke SMOKE-OK), version bump 5.3.0
+- Tasks: planner:55 F2 fix (closes 260718-2353_*_planner-residual-unconditional-ask-line55.md) + B6 (orchestrator Setup; allowlist intact; smoke SMOKE-OK), version bump 5.3.0
 - Commits: 6bdf5ff, 1cc6d5f
 - Review: coderev CLEAN — 0 issues; HYG-NO-REGRESS confirmed
 - Coherence: ok

@@ -1,7 +1,7 @@
 Two demoted-name instances remain in README-agents, and the open record tracking them now lists a residual set that is empty
 
 ---
-`642130f` swept ten instances of the three demoted skill names into the pipeline form. The two residuals its record named — `skills/setup/SKILL.md:60` and `skills/cleanup/SKILL.md:243` — were both closed later in the same session by `c0e179a` and `381f6d8`. So `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md` is open with a "What is left" table whose every row is done. Meanwhile `README-agents.md:71,72` still present `/fusion:curate` as the surface that dispatches the curator, and the same file writes the pipeline form 175 lines later. That site was never surveyed: the record waves through `README-agents.md:239-246` as correct and lines 71-72 are outside it.
+`642130f` swept ten instances of the three demoted skill names into the pipeline form. The two residuals its record named — `skills/setup/SKILL.md:60` and `skills/cleanup/SKILL.md:243` — were both closed later in the same session by `c0e179a` and `381f6d8`. So `260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md` is open with a "What is left" table whose every row is done. Meanwhile `README-agents.md:71,72` still present `/fusion:curate` as the surface that dispatches the curator, and the same file writes the pipeline form 175 lines later. That site was never surveyed: the record waves through `README-agents.md:239-246` as correct and lines 71-72 are outside it.
 
 ---
 
@@ -41,11 +41,11 @@ Verified at HEAD: `grep -n '/fusion:curate' README-agents.md` returns `:246` onl
 labelled slash-command table row this record names as deliberately correct.
 
 **Part 2** — the empty residual table on
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
-was rewritten by the reconciler at 260816-0713, per this record's own fix direction step 2. That
+`260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
+was rewritten by the reconciler at 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md, per this record's own fix direction step 2. That
 record stays open around what actually stands — the three code-comment sources this record listed as
 "lower priority and a different owner" (`hooks/lib/events.ts:70`, its two compiled mirrors,
 `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`, `.gitignore:69`) — and now states why a
 sweep is a scope question rather than a task.
 
-Reconciled 260816-0713 (reconciler, HEAD `f77633f`).
+Reconciled 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`).

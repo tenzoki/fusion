@@ -68,7 +68,7 @@ export interface WorkbenchEntry {
     base: string;
 }
 export type CitationKind = 
-/** the five the gate resolves */
+/** the five the gate judges; the first, third and fourth carry a store segment and are violations */
 "record" | "bare-record" | "circle-record" | "circle-dir"
 /** a stamp plus a dashed name, no store prefix — decidable by prefix */
  | "stamp-name"
@@ -79,7 +79,7 @@ export type CitationKind =
  * 2026-08-20 "everything else" is one kind: `stamp-bare`.
  *
  * `stamp-name` joined the list under decision
- * `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+ * `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
  * (option 2), so that the repair scope and the gate scope coincide instead of
  * diverging by 33 tokens. A `stamp-name` token is a stamp plus a dashed name
  * (`260812-2116-coder-<slug>`), which this parser's own header calls decidable
@@ -109,8 +109,8 @@ export type CitationStatus =
  | "ambiguous"
 /** the record exists, under a different marker */
  | "stale-marker"
-/** the record exists, in another store */
- | "wrong-store"
+/** the citation carries a store segment; never resolved, `fix` spells the storeless form */
+ | "store-prefixed"
 /** nothing on disk matches */
  | "dangling"
 /** a parser exemption fired; the token was never resolved */
@@ -120,6 +120,8 @@ export type CitationStatus =
 export interface CitationHit {
     file: string;
     line: number;
+    /** 0-based column of the token on its line; what a rewriter splices at */
+    col: number;
     token: string;
     kind: CitationKind;
     status: CitationStatus;

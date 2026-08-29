@@ -4,7 +4,7 @@
 **Agent:** shaper (anticipated-circle mode)
 **Filed by:** shaper, Kai Stalmann <ks@qantr.com>
 **Domain:** code
-**Result:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/_a_circle.md`
+**Result:** `260825-2023-presence-travels-monitor-filters-own-checkout`
 
 ## The draft
 
@@ -12,7 +12,7 @@
 
 ## What was read
 
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, principally `### C4` and its Reconciliation Log; the two referred defects from C2, `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` and `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`; the referred Turn-count defect `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`; the answered identity decision `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`; the header of `bin/fusion-identity`; the event emit sites and Observability section of `agents/orchestrator.md`; `skills/setup/SKILL.md` Step 0c; and `bin/monitor`'s session-boundary and ETA logic.
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, principally `### C4` and its Reconciliation Log; the two referred defects from C2, `260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` and `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`; the referred Turn-count defect `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`; the answered identity decision `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`; the header of `bin/fusion-identity`; the event emit sites and Observability section of `agents/orchestrator.md`; `skills/setup/SKILL.md` Step 0c; and `bin/monitor`'s session-boundary and ETA logic.
 
 ## The gaps that were put to the user, and what was decided
 

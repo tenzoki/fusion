@@ -27,25 +27,25 @@ skill bodies is that arrangement one size down, and `rules/critical-stance.md` �
 fall back to `code` and say which happened. All three belong in one place. Two candidates:
 
 1. A `bin/` helper (`fusion-session-domain`) printing `domain=` and `source=`, called the way
-   `bin/fusion-count-sources` is, with the `[ -x ]` guard convention decision `260810-0921` settled.
+   `bin/fusion-count-sources` is, with the `[ -x ]` guard convention decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` settled.
 2. `bin/fusion-paths` gaining a `DOMAIN` key, since every consumer already calls it at its first step
    and the value is workbench state like the rest. This is the cheaper call site but stretches what
    the resolver is for — it resolves *paths*.
 
 Whoever takes this should read
-`archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
+`archive/260817-1907-safe-cleanup-scoped/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
 first. That record proposes a `bin/` helper for a different duplicated criterion in the same skills,
 and weighs the cost of adding one against a thin case. Two duplicated criteria make a thicker case
 than either alone, and one design decision should cover both.
 
 **Cross-references.** `skills/cleanup/SKILL.md:63-72`; `skills/next/SKILL.md:69-80`;
 `skills/direct/SKILL.md:52-60`; `skills/seed-from-plane/SKILL.md:74-82`;
-`shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`.
+`260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). The count in the title is now wrong and the defect is not. `skills/seed-from-plane/` left with the Plane mirror on 2026-08-15, so three copies remain rather than four: `skills/next/SKILL.md:88`, `skills/direct/SKILL.md:57`, `skills/cleanup/SKILL.md:107`. No mechanism was introduced — there is no domain helper in `bin/` and no `DOMAIN` key in `bin/fusion-paths`. The reserved half of decision `260810-2145` is what this record waits on, and that record is deliberately still answered rather than implemented for exactly this reason.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). The count in the title is now wrong and the defect is not. `skills/seed-from-plane/` left with the Plane mirror on 2026-08-15, so three copies remain rather than four: `skills/next/SKILL.md:88`, `skills/direct/SKILL.md:57`, `skills/cleanup/SKILL.md:107`. No mechanism was introduced — there is no domain helper in `bin/` and no `DOMAIN` key in `bin/fusion-paths`. The reserved half of decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` is what this record waits on, and that record is deliberately still answered rather than implemented for exactly this reason.
 
 ---
 Resolved: fixed — the three inline reads are three guarded calls to `bin/fusion-session-domain` (step 7's helper), which prints `domain=` and `source=` so a fallback is reported and not applied silently; `skills/next/SKILL.md:76`, `skills/direct/SKILL.md:52`, `skills/cleanup/SKILL.md:106`

@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Task:** give the two skill bodies a resolvable route to `agents/orchestrator.md` `### The queue's ground` → `#### Reading a queue`
-**Source record:** `shared/issues/260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`
-**Session:** `shared/history/260810-1646-orchestrator-session.md`
+**Source record:** `260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`
+**Session:** `260810-1646-orchestrator-session.md`
 
 ## Route taken
 

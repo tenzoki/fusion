@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** shaper (anticipated-circle mode)
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
 **Dispatched by:** the user, with a draft Directive in their own framing
 **HEAD at time of work:** `472134c`, clean working tree
 
@@ -11,7 +11,7 @@
 The user's draft said the agents' answers are still convoluted and chatty, and that the em-dash
 repair the previous Circle delivered was never the point. They chose the widest of three offered
 scopes: both halves of
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 together with the register patterns underneath them, which are enumeration rhythm, one statement
 restated in three formulations, and an agent's account of its own work at length.
 
@@ -47,7 +47,7 @@ bears on a style Circle is 4.1: 1 939 bytes of new style clauses against 470 byt
 repunctuation. Both figures and their derivation are in the record.
 
 One claim in the draft was corrected rather than repeated.
-`shared/history/260820-2103-orchestrator-session.md` `## What this session got wrong` was cited as
+`260820-2103-orchestrator-session.md` `## What this session got wrong` was cited as
 recording the over-length pattern. It records four faults of a different kind, all of them claims
 that came apart from what they described. The length pattern is real and the transcripts are its
 evidence.
@@ -62,7 +62,7 @@ gate's corpus and every citation in this one had to resolve.
 
 ## Files written
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/_a_circle.md`
+- `260821-1042-reply-bounded-whole-question-answered`
 - the six artifact subdirectories of that Circle
 - this history file
 

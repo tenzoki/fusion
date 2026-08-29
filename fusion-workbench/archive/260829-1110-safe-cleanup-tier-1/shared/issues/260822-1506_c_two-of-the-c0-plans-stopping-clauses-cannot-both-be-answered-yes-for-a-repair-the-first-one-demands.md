@@ -2,7 +2,7 @@ Two of the C0 plan's stopping clauses cannot both be answered yes for a repair t
 
 ---
 
-`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 `## Where this Circle stops` carries these two clauses back to back (`:180` and `:181`):
 
 > - Every cut that landed carries, in the ledger or in its step report, either a named authoring home
@@ -20,7 +20,7 @@ fixes as additions.
 ---
 
 **What actually happened.** The previous review's High finding
-(`shared/issues/260822-1421_c_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`)
+(`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`)
 was clause `:180` firing: a cut in `c2ad89c` moved a claim to a home that did not hold it. `620e737`
 repaired it, and the repair widened the replacement pointer in two bodies:
 
@@ -44,15 +44,15 @@ not that the Circle overspent.
 ---
 
 **Found by:** coderev, reviewing `c2ad89c..6781814`, review file
-`shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
+`260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Low.
-**Affects:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md:180-181`.
+**Affects:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md:180-181`.
 **Filed in the shared store:** no Circle is active.
 **Cross-references:**
-`shared/issues/260822-1421_c_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
 (the repair the tension is about);
-`shared/issues/260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
+`260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
 (a different defect in the same plan, already open).
 
 **The fix.** Widen clause `:181`'s enumeration by one category rather than raising a number: *"beyond
@@ -63,4 +63,4 @@ the edit cannot redden the suite. It costs nothing against any bounded surface: 
 record.
 
 ---
-Resolved: moot — the plan is closed, the tension between its two clauses is recorded above, and the review repair it names was correct; `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`.
+Resolved: moot — the plan is closed, the tension between its two clauses is recorded above, and the review repair it names was correct; `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`.

@@ -15,8 +15,8 @@ the same fact, maintained by hand, and it is the copy that gets left behind.
 **Affected:** 34 files under `fusion-workbench/shared/decisions/` and `fusion-workbench/circles/*/decisions/`
 **Cross-references:**
 `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `## State Markers — decisions`,
-`shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` (the same class, one level up),
-`shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
+`260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` (the same class, one level up),
+`260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
 
 ## The measurement
 
@@ -32,20 +32,20 @@ in the body:
 | other mismatches, including three headers carrying a whole sentence of reconciliation prose where a single word belongs | | 6 |
 
 Four of the mismatched headers already carry a note saying a reconciler corrected them once, for
-example `260803-1803_i_...` reading "implemented (corrected from `open` by reconciliation 260804-1021;
+example `260803-1803_*_...` reading "implemented (corrected from `open` by reconciliation 260804-1021-reconciliation.md;
 the filename marker `_i_` was already right)". So the drift is known, has been repaired by hand at
 least twice, and has re-accumulated since.
 
 ## Why it is worth a record rather than a sweep
 
 The immediate cost is small and real: this planning session read
-`260804-1632_d_should-findrelevantdecisions-fold-case-...` and
-`260809-1224_d_is-the-decision-governed-escalation-check-3-a-live-feature.md`, both of which say
+`260804-1632_*_should-findrelevantdecisions-fold-case-...` and
+`260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`, both of which say
 `**Status:** open` in the body while being deferred by their marker and by a dated deferral note at
 the foot of the file. Both were read correctly only because the marker was checked.
 
 The durable cost is that the header is a hand-maintained second copy of a fact the filename already
-carries, which is the defect class `260810-1635` is about and `260811-1734` is the work for. A sweep
+carries, which is the defect class `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` is about and `260811-1734` is the work for. A sweep
 that corrects 34 headers today leaves the mechanism that produced them intact.
 
 ## Two candidate fixes, for whoever picks this up
@@ -74,7 +74,7 @@ reconciler 260809-2252 …)". Discounting those, the real figure is **35 of 86**
 this record measured on 2026-08-12.
 
 **One new instance was created and corrected inside this session.**
-`shared/decisions/260813-0027_i_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`
+`260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`
 walked open to answered to implemented across commits `e02f268` and `0b14d03`; both renames moved
 the filename marker and neither touched the header, which still read `open` two transitions later.
 This pass corrected it. That is the mechanism this record describes, caught in the act rather than
@@ -84,32 +84,32 @@ The count in this record's title is left as written. It states what was measured
 it is a measurement, not a pointer — restating it here is the derive-over-correct form the project
 applies to exactly this class.
 
-Also seen: 260816-1330 by coderev — re-measured at `6049d3e`: 39 of 100 records now disagree (13 `_i_`/answered, 12 `_i_`/open, 9 `_a_`/open, 4 `_d_`/open, 1 `_s_`/open), and commit `4921026` created the 40th by renaming `260816-0740_o_` to `_a_` while `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:5` still reads `**Status:** open`. No test file under `hooks/lib/__tests__/` mentions `Status`, so the pair is still unread by any gate; `marker-format-lint.test.ts` scopes to `agents/*.md` and `skills/*/SKILL.md` and never looks at the workbench. Head-room on the hook-test surface is 1907 lines of 2500 if a gate is chosen, but a hard gate would fail on 39 records nobody is going to edit, which is the shape `shared/decisions/260816-0740_a_*.md` option 2 already argues against for the output store.
+Also seen: 260816-1330 by coderev — re-measured at `6049d3e`: 39 of 100 records now disagree (13 `_i_`/answered, 12 `_i_`/open, 9 `_a_`/open, 4 `_d_`/open, 1 `_s_`/open), and commit `4921026` created the 40th by renaming `260816-0740_o_` to `_a_` while `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:5` still reads `**Status:** open`. No test file under `hooks/lib/__tests__/` mentions `Status`, so the pair is still unread by any gate; `marker-format-lint.test.ts` scopes to `agents/*.md` and `skills/*/SKILL.md` and never looks at the workbench. Head-room on the hook-test surface is 1907 lines of 2500 if a gate is chosen, but a hard gate would fail on 39 records nobody is going to edit, which is the shape `shared/decisions/260816-0740_a_*.md` option 2 already argues against for the output store.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Re-derived rather than re-asserted. Over the shared decision store alone, 18 of 56 records carry a `**Status:**` that disagrees with their marker; over every decision store including the Circles, 37 of 106. No lint enforces agreement: `hooks/lib/__tests__/marker-format-lint.test.ts` scopes to `agents/*.md` and `skills/*/SKILL.md` and never reads the workbench. One record was corrected in this pass as a side effect of a marker walk (`260814-2017`), which does not touch the class. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Re-derived rather than re-asserted. Over the shared decision store alone, 18 of 56 records carry a `**Status:**` that disagrees with their marker; over every decision store including the Circles, 37 of 106. No lint enforces agreement: `hooks/lib/__tests__/marker-format-lint.test.ts` scopes to `agents/*.md` and `skills/*/SKILL.md` and never reads the workbench. One record was corrected in this pass as a side effect of a marker walk (`260814-2017`), which does not touch the class. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 **The question this record reserved is now filed as a decision, 2026-08-18.**
-`shared/decisions/260818-2212_o_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
+`260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
 carries the two candidate fixes this record named, plus the third the Circle-record version of the
 question considered, re-measured at HEAD `53b6862`: **40 of 94** records disagree (20 of 51 shared,
 20 of 43 in Circle stores), and a naive comparison that counts four correct-but-annotated headers
 reports 44.
 
 The trigger was the Circle record's identical field being removed on the same day
-(`260815-2312`, option 1, commit `95bebe1`), which is what made the reservation worth discharging
+(`260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`, option 1, commit `95bebe1`), which is what made the reservation worth discharging
 rather than renewing. **This record stays open**: the drift it measures is not resolved by filing a
 question about it, and it is the record any sweep or lint will close.
 
 Two things the new decision adds that this record did not have. The change surface is **two rule
 files**, not the thirteen a grep for the field name returns, because four other artifact kinds carry
-a `**Status:**` field of their own with different vocabularies. And `260815-2312` itself — the
+a `**Status:**` field of their own with different vocabularies. And `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` itself — the
 decision that removed the field from the Circle record — is one of the 40, reading `answered` under
 an `_i_` marker.
 
 ---
-**Reconciliation 260818-2230** (reconciler, domain `code`). Re-verified reproducible at HEAD
+**Reconciliation 260818-2230-reconciliation.md** (reconciler, domain `code`). Re-verified reproducible at HEAD
 `8fa3286`, re-derived rather than carried forward: the marker was read out of each filename and the
 first `**Status:**` line out of each body, over every live decision store and no archived one. At
 the pre-session HEAD `53b6862` the population is 94 (51 shared, 43 Circle) and 40 headers do not
@@ -120,11 +120,11 @@ substance and is written in marker form rather than in the template word
 (`circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_*.md`, reading
 `**Status:** _i_ (implemented — …)`), so the count of headers *disagreeing* is 39 with 5
 correct-but-non-template; that discrepancy and two count-of-count errors are filed as
-`shared/issues/260818-2228_o_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
+`260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
 No record was hand-corrected, per this record's own instruction. No lint enforces agreement; the
 full hook suite is green at this HEAD (672 tests, 36 files). Marker stays open — the question is now
 filed as a decision, which does not resolve the drift. Log:
-`shared/history/260818-2230-reconciliation.md`.
+`260818-2230-reconciliation.md`.
 
 **Correction to the note above, same day.** Two figures in it were restated from a first pass and are
 wrong. The disagreeing count is **39, not 40** (20 shared, 19 Circle): one header,
@@ -134,12 +134,12 @@ state in a non-template form, and 39 + 5 is exactly the 44 a naive whole-field c
 And the change surface is **fourteen** files that mention a field of that name, not thirteen; the
 conclusion is unchanged, because only two of them define the vocabulary for this record kind.
 Filed and closed as
-`shared/issues/260818-2228_c_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
+`260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
 
 
 ---
 Resolved: the field itself was removed, so no record filed from now on can carry a state its marker
-contradicts. `shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
+contradicts. `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`
 put the question to the user and was answered option 1 on 2026-08-18; the removal landed in the same
 session, taking the `**Status:**` line out of `rules/fusion-workbench-conventions.md`
 `## Decision Record Template` and out of the worked example in `rules/decision-record-examples.md`,
@@ -148,5 +148,5 @@ with the reason and the measurement stated in the conventions file.
 The existing drift is **not** corrected, and that is the answer rather than an omission. A record
 written before the removal keeps the field exactly as it stands; hand-correcting one destroys the
 evidence the removal was decided on, which is the position the Circle precedent
-`260815-2312` took and the constraint the user chose this option under. This defect therefore closes
+`260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` took and the constraint the user chose this option under. This defect therefore closes
 on the cause being gone, not on the population being cleaned.

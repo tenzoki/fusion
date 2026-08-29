@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Task:** `I:260810-0503-cascade-lint` (tasklist task 6), Turn 1 of session `260810-1646-orchestrator-session.md`
-**Source:** `shared/issues/260810-0503_c_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`
+**Source:** `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`
 **Domain:** code
 
 ---
@@ -11,7 +11,7 @@
 
 `hooks/lib/__tests__/domain-cascade-order-lint.test.ts` guarded the branch order of the
 workbench-domain cascade in `agents/orchestrator.md` Setup Step 5 by asking whether a branch's
-*text* mentioned `code_files`. Four edits that reinstate issue `260807-1942` in full passed it: a
+*text* mentioned `code_files`. Four edits that reinstate issue `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` in full passed it: a
 decoy `elif code_files < 0` above a restored pre-fix order, an inverted `elif code_files == 0` in the
 `> 0` slot, a dead `elif code_files > 100000`, and the token present only in a trailing comment. The
 second helper, `assertAbsentCountFirst`, had never been shown to reject anything — the block that
@@ -46,7 +46,7 @@ behavioural form of the `counted_by == "none"` line's load-bearing position.
    data count that does not trip the documented ratio rather than against an invented one. Every
    `code`/`data` scenario carries the artifact profile that produced the original defect — 122
    commits, three open decisions against one open defect record — so a `strategic` answer anywhere is
-   `260807-1942` returning. One case runs `bin/fusion-count-sources` against this repository live and
+   `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` returning. One case runs `bin/fusion-count-sources` against this repository live and
    feeds the result to the cascade, so helper and prompt are gated as a pair.
 2. **No dead branch** — every branch fires for some input across a ~5 000-case sweep plus the
    absent-count shape.
@@ -58,7 +58,7 @@ measure it. `firstIndex` on line text is gone; both helpers now read the **parse
 `variablesRead`, so a comment cannot answer for a test and a renamed variable fails loudly. Its
 header states plainly that it is no longer primary and what it still cannot see. The missing negative
 control is added: `assertAbsentCountFirst` is fed a cascade with `if code_files > 0` above the
-`counted_by == "none"` branch and expected to throw, matched on `260807-1951` — an issue ID only that
+`counted_by == "none"` branch and expected to throw, matched on `260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` — an issue ID only that
 helper emits.
 
 **`README-hooks.md`** — one row for `lib/domain-cascade.ts`, required by

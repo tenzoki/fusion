@@ -2,14 +2,14 @@
 
 **Status:** Complete
 **Agent:** planner
-**Circle:** `circles/260819-1645-four-constraints-on-deep-change`
+**Circle:** `260819-1645-four-constraints-on-deep-change`
 **Repository HEAD:** `b91c01c`
 **Executors offered:** coder, ontocoder, analyst
 
 ## What was produced
 
-- The plan, at `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_o_four-constraints-on-deep-change.md`. Ten steps, all routed to `coder`, with steps 9 and 10 behind an explicit user gate naming two decision records.
-- One new decision record, at `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_o_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`.
+- The plan, at `260819-2016_*_four-constraints-on-deep-change.md`. Ten steps, all routed to `coder`, with steps 9 and 10 behind an explicit user gate naming two decision records.
+- One new decision record, at `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`.
 - One `Also seen:` line appended to the open corpus decision `260819-1645`, recording that "the open decisions" has two readings and that only the wider one reproduces the Grounding's figures.
 
 Nothing was implemented and nothing was committed.

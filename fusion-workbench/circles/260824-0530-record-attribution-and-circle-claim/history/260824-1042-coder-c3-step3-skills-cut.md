@@ -1,7 +1,7 @@
 # Coder — C3 step 3: cut `skills/` to pay for steps 9 and 10
 
 **Status:** Complete
-**Task:** Plan step 3 of `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`
+**Task:** Plan step 3 of `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`
 **Executor:** coder
 
 ## What was measured before choosing
@@ -31,7 +31,7 @@ path or exit-code reading was removed.
   accounting block: paths 1295 → 1291, anchors 181 → 180, records 118 → 117.
 
 **No growth-bound baseline moved.** `surface-growth-bound.test.ts` is untouched, which keeps
-`shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` open.
+`260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` open.
 
 ## One thing the next executor needs
 

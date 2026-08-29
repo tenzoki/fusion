@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Task:** take the shell out of the commit-message path in `agents/orchestrator.md` Phase 2 Step 3b
-**Source record:** issue `260810-1535` (`...-truncates-any-message-containing-an-apostrophe`), in `$SCAN_ISSUES`
-**Session:** `shared/history/260810-1646-orchestrator-session.md`
+**Source record:** issue `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md` (`...-truncates-any-message-containing-an-apostrophe`), in `$SCAN_ISSUES`
+**Session:** `260810-1646-orchestrator-session.md`
 
 ## Route taken
 

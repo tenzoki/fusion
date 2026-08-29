@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/_*_circle.md`
+**Cross-references:** `260821-1042-reply-bounded-whole-question-answered`
 
 ---
 
@@ -32,4 +32,4 @@ The route chosen is not weaker for being outside the Circle: the curator is the 
 normative text and its pass carries an evidence tier and a citation per change, behind a gate.
 
 ---
-Answered: this record — the user answered at a gate in session `shared/history/260820-2103-orchestrator-session.md` on 260821, before the Circle was activated. Their words, not the orchestrator's reading of them.
+Answered: this record — the user answered at a gate in session `260820-2103-orchestrator-session.md` on 260821, before the Circle was activated. Their words, not the orchestrator's reading of them.

@@ -28,7 +28,7 @@
 # ---------------------------------------------------------------------------
 # Why git ls-files
 #
-# Decision: fusion-workbench/shared/decisions/260809-1731_*_how-should-the-
+# Decision: 260809-1731_*_how-should-the-
 # domain-heuristic-count-a-projects-source-files.md — option 2, chosen by the
 # user. The mechanism it replaced was a `find` walk bounded to "top-level + 1
 # subdir deep", which counted structurally zero for every project that groups
@@ -80,7 +80,7 @@
 # exit 0, over a git that had exited 128 — the labelled zero this whole section
 # forbids, defeating the guard branch built for it. A status that must survive
 # is therefore never piped: the read and the sort are separate commands.
-# Issue: fusion-workbench/shared/issues/260810-0459_*_fusion-count-sources-
+# Issue: 260810-0459_*_fusion-count-sources-
 # reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md.
 #
 # ---------------------------------------------------------------------------

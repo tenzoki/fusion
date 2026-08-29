@@ -2,8 +2,8 @@
 
 **Date:** 2026-07-19
 **Status:** Complete — docs acceptance met (verified against the live tree, 260719 reconciliation). Marketplace publish (`marketplace.json` bump + push) is deferred/user-gated; B-rest stays out of scope with the umbrella Circle active. Decisions: (1) explainer home = new `docs/working-model.md`; (2) release version = 5.4.0; (3) B-rest = KEEP Circle active (do NOT sever/close — umbrella stays `_t_` for B-rest).
-**Spec:** `circles/260718-1924-v5x-overhaul/planning/260718-0437_o_spec-fusion-v5x-overhaul.md` §"Circle E" (conceptrev verdict clean)
-**Master plan:** `circles/260718-1924-v5x-overhaul/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md` §"Circle E" (deferred E's file-level detail to this per-Circle pass)
+**Spec:** `260718-0437_*_spec-fusion-v5x-overhaul.md` §"Circle E" (conceptrev verdict clean)
+**Master plan:** `260718-1001_*_master-plan-fusion-v5x-overhaul.md` §"Circle E" (deferred E's file-level detail to this per-Circle pass)
 **Executors:** coder
 **Circle:** `260718-1924-v5x-overhaul` (active)
 
@@ -55,7 +55,7 @@ This is the checklist the executor works against. Each row is a verified stale r
 
 ### Open decisions read at Setup
 
-`SCAN_DECISIONS` (Circle + shared) holds no open (`_o_`) decision that blocks this plan. The pre-existing README-drift issue `shared/issues/260717-1740_o_preexisting-readme-drift-...md` is partially superseded: its items 1–2 (README.md "14 agents", "30 tests") are moot after the `README.md` rewrite; its item 3 (README-agents.md:153 "exactly one rule file") is **live** and is folded into this plan's README-agents audit (Turn 2). That issue can be closed once E-rest lands.
+`SCAN_DECISIONS` (Circle + shared) holds no open (`_o_`) decision that blocks this plan. The pre-existing README-drift issue `260717-1740_*_preexisting-readme-drift-...md` is partially superseded: its items 1–2 (README.md "14 agents", "30 tests") are moot after the `README.md` rewrite; its item 3 (README-agents.md:153 "exactly one rule file") is **live** and is folded into this plan's README-agents audit (Turn 2). That issue can be closed once E-rest lands.
 
 ## Approach
 
@@ -111,7 +111,7 @@ The graph is a linear DAG (single spine T1→T2→T3→T4) with three decision i
    - Executor: coder
    - Files: `README-agents.md`
    - Changes: apply every `README-agents.md` row in the staleness audit above — bracket→underscore markers (lines 40, 209); rewrite the "exactly one rule file" claim (line 153) to the real always-on + pattern-matched rule set; rewrite the helper description (155–161) to include `agent-setup.md`-first and the Circle B manifest + topic axis; add `editor` to the pattern→agent table (170); add the 4 missing skills to the skills table (188–197).
-   - Source: staleness audit; supersedes item 3 of `shared/issues/260717-1740_o_preexisting-readme-drift-...md`
+   - Source: staleness audit; supersedes item 3 of `260717-1740_*_preexisting-readme-drift-...md`
    - Dependencies: none (may run alongside steps 3–4; all three are independent files)
 
 3. [DONE] **Align `skills/help/SKILL.md` to the backbone and wire the explainer topic.**
@@ -204,5 +204,5 @@ These three are surfaced for the user; the user decides. Each carries a proposal
 - **Consistency sweep (step 6, commit `0a69a6b`):** zero pre-v5.x staleness remains — no 14/15-agent counts, no "exactly one rule file", no bracket-marker circle refs, no live bus protocol; `CLAUDE.md:9` and `README.md:3` both say "16 … agents". `README-hooks.md` confirmed clean.
 - **Release (step 7, commit `74cc11b`):** `.claude-plugin/plugin.json` is `5.4.0`; `bin/fusion-rules` eight→nine prose-agent comment fixed; `npm test` re-run at reconciliation = **261 passed / 11 files** (regression guard green). Marketplace publish + push deferred (user-gated, feature/plane unpushed) — expected, not a discrepancy.
 - **Circle state (step 8):** kept active per Decision 3; no closure. `.active-circle` → `260718-1924-v5x-overhaul`.
-- **Issues:** the four session issues (`260719-1436`, `260719-1441` ×2, `260719-1452`) are all `_c_` with evidence-cited resolution notes. The pre-existing shared drift issue `260717-1740` (agent/test/rule-file counts) is now fully resolved and was closed `_o_`→`_c_` in this pass (plan line 58 flagged it closable once E-rest landed).
+- **Issues:** the four session issues (`260719-1436`, `260719-1441` ×2, `260719-1452`) are all `_c_` with evidence-cited resolution notes. The pre-existing shared drift issue `260717-1740_*_preexisting-readme-drift-agent-count-test-count-rule-file-count.md` (agent/test/rule-file counts) is now fully resolved and was closed `_o_`→`_c_` in this pass (plan line 58 flagged it closable once E-rest landed).
 - **No new issues** discovered during reconciliation. No drift between plan claims and disk.

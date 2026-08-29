@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md` → Schritt 4a
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md` → Schritt 4a
 **Auftrag:** Orchestrator-Dispatch, vom Nutzer am 2026-08-05 angeordnet. Der Schritt ist C9
 Schritt 3 der Spec und stand ausdrücklich **nicht** im Ausstiegsplan.
 
@@ -156,9 +156,9 @@ Historienabsatz.
    `$OUT_DECISION` haben sechs, `$SCAN_DECISIONS` dreizehn (nicht `bugfixer`, `conceptrev`,
    `editor`). Nicht meine Datei; der Plan klammert die kleinen Regeln aus.
 2. **Der Provenance-Zitatpfad im Text zeigt auf einen Marker, der weitergewandert ist.** Der
-   Abschnitt zitiert zweimal `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`;
+   Abschnitt zitiert zweimal `260801-1020_*_provenance-header-on-rule-files.md`;
    auf der Platte liegt `…_i_…`. Bekannt als
-   `shared/issues/260802-1740_o_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md`.
+   `260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md`.
    Der Text ist unverändert mitgewandert.
 3. **Der letzte `describe`-Block in `provenance-header-lint.test.ts` prüft an der falschen
    Datei.** Seine Prämisse lautet „die Datei, die diese Konvention dokumentiert, enthält
@@ -167,7 +167,7 @@ Historienabsatz.
    String ebenfalls unterhalb des Zehn-Zeilen-Fensters führt; er beweist also noch, was er
    behauptet, aber am zufälligen statt am gemeinten Objekt.
 4. **Der Kopfkommentar desselben Tests nennt den falschen Circle.** Er schreibt
-   „`circles/260801-1244-curator` plans to partition
+   „`260801-1244-curator` plans to partition
    `rules/fusion-workbench-conventions.md`" — der Circle heißt
    `260801-1244-rule-provenance-header`, und partitioniert hat am Ende dieser hier.
    Die Voraussicht war richtig: die Rekursion des Gates hat alle drei Shards erfasst.
@@ -204,6 +204,6 @@ der Plan unter *Die Regeln, die klein sind* ausklammert. Schritt 6 bleibt bis da
 `hooks/lib/__tests__/provenance-header-lint.test.ts`,
 `hooks/lib/__tests__/rules-emission-golden.test.ts`,
 `hooks/lib/__tests__/fixtures/rules-emission.golden`,
-`fusion-workbench/circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`
+`260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`
 
 **Nicht committet** — der Orchestrator committet.

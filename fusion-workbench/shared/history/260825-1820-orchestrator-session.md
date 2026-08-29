@@ -1,4 +1,4 @@
-# Orchestrator Session — 260825-1820
+# Orchestrator Session — 260825-1820-orchestrator-session.md
 
 **Directive:** (not yet stated — Setup ran ahead of the user's task)
 **Mode:** (unresolved — Phase 0 not yet run)

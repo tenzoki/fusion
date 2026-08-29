@@ -1,4 +1,4 @@
-# Playmaker session 260828-0038 — orchestrator Phase 4 dispatch
+# Playmaker session 260828-0038-playmaker-orchestrator-phase4.md — orchestrator Phase 4 dispatch
 
 **Trigger:** orchestrator Phase 4, after the `_t_`→`_c_` transition of `260826-1613-cardinality-answered-cut-once-nineteen-cleared`
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:**` line)
@@ -17,8 +17,8 @@ Twenty Circle records under `circles/`: 0 anticipated (`_a_`), 0 active (`_t_`),
 ## Backlog
 
 - Entries read: 1 `_p_`, 1 `_o_`, 1 `_c_`, 0 `_d_`. Distinct ideas in the live entries: 2. Duplicate groups: 0. Items handed to `## Warnings` as defect- or decision-shaped: 0.
-- Top-ranked: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — its narrowing is argued on disk in `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` and nothing has to precede shaping it; with no Circle active or anticipated, shaping it is the only route to a next unit of work short of a fresh draft.
-- Second: `shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md` — still waits on the user reviving the deferred decision `260810-0710_*`.
+- Top-ranked: `260814-1733_*_bounded-executor-dispatches.md` — its narrowing is argued on disk in `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` and nothing has to precede shaping it; with no Circle active or anticipated, shaping it is the only route to a next unit of work short of a fresh draft.
+- Second: `260814-1733_*_attach-the-rule-to-the-act.md` — still waits on the user reviving the deferred decision `260810-0710_*`.
 - Backlog writes performed: none. The markers on disk already match the ranking.
 - Confirm-gated operations proposed and not performed: none proposed. Both live entries carry one idea, do not overlap, are live, and name no deferral target. Phase 4 dispatch holds no confirmation in any case.
 

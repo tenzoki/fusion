@@ -28,7 +28,7 @@ revision** of the fusion v5.x overhaul, gated on Circles A and B (both landed).
   project-side, topic-scoped manifest, which is the wrong tool for universal
   plugin-side Setup). Subsumes F4 for free.
 - **F5** (user-gated): filed decision record
-  `decisions/260718-2150_o_reviewers-history-log-step.md`. Recommendation: document
+  `260718-2150_*_reviewers-history-log-step.md`. Recommendation: document
   the exception. Gates the R5 cells of the three reviewers.
 - **F6** (settled in plan): leave the parameter-parsing block alone — verified it is
   not byte-identical across the four agents, so no clean unit to factor; a unit would
@@ -36,8 +36,8 @@ revision** of the fusion v5.x overhaul, gated on Circles A and B (both landed).
 
 ## Deliverables
 
-- Plan: `planning/260718-2150_o_plan-circle-d-agent-prompt-revision.md`
-- Decision: `decisions/260718-2150_o_reviewers-history-log-step.md`
+- Plan: `260718-2150_*_plan-circle-d-agent-prompt-revision.md`
+- Decision: `260718-2150_*_reviewers-history-log-step.md`
 - 16×5 scoring table, 8 bundles (foundation + 5 prompt bundles + orchestrator-last +
   coupling note), Mermaid bundle/dependency DAG for the plan gate.
 

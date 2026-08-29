@@ -36,7 +36,7 @@ Same file, same checksums, opposite verdicts.
 **Verified at HEAD `7832553`** by running both forms as shown, and by reading `skills/setup/SKILL.md:173`, `rules/fusion-workbench-conventions.md:84`, `rules/workbench-tracking.md:11`.
 
 ---
-**Found by:** coderev, review of `7135a19..7832553`, review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
+**Found by:** coderev, review of `7135a19..7832553`, review file `260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
 **Owner:** `coder` for `skills/setup/SKILL.md`, and the same author for the two rule files — this is one sentence in three places and it should move once.
 **Severity:** Medium. Nothing executes wrongly today. The cost is that a reader following the shipped instruction from the natural working directory gets a verdict that is silently about other files.
 **Direction, not a prescription.** The minimum is to name the working directory in the sentence that promises the one command. Whether the promise is worth keeping at all is a fair question: `.asset-provenance` has exactly one reader by design (`rules/fusion-workbench-conventions.md:84`: "`/fusion:setup` is its only writer and its only reader"), so a hand-check convenience nobody is asked to perform may not need a documented command.

@@ -1,18 +1,18 @@
 # Code review: the guard-rationale repair, the capped help topic, and the prose-metric test
 
 **Reviewed-range:** `c2ad89c..6781814`
-**Not-opened:** `fusion-workbench/shared/history/260822-1136-shaper-multi-user-fusion.md`, `fusion-workbench/shared/history/260822-1154-planner-c0-cut-only-circle.md`, `fusion-workbench/shared/history/260822-1226-analyst-cut-ledger.md`, `fusion-workbench/shared/history/260822-1318-coder-cut-the-hook-test-suite-by-500-lines.md`, `fusion-workbench/shared/history/260822-1350-coder-cut-agents-surface-step3.md`, `fusion-workbench/shared/history/260822-1420-coder-cut-skills-surface-step4.md`, `fusion-workbench/shared/history/260822-1425-coder-plan-c0-step-7-prose-metric-test.md`, `fusion-workbench/shared/history/260822-1435-coder-move-stranded-doc-comment.md`, `fusion-workbench/shared/history/260822-1437-coder-guard-rationale-into-the-helper-header.md`, `fusion-workbench/shared/history/260822-1450-coder-c0-steps-5-and-6-two-defects-on-the-skills-surface.md`, `fusion-workbench/shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md`, `fusion-workbench/shared/issues/260822-0946_c_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`, `fusion-workbench/shared/issues/260822-1422_c_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`, `fusion-workbench/shared/issues/260822-1503_o_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
+**Not-opened:** `260822-1136-shaper-multi-user-fusion.md`, `260822-1154-planner-c0-cut-only-circle.md`, `260822-1226-analyst-cut-ledger.md`, `260822-1318-coder-cut-the-hook-test-suite-by-500-lines.md`, `260822-1350-coder-cut-agents-surface-step3.md`, `260822-1420-coder-cut-skills-surface-step4.md`, `260822-1425-coder-plan-c0-step-7-prose-metric-test.md`, `260822-1435-coder-move-stranded-doc-comment.md`, `260822-1437-coder-guard-rationale-into-the-helper-header.md`, `260822-1450-coder-c0-steps-5-and-6-two-defects-on-the-skills-surface.md`, `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, `260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`, `260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`, `260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
 
 Every shipped file in the range was opened in full, and so was the C0 plan and the previous review.
 The unopened set is fourteen workbench records: the ten step-history logs (whose claims this review
 checked against the tree instead), the multi-user spec, and three records this range filed or closed.
 Every path above was copied off the disk and re-tested with a shell loop before this field was
-written — the failure the previous pass had here is recorded as `260822-1510` and is not repeated.
+written — the failure the previous pass had here is recorded as `260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md` and is not repeated.
 
 **Carried scope, discharged.** The previous review's `**Not-opened:**` field named fifteen records,
 five of which resolved to nothing. All ten that resolve were opened here, together with the five real
 records the failing five were paraphrases of, per
-`fusion-workbench/shared/issues/260822-1510_o_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`.
+`260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`.
 Six of the fifteen carried records — the step-history logs — reappear above as not-opened for this
 pass, for the reason the previous pass gave and this one repeats: a step report is the executor's
 account of its own work, and checking it against the tree is worth more than reading it.
@@ -80,7 +80,7 @@ bodies, and `cleanup` and `help` carry it with no describing paragraph at all �
 demonstration that the header is sufficient for it. About 920 bytes across the two files, on a bounded
 surface.
 
-Filed as `shared/issues/260822-1506_o_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`.
+Filed as `260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`.
 Nothing behaves differently; the repair itself stands.
 
 ### Theme 2 — counted claims that do not survive counting
@@ -107,7 +107,7 @@ is the line's *summary* of what the home holds. That is different in kind from t
 High, where the cited home genuinely did not carry the claim — so a silent action was not lost to the
 cap, and no mechanism was removed. The defect is a wrong count in a sentence later work will read.
 
-Filed as `shared/issues/260822-1506_o_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`.
+Filed as `260822-1506_*_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`.
 
 #### Low — the v9 note's own preamble contradicts its check 2
 
@@ -115,7 +115,7 @@ Filed as `shared/issues/260822-1506_o_the-help-caps-standing-line-names-one-sile
 Check 2, nineteen lines below, describes a silent behaviour change. Read alone, the preamble gives
 exactly the wrong count above, which is most likely where it came from. Out of range — the file was
 read as the destination of a removed paragraph. Filed as
-`shared/issues/260822-1506_o_the-v9-upgrade-notes-preamble-calls-six-checks-optional-and-check-2-describes-a-silent-behaviour-change.md`.
+`260822-1506_*_the-v9-upgrade-notes-preamble-calls-six-checks-optional-and-check-2-describes-a-silent-behaviour-change.md`.
 
 #### Low — the standing line's three derivable claims about `docs/` all fail
 
@@ -128,7 +128,7 @@ read as the destination of a removed paragraph. Filed as
 3. *"starting at its own"* — has no referent for a project at `v10.0.x` or `v10.1.0`, which is exactly
    the case the removed *"Coming from a v10.0 or v10.1 install"* paragraph handled by name.
 
-Filed as `shared/issues/260822-1506_o_the-help-caps-standing-line-makes-three-claims-about-docs-and-none-of-the-three-resolves.md`,
+Filed as `260822-1506_*_the-help-caps-standing-line-makes-three-claims-about-docs-and-none-of-the-three-resolves.md`,
 with a fix that needs no derivation at all.
 
 ### Theme 3 — the prose-metric test: what it pins and what it does not
@@ -157,7 +157,7 @@ false under a plausible edit. The documented `total (N files)` row is unasserted
 the test's `run()` helper filters it out with a comment saying why. **The fix costs about twelve lines
 against 302 of head-room on a closure clause of 300**, so it needs a cut in front of it; that
 sequencing is stated in the record rather than left to be discovered when the suite goes red. Filed as
-`shared/issues/260822-1506_o_the-prose-metric-test-pins-every-header-rule-except-the-two-the-header-calls-limits.md`.
+`260822-1506_*_the-prose-metric-test-pins-every-header-rule-except-the-two-the-header-calls-limits.md`.
 
 #### Low — the test pins a word count the header does not document
 
@@ -166,7 +166,7 @@ tokens; the header's column table says only *"prose words, excluding the same re
 what a word is. The test's own preamble claims it pins the header rather than the awk, and for this one
 assertion there is nothing in the header to pin. `CLAUDE.md` declares that header authoritative, so this
 is the same class as the finding repaired two commits earlier. Filed as
-`shared/issues/260822-1506_o_the-prose-metric-counts-a-bare-em-dash-as-a-prose-word-and-only-the-test-says-so.md`.
+`260822-1506_*_the-prose-metric-counts-a-bare-em-dash-as-a-prose-word-and-only-the-test-says-so.md`.
 
 ### Theme 4 — smaller
 
@@ -176,7 +176,7 @@ Plan `:180` demanded the `620e737` repair; plan `:181` admits additions to a bou
 "the four defect fixes", and the repair added 50 bytes to `skills/`. Since v10.3 the orchestrator reads
 these clauses back at closure, so somebody has to answer `:181` out loud and the honest answer today is
 "no, by 50 bytes, for a reason the clause above required." Filed as
-`shared/issues/260822-1506_o_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`,
+`260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`,
 with a one-clause widening rather than a number.
 
 #### Low — a colon introducing a list that was cut out from under it
@@ -186,7 +186,7 @@ paragraph. `c2ad89c` removed the exit-3 and exit-4 bullets and the sentence's gr
 One site only: `skills/next/SKILL.md:51` kept its Exit 1 bullet, so its colon still introduces a list.
 Introduced by the range's base commit, so it belongs to the previous review's span; filed here because
 it was found here. One byte to fix. Filed as
-`shared/issues/260822-1506_o_setups-exit-code-sentence-ends-in-a-colon-introducing-a-list-that-was-cut.md`.
+`260822-1506_*_setups-exit-code-sentence-ends-in-a-colon-introducing-a-list-that-was-cut.md`.
 
 ## What was verified and holds
 
@@ -229,11 +229,11 @@ Both claims were tested by running the blocks as pasted shell in a scratch workb
 
 The Done-report contract at `:241` now names the skip as a fifth outcome, and the enumeration head at
 `:203` reads "The eight tokens" and names `source-root-unresolved` as the first. The closure note of
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0302_c_…` describes exactly what
+`260821-0302_*_…` describes exactly what
 landed, including the one thing beyond the record's prescription.
 
 **One thing this did not close, correctly.** The `cp` in the replace block is still unchecked, so a
-failed copy is still stamped as replaced. That is `260821-0148`, still open, and the range did not claim
+failed copy is still stamped as replaced. That is `260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md`, still open, and the range did not claim
 to touch it.
 
 ### The suite is green and the pin did not move
@@ -268,7 +268,7 @@ the previous review's High was also a claim about a file the same commit had jus
 **The tightest number in the range is the one nothing is pressing against.** Hook tests stand at 302
 against a clause of 300. Two of the eight findings have fixes that land on that surface, and one of them
 is about twelve lines. The plan's own `## Open Questions` already carries the unanswered decision behind
-this — `260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md` — and every fix that touches
+this — `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md` — and every fix that touches
 this surface between now and its answer is negotiating against two lines of slack.
 
 **The range's method is sound where it was checked.** Three separate claims — "no baseline moved", "all
@@ -287,17 +287,17 @@ range measured, it measured correctly. Where it summarised a document, twice, it
 3. **Cleanup, any time:** the colon at `skills/setup/SKILL.md:362` (one byte), the v9 note's preamble
    (`docs/`, unbounded), and the prose-metric header's word definition (`bin/`, unbounded).
 4. **Sequenced behind a cut, and not before:** the two missing prose-metric assertions. Twelve lines
-   against two of margin. Read `260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`
+   against two of margin. Read `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`
    first.
 5. **Not a blocker:** nothing else. The suite is green, no baseline moved, the three surfaces cleared
    their clauses, and the repair of the previous High is sound.
 
 ## References
 
-- Repaired record: `shared/issues/260822-1421_c_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
-- Previous review: `shared/reviews/260822-1421-coderev-c0-cut-only-circle.md`
-- Carried-scope defect: `shared/issues/260822-1510_o_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
-- Plan: `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+- Repaired record: `260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+- Previous review: `260822-1421-coderev-c0-cut-only-circle.md`
+- Carried-scope defect: `260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
+- Plan: `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 - Filed by this review: eight records under `shared/issues/`, all stamped `260822-1506`
 
 ---
@@ -317,5 +317,5 @@ re-derived per commit at this pass and matches.
 returns `verdict=uncovered` with three commits open: `c600eb7` and `9f65463` touch workbench records
 only, and `77b9a02` touches three shipped skill bodies. So the last shipped-text commit of the
 Circle carries no review. Closing over an uncovered range is permitted
-(`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+(`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
 option 1), and this note records which commit it is so the closure gate is not reading a bare count.

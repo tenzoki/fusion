@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (raised by the user's answer to `260816-0711`)
-**Cross-references:** `shared/decisions/260816-0711_a_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md` (the answer that raised this); `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks` (the text being moved); `bin/fusion-rules`; `rules/workbench-path-resolution.md` and `rules/rule-file-provenance.md` (the two files emitted to no agent by design)
+**Cross-references:** `260816-0711_*_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md` (the answer that raised this); `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks` (the text being moved); `bin/fusion-rules`; `rules/workbench-path-resolution.md` and `rules/rule-file-provenance.md` (the two files emitted to no agent by design)
 
 ---
 
@@ -74,7 +74,7 @@ not among them, so the move this record blocks has not been made. No answer exis
 `shared/analyses/` (sixteen reports, none on rule emission or on this split), in `shared/planning/`
 (nine files, all `_c_` after this pass), or in another decision record — the only two files naming
 `workbench-tracking` are this record and the one that raised it,
-`260816-0711_a_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`.
+`260816-0711_*_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`.
 That record is itself answered-but-unrealised for exactly this reason, which the pass records as a
 blocking pair rather than as two independent items: neither can move until this question is
 answered. Marker stays `_o_`.
@@ -85,16 +85,16 @@ not assumed: `rules/` holds twelve files at HEAD and no `workbench-tracking.md` 
 in `shared/analyses/` (seventeen reports, the new one being on identifier containment) addresses
 rule emission or this split; `shared/planning/` holds three files, all `_c_`; no other decision
 record answers it. The blocking pair with
-`260816-0711_a_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`
-stands unchanged. Marker stays `_o_`. Log: `shared/history/260818-0814-reconciliation.md`.
+`260816-0711_*_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`
+stands unchanged. Marker stays `_o_`. Log: `260818-0814-reconciliation.md`.
 
 ---
-Answered: shared/history/260818-2301-orchestrator-session.md — user chose option 1 (2026-08-18): `rules/workbench-tracking.md` is emitted to no agent. The conventions file points at it, and the archive step of `/fusion:cleanup` cites it in its own body, which is the positive reason the record asked for: unlike the two existing no-agent rule files, this one has a named non-agent consumer that says so. The move approved in `260816-0711` is thereby unblocked.
+Answered: 260818-2301-orchestrator-session.md — user chose option 1 (2026-08-18): `rules/workbench-tracking.md` is emitted to no agent. The conventions file points at it, and the archive step of `/fusion:cleanup` cites it in its own body, which is the positive reason the record asked for: unlike the two existing no-agent rule files, this one has a named non-agent consumer that says so. The move approved in `260816-0711` is thereby unblocked.
 
 ---
 Implemented: `rules/workbench-tracking.md` — the file exists, carries a `**Provenance:**` line citing both this record and `260816-0711`, and has **no** `emit_if_exists` line in `bin/fusion-rules`, so it is emitted to no agent as option 1 specifies. Its two consumers are named in its own lede and in the pointer left behind at `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`; `skills/archive/SKILL.md` cites it explicitly, which is the positive reason this record asked for and the thing that distinguishes it from the two existing no-agent rule files. The always-on floor, as `CLAUDE.md` defines it -- the five unindented `emit_if_exists` files plus the project chat profile -- falls 101 393 -> 97 977 bytes per dispatch.
 
-**Correction 260819-0050** (orchestrator). The sentence above first read "The always-on rule set falls 98 874 -> 95 458 bytes per dispatch." Both figures were the `[analyst]` block of `hooks/lib/__tests__/fixtures/rules-emission.golden`, which is neither the always-on set nor any agent floor: it includes the conditional `design-diagrams.md` and excludes the unconditional chat profile, a fixed 2 519-byte offset. The delta was right and the label was wrong. Filed by the review as `shared/issues/260819-0040_*_the-implemented-note-labels-the-analyst-dispatch-total-as-the-always-on-rule-set.md` and corrected here; the commit message of `b200902` carries the original wording and is left as it stands, being history.
+**Correction 260819-0050** (orchestrator). The sentence above first read "The always-on rule set falls 98 874 -> 95 458 bytes per dispatch." Both figures were the `[analyst]` block of `hooks/lib/__tests__/fixtures/rules-emission.golden`, which is neither the always-on set nor any agent floor: it includes the conditional `design-diagrams.md` and excludes the unconditional chat profile, a fixed 2 519-byte offset. The delta was right and the label was wrong. Filed by the review as `260819-0040_*_the-implemented-note-labels-the-analyst-dispatch-total-as-the-always-on-rule-set.md` and corrected here; the commit message of `b200902` carries the original wording and is left as it stands, being history.
 
 ---
-**Reconciliation 260819-0840** (reconciler, domain `code`, HEAD `83488e9`). The `Implemented:` note above verifies in full, clause by clause, and the corrected byte figures reproduce exactly. `rules/workbench-tracking.md` exists (5 382 bytes) and its `**Provenance:**` line at `:3` cites both this record and `260816-0711`. `bin/fusion-rules` carries no `emit_if_exists` line for it — `grep -n 'workbench-tracking' bin/fusion-rules` is empty, and the five unindented lines at `:384-388` are unchanged — so it is emitted to no agent as option 1 specifies. The pointer stands at `rules/fusion-workbench-conventions.md:15` (header-table row) and `:75`; `skills/archive/SKILL.md` cites it at `:11`, `:40` and `:136`, and since `06ab15b` Step 1 actually `cat`s it, which is the mechanism the positive reason claimed. The always-on floor, measured as `CLAUDE.md` defines it over the five unindented `emit_if_exists` files plus `fusion-workbench/stilwerk/chat-voice-de.yaml`, is 101 393 bytes at `52b1d95` and 97 977 at `b200902` — the corrected figures, to the byte. Marker stays `_i_`. Log: `shared/history/260819-0840-reconciliation.md`.
+**Reconciliation 260819-0840-reconciliation.md** (reconciler, domain `code`, HEAD `83488e9`). The `Implemented:` note above verifies in full, clause by clause, and the corrected byte figures reproduce exactly. `rules/workbench-tracking.md` exists (5 382 bytes) and its `**Provenance:**` line at `:3` cites both this record and `260816-0711`. `bin/fusion-rules` carries no `emit_if_exists` line for it — `grep -n 'workbench-tracking' bin/fusion-rules` is empty, and the five unindented lines at `:384-388` are unchanged — so it is emitted to no agent as option 1 specifies. The pointer stands at `rules/fusion-workbench-conventions.md:15` (header-table row) and `:75`; `skills/archive/SKILL.md` cites it at `:11`, `:40` and `:136`, and since `06ab15b` Step 1 actually `cat`s it, which is the mechanism the positive reason claimed. The always-on floor, measured as `CLAUDE.md` defines it over the five unindented `emit_if_exists` files plus `fusion-workbench/stilwerk/chat-voice-de.yaml`, is 101 393 bytes at `52b1d95` and 97 977 at `b200902` — the corrected figures, to the byte. Marker stays `_i_`. Log: `260819-0840-reconciliation.md`.

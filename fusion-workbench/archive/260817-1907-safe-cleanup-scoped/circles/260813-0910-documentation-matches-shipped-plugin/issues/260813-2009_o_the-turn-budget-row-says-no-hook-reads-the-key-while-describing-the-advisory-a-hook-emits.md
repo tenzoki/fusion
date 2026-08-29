@@ -69,4 +69,4 @@ Say what holds: no hook uses the value — the guard reads and validates it with
 Filed by: coderev (review of Circle Turn 2, range `28f3029..5d51abd`, commit `5d51abd`).
 
 ---
-Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `README.md:112` still reads "This one is not a guard setting and no hook reads it" and, in the same cell, "named in an advisory".
+Reconciled: 260813-2258-reconciliation.md — Still open, re-verified at HEAD `c0e4219`: `README.md:112` still reads "This one is not a guard setting and no hook reads it" and, in the same cell, "named in an advisory".

@@ -3,7 +3,7 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 8
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 8
 **HEAD at start:** `a17cc8c`
 **Verification:** `cd hooks && npm test` — exit 0, 45 files, 827 tests (828 before)
 
@@ -78,7 +78,7 @@ the analyst, dispatchable, one of them typed *"Forensic investigation (4 sim run
 if no prompt names it, and asserted `SCAN_INVESTIGATIONS` stays "either way" because
 `/fusion:archive` names it. Step 7 measured that premise false and left the arm standing for this
 step to decide
-(`issues/260815-1339_o_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`).
+(`260815-1339_*_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`).
 
 The measurement, taken over the whole key table rather than one key, with the resolver's own
 derivation grep (`grep -oE '\$(OUT|SCAN)_[A-Z][A-Z_]*'`) across `agents/*.md` and
@@ -127,10 +127,10 @@ them. Re-adding an arm without a prompt to name it now fails.
 
 ## The decision record: `_o_` → `_s_`, not `_c_`
 
-`shared/decisions/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
+`260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
 was renamed with `git mv` and carries a `Superseded by:` footer. `_c_` was not used and
 `shared/issues/` was not touched — both were the errors
-`issues/260815-0029_*_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-…`
+`260815-0029_*_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-…`
 was filed about, and that record is now `_c_` with a `Resolved:` footer.
 
 The footer is longer than the one that defect record drafted, for the reason the same record
@@ -178,7 +178,7 @@ The plan's scope rule allows these: the change makes a statement false, and no g
 phantom files: `plane.config.yaml` (step 2) and `investigator-capture-layout.md` (this step).
 `templates/` holds exactly one file. The plan assigns that row to gate G1 *knowing* it was
 already stale, because it spells the filename bare and no lint can resolve it, and it names
-`issues/260815-0803_o_two-claude-md-inventory-rows-went-stale-…` as the reason. Overriding a call
+`260815-0803_*_two-claude-md-inventory-rows-went-stale-…` as the reason. Overriding a call
 the plan made with the facts in hand is not the same as making one it never considered, so the
 row was left and the defect record updated with the current count instead. The row's gate-forced
 sibling — the *"Where to look when something breaks"* row that spelled
@@ -233,9 +233,9 @@ absolved of.
 Deleted with `git rm`: `agents/investigator.md`, `templates/investigator-capture-layout.md`.
 
 Renamed with `git mv`:
-`fusion-workbench/shared/decisions/260812-0254_o_should-the-investigator-get-case-folders-with-a-status-per-case.md`
+`260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
 → `…/260812-0254_s_…`;
-`fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-0029_o_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md`
+`260815-0029_*_the-circle-record-cites-the-investigator-case-folder-record-as-an-issue-and-asks-for-a-transition-that-vocabulary-has-no.md`
 → `…/260815-0029_c_…`.
 
 Edited: `agents/analyst.md`, `agents/bugfixer.md`, `agents/consultant.md`,
@@ -249,5 +249,5 @@ Edited: `agents/analyst.md`, `agents/bugfixer.md`, `agents/consultant.md`,
 `.claude-plugin/plugin.json`.
 
 Workbench records: the plan (step 8 `[DONE]`, the `OUT_INVESTIGATION` open question answered and
-ticked), `issues/260815-1339_o_…` (appended, stays open for its other two fix directions),
-`issues/260815-0803_o_two-claude-md-inventory-rows-went-stale-…` (appended).
+ticked), `260815-1339_*_…` (appended, stays open for its other two fix directions),
+`260815-0803_*_two-claude-md-inventory-rows-went-stale-…` (appended).

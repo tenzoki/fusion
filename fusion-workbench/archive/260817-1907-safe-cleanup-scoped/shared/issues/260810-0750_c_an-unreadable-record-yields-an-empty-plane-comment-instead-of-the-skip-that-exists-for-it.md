@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** `bin/fusion-plane:961`, `:471-476`, `:1080-1081`
 **Cross-references:** commit `ea492e6` (named this site in its own message and left it unfiled); `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`
 
@@ -27,7 +27,7 @@ Plane issue in place of the Circle record body.
 and let the caller carry on WITHOUT the comment" — and this path does not reach it. The shell
 has no `pipefail` set (`set -eu` at `:150`), so the masking is invisible on reading, which is the
 same trap the file's sibling `bin/fusion-count-sources` documents at length after being caught by
-it (`260810-0459`).
+it (`260810-0459_*_fusion-count-sources-reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md`).
 
 ## How it comes to be filed now
 
@@ -61,10 +61,10 @@ which is what the `comment_skip` header already promises.
 ---
 Resolved: both spec-comment sites read `build_comment_body`'s status now, and the live one had the same hole a level up.
 
-Folded into the discarded-write-status pass (`260810-0743`) because it is the same class: a fallible operation whose status is dropped, so a failure reaches the API as a success.
+Folded into the discarded-write-status pass (`260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md`) because it is the same class: a fallible operation whose status is dropped, so a failure reaches the API as a success.
 
 **One correction to this record, measured rather than reasoned.** It predicts `comment_html: ""`. Against `c923935` the operation actually carried `<!-- fusion-spec-comment:… -->\n<pre></pre>` — the marker intact and the record body gone. The mechanism is exactly the one this record names; the surviving string is not. That matters for anyone searching Plane for the damage: they should look for an empty `<pre>` under a valid marker, not for an empty comment.
 
 **One request in this record was not met, and not silently.** It also asks for the two `[ -f ]`-guarded pointer reads that the `fusion-count-sources` executor mentioned to be named. `bin/fusion-plane` has eleven `[ -f ]` guards and none of them reads a pointer file — checked, not assumed. The likeliest site is `bin/fusion-paths:227-229`, outside the file list of the task that closed this.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (Turn 3, task R4). Executor log: `shared/history/260810-0805-coder-plane-discarded-write-status.md`.
+Session: `260810-0241-orchestrator-session.md` (Turn 3, task R4). Executor log: `260810-0805-coder-plane-discarded-write-status.md`.

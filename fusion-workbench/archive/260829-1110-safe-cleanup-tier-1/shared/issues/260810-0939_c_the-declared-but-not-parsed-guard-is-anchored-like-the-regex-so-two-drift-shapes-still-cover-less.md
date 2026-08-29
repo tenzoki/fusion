@@ -34,7 +34,7 @@ Case C is correct — the script really does ship 52 then, and covering 52 is ri
 is why removing the floors was the right call. Cases A and B are the defect: both are
 valid bash that preserves the runtime value, so the script still ships 60 while the
 coverage test asserts over 52 and passes. That is exactly the class named in
-`shared/issues/260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-
+`260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-
 not-against-matching-less.md`, re-entered at a different anchor by the commit that
 closed it.
 
@@ -61,4 +61,4 @@ Found in code review of `18b6094..a7c2b03`, commit `38fe341`.
 ---
 Resolved: c546ef0 — the declared filter is now its own pattern, wider than the match it guards. Both cited mutations throw and the deletion case still does not, asserted relative to the unmutated count rather than a literal. The record's `+=` fixture doubles the value at run time; the value-preserving form without the prefix is the actual defect and is what the test mutates.
 
-A fourth round of this class was measured and deliberately not patched: `export`, `declare`, a leading separator and `printf -v` all escape both filters, and the generalisation is that a declaration whose variable name is not the first token on the line escapes. Widening again would start matching the script's own uses of the variable. Filed as `shared/decisions/260810-1010_o_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`.
+A fourth round of this class was measured and deliberately not patched: `export`, `declare`, a leading separator and `printf -v` all escape both filters, and the generalisation is that a declaration whose variable name is not the first token on the line escapes. Widening again would start matching the script's own uses of the variable. Filed as `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`.

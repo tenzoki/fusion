@@ -8,8 +8,8 @@
 **Affects:** `hooks/lib/rules-write-exemption.ts`, Abschnitt `## What the flag reaches` im
 Dokumentationsblock von `isProjectRulePath`
 **Cross-references:**
-`circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md` Schritt 6 (Textschicht),
-`circles/260801-1244-guard-rules-write/issues/260805-1145_c_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md`
+`260807-0931_*_plan-guard-misst-statt-orakelt.md` Schritt 6 (Textschicht),
+`260805-1145_*_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md`
 
 ---
 
@@ -87,4 +87,4 @@ Ausnahme. Der Befund überlebt den Circle unverändert.
 ---
 Resolved: The file the record is about, hooks/lib/rules-write-exemption.ts and its "What the flag reaches" block, was deleted with the FUSION_ALLOW_RULES_WRITE exemption in 60c9cd8; the re-measurement it asks for has no subject.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

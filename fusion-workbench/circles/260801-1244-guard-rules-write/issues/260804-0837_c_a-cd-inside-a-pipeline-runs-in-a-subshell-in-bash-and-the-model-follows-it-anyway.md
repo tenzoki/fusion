@@ -4,13 +4,13 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coderev, Turn 7 review of `circles/260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
+**Filed by:** coderev, Turn 7 review of `260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only)
-**Kind:** PRE-EXISTING — identical at `048f3db` and HEAD. Sibling of `260804-0836`; same root cause, different shell mechanic, different fix.
+**Kind:** PRE-EXISTING — identical at `048f3db` and HEAD. Sibling of `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md`; same root cause, different shell mechanic, different fix.
 **Cross-references:**
 `hooks/lib/bash-mutation-guard.ts:2465`, `:1990`;
 `hooks/lib/shell-parse.ts` (`SegmentJoiner`, which treats `|` as an ordinary separator);
-`260804-0836_o_…` (the `||` half), `260804-0839_o_…precedence…` (the over-deny half of
+`260804-0836_*_…` (the `||` half), `260804-0839_*_…precedence…` (the over-deny half of
 the same precedence gap).
 
 ---
@@ -24,7 +24,7 @@ not move the calling shell at all. The guard models the move, relocates every la
 relative operand into a directory the shell never entered, and a write that lands on the
 protected list is allowed because the model has moved it off.
 
-This is the same defect shape as `260803-2236` (a modelled move the shell did not make),
+This is the same defect shape as `260803-2236_*_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md` (a modelled move the shell did not make),
 and it is bidirectional for the same reason: an asserted move denies when it lands *on*
 the list and allows when it lands *off* it.
 
@@ -52,10 +52,10 @@ protected file. The model asserts one answer for both.
 A `cd` on a segment whose joiner is `|`, or on a segment followed by a `|`-joined
 segment at the same depth, must not set a directory — it must call `unmodelled`. That is
 faithful to bash and over-denies for zsh, which is the direction the module has taken
-everywhere a shell disagreement was found (`260803-2236`'s resolution is the precedent:
+everywhere a shell disagreement was found (`260803-2236_*_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md`'s resolution is the precedent:
 give up rather than model a fact that is a property of the running shell).
 
-Note the interaction with `260804-0839`: `|` must stop being read as "reached
+Note the interaction with `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`: `|` must stop being read as "reached
 unconditionally" for the WRITE at the same time as it starts being read as "does not
 move the shell" for the `cd`. `cd hooks && npx tsc | tee log` needs both halves to come
 out right — the `cd` is proven, and `tee`'s operand is in `hooks/`.
@@ -71,30 +71,30 @@ the suite and re-open bash.
 **Design record filed (T8-1, 2026-08-04), not implemented.** This finding and its sibling
 are one fact — the joiner is consulted for the segment that writes and never for the one
 that moves — and one decision closes both:
-`decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
+`260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
 It costs three options by measurement (option 1: 0 rows on the suite corpus, 0 on the
 30-row ordinary corpus, 940 on a 25,200-row generated cross-product, all carrying the `||`
-or `|` it targets, 0 newly allowing; option 2 also closes `260804-0839`), reproduces the
+or `|` it targets, 0 newly allowing; option 2 also closes `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`), reproduces the
 leak in both shells, and recommends taking the ten-line give-up now and the reachability
 model as its own Circle. Both leaks are also stated as live residuals in
 `rules/protected-path-discipline.md` so nothing ships claiming the model is exact.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Reproduced independently at HEAD.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Reproduced independently at HEAD.**
 
 `echo hi | cd build && rm rules/x.md` **allows** at HEAD `cc012fc`, measured through `classifyBashMutation` with the shipped protected list rather than taken from the review.
 
-**The duplicate question the session raised about this pair, checked and answered: these two are not duplicates.** `260804-0836` is a short-circuit defect — the `cd` is on a `||`-joined segment whose left operand succeeded, so bash skips it. This one is a scoping defect — bash runs every pipeline element in a subshell, so the `cd` runs and does not move the calling shell. They share a root cause in the tracker's sense (the joiner is consulted for the segment that writes and never for the one that moves) and one decision closes both, but the shells behave differently: zsh runs the last pipeline element in the current shell, so this defect's rows are bash-only while `260804-0836`'s reproduce in both. A fix that special-cased the last pipeline element would close this one in zsh's terms and leave bash open, which is exactly why the issue's own `## Anti-vacuity` asks for the zsh row to be pinned separately. The distinction survives; keep both files.
+**The duplicate question the session raised about this pair, checked and answered: these two are not duplicates.** `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` is a short-circuit defect — the `cd` is on a `||`-joined segment whose left operand succeeded, so bash skips it. This one is a scoping defect — bash runs every pipeline element in a subshell, so the `cd` runs and does not move the calling shell. They share a root cause in the tracker's sense (the joiner is consulted for the segment that writes and never for the one that moves) and one decision closes both, but the shells behave differently: zsh runs the last pipeline element in the current shell, so this defect's rows are bash-only while `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md`'s reproduce in both. A fix that special-cased the last pipeline element would close this one in zsh's terms and leave bash open, which is exactly why the issue's own `## Anti-vacuity` asks for the zsh row to be pinned separately. The distinction survives; keep both files.
 
 ---
 
-**Resolved (T9-1, Turn 9, 2026-08-04) — closed together with `260804-0836`, which is the same fact met through `||`.**
+**Resolved (T9-1, Turn 9, 2026-08-04) — closed together with `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md`, which is the same fact met through `||`.**
 
-`decisions/260804-0947…` was answered option 4. A `|`-joined segment is now recorded as one that does not move the calling shell, so a `cd` on it makes the directory unknown instead of relocating every later relative operand. All four rows of the table above deny through the real guard subprocess, one fresh project per row.
+`260804-0947…` was answered option 4. A `|`-joined segment is now recorded as one that does not move the calling shell, so a `cd` on it makes the directory unknown instead of relocating every later relative operand. All four rows of the table above deny through the real guard subprocess, one fresh project per row.
 
 **The `## Anti-vacuity` requirement is met literally.** The zsh rows are pinned in their own test case (`denies the '|' family — bash subshells a pipeline stage, so the cd never lands`), with a comment recording that zsh runs the LAST pipeline element in the calling shell and that a future edit special-casing it would pass a zsh-shaped test and re-open bash. Re-measured this Turn: all four rows are `bash: GONE/OVERWRITTEN, zsh: intact`, and the classifier takes bash's answer for both. The mutation that marks `|` as moving the calling shell — zsh's answer — fails three tests including that one.
 
-The issue's note about the interaction with `260804-0839` is **not** discharged. `cd hooks && npx tsc | tee log` still degrades although the shell guarantees the `cd`; only the "does not move the shell" half landed, and the "reached unconditionally" half needs the reachability model that `260804-0947` option 2 describes. `260804-0839` stays open by design, was measured identically before and after, and is filed for its own Circle.
+The issue's note about the interaction with `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` is **not** discharged. `cd hooks && npx tsc | tee log` still degrades although the shell guarantees the `cd`; only the "does not move the shell" half landed, and the "reached unconditionally" half needs the reachability model that `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` option 2 describes. `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` stays open by design, was measured identically before and after, and is filed for its own Circle.
 
-Not committed by the implementing agent. See `history/260804-1200-turn9-t9-1-the-joiner-for-the-segment-that-moves.md`.
+Not committed by the implementing agent. See `260804-1200-turn9-t9-1-the-joiner-for-the-segment-that-moves.md`.

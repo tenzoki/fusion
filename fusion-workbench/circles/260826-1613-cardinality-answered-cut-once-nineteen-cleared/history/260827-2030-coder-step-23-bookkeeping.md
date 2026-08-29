@@ -1,7 +1,7 @@
 # Coder — plan step 23, bookkeeping after four parallel coders
 
 **Agent:** coder
-**Plan:** `planning/260827-1756_p_repair-the-twenty-open-defect-records.md`, step 23
+**Plan:** `260827-1756_*_repair-the-twenty-open-defect-records.md`, step 23
 **Status:** Complete
 
 ## What was done

@@ -6,7 +6,7 @@ The Plane natural key carries the state marker, so the mapping breaks on exactly
 **Domain:** code
 **Filed by:** consultant, found while checking the premise of a report from another project
 **Affects:** `bin/fusion-plane` (push path, map maintenance, `--rebuild-map`), `fusion-workbench/.plane-map.json`
-**Cross-references:** `fusion-workbench/shared/issues/260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` — the filename question whose verification turned this up; it has since been closed as mis-scoped. The durable answer sits in `fusion-workbench/shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md`: cite a record by its full filename, never by the timestamp alone. The two defects sit on different surfaces and carry different severity.
+**Cross-references:** `260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` — the filename question whose verification turned this up; it has since been closed as mis-scoped. The durable answer sits in `260807-0158_*_how-is-a-unique-record-filename-obtained.md`: cite a record by its full filename, never by the timestamp alone. The two defects sit on different surfaces and carry different severity.
 
 ---
 
@@ -96,7 +96,7 @@ Open, and not decided here: what happens to map entries already written and to t
 change costs nothing, which is an argument for making it before the first successful push.
 
 How fast this bites was demonstrated by this report on itself. The cross-reference above
-pointed at `260807-0158_o_…` when it was written. Less than half an hour later that record
+pointed at `260807-0158_*_…` when it was written. Less than half an hour later that record
 stood at `_c_` and the reference was dead. It was repaired with `_*_` at the marker position,
 the form `CLAUDE.md` already uses for decision references. People and prose can work around
 it that way. `map_get_id` cannot, because what sits there is an exact string comparison.
@@ -133,4 +133,4 @@ Resolved: the key is built in one place, and that place drops the marker.
 
 `.plane-map.json` needed no migration in this workbench — still `{}`, as the record predicted. The 29 legacy keys in `.plane-outbox.jsonl` are deliberately untouched: it is a human-readable record rather than a correctness queue, and its drain matches on the Circle-name prefix.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (task T4). Executor log: `shared/history/260810-0338-coder-plane-natural-key-marker.md`.
+Session: `260810-0241-orchestrator-session.md` (task T4). Executor log: `260810-0338-coder-plane-natural-key-marker.md`.

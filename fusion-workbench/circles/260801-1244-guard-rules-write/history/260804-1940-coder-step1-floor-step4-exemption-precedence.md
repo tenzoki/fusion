@@ -3,10 +3,10 @@
 ---
 **Agent:** coder
 **Date:** 2026-08-04
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Status:** Complete — not committed; the orchestrator commits after validation
-**Plan:** `circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md`, Steps 1 and 4
-**Closes:** `260804-1604` (Step 1); decision `260803-1314`, realised (Step 4)
+**Plan:** `260804-1633_*_plan-c5b-remediation-and-ship.md`, Steps 1 and 4
+**Closes:** `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` (Step 1); decision `260803-1314`, realised (Step 4)
 **Suite:** `npx vitest run` — **1532 passed, 26 files** (from 1448 across 25)
 
 ---
@@ -34,7 +34,7 @@ Measured through the real guard: that command now **denies** on the rule file an
 `agents/coder.md`, and `rm ../<project>/rules/x.md` and `Edit ../<project>/rules/x.md` deny
 too, while `cd .. && cd project && rm notes.txt` still allows. Step 7 owns both files. This
 is the second entry in this Circle whose residual closed under it, so it is the branch
-`260804-1346` anticipated: **delete for the stated reason, do not narrow.** Details below.
+`260804-1346_*_git-clean-fdx-at-the-project-root-is-still-a-residual-and-its-residual-entry-was-deleted.md` anticipated: **delete for the stated reason, do not narrow.** Details below.
 
 ---
 
@@ -165,7 +165,7 @@ rebuilds `hooks/dist/`, which Step 8 owns.
 opposite of decision `260803-1314` and disclaimed endorsement while citing the record. It
 failed the day the decision landed, exactly as it was written to.
 
-### The four rows of `260804-1604`, through a real guard subprocess with cwd one level below the project root
+### The four rows of `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md`, through a real guard subprocess with cwd one level below the project root
 
 | Row | Before | After |
 |---|---|---|
@@ -184,7 +184,7 @@ The plan's own falsification test for Step 1, because that block was reshaped ar
 floor. Both commands go through the real guard AND through a real `bash` in the throwaway
 project. First run: probe allows and reports `absent`, copy allows and creates the file.
 Second run: probe allows and reports `present`, and the copy the skill tells the agent not to
-run **denies** — which is the behaviour that prose is written around. Decision `260802-1912`
+run **denies** — which is the behaviour that prose is written around. Decision `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
 is not reversed by accident, and the same is asserted from a subdirectory.
 
 ### Cross-product — nothing newly allows
@@ -231,7 +231,7 @@ checksums matched the pristine copies afterwards.
 
 M4 is the one worth reading twice. Substituting `config.guard.protectedPaths` for
 `projectDeclaredProtectedPaths(config)` compiles, has the same type, reads as correct, and
-ends `FUSION_ALLOW_RULES_WRITE` in every project on earth — because after `260804-1630` an
+ends `FUSION_ALLOW_RULES_WRITE` in every project on earth — because after `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` an
 omitted list inherits the plugin's, and the plugin's contains `rules/**`.
 
 ### Byte-identity for a project with no `fusion-guard.json`

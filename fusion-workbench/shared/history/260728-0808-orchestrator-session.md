@@ -1,4 +1,4 @@
-# Orchestrator Session — 260728-0808
+# Orchestrator Session — 260728-0808-orchestrator-session.md
 
 **Directive:** (not yet set — Setup only; awaiting user task)
 **Mode:** (unresolved)

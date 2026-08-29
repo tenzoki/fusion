@@ -9,8 +9,8 @@
 
 ## What was asked
 
-Realise the answer in `shared/decisions/260810-0920_a_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`
-against `shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`:
+Realise the answer in `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`
+against `260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`:
 anchor the key to the workbench root (a), migrate what can be rewritten and state the merge rule
 (b), keep every entry and exclude absent files from the ranking on the read path (c).
 
@@ -45,7 +45,7 @@ the helper, not a direct read of `churn.json`, and the call carries the same `[ 
 `bin/fusion-count-sources` one block above it (decision
 `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
 option (a1)). This helper is brand new, so without the guard every session running against an
-older install takes exit 127 at Setup — the exact defect `260810-0352` records, one task earlier in
+older install takes exit 127 at Setup — the exact defect `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` records, one task earlier in
 this same queue. Churn is advisory and has no substitute value to print, so the absent branch
 reports the reason on stderr and stays silent about high-thrash files.
 
@@ -70,7 +70,7 @@ was edited from less often. Recomputing the score because it is derived from the
 combining two derived values by any arithmetic invents a number the formula could not produce. The
 recomputation can leave a merged entry scoring slightly below its pre-migration parts, since a
 persisted score also carries a rapid-change penalty from a session `resetSession` has zeroed; that
-is the latched lifetime alarm decision `260809-2004` moved away from, and this moves the same way.
+is the latched lifetime alarm decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` moved away from, and this moves the same way.
 
 ## What was deliberately not changed
 
@@ -105,7 +105,7 @@ Two earlier full runs were red, both from a concurrent session working in the sa
 both are worth recording because one of them was a real weakness in this task's own test file.
 
 1. `reference-resolution-lint.test.ts` over `docs/plane-setup.md:275-276`. Another session had
-   added the illustrative filename `260719-1600_o_open-issue.md`, which the lint reads as a
+   added the illustrative filename `260719-1600_*_open-issue.md`, which the lint reads as a
    workbench citation and cannot resolve. Not this file set; that session has since replaced the
    literal stamp with `<stamp>` and the run is green.
 2. Every case that drove `bin/fusion-churn-rank` came back exit 3 — the wrapper's "compiled hooks
@@ -132,7 +132,7 @@ both are worth recording because one of them was a real weakness in this task's 
 - `/Users/k1/Projects/productive/fusion/README-hooks.md`
 - `/Users/k1/Projects/productive/fusion/CLAUDE.md`
 - `/Users/k1/Projects/productive/fusion/hooks/dist/**` (rebuilt, never hand-edited)
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` (`Resolved:` note appended; marker left `_o_`)
+- `/Users/k1/Projects/productive/fusion/260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md` (`Resolved:` note appended; marker left `_o_`)
 
 ## One thing that happened to this task rather than in it
 
@@ -141,10 +141,10 @@ The `Resolved:` note this task appended to the defect record is **already in HEA
 with its own. This task ran no git command at all. The content is intact and nothing is lost; what
 it means for the orchestrator is that the defect record has no working-tree diff left to stage, and
 the `_o_` → `_c_` rename is the only move still owed on it. The same commit swept the other
-session's note on `260810-0352` in the same way, so it is a staging breadth, not a one-off.
+session's note on `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` in the same way, so it is a staging breadth, not a one-off.
 
 ## Left for the orchestrator
 
-The decision record `260810-0920_a_...` still needs its `Implemented: <hash> — …` line and the
+The decision record `260810-0920_*_...` still needs its `Implemented: <hash> — …` line and the
 `_a_` → `_i_` rename. It cites a commit hash this task cannot produce, since the orchestrator holds
 the commit lock.

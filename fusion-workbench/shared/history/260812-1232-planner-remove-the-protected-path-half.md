@@ -16,7 +16,7 @@ it, what still blocks a tool call once protected paths are gone.
 
 ## What was produced
 
-`shared/planning/260812-1232_o_remove-the-protected-path-half-of-the-compliance-guard.md` — ten steps,
+`260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` — ten steps,
 two Mermaid diagrams, an exhaustive goes/stays/changes inventory across hook source, configuration,
 tests and prose, and a migration section for consuming projects.
 
@@ -60,10 +60,10 @@ was filed instead.
 Two questions the planning surfaced were already on record, and the Research Gate caught both before a
 duplicate was written:
 
-- `260804-1632_d` already asks whether `findRelevantDecisions` should fold case. The plan changes one
+- `260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md_d` already asks whether `findRelevantDecisions` should fold case. The plan changes one
   of its stated constraints (it says "This is CHECK 3, not CHECK 2", and after the removal there is no
   CHECK 2) rather than raising the question fresh.
-- `260809-1224_d` already asks whether CHECK 3 is live, deferred with an explicit re-open trigger:
+- `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md_d` already asks whether CHECK 3 is live, deferred with an explicit re-open trigger:
   measure whether any reachable consuming project populates its configuration. **That measurement was
   taken here and reads zero**, which by the record's own terms settles it as retired. The new decision
   record is scoped to the successor question that record does not ask.

@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md` (two instances, four passes); `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` criterion 7; `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md` `## Where this Circle stops` clause 7; `agents/shaper.md` (the spec template); `agents/planner.md` (the plan template); `rules/critical-stance.md` §4
+**Cross-references:** `260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md` (two instances, four passes); `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` criterion 7; `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md` `## Where this Circle stops` clause 7; `agents/shaper.md` (the spec template); `agents/planner.md` (the plan template); `rules/critical-stance.md` §4
 
 ---
 
@@ -34,8 +34,8 @@ Option 2, with the inline clause for the two existing instances. The rule goes i
 
 Option 2, with the inline clause `(condition did not arise: <one clause>)` on the two existing instances. The rule goes into the shaper's spec template and the planner's plan template. Realised by plan step 7.
 
-Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session 260827-1749-orchestrator-session.md; the recommendation is adopted as written.
 
-Implemented: plan step 7 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md` (uncommitted at the time of writing; the orchestrator commits after the step) — `## Stops when` in the shaper spec template, one sentence in the planner placeholder, the inline clause on both existing instances, record closed as `_c_`.
+Implemented: plan step 7 of `260827-1756_*_repair-the-twenty-open-defect-records.md` (uncommitted at the time of writing; the orchestrator commits after the step) — `## Stops when` in the shaper spec template, one sentence in the planner placeholder, the inline clause on both existing instances, record closed as `_c_`.
 
-Reconciled 260827-2034: the `Implemented:` line above was written before the commit; it landed in `ea4be341` (this file and the shipped edit in the same commit).
+Reconciled 260827-2034-reconciliation.md: the `Implemented:` line above was written before the commit; it landed in `ea4be341` (this file and the shipped edit in the same commit).

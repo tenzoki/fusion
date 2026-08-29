@@ -3,8 +3,8 @@
 **Datum:** 2026-08-07
 **Agent:** ontocoder
 **Status:** Complete
-**Circle:** `circles/260807-0923-guard-misst-statt-orakelt`
-**Plan:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Schritt 1 und Entscheidung 1
+**Circle:** `260807-0923-guard-misst-statt-orakelt`
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 1 und Entscheidung 1
 
 ## Was geändert wurde
 
@@ -19,11 +19,11 @@ Nichts unter `hooks/lib/` angefasst. Nicht committet.
 
 ## Der Entscheidungssatz
 
-`circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md`
+`260807-0945_*_integritaet-des-eskalationsspeichers.md`
 
 Hält die Halt-Integrität als eigene, offene Frage fest: ein Agent kann `fusion-workbench/.guard-state/escalation.json` löschen und damit seinen eigenen Halt aufheben. Bis heute war das durch die Schutzliste gedeckt, künftig nicht mehr; der Nutzer hat den Verzicht am 260807-0945 in Kenntnis dieser Folge bestätigt. Der Satz nennt vier denkbare Antworten (Zustand außerhalb der Workbench ablegen; Zustand signieren und beim Lesen prüfen; Halt aus dem Ereignisstrom rekonstruieren; den Verzicht als dauerhaft dokumentieren) und gibt keine Empfehlung ab — die Wahl setzt ein Bedrohungsmodell voraus, das dieser Circle nicht geklärt hat.
 
-Zum Ablageort: `bin/fusion-paths ontocoder` gibt **kein** `OUT_DECISION` aus, weil `agents/ontocoder.md` den Schlüssel nirgends nennt und der Resolver die Schlüsselmenge aus dem Prompt ableitet. Der Ort ist stattdessen aus der Circle-Hälfte von `SCAN_DECISIONS` und der Herkunftsregel abgeleitet. Als Defekt abgelegt: `issues/260807-0952_o_ontocoder-kann-keinen-entscheidungssatz-ablegen.md`.
+Zum Ablageort: `bin/fusion-paths ontocoder` gibt **kein** `OUT_DECISION` aus, weil `agents/ontocoder.md` den Schlüssel nirgends nennt und der Resolver die Schlüsselmenge aus dem Prompt ableitet. Der Ort ist stattdessen aus der Circle-Hälfte von `SCAN_DECISIONS` und der Herkunftsregel abgeleitet. Als Defekt abgelegt: `260807-0952_*_ontocoder-kann-keinen-entscheidungssatz-ablegen.md`.
 
 ## Weitere Fundstellen, unverändert gelassen
 

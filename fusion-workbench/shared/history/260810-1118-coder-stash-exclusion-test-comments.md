@@ -3,12 +3,12 @@
 **Agent:** coder
 **Date:** 2026-08-10 11:18
 **Status:** Complete
-**Task:** fix `260810-0947` — the circle-stash exclusion test describes a mechanism and a code shape that no longer exist
+**Task:** fix `260810-0947_*_the-circle-stash-exclusion-test-describes-a-mechanism-and-a-code-shape-that-no-longer-exist.md` — the circle-stash exclusion test describes a mechanism and a code shape that no longer exist
 **Source record:**
-- `fusion-workbench/shared/issues/260810-0947_o_the-circle-stash-exclusion-test-describes-a-mechanism-and-a-code-shape-that-no-longer-exist.md`
+- `260810-0947_*_the-circle-stash-exclusion-test-describes-a-mechanism-and-a-code-shape-that-no-longer-exist.md`
 
 **Origin:** Not Circle work; no Circle active. The other half of the scope decision the
-executor of `260810-0505` made when it declined to widen out of the skill body (its own
+executor of `260810-0505_*_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md` made when it declined to widen out of the skill body (its own
 log is `260810-0941-coder-circle-stash-push-exit-code.md`, "Left for the user").
 
 ## What was wrong

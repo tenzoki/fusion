@@ -193,7 +193,7 @@ function respond(additionalContext?: string): void {
  * that it was a SIBLING of the other rather than an extension of it. That
  * argument was accepted, and the reason is one property and not a matter of
  * taste: **they fire on different conditions.** Decision
- * `fusion-workbench/shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
+ * `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
  * records it as the criterion, so it is written here rather than remembered.
  *
  * A third hung here until 2026-08-15 and its trigger was **every guarded tool
@@ -223,7 +223,7 @@ function respond(additionalContext?: string): void {
  *      commit that broke it onward", the trigger is every call. If it is "it is
  *      only wrong once X has happened", X is the trigger.
  *   2. **On the commonest path, firing at that moment reports NOTHING.** This
- *      is the disqualifying test, and it is the one issue `260810-0710` was
+ *      is the disqualifying test, and it is the one issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` was
  *      paid for: a check that speaks on its commonest path is one its reader
  *      learns to read past, which destroys the other measurements' credibility
  *      along with its own. If the proposed trigger would fire during ordinary
@@ -272,7 +272,7 @@ function respond(additionalContext?: string): void {
  */
 
 /**
- * Review coverage, measured when a review file lands — issue `260810-1205`.
+ * Review coverage, measured when a review file lands — issue `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`.
  *
  * ## The trigger is the whole design
  *
@@ -284,7 +284,7 @@ function respond(additionalContext?: string): void {
  * the review pass runs once per Circle, at its closure (Phase 4 step 2a) — so an every-call
  * cadence here would report a fault on the commonest path, and a check that
  * cries wolf on its commonest path teaches its reader to ignore it. That is
- * issue `260810-0710` arriving one level up. The measurement that DID hold the
+ * issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving one level up. The measurement that DID hold the
  * every-call slot, until 2026-08-15, held it on the opposite reading of the
  * same criterion: a stale `agentstate.yaml` was a fault at every moment after
  * the commit that outdated it, so measuring on every call reported a fault only
@@ -300,7 +300,7 @@ function respond(additionalContext?: string): void {
  * Like its sibling below, it writes nothing but its own throttle record, it
  * reports once per gap rather than once per file, and it is anchored at the
  * workbench root — so it is NOT stood down in fusion's own repository, which is
- * where issue `260810-1205` was measured.
+ * where issue `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` was measured.
  */
 function measureReviewCoverageForModel(input: HookInput): string | null {
   if (!WRITE_TOOLS.includes(input.tool_name)) return null;
@@ -322,7 +322,7 @@ function measureReviewCoverageForModel(input: HookInput): string | null {
   // The same population the scan reads, through the same function — a trigger
   // wider than the scan fires the whole measurement over a file the scan will
   // not measure, which is what a `conceptrev` verdict landing at the plan gate
-  // did (issue `260811-1145`). `basename` of the ORIGINAL path, not the folded
+  // did (issue `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`). `basename` of the ORIGINAL path, not the folded
   // one: the sender segment is lower-case by the filename convention, and
   // folding is only ever applied to the directory test above it.
   if (!isMeasuredReview(basename(written))) return null;
@@ -347,7 +347,7 @@ function measureReviewCoverageForModel(input: HookInput): string | null {
 }
 
 /**
- * Staging drift, measured when HEAD moves — issue `260811-0114`.
+ * Staging drift, measured when HEAD moves — issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`.
  *
  * ## The trigger is read, not predicted, and that is the whole of it
  *
@@ -359,7 +359,7 @@ function measureReviewCoverageForModel(input: HookInput): string | null {
  * sat — would report the commonest correct state as a fault. A coder writes an issue
  * file and Step 3b stages it minutes later; in between, the record is unstaged
  * and nothing is wrong. `measureReviewCoverageForModel` above declines the
- * every-call path for the same reason, and issue `260810-0710` is where that
+ * every-call path for the same reason, and issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` is where that
  * reasoning was first paid for.
  *
  * Reading the **`Bash` command's text** for `git commit` would be the
@@ -385,7 +385,7 @@ function measureReviewCoverageForModel(input: HookInput): string | null {
  * It writes nothing but its own throttle record; it reports once per miss
  * rather than once per commit, and a miss that grows speaks again; and it is
  * anchored at the workbench root rather than at cwd, so it is NOT stood down in
- * fusion's own repository — which is where issue `260811-0114` was measured.
+ * fusion's own repository — which is where issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` was measured.
  */
 function measureStagingDriftForModel(): string | null {
   const root = findWorkbenchRoot();
@@ -487,7 +487,7 @@ async function main(): Promise<void> {
   // Review coverage, on the narrow trigger of a review file landing. Anchored
   // at the workbench root rather than at cwd, and not stood down in fusion's
   // own repository: that repository is a fusion consumer, and issue
-  // `260810-1205` was measured there. `bestEffort` because one bookkeeping
+  // `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` was measured there. `bestEffort` because one bookkeeping
   // report may never cost the other.
   let coverage: string | null = null;
   bestEffort("tracker", () => {
@@ -521,7 +521,7 @@ async function main(): Promise<void> {
   // The reply is the only thing this hook says to the model, and it used to be
   // held until an advisory metric had finished: measured with `churn.json`
   // replaced by a non-empty directory, `{}` reached stdout and the agent was
-  // told nothing (`260809-2045`). Both things that could swallow it are gone,
+  // told nothing (`260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md`). Both things that could swallow it are gone,
   // and the rule they established is not — nothing may run between these
   // measurements and `respond`. Joined rather than chosen between, for the same
   // reason.

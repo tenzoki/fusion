@@ -7,8 +7,8 @@
 **Filed by:** coderev (Turn 4 review, range `b261d83..951c809`)
 **Affects:** `agents/orchestrator.md:95` (Setup step 1, the **Continue** branch), `agents/orchestrator.md:438` (Phase 2 step 2, "This fires in **every** Turn")
 **Cross-references:**
-`shared/issues/260811-2143_o_the-drift-checks-turn-row-and-commits-row-use-two-different-session-anchors…md` (the same event, seen from the measurement side);
-`shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+`260811-2143_*_the-drift-checks-turn-row-and-commits-row-use-two-different-session-anchors…md` (the same event, seen from the measurement side);
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 
 ---
 
@@ -51,7 +51,7 @@ The resume branch has to say what it does about the Turn it is re-entering. Two 
 1. **Emit `turn_start` for the resumed Turn, with the same rider.** A resumed Turn is a Turn being started by this session, even if its number was set by another. The emission carries `"turn": <progress.turn>` and the drift check runs with it — which is also the moment a resumed session most needs it, because the state it is reading was written by a session that is gone.
 2. Or **state explicitly that a resumed Turn is exempt and why**, and correct "fires in **every** Turn" at `agents/orchestrator.md:438` to match.
 
-Shape 1 also removes half of `260811-2143`'s symptom, but not its cause — that record's anchor mismatch stands independently and should be fixed on its own terms.
+Shape 1 also removes half of `260811-2143_*_the-drift-checks-turn-row-and-commits-row-use-two-different-session-anchors-so-every-resume-reports-a-permanent-false-drift.md`'s symptom, but not its cause — that record's anchor mismatch stands independently and should be fixed on its own terms.
 
 ## Acceptance criteria
 
@@ -62,7 +62,7 @@ Shape 1 also removes half of `260811-2143`'s symptom, but not its cause — that
 ---
 Resolved: shape 2, and it turned out to be the true one rather than the cheaper one. `agents/orchestrator.md` Setup step 1 gains **What a resumed session inherits**, which says that a resumed Turn was started by the session that is gone, keeps the `turn_start` that session emitted, and gets no second one — and names step 3's drift check, taken minutes earlier and shown to the user in the resume summary, as that Turn's boundary read. Phase 2 step 2's "This fires in **every** Turn" now reads "every Turn **this session starts**" and points at that paragraph.
 
-Shape 1 (emit a second `turn_start` for the re-entered Turn) is not merely larger, it is wrong under the count that `260811-2143` installed in the same change: the Turn row counts `turn_start` events from the session's own beginning, so a Turn carrying two of them is counted twice and the row reports a freeze that is not there. The two halves have to agree, and this is the shape in which they do — the prompt says a resumed Turn keeps its one start, and the module counts one per Turn.
+Shape 1 (emit a second `turn_start` for the re-entered Turn) is not merely larger, it is wrong under the count that `260811-2143_*_the-drift-checks-turn-row-and-commits-row-use-two-different-session-anchors-so-every-resume-reports-a-permanent-false-drift.md` installed in the same change: the Turn row counts `turn_start` events from the session's own beginning, so a Turn carrying two of them is counted twice and the row reports a freeze that is not there. The two halves have to agree, and this is the shape in which they do — the prompt says a resumed Turn keeps its one start, and the module counts one per Turn.
 
 What is not claimed: the resumed Turn's boundary read is Setup step 1's, not a second one at Phase 2. That is a stronger read, not a weaker one — it is the only call point whose result the *user* sees, in the Continue/Restart summary — but it happens before the branch is chosen rather than at the re-entry, and this record's "the moment the orchestrator was meant to look at drift and act on it" is satisfied by it only in that sense.
 

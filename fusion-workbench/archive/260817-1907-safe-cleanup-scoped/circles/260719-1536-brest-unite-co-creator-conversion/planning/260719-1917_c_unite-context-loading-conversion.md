@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-19
 **Status:** Complete
-**Spec:** none — planned from the user's target end-state (supersedes v5.x master-plan Step 5). Cites `circles/260718-1924-v5x-overhaul/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md` (Circle B steps 5-8) and the answered premise decision `circles/260719-1536-brest-unite-co-creator-conversion/decisions/260719-1856_a_unite-rules-mirror-vs-dedup-premise.md`.
+**Spec:** none — planned from the user's target end-state (supersedes v5.x master-plan Step 5). Cites `260718-1001_*_master-plan-fusion-v5x-overhaul.md` (Circle B steps 5-8) and the answered premise decision `260719-1856_*_unite-rules-mirror-vs-dedup-premise.md`.
 
 > **Target repo `$U` = `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator`.** Every edit in this plan lands in `$U` by absolute path. This is a different repo from the fusion source repo the planner ran Setup in. Paths written **`$U/...`** are absolute in the target; paths without `$U` are in the fusion plugin.
 
@@ -254,9 +254,9 @@ Step 6 is the test: it exercises the manifest's emit predicate across topics and
 | Risk | Mitigation |
 |---|---|
 | **Case-only rename fails on the case-insensitive FS** (`git mv RULES/X rules/X` sees "destination exists"). | Use `git mv -f`; fall back to the two-step temp-name rename (Step 1). Verify with `git ls-files rules/*`. |
-| **Removing `.claude/rules/` auto-load changes plain Claude Code sessions** for other unite developers — they lose the always-on rule bodies. | This is the intended reduction, but it is a convention change unite's team must accept. Surfaced here and in the answered premise decision (`260719-1856_a_...`, resolved by user direction). Plain sessions can still read `rules/*.md` on demand; fusion agents load them selectively. Communicate to the unite team on merge. |
+| **Removing `.claude/rules/` auto-load changes plain Claude Code sessions** for other unite developers — they lose the always-on rule bodies. | This is the intended reduction, but it is a convention change unite's team must accept. Surfaced here and in the answered premise decision (`260719-1856_*_...`, resolved by user direction). Plain sessions can still read `rules/*.md` on demand; fusion agents load them selectively. Communicate to the unite team on merge. |
 | **The case-consolidation only bites on a case-sensitive clone/CI** — on the dev's macOS FS nothing looks broken, so the fix's value is invisible locally. | Acceptance Step 1 asserts git tracks 12 under `rules/` and 0 under `RULES/` — that is the case-sensitive-correct state, verifiable on macOS via the index even though the FS hides it. |
-| **`coding-frontend.md` cannot be made topic-scoped** (lowercase name collides with the `coding` pattern → always-on for code agents). | Filed as decision `260719-1917_o_coding-frontend-pattern-collision.md`. Recommended: accept always-on (2 KB), keep it out of the manifest to avoid double-emission, document the exclusion in the manifest header. User owns the final call. |
+| **`coding-frontend.md` cannot be made topic-scoped** (lowercase name collides with the `coding` pattern → always-on for code agents). | Filed as decision `260719-1917_*_coding-frontend-pattern-collision.md`. Recommended: accept always-on (2 KB), keep it out of the manifest to avoid double-emission, document the exclusion in the manifest header. User owns the final call. |
 | **Executor-routing deviation** — dispatch said "coder for all"; plan routes the `.yaml` manifest (Step 3) and ontology-gotchas (Step 2b) to `ontocoder` per fusion routing. | Explicit single override point: reassign Steps 2b + 3 to `coder` at dispatch if a single-executor run is preferred. Flagged in Approach. |
 | **`unite-platform-skill` inclusion** — dispatch named bok/mos/taxonomy but not platform. | Included as a manifest `skill:` unit `[unite-framework, platform]` (it is a knowledge body under `.claude/skills/`). Trivially droppable if the user does not want it tagged. |
 | **Gotchas content may already be duplicated** in existing rule files. | Step 2 instructs a reuse-check: if a block is already captured, replace with a pointer instead of creating a new file, and note it — do not blindly proliferate files. |
@@ -265,7 +265,7 @@ Step 6 is the test: it exercises the manifest's emit predicate across topics and
 
 ## Open Questions
 
-- [x] **`coding-frontend.md` collision** — resolved: accept always-on, keep out of manifest, document exclusion in header. Decision `260719-1917_a_coding-frontend-pattern-collision.md` (user approved plan gate); realised by `06734571`. Manifest header carries the INTENTIONAL OMISSIONS block.
+- [x] **`coding-frontend.md` collision** — resolved: accept always-on, keep out of manifest, document exclusion in header. Decision `260719-1917_*_coding-frontend-pattern-collision.md` (user approved plan gate); realised by `06734571`. Manifest header carries the INTENTIONAL OMISSIONS block.
 - [x] **Gotchas destination** — resolved: new dedicated files. `rules/GO-GOTCHAS.md` (10,127 B) + `rules/ONTOLOGY-GOTCHAS.md` (3,904 B) created and git-tracked (`1e9b5649`).
 - [x] **`unite-platform-skill` tagging** — resolved: included as a `skill:` unit `[unite-framework, platform]` in the manifest (`06734571`).
 
@@ -283,7 +283,7 @@ All 6 steps (+2 substeps) verified realised in target repo `$U = /Users/kai/Drop
 | 3 — `rules/context-manifest.yaml` | exists (3,794 B), git-tracked; header documents the two intentional omissions; `coding-frontend` appears only in the omissions comment, not as a unit | `06734571` |
 | 4 — remove mirror + fix refs | `grep 'mirror-rules' $U/Makefile` = 0 live hits; `$U/.claude/rules/` empty | `5be1cb25` |
 | 5 — lean `CLAUDE.md` | `wc -c` = 8,504 B (was 43,145; −80.3%) | `2e9abf30` |
-| 6 — acceptance proof | 9/9 checks PROVEN in `history/260719-2045-step6-acceptance-evidence.md` | (verification-only, no commit) |
+| 6 — acceptance proof | 9/9 checks PROVEN in `260719-2045-step6-acceptance-evidence.md` | (verification-only, no commit) |
 
 `$U` working tree clean; the 6 commits `a957bd30 3876e0c0 1e9b5649 06734571 5be1cb25 2e9abf30` present in `git -C $U log`. No drift between plan and disk. No open issues filed in this Circle's `issues/` store.
 

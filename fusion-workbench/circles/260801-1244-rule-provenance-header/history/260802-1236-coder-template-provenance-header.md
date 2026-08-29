@@ -3,7 +3,7 @@
 **Date:** 2026-08-02 12:36
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-rule-provenance-header`
+**Circle:** `260801-1244-rule-provenance-header`
 **Plan:** not a plan step. Added by the user at the plan gate on 2026-08-02, after asking
 whether consuming projects need a migration for the new convention. The prompt was the
 specification.

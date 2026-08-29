@@ -4,7 +4,7 @@ The queue-ground parse reads a backticked token out of the prose that follows th
 `agents/orchestrator.md` `#### Reading a queue` and the retirement block in Phase 4 both extract the queue's ground from its `**Active Circle:**` head line with `grep -oE 'circles/[A-Za-z0-9._-]+|`[A-Za-z0-9._-]+`' | head -1`. That expression takes the first match anywhere on the line, not the first token after the label. A head line that says `none` and then explains why in prose containing a backticked token yields that token as the ground.
 
 ---
-**Found by:** `orchestrator`, at Phase 4 of session `260813-2345` (resumed 260814-2009), while clearing the pointer for the closure of Circle `260801-1244-curator`.
+**Found by:** `orchestrator`, at Phase 4 of session `260813-2345-orchestrator-session.md` (resumed 260814-2009), while clearing the pointer for the closure of Circle `260801-1244-curator`.
 **Owner:** `coder`.
 **Severity:** Low — the wrong value was harmless in the case observed, and the failure needs a coincidence to bite. Recorded because the consequence when it does bite is a destructive move.
 **Affects:** `agents/orchestrator.md`, the `#### Reading a queue` snippet and the retirement block in `### Phase 4 — Portfolio sync` step 4; `skills/setup/SKILL.md` Step 3 and `skills/next/SKILL.md` Step 5, which both cite the first of those as canonical.

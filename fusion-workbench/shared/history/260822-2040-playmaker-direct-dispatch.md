@@ -1,4 +1,4 @@
-# Playmaker run 260822-2040 — direct dispatch
+# Playmaker run 260822-2040-playmaker-direct-dispatch.md — direct dispatch
 
 **Status:** Complete
 **Trigger:** `direct-dispatch` (a `**Domain:** code` line and nothing else; no `**Confirmed operations:**` block)
@@ -23,7 +23,7 @@ in a single enumeration pass:
 `.active-circle` is absent and no record carries `_t_`. That is the normal state between Circles and
 raises none of the four pointer warnings.
 
-The inventory grew by one since the previous run at 260822-0319, which reported fourteen records and
+The inventory grew by one since the previous run at 260822-0319-playmaker-orchestrator-phase4.md, which reported fourteen records and
 no anticipated Circle. `260822-1921-measure-what-two-checkouts-share` was filed by the shaper at
 260822-1921 with all six artifact subdirectories present.
 
@@ -33,14 +33,14 @@ no anticipated Circle. `260822-1921-measure-what-two-checkouts-share` was filed 
 no Circle in its `## Dependencies`, and three later capabilities in its own specification resting on
 the premise it measures.
 
-Both decisions its Grounding cites were resolved on disk: `260822-1610` carries the answered marker,
+Both decisions its Grounding cites were resolved on disk: `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` carries the answered marker,
 `260719-2141` the superseded one. No dependencies-closed flag was raised, because the section names
 no Circle to resolve.
 
 ## Writes to Circle records
 
 - `## Activation proposal` appended to
-  `circles/260822-1921-measure-what-two-checkouts-share/_a_circle.md`. No prior copy of the section
+  `260822-1921-measure-what-two-checkouts-share`. No prior copy of the section
   existed on that record.
 - No `## Dependency warning` appended: no cycle was detected.
 - No `## Parent grounding stale` appended: see the propagation section below.
@@ -56,9 +56,9 @@ Distinct ideas found inside the live entries: two, one per entry. Both were alre
 duplicate group was found across the two, and neither is defect-shaped or decision-shaped, so nothing
 was handed to `## Warnings` from the entries themselves.
 
-Top-ranked entry: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — the only live idea
+Top-ranked entry: `260814-1733_*_bounded-executor-dispatches.md` — the only live idea
 whose shaping needs no user act first, with its evidence already sized on disk in
-`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`.
+`260812-0303-simplify-speed-and-why-rules-do-not-hold.md`.
 
 ### Backlog writes performed
 
@@ -66,7 +66,7 @@ None. Both live markers already matched this run's ranking, so no `_o_`/`_p_` re
 
 ### Confirmed operations proposed and not performed
 
-- `defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
+- `defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
 
   Reason it was not performed: this run holds no confirmation for it. The dispatch prompt carried no
   `**Confirmed operations:**` block and no question was put to the user, so neither of the two
@@ -89,10 +89,10 @@ The only non-terminal Circle cites neither directory name nor either Closure not
 ## Warnings emitted to the portfolio
 
 - `spec-circles-unfiled`: C2, C3 and C4 of
-  `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` still have no Circle
+  `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` still have no Circle
   record. Filing C1 answered one quarter of the first fix direction in
-  `shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
-- `dead-citation-in-live-store`: the closed entry `shared/backlog/260811-0826_*_observations.md`
+  `260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
+- `dead-citation-in-live-store`: the closed entry `260811-0826_*_observations.md`
   names a third split sibling that commit `e59dea2` moved out of the live store.
 - `open-issue-volume`: 117 open defect records against 149 closed under `shared/issues/`, 21 filed on
   2026-08-22. Stated as context; filing or scoping is not this agent's act.
@@ -108,4 +108,4 @@ lines `Recommended next: <circle-dir> — <rationale>` and `Recommended to shape
 <rationale>`, each spelled that way in the portfolio template in `rules/circle-records.md`. The four
 this run controlled, one per warning code, were rewritten to a full stop before this log was written.
 Whether the ceiling is read per file or across the always-on corpus is open in
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`.
+`260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`.

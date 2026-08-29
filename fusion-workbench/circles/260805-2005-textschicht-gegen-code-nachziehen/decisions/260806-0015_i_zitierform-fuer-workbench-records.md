@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** coder
-**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_*_plan-textschicht-gegen-code.md (Track 2, Schritt 1; Schritte 10–14 hängen an der Antwort); circles/260801-1244-guard-rules-write/issues/260805-1839_*_ausgelieferte-texte-zitieren-acht-workbench-records-die-nirgends-existieren.md; circles/260801-1244-guard-rules-write/issues/260805-1839_*_acht-zitate-tragen-verfallene-decision-marker-und-zwei-davon-sind-inhaltlich-falsch-geworden.md; rules/rule-file-provenance.md (Z. 48 — die `Binding decision:`-Zeile der Datei, die die Zitierformen selbst definiert, zitiert ihre eigene bindende Entscheidung unter einem Namen, den es nicht mehr gibt)
+**Cross-references:** 260805-2353_*_plan-textschicht-gegen-code.md (Track 2, Schritt 1; Schritte 10–14 hängen an der Antwort); 260805-1839_*_ausgelieferte-texte-zitieren-acht-workbench-records-die-nirgends-existieren.md; 260805-1839_*_acht-zitate-tragen-verfallene-decision-marker-und-zwei-davon-sind-inhaltlich-falsch-geworden.md; rules/rule-file-provenance.md (Z. 48 — die `Binding decision:`-Zeile der Datei, die die Zitierformen selbst definiert, zitiert ihre eigene bindende Entscheidung unter einem Namen, den es nicht mehr gibt)
 
 ---
 
@@ -29,14 +29,14 @@ Ausgelieferte Texte (Regel-Dateien, Agenten-Prompts, READMEs, bin-Header) zitier
 - Der Referenz-Lint (Plan-Schritt 14) kann vor dieser Antwort nicht geschrieben werden: seine akzeptierte Zitier-Grammatik ist genau diese Entscheidung.
 - Die gewählte Form muss den Falsifier des Lints bestehen: gegen den Vor-Korrektur-Stand angewandt muss die Grammatik alle 16 bekannten toten Referenzen finden.
 - `rules/rule-file-provenance.md` definiert die Zitierformen normativ; die Antwort muss dort eingearbeitet werden (Plan-Schritt 13), inklusive einer Rationale, die Marker-Übergänge abdeckt — die bestehende deckt den `_a_→_i_`-Normalfall erkennbar nicht.
-- Für die 8 nirgends existierenden Records gilt unabhängig von der Form die Regel aus Entscheidung 260805-0709 (zitiert im Befund): Beleg-Substanz in den Text ziehen, toten Pfad streichen — eine Zitierform repariert kein gelöschtes Ziel.
+- Für die 8 nirgends existierenden Records gilt unabhängig von der Form die Regel aus Entscheidung 260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md (zitiert im Befund): Beleg-Substanz in den Text ziehen, toten Pfad streichen — eine Zitierform repariert kein gelöschtes Ziel.
 
 ## Recommendation
 
 Option (a), wie vom Gesamtreview empfohlen. Verifiziert vor dem Filing: Die 8 Marker-Verfalls-Referenzen brachen genau durch `_o_→_a_→_i_`-Übergänge, nicht aus einem anderen Grund; die Rationale in `rule-file-provenance.md` deckt diese Übergänge nicht ab — die Frage ist also richtig gerahmt. Der zweite Befund schlägt die markerlose Form selbst vor („z. B. `260801-1020_*_slug`, damit `_o_→_a_→_i_`-Übergänge Zitate nicht mehr brechen"). Option (c) scheidet aus meiner Sicht aus, weil sie mit dem Namensmuster markerloser Artefakte kollidiert; Option (b) verlagert die Instabilität in Dauerpflege und schützt konsumierende Projekte nicht.
 
 ---
-Answered: circles/260805-2005-textschicht-gegen-code-nachziehen/history/260805-2350-orchestrator-session.md — User wählt Option (a): Wildcard-Form `YYMMDD-HHMM_*_<slug>`; überlebt jeden Marker-Übergang, Empfehlung von Review und Planner. (Gate 260806-0027)
+Answered: 260805-2350-orchestrator-session.md — User wählt Option (a): Wildcard-Form `YYMMDD-HHMM_*_<slug>`; überlebt jeden Marker-Übergang, Empfehlung von Review und Planner. (Gate 260806-0027)
 
 ---
 Implemented: a1b7872 — hooks/lib/__tests__/reference-resolution-lint.test.ts erzwingt die Wildcard-Grammatik `YYMMDD-HHMM_*_<slug>` über alle ausgelieferten Textflächen; die Batches (9a96466, fae818b) haben die Bestandszitate umgestellt.

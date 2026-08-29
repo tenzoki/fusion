@@ -14,7 +14,7 @@ loads the rule on every dispatch. No agent can satisfy both.
 
 Reached at a live gate on 260825: a Phase 3 reconciler verdict of `review-needed` with
 recommendation `revise Artifact`, in session
-`shared/history/260825-0858-orchestrator-session.md`. The orchestrator had to choose which
+`260825-0858-orchestrator-session.md`. The orchestrator had to choose which
 of the two rules to break before it could ask the user anything, which is the worst moment
 for an unresolved conflict, because the choice is invisible to the user in the output it
 produces.
@@ -58,4 +58,4 @@ undocumented habit.
 
 ## Resolved
 
-Resolved: 260827, coder, plan step 9 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md`, per decision `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md` `## Answer` (option 2, candidate 2 above). `rules/orchestrator-rebalance.md` `### Rebalance Gate` is now two gates: Gate 1 asks whether the Directive stands (Revise Directive, Accept Bounded Closure, Keep it); Gate 2, on Keep it, asks what to revise (Artifact, Grounding). Every option carries a foreclosure line, and `#### Rebalance bounding` names Gate 2 as the re-entry point. `agents/orchestrator.md` `### Rebalance Gate` and the Phase-2 Rebalance paragraph no longer count four options. `rules/user-facing-output.md` is unchanged; candidate 1 was not chosen.
+Resolved: 260827, coder, plan step 9 of `260827-1756_*_repair-the-twenty-open-defect-records.md`, per decision `260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md` `## Answer` (option 2, candidate 2 above). `rules/orchestrator-rebalance.md` `### Rebalance Gate` is now two gates: Gate 1 asks whether the Directive stands (Revise Directive, Accept Bounded Closure, Keep it); Gate 2, on Keep it, asks what to revise (Artifact, Grounding). Every option carries a foreclosure line, and `#### Rebalance bounding` names Gate 2 as the re-entry point. `agents/orchestrator.md` `### Rebalance Gate` and the Phase-2 Rebalance paragraph no longer count four options. `rules/user-facing-output.md` is unchanged; candidate 1 was not chosen.

@@ -6,7 +6,7 @@
 **Checkout:** 5e8248d7
 **Date:** 2026-08-26 08:00
 **Circle:** 260825-2023-presence-travels-monitor-filters-own-checkout
-**Analysis:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260826-0715-cut-candidates-for-two-growth-bounded-surfaces.md` sections 3, 5 and 6
+**Analysis:** `260826-0715-cut-candidates-for-two-growth-bounded-surfaces.md` sections 3, 5 and 6
 
 ## What was cut, and what stopped being checked
 
@@ -60,7 +60,7 @@ the seed set, replaces one inside it and leaves the rest of the seed intact; and
 caller's file would leave every configuration case below with no configuration and an empty
 advisory list where each asserts an exact one. A harness that seeded the retired filename
 would add one advisory to every project in the suite, which is exactly the regression
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md`
+`260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md`
 recorded and which `guard-bash-integration.test.ts`'s "records the allow in a
 project that HAS a valid configuration file too" asserts against with an exact
 single-element event list. That case survives cut 1. This is the weakest of the three cuts

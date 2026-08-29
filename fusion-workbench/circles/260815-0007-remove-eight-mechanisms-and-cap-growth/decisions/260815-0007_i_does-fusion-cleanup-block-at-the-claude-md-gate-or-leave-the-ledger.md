@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** shaper (anticipated-circle mode)
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_*_circle.md` § Grounding snapshot → The administrative surface; `skills/cleanup/SKILL.md` § Autonomy and safety, Step 5; `skills/curate/SKILL.md`; `agents/curator.md`; `shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md` § 5
+**Cross-references:** `260815-0007-remove-eight-mechanisms-and-cap-growth` § Grounding snapshot → The administrative surface; `skills/cleanup/SKILL.md` § Autonomy and safety, Step 5; `skills/curate/SKILL.md`; `agents/curator.md`; `260812-0303-the-largest-consumer-read-for-the-first-time.md` § 5
 
 ---
 
@@ -68,7 +68,7 @@ the options, and the sentence in the skill body that becomes false differs with 
 Option 1, with low confidence, and the reasoning is worth reading before it is followed.
 
 *Verified:* the deferred-artifact failures cited under option 2's cons are measured, each from
-`shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md` § 5.
+`260812-0303-the-largest-consumer-read-for-the-first-time.md` § 5.
 
 *Inference:* choosing the gated path over the autonomous one is a statement that `CLAUDE.md`
 changes are worth a person's attention. A pipeline that defers that attention to a run this
@@ -82,7 +82,7 @@ honest answer may be option 2 with the ledger surfaced at the next `/fusion:setu
 filed and forgotten.
 
 ---
-Answered: shared/history/260814-2306-orchestrator-session.md:103 — Option 1, the gate blocks: /fusion:cleanup presents the curator's change ledger and waits for the user before touching CLAUDE.md. The deciding fact, that the user sits with the run rather than leaving it, was supplied by the user at the activation gate.
+Answered: 260814-2306-orchestrator-session.md:103 — Option 1, the gate blocks: /fusion:cleanup presents the curator's change ledger and waits for the user before touching CLAUDE.md. The deciding fact, that the user sits with the run rather than leaving it, was supplied by the user at the activation gate.
 Implemented: skills/cleanup/SKILL.md `## Step 5 — Reconcile CLAUDE.md (the one gate)` and `## Autonomy and safety` — Step 5 now reads skills/curate/SKILL.md and runs its procedure inline, holding the gate itself; nothing reaches CLAUDE.md until the user answers, --dry-run stops after the survey dispatch, and the autonomy section states that an unattended run stops at Step 5 with Steps 6 to 8 unrun. No commit hash: the executor does not commit, and the orchestrator's commit for this step is what carries these paths.
 Deferred:
 Superseded by:

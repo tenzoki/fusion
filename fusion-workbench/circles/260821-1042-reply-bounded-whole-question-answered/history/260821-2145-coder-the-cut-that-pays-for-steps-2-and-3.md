@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-21
 **Agent:** coder
-**Circle:** circles/260821-1042-reply-bounded-whole-question-answered
-**Plan step:** 5 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Circle:** 260821-1042-reply-bounded-whole-question-answered
+**Plan step:** 5 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Status:** Complete
 
 ## What was asked

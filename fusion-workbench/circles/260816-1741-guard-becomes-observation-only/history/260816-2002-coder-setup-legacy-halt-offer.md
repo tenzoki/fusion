@@ -3,7 +3,7 @@
 **Date:** 2026-08-16 20:02
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 1
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 1
 **Files changed:** `skills/setup/SKILL.md`
 
 ## What was implemented
@@ -35,7 +35,7 @@ handed back, and it never left.
 
 `clear-halt.js` is named nowhere in the new text. That is deliberate: the plan deletes it at
 step 6, and the sequencing constraint in
-`shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
+`260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
 `## Constraints` requires this replacement remedy to exist before the old one goes.
 
 ## Decisions taken while implementing

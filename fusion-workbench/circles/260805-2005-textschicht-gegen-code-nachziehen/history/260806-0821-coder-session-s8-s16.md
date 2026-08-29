@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Datum:** 2026-08-06
-**Auftrag:** Plan `260805-2353_p_plan-textschicht-gegen-code.md`, Schritte 8 ("Independent scoping change") und 16 (D3, Option c)
+**Auftrag:** Plan `260805-2353_*_plan-textschicht-gegen-code.md`, Schritte 8 ("Independent scoping change") und 16 (D3, Option c)
 **Status:** Complete
 
 ## Was implementiert wurde
@@ -24,13 +24,13 @@
 - `bin/fusion-paths`: **Änderung ist warranted** — das Skript liest plugin-root-relative Ressourcen (die Prompt-Dateien `agents/<name>.md` / `skills/<name>/SKILL.md`, aufgelöst über den eigenen Installationsort). Im Plugin-Repo wird `PLUGIN_ROOT=$PWD` gesetzt, damit Key-Sets aus den Arbeitsbaum-Prompts statt aus der Install-Kopie abgeleitet werden. Die Prompt-Dateien sind die einzige solche Ressource; die Präferenz ist eine Zuweisung.
 - Neuer Test in `rules-emission-golden.test.ts` ("prefers the work tree's rules..."): aus dem Repo, mit `FUSION_PLUGIN_ROOT` auf ein leeres Verzeichnis gezeigt, kommt die Emission vollständig aus dem Arbeitsbaum.
 - Neue Tests in `fusion-paths.test.ts` (describe "plugin-repo preference"): Fake-Repo mit eigenem Prompt wird aufgelöst (Präferenz), Fake-Repo mit fremdem Plugin-Namen nicht (Bound = Name, nicht Manifest-Existenz). Staging-Listen in `fusion-paths.test.ts` und `context-manifest.test.ts` um den neuen Sibling-Helper erweitert.
-- D3-Record: `Implemented:`-Footer angehängt, `_a_` → `_i_` umbenannt (`260806-0015_i_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen.md`). Verhaltensregel (a) bleibt Dokumentation (Release-Prozedur in CLAUDE.md; Textabgleich gehört Plan-Schritt 11).
+- D3-Record: `Implemented:`-Footer angehängt, `_a_` → `_i_` umbenannt (`260806-0015_*_veraltete-regeln-im-eigenen-repo-melden-oder-umgehen.md`). Verhaltensregel (a) bleibt Dokumentation (Release-Prozedur in CLAUDE.md; Textabgleich gehört Plan-Schritt 11).
 
 ## Verifikation
 
 - Repo-Root: `bin/fusion-rules coder` emittiert Repo-Pfade inkl. `protected-path-internals.md`; `bin/fusion-rules orchestrator` emittiert 9 Repo-Regelpfade, null Pfade der installierten Kopie — beide Läufe mit `FUSION_PLUGIN_ROOT=~/.fusion`.
 - Temp-Verzeichnis (konsumierendes Projekt): `protected-path-internals.md` fehlt; Emission sonst unverändert (Golden byte-genau).
-- Suite: 26 von 27 Test-Dateien grün (1550 Tests), darunter alle drei angefassten. **Rot (vorbestehend, HEAD-Defekt):** `monitor-warnings-panel.test.ts`, 9 Tests — Commit `8586ba3` (Bind `0.0.0.0`) bricht auf dieser Maschine Loopback-Verbindungen anderer Prozesse. Per Zwei-Prozess-Experiment isoliert, mit und ohne Sandbox reproduziert, von diesem Task unabhängig (kein Input-File gemeinsam). Als Issue gefiled: `issues/260806-0820_o_monitor-bind-0000-bricht-loopback-verbindungen-neun-tests-rot.md`.
+- Suite: 26 von 27 Test-Dateien grün (1550 Tests), darunter alle drei angefassten. **Rot (vorbestehend, HEAD-Defekt):** `monitor-warnings-panel.test.ts`, 9 Tests — Commit `8586ba3` (Bind `0.0.0.0`) bricht auf dieser Maschine Loopback-Verbindungen anderer Prozesse. Per Zwei-Prozess-Experiment isoliert, mit und ohne Sandbox reproduziert, von diesem Task unabhängig (kein Input-File gemeinsam). Als Issue gefiled: `260806-0820_*_monitor-bind-0000-bricht-loopback-verbindungen-neun-tests-rot.md`.
 
 ## Zahlen (Consuming-Kontext, Golden)
 

@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`
+**Cross-references:** `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, `260820-2308-assessment-of-the-style-rules-spec.md`
 
 ---
 
@@ -24,7 +24,7 @@ conflict depends on what a foreclosure costs, which no surface says.
 ## Answer: (b) together with (c), plus a 2-line cap on the `AskUserQuestion` `description` field.
 
 The deciding evidence is what the user was shown when they approved the clause. The curator run file
-`shared/history/260816-1251-curator-run.md` records the cost presented as "roughly one line per
+`260816-1251-curator-run.md` records the cost presented as "roughly one line per
 option", which is reading (b). The shaper acknowledged this and recommended (a) anyway. An orchestrator
 answering in the user's absence may not reverse the basis on which the user's own approval was given.
 

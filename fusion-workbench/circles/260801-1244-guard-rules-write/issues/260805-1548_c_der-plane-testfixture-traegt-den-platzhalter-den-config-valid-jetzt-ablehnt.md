@@ -9,7 +9,7 @@ Scope-Regel nicht an).
 `project_id: "00000000-0000-0000-0000-000000000000"` — dieselbe Null-UUID, mit der
 `templates/plane.config.yaml` ausliefert. Seit `config_valid` in `bin/fusion-plane` die
 Auslieferungswerte der Vorlage als unausgefüllt zurückweist (Befund
-`260805-1548_c_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md`)
+`260805-1548_*_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md`)
 ist das Fixture aus Sicht des Helfers eine unausgefüllte Konfiguration.
 
 Vier Tests, die den Live-Pfad gegen einen garantiert unerreichbaren Host fahren, kippten
@@ -48,7 +48,7 @@ Randbedingungen, geprüft:
 ---
 
 **Herkunft.** Entstanden bei der Behebung von
-`260805-1548_c_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md`
+`260805-1548_*_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md`
 in dieser Charge, nicht extern gemeldet.
 
 ---

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-02 11:38
 **Sender:** conceptrev
-**Target:** `circles/260801-1244-rule-provenance-header/planning/260802-1131_o_plan-rule-provenance-header.md`
+**Target:** `260802-1131_*_plan-rule-provenance-header.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mermaid 11 parser under a jsdom shim; both blocks return `flowchart-v2`)
 
@@ -63,6 +63,6 @@ The absence of `subgraph` blocks in diagram 1 is right. A four-node chain has no
 
 ## Notes on scope of this evaluation
 
-This plan's input spec was evaluated earlier today at `circles/260801-1244-rule-provenance-header/reviews/260802-1108-conceptrev-spec-rule-provenance-header.md`, verdict acceptable on a missing-edge finding. The plan's graphs are new work rather than a redraw of the spec's graph, so nothing here re-litigates that verdict. The four prior `conceptrev` verdicts in `shared/reviews/` cover the Plane integration and the Circle-container restructure and do not touch this Circle.
+This plan's input spec was evaluated earlier today at `260802-1108-conceptrev-spec-rule-provenance-header.md`, verdict acceptable on a missing-edge finding. The plan's graphs are new work rather than a redraw of the spec's graph, so nothing here re-litigates that verdict. The four prior `conceptrev` verdicts in `shared/reviews/` cover the Plane integration and the Circle-container restructure and do not touch this Circle.
 
 This evaluation judges the two diagrams against `rules/design-diagrams.md`. It does not verify the plan's factual claims, among them the commit hashes in the backfill table, the line numbers cited in `bin/fusion-rules`, and the assertion that the three sibling lint gates share the shape Step 3 follows.

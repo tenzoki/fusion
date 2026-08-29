@@ -4,15 +4,15 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coderev, Turn 4 incremental review of `circles/260801-1244-guard-rules-write`
+**Filed by:** coderev, Turn 4 incremental review of `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only)
 **Cross-references:**
-`issues/260803-1431_c_gate-0-misses-the-dotdot-in-a-cd-p-operand…`,
-`issues/260803-1803_c_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate…`
+`260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand…`,
+`260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate…`
 (both closed by `a79ff1a`; this is the same class through a route the allow-list cannot reach),
 `hooks/lib/bash-mutation-guard.ts:1689-1717` (`applyDirEffect`),
 `hooks/lib/command-word.ts:113-135` (`WRAPPER_PROGRAMS`), `:151-159` (`findCommandWord`),
-`history/260803-1835-turn4-t4-2-working-directory-allow-list.md` (Residual 5, whose stated
+`260803-1835-turn4-t4-2-working-directory-allow-list.md` (Residual 5, whose stated
 reason is what this issue falsifies)
 
 ---

@@ -3,7 +3,7 @@
 **Agent:** ontocoder
 **Date:** 2026-08-22
 **Status:** Complete
-**Task:** The C06 half of `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_c_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
+**Task:** The C06 half of `260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
 
 ## What changed
 
@@ -36,7 +36,7 @@ The record proposed the rename and named a second shape it calls cleaner: split 
 entries, which is what `rules/user-facing-output.md:80-81` already does with these same two
 principles. It left the choice on budget grounds, and the budget decided it.
 
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md`
+`260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
 answers option 1: every new clause is paid for by a cut, held here as a per-file rule on the
 profiles. A second entry buys four structural keys, `- id:`, `name:`, `instruction:` and
 `examples:`, at roughly +57 bytes English net of the text that moves out of C06 and more in
@@ -91,7 +91,7 @@ entries.
 
 ## Record closed
 
-`260821-2202` renamed `_o_` → `_c_` with a `Resolved:` note carrying the byte arithmetic and
+`260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md` renamed `_o_` → `_c_` with a `Resolved:` note carrying the byte arithmetic and
 the reason the split was declined. Its AI04 half was already done on 260821. Nothing staged
 and nothing committed: two other executors are working this tree, and every git read here was
 path-scoped or `git show HEAD:<path>`.

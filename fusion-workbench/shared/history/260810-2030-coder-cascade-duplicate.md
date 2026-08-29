@@ -1,6 +1,6 @@
 # coder — the second domain cascade, and the claim that denied it
 
-**Session:** `260810-1646` Turn 2, task `R:260810-1918-cascade-duplicate`
+**Session:** `260810-1646-orchestrator-session.md` Turn 2, task `R:260810-1918-cascade-duplicate`
 **Agent:** coder
 **Domain:** code
 **Status:** Complete
@@ -10,7 +10,7 @@
 ## What the task was
 
 Three review findings from the Turn-1 code review
-(`shared/reviews/260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`): the release-blocking
+(`260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`): the release-blocking
 second copy of the domain cascade in `/fusion:cleanup`, the citation rooting that reached two
 of three skills, and a live test that asserted a git checkout rather than a property.
 
@@ -83,7 +83,7 @@ the file passes standalone (10/10) and the full suite passes clean before and af
 observed load-sensitivity under four parallel executors, not as a finding about this change.
 
 The gate was demonstrated failing, on a copy — the working tree was not mutated (decision
-`260810-1820`). `rsync` of the tree into the scratchpad, the pre-fix paraphrase written back into
+`260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`). `rsync` of the tree into the scratchpad, the pre-fix paraphrase written back into
 the copy's `skills/cleanup/SKILL.md`, then `npx vitest run lib/__tests__/domain-cascade.test.ts`
 in the copy: the reach gate fails naming `skills/cleanup/SKILL.md:125`, its four domains, its
 three inputs, and the route to take instead.

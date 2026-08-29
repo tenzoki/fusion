@@ -2,8 +2,8 @@
 
 **Date:** 260801-1430
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 2 only
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 2 only
 **Status:** Complete
 
 ## What was implemented
@@ -128,7 +128,7 @@ body out and leaves a space, so the operand is *invisible* rather than *unresolv
 `rm $(echo rules/x.md)` is allowed where `rm $VAR` denies. The fix belongs in `shell-parse`
 (capture mode leaves an unresolvable token instead of a space) and changes the deny surface,
 so it is filed for the Q3 gate rather than applied:
-`issues/260801-1430_o_substitution-operand-is-invisible-to-the-mutation-classifier.md`.
+`260801-1430_*_substitution-operand-is-invisible-to-the-mutation-classifier.md`.
 
 **Three false positives the gate should see, all following from the plan as written:**
 
@@ -147,8 +147,8 @@ accepted residual, but the specific list is worth naming at the gate.
 ## Files
 
 - `hooks/lib/bash-mutation-guard.ts` — new
-- `fusion-workbench/circles/260801-1244-guard-bash-inspection/planning/260801-1253_o_plan-guard-bash-inspection.md` — step 2 marked `[DONE]` with divergences
-- `fusion-workbench/circles/260801-1244-guard-bash-inspection/issues/260801-1430_o_substitution-operand-is-invisible-to-the-mutation-classifier.md` — new
+- `260801-1253_*_plan-guard-bash-inspection.md` — step 2 marked `[DONE]` with divergences
+- `260801-1430_*_substitution-operand-is-invisible-to-the-mutation-classifier.md` — new
 
 `hooks/guard.ts` (step 5), `hooks/dist/` (step 8) and `.claude-plugin/plugin.json` (step 8)
 were not touched. Not committed — the orchestrator commits.

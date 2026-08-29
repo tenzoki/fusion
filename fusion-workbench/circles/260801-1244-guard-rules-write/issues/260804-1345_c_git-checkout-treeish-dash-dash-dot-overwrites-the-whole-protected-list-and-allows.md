@@ -8,9 +8,9 @@
 **Affects:** `hooks/lib/bash-mutation-guard.ts:914-936` (`gitCheckoutWrites`), `:1557-1568` (`ancestorOfProtected`, the project-root exclusion at `:1562`); `rules/protected-path-discipline.md:81-104` (the `checkout` row and its two stated costs, which do not name this one)
 **Kind:** Not a regression — `git checkout` was in no table before `613d6fd`, so this allowed then too. It is NEW as an **uncovered case inside a row that is now presented as covering the operation**, and the residual list does not carry it.
 **Cross-references:**
-`issues/260804-1026_c_…` (the finding `613d6fd` closed; this is the part of it that did not close),
-`decisions/260804-1323_i_…` (`## The second question` — the two stated costs),
-`issues/260804-1346_o_…` (the same root-pathspec hole on `git clean`, filed separately because the verb and the fix differ).
+`260804-1026_*_…` (the finding `613d6fd` closed; this is the part of it that did not close),
+`260804-1323_*_…` (`## The second question` — the two stated costs),
+`260804-1346_*_…` (the same root-pathspec hole on `git clean`, filed separately because the verb and the fix differ).
 
 ---
 
@@ -53,7 +53,7 @@ agent could not have obtained by leaving the file alone.
 
 `git restore --source=HEAD~1 .` is the **pre-existing sibling** — it has allowed since
 `restore` joined the table. It is listed here because any fix has to cover both spellings or
-it recreates the asymmetry `260804-1026` was filed about.
+it recreates the asymmetry `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md` was filed about.
 
 The `'*'` row is the documented glob residual and is correctly out of scope
 (`rules/protected-path-discipline.md`, "Glob and brace expansion are matched as literal
@@ -124,7 +124,7 @@ protected path spelled in the command. Lifting the root exclusion for every
 candidate would have denied `git -C build clean -fdx`, whose modelled `.`
 resolves to the root at the shell's base although git cleans `build` and nothing
 else. That row is pinned as an allow in both suites and is named as a control in
-`260804-1346`. So `writesThrough` is consulted only at `gitEffectiveBase` — the
+`260804-1346_*_git-clean-fdx-at-the-project-root-is-still-a-residual-and-its-residual-entry-was-deleted.md`. So `writesThrough` is consulted only at `gitEffectiveBase` — the
 directory the invocation actually runs in. The union is unweakened: a protected
 path spelled in the command still denies however the flags point.
 
@@ -132,7 +132,7 @@ The deny also earned its own reason. `ancestorReason` says removing or moving th
 directory would take the protected path with it, which is what `rm -rf hooks`
 does and is not what `checkout` does — it leaves every directory in place and
 replaces the contents. `writesThroughReason` names the real mechanism and the
-real way through (the literal file list). Same class as `260804-1347`.
+real way through (the literal file list). Same class as `260804-1347_*_the-git-directory-fail-closed-deny-tells-the-agent-to-drop-a-cd-that-is-not-in-the-command.md`.
 
 Measured against a generated cross-product of 181,115 commands, baseline
 `f82ac02`: **0 newly allowed**; 1,174 newly denied, every one a `writesThrough`

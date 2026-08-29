@@ -64,13 +64,13 @@ loudness the module already chose for a plugin file that exists but does not
 parse.
 
 Cross-references:
-`shared/analyses/260809-1101-guard-support-layer.md` (finding 5);
+`260809-1101-guard-support-layer.md` (finding 5);
 `templates/fusion-guard.json` (`_override`, `_inherits`);
-`circles/260801-1244-guard-rules-write/issues/260804-1603_c_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md`.
+`260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md`.
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
 The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.
 
 ---

@@ -3,10 +3,10 @@
 ---
 **Severity:** Medium — the Circle's closure criterion is a before-and-after measurement, and two of its seventeen rows no longer hold at HEAD
 **Domain:** code
-**Filed by:** reconciler, Phase-3 pass `history/260815-1913-reconciliation.md`, HEAD `9306f0a`
+**Filed by:** reconciler, Phase-3 pass `260815-1913-reconciliation.md`, HEAD `9306f0a`
 **Owner:** whoever writes the Closure note
-**Affects:** `history/260815-1832-coder-after-measurement.md` `## Before and after, with deltas`, rows 8, 9 and 11
-**Cross-references:** `_t_circle.md` `## Closure criterion`; `planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md` steps 14 and 15
+**Affects:** `260815-1832-coder-after-measurement.md` `## Before and after, with deltas`, rows 8, 9 and 11
+**Cross-references:** `_t_circle.md` `## Closure criterion`; `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` steps 14 and 15
 
 ---
 
@@ -41,7 +41,7 @@ a cost of the release rather than a saving it failed to make.
 
 Either the Closure note carries these three corrected rows with the reason, or step 14's block is
 re-run at the true closing HEAD. Re-running is cheap — the block is reproduced verbatim in
-`history/260815-0729-coder-before-measurement.md` — but it would then need the same treatment for
+`260815-0729-coder-before-measurement.md` — but it would then need the same treatment for
 whatever the closing commit itself adds, which is the regress the annotation avoids.
 
 
@@ -56,4 +56,4 @@ whatever the closing commit itself adds, which is the regress the annotation avo
 The Circle record is terminal, so neither row is corrected. What this costs is specific rather than general: the four growth bounds armed by this Circle are argued from these measurements, so a later reader re-deriving the head-room from the Closure note starts 897 bytes off on the surface with the largest budget.
 
 ---
-Resolved: moot — a terminal Circle record is not edited; the corrected `skills/` figure, 221 336 bytes, stands here beside `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_*_circle.md`.
+Resolved: moot — a terminal Circle record is not edited; the corrected `skills/` figure, 221 336 bytes, stands here beside `260815-0007-remove-eight-mechanisms-and-cap-growth`.

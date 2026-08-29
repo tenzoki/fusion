@@ -21,7 +21,7 @@ only under a condition that is never met. Establish which before changing anythi
 nothing in common.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:580` still reads `localStorage.getItem(key)` unguarded inside the warning render, and `task_start` emission is still unenforced, so both causes the analysis pinned are live. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:580` still reads `localStorage.getItem(key)` unguarded inside the warning render, and `task_start` emission is still unenforced, so both causes the analysis pinned are live. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — the unguarded `localStorage.getItem` in the warning render is wrapped in try/catch like the writes beside it, so a browser refusing storage no longer kills the render before the ETA slot is reached; the other pinned cause, `task_start` not being emitted, is the orchestrator's emission obligation (`agents/orchestrator.md`) and is not a monitor defect; `bin/monitor` `renderWarnings()`

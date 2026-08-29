@@ -1,4 +1,4 @@
-# Reconciliation — session 260818-2301, final pass
+# Reconciliation — session 260818-2301-orchestrator-session.md, final pass
 
 **Date:** 2026-08-19
 **Agent:** reconciler
@@ -43,16 +43,16 @@ All four hold and keep the `_i_` marker. Each carries a reconciliation note in i
 
 | Record | Footer accuracy |
 |---|---|
-| `260816-1707_i_to-whom-is-the-new-workbench-tracking-rule-emitted…` | Accurate in every clause. The mid-session correction is honest: the earlier figures were the `[analyst]` dispatch block, the corrected 101 393 → 97 977 is the floor as `CLAUDE.md` defines it, and it reproduces exactly. The commit message of `b200902` keeps the wrong wording and says so, which is right — a commit message is history. |
-| `260816-0711_i_where-does-the-tracked-workbench-split-live…` | Accurate except one word. The footer says the subsection moved out **verbatim**; its lede was rewritten in the same change, replacing a four-name exclusion list with a phrase the cited tree does not use for half of it. The two record-versus-live-state bullets did move unchanged and nothing normative was lost. Already carried as `shared/issues/260819-0826_o_*`. |
-| `260817-1613_i_does-a-plan-stated-precondition-get-any-mechanism…` | Accurate. One residue is filed and open: the section was made mandatory for plans with no Circle active, whose only stated reader is a Phase 4 that runs solely on a Circle closure (`shared/issues/260819-0828_o_*`). |
-| `260818-2212_i_should-the-decision-records-status-field-exist-at-all…` | Accurate for what it claims. Two surfaces the closure did not reach are filed and open (`260819-0821_o_*`, `260819-0028_o_*`). The record itself still carries `**Status:** open` and the unfilled footer stub, both correctly left — it is a member of the population its own answer says not to hand-correct. |
+| `260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted…` | Accurate in every clause. The mid-session correction is honest: the earlier figures were the `[analyst]` dispatch block, the corrected 101 393 → 97 977 is the floor as `CLAUDE.md` defines it, and it reproduces exactly. The commit message of `b200902` keeps the wrong wording and says so, which is right — a commit message is history. |
+| `260816-0711_*_where-does-the-tracked-workbench-split-live…` | Accurate except one word. The footer says the subsection moved out **verbatim**; its lede was rewritten in the same change, replacing a four-name exclusion list with a phrase the cited tree does not use for half of it. The two record-versus-live-state bullets did move unchanged and nothing normative was lost. Already carried as `shared/issues/260819-0826_o_*`. |
+| `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism…` | Accurate. One residue is filed and open: the section was made mandatory for plans with no Circle active, whose only stated reader is a Phase 4 that runs solely on a Circle closure (`shared/issues/260819-0828_o_*`). |
+| `260818-2212_*_should-the-decision-records-status-field-exist-at-all…` | Accurate for what it claims. Two surfaces the closure did not reach are filed and open (`260819-0821_o_*`, `260819-0028_o_*`). The record itself still carries `**Status:** open` and the unfilled footer stub, both correctly left — it is a member of the population its own answer says not to hand-correct. |
 
 ## The thirteen closures, re-checked
 
 Twelve of the thirteen were re-checked against disk rather than read. Nine hold as written. Three
-were already found overstated by the Turn-2 review and are filed (`260819-0821`, `260819-0824`,
-`260819-0827`); the `260819-0041_c_*` closure already carries its `Revised by:` line. **One more was
+were already found overstated by the Turn-2 review and are filed (`260819-0821_*_the-status-qualifier-closure-names-one-remaining-site-and-a-shipped-agent-prompt-still-carries-it.md`, `260819-0824_*_the-stub-guard-holds-only-for-a-section-that-is-nothing-but-the-stub-and-the-closure-claims-otherwise.md`,
+`260819-0827_*_the-fold-note-credits-the-header-table-with-carrying-verbatim-what-the-rule-files-own-lede-carries.md`); the `260819-0041_c_*` closure already carries its `Revised by:` line. **One more was
 found in this pass.**
 
 ### New finding — `260811-2146_c_*` was closed on one of its two halves
@@ -67,9 +67,9 @@ than the four the record quoted, `Retired:` having been added since. Three live 
 still carry it verbatim, measured by grepping `^Answered: <set when status moves to _a_>` across
 `shared/decisions/` and `circles/*/decisions/`:
 
-- `shared/decisions/260818-0814_i_what-covers-the-plugin-repo-shaped-exempt-surface-record…md`
-- `shared/decisions/260818-1512_a_does-the-shapers-third-mode-keep-the-name-portfolio-activation…md`
-- `shared/decisions/260818-2212_i_should-the-decision-records-status-field-exist-at-all…md`
+- `260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record…md`
+- `260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation…md`
+- `260818-2212_*_should-the-decision-records-status-field-exist-at-all…md`
 
 The third is the decision record that authorised the closure: it carries the stub at `:146-150`
 while its real `Answered:` and `Implemented:` annotations sit at `:167` and `:170`. Twelve became
@@ -98,7 +98,7 @@ Counts below were taken with `ls` over the markers, not read from the session re
 | `shared/planning/` | 4 files, all `_c_`; no plan was written for this session (mode `custom`) |
 
 The arithmetic closes exactly. The session opened at 87 open defects. It filed 22 (twelve in
-`5ec26b2`, `260818-2343` filed and closed inside `b200902`, `260819-0756` in `83488e9`, eight
+`5ec26b2`, `260818-2343_*_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md` filed and closed inside `b200902`, `260819-0756_*_the-v10-2-migration-note-still-states-the-status-position-with-the-qualifier-the-rule-just-dropped.md` in `83488e9`, eight
 uncommitted from the Turn-2 review) and closed 13, and this pass filed 2 more:
 87 + 22 − 13 + 2 = 98.
 
@@ -108,11 +108,11 @@ three the session opened with are the three it realised.
 
 ## Decisions checked and deliberately not moved
 
-- `260810-2145_a_should-a-repeated-skill-body-snippet-become-a-bin-helper…` stays `_a_` although its
+- `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper…` stays `_a_` although its
   first half is implemented. Its own footer says why, at length: it bundles two questions, the second
   is held in reserve by the answer itself, and `_i_` is terminal. This is correct and is not a
   reconciliation gap.
-- `260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md` stands at `_a_`. It is
+- `260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md` stands at `_a_`. It is
   the record a glob renamed by accident during Turn 1. `git log --follow` shows no commit in the
   range touching it, `git diff --stat 52b1d95..HEAD` over it is empty, and the worktree is clean for
   the whole decisions store. The revert was complete and the body is untouched.
@@ -121,7 +121,7 @@ three the session opened with are the three it realised.
 
 ## Also filed
 
-`shared/issues/260819-0837_o_an-untracked-zero-byte-test-txt-sits-at-the-repository-root…` — a
+`260819-0837_*_an-untracked-zero-byte-test-txt-sits-at-the-repository-root…` — a
 0-byte `Test.txt` at the repository root, written one minute after `06ab15b`, referenced by nothing,
 and not covered by any ignore rule. The Turn-2 review saw it and recorded it under "filed nowhere",
 which is the one place the filing rule names as not a filing home. Fix is `rm`. The review's second
@@ -135,7 +135,7 @@ session and was correctly left alone.
 - `shared/issues/260819-0836_o_*`, `shared/issues/260819-0837_o_*` — filed.
 - `shared/reviews/260819-0044-coderev-turn-1-*` and `shared/reviews/260819-0832-coderev-turn-2-*` —
   confirmation notes appended. No finding rewritten.
-- `shared/history/260818-2301-orchestrator-session.md` — `## Coherence` section appended.
+- `260818-2301-orchestrator-session.md` — `## Coherence` section appended.
 
 ## Two things left for the orchestrator
 

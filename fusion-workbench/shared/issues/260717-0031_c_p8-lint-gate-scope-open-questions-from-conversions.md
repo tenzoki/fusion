@@ -14,11 +14,11 @@ Tasks P-4 through P-7 each hit a case where the lint gate's exact scope matters,
 - **Under-emission** (prompt uses a key the resolver withholds) is an unambiguous bug and should hard-fail. That class produced a live defect: reconciler wrote decision records to the workbench root until commit `45d8a71`.
 - **Over-emission** (resolver emits a key the prompt never names) is ambiguous. T2-B's audit of eleven cases classified only one as clear-cut (`bugfixer`/`SCAN_PLANS`, whose prompt says twice it does not follow plans); several others look like prompt gaps rather than resolver spares. Auto-failing over-emission would pressure people into stripping keys where the prompt is what is at fault.
 
-Note item 4 interacts with the open namespace decision (`decisions/260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`): under option 2, skills resolve their own keys and the union problem disappears.
+Note item 4 interacts with the open namespace decision (`260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`): under option 2, skills resolve their own keys and the union problem disappears.
 
 ---
 Collected by the orchestrator from findings reported by `coder` in tasks P-4, P-5, P-6, P-7 and T2-B.
-Source: fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md step 8
+Source: 260716-1910[p]-plan-workbench-umbau-circle-container.md step 8
 
 ---
 Resolved: all four scope questions are settled in `hooks/lib/__tests__/path-literal-lint.test.ts`,

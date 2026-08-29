@@ -27,9 +27,9 @@ verdict.
 the suite would not notice if that behaviour changed in either direction
 **Affected:** `hooks/guard.ts:353`, `hooks/lib/project-relative.ts`, the test suite (no coverage)
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
-`shared/planning/260812-1232_p_remove-the-protected-path-half-of-the-compliance-guard.md` (step 5),
-`shared/history/260812-1546-coder-acceptance-run-against-a-project-that-is-not-this-repository.md`
+`260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
+`260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (step 5),
+`260812-1546-coder-acceptance-run-against-a-project-that-is-not-this-repository.md`
 
 ## What is and is not new here
 
@@ -54,4 +54,4 @@ can choose. `churnKey` passes the workbench root. Passing `findWorkbenchRoot() ?
 is a behaviour change to a live check and is not filed as decided here.
 
 ---
-Resolved: the guard has no block source at all, so the class this record tracks has no carrier left. `2f624ca` (plan step P-2) deleted CHECK 3 from `hooks/guard.ts`; `fab8a4b` (P-7a) deleted the four keys that armed it (`decisions`, `guard.categoryPaths`, `guard.categorySensitivity`, `guard.defaultSensitivity`) together with `findRelevantDecisions` and `sensitivityLevel`; and `3c2e1c6` (P-5, first half) deleted `hooks/lib/project-relative.ts` with its last caller, which is the cwd anchoring measured here. The narrow fix this record offered — passing `findWorkbenchRoot() ?? process.cwd()` at the old `hooks/guard.ts:353` — has no site to be applied at, and the missing coverage it names is coverage of a verdict that can no longer occur. The cwd-anchored assumption itself is not gone from the project: `bin/fusion-plugin-cwd`, `bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` still resolve their work-tree preference against cwd with no upward walk, and `hooks/session-start.ts` warns about exactly that. What is gone is its reach into a guard verdict, which is what this record is about. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
+Resolved: the guard has no block source at all, so the class this record tracks has no carrier left. `2f624ca` (plan step P-2) deleted CHECK 3 from `hooks/guard.ts`; `fab8a4b` (P-7a) deleted the four keys that armed it (`decisions`, `guard.categoryPaths`, `guard.categorySensitivity`, `guard.defaultSensitivity`) together with `findRelevantDecisions` and `sensitivityLevel`; and `3c2e1c6` (P-5, first half) deleted `hooks/lib/project-relative.ts` with its last caller, which is the cwd anchoring measured here. The narrow fix this record offered — passing `findWorkbenchRoot() ?? process.cwd()` at the old `hooks/guard.ts:353` — has no site to be applied at, and the missing coverage it names is coverage of a verdict that can no longer occur. The cwd-anchored assumption itself is not gone from the project: `bin/fusion-plugin-cwd`, `bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` still resolve their work-tree preference against cwd with no upward walk, and `hooks/session-start.ts` warns about exactly that. What is gone is its reach into a guard verdict, which is what this record is about. Plan: `260816-1915_*_the-compliance-guard-becomes-observation-only.md`.

@@ -6,7 +6,7 @@ The conditional marker write has no plugin-root guard, so an empty version wipes
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `skills/setup/SKILL.md:92-94`
-**Cross-references:** plan step 4 and its `## Data Structures` section in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run`
+**Cross-references:** plan step 4 and its `## Data Structures` section in `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`; `rules/workbench-tracking.md` `## The setup marker is written on change, not on every run`
 
 ---
 

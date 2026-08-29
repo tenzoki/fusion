@@ -2,18 +2,18 @@
 
 **Date:** 2026-07-17
 **Status:** Complete — verified retroactively at HEAD `cde5319`; see Reconciliation Log.
-**Spec:** none — planned from the defect issue `fusion-workbench/shared/issues/260717-1903[o]-skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
+**Spec:** none — planned from the defect issue `260717-1903[o]-skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
 **Origin — why this plan sits in `shared/planning/` and not in the Circle that caused it.** It was
 written while Circle `260716-1847-workbench-umbau` was active: its sibling planner session history
-is `circles/260716-1847-workbench-umbau/history/260717-1918-planner-session.md`, written by the
+is `260717-1918-planner-session.md`, written by the
 same run under the same resolver call, so by the Origin Rule this plan's origin is that Circle. It
 was **promoted** to `shared/planning/` at the Circle's closure, deliberately and with the reason
-recorded at the time (`circles/260716-1847-workbench-umbau/_*_circle.md` `## Closure note`): it
+recorded at the time (`260716-1847-workbench-umbau` `## Closure note`): it
 declares its own Directive and is independent follow-on work rather than part of the closed
 Circle. That is the Origin Rule's own promotion clause — *"an explicit, recorded move from a Circle
 to `shared/`"* — and this is its only instance in this workbench. The Circle-first placement change
 of 260812 re-examined the promotion and confirmed it rather than reversing it; see
-`shared/decisions/260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`.
+`260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`.
 **Do not move this file into the Circle.** Every other file in `shared/planning/` is there because
 no Circle was active when it was written, which its own sibling history in `shared/history/`
 witnesses; this one is the exception, and this paragraph is the reason it is not a mistake.
@@ -242,9 +242,9 @@ Full-suite gate: `npm test` green after step 6, and `claude plugin validate .` s
 
 ## Open Questions
 
-- [ ] None blocking. The open/answered decisions in scope (`260716-*`, `260717-0033[a]`) concern the Circle-container restructure and the Plane, not shell hygiene; none feeds this plan. The one open decision `260716-1847[o]-offline-verhalten-bei-plane-ausfall` is unrelated.
+- [ ] None blocking. The open/answered decisions in scope (`260716-*`, `260717-0033_*_derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`) concern the Circle-container restructure and the Plane, not shell hygiene; none feeds this plan. The one open decision `260716-1847[o]-offline-verhalten-bei-plane-ausfall` is unrelated.
 - [ ] Cosmetic only: whether to append `| sort` to the cleanup listing (site 12) for deterministic display order. Executor's call at implementation time; not a blocker.
 
 ## Reconciliation Log
 
-**260806-1152 (reconciler, workbench-wide pass)** — Status Draft → Complete, retroactive; the marker was already `_c_` while the body still said Draft with no step markers. Evidence the plan was executed: the driving issue `shared/issues/260717-1903_c_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md` carries a Resolved footer naming the delivered shape (`find`-based enumeration, `< <(find …)` process substitution where counters persist, and the `glob-nomatch-lint.test.ts` gate against reintroducing raw `.[!.]*`; verified under zsh 5.9 with 196 hooks tests then green). Spot-checked at HEAD `cde5319`: `skills/migrate/SKILL.md` steps 2/4 run `while IFS= read -r … done < <(find …)` loops throughout, `skills/setup/SKILL.md` and the sibling skills carry the same form, and the lint gate is part of the 30-file suite (1611 green this pass). Site 12's escaped-bracket construct was later simplified by the v5.0.0 underscore-marker change, as the issue footer records.
+**260806-1152 (reconciler, workbench-wide pass)** — Status Draft → Complete, retroactive; the marker was already `_c_` while the body still said Draft with no step markers. Evidence the plan was executed: the driving issue `260717-1903_*_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md` carries a Resolved footer naming the delivered shape (`find`-based enumeration, `< <(find …)` process substitution where counters persist, and the `glob-nomatch-lint.test.ts` gate against reintroducing raw `.[!.]*`; verified under zsh 5.9 with 196 hooks tests then green). Spot-checked at HEAD `cde5319`: `skills/migrate/SKILL.md` steps 2/4 run `while IFS= read -r … done < <(find …)` loops throughout, `skills/setup/SKILL.md` and the sibling skills carry the same form, and the lint gate is part of the 30-file suite (1611 green this pass). Site 12's escaped-bracket construct was later simplified by the v5.0.0 underscore-marker change, as the issue footer records.

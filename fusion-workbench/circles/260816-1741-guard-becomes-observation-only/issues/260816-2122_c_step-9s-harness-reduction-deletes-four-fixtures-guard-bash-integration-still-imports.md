@@ -43,7 +43,7 @@ by `grep -l` over `hooks/lib/__tests__/*.ts` and `helpers/*.ts`, and by
 `cd hooks && npm test -- lib/__tests__/guard-bash-integration.test.ts` (5 failed, 10 passed).
 
 Related and not duplicated:
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2021_o_the-plan-requires-guard-bash-integration-to-stay-green-while-five-of-its-cases-assert-a-deny.md`
+`260816-2021_*_the-plan-requires-guard-bash-integration-to-stay-green-while-five-of-its-cases-assert-a-deny.md`
 records that the same file is red and absent from step 9's list, and proposes adding it. This
 record is the second half of that: even with the file added, step 9's harness instruction as
 written removes the fixtures the re-pointed cases would run on, and the instruction's own count
@@ -108,4 +108,4 @@ This record's closing suggestion — grep an exported symbol across `hooks/**`
 including `__tests__/` before any remaining step deletes it — was followed here
 and is worth keeping for steps 10 to 15.
 
-History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2250-step-9-test-surface-follows-the-removal.md`.
+History: `260816-2250-step-9-test-surface-follows-the-removal.md`.

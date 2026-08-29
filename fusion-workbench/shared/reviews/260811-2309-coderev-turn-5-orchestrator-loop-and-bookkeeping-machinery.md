@@ -3,7 +3,7 @@
 **Sender:** coderev
 **Reviewed-range:** `e3da397..a6b4928`
 **Not-opened:** none
-**Date:** 260811-2309
+**Date:** 260811-2309-coderev-turn-5-orchestrator-loop-and-bookkeeping-machinery.md
 **Scope as dispatched:** the whole of Turn 5, four commits, with six named checks
 
 ---
@@ -14,7 +14,7 @@
 
 Every finding below is in prose inside `agents/orchestrator.md`. The executable changes — the drift anchor, the record-counts split, the regenerated golden — were each checked against their own claims and each held: the anchor is stronger in the direction claimed and weaker in none, the split is disjoint and complete, the golden moved by exactly the five bytes the conventions edit added and by nothing else. The suite is 1349/1349 and `hooks/dist` rebuilds byte-identical to the committed build.
 
-The two Medium findings worth fixing in the next Turn, in this order, are `260811-2304` (the Revise Artifact path never reaches the gate that is said to bound it) and `260811-2305_o_continue-without-check-ins-…` (the third gate answer falsifies two nearby bounding claims). Both are the same class of defect as the High finding this range repaired: the mechanism is honest, and a sentence one paragraph away is not. Neither is a runaway — on both paths the user is still asked something at every Turn boundary and still has a terminating choice — which is why neither blocks a release.
+The two Medium findings worth fixing in the next Turn, in this order, are `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md` (the Revise Artifact path never reaches the gate that is said to bound it) and `260811-2305_*_continue-without-check-ins-…` (the third gate answer falsifies two nearby bounding claims). Both are the same class of defect as the High finding this range repaired: the mechanism is honest, and a sentence one paragraph away is not. Neither is a runaway — on both paths the user is still asked something at every Turn boundary and still has a terminating choice — which is why neither blocks a release.
 
 ## Totals
 
@@ -25,7 +25,7 @@ The two Medium findings worth fixing in the next Turn, in this order, are `26081
 | Medium | 3 |
 | Low | 5 |
 
-All eight are filed under `shared/issues/` as `_o_` records, stamps `260811-2304` to `260811-2307`.
+All eight are filed under `shared/issues/` as `_o_` records, stamps `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md` to `260811-2307`.
 
 ---
 
@@ -37,13 +37,13 @@ All eight are filed under `shared/issues/` as `_o_` records, stamps `260811-2304
 
 **Continue** and **Continue without check-ins** each leave a problem.
 
-- The gate is placed "after the circuit-breaker table has been evaluated and **before Step 3e**" (`:625`). Step 3e is the convergence check (`:635`). So on the Turn that empties the queue the user is asked "run another Turn?", answers Continue, and Step 3e exits to Phase 4 anyway. One spurious gate per session, and one answer collected and discarded. Filed: `260811-2305_o_the-unresolved-budget-check-in-fires-before-the-convergence-test-…`. Medium.
-- **Continue without check-ins** is recorded only in the session history (`:629`), not in `agentstate.yaml`. `e61e24a` — in this same range — defines a resume as *the same session* and enumerates the fields that survive it (`:100`). This one does not. A resumed session re-asks. The direction is safe; the two commits disagreeing about where session-scoped state lives is the finding. Filed: `260811-2306_o_the-check-in-opt-out-is-session-scoped-…`. Low.
+- The gate is placed "after the circuit-breaker table has been evaluated and **before Step 3e**" (`:625`). Step 3e is the convergence check (`:635`). So on the Turn that empties the queue the user is asked "run another Turn?", answers Continue, and Step 3e exits to Phase 4 anyway. One spurious gate per session, and one answer collected and discarded. Filed: `260811-2305_*_the-unresolved-budget-check-in-fires-before-the-convergence-test-…`. Medium.
+- **Continue without check-ins** is recorded only in the session history (`:629`), not in `agentstate.yaml`. `e61e24a` — in this same range — defines a resume as *the same session* and enumerates the fields that survive it (`:100`). This one does not. A resumed session re-asks. The direction is safe; the two commits disagreeing about where session-scoped state lives is the finding. Filed: `260811-2306_*_the-check-in-opt-out-is-session-scoped-…`. Low.
 
 The sentence-level check the predecessor's finding asked for was applied to the new sentences, and two of them fail it. Both are in the Rebalance-bounding section and both were touched by `500f51f` itself:
 
-- `:974` — "every Turn boundary in such a session runs the **Unresolved-budget check-in** (Step 3d)". It does not. `:450` lists three ways a Turn ends and only one is Step 3d; `:591` says a Coherence-gate Rebalance "exits without emitting `turn_end`" and Revise Artifact re-enters Phase 2 directly. Step 3c-bis sits *before* Step 3d, so the whole Revise Artifact cycle skips the gate. Filed: `260811-2304`. Medium.
-- `:972` — "No option is allowed to loop unboundedly", and `:974` again — "that is what bounds the retries". Both are false the moment the user answers **Continue without check-ins**. The check-in bullet at `:629` states that residual correctly; the Rebalance section was not qualified with it. Filed: `260811-2305_o_continue-without-check-ins-…`. Medium.
+- `:974` — "every Turn boundary in such a session runs the **Unresolved-budget check-in** (Step 3d)". It does not. `:450` lists three ways a Turn ends and only one is Step 3d; `:591` says a Coherence-gate Rebalance "exits without emitting `turn_end`" and Revise Artifact re-enters Phase 2 directly. Step 3c-bis sits *before* Step 3d, so the whole Revise Artifact cycle skips the gate. Filed: `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md`. Medium.
+- `:972` — "No option is allowed to loop unboundedly", and `:974` again — "that is what bounds the retries". Both are false the moment the user answers **Continue without check-ins**. The check-in bullet at `:629` states that residual correctly; the Rebalance section was not qualified with it. Filed: `260811-2305_*_continue-without-check-ins-…`. Medium.
 
 ### 2. The gate's placement in the Human Gate Rules table — correct, and it is the only by-position reference
 
@@ -62,7 +62,7 @@ Checked each consumer of `orchestrator-events.jsonl` that reads code rather than
 | `hooks/lib/staging-drift.ts`, `hooks/lib/churn.ts`, `hooks/lib/events.ts`, `hooks/tracker.ts`, `bin/fusion-staging-drift` | grepped: none reads `session_start` at all | n/a |
 | Phase 4 "sequence-diagram generator" | not a program — the orchestrator writes a Mermaid `sequenceDiagram` into the history file from the log (`:218`, and the worked examples under `shared/history/`) | yes, it is LLM-read |
 
-**The pre-field fallback is unambiguous-only, and I tested the claim against this repository's own log.** It carries 1256 lines, and after the last `session_end` at line 1152 there are two `session_start` lines (1153 and 1213, the second being this session's 17:15 resume), neither carrying `history_file`. `agentstate.yaml` names `shared/history/260811-0752-orchestrator-session.md`. Running `bin/fusion-state-drift` here:
+**The pre-field fallback is unambiguous-only, and I tested the claim against this repository's own log.** It carries 1256 lines, and after the last `session_end` at line 1152 there are two `session_start` lines (1153 and 1213, the second being this session's 17:15 resume), neither carrying `history_file`. `agentstate.yaml` names `260811-0752-orchestrator-session.md`. Running `bin/fusion-state-drift` here:
 
 ```
 progress.turn  surface=5  record=?  UNCHECKED (2 session_start lines since the last
@@ -72,7 +72,7 @@ of them began this session is not decidable)
 
 Case 2 requires `candidates.length === 1` and refuses to guess at two. The claim holds exactly as stated.
 
-Two Low findings came out of this area, both about the identity rather than the fallback: the history filename is minute-resolution and nothing prevents two sessions sharing one (`260811-2307_o_the-history-filename-is-minute-resolution-…`), and Setup step 6 still tells a resumed session to create a history file that step 1 forbids (`260811-2306_o_setup-step-6-…`).
+Two Low findings came out of this area, both about the identity rather than the fallback: the history filename is minute-resolution and nothing prevents two sessions sharing one (`260811-2307_*_the-history-filename-is-minute-resolution-…`), and Setup step 6 still tells a resumed session to create a history file that step 1 forbids (`260811-2306_*_setup-step-6-…`).
 
 ### 4. The drift row is stronger, and it is stronger in the direction claimed
 
@@ -84,7 +84,7 @@ Both halves verified, by reading `sessionAnchor` and by the cases the commit add
 
 **No shape got weaker.** I walked the four log shapes against `sessionAnchor` by hand — clean restart, crash-then-fresh-session, crash-then-resume, and truncated tail — and each lands where the old code landed or better. The Restart-after-crash case is the one the old positional rule would have got wrong and the identity gets right; the test suite covers it ("counts only this session's Turns when a crashed session left no session_end").
 
-One Low finding: on the tracker path an `unchecked` row is reported as nothing at all, because `driftSentence` is built from `report.drifted` alone (`hooks/lib/state-drift.ts:661`), and the CLI header prints `drift=0 verdict=clean` with no `unchecked=` count. The module docstring at `:64` says no undecidable row is dropped; on that one caller it is. The population landing there is larger after this change than before. Filed: `260811-2307_o_an-unchecked-drift-row-is-silent-…`.
+One Low finding: on the tracker path an `unchecked` row is reported as nothing at all, because `driftSentence` is built from `report.drifted` alone (`hooks/lib/state-drift.ts:661`), and the CLI header prints `drift=0 verdict=clean` with no `unchecked=` count. The module docstring at `:64` says no undecidable row is dropped; on that one caller it is. The population landing there is larger after this change than before. Filed: `260811-2307_*_an-unchecked-drift-row-is-silent-…`.
 
 ### 5. The regenerated golden is the five bytes and nothing else
 
@@ -122,7 +122,7 @@ Disjoint and complete over the two booleans, with no fifth branch and no fall-th
 
 ## Cross-cutting observations
 
-**One defect class accounts for all three Medium findings, and it is the class the range set out to fix.** `260811-2142` was "a sentence claims a bound the mechanism lacks". Two of the three Mediums here are the same sentence-versus-mechanism gap, in the section immediately below the one that was repaired, and both were touched by the repairing commit. The pattern is not carelessness — it is that the *fix* was written where the false claim was, and the neighbouring paragraph that repeats the claim in different words was read as already covered. `hooks/lib/__tests__/turn-budget-lint.test.ts`'s `CLAIM` regex (`/\bloop is (?:still |…)?bounded\b/i`) is precisely this narrow: it catches the phrasing that was there and not the two phrasings one section down (`bounded post-action mechanics`, `bounds the retries`). Widening that one regex is the cheapest thing in this review.
+**One defect class accounts for all three Medium findings, and it is the class the range set out to fix.** `260811-2142_*_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md` was "a sentence claims a bound the mechanism lacks". Two of the three Mediums here are the same sentence-versus-mechanism gap, in the section immediately below the one that was repaired, and both were touched by the repairing commit. The pattern is not carelessness — it is that the *fix* was written where the false claim was, and the neighbouring paragraph that repeats the claim in different words was read as already covered. `hooks/lib/__tests__/turn-budget-lint.test.ts`'s `CLAIM` regex (`/\bloop is (?:still |…)?bounded\b/i`) is precisely this narrow: it catches the phrasing that was there and not the two phrasings one section down (`bounded post-action mechanics`, `bounds the retries`). Widening that one regex is the cheapest thing in this review.
 
 **A second, smaller pattern: state added in one commit outside the state model another commit wrote in the same range.** `500f51f` puts the check-in opt-out in the session history; `e61e24a` writes the definitive list of what a session carries across a resume into `agentstate.yaml`. Neither is wrong on its own. Together they leave two precedents for where the next session-scoped fact goes.
 
@@ -136,8 +136,8 @@ Disjoint and complete over the two booleans, with no fifth branch and no fall-th
 
 **Next Turn, in order:**
 
-1. `260811-2304` — the Revise Artifact path and the gate it is said to meet. Fixing it by moving the check-in to the Turn-*start* obligation also closes `260811-2305_o_the-unresolved-budget-check-in-fires-before-the-convergence-test-…`, so consider them together rather than separately.
-2. `260811-2305_o_continue-without-check-ins-…` — qualify the two Rebalance claims, and widen the lint's `CLAIM` scan to reach that section while you are there.
+1. `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md` — the Revise Artifact path and the gate it is said to meet. Fixing it by moving the check-in to the Turn-*start* obligation also closes `260811-2305_*_the-unresolved-budget-check-in-fires-before-the-convergence-test-…`, so consider them together rather than separately.
+2. `260811-2305_*_continue-without-check-ins-…` — qualify the two Rebalance claims, and widen the lint's `CLAIM` scan to reach that section while you are there.
 
 **Cleanup, any time:** `260811-2306` ×3 (the `gate_response` vocabulary, Setup step 6's unqualified creation, the opt-out's persistence) and `260811-2307` ×2 (the minute-resolution identity, the silent `unchecked` row).
 
@@ -157,7 +157,7 @@ Disjoint and complete over the two booleans, with no fifth branch and no fall-th
 
 All eight are open, and none has been worked: the Phase 2 loop exited on the Max-Turns circuit
 breaker in the same commit that filed them (`31746d1`), so no Turn followed this review. Confirmed
-on disk at HEAD `31746d1` — `shared/issues/260811-2304`, `260811-2305` (×2), `260811-2306` (×3),
+on disk at HEAD `31746d1` — `260811-2304`, `260811-2305` (×2), `260811-2306` (×3),
 `260811-2307` (×2), each still `_o_`.
 
 Two things this pass confirmed rather than took on trust:
@@ -165,9 +165,9 @@ Two things this pass confirmed rather than took on trust:
 - **The release recommendation holds.** `cd hooks && npm test` at HEAD: 52 files, 1349 tests,
   exit 0. A first run of the same command aborted one worker (`Error: Worker exited unexpectedly`,
   51/52 files) and the re-run was clean — the load-sensitive class already recorded as
-  `260810-1135`, `260811-1409` and `260810-0918`, not a new failure.
+  `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`, `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md` and `260810-0918`, not a new failure.
 - **The findings are the largest single contribution to this session's open-record count.** Filing
   them took the workbench from 66 open defect records to 74. That is the honest arithmetic and it
   is not an argument against the review; it is recorded in this session's Coherence verdict.
 
-Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+Reconciled by `reconciler`, `260811-2330-reconciliation.md`.

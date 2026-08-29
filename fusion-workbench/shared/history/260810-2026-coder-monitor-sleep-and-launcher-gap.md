@@ -3,9 +3,9 @@
 **Status:** Complete
 **Session:** 260810-1646-orchestrator-session, Turn 2, task `R:260810-1918-monitor-residuals`
 **Source records:**
-`fusion-workbench/shared/issues/260810-1918_c_sleep-0-5-is-the-remaining-command-that-can-exit-the-monitor-wrapper-before-wait.md`,
-`fusion-workbench/shared/issues/260810-1918_c_the-monitor-launcher-goes-silent-where-the-same-session-established-naming-the-gap.md`
-**Review:** `fusion-workbench/shared/reviews/260810-1918-coderev-turn-1-range-5ef92eb-940d522.md` (M3, L1)
+`260810-1918_*_sleep-0-5-is-the-remaining-command-that-can-exit-the-monitor-wrapper-before-wait.md`,
+`260810-1918_*_the-monitor-launcher-goes-silent-where-the-same-session-established-naming-the-gap.md`
+**Review:** `260810-1918-coderev-turn-1-range-5ef92eb-940d522.md` (M3, L1)
 **Files changed:** `bin/monitor` — the browser-launch block at the tail only. No test file was touched.
 
 ## What the two defects were
@@ -81,7 +81,7 @@ become the wrapper's exit status:
 ## How it was verified
 
 All of it in a scratch copy under `scratchpad/monitor-sleep/`, per the session decision
-`260810-1820` — never in the working tree, which four executors were writing to at the time.
+`260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md` — never in the working tree, which four executors were writing to at the time.
 
 **The harness.** `script(1)` gives the wrapper a pty so `[ -t 1 ]` is true. The pty is held
 open by a trailing `sleep` **after** the wrapper returns, in an outer `bash -c`; without it
@@ -108,7 +108,7 @@ RESULT variant=beforeslow monitor_wrapper=EXITED http=200 listener='41851' [pid 
 
 The wrapper exited **1** at the `sleep` line, never reached `wait`, and the python server is
 still answering on the port with **ppid 1**: reparented to init, orphaned, its `INT`/`TERM`
-trap dead with the shell that installed it. That is the symptom of `260810-1558` returning by
+trap dead with the shell that installed it. That is the symptom of `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md` returning by
 a different door, as the record predicted.
 
 After (same shim, same harness, port 8802):
@@ -151,4 +151,4 @@ No test file was touched. The new stderr line has no executable gate, which is t
 asymmetry the review's cross-cutting note names for the commit sequence and the staging rule.
 Adding one would touch `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, which the queued
 task `I:260810-1632-pty-case` owns this session, so the gap is filed rather than collided with:
-`shared/issues/260810-2027_o_the-monitors-browser-gap-line-has-no-executable-gate.md`.
+`260810-2027_*_the-monitors-browser-gap-line-has-no-executable-gate.md`.

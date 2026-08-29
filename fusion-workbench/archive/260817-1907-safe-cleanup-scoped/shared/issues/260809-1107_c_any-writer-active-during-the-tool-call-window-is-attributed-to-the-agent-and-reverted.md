@@ -7,8 +7,8 @@
 **Filed by:** analyst, during the guard-enforced-policies analysis
 **Affects:** `hooks/tracker.ts` (`measureProtectedPaths`), `hooks/lib/protected-snapshot.ts` (`## The BEFORE fingerprint is the condition of admissibility`), `rules/protected-path-discipline.md` (`## The route to the file does not matter`, the two conceded prices)
 **Cross-references:**
-`fusion-workbench/shared/analyses/260809-1103-guard-enforced-policies.md` §Findings 2c-2,
-`circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_c_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md` (closed; the same failure in its `HEAD`-restore form)
+`260809-1103-guard-enforced-policies.md` §Findings 2c-2,
+`260807-1026_*_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md` (closed; the same failure in its `HEAD`-restore form)
 
 ---
 
@@ -74,15 +74,15 @@ sentence the model receives and in the `guard_block` event. (2) The message
 stopped asserting that this tool call made the change; `measureProtectedPaths`
 and the module header now say in as many words that the pair of fingerprints
 bounds an interval and not an author. (3) Per
-`shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md`
+`260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md`
 (option 2) the revert itself narrows for `Write`, `Edit`, `MultiEdit` and
 `NotebookEdit`: a changed protected path other than the payload's is preserved,
 described and halted on, but left standing. `Bash` keeps the full revert, and a
 test pins that half explicitly so a later refactor cannot quietly extend the
 narrowing. Step 6 of
-`shared/planning/260809-1229_*_plan-five-severe-guard-defects.md` added the
+`260809-1229_*_plan-five-severe-guard-defects.md` added the
 window as the third price in `rules/protected-path-discipline.md`, with the
 measured example from this record.
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — closure confirmed against the tree, and the decision's four obligations checked separately.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — closure confirmed against the tree, and the decision's four obligations checked separately.**
 All four acceptance criteria verified at HEAD `fb262d8`. The third price is in `rules/protected-path-discipline.md` `## What the measurement costs` with this record's measured example. `preserveObserved` writes the observed bytes under `.guard-state/reverted/` before any write-back (`hooks/tracker.ts:508-513`, `hooks/lib/reverted-copy.ts:107-123`) and the copy is named in the message and in the `guard_block` event. The narrowing from `shared/decisions/260809-1527_*` is implemented as that record's option 2 and its four obligations hold: `narrowingTarget` returns `null` for anything outside `WRITE_TOOLS` (`hooks/tracker.ts:285-286`), a spared path is still preserved, described and emitted (`:515-531`, `:535-549`), the halt is raised for a spared path exactly as for a reverted one (`:552-560`), and the `Bash` half is pinned by the case named "OBLIGATION 4" (`hooks/lib/__tests__/protected-snapshot-integration.test.ts:1448`). All five cases under "the revert narrows to the payload path at the four write tools" pass.

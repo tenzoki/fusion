@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented (marker `_i_`; header corrected by the reconciler 260809-2252 — it still read `open` two commits after `c353196` landed the answer)
 **Filed by:** coder
-**Cross-references:** `shared/issues/260809-1101_c_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md` (the defect this decision blocked; closed by the same commit — marker corrected from `_o_` by the reconciler 260809-2252); `shared/analyses/260809-1101-guard-support-layer.md` (finding 1, targets C1/C3, and the open question at its end); `circles/260801-1244-guard-rules-write/issues/260805-1859_*_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md` (log volume, treats the symptom); `circles/260801-1244-guard-rules-write/issues/260802-2232_c_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md` (the panel budget); `circles/260804-1205-shell-reachability-model/decisions/260807-0825_i_should-the-guard-predict-shell-writes-or-enforce-them.md` (binding on how a commit checkpoint may be detected); `README-hooks.md` (Churn Detection); `fusion-workbench/tasklist.md` task 9.
+**Cross-references:** `260809-1101_*_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md` (the defect this decision blocked; closed by the same commit — marker corrected from `_o_` by the reconciler 260809-2252); `260809-1101-guard-support-layer.md` (finding 1, targets C1/C3, and the open question at its end); `260805-1859_*_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md` (log volume, treats the symptom); `260802-2232_*_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md` (the panel budget); `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` (binding on how a commit checkpoint may be detected); `README-hooks.md` (Churn Detection); `fusion-workbench/tasklist.md` task 9.
 
 ---
 
@@ -54,7 +54,7 @@ The two critical types are **3,064 lines, 20.1%** (the issue recorded 2,330 of 1
 
 - Pros: keeps both observation surfaces intact and makes both levels mean "this session" again. A SessionStart hook already exists to hang it on (`hooks/hooks.json` SessionStart runs `hooks/dist/session-start.js`), so the boundary needs no new hook registration.
 - Cons: for churn it is close to self-defeating. Resetting `totalChanges` turns it into a second copy of `changesThisSession`, which already resets after two hours (`hooks/lib/churn.ts:152`, `:158-161`, `:273-278`), and it removes the only long-horizon input the orchestrator's Setup read has. For cross-file it means giving `pingBackCount` a session scope it was never designed to have, plus new state and new wiring.
-- Constraint on the commit variant: a commit checkpoint must be detected by **measuring** (compare `git rev-parse HEAD` across the tool call), never by reading the Bash command's text. Reading it from the text is the predict-from-command-text pattern that decision `260807-0825` closed for the guard, and re-introducing it in the tracker would reopen the same undecidable question one module over.
+- Constraint on the commit variant: a commit checkpoint must be detected by **measuring** (compare `git rev-parse HEAD` across the tool call), never by reading the Bash command's text. Reading it from the text is the predict-from-command-text pattern that decision `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` closed for the guard, and re-introducing it in the tracker would reopen the same undecidable question one module over.
 - Cost: the largest of the three. It keeps 443 lines of accumulator and adds to them, for a surface with one narrative reader.
 
 **2. Drop the total-level thresholds and keep only the session-level ones.** Delete the total-level comparison at `hooks/lib/churn.ts:224-231`, the two keys from `hooks/config.json:34-35`, the `GuardSettings` fields at `hooks/lib/config.ts:194-195`, the defaults at `:295-296`, the leaf rules at `:505-506` and the two `pickChurn` lines at `:737-738`.
@@ -101,7 +101,7 @@ Deferred:
 Superseded by:
 
 ---
-Answered: `shared/history/260809-1725-orchestrator-session.md` (Turn 1, Rebalance-free human
+Answered: `260809-1725-orchestrator-session.md` (Turn 1, Rebalance-free human
 gate) — user chose the recommendation, and chose it as the two-part answer the record argued
 for rather than as one of the three original options. For **churn**: drop the threshold
 comparison on the lifetime counter only. The lifetime number itself stays, because the
@@ -121,10 +121,10 @@ backward references survive in comments. `resetCrossFile` and `getTopChurnFiles`
 both callerless. 1127 tests green.
 
 One part of the question turned out to have a second cause the decision had not seen, and it is
-filed rather than absorbed: `shared/issues/260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
+filed rather than absorbed: `260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
 Of 535 churn keys, 297 resolve to no file under any reading, because the tracker normalises an
 absolute path against the working directory and otherwise stores it raw. Dropping the lifetime
 threshold does not touch that.
 
 ---
-Retired: `a69d56e` + `04ea182` (steps 4 and 5 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — the reset boundary this record put on the latching churn counter and the cross-file criticals went out with the counters themselves: `hooks/lib/churn.ts`, the `churn_warning`/`churn_critical` events, job 2 in `hooks/tracker.ts`, `bin/fusion-churn-rank` and the `guard.churn`/`guard.crossFile` configuration leaves. Nothing latches, so nothing needs a boundary.
+Retired: `a69d56e` + `04ea182` (steps 4 and 5 of 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md) — the reset boundary this record put on the latching churn counter and the cross-file criticals went out with the counters themselves: `hooks/lib/churn.ts`, the `churn_warning`/`churn_critical` events, job 2 in `hooks/tracker.ts`, `bin/fusion-churn-rank` and the `guard.churn`/`guard.crossFile` configuration leaves. Nothing latches, so nothing needs a boundary.

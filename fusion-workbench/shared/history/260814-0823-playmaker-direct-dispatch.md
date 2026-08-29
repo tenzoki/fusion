@@ -1,4 +1,4 @@
-# Playmaker Run — 260814-0823
+# Playmaker Run — 260814-0823-playmaker-direct-dispatch.md
 
 **Trigger:** direct-dispatch
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:**` line)
@@ -27,15 +27,15 @@ the first time in nine runs. It remains the only candidate, so first place carri
 what changed is the Circle's own readiness rather than the field.
 
 Commit `f273b9a` landed the shaper's portfolio-activation pass of 2026-08-14
-(`circles/260801-1244-curator/history/260814-0738-shaper-curator.md`). It discharged the three
+(`260814-0738-shaper-curator.md`). It discharged the three
 blockers three earlier runs had named: the Grounding was re-measured on the day it was written, the
 validation case was replaced with the project's own decision corpus, and the rate-bounding question
 was answered inside the Directive as capability C10. The Circle now has a spec and all six artifact
 subdirectories. All three dependencies are closed coherent and the Grounding cites no open decision
 record; its one decision carries the answered marker.
 
-A `## Activation proposal (playmaker run 260814-0823)` section was appended to
-`circles/260801-1244-curator/_a_circle.md`, beside the three earlier ones rather than replacing
+A `## Activation proposal (playmaker run 260814-0823-playmaker-direct-dispatch.md)` section was appended to
+`260801-1244-curator`, beside the three earlier ones rather than replacing
 them.
 
 ## Backlog
@@ -51,7 +51,7 @@ them.
 | Items handed to `## Warnings` as defect-shaped | 1 |
 | Items handed to `## Warnings` as decision-shaped | 0 |
 
-Top-ranked entry: `shared/backlog/260811-0826_*_observations.md`, recommended for splitting first
+Top-ranked entry: `260811-0826_*_observations.md`, recommended for splitting first
 rather than for shaping, because promoting it whole would make one Circle of all 13 ideas. Its top
 idea is `radical-simplification`, ranked first because two analyses dated 2026-08-12 already answer
 it with measurements, including a single named first move, so it is shapeable today with no new
@@ -62,7 +62,7 @@ rather than 3: this run reads the entry's examples of agents passing unverified 
 diagnosis that an instruction is not a mechanism as one idea with its cause. And the top-ranked idea
 is `radical-simplification` rather than the previous run's `bounded-dispatches-and-re-injected-context`.
 The reason is a reading of the source rather than a change on disk:
-`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` adopts the shorter-dispatch
+`260812-0303-simplify-speed-and-why-rules-do-not-hold.md` adopts the shorter-dispatch
 half of that idea for cost and rejects the re-injection half outright, refuting the decay premise the
 idea rests on. Shaping it therefore requires narrowing the user's own statement, which ranks it below
 an idea whose supporting analysis is unqualified.
@@ -106,7 +106,7 @@ None. The scan ran against the one Circle carrying the bounded marker,
 inside a playmaker activation-proposal section, and not in its `## Grounding snapshot`, so it is not
 a parent under the propagation rule. No `## Parent grounding stale` section was appended.
 
-## What moved since the previous run at 260813-2346
+## What moved since the previous run at 260813-2346-playmaker-direct-dispatch.md
 
 One commit, `f273b9a`, moving HEAD from `d7786eb`. It is the curator re-sharpening, and it is the
 whole of the change. Everything else was re-checked rather than carried: the backlog entry is

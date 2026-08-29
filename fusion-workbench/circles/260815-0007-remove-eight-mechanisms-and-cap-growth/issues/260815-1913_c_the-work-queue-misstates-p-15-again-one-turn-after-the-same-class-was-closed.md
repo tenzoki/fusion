@@ -3,10 +3,10 @@
 ---
 **Severity:** Medium — this file is the queue's only durable copy and the check that compared it against git was deleted in the same Turn
 **Domain:** data
-**Filed by:** reconciler, Phase-3 pass `history/260815-1913-reconciliation.md`, HEAD `9306f0a`
+**Filed by:** reconciler, Phase-3 pass `260815-1913-reconciliation.md`, HEAD `9306f0a`
 **Owner:** `orchestrator` — `agentstate.yaml` is session state and no executor writes it
 **Affects:** `fusion-workbench/agentstate.yaml`, `current_task` and `work_queue[16]`
-**Cross-references:** `issues/260815-1631_c_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md` (the same class, closed at Turn 4); `issues/260815-1848_o_step-14-landed-without-its-done-marker-and-the-issue-that-closed-this-for-three-earlier-steps-did-not-hold.md` (the same shape on the plan's inline markers); commit `f45f76a` (deleted the check)
+**Cross-references:** `260815-1631_*_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md` (the same class, closed at Turn 4); `260815-1848_*_step-14-landed-without-its-done-marker-and-the-issue-that-closed-this-for-three-earlier-steps-did-not-hold.md` (the same shape on the plan's inline markers); commit `f45f76a` (deleted the check)
 
 ---
 
@@ -33,7 +33,7 @@ the seventeen entries are correct; the seventeenth is the one that finished last
 
 `dd312eb` deleted the persisted task list, which made `work_queue` in this file the queue's only
 durable copy, and `f45f76a` deleted `hooks/lib/state-drift.ts`, whose first row compared this file's
-counters against git. Both landed in Turn 4. `260815-1631_c_…` was filed at the Turn-4 review for
+counters against git. Both landed in Turn 4. `260815-1631_*_…` was filed at the Turn-4 review for
 exactly this — three of seventeen entries wrong at a gate — and closed by correcting them. The class
 recurred four commits later, which is the evidence that correcting instances does not reach it.
 
@@ -43,7 +43,7 @@ Turn 4, while Turns 1 to 3 carry all three.
 
 ## What would decide it mechanically
 
-The same input `260815-1848_o_…` names for the plan-marker case: every commit whose message carries
+The same input `260815-1848_*_…` names for the plan-marker case: every commit whose message carries
 `Task: P-<n>` implies that task's `status` is `done` and its `commit` is that hash. Both halves are
 already in the trailer convention this Circle used throughout. Whether such a check is worth building
 one Circle after eight mechanisms were deleted for never having caught anything is a decision, not a

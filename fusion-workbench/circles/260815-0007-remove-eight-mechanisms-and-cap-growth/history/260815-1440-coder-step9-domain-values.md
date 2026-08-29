@@ -3,8 +3,8 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 2026-08-15
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
-**Plan:** `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 9
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 9
 **HEAD at start:** `7260bbc`
 **Verification:** `cd hooks && npm test` — exit 0, 45 files, 831 tests (827 before; the four new
 ones are named below). `claude plugin validate .` passed with the one pre-existing CLAUDE.md
@@ -83,7 +83,7 @@ control so it demonstrates the two asserts disagreeing about one cascade.
 
 ## The answered decision, implemented
 
-`decisions/260815-0029_*_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`,
+`260815-0029_*_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`,
 option 1, answered by the user at the plan gate. Transitioned `_a_` → `_i_` with `git mv`.
 
 - `agents/orchestrator.md:396` — the condition is gone. Every planner dispatch carries
@@ -107,8 +107,8 @@ is a citation that resolves now.
 ## The sequenced plugin-description edit
 
 Two records asked for the `.claude-plugin/plugin.json` description to be rewritten once here rather
-than twice: `issues/260815-1206_o_three-churn-references-…` (item 2) and
-`issues/260815-1251_o_the-three-churn-references-record-lists-three-and-two-remain.md`. Done in one
+than twice: `260815-1206_*_three-churn-references-…` (item 2) and
+`260815-1251_*_the-three-churn-references-record-lists-three-and-two-remain.md`. Done in one
 edit — the `churn detection` clause and the four-value domain list left together. The version was
 **not** bumped; step 15 owns that.
 
@@ -194,9 +194,9 @@ Shipped: `agents/orchestrator.md`, `agents/reconciler.md`, `agents/taskplanner.m
 
 Workbench: the plan (step 9 `[DONE]`, two `_a_`-exact citations of the transitioned decision moved
 to the wildcard form), the decision record (`_a_` → `_i_`, `git mv`),
-`issues/260815-1206_o_…` (appended, stays open), `issues/260815-1251_…` (appended, `git mv` to
+`260815-1206_*_…` (appended, stays open), `260815-1251_…` (appended, `git mv` to
 `_c_`), one new issue
-(`260815-1447_o_claude-mds-dispatch-parameter-bullet-asserts-orchestrator-behaviour-step-9-inverted-not-just-a-value-list.md`),
+(`260815-1447_*_claude-mds-dispatch-parameter-bullet-asserts-orchestrator-behaviour-step-9-inverted-not-just-a-value-list.md`),
 and this file.
 
 `CLAUDE.md` was **not** edited, per the step's own instruction. The new issue records why the plan's

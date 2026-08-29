@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** Turn 2, R3
-**Source:** `fusion-workbench/shared/issues/260810-0500_o_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md` (review `260810-0512-coderev-turn-1-range-8960e1a-to-head.md`, Theme C, F6)
+**Source:** `260810-0500_*_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md` (review `260810-0512-coderev-turn-1-range-8960e1a-to-head.md`, Theme C, F6)
 **Origin:** shared — no Circle active
 
 ---
@@ -91,16 +91,16 @@ under `rules/`.
 
 ## Not fixed, reported instead
 
-- `skills/next/SKILL.md` step 6.3 (`260810-0506`) — a skill body, owned by another queued task.
+- `skills/next/SKILL.md` step 6.3 (`260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`) — a skill body, owned by another queued task.
   Recommend keeping it separate: it is a different defect class (`&&` short-circuit exit status plus a
   bypassed `$TASKLIST` key), not an unchecked expansion.
 - `agents/orchestrator.md` drift check, last line
   `[ -n "$REC" ] && row "Circle Turn log" …` — when no Circle is active this is the block's last
-  command and the whole drift check exits 1. That is the `260810-0506` shape, inside the orchestrator,
+  command and the whole drift check exits 1. That is the `260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md` shape, inside the orchestrator,
   unreported. Not touched: different class, and the drift check landed in `9bad4d6` this Turn.
 - Phase 4 step 4 and `#### Reading a queue` both spell `Q=fusion-workbench/tasklist.md` rather than
-  `"$WORKBENCH/$TASKLIST"`, which the orchestrator does receive. That is `260810-0511`'s duplication
-  finding plus `260810-0506`'s bypassed-key finding meeting in one line; changing it edits the
+  `"$WORKBENCH/$TASKLIST"`, which the orchestrator does receive. That is `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`'s duplication
+  finding plus `260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`'s bypassed-key finding meeting in one line; changing it edits the
   canonical section two skills cite, so it belongs to whoever takes those two records.
 
 ## On why the rule did not reach the author

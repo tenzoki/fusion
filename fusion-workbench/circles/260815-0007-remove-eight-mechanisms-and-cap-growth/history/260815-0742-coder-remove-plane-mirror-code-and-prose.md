@@ -3,8 +3,8 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
-**Plan step:** 2 of `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Plan step:** 2 of `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`
 **Dispatched by:** orchestrator
 
 ---
@@ -19,7 +19,7 @@ the tree and fails on a dangling one.
 
 ## What the mirror was
 
-The bridge was built in one Circle, `circles/260719-1536-plane-mirror-integration`, closed
+The bridge was built in one Circle, `260719-1536-plane-mirror-integration`, closed
 **coherent** on 2026-07-20 with no Rebalance. Its closure note records the artifact as six commits
 on `main` (`eb9cf59`..`aefbf39`, all six on 2026-07-19): `bin/fusion-plane` with the
 `push` / `plan` / `states` / `doctor` / `map` / `seed` subcommands over an idempotent
@@ -128,12 +128,12 @@ authoritative set is false from this commit until G1 applies the ledger.
 **2. The sentence the step expected to delete beneath the layout tree does not exist.** The step
 asks for "the sentence beneath it that counts them" alongside the three tree rows. No sentence below
 the tree accounts for the Plane entries — and that absence is itself a filed defect,
-`circles/260801-1244-curator/issues/260814-1419_o_three-plane-files-entered-the-layout-tree-and-neither-of-the-two-per-surface-arguments-below-it-was-extended.md`,
+`260814-1419_*_three-plane-files-entered-the-layout-tree-and-neither-of-the-two-per-surface-arguments-below-it-was-extended.md`,
 which records that the three rows entered the tree while neither of the two paragraphs ranging over
 the root-anchored surfaces was extended to cover them. Removing the rows closes that gap rather than
 requiring a further deletion. Two open issues are retired by this step and neither transition is in
-this step's file list: `260814-1419_o_…` above, and
-`shared/issues/260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md`,
+this step's file list: `260814-1419_*_…` above, and
+`260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md`,
 whose subject is gone.
 
 **3. `staging-drift.test.ts` names no Plane path.** It is in the step's file list among "the eight
@@ -214,7 +214,7 @@ Deletions marked as such; all paths absolute.
 - `/Users/k1/Projects/productive/fusion/docs/working-model.md`
 - `/Users/k1/Projects/productive/fusion/CLAUDE.md`
 - `/Users/k1/Projects/productive/fusion/.claude-plugin/plugin.json`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0742-coder-remove-plane-mirror-code-and-prose.md` (this entry)
+- `/Users/k1/Projects/productive/fusion/260815-0742-coder-remove-plane-mirror-code-and-prose.md` (this entry)
 
 Not touched, and deliberately: `templates/plane.config.yaml`, `fusion-workbench/plane.config.yaml`,
 `fusion-workbench/.plane-map.json`, `fusion-workbench/.plane-outbox.jsonl` and

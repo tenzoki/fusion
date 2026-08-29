@@ -1,6 +1,6 @@
 # coder — Turn 3, task `P:turn-2-residuals`
 
-**Session:** `260810-1646` · **Mode:** issues · **Domain:** code
+**Session:** `260810-1646-orchestrator-session.md` · **Mode:** issues · **Domain:** code
 **Status:** Complete
 **Verification:** `npm test` from `hooks/` — exit 0, 41 files, 1139 tests.
 
@@ -8,7 +8,7 @@
 
 ## What was asked
 
-Five records from the Turn-2 code review (`shared/reviews/260810-2110-coderev-turn-2-range-da8c9db-b3cc034.md`):
+Five records from the Turn-2 code review (`260810-2110-coderev-turn-2-range-da8c9db-b3cc034.md`):
 four mechanical consequences of Turn 2's changes plus one remainder from Turn 1. Owned files:
 `skills/commit/SKILL.md`, `skills/cleanup/SKILL.md`, `skills/setup/SKILL.md`, `skills/next/SKILL.md`,
 and `agents/orchestrator.md` Phase 2 Step 3b. Out of scope by instruction: `hooks/**`, `bin/monitor`,
@@ -17,10 +17,10 @@ and `agents/orchestrator.md` Phase 2 Step 3b. Out of scope by instruction: `hook
 
 ## What was done
 
-### 1. The staging directory (record `260810-2110_c_moving-git-add-inside-the-lock-wrapper-…`)
+### 1. The staging directory (record `260810-2110_*_moving-git-add-inside-the-lock-wrapper-…`)
 
 Established by reading the helper, then measured on a scratch repository — never in this tree, per
-decision `260810-1820`.
+decision `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`.
 
 `bin/fusion-commit-lock`, the `with` branch, runs `resolve_root` and then `cd "$root"` before the
 command after `--`. `resolve_root` calls `bin/fusion-workbench-root`, which walks up from the
@@ -51,7 +51,7 @@ Written into `agents/orchestrator.md` Step 3b item 4 as one bullet, and step 5's
 are now `<absolute-path>`. `skills/commit/SKILL.md` got the instruction in two sentences without the
 argument.
 
-### 2. `$FUSION_SRC` empty (record `260810-2110_c_fusion-src-resolves-to-the-empty-string-…`)
+### 2. `$FUSION_SRC` empty (record `260810-2110_*_fusion-src-resolves-to-the-empty-string-…`)
 
 The branch in `skills/setup/SKILL.md` and `skills/next/SKILL.md` now separates an unset root from an
 absent helper and prints `UNRESOLVED (FUSION_PLUGIN_ROOT is unset)` instead of an empty string. All
@@ -68,7 +68,7 @@ Measured in `bash` and `zsh`, both under `nounset`, in four conditions (root uns
 inside the plugin repo; root set with cwd elsewhere; root set to a directory with no helper). All
 four print what they should.
 
-### 3. The heredoc and its list (record `260810-2110_c_the-heredoc-example-was-de-indented-…`)
+### 3. The heredoc and its list (record `260810-2110_*_the-heredoc-example-was-de-indented-…`)
 
 `skills/commit/SKILL.md` ends its `## Process` list at step 5 and continues as `### 6. Stage and
 commit as one held pair` and `### 7. Show result`, with a short paragraph saying why. All of step 6
@@ -80,13 +80,13 @@ The record's open question (does the verbatim-copy assumption hold?) was answere
 an agent reproduces with their leading whitespace, and the terminator is the line that must be at
 column 0. So the fence stays at column 0 and the structure moved.
 
-### 4. The cleanup step pointer (record `260810-2110_c_the-cleanup-domain-capture-cites-step-4-…`)
+### 4. The cleanup step pointer (record `260810-2110_*_the-cleanup-domain-capture-cites-step-4-…`)
 
 `skills/cleanup/SKILL.md` Step 1 item 1 now reads "item 4 of this step removes `agentstate.yaml`, and
 Step 3 (Reconcile) needs the value it holds." Checked against the file: the deletion is still Step 1
 item 4 and `## Step 3 — Reconcile` is still the heading meant.
 
-### 5. The citation rooting remainder (record `260810-1918_c_the-citation-rooting-reached-two-of-three-skills-…`)
+### 5. The citation rooting remainder (record `260810-1918_*_the-citation-rooting-reached-two-of-three-skills-…`)
 
 `skills/setup/SKILL.md` and `skills/next/SKILL.md` now cite `$FUSION_SRC/skills/cleanup/SKILL.md:11`.
 The anchor was verified against the file first: line 11 still carries the rooting instruction, so the

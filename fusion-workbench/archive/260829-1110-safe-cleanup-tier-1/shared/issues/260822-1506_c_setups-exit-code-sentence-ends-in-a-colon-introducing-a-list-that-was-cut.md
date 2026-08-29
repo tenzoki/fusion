@@ -24,7 +24,7 @@ site where the cut left the colon bare.
 
 **Out of the reviewed range, and named honestly.** The cut is `c2ad89c`, which is the base of the range
 `c2ad89c..6781814` and therefore belongs to the previous review's span
-(`shared/reviews/260822-1421-coderev-c0-cut-only-circle.md`, range `370bfc5..c2ad89c`). That review did
+(`260822-1421-coderev-c0-cut-only-circle.md`, range `370bfc5..c2ad89c`). That review did
 not flag it. It is filed here because it was found here, not because this range introduced it.
 
 **Nothing behaves differently.** A skill body is read, and a reader meeting a dangling colon reads on.
@@ -35,7 +35,7 @@ subject is *what to do when a resolver fails* is the wrong moment to invite that
 ---
 
 **Found by:** coderev, reviewing `c2ad89c..6781814`, review file
-`shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
+`260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Low.
 **Affects:** `skills/setup/SKILL.md:362`.

@@ -1,7 +1,7 @@
 # Concept Evaluation: Spec — fusion v5.x overhaul (umbrella framing)
 
 **Date:** 2026-07-18 09:55
-**Target:** `fusion-workbench/shared/planning/260718-0437_o_spec-fusion-v5x-overhaul.md`
+**Target:** `260718-0437_*_spec-fusion-v5x-overhaul.md`
 **Verdict:** clean
 **Diagrams evaluated:** 1  |  **Validation:** by-tool (mmdc)
 

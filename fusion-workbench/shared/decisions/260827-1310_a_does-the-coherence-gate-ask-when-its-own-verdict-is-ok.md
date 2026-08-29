@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (UX round, finding 1 of the 260827 UX review), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `agents/orchestrator.md` Step 3c-bis (the gate) · `rules/orchestrator-rebalance.md` (the escalation the drift case keeps) · `shared/decisions/260827-1120_*_how-often-does-the-review-pass-run.md` (the same speak-on-the-uncommon-path criterion, one gate earlier)
+**Cross-references:** `agents/orchestrator.md` Step 3c-bis (the gate) · `rules/orchestrator-rebalance.md` (the escalation the drift case keeps) · `260827-1120_*_how-often-does-the-review-pass-run.md` (the same speak-on-the-uncommon-path criterion, one gate earlier)
 
 ---
 

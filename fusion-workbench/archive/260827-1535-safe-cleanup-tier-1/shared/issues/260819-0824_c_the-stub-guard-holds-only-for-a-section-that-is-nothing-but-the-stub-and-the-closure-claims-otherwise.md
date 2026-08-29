@@ -2,7 +2,7 @@ The stub guard holds only for a section that is *nothing but* the stub, and the 
 
 ---
 
-`260819-0039_c_the-new-plan-section-is-neither-mandatory-nor-guarded-against-the-unfilled-template-stub.md`
+`260819-0039_*_the-new-plan-section-is-neither-mandatory-nor-guarded-against-the-unfilled-template-stub.md`
 closed with:
 
 > adding "the section is empty or still holds only its angle-bracket placeholder" to the do-nothing
@@ -39,7 +39,7 @@ author, is then put to the user as a stop condition to answer yes or no.
 **Why it is worth recording rather than shrugging at.** The record this closed was filed on exactly
 this class, and cited the measured precedent in this repository: twelve decision records keeping the
 unfilled template stub
-(`260811-2146_c_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`).
+(`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`).
 A half-filled section is the more likely shape of that failure than an untouched one, because the
 author who touched the section at all is the author who left the rest.
 
@@ -51,7 +51,7 @@ Verified at HEAD `83488e9` by reading `agents/orchestrator.md:864` and `agents/p
    look at the text, not a parse — the same standing the closure claims for the existing test.
 2. Leave the step and correct the closure sentence to state what it guarantees. Cheaper, and honest.
 
-Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
+Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301-orchestrator-session.md`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
 
 ---

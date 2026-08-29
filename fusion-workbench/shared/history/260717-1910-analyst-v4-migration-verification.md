@@ -31,5 +31,5 @@ logs). No defects, no issues filed.
 
 ## Artifacts
 
-- Analysis report: `fusion-workbench/shared/analyses/260717-1910-v4-migration-verification.md`
-- This log: `fusion-workbench/shared/history/260717-1910-analyst-v4-migration-verification.md`
+- Analysis report: `260717-1910-v4-migration-verification.md`
+- This log: `260717-1910-analyst-v4-migration-verification.md`

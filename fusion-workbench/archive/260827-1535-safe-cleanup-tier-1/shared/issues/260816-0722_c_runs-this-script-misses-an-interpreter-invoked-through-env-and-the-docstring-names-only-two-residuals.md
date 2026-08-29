@@ -7,7 +7,7 @@ docstring enumerates the two kills the narrowing costs. There is a third of the 
 the first question's listener kill is untouched. It is filed because the docstring presents its list as
 complete, and a reader checking whether their case is covered will conclude wrongly.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `bin/monitor` (`_runs_this_script`, ~:1261-1291)
 
@@ -40,14 +40,14 @@ has the script at argv[1] and is matched. The gap reaches only a monitor started
 
 Either scan all tokens for a basename match instead of returning on the first, or name `env` as a third
 residual. The first is not free — scanning all tokens re-admits the argv-mention kill that
-`260816-0131` was filed for — so the cheap and honest move is to name it.
+`260816-0131_*_the-monitors-second-port-query-matches-any-command-line-naming-the-script-not-only-a-prior-monitor.md` was filed for — so the cheap and honest move is to name it.
 
 ## Related
 
 - `shared/issues/260816-0131_*` — the defect this predicate was narrowed to fix
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1263-1291` still returns on the first non-option token after argv[0] and still names only two residuals, so an interpreter reached through `env` is missed. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1263-1291` still returns on the first non-option token after argv[0] and still names only two residuals, so an interpreter reached through `env` is missed. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — the docstring names `env` as the third residual, says why it is not closed by scanning every token, and states the bound (the wrapper launches as `python3 "$TMPFILE"`); `bin/monitor` `_runs_this_script`

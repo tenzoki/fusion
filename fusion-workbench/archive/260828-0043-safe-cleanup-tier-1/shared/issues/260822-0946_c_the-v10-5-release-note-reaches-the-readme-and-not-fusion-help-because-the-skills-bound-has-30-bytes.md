@@ -6,7 +6,7 @@ The v10.5 release note reaches README.md and not /fusion:help, because the skill
 **Domain:** code
 **Filed by:** orchestrator, cutting the v10.5 release
 **Affects:** `skills/help/SKILL.md`, its upgrade section; `hooks/lib/__tests__/surface-growth-bound.test.ts`, the `skills/*/SKILL.md` bound
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/_c_circle.md` `## Closure note`, which names the growth bounds as a residual it closed over
+**Cross-references:** `260821-1042-reply-bounded-whole-question-answered` `## Closure note`, which names the growth bounds as a residual it closed over
 
 ---
 
@@ -34,7 +34,7 @@ Every release since v9 has added a paragraph to two places: `README.md` and the 
 
 ---
 Resolved: option 2, capped at **N = 3**, applied to `skills/help/SKILL.md` topic 4 at step 6 of the
-C0 plan (`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`).
+C0 plan (`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`).
 The user chose the shape at Gate B; option 1 (compress the tail) and option 3 (raise the baseline)
 were not taken.
 
@@ -73,6 +73,6 @@ unchanged and needed no re-approval block.
 `upgrading-to-vN.md` "is pointed at from `README.md` `## Install` and from `/fusion:help`'s update
 topic". After the cap the second half holds for three of the six notes. `CLAUDE.md` is the curator's
 surface and outside this step's file scope, so the correction is filed as
-`shared/issues/260822-1503_o_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`.
+`260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`.
 
 Verified: `cd hooks && npm test` — exit 0, 41 files, 724 tests.

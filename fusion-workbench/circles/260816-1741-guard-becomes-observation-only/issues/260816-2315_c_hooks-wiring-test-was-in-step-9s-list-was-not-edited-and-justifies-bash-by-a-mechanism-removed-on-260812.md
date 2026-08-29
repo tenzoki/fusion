@@ -45,7 +45,7 @@ line that must not move.
 **Scope:** the plugin's hook test surface. No consuming project sees it.
 
 **Cross-references:**
-- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 9, Files list and Changes text
+- `260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 9, Files list and Changes text
 - `hooks/guard.ts:178-195` — the current reason, already written
 - `hooks/lib/config.ts:105-114` — why the Bash surface now carries the migration
 

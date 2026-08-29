@@ -2,8 +2,8 @@
 
 **Date:** 260827-1836
 **Agent:** coder
-**Plan:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md, step 13b
-**Record:** shared/issues/260825-1456_*_three-shipped-surfaces-say-the-retired-configuration-key-set-is-three-and-the-loader-holds-four.md
+**Plan:** 260827-1756_*_repair-the-twenty-open-defect-records.md, step 13b
+**Record:** 260825-1456_*_three-shipped-surfaces-say-the-retired-configuration-key-set-is-three-and-the-loader-holds-four.md
 
 ## What changed
 

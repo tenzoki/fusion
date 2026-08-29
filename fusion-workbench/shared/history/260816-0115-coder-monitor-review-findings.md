@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 2026-08-16
-**Sources:** `shared/issues/260815-2325`, `260815-2326`, `260815-2327` (coderev, against commit `f5ae298`)
+**Sources:** `260815-2325`, `260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`, `260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md` (coderev, against commit `f5ae298`)
 
 ## What was asked
 
@@ -20,7 +20,7 @@ publishes it to `$TMPDIR_PATH/monitor-url` right after binding and the launcher 
 also turned the flat pre-launch `sleep 0.5` into a bounded wait on the event that sleep was
 estimating. The whole-second fallback for platforms rejecting a fractional `sleep` operand is kept.
 
-**2 — the port clearing (`260815-2326`, closed; residual filed as `260816-0110_o_*`).** Investigated
+**2 — the port clearing (`260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`, closed; residual filed as `260816-0110_o_*`).** Investigated
 before touching. The load-bearing claim turned out to have a real measurement behind it
 (`260806-0820_c_*`, this machine, 2026-08-06), and it does not reproduce here now — but only
 because the precondition is gone: this process tree now holds Local Network permission. So the
@@ -30,7 +30,7 @@ LISTEN query, plus the pids holding the port whose `ps -o command=` names `monit
 That reaches a stale monitor in any socket state, can never reach a browser, and is inert where
 the old query already worked, so it is not a bet on the claim.
 
-**3 — the wildcard bind is pinned (`260815-2327`, closed).** New case spawning with `MONITOR_BIND`
+**3 — the wildcard bind is pinned (`260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md`, closed).** New case spawning with `MONITOR_BIND`
 deleted, asserting `http://localhost:${port}` answers 200 with the family forced via `net.connect`
 + `autoSelectFamily: false` (Node's happy-eyeballs would otherwise pass against the defect). Guarded
 by a probe that binds a dual-stack wildcard from the test process and checks loopback reachability,

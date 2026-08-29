@@ -3,7 +3,7 @@ The release went out over a Turn whose six shipped-file commits no review pass o
 ---
 **Domain:** code
 **Filed by:** reconciler
-**Cross-references:** `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`, `shared/issues/260810-1618_o_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`, `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_c_the-compliance-guard-becomes-observation-only.md` `## Where this Circle stops`
+**Cross-references:** `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`, `260810-1618_*_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`, `260816-1915_*_the-compliance-guard-becomes-observation-only.md` `## Where this Circle stops`
 
 ---
 
@@ -57,7 +57,7 @@ clause was then not met, and nothing in the tree says so. The release was a user
 gate and the user holds that authority; what is missing is the record that the gate was crossed
 with one of its two stated preconditions unmet.
 
-**The class is adjacent to `260810-1618`, not identical, and the difference is the worse half.**
+**The class is adjacent to `260810-1618_*_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`, not identical, and the difference is the worse half.**
 That record is about a release tagged while its review pass was still running — the answer existed
 and was not waited for. Here no pass was dispatched, so no answer exists to wait for. A finding
 against v10.0.0 now lands in a v10.0.1 after consumers have been told to update, which is exactly
@@ -95,8 +95,8 @@ role ends at naming it.
 Resolved: **option 2, executed at Turn 4 as `70f17da`.** `coderev` was dispatched over
 `1d1d3a3..01932d6` — twelve commits, which subsumes all nine that were uncovered when this record
 was filed and all six of those that touched shipped files, including `e331332`, the commit
-`v10.0.0` points at. Five findings came out of it (`260817-1505` through `260817-1509`), and one of
-them rode into the patch rather than waiting: `260817-1506` was fixed in `dcb0784` and shipped in
+`v10.0.0` points at. Five findings came out of it (`260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` through `260817-1509_*_no-test-pins-the-repeat-to-the-user-mandate-that-already-shipped-narrow-once.md`), and one of
+them rode into the patch rather than waiting: `260817-1506_*_three-surfaces-say-the-retired-file-diagnostic-has-one-channel-and-the-orchestrator-fix-gave-it-two.md` was fixed in `dcb0784` and shipped in
 v10.0.1, which is precisely the "findings cannot change v10.0.0 but can shape a v10.0.1" this
 record's option 2 predicted.
 
@@ -111,10 +111,10 @@ record names. Two files are carried as `not-opened` by the Turn-4 review's own h
 half, "separately decide whether a plan-stated precondition gets any mechanism at all", is
 untouched. This record's own `## What it costs if it stands` is therefore still live — the next
 plan that writes such a clause has the same nothing enforcing it. It is now filed as its own
-choice point, `shared/decisions/260817-1613_o_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`,
+choice point, `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`,
 rather than left inside this closed record. Option 3's *first* half — the filter of the uncovered
 set to shipped-file commits — remains unimplemented on
-`shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
 where it belongs.
 
 The historical fact this record was filed about stands and cannot be undone: v10.0.0 was tagged

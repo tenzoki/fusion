@@ -7,7 +7,7 @@
 
 ## Directive
 
-`CLAUDE.md` carries one language declaration. Decision `shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, answered by the user on 260807-1925, draws the boundary elsewhere than the declaration does: the declaration reaches direct user interaction only, and every artifact that persists as a file is English. One line cannot serve both halves. Split it in two, make `bin/fusion-rules` honour the split, and bring the rule text that describes the old single line up to the answer.
+`CLAUDE.md` carries one language declaration. Decision `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, answered by the user on 260807-1925, draws the boundary elsewhere than the declaration does: the declaration reaches direct user interaction only, and every artifact that persists as a file is English. One line cannot serve both halves. Split it in two, make `bin/fusion-rules` honour the split, and bring the rule text that describes the old single line up to the answer.
 
 The mechanism is fixed by the user and is not re-opened: a second declaration line in `CLAUDE.md`, with the first line governing both when the second is absent.
 
@@ -186,7 +186,7 @@ The subgraph **text that ships to every consumer** carries a single node and no 
 
 12. [DONE] **S12 — Move the answered decision to implemented**
     - Executor: `coder`
-    - Files: `fusion-workbench/shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+    - Files: `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
     - Changes: the record's own reconciliation note (lines 160-164) states the condition for the transition — the rule text carries the exempt-surface list, the `**Decidability:**` resolution, and the "direct user interaction" wording. All three land in S1 and S5. Append an `Implemented:` line citing the commit hash and summarising the change in one sentence (the declaration is split in two; the exempt-surface list, the head-label resolution and the direct-user-interaction wording now sit in `rules/fusion-workbench-conventions.md` `## Project language`), then rename `_a_` → `_i_`. The commit hash exists only after the work is committed, so this step runs last and cites the real hash, never a placeholder.
     - Dependencies: S11, and the commit that lands S1-S11
 
@@ -302,13 +302,13 @@ rather than read.
 | S9 | `README.md:117` describes the optional second line; `rules/context-lean-claude-md.md:39` names both. The lean example at `:103` is untouched, as planned. |
 | S10 | `cd hooks && npm test` — **33 files, 1030 tests, all green**, including the regenerated golden, `reference-resolution-lint`, `derivable-enumerations-lint` and `path-literal-lint`. |
 | S11 | `.claude-plugin/plugin.json:3` = `6.1.0`. |
-| S12 | The record is `260807-1515_i_…` and carries an `Implemented:` line. See the decision's own reconciliation note for the one citation defect found. |
+| S12 | The record is `260807-1515_*_…` and carries an `Implemented:` line. See the decision's own reconciliation note for the one citation defect found. |
 
 **The split itself re-executed, end to end.** Against today's script in a temp project: `de`/`en`
 → `chat-voice-de` + `default-voice-en`; `en`/`de` → the mirror, so a hard-coded "artifacts are
 English" is ruled out; `en`/`de-DE` → `default-voice-en`, where `git show 4992ffb~1:bin/fusion-rules`
 emits `default-voice-de` for the same input. Turn 2's `declared_lang` fix is real and
-`shared/issues/260807-2152_c_…` is correctly closed.
+`260807-2152_*_…` is correctly closed.
 
 **Two Open Questions carry unticked boxes in a plan marked Complete.** Both are resolved, and
 neither is a gap: OQ1 (does the artifact language cover the dashboard and monitor strings?) was
@@ -320,7 +320,7 @@ because the convention marks steps and not questions.
 **Drift found: one, and it points outward rather than at the plan.** S1 grew
 `rules/fusion-workbench-conventions.md` by roughly 36 lines, which moved every section below
 `## Project language` and staled the line-range citations that other records hold into it —
-`shared/decisions/260807-0158_a_…:7` cites `## Filename Patterns` at lines 185-208, now 221-245.
+`260807-0158_*_…:7` cites `## Filename Patterns` at lines 185-208, now 221-245.
 Nothing in the suite catches this: `reference-resolution-lint` resolves paths, heading anchors and
 record citations, and reads no line number. Filed as
-`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.

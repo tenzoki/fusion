@@ -59,7 +59,7 @@ Cleanup is their only boundary.
 
 ## Verified against live drift
 
-The snippet was run against this workbench at 260810-0400 and against a sandbox with an active
+The snippet was run against this workbench at 260810-0400-executor-verification-report-contract.md and against a sandbox with an active
 Circle, a dangling `session.history_file` and a short Turn log. Live result:
 
 ```
@@ -109,7 +109,7 @@ shape I would argue for next, and it was out of this task's scope.
   and `agentstate.yaml`-delete bullets in Cleanup; the new `### Drift check` section; the
   `state_drift` row in the event-type table.
 - `hooks/lib/__tests__/state-drift-detection-lint.test.ts` — new.
-- `fusion-workbench/shared/issues/260801-2038_o_...` — appended a partial-resolution section.
+- `260801-2038_*_...` — appended a partial-resolution section.
 
 ## Verification
 
@@ -118,7 +118,7 @@ shape I would argue for next, and it was out of this task's scope.
 - `rules-emission-golden` — known, fixture regenerated at the end of the session
   (`fusion-workbench-conventions.md` grew by 2151 bytes under another task).
 - `path-literal-lint` — `skills/circle-stash/SKILL.md:276` cites
-  `issues/260717-0030_*_...` with a store prefix. That file is a concurrent task's edit,
+  `260717-0030_*_...` with a store prefix. That file is a concurrent task's edit,
   unmodified by this one; `agents/orchestrator.md` is clean under the same gate.
 
 The new test file passes on its own: 9/9.

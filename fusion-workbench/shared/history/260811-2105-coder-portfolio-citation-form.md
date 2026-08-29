@@ -1,9 +1,9 @@
-# 260811-2105 — coder — portfolio citation form (transferred defect 260810-1730)
+# 260811-2105 — coder — portfolio citation form (transferred defect 260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md)
 
 **Status:** Complete
 **Agent:** coder
 **Dispatched by:** user, single-task dispatch (tree uncontended)
-**Source record:** `shared/issues/260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`
+**Source record:** `260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`
 
 ---
 
@@ -26,7 +26,7 @@ letter, because there the letter is the statement. Binding decision and the meas
 cited, both in the wildcard form.
 
 **2. `agents/playmaker.md` — the examples and a pointer.** Both occurrences of
-`260510-0930_o_token-format.md` moved to `_*_`: process step 3 (the site the record named) and
+`260510-0930_*_token-format.md` moved to `_*_`: process step 3 (the site the record named) and
 `## Output Style` (the same example repeated, which the record did not measure — reported to
 the user rather than passed over). `## Output — the portfolio` gained a short paragraph naming
 the rule and restating the pointer-versus-naming distinction, citing the rule section rather
@@ -59,7 +59,7 @@ deleted.
 
 ## The speculation, measured
 
-Filed as `shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md`.
+Filed as `260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md`.
 Twelve Circle records, 60 literal citations, **21 already stale** (35%), 38 already wildcarded.
 The template is indeed silent. But Circle records are append-only, so a hand correction there
 holds — the portfolio defect's sharpest edge is absent. And ten of the sixty are the

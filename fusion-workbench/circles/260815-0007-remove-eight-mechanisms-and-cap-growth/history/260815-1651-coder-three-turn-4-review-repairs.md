@@ -11,7 +11,7 @@ not touched (nothing under `rules/` was edited).
 
 ## 1. The resume shell reported two figures it is forbidden to report
 
-Record `260815-1631_c_the-resume-shell-that-replaced-the-drift-check-prints-a-two-line-figure-and-an-empty-one.md`.
+Record `260815-1631_*_the-resume-shell-that-replaced-the-drift-check-prints-a-two-line-figure-and-an-empty-one.md`.
 
 The block that replaced `bin/fusion-state-drift` at both resume paths tested the wrong thing on both
 figures. It branched on whether the anchor was *read* (`[ -n "$A" ]`), not on whether it *resolved*,
@@ -70,7 +70,7 @@ settle that in a repair dispatch.
 
 ## 2. `queue_empty` restored
 
-Record `260815-1633_c_queue-empty-left-the-event-vocabulary-in-p-10-and-only-queue-built-was-restored.md`.
+Record `260815-1633_*_queue-empty-left-the-event-vocabulary-in-p-10-and-only-queue-built-was-restored.md`.
 
 Read against `queue_built`, the two events are the same case, and the restoration argument covers
 both exactly: neither was about the deleted state file, both record the session's initial queue
@@ -91,7 +91,7 @@ asserts the event vocabulary — the only occurrence of either name is a comment
 
 ## 3. The third dangling ship-exception
 
-Record `260815-1635_c_the-gitignore-sweep-that-removed-two-dangling-ship-exceptions-missed-the-third.md`.
+Record `260815-1635_*_the-gitignore-sweep-that-removed-two-dangling-ship-exceptions-missed-the-third.md`.
 
 `!bin/fusion-churn-rank` deleted (was `.gitignore:38`; the file is now 112 lines). The count was not
 trusted — the list was re-measured against the directory in both directions:

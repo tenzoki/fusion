@@ -4,9 +4,9 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** orchestrator, from an adjacent finding the T11 executor reported outside its own scope (session `260810-0844`, Turn 3)
+**Filed by:** orchestrator, from an adjacent finding the T11 executor reported outside its own scope (session `260810-0844-orchestrator-session.md`, Turn 3)
 **Affects:** `bin/fusion-plane` — the `push` synopsis in the file header and in `usage()`
-**Cross-references:** commit `98c8b3f` (which documented `--fixture` at both sites); `shared/issues/260810-0939_c_the-fixture-seam-header-is-a-fifth-surface-and-still-names-the-spelling-the-refusal-rejects.md`
+**Cross-references:** commit `98c8b3f` (which documented `--fixture` at both sites); `260810-0939_*_the-fixture-seam-header-is-a-fifth-surface-and-still-names-the-spelling-the-refusal-rejects.md`
 
 ---
 

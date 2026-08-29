@@ -41,8 +41,8 @@ no consuming project's session, being a comment in a bash wrapper. That is why i
 Medium.
 
 What it does not have is a reason to be different from its two siblings. This project has already
-paid for a corrected sentence that reached one copy and not the others: `shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md`
-is the same class, and `260817-2132` was filed for precisely this pattern one file over — a
+paid for a corrected sentence that reached one copy and not the others: `260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md`
+is the same class, and `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md` was filed for precisely this pattern one file over — a
 source comment left disagreeing with the shipped text derived from it, on the ground that
 correcting one without the other "leaves the next editor the same trap". The wrapper header is
 the file a reader meets when they arrive at this mechanism from `bin/` rather than from
@@ -68,7 +68,7 @@ Pre-existing: the wrapper was not touched by `bd2db5c` or `6b6436d`.
 
 **Severity:** Low
 **Filed by:** coderev, review of `bd2db5c..6b6436d`
-**Cross-references:** `shared/issues/260817-2130_c_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` (the emitted copy, corrected), `shared/issues/260817-2132_c_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md` (the same one-copy-corrected pattern, resolved in `6b6436d`), `shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md` (the class)
+**Cross-references:** `260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` (the emitted copy, corrected), `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md` (the same one-copy-corrected pattern, resolved in `6b6436d`), `260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` (the class)
 
 ---
 Resolved: The third copy at `bin/fusion-staging-drift:51-54` no longer ranges over every

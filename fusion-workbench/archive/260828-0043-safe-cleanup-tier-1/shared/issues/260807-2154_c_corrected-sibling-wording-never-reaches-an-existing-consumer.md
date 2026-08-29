@@ -2,7 +2,7 @@
 
 ---
 
-Step S8 of `archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` replaced the same-language
+Step S8 of `archive/260817-1907-safe-cleanup-scoped/260807-2024_*_two-language-declarations.md` replaced the same-language
 filename in both chat profiles with a language-neutral role reference. The corrected files reach
 new consumers only. Every project set up before v6.1.0 keeps a `chat-voice-<lang>.yaml` that still
 names `default-voice-<chat-lang>.yaml` as its long-form sibling — which is exactly the file the
@@ -60,10 +60,10 @@ Option 1 or 2 needs a decision before implementation — the guarded-copy semant
 
 ## Cross-references
 
-- Plan: `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` step S8, Risks row
+- Plan: `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260807-2024_*_two-language-declarations.md` step S8, Risks row
 - Rule: `rules/agent-setup.md` `## Voice profiles`
 - Rule: `rules/fusion-workbench-conventions.md` `## Project language`
-- Review: `fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
+- Review: `260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
 
 ---
 
@@ -93,10 +93,10 @@ the finding and is not a claim about this tree.
 The three candidate resolutions all remain open. None was taken this session.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md:159-165` still guards all four stylometric-profile copies with an existence test and leaves existing files untouched. None of the three candidate resolutions (detect and refresh, document in README, accept and close) was taken. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md:159-165` still guards all four stylometric-profile copies with an existence test and leaves existing files untouched. None of the three candidate resolutions (detect and refresh, document in README, accept and close) was taken. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-**Resolved 260821-0020** (coder, plan step 3 of `circles/260820-2051-style-rules-arrive-and-get-measured`). The residual this record tracked is closed, by a fourth resolution rather than by one of the three candidates. `/fusion:setup` Step 0d still copies only when the file is absent — the guarded-copy semantics this record warned must not be silently inverted are untouched — and now stamps what it copied into `fusion-workbench/.asset-provenance`. The new Step 0e compares each profile against the shipped copy and offers a replace, so an existing consumer is told and asked rather than left with a stale file. Candidate 1's `grep` for one filename is not needed: the comparison is over the whole file and covers every future wording change, not the `default-voice-*.yaml` reference alone. Candidate 3 is refused for the same reason.
+**Resolved 260821-0020-coder-setup-stamps-and-offers-a-refresh.md** (coder, plan step 3 of `260820-2051-style-rules-arrive-and-get-measured`). The residual this record tracked is closed, by a fourth resolution rather than by one of the three candidates. `/fusion:setup` Step 0d still copies only when the file is absent — the guarded-copy semantics this record warned must not be silently inverted are untouched — and now stamps what it copied into `fusion-workbench/.asset-provenance`. The new Step 0e compares each profile against the shipped copy and offers a replace, so an existing consumer is told and asked rather than left with a stale file. Candidate 1's `grep` for one filename is not needed: the comparison is over the whole file and covers every future wording change, not the `default-voice-*.yaml` reference alone. Candidate 3 is refused for the same reason.
 
 What made it decidable is the third input this record did not have. "Stale copy or project edit" is one difference with two causes, so the recorded checksum decides it: unedited and shipped moved is offered, edited and shipped did not move is silent, both moved is named as a conflict and never auto-replaced, and no recorded checksum is named as unclassifiable rather than guessed. Declining stamps the shipped checksum, so the question is asked once and not on every run.
 

@@ -1,11 +1,11 @@
-# Record `260811-1547` states its proposed lint has no exceptions, and a shipped skill already is one
+# Record `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` states its proposed lint has no exceptions, and a shipped skill already is one
 
 ---
 
 **Severity:** Low — an unchecked claim about the tree, inside the record filed against an unchecked claim about the tree
 **Domain:** code
 **Filed by:** coderev (Turn 3 review, range `7d9efc8..adaa545`)
-**Affects:** `shared/issues/260811-1547_o_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` (the "Suggested direction" and the second acceptance criterion)
+**Affects:** `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` (the "Suggested direction" and the second acceptance criterion)
 **Cross-references:**
 `skills/setup/SKILL.md:49` (the line the proposed rule would fail on);
 `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the lint the record proposes extending);
@@ -15,7 +15,7 @@
 
 ## What is wrong
 
-`260811-1547` is a correct record — `/fusion:monitor-reset` really does not exist, and
+`260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` is a correct record — `/fusion:monitor-reset` really does not exist, and
 `agents/orchestrator.md:192` really does justify an instruction with it. Its proposal carries a claim
 of the same kind it was filed against:
 
@@ -65,11 +65,11 @@ The record's own diagnosis is that a claim about the tree was written without be
 the tree, and that it *"was cited a second time, in a decision record about a different append-only
 log, before anybody checked whether the skill was real."* The proposal repeats the move one level
 down. Recording it here means whoever implements the lint meets the exception in the record rather
-than in a red suite — which is the same reason `260811-1547` gives for existing.
+than in a red suite — which is the same reason `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` gives for existing.
 
 ## Suggested direction
 
-Amend `260811-1547` rather than opening a competing record. Two things to change:
+Amend `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` rather than opening a competing record. Two things to change:
 
 1. Drop "the rule has no exceptions to carve", and name the one that exists.
 2. Give criterion 2 the shape the neighbouring lints already use for honest prose — a reference is an
@@ -80,11 +80,11 @@ Amend `260811-1547` rather than opening a competing record. Two things to change
 
 ## Acceptance criteria
 
-- [ ] `260811-1547` names `skills/setup/SKILL.md:49` and no longer claims the rule has no exceptions.
+- [ ] `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` names `skills/setup/SKILL.md:49` and no longer claims the rule has no exceptions.
 - [ ] Its acceptance criterion 2 is expressible as a test that passes against the tree as it stands.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Neither fix landed: `260811-1547` still contains the unamended no-exceptions sentence, and `skills/setup/SKILL.md:60` still cites a retired skill name legitimately, which is the exception the record is about. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Neither fix landed: `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` still contains the unamended no-exceptions sentence, and `skills/setup/SKILL.md:60` still cites a retired skill name legitimately, which is the exception the record is about. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Resolved: fixed — the record now names the `skills/setup/SKILL.md` exception, retracts the no-exceptions sentence and says the lint was never built; shared/issues/260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md:71
+Resolved: fixed — the record now names the `skills/setup/SKILL.md` exception, retracts the no-exceptions sentence and says the lint was never built; 260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md:71

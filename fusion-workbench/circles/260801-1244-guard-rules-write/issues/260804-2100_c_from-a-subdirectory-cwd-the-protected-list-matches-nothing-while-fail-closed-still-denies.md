@@ -7,8 +7,8 @@
 **Filed by:** coder, during Step 5 of the C5b remediation plan
 **Affects:** `hooks/lib/project-relative.ts` (`projectRelative`), `hooks/guard.ts` (the `!isFusionPluginCwd()` gate on the Bash mutation policy), `rules/protected-path-discipline.md`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-1604_c_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` (closed; states this degradation for `rules/**` and calls it arguably correct, and labels its own reachability *inference, not measured*),
-`circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md` Step 1
+`260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` (closed; states this degradation for `rules/**` and calls it arguably correct, and labels its own reachability *inference, not measured*),
+`260804-1633_*_plan-c5b-remediation-and-ship.md` Step 1
 
 ---
 
@@ -16,7 +16,7 @@
 
 Two things, and the second is the one worth fixing.
 
-**The measurement `260804-1604` did not have.** That record's reachability section says: *"Inference, not measured against a real Claude Code session: the trigger is a session whose working directory is a subdirectory of a fusion-set-up project. I did not verify how Claude Code sets the hook's working directory beyond the harness."* This session is that measurement. Its working directory is `<project>/fusion-workbench`, one level below the project root, and from there the whole relative half of `guard.protectedPaths` matches nothing in the real project. The trigger is not hypothetical and it is not exotic: it is where this session was started.
+**The measurement `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` did not have.** That record's reachability section says: *"Inference, not measured against a real Claude Code session: the trigger is a session whose working directory is a subdirectory of a fusion-set-up project. I did not verify how Claude Code sets the hook's working directory beyond the harness."* This session is that measurement. Its working directory is `<project>/fusion-workbench`, one level below the project root, and from there the whole relative half of `guard.protectedPaths` matches nothing in the real project. The trigger is not hypothetical and it is not exotic: it is where this session was started.
 
 **The asymmetry that is not in any record.** From that same working directory, a literal write to a genuinely protected path is *allowed*, while an operand the classifier cannot resolve is *denied* fail-closed. The two halves of one policy disagree about whether the policy applies at all. An agent meets a deny whose reason ends "STOP and ask the user" for a scratch-file copy, one command after a `mv` into the project's real `rules/` went through unremarked.
 
@@ -37,9 +37,9 @@ Rows 2 and 3 name a protected pattern (`rules/**`) and a protected-ancestor dest
 
 The Bash mutation policy is gated on `!isFusionPluginCwd()`, which reads `process.cwd()`. Row 1 was denied *by that policy's own fail-closed branch*, so the classifier ran, so the gate was open, so the guard does not consider itself in the plugin's repository — correct, because its working directory is `fusion-workbench/`, which holds no `.claude-plugin/plugin.json`. The policy is therefore fully active. `projectRelative(filePath, cwd)` then anchors every pattern at that same working directory, so `/…/fusion/rules/x` lands outside it and comes back as an absolute path, which no relative pattern can match. Rows 2, 3 and 4 follow. **This is inference from the four measured verdicts plus the code, not an instrumented read of the hook's working directory.**
 
-## Why this is not simply `260804-1604` again
+## Why this is not simply `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` again
 
-`260804-1604` closed the floor's half and argued the rest away in one sentence: *"`rules/**` degrades the same way from a subdirectory, and for `rules/**` that is arguably correct: `sub/rules/` genuinely is a different directory from `project/rules/`, and the protected list is documented as project-relative."* That argument stands on its own terms, and this record does not reopen it.
+`260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` closed the floor's half and argued the rest away in one sentence: *"`rules/**` degrades the same way from a subdirectory, and for `rules/**` that is arguably correct: `sub/rules/` genuinely is a different directory from `project/rules/`, and the protected list is documented as project-relative."* That argument stands on its own terms, and this record does not reopen it.
 
 What the argument does not cover is fail-closed. Fail-closed is not project-relative — it fires on the *shape* of an operand, before any question of which directory it names. So in exactly the configuration where the list protects nothing, the policy is at its most obstructive. An agent that meets that deny reads the rule file, finds "the whole check stands down in the fusion plugin's own repository", sees its own project untouched by the list, and has no account of what it just met. `rules/protected-path-discipline.md` names precisely that outcome as the failure it exists to prevent.
 
@@ -92,7 +92,7 @@ writing a protected path because the guard happened to let you is the thing this
 forbids.
 
 **Branch B, done.** The forensics catalogue gains an entry — one of the two new ones that
-open it — carrying the measurement, the `260804-1604` argument this record explicitly does
+open it — carrying the measurement, the `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` argument this record explicitly does
 not reopen, and why that argument does not cover fail-closed.
 
 **Why it stays `_o_`.** Both directions in § Suggested direction are behaviour: scoping
@@ -125,7 +125,7 @@ Das heißt: läuft der Hook mit cwd in einem Unterverzeichnis, findet die Aufzä
 
 ---
 
-**Messung 260807-1601 (coder) — beides erledigt, der Befund bleibt `_o_` mit deutlich engerem Rest.**
+**Messung 260807-1601-coder-messwurzel-aus-dem-unterverzeichnis.md (coder) — beides erledigt, der Befund bleibt `_o_` mit deutlich engerem Rest.**
 
 Beide Schritte der obigen Reihenfolge sind gegangen. Die Ableitung stimmte.
 
@@ -193,7 +193,7 @@ in beide Richtungen, und dass das gemessen ist.
 
 ---
 
-**Sichtbarkeit 260807-1626 (coder) — der Rest ist unverändert, aber nicht mehr still. BLEIBT `_o_`.**
+**Sichtbarkeit 260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md (coder) — der Rest ist unverändert, aber nicht mehr still. BLEIBT `_o_`.**
 
 Der Auslöser war eine Nutzeranforderung im Chat, nicht dieser Befund: „aus einem
 Unterverzeichnis zu starten macht keinen Sinn, eine deutliche Warnung wäre hilfreich."
@@ -206,7 +206,7 @@ Unterprozess; falsifiziert.
 
 **Was das an diesem Befund ändert: nichts am Verhalten.** `hooks/lib/project-relative.ts`
 löst die Pfade der Vorab-Verweigerung weiterhin gegen `process.cwd()` auf, genau wie in der
-Messung vom 260807-1601 festgehalten. Der Befund bleibt offen und behält seinen Rest.
+Messung vom 260807-1601-coder-messwurzel-aus-dem-unterverzeichnis.md festgehalten. Der Befund bleibt offen und behält seinen Rest.
 
 **Was es ändert: die Erreichbarkeit der Bedingung für den Menschen.** Die Auslösebedingung
 dieses Befunds — Sitzung unterhalb der Projektwurzel — war bisher von außen nicht erkennbar;
@@ -222,7 +222,7 @@ die geteilte Annahme an der einen Stelle hörbar, an der das Arbeitsverzeichnis 
 und ist das, was diesen Befund offen hält.
 
 Sitzungsprotokoll:
-`circles/260807-0923-guard-misst-statt-orakelt/history/260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md`
+`260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md`
 
 ---
 
@@ -236,15 +236,15 @@ ls hooks/lib/project-relative.ts      → No such file or directory
 ls hooks/lib/protected-snapshot.ts    → No such file or directory
 ```
 
-The record's title names two clauses and both were already false at the last pass; what kept it `_o_` was the residual named in the 260807-1626 note — *`hooks/lib/project-relative.ts` (`projectRelative`) still resolves the write tools' pre-deny paths against `process.cwd()`*. That file no longer exists. There is no pre-deny: `hooks/guard.ts` is 223 lines, holds no `permissionDecision`, no `"deny"` and no `hookSpecificOutput`, and every path through it writes `{}`.
+The record's title names two clauses and both were already false at the last pass; what kept it `_o_` was the residual named in the 260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md note — *`hooks/lib/project-relative.ts` (`projectRelative`) still resolves the write tools' pre-deny paths against `process.cwd()`*. That file no longer exists. There is no pre-deny: `hooks/guard.ts` is 223 lines, holds no `permissionDecision`, no `"deny"` and no `hookSpecificOutput`, and every path through it writes `{}`.
 
 Three removals took it, in this order, and none of them was aimed at this record:
 
-1. **2026-08-12** — the protected-path half of the guard: the write-tool deny, the before/after fingerprint, the write-back, `guard.protectedPaths` and `rules/protected-path-discipline.md`. That took `protected-snapshot.ts` and the measurement root this record's 260807-1601 note had just moved to `findWorkbenchRoot()`. Plan: `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`.
-2. **2026-08-16** — the guard's last verdict, the halt, the escalation module, and with them `isFusionPluginCwd()`, the second of the four cwd-anchored resolutions this record's 260807-1626 note enumerated. Circle: `circles/260816-1741-guard-becomes-observation-only`.
+1. **2026-08-12** — the protected-path half of the guard: the write-tool deny, the before/after fingerprint, the write-back, `guard.protectedPaths` and `rules/protected-path-discipline.md`. That took `protected-snapshot.ts` and the measurement root this record's 260807-1601-coder-messwurzel-aus-dem-unterverzeichnis.md note had just moved to `findWorkbenchRoot()`. Plan: `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`.
+2. **2026-08-16** — the guard's last verdict, the halt, the escalation module, and with them `isFusionPluginCwd()`, the second of the four cwd-anchored resolutions this record's 260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md note enumerated. Circle: `260816-1741-guard-becomes-observation-only`.
 3. The same release deleted `hooks/lib/project-relative.ts`, the residual itself.
 
-**What survives, and it is not this record's.** `bin/fusion-plugin-cwd` is the one cwd-anchored implementation left, and the SessionStart warning added on 2026-08-05 by the 260807-1626 note is still there and still fires — `hooks/session-start.ts` warns whenever a workbench root is found above the working directory. The warning outlived every mechanism it was a warning about. That is a fact about the tree, not an open defect, and `CLAUDE.md` `## Where to look when something breaks` carries it under the *"SessionStart prints restart this session at the project root"* row.
+**What survives, and it is not this record's.** `bin/fusion-plugin-cwd` is the one cwd-anchored implementation left, and the SessionStart warning added on 2026-08-05 by the 260807-1626-sessionstart-warnt-bei-start-unterhalb-der-projektwurzel.md note is still there and still fires — `hooks/session-start.ts` warns whenever a workbench root is found above the working directory. The warning outlived every mechanism it was a warning about. That is a fact about the tree, not an open defect, and `CLAUDE.md` `## Where to look when something breaks` carries it under the *"SessionStart prints restart this session at the project root"* row.
 
 **Closed as moot rather than as fixed, and the distinction is recorded because it matters to a reader.** Nobody decided the coordinate-space asymmetry; the code that could exhibit it was removed for other reasons. `CLAUDE.md` states exactly this of this record by name — *"The issue that tracked the first, `260804-2100_*_…`, is moot rather than fixed."* If a future change reintroduces a path check that resolves against `process.cwd()`, this record is the measurement to read first: the asymmetry was never argued away, only outlived.
 

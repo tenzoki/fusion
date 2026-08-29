@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** tasklist task 2, `I:260809-1109-failopen`
-**Source record:** `fusion-workbench/shared/issues/260809-1109_*_both-hooks-fail-silent-instead-of-open-….md`
+**Source record:** `260809-1109_*_both-hooks-fail-silent-instead-of-open-….md`
 
 ---
 
@@ -52,7 +52,7 @@ call has run.
 `clear-halt.ts` genuinely differs and was not given a fail-open tail. It is a
 manual tool a human runs; it owes Claude Code no verdict on stdout, and a run
 that could not do its job must exit non-zero with the stack trace rather than
-print a reassuring line — which is the whole subject of issue `260805-1134` in
+print a reassuring line — which is the whole subject of issue `260805-1134_*_clear-halt-meldet-erfolg-wenn-es-die-workbench-nicht-findet.md` in
 its header. The reporting half does carry over: its closing `emitEvent` sits
 after `saveEscalation`, so the halt is already cleared by the time it runs, and
 it is now best effort with a note on stderr rather than able to withdraw the
@@ -94,7 +94,7 @@ the marker assertion the case would be green while checking nothing.
 
 ## Filed
 
-`fusion-workbench/shared/issues/260809-1825_*_an-unwritable-guard-state-directory-turns-….md`.
+`260809-1825_*_an-unwritable-guard-state-directory-turns-….md`.
 Measuring the fix surfaced that `guard.ts` persists the escalation counter before
 it writes a deny (`saveEscalation` then `block`, in all three checks), so an
 unwritable state directory throws while the verdict is still unwritten and the

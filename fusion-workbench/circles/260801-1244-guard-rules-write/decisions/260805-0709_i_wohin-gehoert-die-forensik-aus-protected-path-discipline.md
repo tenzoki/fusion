@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator, am Zuschnitt-Gate des Ausstiegsplans
-**Cross-references:** `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md` Schritt 2; `history/260805-0645-coder-step1-emission-golden.md` (die Messung, die den Widerspruch fand); `rules/context-lean-claude-md.md`
+**Cross-references:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md` Schritt 2; `260805-0645-coder-step1-emission-golden.md` (die Messung, die den Widerspruch fand); `rules/context-lean-claude-md.md`
 
 ---
 
@@ -59,11 +59,11 @@ widersprochen hätte. Option 1 löscht nichts; sie nimmt nur den automatischen L
 ---
 Answered: dieser Record, `## Antwort` — Nutzerwahl am Zuschnitt-Gate; die Trennlinie ist der Adressat, nicht die Größe.
 
-Implemented: Plan-Schritt 2, `history/260805-0717-coder-step2-drei-schichten.md` — drei Schichten
+Implemented: Plan-Schritt 2, `260805-0717-coder-step2-drei-schichten.md` — drei Schichten
 geschnitten: Kern 16 346 (alle 16 Agenten), Referenz `rules/protected-path-internals.md` 20 754
 (`coder`, `coderev`, `bugfixer`, über ein eigenes Agenten-Flag statt über das `coding`-Muster, das
 zusätzlich `planner` erfasst hätte), Forensik
-`analyses/260805-0717-protected-path-forensics.md` 19 090 (kein Emissionspfad). Kein Byte
+`260805-0717-protected-path-forensics.md` 19 090 (kein Emissionspfad). Kein Byte
 gelöscht, auf Wort-Token-Ebene geprüft: 4 von 8 559 Token geändert, alle vier dokumentierte
 Querverweis-Umlenkungen. Alle drei Verpflichtungen erfüllt; die dritte als Befund: nach dem
 Schnitt liegt **kein** Agent unter dem Release-Deckel von 105 354 (110 931 / 116 604 / 131 685),
@@ -71,4 +71,4 @@ und die Plan-Projektion von 104 600 hat die sechs Diagramm-Agenten nie mitgerech
 den Orchestrator.
 
 ---
-Retired: `fa2f00b` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — die Dreischichtung ist auf eine Schicht zusammengefallen. Kern und Referenz waren `rules/protected-path-discipline.md`, die als immer-aktive Regel geloescht wurde (10 420 Byte pro Dispatch); damit ist auch die Verpflichtung "die Forensik muss zitierbar bleiben" ohne Traeger, denn der Kern war der Verweis. Erhalten ist allein die Forensik selbst, `circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`, jetzt ohne die Datei, aus der sie ausgelagert wurde.
+Retired: `fa2f00b` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — die Dreischichtung ist auf eine Schicht zusammengefallen. Kern und Referenz waren `rules/protected-path-discipline.md`, die als immer-aktive Regel geloescht wurde (10 420 Byte pro Dispatch); damit ist auch die Verpflichtung "die Forensik muss zitierbar bleiben" ohne Traeger, denn der Kern war der Verweis. Erhalten ist allein die Forensik selbst, `260805-0717-protected-path-forensics.md`, jetzt ohne die Datei, aus der sie ausgelagert wurde.

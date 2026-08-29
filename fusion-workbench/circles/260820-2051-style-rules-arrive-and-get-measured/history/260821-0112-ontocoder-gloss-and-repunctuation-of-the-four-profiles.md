@@ -3,8 +3,8 @@
 **Status:** Complete
 **Date:** 2026-08-21
 **Agent:** ontocoder
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
-**Task source:** user dispatch, carrying step 6's residual (`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`) and plan step 7
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
+**Task source:** user dispatch, carrying step 6's residual (`260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`) and plan step 7
 
 Two changes, deliberately kept separable so they can be committed apart. The word change went in
 first; the repunctuation followed it. Nothing was committed here.
@@ -53,9 +53,9 @@ permitted one.
 
 **No sentence split was used, so criterion 3 holds by construction.** The two failure modes recorded
 against the first repunctuation pass in this project were vague pronoun openers
-(`shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`)
+(`260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`)
 and a mark weaker than the clause it replaced
-(`shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`).
+(`260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`).
 A pronoun opener can only be created by splitting a sentence, and no replacement here did. The
 case-sensitive token stream is byte-identical before and after, which is the same evidence the first
 record used to find its three, read the other way: not one token gained a capital, so no new sentence
@@ -164,7 +164,7 @@ stream, which is the whole point of the check, and no replacement in this pass t
 ## What was changed outside `stilwerk/`
 
 Plan step 7 is marked `[DONE]` in
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`.
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`.
 Nothing else. Step 6 was left as it stands, and the issue behind part A was left open at `_o_`: part A
 satisfies its first acceptance bullet, its second is about step 6's own file list and acceptance
 criterion agreeing, which this task did not touch.
@@ -180,7 +180,7 @@ at part A only, and `git apply partB.patch` restores it. `git apply -R --check p
 and passes.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The paragraph "On strength, the second record's fault" says five
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The paragraph "On strength, the second record's fault" says five
 of the six English replacements took the colon; this record's own table gives three colons
 (`chat-voice-en.yaml:4`, `:11`, `:21`) and three commas (the three at `:86`). Six replacements, three
 colons, three commas. The verdict the paragraph discharges holds on the corrected count: every
@@ -188,4 +188,4 @@ appositive or explanatory break took a colon, and the three commas at `:86` are 
 choice was not forced. The sentence "A pronoun opener can only be created by splitting a sentence" is
 also stated too strongly; the argument that holds is the paragraph's own next one, that none of the four
 pronouns was written by this pass. Filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md`.
+`260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md`.

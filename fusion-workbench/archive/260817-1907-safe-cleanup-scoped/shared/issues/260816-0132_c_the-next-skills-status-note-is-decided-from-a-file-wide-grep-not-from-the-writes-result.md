@@ -72,7 +72,7 @@ checked against the file at HEAD:
   commit and now describes the three branches.
 
 Verified by the executor against nine fixtures and all fifteen real `*_circle.md` records in this
-workbench (`shared/history/260816-0205-coder-status-note-and-demoted-names.md`).
+workbench (`260816-0205-coder-status-note-and-demoted-names.md`).
 
-Reconciled 260816-0713 (reconciler, HEAD `f77633f`) — the fix landed in the session's last commit and
+Reconciled 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`) — the fix landed in the session's last commit and
 the marker had not been moved.

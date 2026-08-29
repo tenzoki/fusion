@@ -4,7 +4,7 @@
 **Sender:** coderev
 **Reviewed-range:** `7c12d6a..5d29b6d`
 **Not-opened:** none
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
 **Suite at review time:** `cd hooks && npm test` — 45 files, 830 tests, **all green**, 76.0 s. Working tree clean afterwards apart from the pre-existing `orchestrator-events.jsonl` modification. This is the first full green run recorded in this Circle.
 
 ---
@@ -39,7 +39,7 @@ The dispatch listed seven and named `7c12d6a..HEAD`; the `review_start` event sa
 
 ### A. The plan describes a tree two of its own steps have moved
 
-**A1 — Step 11's file list predates Turn 2, which re-pointed two suites onto the measurement step 11 deletes.** Medium. Filed as `issues/260815-1251_o_step-11s-file-list-predates-turn-2-which-re-pointed-two-suites-onto-the-measurement-step-11-deletes.md`.
+**A1 — Step 11's file list predates Turn 2, which re-pointed two suites onto the measurement step 11 deletes.** Medium. Filed as `260815-1251_*_step-11s-file-list-predates-turn-2-which-re-pointed-two-suites-onto-the-measurement-step-11-deletes.md`.
 
 `a69d56e` re-pointed `hooks/lib/__tests__/guard-state-shape.test.ts` off `churn.json` and onto `state-drift.json`, and off the churn load and onto the state-drift sentence. Its header argues at length that `state-drift.json` is the right successor because it is *"the throttle record `measureStateDriftForModel` reads on EVERY guarded tool call"*. Step 11 deletes that measurement. Step 11's test file list is `hooks/lib/__tests__/{hook-fail-open,staging-drift,review-coverage,helpers/guard-harness}.ts`; `guard-state-shape` appears in the plan only in step 4's list, which has landed.
 
@@ -47,13 +47,13 @@ All nine of that file's cases call `ordinaryEdit()`, one `Edit` on `notes.txt`. 
 
 `hooks/lib/__tests__/monitor-warnings-panel.test.ts:730` is the second omission — it asserts the `state_drift` level branch step 11 removes from `bin/monitor`, and it too is named in steps 2, 4 and 12 but not 11.
 
-The finding under both file names is larger than either. **After step 11 no tracker measurement fires on an ordinary write at an unremarkable path.** Step 11's prose is careful about what stops being measured — it enumerates state-drift rows 3, 4 and 5 and states plainly that nothing will notice a frozen Circle Turn log — and says nothing about this. `hook-fail-open.test.ts`'s two tracker cases, both re-pointed by `a69d56e`, lose their trigger rather than needing an edit, and with them the PostToolUse-side probe for the property `shared/issues/260809-2045` was filed about. `inference:` a replacement exists on `measureStagingDriftForModel`'s first-sighting arm, which does write on a first call; I did not build it, so that is reasoning and not a checked claim.
+The finding under both file names is larger than either. **After step 11 no tracker measurement fires on an ordinary write at an unremarkable path.** Step 11's prose is careful about what stops being measured — it enumerates state-drift rows 3, 4 and 5 and states plainly that nothing will notice a frozen Circle Turn log — and says nothing about this. `hook-fail-open.test.ts`'s two tracker cases, both re-pointed by `a69d56e`, lose their trigger rather than needing an edit, and with them the PostToolUse-side probe for the property `260809-2045` was filed about. `inference:` a replacement exists on `measureStagingDriftForModel`'s first-sighting arm, which does write on a first call; I did not build it, so that is reasoning and not a checked claim.
 
-**A2 — The plan's `**Decidability:**` head counts eight asserted enumerations and seven remain.** Low. Filed as `issues/260815-1251_o_the-plans-decidability-head-counts-eight-asserted-enumerations-and-seven-remain.md`. `5d29b6d` deleted the stash-manifest field-count check and renumbered the sections below it; `grep '^// --- ' hooks/lib/__tests__/derivable-enumerations-lint.test.ts` returns seven numbered sections. The test file's own header was corrected in the same commit; the plan's head was not, and the executor named the residual and left it standing as outside its file list, which is right. `d1ae1c0`'s commit message also says eight and stays — it was true at 08:47.
+**A2 — The plan's `**Decidability:**` head counts eight asserted enumerations and seven remain.** Low. Filed as `260815-1251_*_the-plans-decidability-head-counts-eight-asserted-enumerations-and-seven-remain.md`. `5d29b6d` deleted the stash-manifest field-count check and renumbered the sections below it; `grep '^// --- ' hooks/lib/__tests__/derivable-enumerations-lint.test.ts` returns seven numbered sections. The test file's own header was corrected in the same commit; the plan's head was not, and the executor named the residual and left it standing as outside its file list, which is right. `d1ae1c0`'s commit message also says eight and stays — it was true at 08:47.
 
 ### B. A measurement that will not see what this Turn added
 
-**B1 — The after-measurement command cannot see the 320 lines the build change added.** Medium. Filed as `issues/260815-1251_o_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`.
+**B1 — The after-measurement command cannot see the 320 lines the build change added.** Medium. Filed as `260815-1251_*_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`.
 
 Step 14 re-runs step 1's block verbatim, which is right. Its hook-source row is `cat hooks/*.ts hooks/lib/*.ts | wc -l`. `332267a` added `hooks/scripts/build.mjs` (205 lines), `hooks/scripts/run-tests.mjs` (48) and `hooks/vitest.config.mjs` (67) — 320 lines, all `.mjs`, all outside both globs. The before reading was 7 934; the current reading is 6 945; the delta will read −989 where the real change to hook code is −669.
 
@@ -61,15 +61,15 @@ Step 14 re-runs step 1's block verbatim, which is right. Its hook-source row is 
 
 ### C. Two removals that took a little more with them than intended
 
-**C1 — Four shipped consumers exclude a `stashes/` store the layout definition no longer knows about.** Low. Filed as `issues/260815-1251_o_four-shipped-consumers-exclude-a-stashes-store-the-layout-definition-no-longer-knows-about.md`.
+**C1 — Four shipped consumers exclude a `stashes/` store the layout definition no longer knows about.** Low. Filed as `260815-1251_*_four-shipped-consumers-exclude-a-stashes-store-the-layout-definition-no-longer-knows-about.md`.
 
 All four exclusions are intact and all four are right to keep: `skills/setup/SKILL.md:67`, `skills/log-activity/SKILL.md:82`, `skills/archive/SKILL.md:96`, `agents/playmaker.md:63`. What `5d29b6d` removed is the `stashes/` line from the layout tree in `rules/fusion-workbench-conventions.md`, the file that declares itself the layout's single authoring home. The next editor of any of the four meets an exclusion for a directory no definition mentions, and the argument for keeping it lives in a commit message.
 
 One over-claim to correct rather than repeat while fixing it. The commit message says an unexcluded Setup probe *"reads its bracket-marker filenames as an unconverted workbench and refuses Setup permanently"*. `skills/setup/SKILL.md:60` records the measurement that sentence leans on and says the opposite about this store specifically: 1146 matches, *"all of them under `archive/` and `.migration-v2-backup/`, none anywhere else"*. The exclusions are right because frozen content is not live content, which is the stated principle; they are not right because of a measured hit. `rules/critical-stance.md` §3.
 
-**C2 — The reference lint's non-plugin root-var branch lost its data and its only behavioural test in one commit.** Low. Filed as `issues/260815-1251_o_the-reference-lints-non-plugin-root-var-branch-lost-its-data-and-its-only-behavioural-test-together.md`. `5d29b6d` removed `STASH_DIR` from `ROOT_VARS` and deleted the case that drove the `typeof names === "string" → continue` branch at `reference-resolution-lint.test.ts:301`. The guard test at `:535`, which the file calls "the falsifier for the skip half", now filters an empty list and cannot fail. The vacuity is stated honestly in a source comment; it is not stated anywhere a reader of the defect store would find it, and the case could have been kept with a test-only entry rather than a real one.
+**C2 — The reference lint's non-plugin root-var branch lost its data and its only behavioural test in one commit.** Low. Filed as `260815-1251_*_the-reference-lints-non-plugin-root-var-branch-lost-its-data-and-its-only-behavioural-test-together.md`. `5d29b6d` removed `STASH_DIR` from `ROOT_VARS` and deleted the case that drove the `typeof names === "string" → continue` branch at `reference-resolution-lint.test.ts:301`. The guard test at `:535`, which the file calls "the falsifier for the skip half", now filters an empty list and cannot fail. The vacuity is stated honestly in a source comment; it is not stated anywhere a reader of the defect store would find it, and the case could have been kept with a test-only entry rather than a real one.
 
-**C3 — The three-churn-references record lists three and two remain.** Low. Filed as `issues/260815-1251_o_the-three-churn-references-record-lists-three-and-two-remain.md`. `04ea182` struck the record's third item, `skills/help/SKILL.md:106`, eleven minutes after the record was filed and said so in its message; the record was not annotated. `grep -rniI churn skills/help/SKILL.md` returns nothing at HEAD. The title stays true — three did survive step 4 — so the fix is an append, not a transition.
+**C3 — The three-churn-references record lists three and two remain.** Low. Filed as `260815-1251_*_the-three-churn-references-record-lists-three-and-two-remain.md`. `04ea182` struck the record's third item, `skills/help/SKILL.md:106`, eleven minutes after the record was filed and said so in its message; the record was not annotated. `grep -rniI churn skills/help/SKILL.md` returns nothing at HEAD. The title stays true — three did survive step 4 — so the fix is an append, not a transition.
 
 ## The six specific checks the dispatch asked for
 
@@ -133,18 +133,18 @@ The one cosmetic leftover: `hooks/lib/project-relative.ts` now carries two conse
 
 ## Overlap with the parallel review
 
-`ontorev` filed four records at the `260815-1247` stamp, three minutes ahead of mine. **One of them is a finding I reached independently and have withdrawn:** `260815-1247_o_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md`. My record was deleted rather than filed; the two agreed on the evidence and on the remedy, and theirs is the earlier stamp. Recorded here because Turn 1 produced three such pairs and the dispatch asked for the collision to be named.
+`ontorev` filed four records at the `260815-1247` stamp, three minutes ahead of mine. **One of them is a finding I reached independently and have withdrawn:** `260815-1247_*_the-inserted-step-p-3b-is-in-no-plan-and-in-no-turn-log-only-in-the-event-stream.md`. My record was deleted rather than filed; the two agreed on the evidence and on the remedy, and theirs is the earlier stamp. Recorded here because Turn 1 produced three such pairs and the dispatch asked for the collision to be named.
 
 Two of their other three reach files I also read, and I am not duplicating them:
 
-- **`260815-1247_o_the-churn-leaves-were-removed-without-a-retirement-entry…`** names `hooks/lib/config.ts:503-508` and the unreachable retirement branch. That is application code and therefore mine by charter; `ontorev` reached it from the configuration side, flags the overlap in its own `**Owner:**` line, and got there first. I read `config.ts`'s header and its `DEFAULTS` and did not check the retirement table, so their finding is new information to me rather than a duplicate of anything I withheld.
-- **`260815-1247_o_the-implemented-decision-records-two-cross-references-were-broken…`** is a record-store citation, the same class as Turn 1's A1 and C2.
+- **`260815-1247_*_the-churn-leaves-were-removed-without-a-retirement-entry…`** names `hooks/lib/config.ts:503-508` and the unreachable retirement branch. That is application code and therefore mine by charter; `ontorev` reached it from the configuration side, flags the overlap in its own `**Owner:**` line, and got there first. I read `config.ts`'s header and its `DEFAULTS` and did not check the retirement table, so their finding is new information to me rather than a duplicate of anything I withheld.
+- **`260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken…`** is a record-store citation, the same class as Turn 1's A1 and C2.
 
 The split by artifact kind again does not match the defect distribution: the plan, the Circle record and the defect store are neither structured data nor application code, and both reviewers can reach all three. `ontorev` carries `**Domain:** data` and `**Owner:** ontocoder` on records about a plan and a decision record, which is the same unsettled ownership Turn 1 raised and which nobody has settled.
 
 ## Recommended sequencing
 
-**Before step 7 starts, and as one pass over the plan** — A1, A2 and B1. All three are edits to `planning/260815-0029_o_plan-…md`, the same editor is in the file, and A1 is the only finding in this range that makes a future commit fail. While there, re-read steps 7 through 15's file lists against the tree rather than against the plan, which is what turned A1 up.
+**Before step 7 starts, and as one pass over the plan** — A1, A2 and B1. All three are edits to `260815-0029_*_plan-…md`, the same editor is in the file, and A1 is the only finding in this range that makes a future commit fail. While there, re-read steps 7 through 15's file lists against the tree rather than against the plan, which is what turned A1 up.
 
 **Any time in this Circle, cheaply** — C3, one append; C2, either a restored test case or a recorded acceptance.
 

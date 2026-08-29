@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md` step 4
+**Plan:** `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md` step 4
 
 ## What was implemented
 
@@ -15,7 +15,7 @@ would be the duplication this project treats as a defect.
 
 ## What this closes
 
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md`
+`260825-2140_*_the-two-session-start-emit-sites-disagree-on-the-detail-field-and-the-vocabulary-names-one.md`
 carries its `Resolved:` note and its marker is `_c_`. The two emit sites now agree, and both write
 what the vocabulary declares.
 

@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Filed by:** analyst
-**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
-**Cross-references:** `shared/issues/260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`; `shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`; `rules/circle-records.md` `## Circle record template`; `agents/orchestrator.md` `## Scope` and `## Circle head fields`; `agents/shaper.md` `## Four invocation modes`; `skills/next/SKILL.md` Step 6.2; plan `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 1 (D-record-writers)
+**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+**Cross-references:** `260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`; `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`; `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`; `rules/circle-records.md` `## Circle record template`; `agents/orchestrator.md` `## Scope` and `## Circle head fields`; `agents/shaper.md` `## Four invocation modes`; `skills/next/SKILL.md` Step 6.2; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-record-writers)
 
 ---
 
@@ -78,4 +78,4 @@ Retired:
 
 ---
 Answered (parts a and b): user 2026-08-29 — (a) reverse `## Dependencies` edge: option 1, the orchestrator's Circle-record write list gains `## Dependencies`; (b) `**Active spec/plan:**` on activation: option 5, `/fusion:next` writes it too, deriving the path from the record's Grounding citation.
-Answered (part c): option 8, a third scope value `grounding-only` for shaper mode 3. Full answer recorded in this file (circles/260824-1853-close-every-open-defect/decisions/260824-2013_a_who-writes-the-circle-record-fields-that-no-current-party-may-write.md).
+Answered (part c): option 8, a third scope value `grounding-only` for shaper mode 3. Full answer recorded in this file (260824-2013_*_who-writes-the-circle-record-fields-that-no-current-party-may-write.md).

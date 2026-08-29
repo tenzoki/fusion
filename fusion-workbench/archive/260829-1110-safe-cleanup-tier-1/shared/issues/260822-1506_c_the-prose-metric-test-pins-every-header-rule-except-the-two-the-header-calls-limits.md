@@ -43,13 +43,13 @@ what it says for everything it covers.
 ---
 
 **Found by:** coderev, reviewing `c2ad89c..6781814`, review file
-`shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
+`260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Low.
 **Affects:** `hooks/lib/__tests__/fusion-prose-metric.test.ts`, `bin/fusion-prose-metric:69-73` and `:13`.
 **Filed in the shared store:** no Circle is active.
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`
+`260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`
 (the record this test discharges).
 
 **The fix, and its cost, which is the reason this is filed rather than done.** Three assertions of
@@ -58,7 +58,7 @@ and closing on the next whose content counts as prose, and one total-row read. R
 the hook-test surface, which stands at **302 lines of head-room against a closure clause of 300**. So
 this cannot be added without a cut in front of it, and the sequencing should be decided rather than
 discovered when `npm test` goes red. Whoever takes it should read
-`shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md` first: three of
+`260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md` first: three of
 the twelve lines would be comment, and that record is the open question about what comment costs on
 this surface.
 

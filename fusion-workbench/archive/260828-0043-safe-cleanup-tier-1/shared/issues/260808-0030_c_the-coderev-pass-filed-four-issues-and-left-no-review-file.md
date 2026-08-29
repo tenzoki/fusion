@@ -1,18 +1,18 @@
-# The coderev pass of session 260807-2020 filed four issues and wrote no review file
+# The coderev pass of session 260807-2020-orchestrator-session.md filed four issues and wrote no review file
 
 ---
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** reconciler, Phase 3 pass of session `260807-2020`
+**Filed by:** reconciler, Phase 3 pass of session `260807-2020-orchestrator-session.md`
 **Affects:** `fusion-workbench/shared/reviews/` (the absent document); `agents/coderev.md:69,76,87` (the obligation)
 **Cross-references:**
-`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-2152_*_declared-lang-prefix-matches-so-deutsch-resolves-to-de.md`,
-`fusion-workbench/shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`,
-`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-2154_*_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md`,
-`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-2155_*_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md`
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260807-2152_*_declared-lang-prefix-matches-so-deutsch-resolves-to-de.md`,
+`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`,
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260807-2154_*_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md`,
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260807-2155_*_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md`
 (the four findings, each carrying `**Filed by:** coderev`),
-`fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md` (the sibling reviewer's pass, which did write one)
+`260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md` (the sibling reviewer's pass, which did write one)
 
 ---
 
@@ -22,7 +22,7 @@ Four issues in `shared/issues/` carry `**Filed by:** coderev, review of b246996.
 corresponding review document exists. `shared/reviews/` holds two files from this session —
 `260807-2035-conceptrev-plan-two-language-declarations.md` and
 `260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md` — and its only `coderev`
-entries are `260731-2247` and `260806-1154`, both from earlier sessions.
+entries are `260731-2247-coderev-cadence-skill-port-v5-7-0.md` and `260806-1154`, both from earlier sessions.
 
 Confirmed against git rather than against the directory listing alone:
 `git log --diff-filter=A --name-only b246996..HEAD | grep -i coderev` returns nothing. The file was
@@ -91,7 +91,7 @@ Second witness's detail, as reported: the reporting project also observed the as
 record names — an ontorev pass the same night wrote exactly the document the coderev pass did not.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: No review file for the cited range exists in `shared/reviews/`, and neither the reconstruction nor the diagnosis note was produced. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: No review file for the cited range exists in `shared/reviews/`, and neither the reconstruction nor the diagnosis note was produced. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: moot — the class was worked rather than the instance repaired: the review-file obligation now has one home and a measurement names any range no review covers; `rules/review-contract.md` exists at HEAD 260824 and `bin/fusion-review-coverage` reports the uncovered commits.

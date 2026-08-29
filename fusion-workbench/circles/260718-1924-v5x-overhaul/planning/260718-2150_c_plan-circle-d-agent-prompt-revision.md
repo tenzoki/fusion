@@ -1,10 +1,10 @@
 # Implementation Plan: Circle D — Agent-prompt revision (fusion v5.x)
 
 **Date:** 2026-07-18
-**Status:** Complete (session 260718-2110; all 16 prompts factored across Bundles 0–6; every Turn review GO/PASS/CLEAN; F1/F5/F6 settled; plugin bumped 5.2.0→5.3.0)
-**Spec:** `fusion-workbench/shared/planning/260718-0437_o_spec-fusion-v5x-overhaul.md` (§Circle D)
-**Master plan:** `fusion-workbench/circles/260718-1924-v5x-overhaul/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md` (§Circle D, §Testing Strategy)
-**Coordination analysis (rubric + findings):** `fusion-workbench/circles/260718-1924-v5x-overhaul/analyses/260718-1929-agent-coordination-analysis.md` (§4, §5, §6, F1–F8)
+**Status:** Complete (session 260718-2110-orchestrator-session.md; all 16 prompts factored across Bundles 0–6; every Turn review GO/PASS/CLEAN; F1/F5/F6 settled; plugin bumped 5.2.0→5.3.0)
+**Spec:** `260718-0437_*_spec-fusion-v5x-overhaul.md` (§Circle D)
+**Master plan:** `260718-1001_*_master-plan-fusion-v5x-overhaul.md` (§Circle D, §Testing Strategy)
+**Coordination analysis (rubric + findings):** `260718-1929-agent-coordination-analysis.md` (§4, §5, §6, F1–F8)
 **Executors:** coder
 **Circle:** `260718-1924-v5x-overhaul` (active)
 
@@ -120,7 +120,7 @@ emitted file set is unchanged; only the prose describing it is centralised.
 
 ### The F5 decision — reviewers' history log (user-gated)
 
-Filed as a decision record: `decisions/260718-2150_o_reviewers-history-log-step.md`.
+Filed as a decision record: `260718-2150_*_reviewers-history-log-step.md`.
 **Planner recommendation: document the exception** (a reviewer's `$OUT_REVIEW` file
 is already its durable session record; adding a history step creates two records of
 one session — a duplication smell). The user rules at this plan gate. This decision
@@ -200,11 +200,11 @@ must be re-checked. Cells I scored first-hand are stated plainly; cells taken fr
   not in `IS_PROSE_AGENT`, so R5 passes for them (A's "prose-ish" note is a description,
   not a defect).
 - **R1 `edit` for playmaker only** — its `description:` frontmatter is factually stale
-  (describes the pre-container model; tracked in issue `260717-0031` item 1). A
+  (describes the pre-container model; tracked in issue `260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md` item 1). A
   `description:` edit is far lower-risk than a `tools:` edit but is still frontmatter:
   the executor keeps YAML valid (quote any colon) and runs `claude plugin validate .`
   immediately after. The other five prompts whose frontmatter names type-folder
-  literals (analyst, planner, consultant, investigator, taskplanner — issue 260717-0031
+  literals (analyst, planner, consultant, investigator, taskplanner — issue 260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md
   item 1) are **out of scope for D** — the path-lint test skips frontmatter, they are
   not R1-substantive, and P-6 deliberately left frontmatter alone. Not re-filed (already
   tracked).
@@ -453,13 +453,13 @@ Master plan Circle-D criteria bind. Plan-level acceptance:
   Circle C (editor registration) and Circle E (docs pass). D bumps only `plugin.json`
   `version` and syncs the `bin/fusion-rules` header comment for the new always-on rule.
 - No frontmatter edits beyond playmaker's stale `description:` (the other five type-folder
-  frontmatter literals are tracked in issue 260717-0031 and left to their own pass).
+  frontmatter literals are tracked in issue 260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md and left to their own pass).
 
 ## Open Questions
 
 - [ ] **F5 — reviewers' history log:** unify or document the exception? Recommendation:
   document. User rules at this plan gate. See
-  `decisions/260718-2150_o_reviewers-history-log-step.md`. Gates the R5 cells of
+  `260718-2150_*_reviewers-history-log-step.md`. Gates the R5 cells of
   coderev, ontorev, conceptrev.
 - [ ] **Editor dispatch coupling:** if the editor is dispatchable but not yet in the
   orchestrator's `tools:` allowlist/routing at Bundle 6, D files an issue (Circle-C gap)
@@ -477,7 +477,7 @@ Ground-truth verification (not taken from the plan header):
 4. **F4/F3 (conceptrev)**: Setup points at `agent-setup.md` (`conceptrev.md:19`) which carries the voice-read F4 needed, while retaining the load-bearing `design-diagrams.md` "that is the rubric you evaluate against" emphasis inline. Output-Style long-form/short-form block normalised (`conceptrev.md:120-124`). (Criterion 8.)
 5. **Orchestrator (Bundle 6, F8)**: Setup factored to the pointer (`orchestrator.md:100`) while **retaining** its bespoke expansions — the root-anchored-surfaces note (`orchestrator.md:106`) and the exit-4 issue-filing rule (`:105`). `tools:` allowlist intact: `AskUserQuestion` + all dispatchable `Agent(fusion:…)` entries present, editor included. (Criteria 3, 4.)
 6. **Gates green**: `npm test` → 261 passed / 11 files (path-lint + updated context-manifest baseline with the `agent-setup.md` presence assertion). `claude plugin validate .` → passed with one pre-existing benign warning (CLAUDE.md-not-loaded). (Criteria 5, 6.)
-7. **Both D-scoped issues closed on disk** with genuine Resolved notes: `260718-2238_c_` (agent-setup history-file assumption, fix in `eecbd21`) and `260718-2353_c_` (planner line-55 residual ask, fix in `6bdf5ff`).
+7. **Both D-scoped issues closed on disk** with genuine Resolved notes: `260718-2238_*_agent-setup-voice-profile-assumes-history-file.md` (agent-setup history-file assumption, fix in `eecbd21`) and `260718-2353_*_planner-residual-unconditional-ask-line55.md` (planner line-55 residual ask, fix in `6bdf5ff`).
 
 **Observation (not a defect — no action taken):** the plan text says the allowlist should list "12 `Agent(fusion:…)`" (criterion 4, and §Reading-the-table). The live allowlist lists **13** — the editor is the 13th, legitimately registered in Circle C (v5.2.0), so the Bundle-6 coupling note's "if editor absent, file an issue" gap did **not** materialise. The "12" is pre-editor plan phrasing; the acceptance is functionally met. No issue filed.
 

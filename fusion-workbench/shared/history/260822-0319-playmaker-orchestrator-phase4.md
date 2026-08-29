@@ -1,4 +1,4 @@
-# Playmaker run 260822-0319 — orchestrator Phase 4
+# Playmaker run 260822-0319-playmaker-orchestrator-phase4.md — orchestrator Phase 4
 
 **Status:** Complete
 **Trigger:** `orchestrator-phase4`
@@ -61,7 +61,7 @@ and was read only.
 - **Duplicate groups found: 0.** The two entries state different Directives; a merge would lose one.
 - **Handed to `## Warnings` as defect- or decision-shaped: 0.** Both live entries state ideas.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — the only live
+**Top-ranked entry:** `260814-1733_*_bounded-executor-dispatches.md` — the only live
 idea whose evidence is on disk and which needs no user act before it can be shaped.
 
 **Backlog writes performed: none.** Both markers already matched this run's ranking, so the
@@ -77,7 +77,7 @@ Grepped `shared/` and `circles/` for multi-user, multi-tenant, concurrency, para
 worktree-slot wording. **No backlog entry, no live plan and no open issue covers it.**
 
 One record is the standing position, and it is an answer rather than a gap:
-`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` was answered
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` was answered
 by the user at option 3, that fusion stays single-active-Circle with no concurrency lock and
 parallelism is explicitly out of scope. A multi-user Circle would overturn that record. That is a
 user act and belongs in the new Circle's Grounding, the same shape as the Circle that just closed
@@ -95,10 +95,10 @@ overturning `260820-2314`.
   transcripts.
 - Two of the four growth budgets effectively spent, re-measured at `655d976`: `skills/*/SKILL.md` at
   30 bytes, hook tests at 15 lines, `agents/*.md` at 1 638 bytes, always-on rules at 3 509 bytes.
-- Four open defects writing into surfaces with no room (`260821-0148`, `260821-0302`, `260821-0143`,
-  `260821-0144`).
+- Four open defects writing into surfaces with no room (`260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md`, `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md`, `260821-0143_*_the-provenance-record-is-verified-with-a-command-whose-answer-depends-on-the-cwd-nobody-states.md`,
+  `260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`).
 - Three decision records still existing twice with a glob metacharacter in the second filename,
-  verified on this run; filed as `shared/issues/260821-0430_*_...`, open.
+  verified on this run; filed as `260821-0430_*_...`, open.
 - The closed Circle's rename is uncommitted in the working tree.
 - Nothing in the backlog read as defect- or decision-shaped.
 - This file's own em-dash rate, 3 over 1 546 prose words, all three in forms another surface parses.

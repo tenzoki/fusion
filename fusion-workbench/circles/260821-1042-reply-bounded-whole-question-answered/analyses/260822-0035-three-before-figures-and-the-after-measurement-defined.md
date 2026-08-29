@@ -3,9 +3,9 @@
 **Date:** 2026-08-22 00:35
 **Type:** Document Study
 **Status:** Complete
-**Requested by:** orchestrator, against `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
+**Requested by:** orchestrator, against `260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
 **Revised:** 2026-08-22 01:57, against findings 1 and 2 of
-`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`.
+`260822-0116-coderev-the-measurement-report-reproduces-and-its-after-run-does-not.md`.
 Section 6 now states that the records-per-session arm is **not** restricted to unprimed transcripts,
 why the project records no key that could restrict it, and what counting every one of them costs;
 the
@@ -143,7 +143,7 @@ holds five Circles' records, and excluding it would depress every session before
 Backlog entries are excluded, because filing one is the user's act and no agent originates one
 (`rules/fusion-workbench-conventions.md` `## Backlog entries`).
 
-One record shares its stamp `260811-1915` with a session start. Under this sort it is assigned to
+One record shares its stamp `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md` with a session start. Under this sort it is assigned to
 the preceding session. Re-running step (c) with `-k2,2r`, which reverses the tie, returns the same
 `sessions=52 records=854 mean=16.42 median=11`, so the tie-break changes nothing above the
 per-session row.
@@ -258,10 +258,10 @@ Two contrasts that calibrate the number. A naive `grep -o '—' | wc -l` over th
 returns 2 062 against the tool's 2 029, so the tool's four exclusions remove 33 instances, about 1.6
 per cent; the reply corpus is mostly prose and the exclusions matter far less here than they do in
 a rule file full of exhibits. And 22 en-dashes `–` U+2013 are present and are not counted, by
-design, which is the asymmetry `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0147_o_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
+design, which is the asymmetry `260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
 already tracks.
 
-The figure sits beside a known one. `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+The figure sits beside a known one. `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
 records the always-on rule corpus at sixteen times the ceiling. The replies those rules govern run
 at ten times it. Neither number is evidence about the other, and the pair is worth seeing together.
 
@@ -608,7 +608,7 @@ what it needs and twenty is what the Circle should wait for.
 2. **Re-verify the boundary before the after-run**, with `git log -- rules/user-facing-output.md
    stilwerk/`. Executors are editing `stilwerk/` in this tree now, and the boundary moves with the
    last commit to either surface.
-3. **Do not build a gate from any figure here.** `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+3. **Do not build a gate from any figure here.** `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
    forbids it until its own registered measurement runs, and this is not that measurement.
 4. **Put the rubric judgement of section 8 to the user as a decision**, not as an agent task. It
    costs the user an evening and it is the only instrument that reaches the Directive's second half.
@@ -618,27 +618,27 @@ what it needs and twenty is what the Circle should wait for.
 
 ## Filed Issues
 
-- `fusion-workbench/shared/issues/260822-0035_o_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
+- `260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
   — `bin/fusion-prose-metric` is absent from the installed plugin copy while both trees report
   version 10.4.0, so no orchestrator session can tell from the version string which helpers it has.
-- `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0035_*_the-briefings-contamination-grep-marks-49-of-72-transcripts-primed-because-the-setup-skill-body-names-the-files-it-greps-for.md`
+- `260822-0035_*_the-briefings-contamination-grep-marks-49-of-72-transcripts-primed-because-the-setup-skill-body-names-the-files-it-greps-for.md`
   — the measurement briefing states a contamination test that excludes the population being
   measured; the corrected test is in section 4 of this report.
 
 ## Sources
 
 - `~/.claude/projects/-Users-k1-Projects-productive-fusion/*.jsonl`, 72 files, read through `jq` only
-- `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md`, sections 1 to 4 and recommendations 1 and 3
-- `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`, the whole briefing
-- `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`, read and not amended
-- `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`, the authority to read the corpus
+- `260821-2020-reply-length-baseline.md`, sections 1 to 4 and recommendations 1 and 3
+- `260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`, the whole briefing
+- `260820-2354-prose-register-measurement-protocol.md`, read and not amended
+- `260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`, the authority to read the corpus
 - `fusion-workbench/orchestrator-events.jsonl`, 1 896 records, 71 `session_start`
 - `fusion-workbench/circles/*/issues`, `*/decisions`, `shared/issues`, `shared/decisions`, and `archive/260817-1907-safe-cleanup-scoped/**`, 954 records in total
 - `rules/user-facing-output.md`, `## Length` and `## Information architecture`
 - `bin/fusion-prose-metric`, header, and `install.sh:82`
-- `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
-- `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0147_o_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
-- `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+- `260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 
 ## Open Questions
 
@@ -652,6 +652,6 @@ what it needs and twenty is what the Circle should wait for.
       `## Issue and Decision Filing` explicitly prefers a duplicate to a miss, which biases the
       figure upward over time independently of any rule change.
 - [ ] Whether the em-dash ceiling is read per file or across a corpus is still open
-      (`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`).
+      (`260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`).
       This report reads it pooled across the reply corpus and per transcript beside it, which is one
       answer applied to a different corpus than that record is about, and settles nothing there.

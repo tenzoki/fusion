@@ -54,7 +54,7 @@ Verified at HEAD `b54ace5` by reading the whole of `skills/archive/SKILL.md` and
 This is a choice somebody has to make, not a wording fix; if option 2 is taken it wants a decision
 record against `260816-1707` rather than an edit.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

@@ -7,9 +7,9 @@
 **Filed by:** analyst, independent assessment A1 of C5b
 **Affects:** `templates/fusion-guard.json` keys `_protectsItself`, `_inFusionsOwnSourceTree` and `_override`; the byte-identical root copy `fusion-guard.json`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md` `### Coherence across the three commits`,
-`circles/260801-1244-guard-rules-write/issues/260804-1601_o_...md`, `260804-1602_o_...md`, `260804-1604_o_...md` — the three findings that falsify the sentences,
-`circles/260801-1244-guard-rules-write/history/260804-1502-ontocoder-step7-guard-config-template.md` (where both claims were checked against the code that existed and found true of it)
+`260804-1600-c5b-independent-assessment.md` `### Coherence across the three commits`,
+`260804-1601_*_...md`, `260804-1602_*_...md`, `260804-1604_*_...md` — the three findings that falsify the sentences,
+`260804-1502-ontocoder-step7-guard-config-template.md` (where both claims were checked against the code that existed and found true of it)
 
 ---
 
@@ -25,9 +25,9 @@ verbatim by `/fusion:setup` Step 0f into every consuming project, so each one pr
 > through a guarded tool call is denied.
 
 Falsified twice. `{"guard":{"enabled":false}}` short-circuits above every check, and `Edit
-fusion-guard.json` then allows (`260804-1602_o_`). And from any working directory that is not
+fusion-guard.json` then allows (`260804-1602_*_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md`). And from any working directory that is not
 the project root, the floor names a file that does not exist while the real one is writable
-(`260804-1604_o_`). Measured in both cases.
+(`260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md`). Measured in both cases.
 
 **Two.** `_inFusionsOwnSourceTree`:
 
@@ -48,7 +48,7 @@ file, and denies in the same project carrying the template.
 Accurate and materially incomplete. It does not say that fusion's built-in default for
 `guard.protectedPaths` is the **empty list**, so a reader who understands the sentence
 perfectly still does not learn that adding any `guard` key unprotects the project
-(`260804-1601_o_`).
+(`260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`).
 
 ## Why this is filed against the template rather than only against the code
 
@@ -56,7 +56,7 @@ The three code findings may each be answered by changing the code, in which case
 sentences become true again and the third still needs the missing clause. So the fix here is
 **sequenced after** the code decisions, not before. Writing the correction now would document
 a boundary that is about to move — the mistake plan Step 9 has already made once in this
-Circle, recorded in the 260804-1021 reconciliation entry.
+Circle, recorded in the 260804-1021-reconciliation.md reconciliation entry.
 
 The author's own verification was sound for the code that existed when it ran. Both claims
 were checked against `hooks/lib/config.ts` and `hooks/guard.ts` rather than taken from the
@@ -65,7 +65,7 @@ plan or the step named it.
 
 ## Suggested direction
 
-After `260804-1601_o_`, `260804-1602_o_` and `260804-1604_o_` are answered, re-read all six
+After `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`, `260804-1602_*_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md` and `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` are answered, re-read all six
 underscore keys against the behaviour the tests then assert, and change the root copy in the
 same commit — `config.test.ts` asserts the two files are byte-identical, so they cannot drift
 apart silently. Executor `ontocoder`, as Step 7 was.
@@ -89,9 +89,9 @@ seeded template is named in the Circle's own Directive — "`/fusion:setup` seed
 that declares inheritance and lists no paths". Under the Origin Rule this record belongs
 here. Reported to the orchestrator as a correction to the plan, not applied silently.
 
-**The sequencing condition is satisfied.** `260804-1601`, `260804-1602` and `260804-1604`
-all carry `_c_`, closed by `history/260804-1725-coder-step2-project-layer-boundary.md` and
-`260804-1940-…-floor-step4-…`. Two of the three sentences this issue names may now be true
+**The sequencing condition is satisfied.** `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`, `260804-1602_*_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md` and `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md`
+all carry `_c_`, closed by `260804-1725-coder-step2-project-layer-boundary.md` and
+`260804-1940-coder-step1-floor-step4-exemption-precedence.md-…-floor-step4-…`. Two of the three sentences this issue names may now be true
 again; that is not verified here and is the re-read the issue asks for.
 
 **What IS verified here is a fourth defect, and it is the biggest one.** `_override` now
@@ -111,7 +111,7 @@ Against the three claims the template ships:
 | "any field you leave out … falls back to fusion's built-in default, not to the plugin's file" | an omitted leaf falls back to **the plugin's file**; only what neither layer declares reaches the built-in default |
 
 All three were true when Step 7 wrote them and were falsified by Step 2 of the C5b
-remediation, which changed the merge to close `260804-1601` and its three latent siblings.
+remediation, which changed the merge to close `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md` and its three latent siblings.
 So the template is copied verbatim into every consuming project stating the opposite of what
 the loader does, and the one property a reader most needs — that narrowing still works,
 because a *declared* empty list is still empty — is now stated by an argument that is false
@@ -132,7 +132,7 @@ both write surfaces") and the subdirectory hole is closed by the absolute floor 
 ("the self-protection floor reached from a subdirectory"). (2) `_inFusionsOwnSourceTree`'s
 incompleteness is closed the other way round: a project file cannot set `guard.enabled` at
 all ("ignores it in the plugin's own repo too"), and the key now says so. (3) `_override` is
-rewritten around the per-leaf rule of decision `260804-1630` and states explicitly that
+rewritten around the per-leaf rule of decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` and states explicitly that
 fusion's built-in default for the protected list is the empty list. A new `_guardEnabled` key
-carries the one-key exception of decision `260804-1631`. Session:
-`history/260805-2222-ontocoder-step6-guard-template-rewrite.md`.
+carries the one-key exception of decision `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md`. Session:
+`260805-2222-ontocoder-step6-guard-template-rewrite.md`.

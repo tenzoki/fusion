@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 260810
-**Source:** `shared/issues/260810-0749_o_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md`
+**Source:** `260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md`
 **Files changed:** `hooks/lib/__tests__/fusion-count-sources.test.ts` (only)
 
 ## What the task asked

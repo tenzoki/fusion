@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** coder
-**Cross-references:** `hooks/lib/__tests__/rules-emission-golden.test.ts` (`ROLE_CAPS`, `RELEASE_CAP`, die vier Cap-Tests). Die beiden Fixes, die daran gescheitert sind: `circles/260801-1244-guard-rules-write/issues/260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md` und `…_c_playmaker-liest-den-eingefrorenen-archiv-store-und-mischt-ihn-in-die-lebende-bestandsaufnahme.md`.
+**Cross-references:** `hooks/lib/__tests__/rules-emission-golden.test.ts` (`ROLE_CAPS`, `RELEASE_CAP`, die vier Cap-Tests). Die beiden Fixes, die daran gescheitert sind: `260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md` und `…_c_playmaker-liest-den-eingefrorenen-archiv-store-und-mischt-ihn-in-die-lebende-bestandsaufnahme.md`.
 
 ---
 
@@ -124,7 +124,7 @@ allem der Absatz zur Filing-Konvention (rund 430 Byte) — sind jetzt landbar, w
 aber bewusst **nicht** mitgeliefert. Eine Konventionsänderung gehört nicht in einen
 Testumbau; sie braucht einen eigenen Durchgang.
 
-Belege: `history/260805-1753-coder-ratchet-wird-budget-mit-meldung.md`.
+Belege: `260805-1753-coder-ratchet-wird-budget-mit-meldung.md`.
 
 ---
 Answered: 2026-08-05 — Nutzerentscheid über den Orchestrator; umgesetzt im selben Turn.

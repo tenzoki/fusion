@@ -43,14 +43,14 @@ one for any command that sweeps the tree — are stated in..."). No ignore patte
 text only, so no rule byte moves and no golden regeneration is needed.
 
 Worth taking in one pass with
-`shared/issues/260816-1049_o_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`,
+`260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`,
 which is the same block's authoring counterpart in the rule file.
 
 **Found by:** coderev, reviewing `433e206..b18a8cf`
-(`shared/reviews/260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F3).
+(`260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F3).
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `.gitignore:65` still calls both consequences lifecycle-skill consequences, while the conventions file states the second lost its consumer when the stash skills were removed on 2026-08-15. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `.gitignore:65` still calls both consequences lifecycle-skill consequences, while the conventions file states the second lost its consumer when the stash skills were removed on 2026-08-15. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: `.gitignore:65` now distinguishes the two: one binding the lifecycle skills, one binding any command that sweeps the tree. Taken in the same pass that rewrote line 66 of the same block, rather than as a fourth single-sentence visit to eleven lines.

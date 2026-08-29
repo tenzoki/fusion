@@ -5,7 +5,7 @@
 
 **Date:** 2026-08-21
 **Agent:** coderev
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
 **Dispatched by:** user, as review gate R1, which the plan places before the Circle's reconciliation
 **Coverage before this pass:** `bin/fusion-review-coverage --since d66763b` reported
 `commits=3 reviews=0 uncovered=3 verdict=uncovered`. The range stated above starts one commit
@@ -19,7 +19,7 @@ reproduce its third.** No replacement sentence opens with a bare demonstrative o
 the four files; that criterion passes cleanly and the checking behind it is sound. Mark strength
 holds at 152 of the 155 replacements. What did recur is the evidence-record class: `b393a45`'s
 history record states three commas where five were made and claims a property for them that fails at
-one site, which is the same defect as the still-open `260821-0149` from Turn 1 and its ancestor
+one site, which is the same defect as the still-open `260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md` from Turn 1 and its ancestor
 `260816-1330`. Separately, the two commits applied two different standards to heading renames in the
 same Turn, and two workbench citations are dead as a result. Step 0e's repair is real: both High
 findings are genuinely closed and the reasoning for its fallback shape holds under test. It carries
@@ -36,7 +36,7 @@ the outcome that guard emits.
 | Low-Medium | 1 |
 | Low | 2 |
 
-Six issue files were filed in this Circle's issue store, `260821-0257` through `260821-0302`.
+Six issue files were filed in this Circle's issue store, `260821-0257` through `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md`.
 
 ## The question this gate exists to answer
 
@@ -66,9 +66,9 @@ what was established.
 non-clause-boundary, and I confirmed each against the pre-edit file. The five in
 `rules/critical-stance.md` are not as its record describes them (issue `260821-0257`), and one of the
 five, at `:47`, puts a comma where an independent clause follows. Four newly stacked colons
-(`260821-0300`) and one lost table parallelism (`260821-0301`) are the rest.
+(`260821-0300_*_four-replacements-stack-a-second-colon-in-one-sentence-which-the-pass-states-it-avoided.md`) and one lost table parallelism (`260821-0301_*_the-decision-marker-table-loses-its-parallelism-at-one-of-five-rows.md`) are the rest.
 
-**A mark removed from an exhibit: one site (`260821-0259`).** `rules/critical-stance.md:12` is a
+**A mark removed from an exhibit: one site (`260821-0259_*_the-flattery-specimen-lost-the-em-dash-that-is-the-specimen-while-its-sibling-two-lines-below-kept-one.md`).** `rules/critical-stance.md:12` is a
 quoted specimen of AI flattery and its em-dash is part of the register on display. It was
 repunctuated while the German specimen five lines below kept its mark. The file's permit is 1 and it
 is spent, so this was a forced choice between two identical objects, made without saying so.
@@ -126,7 +126,7 @@ closing parenthesis.
 numbers and the construction each sits on, and all four check out. The difference between the two
 records is not care in general — both are careful — it is that one enumerated and one summarised.
 
-### C. Six headings renamed with no census — `260821-0258` (Medium)
+### C. Six headings renamed with no census — `260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md` (Medium)
 
 `c226949` kept four em-dashes because 61 citations depend on the heading spellings that carry them,
 and probed each one to find which were gate-protected. `b393a45`, twenty-five minutes earlier,
@@ -134,14 +134,14 @@ renamed six headings across two always-on rule files and its record does not men
 
 Two workbench citations now resolve to nothing, both to `## 4. A case split is disjoint and complete
 — or the question is cut wrong`: one in the backticked `` `## …` `` citation form at
-`circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md:288`,
-one in prose at that Circle's `history/260807-0955-coder-s8-mece-prinzip.md:11`.
+`260807-0931_*_plan-guard-misst-statt-orakelt.md:288`,
+one in prose at that Circle's `260807-0955-coder-s8-mece-prinzip.md:11`.
 
 **Why nothing went red, stated as mechanism.** `reference-resolution-lint.test.ts:143-190` builds its
 corpus from the shipped tree only; `fusion-workbench/` is on none of its roots. The sibling gate,
 `workbench-citation-lint.test.ts`, does read the workbench but resolves paths, not heading anchors.
 So a heading citation originating in a workbench record is unprotected by construction — which is
-the general exposure `260821-0250` already files, and this is the instance of it firing.
+the general exposure `260821-0250_*_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md` already files, and this is the instance of it firing.
 
 ### D. The six kept marks — the probe confirmed, by reading rather than by breaking
 
@@ -160,17 +160,17 @@ code, which is stronger because it says *why*.
   any case, which excludes anchors. **Unprotected. Confirmed, and the reason is structural rather
   than incidental.**
 
-**One correction to the record, folded into `260821-0258` rather than filed alone.** It says of
+**One correction to the record, folded into `260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md` rather than filed alone.** It says of
 `## Issue and Decision Filing — MANDATORY` that "no shipped file names it". `agents/planner.md:65`
 cites `` `## Issue and Decision Filing` ``, a prefix of it. Because the matcher is a prefix match the
 conclusion survives — that citation would resolve whatever the suffix became — but the sentence as
 written is false, and it sits in the record's own evidence table.
 
 **The finding about which gates are asleep is worth more than the finding that produced it, and the
-project already knows that**: it is filed as `260821-0250` with acceptance criteria that ask for the
+project already knows that**: it is filed as `260821-0250_*_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md` with acceptance criteria that ask for the
 load-bearing set to be derived rather than listed. Nothing here weakens it.
 
-### E. The repaired Step 0e — `260821-0302` (Medium / Low)
+### E. The repaired Step 0e — `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` (Medium / Low)
 
 Read as a reader who pastes the three blocks.
 
@@ -189,7 +189,7 @@ behaviour the shape produces.
 
 **Part 1 — the skip is missing from the reporting contract.** `:188` emits `source-root-unresolved`,
 an eighth token the "seven cases" at `:203` does not contain. Unlike `absent`, it is covered in prose
-at `:181`, so this is not a recurrence of `260821-0141`. What is missing is the other end: `:240`,
+at `:181`, so this is not a recurrence of `260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md`. What is missing is the other end: `:240`,
 the sentence that tells an agent what to put in the Done report, names four outcome classes and not
 this one, and the obligation to report it sits 59 lines earlier inside a paragraph about root
 resolution. This is the one outcome where every other outcome is unknown, so the step's whole result
@@ -207,9 +207,9 @@ decision. **The executor saw this failure mode** — the session record names th
 test.
 
 **Still open and unchanged at HEAD:** the unguarded `cp` at `:223` and the stamp-hashes-the-source
-pairing that `260821-0148` part 1 names. Not refiled.
+pairing that `260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md` part 1 names. Not refiled.
 
-### F. Two smaller marks — `260821-0300` (Low), `260821-0301` (Low)
+### F. Two smaller marks — `260821-0300_*_four-replacements-stack-a-second-colon-in-one-sentence-which-the-pass-states-it-avoided.md` (Low), `260821-0301_*_the-decision-marker-table-loses-its-parallelism-at-one-of-five-rows.md` (Low)
 
 Four replacements stack a second colon inside one sentence (`rules/fusion-workbench-conventions.md:84`
 and `:343`, `rules/critical-stance.md:34`, `rules/agent-setup.md:40`), which is the exact condition
@@ -235,7 +235,7 @@ retroactive.
 **2. Two defect classes are separating cleanly, and it says where to spend effort.** The
 *text* defects are gone: no pronoun openers, mark strength holding at 152 of 155, no word moved on any
 of three independent invariance checks. The *record* defects are not: `260816-1330` (a count nobody
-can reproduce), `260821-0149` (a count that does not reconcile with its own table), and now
+can reproduce), `260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md` (a count that does not reconcile with its own table), and now
 `260821-0257` (a count that does not reconcile with the file). Three passes, three arithmetic slips
 in the evidence paragraph, zero in the prose. Whatever mechanism this project builds next for the
 repunctuation programme should count the replacements rather than ask the executor to.
@@ -255,26 +255,26 @@ at the far end of a step whose classification is now sound.
 
 **5. The `skills/` budget blocks the Step 0e fix, and that is a sequencing fact rather than a
 preference.** `skills/` measures 240 409 against a budget of 240 439: **30 bytes**. Both halves of
-`260821-0302` add text to `skills/setup/SKILL.md` and would redden the growth bound. The way out is
+`260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` add text to `skills/setup/SKILL.md` and would redden the growth bound. The way out is
 authored once, in `hooks/lib/__tests__/helpers/growth-bound.ts`, and it is a cut. This should be
 decided before an executor discovers it with a red suite.
 
 ## Recommended sequencing
 
-**Before this Circle closes.** `260821-0257` and `260821-0258`, both Medium, both corrections to the
+**Before this Circle closes.** `260821-0257` and `260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md`, both Medium, both corrections to the
 record and to text this Circle wrote. `260821-0257`'s `:47` half needs a judgement rather than a
 substitution: the mark that preserves the disjunction is a semicolon, which is not on the four-mark
 list at `rules/user-facing-output.md:130`.
 
-**With steps 13 and 14.** `260821-0259`. The clean fix is structural, not another mark choice: move
+**With steps 13 and 14.** `260821-0259_*_the-flattery-specimen-lost-the-em-dash-that-is-the-specimen-while-its-sibling-two-lines-below-kept-one.md`. The clean fix is structural, not another mark choice: move
 the `Before:` / `After:` specimens into block quotes, which `bin/fusion-prose-metric` excludes and
 which `rules/user-facing-output.md` already uses for its own anti-examples. Both specimens then keep
 the em-dash that makes them specimens and the file's permit goes unspent. That is the same surface
 steps 13 and 14 open anyway.
 
-**Behind a `skills/` cut.** `260821-0302`, both parts. 30 bytes of head-room is not enough for either.
+**Behind a `skills/` cut.** `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md`, both parts. 30 bytes of head-room is not enough for either.
 
-**Cleanup, unsequenced.** `260821-0300`, `260821-0301`.
+**Cleanup, unsequenced.** `260821-0300_*_four-replacements-stack-a-second-colon-in-one-sentence-which-the-pass-states-it-avoided.md`, `260821-0301_*_the-decision-marker-table-loses-its-parallelism-at-one-of-five-rows.md`.
 
 ## References
 
@@ -282,25 +282,25 @@ steps 13 and 14 open anyway.
   reported `uncovered=3 verdict=uncovered` before this pass; the range above extends one commit back
   so that it tiles with the Turn 1 review's `7135a19..7832553` and leaves `d66763b` covered.
 - Issues filed: `260821-0257`, `0258`, `0259`, `0300`, `0301`, `0302`, all under this Circle's issue
-  store. `260821-0302` carries two parts.
+  store. `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` carries two parts.
 - Measurements taken: `bin/fusion-prose-metric` over the six files `bin/fusion-rules coder` emits,
   returning `8 / 12 963 / 0.6` against a permit of 12 with every file `ok`; separator-level diffs of
   all four repunctuated files against their pre-edit versions; hyphen-sequence and character-inventory
   comparisons on the same pairs; the `skills/` growth arithmetic from
   `hooks/lib/__tests__/surface-growth-bound.test.ts:286-299` and `:354`.
 - Pre-existing open records this pass judged against:
-  `shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`,
-  `shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`,
-  `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`,
-  and this Circle's `260821-0147`, `260821-0148`, `260821-0149`, `260821-0250`.
+  `260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`,
+  `260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`,
+  `260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`,
+  and this Circle's `260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`, `260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md`, `260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md`, `260821-0250_*_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md`.
 - Deliberately out of scope: `rules/user-facing-output.md`, which steps 13 and 14 repunctuate. It
   measures 1 in 2 248 words against a permit of 2, and that mark is inside its own anti-example.
 - Workbench records read as context and not reviewed: the Circle record, the spec, the plan, the ten
   decisions, the two analyses, and the three history files of this Turn.
 
 ---
-**Reconciliation annotation 260821-0414** (reconciler, domain `code`, HEAD `247abfe`). Findings are not
-rewritten; only their disposition is recorded. Log: `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.
+**Reconciliation annotation 260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md** (reconciler, domain `code`, HEAD `247abfe`). Findings are not
+rewritten; only their disposition is recorded. Log: `260821-0416-reconciliation.md`.
 
 **The gate's own question is answered and the answer holds on re-measurement.** Review gate R1 exists
 because this project's first repunctuation pass introduced two defects while repairing old ones. The
@@ -311,18 +311,18 @@ evidence was re-derived independently for every repaired file by the executors a
 under their per-file permits.
 
 **All six findings this review filed are still reproducible at HEAD** and remain `_o_`:
-`260821-0257`, `260821-0258`, `260821-0259`, `260821-0300`, `260821-0301`, `260821-0302`.
+`260821-0257`, `260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md`, `260821-0259_*_the-flattery-specimen-lost-the-em-dash-that-is-the-specimen-while-its-sibling-two-lines-below-kept-one.md`, `260821-0300_*_four-replacements-stack-a-second-colon-in-one-sentence-which-the-pass-states-it-avoided.md`, `260821-0301_*_the-decision-marker-table-loses-its-parallelism-at-one-of-five-rows.md`, `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md`.
 None was closed or deferred, so the Circle's own stopping clause 6 is not met and the Circle does not
 qualify for a coherent close on that clause alone.
 
 **Two of the six carry a choice point the reconciler will not let an executor settle by default.**
 `260821-0257`'s `rules/critical-stance.md:47` half needs a mark the four-mark list does not offer,
-and `260821-0258` asks whether to restore two heading spellings or annotate the two records that
+and `260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md` asks whether to restore two heading spellings or annotate the two records that
 cite them. Both are judgements, as this review says.
 
 **The sequencing constraint this review named is confirmed and is now binding.** `skills/` head-room
-re-measured at **30 bytes** (240 409 against a budget of 240 439). `260821-0302` and part 1 of
-`260821-0148` both write into `skills/setup/SKILL.md`, so either turns `npm test` red on arrival,
+re-measured at **30 bytes** (240 409 against a budget of 240 439). `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` and part 1 of
+`260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md` both write into `skills/setup/SKILL.md`, so either turns `npm test` red on arrival,
 and `hooks/lib/__tests__/helpers/growth-bound.ts` allows no baseline edit as the way out.
 
 **The declared range is honoured.** `**Reviewed-range:** 7832553..c226949` tiles exactly against

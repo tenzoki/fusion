@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `agents/orchestrator.md` — Phase 2 step 2, Step 3e (the `turn_end` paragraph), Cleanup (the `session_end` bullet)
 **Cross-references:** commit `9bad4d6`
 

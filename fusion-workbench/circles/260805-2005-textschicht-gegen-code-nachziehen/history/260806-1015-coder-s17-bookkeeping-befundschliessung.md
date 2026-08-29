@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-06
 **Agent:** coder
-**Plan:** `circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_*_plan-textschicht-gegen-code.md`, Schritt 17 (jetzt [DONE]; Plan Status Complete, `_p_`→`_c_`)
+**Plan:** `260805-2353_*_plan-textschicht-gegen-code.md`, Schritt 17 (jetzt [DONE]; Plan Status Complete, `_p_`→`_c_`)
 **Status:** Complete
 
 ## Was getan wurde
@@ -32,7 +32,7 @@ Der 66-Record-Korpus in `circles/260801-1244-guard-rules-write/issues/` (Zeitste
 
 ## Beobachtung für den Orchestrator
 
-D1 (`decisions/260806-0015_a_zitierform-fuer-workbench-records.md`) steht noch auf `_a_`, obwohl seine Antwort realisiert ist (der Referenz-Lint a1b7872 erzwingt die Wildcard-Grammatik und zitiert D1). Der `_a_`→`_i_`-Übergang gehörte dem realisierenden Schritt (S14) und wurde dort nicht vollzogen; dieser Task hat die Realisierung nicht produziert und den Marker deshalb nicht angefasst. Ein Einzeiler beim Circle-Closure (Implemented-Footer mit a1b7872) schließt die Lücke.
+D1 (`260806-0015_*_zitierform-fuer-workbench-records.md`) steht noch auf `_a_`, obwohl seine Antwort realisiert ist (der Referenz-Lint a1b7872 erzwingt die Wildcard-Grammatik und zitiert D1). Der `_a_`→`_i_`-Übergang gehörte dem realisierenden Schritt (S14) und wurde dort nicht vollzogen; dieser Task hat die Realisierung nicht produziert und den Marker deshalb nicht angefasst. Ein Einzeiler beim Circle-Closure (Implemented-Footer mit a1b7872) schließt die Lücke.
 
 ## Verifikation
 

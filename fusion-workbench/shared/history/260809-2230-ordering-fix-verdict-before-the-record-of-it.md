@@ -33,11 +33,11 @@ open records named four of the eleven.
 | # | Site | Failing call | Cost before the fix |
 |---|---|---|---|
 | 1 | `config.diagnostics` loop | `emitEvent` | ANY verdict → allow. Needs a malformed `fusion-guard.json`. **Named in no record.** |
-| 2 | CHECK 1, halt | `emitEvent` | deny → allow. `260809-1825` names this site but names `saveEscalation` as the call; it is `emitEvent`. |
-| 3 | CHECK 2, protected path | `saveEscalation`, `emitBlockEvent` | deny → allow. `260809-1825`. |
+| 2 | CHECK 1, halt | `emitEvent` | deny → allow. `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` names this site but names `saveEscalation` as the call; it is `emitEvent`. |
+| 3 | CHECK 2, protected path | `saveEscalation`, `emitBlockEvent` | deny → allow. `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md`. |
 | 4 | CHECK 2, rules-write advisory | `emitEvent` | The later verdict → allow. Flips only when a path is BOTH exempted and decision-governed at high sensitivity. **Named in no record.** |
-| 5 | CHECK 3, decision-governed | `saveEscalation`, `emitBlockEvent` | deny → allow. `260809-1825`. |
-| 6 | `guardBashCommand` STEP 1, git deny | `saveEscalation`, `emitBlockEvent` | deny → allow. `260809-2046`. |
+| 5 | CHECK 3, decision-governed | `saveEscalation`, `emitBlockEvent` | deny → allow. `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md`. |
+| 6 | `guardBashCommand` STEP 1, git deny | `saveEscalation`, `emitBlockEvent` | deny → allow. `260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-and-is-not-in-the-open-records-scope.md`. |
 | 7 | `guardBashCommand` STEP 3, override note | `saveEscalation`, `emitEvent` | allow → allow. No flip; same class. |
 | 8 | Self-detect stand-down | `emitEvent` | allow → allow. No flip; same class. |
 | 9 | Final allow path | `saveEscalation`, `emitEvent` | allow → allow. No flip; same class. |
@@ -48,9 +48,9 @@ open records named four of the eleven.
 |---|---|---|---|
 | 10 | `measureProtectedPaths`, exempted advisory | `emitEvent` | Skips the RESTORE entirely — the protected path stays rewritten, no halt, nothing said. The worst of the five. **Named in no record.** |
 | 11 | Per-outcome `guard_block` rows | `emitEvent` | Sentence lost. **Named in no record.** |
-| 12 | Halt record | `saveEscalation` | Sentence lost. Raised as an open question by `260809-2045`, never filed. |
+| 12 | Halt record | `saveEscalation` | Sentence lost. Raised as an open question by `260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md`, never filed. |
 | 13 | `guard_halt` row | `emitEvent` | Sentence lost. **Named in no record.** |
-| 14 | `trackChurn` before `respond` | any throw in the heatmap | Sentence lost. `260809-2045`. |
+| 14 | `trackChurn` before `respond` | any throw in the heatmap | Sentence lost. `260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md`. |
 
 ### Checked and deliberately NOT in the class
 
@@ -61,7 +61,7 @@ open records named four of the eleven.
   validates `protectedPaths` as `isStringArray`. Wrapping it would be wrong, not
   merely redundant: `saveSnapshot`'s catch REMOVES the stale snapshot, and
   swallowing one level up would hand `tracker.ts` a picture two calls old
-  (`260809-1108`). Documented at the call site.
+  (`260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md`). Documented at the call site.
 - **`hooks/session-start.ts`** writes nothing anywhere and already ends in
   `failOpen`. No site.
 - **`hooks/clear-halt.ts`** already reports after it acts, and its `emitEvent` is
@@ -83,8 +83,8 @@ step:
 A guarded step that fails writes the same `[<tag>] Error:` marker a crash would
 have written, so nothing is lost in silence.
 
-Two decisions taken while there, both of which `260809-2045` asked to be settled
-with `260809-1825` rather than separately:
+Two decisions taken while there, both of which `260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md` asked to be settled
+with `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` rather than separately:
 
 1. **The tracker's halt record is best effort.** An unwritable state directory
    costs the halt record, not the sentence — the sentence is what stops an agent
@@ -118,7 +118,7 @@ case, so none of them can pass by the mode bits being ignored.
 all five measured cases through the real hook subprocesses, plus unit cases for
 `answer` and `bestEffort` (order, independent guarding, the stderr marker, the
 returned failure). The case previously named "fails open on a protected path
-too" asserted the defect and pointed at `260809-1825` as the record whose landing
+too" asserted the defect and pointed at `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` as the record whose landing
 should flip it; it now asserts the deny.
 
 Two source-text gates in `guard-bash-wiring.test.ts` moved with the shape they
@@ -139,7 +139,7 @@ cases, none removed.
 
 ## The fourth record — left open, deliberately
 
-`shared/issues/260809-2049_o_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-….md`
+`260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-….md`
 is a different defect in the same family and does not belong in this change.
 
 - **Ordering is not its problem.** `clear-halt.ts` already acts first
@@ -162,16 +162,16 @@ about, arrived at from the other side.
 
 ## Record status
 
-- `260809-1825` — **fully closed** by this change, and its enumeration extended:
+- `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` — **fully closed** by this change, and its enumeration extended:
   CHECK 1 fails through `emitEvent` rather than `saveEscalation`, and two sites
   it does not name (the diagnostics loop, the rules-write advisory) are fixed
   with it. Its four acceptance criteria are met, the last one included.
-- `260809-2045` — **fully closed**, including the question it deferred to
-  `260809-1825` about `saveEscalation` inside `measureProtectedPaths`.
-- `260809-2046` — **fully closed**. Its second criterion ("`260809-1825` names
+- `260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md` — **fully closed**, including the question it deferred to
+  `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` about `saveEscalation` inside `measureProtectedPaths`.
+- `260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-and-is-not-in-the-open-records-scope.md` — **fully closed**. Its second criterion ("`260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` names
   this site, or this record is closed by the commit that closes it") is met by
   the second half.
-- `260809-2049` — **left open**, for the reasons above.
+- `260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md` — **left open**, for the reasons above.
 
 ## Not done here, on purpose
 

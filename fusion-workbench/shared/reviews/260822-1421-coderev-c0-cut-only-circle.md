@@ -1,7 +1,7 @@
 # Code review: C0, the cut-only Circle
 
 **Reviewed-range:** `370bfc5..c2ad89c`
-**Not-opened:** `fusion-workbench/shared/decisions/260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`, `fusion-workbench/shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`, `fusion-workbench/shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`, `fusion-workbench/shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`, `fusion-workbench/shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, `fusion-workbench/shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md`, `fusion-workbench/shared/history/260822-1136-shaper-multi-user-fusion.md`, `fusion-workbench/shared/history/260822-1154-planner-c0-cut-only-circle.md`, `fusion-workbench/shared/history/260822-1226-analyst-cut-ledger.md`, `fusion-workbench/shared/history/260822-1318-coder-cut-the-hook-test-suite-by-500-lines.md`, `fusion-workbench/shared/history/260822-1350-coder-cut-agents-surface-step3.md`, `fusion-workbench/shared/history/260822-1420-coder-cut-skills-surface-step4.md`, `fusion-workbench/shared/issues/260822-1226_o_the-executor-report-contract-cites-bugfixer-as-its-author-and-bugfixer-defines-a-different-shape.md`, `fusion-workbench/shared/issues/260822-1227_o_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`, `fusion-workbench/shared/issues/260822-1228_o_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
+**Not-opened:** `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`, `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`, `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`, `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`, `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, `260822-1136-shaper-multi-user-fusion.md`, `260822-1154-planner-c0-cut-only-circle.md`, `260822-1226-analyst-cut-ledger.md`, `260822-1318-coder-cut-the-hook-test-suite-by-500-lines.md`, `260822-1350-coder-cut-agents-surface-step3.md`, `260822-1420-coder-cut-skills-surface-step4.md`, `260822-1226_*_the-executor-report-contract-cites-bugfixer-as-its-author-and-bugfixer-defines-a-different-shape.md`, `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`, `260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`
 
 Every shipped file in the range was opened. The unopened set is workbench records: the step
 history logs (the reports whose claims this review checked against the code instead), the
@@ -29,7 +29,7 @@ moved, the always-on rule core did not grow, and no subject lost a test assertio
 
 **No cut removed a mechanism.** One cut removed a rationale into a home that does not hold it,
 which the plan's own stopping clause names as a Circle-stopping condition. It is filed as
-`shared/issues/260822-1421_o_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`.
+`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`.
 
 ## Findings
 
@@ -125,11 +125,11 @@ The suite is green: 40 files, 715 tests, exit 0.
 
 ### The re-approval log moved verbatim, and the pin still reads
 
-`shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md` holds
+`260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md` holds
 25 entries. Compared mechanically against `git show 370bfc5:hooks/lib/__tests__/reference-resolution-lint.test.ts`
 lines 493-910 with the `// ` prefix stripped and blank lines ignored: **zero differences**. The
 26th entry (the v10.5 release) stays in the test file above `const BASELINE`, together with the
-pin's rationale paragraph and the issue citation behind it (`260810-2149`). Two new attribution
+pin's rationale paragraph and the issue citation behind it (`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`). Two new attribution
 blocks were added for steps 3 and 4, one per step as the plan requires, and both explain the
 counter-intuitive direction — the counts *rise* on a step that removed 15 000 bytes, because every
 removed restatement left a citation behind.
@@ -212,31 +212,31 @@ of them was wrong, which is a rate worth knowing before the next cut Circle.
 
 ## References
 
-- Plan: `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
-- Ledger: `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`
-- Moved log: `shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`
-- Filed: `shared/issues/260822-1421_o_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`, `shared/issues/260822-1422_o_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`
+- Plan: `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+- Ledger: `260822-1226-cut-ledger-for-three-bounded-surfaces.md`
+- Moved log: `260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`
+- Filed: `260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`, `260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`
 
 ---
 
 **Reconciliation 260822-1556 (reconciler, HEAD `9f65463`).** Findings only; no finding text changed.
 The two defects this review filed are both closed and both were verified at their own site rather
-than from their notes: `shared/issues/260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+than from their notes: `260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
 (the rationale now stands at `bin/fusion-source-root:46-56` and the two pointers name three claims),
-and `shared/issues/260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`
+and `260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md`
 (the block sits immediately above `export function shippedPrompts` at
 `hooks/lib/__tests__/helpers/citation-scan.ts:830`). The first was later revised by
-`shared/issues/260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`,
+`260822-1506_*_the-declined-second-order-cut-is-declined-on-a-reason-the-same-commit-made-false.md`,
 which the next review found and which is also closed. This review's `**Not-opened:**` field names
-five records that do not exist; that is filed as `shared/issues/260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
+five records that do not exist; that is filed as `260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`
 and is still open.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The first five entries of the `**Not-opened:**` field named records
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The first five entries of the `**Not-opened:**` field named records
 that do not exist: paraphrases with wrong stamps (`1155`, `1137`, `1138`, `1156`), wrong markers and
 reworded slugs. They were corrected in place, in wildcard form, to the five real records they gestured
 at, because the field's only reader is the next dispatch and a note beneath it would not reach that
 reader. The ten remaining entries were untouched. The class, a field written from recall that no gate
-resolves, is `shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`.
+resolves, is `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`.
 Filed as
-`shared/issues/260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`.
+`260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`.

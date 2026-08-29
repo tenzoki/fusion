@@ -5,12 +5,12 @@
 **Status:** Complete
 **Task:** Turn 2, R1
 **Source records:**
-- `fusion-workbench/shared/issues/260810-0456_o_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`
-- `fusion-workbench/shared/issues/260810-0457_o_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md`
-- `fusion-workbench/shared/reviews/260810-0512-coderev-turn-1-range-8960e1a-to-head.md` Theme B (F2, F3)
+- `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`
+- `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md`
+- `260810-0512-coderev-turn-1-range-8960e1a-to-head.md` Theme B (F2, F3)
 
 **Origin:** Not Circle work; no Circle active. Review findings against `f320db2`,
-whose executor log is `fusion-workbench/shared/history/260810-0338-coder-plane-natural-key-marker.md`.
+whose executor log is `260810-0338-coder-plane-natural-key-marker.md`.
 
 ## The one defect behind the two exits
 
@@ -76,7 +76,7 @@ file it replaces on every 404. Pre-existing hazard, but the view made it reachab
 
 ## What was deliberately not changed
 
-**A rebuild still replaces the map; it does not merge.** Issue 260810-0457's "Adjacent,
+**A rebuild still replaces the map; it does not merge.** Issue 260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md's "Adjacent,
 pre-existing" note is right that a seed-origin binding is invisible to a rebuild — its
 Plane issue is a human's own story and carries no `fusion-key:` line at all — and that
 losing `origin:"seed"` lets a later push overwrite that human's title. The record scopes
@@ -89,7 +89,7 @@ What the command does instead is stop being silent: every orphaned entry is name
 its UUID, its origin, and the `seed --record-origin` line that restores it. Whether the
 merge should happen is left as a decision for the orchestrator to queue.
 
-**`docs/plane-setup.md:251`** is issue 260810-0507's paragraph (the marker-bearing key
+**`docs/plane-setup.md:251`** is issue 260810-0507_*_plane-setup-doc-still-documents-the-marker-bearing-key-so-map-forget-fails-as-written.md's paragraph (the marker-bearing key
 shape). My edits are in different paragraphs, so it is left queued on its own.
 
 ## Verification

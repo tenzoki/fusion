@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `rules/circle-records.md` `### The Directive is a pointer once a spec exists`; `agents/orchestrator.md` `## Circle head fields`; `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` `## Directive`
+**Cross-references:** `rules/circle-records.md` `### The Directive is a pointer once a spec exists`; `agents/orchestrator.md` `## Circle head fields`; `260821-1805_*_plan-reply-bounded-whole-question-answered.md` `## Directive`
 
 ---
 
@@ -63,7 +63,7 @@ Circle whose planner writes a plan of this shape, not only this one.
    - Cons: reintroduces exactly the defect the head-field obligation was written to close. The
      Circle runs on a plan that no reader of its record can see, and both mechanical readers
      (playmaker's portfolio rendering, a resume) degrade silently. Filed once already as
-     `260811-0932`.
+     `260811-0932_*_die-circle-aktivierung-zieht-die-kopffelder-des-datensatzes-nicht-nach.md`.
 
 ## Constraints
 
@@ -111,13 +111,13 @@ marker after its Circle closes.
 This record's answer binds every future Circle whose planner writes a plan of this shape, and
 option 1 additionally spends bytes in `rules/circle-records.md`, which sits inside the always-on
 rule set with 3 509 bytes of head-room. The Circle record's `## Grounding snapshot` records the
-precedent directly: `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`
+precedent directly: `260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`
 was filed open, answered by an orchestrator during an unattended run, and **overturned by the user
 on 2026-08-21**. One reversal of exactly this class inside the Grounding of the Circle now asked to
 repeat it is the argument.
 
 **What leaving it open costs, and where the cost is discharged.** `**Active spec/plan:**` in
-`circles/260821-1042-reply-bounded-whole-question-answered/_*_circle.md` stays `(none yet)`, so a
+`260821-1042-reply-bounded-whole-question-answered` stays `(none yet)`, so a
 reader of the terminal record cannot see the plan the Circle ran on. Under the rule as written that
 is consistent, because the record's `## Directive` holds prose if and only if that field reads the
 literal `(none yet)`. The mitigation is that the closure note names the plan, and the closure note

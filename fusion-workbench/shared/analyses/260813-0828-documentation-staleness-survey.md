@@ -193,7 +193,7 @@ the Circle will actually spend its time, and where a reviewer is worth dispatchi
 
 ## Filed issues
 
-- `fusion-workbench/shared/issues/260813-0828_o_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
+- `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
   — three test failures reproduce at HEAD in `circle-stash-git-exclusion.test.ts` and
   `fusion-plane.test.ts`. A code defect, out of scope for a documentation Circle, and not covered
   by the one open record about that suite.

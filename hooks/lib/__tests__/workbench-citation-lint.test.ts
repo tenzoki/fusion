@@ -21,11 +21,13 @@ import {
 // nothing had ever checked them (issue
 // `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`).
 //
-// One parser serves both. Everything about what a citation IS — the grammar, the
-// seven exemptions, what resolves and what dangles — lives in
-// `hooks/lib/__tests__/helpers/citation-scan.ts` and is not restated here. What
-// is this file's own is the CORPUS: which of the workbench's several hundred
-// markdown files are held to the standard.
+// One parser serves both. Everything about what a citation IS — the storeless
+// grammar, the seven exemptions, what resolves, what dangles and why a store
+// segment (`shared/<store>/`, `circles/<dir>/`) is the `store-prefixed`
+// violation — lives in `hooks/lib/citation-scan.ts` (bound to this checkout by
+// the shim at `hooks/lib/__tests__/helpers/citation-scan.ts`) and is not
+// restated here. What is this file's own is the CORPUS: which of the
+// workbench's several hundred markdown files are held to the standard.
 //
 // WHAT THIS GATE ASSERTS, AND WHAT IT DELIBERATELY DOES NOT.
 //
@@ -372,5 +374,32 @@ describe.runIf(WORKBENCH_PRESENT)("workbench citation lint: the corpus predicate
     );
     expect(terminal.length, "the tree carries terminal records to exclude").toBeGreaterThan(0);
     expect(terminal.filter((r) => rels.has(r))).toEqual([]);
+  });
+});
+
+describe("workbench citation lint: the storeless form rests on basename uniqueness", () => {
+  // The rule states the scope as the live tree AND `archive/`, so this walk
+  // takes the whole workbench with no frozen-store exclusion (decision
+  // `260828-0904_*_should-the-uniqueness-claim-state-its-scope.md`).
+  const STAMPED_RE = /^[0-9]{6}-[0-9]{4}(?:_[a-z]_|-).+\.md$/;
+  const all = markdownFilesUnder(workbenchRoot).map((f) => f.rel);
+
+  it("no two stamped artifacts share a marker-normalised basename, archive/ included", () => {
+    const seen = new Map<string, string[]>();
+    for (const rel of all) {
+      const base = rel.slice(rel.lastIndexOf("/") + 1);
+      if (!STAMPED_RE.test(base)) continue;
+      const key = base.replace(/^([0-9]{6}-[0-9]{4})_[a-z]_/, "$1_*_");
+      seen.set(key, [...(seen.get(key) ?? []), rel]);
+    }
+    const collisions = [...seen]
+      .filter(([, paths]) => paths.length > 1)
+      .map(([key, paths]) => `${key}: ${paths.join(" | ")}`);
+    expect(seen.size, "the walk saw stamped artifacts").toBeGreaterThan(0);
+    expect(collisions, "two artifacts share a basename; a storeless citation cannot tell them apart").toEqual([]);
+  });
+
+  it("the walk saw archive/, so the scope the rule states is the scope measured", () => {
+    expect(all.some((r) => r.startsWith("archive/"))).toBe(true);
   });
 });

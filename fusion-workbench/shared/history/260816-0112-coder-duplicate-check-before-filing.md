@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Source record:** `circles/260801-1244-guard-rules-write/issues/260805-1548_o_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
+**Source record:** `260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
 
 ---
 
@@ -21,7 +21,7 @@ carries the three properties the source record specified:
   named (a duplicate costs one merge, an unfiled defect costs the defect) and the closing
   sentence that this step never ends with nothing written.
 
-The blocker the record named — the rule-text ratchet, decision `260805-1559` — is
+The blocker the record named — the rule-text ratchet, decision `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` — is
 implemented, so the addition is landable: the always-on set now measures growth and
 reports rather than blocking, within a head-room bound.
 

@@ -3,7 +3,7 @@
 **Agent:** coder
 **Status:** Complete
 **Origin:** Not Circle work. Closes a defect from the shared issue store; no Circle was active.
-**Source record:** `fusion-workbench/shared/issues/260731-2246_o_cadence-churn-session-defined-two-ways-for-git-commits.md`
+**Source record:** `260731-2246_*_cadence-churn-session-defined-two-ways-for-git-commits.md`
 **Queue entry:** `fusion-workbench/tasklist.md` § 9 (`I:260731-2246-churn-unit`)
 
 ## What was wrong
@@ -65,7 +65,7 @@ The dispatch restricted this task to `skills/cadence/SKILL.md`, so two tracking 
 made here and are still open:
 
 - `fusion-workbench/tasklist.md` § 9 still reads `**Status:** [ ] open`.
-- The issue record is still `260731-2246_o_...`; it needs the `Resolved:` note and the `_o_` →
+- The issue record is still `260731-2246_*_...`; it needs the `Resolved:` note and the `_o_` →
   `_c_` rename.
 
 ## Files changed

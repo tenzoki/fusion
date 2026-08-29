@@ -4,9 +4,9 @@
 
 **Severity:** Medium — the defect that killed the whole Plane bridge is now fixed with no test that reproduces its trigger; on a quiet rc the suite is green either way.
 **Domain:** code
-**Filed by:** coderev, reviewing `7342fdd` (`shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md`)
+**Filed by:** coderev, reviewing `7342fdd` (`260813-1051-coderev-plane-curl-response-via-temp-file.md`)
 **Affects:** `hooks/lib/__tests__/fusion-plane.test.ts:1494` (the `describe` block), `:1603-1620` (`runLive`)
-**Cross-references:** `shared/issues/260813-0828_c_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md` (records the environment dependency explicitly)
+**Cross-references:** `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md` (records the environment dependency explicitly)
 
 ---
 
@@ -43,7 +43,7 @@ rebuild still parses") pins the whole design decision: it fails against the pre-
 stdout read and passes against the temp-file read, on every machine.
 
 A second fixture line — a `zshexit` hook — would pin the residual filed as
-`260813-1051_o_the-http-code-is-still-read-from-the-noisy-channel-…`, and should be added with
+`260813-1051_*_the-http-code-is-still-read-from-the-noisy-channel-…`, and should be added with
 whatever fix that issue receives, not before.
 
 ## Note on scope

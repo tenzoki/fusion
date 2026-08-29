@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** Fix the false claim at `rules/fusion-workbench-conventions.md:64` that four shipped consumers exclude both legacy stores.
-**Source record:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1938_c_the-always-on-conventions-file-says-four-consumers-exclude-two-stores-and-one-of-them-excludes-one.md`
+**Source record:** `260815-1938_*_the-always-on-conventions-file-says-four-consumers-exclude-two-stores-and-one-of-them-excludes-one.md`
 
 ## What the measurement found
 
@@ -31,7 +31,7 @@ Cost: 97 bytes on the always-on surface (54 526 → 54 623), paid by every agent
 
 ## What was deliberately not done
 
-`skills/archive/SKILL.md:96` is untouched. Adding `.migration-v2-backup/` there would change shipped behaviour to make a sentence true, which is the wrong direction — the sentence was the defect. Having read the file, I do think the exclusion belongs there: safety filter 1 is a list of workbench root entries that no tier survey can reach anyway, so its real audience is the natural-language archive mode, and in that mode the two legacy stores are equally reachable while only one is protected. That is a behaviour decision, not this task's correction, and it is filed as `shared/issues/260816-0025_o_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`.
+`skills/archive/SKILL.md:96` is untouched. Adding `.migration-v2-backup/` there would change shipped behaviour to make a sentence true, which is the wrong direction — the sentence was the defect. Having read the file, I do think the exclusion belongs there: safety filter 1 is a list of workbench root entries that no tier survey can reach anyway, so its real audience is the natural-language archive mode, and in that mode the two legacy stores are equally reachable while only one is protected. That is a behaviour decision, not this task's correction, and it is filed as `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`.
 
 `hooks/lib/__tests__/fixtures/surface-growth.golden` is untouched, per the dispatch.
 
@@ -44,4 +44,4 @@ Cost: 97 bytes on the always-on surface (54 526 → 54 623), paid by every agent
 - `rules/fusion-workbench-conventions.md`
 - `hooks/lib/__tests__/fixtures/rules-emission.golden` (regenerated)
 - source record appended and renamed `_o_` → `_c_`
-- `fusion-workbench/shared/issues/260816-0025_o_…` (new)
+- `260816-0025_*_…` (new)

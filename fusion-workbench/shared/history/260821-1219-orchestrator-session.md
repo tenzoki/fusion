@@ -1,4 +1,4 @@
-# Orchestrator Session — 260821-1219
+# Orchestrator Session — 260821-1219-orchestrator-session.md
 
 **Directive:** (not yet stated — session started via `/fusion:setup`, awaiting the user's task)
 **Mode:** (not yet resolved — Phase 0 pending)
@@ -45,7 +45,7 @@ and every `OUT_*` points into `shared/`.
 1 anticipated, 2 bounded, 10 closed-coherent, 1 superseded. No active Circle.
 
 The single anticipated Circle is
-`circles/260821-1042-reply-bounded-whole-question-answered/_a_circle.md`.
+`260821-1042-reply-bounded-whole-question-answered`.
 
 **Portfolio hint emitted:** yes — 1 anticipated Circle, 0 active, so the user was pointed at
 `/fusion:next` for portfolio review before starting work.

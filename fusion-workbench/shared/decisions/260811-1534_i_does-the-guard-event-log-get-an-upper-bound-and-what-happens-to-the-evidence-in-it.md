@@ -5,7 +5,7 @@
 **Status:** open
 **Filed by:** coder (closing `260805-1859`, task 21)
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260805-1859_c_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md` (the finding this splits off from — its half (a) landed, this is half (b));
+`260805-1859_*_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md` (the finding this splits off from — its half (a) landed, this is half (b));
 `hooks/lib/events.ts` (`emitEvent`, the only writer);
 `bin/monitor` (`_read_warnings`, the only reader, re-parsing the whole file every two seconds);
 `skills/archive/SKILL.md` safety filter 1 (the never-touch list that names `.guard-state/`);
@@ -124,7 +124,7 @@ roughly 300 lines a day here, and roughly a quarter less than that now that half
 landed.
 
 ---
-Answered: user, session 260811-0752 (chat) — **Option 1, archive rather than truncate.**
+Answered: user, session 260811-0752-orchestrator-session.md (chat) — **Option 1, archive rather than truncate.**
 `.guard-state/events.jsonl` gets its own case in `skills/archive/SKILL.md`: the log is rolled into
 the archive store under a dated name and a fresh empty log is started, the way terminal records are
 already moved. No line or byte ceiling is added, because every such ceiling discards the 99

@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-18
 **Mode:** user-direct (finalisation pass; forks answered by the user via the orchestrator)
-**Spec:** `fusion-workbench/shared/planning/260718-0437_o_spec-fusion-v5x-overhaul.md`
+**Spec:** `260718-0437_*_spec-fusion-v5x-overhaul.md`
 
 ## What happened
 

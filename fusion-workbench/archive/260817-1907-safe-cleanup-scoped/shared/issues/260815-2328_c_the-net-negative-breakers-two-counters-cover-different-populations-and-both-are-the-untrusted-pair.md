@@ -31,7 +31,7 @@ hand-kept count for a control decision.
 moment (Step 3c incremental review). The denominator is scoped to neither. Issues also arrive from
 `coder` and `bugfixer` during execution, from `analyst` findings, and from the user, and none of
 them increments `issues_created` under the definition as written. So the comparison is
-systematically biased toward *not* tripping, which is the mirror of the defect `260814-1430` fixed.
+systematically biased toward *not* tripping, which is the mirror of the defect `260814-1430_*_the-net-negative-breaker-compares-a-per-finding-count-against-a-per-batch-count.md` fixed.
 The commit message's "compares like with like" holds for the unit and not for the population.
 
 Whichever way it is resolved, resolve it in the **definitions**, not by a third rewrite of the
@@ -80,7 +80,7 @@ near the bound.
 
 ---
 
-**Resolved:** 260816-0050, `coder`, in `agents/orchestrator.md` (+544 B).
+**Resolved:** 260816-0050-coder-net-negative-breaker-populations.md, `coder`, in `agents/orchestrator.md` (+544 B).
 
 **Part 1 — populations aligned, residual stated rather than closed.** `:952`/`:953` now read
 "issues filed this session by **any** agent or the user, not only by reviewers at Step 3c" and

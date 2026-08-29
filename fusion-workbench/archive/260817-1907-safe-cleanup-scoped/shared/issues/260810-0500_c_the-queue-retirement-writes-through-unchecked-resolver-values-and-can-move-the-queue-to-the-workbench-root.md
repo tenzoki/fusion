@@ -4,7 +4,7 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `agents/orchestrator.md` Phase 4 step 4, the retirement snippet (`P=$(... fusion-paths orchestrator ...)`, `mkdir -p "$WORKBENCH/$P"`, `mv "$Q" "$WORKBENCH/$P/..."`)
 **Cross-references:** commit `ff70d3a`; `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs* (added by `e99f0ef` in this same range); commit `6a69717` (`/fusion:cadence`, the same hazard guarded)
 
@@ -75,7 +75,7 @@ where it is and the closure still completes.
 
 ---
 
-**Resolved:** 260810-0706 by `coder` (Turn 2, task R3). The `mkdir`/`mv` pair now sits inside
+**Resolved:** 260810-0706-coder-queue-retirement-empty-key.md by `coder` (Turn 2, task R3). The `mkdir`/`mv` pair now sits inside
 `[ -n "$WORKBENCH" ] && [ -n "$P" ]`, in the same spelling `/fusion:cadence` step 8 carries, with an
 `else` that names both keys on stderr. The assertion is inside the `if` rather than in front of the
 whole command, so an empty key skips the retirement without skipping the pointer clear — aborting
@@ -90,4 +90,4 @@ Gate: `hooks/lib/__tests__/queue-retirement-empty-key.test.ts` extracts the Phas
 against throwaway workbenches with a stub `fusion-paths`. Its negative control is
 `git show ff70d3a:agents/orchestrator.md` run through the same helpers, not a transcribed fixture.
 
-History: `fusion-workbench/shared/history/260810-0706-coder-queue-retirement-empty-key.md`
+History: `260810-0706-coder-queue-retirement-empty-key.md`

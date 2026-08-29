@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** `circles/260801-1244-curator/planning/260814-0845_*_plan-curator.md` step 2 and `## Open Questions`; `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md` C2 (the derive-over-correct rule); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`
+**Cross-references:** `260814-0845_*_plan-curator.md` step 2 and `## Open Questions`; `260814-0738_*_spec-curator.md` C2 (the derive-over-correct rule); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts`
 
 ---
 
@@ -50,7 +50,7 @@ The residual is small and bounded: a handful of occurrences carry a real measure
 Confidence, labelled per `rules/critical-stance.md`: the counts are verified, obtained by `grep` over the nine files on 2026-08-14. The claim that the five lint-derived sites are the only asserted ones is verified against the `CLAIMS` array in `derivable-enumerations-lint.test.ts`. The judgement that removing the figure reads no worse is the filing agent's editorial opinion and is not measured.
 
 ---
-Answered: shared/history/260813-2345-orchestrator-session.md § User decisions recorded this session, item 6 — option 2. The five lint-derived digit claims are corrected to the tree; in the twenty-seven unasserted occurrences the figure is removed where the sentence does not need it, so "all sixteen agents" becomes "every agent". Historical measurements in the cut log are not touched. Answered by the user on 2026-08-14 at the plan gate.
+Answered: 260813-2345-orchestrator-session.md § User decisions recorded this session, item 6 — option 2. The five lint-derived digit claims are corrected to the tree; in the twenty-seven unasserted occurrences the figure is removed where the sentence does not need it, so "all sixteen agents" becomes "every agent". Historical measurements in the cut log are not touched. Answered by the user on 2026-08-14 at the plan gate.
 Implemented: 6ba9d77 — the five lint-derived digit claims now equal the tree at seventeen; in the twenty-seven no parser reads, the figure is removed where the sentence carried it as a synonym for "every agent". Historical measurements in the cut log of rules-emission-golden.test.ts are untouched, as the record's constraints require.
 Deferred:
 Superseded by:

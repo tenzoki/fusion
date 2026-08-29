@@ -1,6 +1,6 @@
-# Orchestrator Session — 260802-0848
+# Orchestrator Session — 260802-0848-orchestrator-session.md
 
-**Directive:** Every rule file names the decision record, Circle, or analysis that produced it. The convention is documented in `rules/fusion-workbench-conventions.md`; all of the plugin's rule files carry a header, each naming a record or stating honestly that none is recoverable; a lint gate in the plugin's test suite fails when a file in `rules/` lacks a header and names the offending file. (Source: `circles/260801-1244-rule-provenance-header/_t_circle.md` `## Directive`; capability C8 of `shared/planning/260801-1122_o_spec-normative-consolidation.md`.)
+**Directive:** Every rule file names the decision record, Circle, or analysis that produced it. The convention is documented in `rules/fusion-workbench-conventions.md`; all of the plugin's rule files carry a header, each naming a record or stating honestly that none is recoverable; a lint gate in the plugin's test suite fails when a file in `rules/` lacks a header and names the offending file. (Source: `260801-1244-rule-provenance-header` `## Directive`; capability C8 of `260801-1122_*_spec-normative-consolidation.md`.)
 **Mode:** custom (Circle Directive with an existing spec, no implementation plan yet)
 **Status:** Complete
 
@@ -12,11 +12,11 @@
 | Plugin version | 5.8.0 |
 | Git HEAD at start | e8988d9 |
 | Domain | `code` (from the Circle record's `**Domain:**` line; matches Setup detection) |
-| Active Circle | `circles/260801-1244-rule-provenance-header` (activated via `/fusion:next` at 260802-0829) |
+| Active Circle | `260801-1244-rule-provenance-header` (activated via `/fusion:next` at 260802-0829) |
 | Circle stores | created at Setup — the Circle held only its record, no artifact subdirectories |
 | Circle-local issues / decisions / plans | 0 / 0 / 0 |
 | Open issues (shared) | 18 |
-| Open plans (shared) | 1 (`260801-1122_o_spec-normative-consolidation.md`, the spec covering all four Circles) |
+| Open plans (shared) | 1 (`260801-1122_*_spec-normative-consolidation.md`, the spec covering all four Circles) |
 | Open decisions | 0 open, 4 answered (D1, D2, D3 among them) |
 | Guard | not halted; 2 prior blocks (both `git_branch_switch`, earlier sessions) |
 | Interrupted session | none |
@@ -114,15 +114,15 @@ Three questions the Circle record and the spec (line 663) both leave open:
 
 Three findings left open in the Circle's issue store by explicit user decision:
 
-- `260802-1252` — both pre-existing `Binding decision:` instances are dead links
-- `260802-1255` — five `report()` assertions interpolate `HEADER_WINDOW` on both sides, so they
+- `260802-1252_*_binding-decision-formalised-while-both-existing-instances-are-dead.md` — both pre-existing `Binding decision:` instances are dead links
+- `260802-1255_*_five-message-assertions-interpolate-header-window-on-both-sides.md` — five `report()` assertions interpolate `HEADER_WINDOW` on both sides, so they
   cannot detect a wrong constant
-- `260802-1256` — the template placeholder opts out of the template's own fill-in convention
+- `260802-1256_*_template-placeholder-opts-out-of-the-templates-own-fill-in-convention.md` — the template placeholder opts out of the template's own fill-in convention
 
 Two filed in the shared store during or immediately after the session:
 
-- `260802-0920` — `/fusion:next` activates a Circle without updating its `**Status:**` field
-- `260802-1740` — a citation path carrying a state marker dies on ordinary progress
+- `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md` — `/fusion:next` activates a Circle without updating its `**Status:**` field
+- `260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` — a citation path carrying a state marker dies on ordinary progress
 
 Deferred by user decision at the plan gate: the `.claude-plugin/plugin.json` version bump and the
 `CLAUDE.md` line about the new gate, both to the normal release and `/fusion:revise-claude-md` flows.
@@ -226,15 +226,15 @@ sequenceDiagram
 
 <!-- RECONCILER-OWNED -->
 
-*Computed 260802-1413 by the reconciler (domain `code`) at `b568ad9`, against the Directive on this file's line 3 and the Circle record's `## Directive`. Session-start anchor `e8988d9`, eight commits in range. Evidence detail in `history/260802-1413-reconciliation.md`.*
+*Computed 260802-1413-reconciliation.md by the reconciler (domain `code`) at `b568ad9`, against the Directive on this file's line 3 and the Circle record's `## Directive`. Session-start anchor `e8988d9`, eight commits in range. Evidence detail in `260802-1413-reconciliation.md`.*
 
 **Verdict:** review-needed
 
 **Edges:**
 
 - **Artifact↔Grounding:** OK. 8 of 8 acceptance criteria verified against the tree, not against `[DONE]` markers; `npm test` re-run at 260802-1411 gives 780 passing tests across 17 files; 10 reviewer issues filed, 7 closed with each closure checked against its cited commit rather than its resolution note, 3 left `_o_` by explicit user decision and all 3 re-verified still live; 2 decision records promoted `_a_`→`_i_` on realisation (`929dbf5`, `c2c2a04`, `de9d5aa`); 0 open decisions anywhere in `$SCAN_DECISIONS`. One residual, named rather than absorbed: the delivered change set is 14 non-workbench paths against a plan that bounded itself to 11, and one of the three extras (`templates/investigator-capture-layout.md`, `482e9c3`) is named in neither the spec nor the plan.
-- **Artifact↔Directive:** **Flagged — on the Directive's wording, not on the work.** Every one of the eight commits moves toward the Directive; none is orthogonal to it and none moves away. But the Directive as written is not what the Circle delivered, in two ways that a downstream reader will hit. It still says "all nine of the plugin's rule files carry a header" when ten do — the same record's `## Grounding snapshot` corrects the count and states outright that the Directive still misstates it, so the record knowingly ships an internal contradiction. And its closing clause, that the header "makes the curator's grounding-in-history requirement true by construction rather than dependent on its diligence", is not delivered for any file that exists: 4 of 10 citations name a Circle directory and 6 name a commit, neither of which carries a state marker, and the spec established that no backfilled citation can ever be upgraded to the decision-record form, because neither cited Circle holds a record that motivated any of those files. **The Directive is partially met.** The mechanism is complete — convention documented, ten files backfilled, gate enforcing. The payoff clause holds forward only, for rule files written from now on, and never for the ten the curator will actually read. This matters beyond bookkeeping because `circles/260801-1244-curator` depends on this Circle hard and reads this Directive as its premise.
-- **Grounding↔Directive:** OK. All 10 records across both paths in `$SCAN_DECISIONS` scanned (1 Circle-local, 9 shared). 0 open. 3 active (`_a_`) and consistent with the Directive: D1 `shared/decisions/260801-1020_a_where-does-normative-consistency-live.md` and D2 `…_a_may-any-fusion-writer-touch-rules.md` are downstream siblings whose realisation belongs to two Circles still `_a_`, and `shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md` is unrelated to this Directive. 0 conflicting.
+- **Artifact↔Directive:** **Flagged — on the Directive's wording, not on the work.** Every one of the eight commits moves toward the Directive; none is orthogonal to it and none moves away. But the Directive as written is not what the Circle delivered, in two ways that a downstream reader will hit. It still says "all nine of the plugin's rule files carry a header" when ten do — the same record's `## Grounding snapshot` corrects the count and states outright that the Directive still misstates it, so the record knowingly ships an internal contradiction. And its closing clause, that the header "makes the curator's grounding-in-history requirement true by construction rather than dependent on its diligence", is not delivered for any file that exists: 4 of 10 citations name a Circle directory and 6 name a commit, neither of which carries a state marker, and the spec established that no backfilled citation can ever be upgraded to the decision-record form, because neither cited Circle holds a record that motivated any of those files. **The Directive is partially met.** The mechanism is complete — convention documented, ten files backfilled, gate enforcing. The payoff clause holds forward only, for rule files written from now on, and never for the ten the curator will actually read. This matters beyond bookkeeping because `260801-1244-curator` depends on this Circle hard and reads this Directive as its premise.
+- **Grounding↔Directive:** OK. All 10 records across both paths in `$SCAN_DECISIONS` scanned (1 Circle-local, 9 shared). 0 open. 3 active (`_a_`) and consistent with the Directive: D1 `260801-1020_*_where-does-normative-consistency-live.md` and D2 `…_a_may-any-fusion-writer-touch-rules.md` are downstream siblings whose realisation belongs to two Circles still `_a_`, and `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` is unrelated to this Directive. 0 conflicting.
 
 **Rebalance recommendation:** revise Directive
 
@@ -245,7 +245,7 @@ Accept Bounded Closure is *not* the reading here. The Directive's mechanism was 
 ## Portfolio update
 
 Playmaker regenerated `portfolio.md` after the closure
-(`shared/history/260802-1736-playmaker-direct-dispatch.md`). The recommendation changed: next is
+(`260802-1736-playmaker-direct-dispatch.md`). The recommendation changed: next is
 `260801-1244-guard-rules-write`, not the curator, even though the curator's hard block was what this
 Circle removed. The reason is a consequence of the Circle before this one: `hooks/config.json`
 protects `rules/**`, and since `260801-1244-guard-bash-inspection` closed, that list is checked on

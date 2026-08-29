@@ -48,7 +48,7 @@ cell at `:62` describes as leaving "the stamp check nothing to read".
 
 The clause was added so a block-valued parameter could sit in a table whose preamble says "one per
 line" — the closure note on
-`260813-2052_c_the-dispatch-parameter-roster-omits-the-two-lines-the-playmaker-relay-carries.md`
+`260813-2052_*_the-dispatch-parameter-roster-omits-the-two-lines-the-playmaker-relay-carries.md`
 says exactly that. The widening is right; what it should not do is attribute one prompt's stated
 contract to a second parameter whose prompt is silent. The section states its own ground truth two
 sentences later ("`Declared at` names the prompt lines each row was read against"), and this

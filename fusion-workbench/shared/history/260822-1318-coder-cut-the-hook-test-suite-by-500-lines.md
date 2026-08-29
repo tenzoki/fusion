@@ -1,7 +1,7 @@
 # Cut the hook test suite by 500 lines
 
 **Agent:** coder
-**Task source:** `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 2
+**Task source:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 2
 **Status:** Complete
 **HEAD at start:** `aa44a8b`
 
@@ -10,9 +10,9 @@
 ## What the step asked for
 
 Cut at least 500 lines from the hook test surface, applying the rows of
-`shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md` and the user's Gate A answer
+`260822-1226-cut-ledger-for-three-bounded-surfaces.md` and the user's Gate A answer
 (option 2 of
-`shared/decisions/260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`).
+`260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`).
 No baseline map may move. This step runs first in the Circle because cutting `agents/` or `skills/`
 later moves the `BASELINE` pin, and re-approving that pin costs lines on this surface.
 
@@ -35,7 +35,7 @@ left the walk.
 **H6, 417 lines — `reference-resolution-lint.test.ts`.** The chronological log of 26 approvals and
 re-approvals of the `BASELINE` count pin stood at lines 493-913. Entries 1 to 25 (418 lines) were
 moved verbatim into
-`shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`; the pin's
+`260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`; the pin's
 rationale and the newest re-approval stay in the file, and a six-line block at line 488 names the
 record, says the convention is unchanged, and instructs the next roll. The file went 1431 -> 1014
 lines. This is option 2 of the answered decision and nothing else; options 3 and 4 were not taken.

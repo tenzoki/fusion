@@ -4,9 +4,9 @@
 
 **Severity:** Medium — nothing is wrong with the code under test, but every "N tests green" claim in this project's records is now approximate, and the orchestrator's commit gate reads that number
 **Domain:** code
-**Filed by:** orchestrator, from a finding reported by the executor of task T3 (session `260810-0844`, Turn 1)
+**Filed by:** orchestrator, from a finding reported by the executor of task T3 (session `260810-0844-orchestrator-session.md`, Turn 1)
 **Affects:** `hooks/lib/__tests__/fusion-plane.test.ts` — test collection, not any assertion
-**Cross-references:** commit `38fe341`; `shared/issues/260810-0703_o_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`
+**Cross-references:** commit `38fe341`; `260810-0703_*_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`
 
 ---
 
@@ -56,4 +56,4 @@ some environments, they should be `skip`ped visibly rather than never registered
 is reported and counted, which is the property this defect removes.
 
 ---
-Resolved: moot, not fixed. The one file the variance was entirely in, `hooks/lib/__tests__/fusion-plane.test.ts`, was deleted in `d0ddabb`. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: the suite is 40 files / 751 tests, and `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1832-coder-after-measurement.md` re-measures the wall clock at 59.52 s and 61.24 s over two runs, against 76.57 s before. The remaining spread has a different cause, named there: step 3b caps a run at half the machine's cores.
+Resolved: moot, not fixed. The one file the variance was entirely in, `hooks/lib/__tests__/fusion-plane.test.ts`, was deleted in `d0ddabb`. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: the suite is 40 files / 751 tests, and `260815-1832-coder-after-measurement.md` re-measures the wall clock at 59.52 s and 61.24 s over two runs, against 76.57 s before. The remaining spread has a different cause, named there: step 3b caps a run at half the machine's cores.

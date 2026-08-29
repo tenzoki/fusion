@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-04
 **Agent:** `coder`
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Status:** Complete
 **Dispatched by:** orchestrator, at the user's explicit request, ahead of the remaining behavioural steps
 **Not** plan Step 7. Step 7 still runs and nothing here is marked complete.
@@ -13,8 +13,8 @@
 
 Discharge the four documentation obligations that describe behaviour **already true at
 HEAD** and that no plan step owned: two created by decisions answered an hour earlier
-(`260803-1402`, `260804-1815`), two deliberately left by Step 3 (`260804-1346`,
-`260804-1348`) whose documentation halves live in Step 7's file while Step 7's `Closes`
+(`260803-1402`, `260804-1815`), two deliberately left by Step 3 (`260804-1346_*_git-clean-fdx-at-the-project-root-is-still-a-residual-and-its-residual-entry-was-deleted.md`,
+`260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md`) whose documentation halves live in Step 7's file while Step 7's `Closes`
 line did not name them.
 
 ## What I did first, and why it changed the work
@@ -35,14 +35,14 @@ Two dispatch claims did not survive the measurement.
    dispatch itself flagged this possibility and told me to verify rather than trust the
    issue's original text; that instruction is the reason obligation 3 is written the way it
    is.
-2. `260804-1348` calls `checkout`'s second cost "unreachable". It is the record's
+2. `260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` calls `checkout`'s second cost "unreachable". It is the record's
    **example** that is unreachable, not the cost. `git checkout rules/a.md rules/b.md` is a
    branch-policy deny because `rules/a.md` is not on disk. With both operands present the
    mutation classifier answers with its own reason:
    `git checkout rules/x.md agents/coder.md` denies on `agents/coder.md`.
 
 A third correction fell out of the same measurement and is the one I would have shipped
-wrong if I had trusted a record: `260804-1346`'s in-progress note says
+wrong if I had trusted a record: `260804-1346_*_git-clean-fdx-at-the-project-root-is-still-a-residual-and-its-residual-entry-was-deleted.md`'s in-progress note says
 `GIT_WORK_TREE=rules git clean -fdx` "remains a live residual". The residual is live; that
 *spelling* is not — it now denies on the root's own write-through, not because the variable
 was read. Quoting it as evidence would have been the fifth falsified sentence in this
@@ -93,7 +93,7 @@ BLOCK  git checkout main                         BRANCH reason
 
 The last row is why one sentence changed that no obligation named: the rule file's allowed
 column listed `git checkout main`, a command the sibling policy denies. That is the same
-defect class as `260804-1348` recommendation 2 — the protected-path rule claiming an outcome
+defect class as `260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md` recommendation 2 — the protected-path rule claiming an outcome
 another policy owns — so I corrected it in the row I was already rewriting and reported it.
 
 ## Files changed
@@ -125,14 +125,14 @@ consuming project and has been edited seven times in two days):
 index; the revert strategy is `git checkout HEAD --`, which line 180 already said. Leaving
 both would have been the contradiction Step 7's falsification test looks for.
 
-`planning/260804-1633_o_plan-c5b-remediation-and-ship.md` — Step 7's `Closes` line now names
-`260804-1348`'s documentation half, closing the ownership gap the issue flagged. A block
+`260804-1633_*_plan-c5b-remediation-and-ship.md` — Step 7's `Closes` line now names
+`260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md`'s documentation half, closing the ownership gap the issue flagged. A block
 after the thirteen obligations records all four as discharged early, by whom, with what Step 7
 still owes each (a re-read after Steps 1, 4, 5 and 6, not a rewrite), and carries forward the
 `GIT_WORK_TREE` example correction as something obligation 11 must not lose. The enumeration
 is intact — nothing was struck.
 
-`issues/260804-1346_p_…` and `issues/260804-1348_p_…` — a resolution note on each, with the
+`260804-1346_*_…` and `260804-1348_*_…` — a resolution note on each, with the
 measured rows, what was written, and where each record's own text needed correcting. Both
 markers left at `_p_`; the orchestrator owns the move.
 

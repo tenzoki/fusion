@@ -1,7 +1,7 @@
 # Step 7 — the seeded template and this repository's own configuration file
 
 **Agent:** ontocoder
-**Circle:** `circles/260801-1244-guard-rules-write` — plan Step 7
+**Circle:** `260801-1244-guard-rules-write` — plan Step 7
 **Date:** 260804, 14:45–15:05
 **Status:** Complete
 **Outcome:** Both JSON files written, three unit cases added, `npx vitest run` green at **1344 passed, 25 files** (baseline 1341 from Step 6). The three cases were each shown to fail under a deliberate mutation of the file they pin.

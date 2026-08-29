@@ -8,8 +8,8 @@
 **Affects:** `rules/protected-path-discipline.md:127-130` (the new claim) and `:655-662` (where the residual entry used to be); `README-hooks.md` (the same pair); `hooks/lib/bash-mutation-guard.ts:864-866` (`gitCleanWrites`) and `:1562` (the root exclusion)
 **Kind:** NEW in `613d6fd`. The behaviour is unchanged at the project root; what changed is that the residual entry naming it was removed.
 **Cross-references:**
-`issues/260804-1345_o_…` (the same root-pathspec hole on `checkout` / `restore`, where it fails open on TRACKED files — that one is the High),
-`decisions/260804-1323_i_…` (`## Answer`, third bullet, where the old entry is called "wrong about git").
+`260804-1345_*_…` (the same root-pathspec hole on `checkout` / `restore`, where it fails open on TRACKED files — that one is the High),
+`260804-1323_*_…` (`## Answer`, third bullet, where the old entry is called "wrong about git").
 
 ---
 
@@ -77,7 +77,7 @@ Two edits, no code change required for the documentation half:
    the ancestor check on purpose (`cp x .`). From any other directory, and under any `-C`,
    the command denies."*
 2. If the code half is taken, it is the same `writesThrough` field
-   `issues/260804-1345_o_…` recommends: `clean -f` writes through its pathspec, so the root
+   `260804-1345_*_…` recommends: `clean -f` writes through its pathspec, so the root
    exclusion should not apply to it either. Doing both in one pass is cheaper than twice, and
    they share the test.
 
@@ -102,14 +102,14 @@ until both land, because closing it on the code alone would repeat the mistake i
 was filed about — a residual entry removed rather than narrowed.
 
 Edit 2 of the recommendation, taken: `clean` carries the same `writesThrough`
-field `260804-1345` asked for, so the root exclusion does not apply to it either.
+field `260804-1345_*_git-checkout-treeish-dash-dash-dot-overwrites-the-whole-protected-list-and-allows.md` asked for, so the root exclusion does not apply to it either.
 Both measured rows now deny with their real-shell effect asserted in bash and
 zsh, and BOTH SPELLINGS are pinned — the explicit `git clean -fdx .` and the
 implicit `git clean -fdx`, which took different code paths to the same allow.
 Both allow-side controls this record names hold: `git clean -fdx build` and
 `git -C build clean -fdx`, the second of which is what forced the design to
 consult `writesThrough` only at the directory git actually runs in rather than at
-every candidate base (see `260804-1345`'s resolution note).
+every candidate base (see `260804-1345_*_git-checkout-treeish-dash-dash-dot-overwrites-the-whole-protected-list-and-allows.md`'s resolution note).
 
 Two things the residual list now has to say, and Step 7 owns both:
 
@@ -121,8 +121,8 @@ Two things the residual list now has to say, and Step 7 owns both:
 2. What survives and must NOT be dropped: `git clean -fdx` **from a directory the
    guard cannot place** still fails closed rather than allowing, and
    `GIT_WORK_TREE=rules git clean -fdx` in the ENVIRONMENT remains a live
-   residual (`260804-1332`, deferred to
-   `circles/260804-1205-shell-reachability-model`). Deleting one residual entry
+   residual (`260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`, deferred to
+   `260804-1205-shell-reachability-model`). Deleting one residual entry
    while a sibling of the same shape is still open is how this record came to be
    filed.
 

@@ -7,7 +7,7 @@
 
 ## Scope reviewed
 
-- **Plans:** 1 (`circles/…/planning/260717-1959_c_plan-marker-format-underscore.md`) — updated.
+- **Plans:** 1 (`circles/…/260717-1959_*_plan-marker-format-underscore.md`) — updated.
 - **Issues:** 0 in the Circle; 9 `_o_` in `shared/issues` (unchanged — none belong to this Circle's Directive; the two zsh-related ones are follow-on, see below).
 - **Decisions:** 0 in the Circle; 3 in `shared/decisions` (Plane-domain, none touched).
 - **Reviews:** 0 in the Circle.
@@ -15,8 +15,8 @@
 
 ## What was updated
 
-- **Plan** `260717-1959_o_…` → renamed `_c_`, `**Status:** Draft` → `Complete`, `## Reconciliation Log` appended with per-step commit evidence.
-- **Orchestrator session history** `shared/history/260717-1832-orchestrator-session.md` — second `## Coherence` section appended (Circle 3). Append-only.
+- **Plan** `260717-1959_*_…` → renamed `_c_`, `**Status:** Draft` → `Complete`, `## Reconciliation Log` appended with per-step commit evidence.
+- **Orchestrator session history** `260717-1832-orchestrator-session.md` — second `## Coherence` section appended (Circle 3). Append-only.
 
 ## Findings
 
@@ -38,7 +38,7 @@ All 7 plan steps landed and verify against the tree. No "marked-done-but-missing
 
 ## Follow-on (non-blocking)
 
-The zsh no-match-glob defect — issue `shared/issues/260717-1903_o_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md` and plan `shared/planning/260717-1918_o_skill-glob-nomatch-zsh-hardening.md` — is an orthogonal defect class and does **not** block closing Circle 3. This Circle's delivery unblocks and simplifies it: with brackets gone, the plan's site-12 special-casing (`skills/cleanup/SKILL.md`, the escaped-bracket glob) dissolves and the fix becomes a uniform glob-loop-to-`find` sweep. That plan should be re-grounded before it is scheduled (drop the site-12 note and the Step-5 bracket-preservation caveat). Recorded for the orchestrator/playmaker; no new issue filed.
+The zsh no-match-glob defect — issue `260717-1903_*_skill-shell-scripts-assume-bash-glob-abort-under-zsh.md` and plan `260717-1918_*_skill-glob-nomatch-zsh-hardening.md` — is an orthogonal defect class and does **not** block closing Circle 3. This Circle's delivery unblocks and simplifies it: with brackets gone, the plan's site-12 special-casing (`skills/cleanup/SKILL.md`, the escaped-bracket glob) dissolves and the fix becomes a uniform glob-loop-to-`find` sweep. That plan should be re-grounded before it is scheduled (drop the site-12 note and the Step-5 bracket-preservation caveat). Recorded for the orchestrator/playmaker; no new issue filed.
 
 ## New issues filed
 

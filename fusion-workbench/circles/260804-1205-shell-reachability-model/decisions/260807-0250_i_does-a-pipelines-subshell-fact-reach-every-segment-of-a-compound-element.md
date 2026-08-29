@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** coder
-**Cross-references:** `circles/260804-1205-shell-reachability-model/reviews/260807-0158-conceptrev-plan-shell-reachability-model.md` (the evaluation that posed the question); `hooks/lib/shell-reach.ts` (the answer, in the module docstring under "A COMPOUND COMMAND CAN ITSELF BE A PIPELINE ELEMENT"); `hooks/lib/__tests__/shell-reach.test.ts` (`describe("a compound command that is itself a pipeline element")`).
+**Cross-references:** `260807-0158-conceptrev-plan-shell-reachability-model.md` (the evaluation that posed the question); `hooks/lib/shell-reach.ts` (the answer, in the module docstring under "A COMPOUND COMMAND CAN ITSELF BE A PIPELINE ELEMENT"); `hooks/lib/__tests__/shell-reach.test.ts` (`describe("a compound command that is itself a pipeline element")`).
 
 ---
 
@@ -67,7 +67,7 @@ constraint 1 in tail position and in the multi-line head spelling. Constraint 3 
 makes the rule conditional on the element being piped rather than on the terminator.
 
 ---
-Answered: 260807-0250 — option 3. Neither option the evaluation offered survives the three
+Answered: 260807-0250_*_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md — option 3. Neither option the evaluation offered survives the three
 constraints; the measured answer is a third one.
 Implemented: working tree (uncommitted at time of writing) — `hooks/lib/shell-reach.ts`
 adds the `pipe-exit` edge, `SPAN_OPENERS`, a per-scope span stack and
@@ -78,4 +78,4 @@ only. The classifier does not consume the layer yet, so the full-corpus verdict
 differential against HEAD `38c5123` is 0/0/0.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the reachability layer this record's answer built was deleted the same day it was measured, without ever being consumed. The record's own footer says the classifier did not read the layer yet; `ba7ccda` removed `hooks/lib/shell-reach.ts` (786 lines), its test file, `helpers/reachability-corpus.ts`, `helpers/shell-witness.ts` and `fixtures/mutation-verdicts-head.json`. `pipe-exit`, `SPAN_OPENERS` and `spanIsPipelineElement` exist nowhere at HEAD.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md) — the reachability layer this record's answer built was deleted the same day it was measured, without ever being consumed. The record's own footer says the classifier did not read the layer yet; `ba7ccda` removed `hooks/lib/shell-reach.ts` (786 lines), its test file, `helpers/reachability-corpus.ts`, `helpers/shell-witness.ts` and `fixtures/mutation-verdicts-head.json`. `pipe-exit`, `SPAN_OPENERS` and `spanIsPipelineElement` exist nowhere at HEAD.

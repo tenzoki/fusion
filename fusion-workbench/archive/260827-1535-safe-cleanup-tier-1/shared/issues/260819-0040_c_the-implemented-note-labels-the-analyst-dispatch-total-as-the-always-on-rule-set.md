@@ -42,7 +42,7 @@ rather than under 97 000, which matters against the 12 000-byte head-room in
 floor by 819 bytes, which the single-figure claim in the footer hides: the movement is −3 416 then
 +819, netting −2 597 — the same net the tabled figures give, off a base 2 519 bytes higher.
 
-**Same class, second instance.** `shared/issues/260816-1345_o_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
+**Same class, second instance.** `260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
 found the identical mislabelling three days earlier, in a different artifact, and with the same two
 memberships wrong in the same two directions: `design-diagrams.md` counted in, the chat profile left
 out. Two independent measurements have now reached for the golden's analyst row and called it the
@@ -58,7 +58,7 @@ misread, so consider whether it should carry a line naming the always-on subtota
 is a change to a fixture and wants weighing against the count-pinning convention, so it belongs in a
 record rather than in this fix.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

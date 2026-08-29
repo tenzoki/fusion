@@ -4,7 +4,7 @@ Two entry names no longer cover their instructions, and AI04's only example is n
 
 **Severity:** Medium
 **Domain:** data
-**Filed by:** ontorev, reviewing step 4 of plan `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Filed by:** ontorev, reviewing step 4 of plan `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Affects:** `stilwerk/chat-voice-en.yaml:56-75,119-126`, `stilwerk/chat-voice-de.yaml:57-76,121-128`, and both `fusion-workbench/stilwerk/` copies
 
 ---
@@ -54,7 +54,7 @@ budget can carry it is the fixer's call, and this record does not decide it.
 ---
 Partly addressed: 260821-2251 by ontocoder — AI04 is renamed in both copies of both chat
 profiles, alongside the instruction rewrite this record's sequencing put first
-(`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`):
+(`260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`):
 `"Mechanical triads"` → `"Mechanical enumeration"`, `"Mechanische Dreiergruppen"` →
 `"Mechanische Aufzählungen"`. The name now covers the whole entry and matches the one-item
 example the record objected to. The English rename costs +5 bytes rather than the −1 this
@@ -64,7 +64,7 @@ both are absorbed by the instruction rewrite, which leaves each file net negativ
 **C06 is deliberately left at `"One name per thing"` / `"Eine Benennung pro Sache"`, and
 this record stays `_o_` for that half.** The clause the name undersells is the one whose
 residency in the profile is the open question in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`,
+`260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`,
 which the review recommends taking to the user rather than fixing, and both routes there
 move or copy the clause out of the profile. Renaming the entry for a half that may leave it
 spends +7 bytes English and +9 German on text that would then be renamed back. The rename
@@ -78,14 +78,14 @@ enumeration"` in `stilwerk/chat-voice-en.yaml:120` and `"Mechanische Aufzählung
 `stilwerk/chat-voice-de.yaml`, both mirrored in `fusion-workbench/stilwerk/`; C06 still reads
 `name: "One name per thing"` at `stilwerk/chat-voice-en.yaml:57` while its instruction carries
 "Likewise one formulation per claim". The C06 rename remains owed and remains cheapest after
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
+`260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
 resolved where the clause lives, which it now has: `rules/user-facing-output.md:81` carries "One
 formulation per claim" as its own bullet and the profile entry stayed. So the reason this record
 gave for waiting has expired, and the rename is now a clean, unblocked edit inside the profiles'
 own budget.
 
 ---
-**Resolved: 260822-0027 by ontocoder.** C06 is renamed in both copies of both chat profiles,
+**Resolved: 260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md by ontocoder.** C06 is renamed in both copies of both chat profiles,
 which closes the half this record kept open: `"One name per thing"` → `"One name, one
 formulation"`, `"Eine Benennung pro Sache"` → `"Eine Benennung, eine Formulierung"`. Both
 halves of the instruction are now reachable by an agent scanning `name:` fields, which is
@@ -94,7 +94,7 @@ what this record asked for.
 **The rename, not the split.** The split into two entries is the shape this record calls
 cleaner and `rules/user-facing-output.md:80-81` already uses, and it was priced and rejected
 on the budget in
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md`
+`260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
 (option 1, net zero or less, held per profile file). A second entry costs its own `- id:`,
 `name:`, `instruction:` and `examples:` keys, about +57 bytes English net of the text moved
 out of C06 and more in German, and the only cut of that size inside these files is C06's own

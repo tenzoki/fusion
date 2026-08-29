@@ -2,8 +2,8 @@
 
 **Date:** 2026-07-19
 **Status:** Complete
-**Spec:** `circles/260716-1847-workbench-umbau/planning/260716-1847_o_spec-plane-integration-und-workbench-struktur.md` (C3/C4 backbone + "Open for Planner" agenda), refined to variant b (bounded bridge) by `shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md` §5
-**Circle:** `circles/260719-1536-plane-mirror-integration/_t_circle.md`
+**Spec:** `260716-1847_*_spec-plane-integration-und-workbench-struktur.md` (C3/C4 backbone + "Open for Planner" agenda), refined to variant b (bounded bridge) by `260719-2141-plane-mirror-martin-convergence-feasibility.md` §5
+**Circle:** `260719-1536-plane-mirror-integration`
 
 ## Directive
 
@@ -213,7 +213,7 @@ Reuse the `hooks/lib/__tests__/` vitest pattern; no live Plane needed.
    - Files: `bin/fusion-plane` (extend), reads/writes `fusion-workbench/.plane-map.json`
    - Changes: implement `reconcile(circle)` = read record + `issues/*.md` + `decisions/*.md`, derive kind label + Plane state (mapping table above), diff against `.plane-map.json`, POST-if-absent / PATCH-if-present keyed on the stable Circle directory name (+ file relpath); embed the natural key in the Plane issue for `--rebuild-map`; pace calls under 60/min. `--plan` emits the ordered op list as JSON without executing (test seam). Implement the DR-1 attach as a single swappable function (default: child sub-issue via `parent`; verify the field with one call, else fall back to links via the verified `issues/{id}/links/` endpoint). Reuse MARTIN.md: `sequence_id`/issue lookup pattern, issue-links endpoint.
    - Acceptance: first `push` creates; second `push` (map populated) issues zero POSTs; `--plan` JSON matches fixtures for a Circle with issues + decisions; shared/ artifacts get no parent; attach function is one call site.
-   - Dependencies: Step 2; **decision DR-1** (`260719-2223_o_plane-datamodel-subissue-vs-flat-links.md`) — default (child sub-issue, fall back to links) lets the step proceed; the gate confirms.
+   - Dependencies: Step 2; **decision DR-1** (`260719-2223_*_plane-datamodel-subissue-vs-flat-links.md`) — default (child sub-issue, fall back to links) lets the step proceed; the gate confirms.
 
 4. **C4 offline doctrine — never-silent, outbox, rebuild-from-files** [DONE]
    - Executor: `coder`
@@ -227,7 +227,7 @@ Reuse the `hooks/lib/__tests__/` vitest pattern; no live Plane needed.
    - Files: `skills/seed-from-plane/SKILL.md` (new), `bin/fusion-plane` (add `seed`)
    - Changes: `seed <seq>` resolves `sequence_id`→UUID, GETs title+description (one read), records the origin UUID under the new Circle's natural key; the skill feeds the fetched text into the existing `/fusion:direct`→shaper Circle-creation path (default anticipated `_a_` — DR-2), and prints the manual-paste fallback when the key is absent or Plane is down. Reuse MARTIN.md: `sequence_id` lookup, `/new-fe-feature` read-once-then-materialise shape.
    - Acceptance: given a fixture issue JSON, `seed --plan` extracts the description and records the origin UUID under the new Circle's key; absent-key path prints the paste fallback; after seeding, no further Plane read is issued for that Circle.
-   - Dependencies: Step 2 (key/states), Step 3 (map); **decision DR-2** (`260719-2223_o_seeded-circle-anticipated-vs-active.md`) — default (anticipated) lets the step proceed; the gate confirms.
+   - Dependencies: Step 2 (key/states), Step 3 (map); **decision DR-2** (`260719-2223_*_seeded-circle-anticipated-vs-active.md`) — default (anticipated) lets the step proceed; the gate confirms.
 
 6. **Wire the mirror into the orchestrator Turn loop** [DONE]
    - Executor: `coder`
@@ -317,7 +317,7 @@ Covered in agenda item 8 above: a dry-run `--plan` JSON seam makes the whole rec
 **Decisions DR-1 and DR-2 transitioned `_a_`→`_i_`** (see the two decision records): DR-1 (attach shape) implemented by `982336f` as a single swappable `attach_child` with child sub-issue default + links fallback; DR-2 (seeded-Circle state) implemented by `bd62bf1` routing through `/fusion:direct` to the anticipated `_a_` path.
 
 **Two items deliberately left OPEN — the pre-live-Plane gap, not implementation debt:**
-- Issue `issues/260719-2304_o_verify-plane-create-patch-body-against-live-instance.md` — create/PATCH body field names, `states/` envelope, and the `parent` sub-issue field are unverified against a live instance. The plan scoped acceptance as offline dry-run by design (Testing §, agenda item 8); this is the separate live/install-time check. No live Plane was reachable this session.
-- Decision `decisions/260719-2313_o_round-trip-write-overwrites-origin-story-description.md` — how a seeded issue's push-back treats the human's original description (recommendation: Option 1, state-only writes for seeded issues). User's to settle before the first real round-trip push.
+- Issue `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md` — create/PATCH body field names, `states/` envelope, and the `parent` sub-issue field are unverified against a live instance. The plan scoped acceptance as offline dry-run by design (Testing §, agenda item 8); this is the separate live/install-time check. No live Plane was reachable this session.
+- Decision `260719-2313_*_round-trip-write-overwrites-origin-story-description.md` — how a seeded issue's push-back treats the human's original description (recommendation: Option 1, state-only writes for seeded issues). User's to settle before the first real round-trip push.
 
 No drift found: every claimed change exists and matches the plan. No new issues filed.

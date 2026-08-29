@@ -4,10 +4,10 @@
 **Domain:** code
 **Status:** closed (coherent)
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** shared/planning/260801-1122_*_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · planning/260804-1633_*_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · planning/260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor planning/260802-1856_*_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)
-**Active session history:** history/260805-2117-orchestrator-session.md (latest; 11 orchestrator sessions total under history/)
+**Active spec/plan:** 260801-1122_*_spec-normative-consolidation.md (spec, covers all four Circles of this body of work) · 260804-1633_*_plan-c5b-remediation-and-ship.md (C5b remediation and ship) · 260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md (Ausstiegsplan) · predecessor 260802-1856_*_plan-guard-rules-write.md (steps 1–8 complete, 9/10 superseded)
+**Active session history:** 260805-2117-orchestrator-session.md (latest; 11 orchestrator sessions total under history/)
 
-*Status, plan and history fields corrected retroactively by the reconciler on 260805-2323 — the record had never been updated after activation (issue `issues/260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`, closed by this correction). The Turn log below is likewise reconstructed from the orchestrator session histories rather than appended live.*
+*Status, plan and history fields corrected retroactively by the reconciler on 260805-2323 — the record had never been updated after activation (issue `260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`, closed by this correction). The Turn log below is likewise reconstructed from the orchestrator session histories rather than appended live.*
 
 ---
 
@@ -29,17 +29,17 @@ Two settled decisions are inputs rather than options. D2 asked for both halves: 
 
 **Spec and its prior decisions** (cited where they live, per the Origin Rule, not copied):
 
-- Spec: `shared/planning/260801-1122_*_spec-normative-consolidation.md`. C5a, C5b, the constraints block, and `## Circle structure`.
-- Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`.
-- **D1** — `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`. A writing consolidation agent rather than a report-only detector. The reason a fusion agent needs to touch rule files at all.
-- **D2** — `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`. The direct input to this Circle: both the exemption and the project-level configuration come from it.
-- **D3** — `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. Answered by the spec's D-e and realised in Circle `260801-1244-rule-provenance-header`. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
+- Spec: `260801-1122_*_spec-normative-consolidation.md`. C5a, C5b, the constraints block, and `## Circle structure`.
+- Gap analysis: `260801-1020-normative-surface-drift-gap-analysis.md`.
+- **D1** — `260801-1020_*_where-does-normative-consistency-live.md`. A writing consolidation agent rather than a report-only detector. The reason a fusion agent needs to touch rule files at all.
+- **D2** — `260801-1020_*_may-any-fusion-writer-touch-rules.md`. The direct input to this Circle: both the exemption and the project-level configuration come from it.
+- **D3** — `260801-1020_*_provenance-header-on-rule-files.md`. Answered by the spec's D-e and realised in Circle `260801-1244-rule-provenance-header`. Unrelated to this Circle's work; cited so the three open normative decisions are visible from every record in the set.
 
-Two filed issues sit adjacent and are not part of this Circle: `shared/issues/260801-1020_*_guard-protects-rules-but-not-claude-rules.md` and `archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
+Two filed issues sit adjacent and are not part of this Circle: `260801-1020_*_guard-protects-rules-but-not-claude-rules.md` and `archive/260817-1907-safe-cleanup-scoped/260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`. The second is closed by the Circle this one depends on.
 
 ## Dependencies
 
-**`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`** — must land first. The dependency is not a compile dependency; the flag builds and runs fine on today's guard. It is a correctness-of-claim dependency. `FUSION_ALLOW_RULES_WRITE` sits on the `Edit` path, and while `mv`, `rm`, `sed -i` and shell redirection reach the same file unguarded, the flag controls the polite route to a door standing open. Shipping this Circle first delivers the appearance of a control, which is worse than an acknowledged absence because it stops anyone looking.
+**`archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection`** — must land first. The dependency is not a compile dependency; the flag builds and runs fine on today's guard. It is a correctness-of-claim dependency. `FUSION_ALLOW_RULES_WRITE` sits on the `Edit` path, and while `mv`, `rm`, `sed -i` and shell redirection reach the same file unguarded, the flag controls the polite route to a door standing open. Shipping this Circle first delivers the appearance of a control, which is worse than an acknowledged absence because it stops anyone looking.
 
 Depended on by `260801-1244-curator`, but weakly: the curator is buildable and testable in this repository without the exemption, and needs it only for its rule-file writes to be exercisable in a consuming project.
 
@@ -49,34 +49,34 @@ Depended on by `260801-1244-curator`, but weakly: the curator is buildable and t
 
 | Session | Turns | Commits (range or key) | Outcome |
 |---|---|---|---|
-| `history/260802-1827-orchestrator-session.md` | 1–2 | from `c7f117b`: `768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941` (plan steps 1–5), Turn-2 boundary hardening incl. `aff7486` | Plan A steps 1–5 built; flag live on both surfaces |
-| `history/260803-1038-orchestrator-session.md` | 3 | from `c9bf59e`, incl. `ce7a125`, reconciliation 260803-1516 | Turn-2 review findings worked; Coherence `review-needed`, user stopped, Circle stayed active |
-| `history/260803-1737-orchestrator-session.md` | 4–8 | `6c447eb`..`cc012fc` incl. `86a437a` (case folding), `a79ff1a` (gate-0 `cd -P`) | Max-Turns circuit breaker (5/5); Coherence `review-needed`, Directive judged still reachable |
-| `history/260804-1138-orchestrator-session.md` | — | from `c43a6a2`, incl. `b93dda4` | Decision `260804-0947` answered option 4; shell reachability model spun out as `circles/260804-1205-shell-reachability-model` |
-| `history/260804-1243-orchestrator-session.md` | 9–10 | from `d2962f3`: `4f1007f`, `613d6fd`, `1187bfd` | The two git routes into the protected list closed |
-| `history/260804-1407-orchestrator-session.md` | — | `46d8333`, `557340d`, `7f3d789` (plan A steps 6–8); `53b3765` (assessment: do not ship); `eae2cb7`, `70e769e` (C5b remediation plan); `f82ac02`, `64e0837`, `9c01f34`, `98c9363`, `ac20f7d`, `f0c3d65`, `49a1c48` (remediation steps 1–5) | C5b built, independently assessed, remediated |
-| `history/260805-0638-orchestrator-session.md` | — | `658653a` (emission golden), `b67a386`, `c920463`, `96ad1db`, `0fead5e` (Ausstiegsplan steps 2–4a), `f41c1f6`+`2eaee31` (role-cap gate + release v5.9.0), `199ef22` (dist), `ec0561a` (v5.9.1), `1babb48`, `3163281`, `a1002cc` (Gesamtreview, 66 findings), `b5a9039` (Textschicht Circle filed) | Context-tax cut shipped as v5.9.0/v5.9.1; plugin-wide review filed |
-| `history/260805-2035-orchestrator-session.md` | — | `8586ba3` | Monitor LAN bind fix |
-| `history/260805-2117-orchestrator-session.md` | 1–2 (close-out) | `4a8fea0` + tag `v5.9.2` (release); `21a72b7` (C5b plan step 6, template), `373f5ed` (step 7 remainder + release-checklist line), `b9b350f`, `def351e` (issue closures) | v5.9.2 released; C5b plan steps 6+7 landed; Circle reconciled for closure |
+| `260802-1827-orchestrator-session.md` | 1–2 | from `c7f117b`: `768242c`, `6b3aa5c`, `0f341e0`, `45f53d4`, `bf75941` (plan steps 1–5), Turn-2 boundary hardening incl. `aff7486` | Plan A steps 1–5 built; flag live on both surfaces |
+| `260803-1038-orchestrator-session.md` | 3 | from `c9bf59e`, incl. `ce7a125`, reconciliation 260803-1516 | Turn-2 review findings worked; Coherence `review-needed`, user stopped, Circle stayed active |
+| `260803-1737-orchestrator-session.md` | 4–8 | `6c447eb`..`cc012fc` incl. `86a437a` (case folding), `a79ff1a` (gate-0 `cd -P`) | Max-Turns circuit breaker (5/5); Coherence `review-needed`, Directive judged still reachable |
+| `260804-1138-orchestrator-session.md` | — | from `c43a6a2`, incl. `b93dda4` | Decision `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` answered option 4; shell reachability model spun out as `260804-1205-shell-reachability-model` |
+| `260804-1243-orchestrator-session.md` | 9–10 | from `d2962f3`: `4f1007f`, `613d6fd`, `1187bfd` | The two git routes into the protected list closed |
+| `260804-1407-orchestrator-session.md` | — | `46d8333`, `557340d`, `7f3d789` (plan A steps 6–8); `53b3765` (assessment: do not ship); `eae2cb7`, `70e769e` (C5b remediation plan); `f82ac02`, `64e0837`, `9c01f34`, `98c9363`, `ac20f7d`, `f0c3d65`, `49a1c48` (remediation steps 1–5) | C5b built, independently assessed, remediated |
+| `260805-0638-orchestrator-session.md` | — | `658653a` (emission golden), `b67a386`, `c920463`, `96ad1db`, `0fead5e` (Ausstiegsplan steps 2–4a), `f41c1f6`+`2eaee31` (role-cap gate + release v5.9.0), `199ef22` (dist), `ec0561a` (v5.9.1), `1babb48`, `3163281`, `a1002cc` (Gesamtreview, 66 findings), `b5a9039` (Textschicht Circle filed) | Context-tax cut shipped as v5.9.0/v5.9.1; plugin-wide review filed |
+| `260805-2035-orchestrator-session.md` | — | `8586ba3` | Monitor LAN bind fix |
+| `260805-2117-orchestrator-session.md` | 1–2 (close-out) | `4a8fea0` + tag `v5.9.2` (release); `21a72b7` (C5b plan step 6, template), `373f5ed` (step 7 remainder + release-checklist line), `b9b350f`, `def351e` (issue closures) | v5.9.2 released; C5b plan steps 6+7 landed; Circle reconciled for closure |
 
 ## Activation proposal
 
-**Recommended as the next Circle — playmaker run 260802-1736 (trigger: direct-dispatch, domain
+**Recommended as the next Circle — playmaker run 260802-1736-playmaker-direct-dispatch.md (trigger: direct-dispatch, domain
 bias `code`), and this is a change from the previous three runs, which ranked this Circle second.**
 
 The Circle ranked ahead of it, `260801-1244-rule-provenance-header`, closed coherent at commit
 `060859b`, so the field is now two anticipated Circles rather than three. Both pass the
 code-domain criteria without argument. This Circle's one dependency,
-`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`, carries the closed marker. The rival's hard dependency also
+`archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection`, carries the closed marker. The rival's hard dependency also
 closed this run, and neither Circle's `## Grounding snapshot` cites an open decision record: the
 shared decision store holds no open record at all, and the three this Circle cites are two
-answered (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`,
-`shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md`) and one now implemented
-(`shared/decisions/260801-1020_i_provenance-header-on-rule-files.md`, which moved from answered
+answered (`260801-1020_*_where-does-normative-consistency-live.md`,
+`260801-1020_*_may-any-fusion-writer-touch-rules.md`) and one now implemented
+(`260801-1020_*_provenance-header-on-rule-files.md`, which moved from answered
 to implemented at the closure). Zero open decisions and zero unmet dependencies on both sides, so
 the ranking turns on unblock value, and there the position reversed.
 
-**Why this now outranks the curator.** Closing `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md` sealed the
+**Why this now outranks the curator.** Closing `archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection` sealed the
 shell route into `rules/`, which was the last unguarded way in. `hooks/config.json` lists
 `rules/**` under `guard.protectedPaths`, and the guard now checks that list on file-mutating
 shell commands as well as on the four write tools. In a consuming project there is therefore no
@@ -93,11 +93,11 @@ rule-file half at all.
 the curator activates with no unmet dependency of either kind, and the remaining work is a single
 sequence rather than a choice.
 
-**Suggested activation timestamp:** 260802-1736 (or whenever the user activates).
+**Suggested activation timestamp:** 260802-1736-playmaker-direct-dispatch.md (or whenever the user activates).
 
 **Activation notes, which do not change the ranking.** Two sizing cautions carry forward and are
 now better evidenced than when they were first written. This Circle touches the same guard code as
-the Circle that overran (`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`: sixteen commits and three Turns
+the Circle that overran (`archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection`: sixteen commits and three Turns
 against eight planned steps), and its own acceptance criteria cannot be verified here, because the
 write guard stands down in the plugin's own tree (`hooks/lib/self-detect.ts:18-33`). The Circle
 that closed this run was forecast as the small, bounded, in-repo-verifiable case and still ran
@@ -115,19 +115,19 @@ orchestrator activates. Proposal, not commitment.*
 
 ## Closure note
 
-Closed coherent (`_t_` → `_c_`) on 260805-2359. Phase-3 verdict: **coherent** — the reconciler's
+Closed coherent (`_t_` → `_c_`) on 260805-2359-conceptrev-plan-textschicht-gegen-code.md. Phase-3 verdict: **coherent** — the reconciler's
 review-needed flag (stale emission golden after the Step-7 documentation commit) was resolved via
 Rebalance/Revise-Artifact in Turn 3 (commit `24186a4`); with it, all three Coherence edges are
 clean. All twelve spec acceptance criteria verified with per-criterion test citations
-(`shared/planning/260801-1122_*_spec-normative-consolidation.md:309-332`), suite 1551/1551 green
+(`260801-1122_*_spec-normative-consolidation.md:309-332`), suite 1551/1551 green
 against source and against the shipped `dist` artifact. All three plans closed; shipped as
 v5.9.0–v5.9.2 (tags pushed).
 
-Session history: `history/260805-2117-orchestrator-session.md` (Turns 1–3, commits
+Session history: `260805-2117-orchestrator-session.md` (Turns 1–3, commits
 `21a72b7`, `373f5ed`, `b9b350f`, `def351e`, `24186a4`, `89f2c58`).
-Reconciliation: `history/260805-2334-reconciliation.md`.
+Reconciliation: `260805-2334-reconciliation.md`.
 Open issues remaining in this Circle at closure: 79, all claimed by other Circles' scope
 (64 Textschicht, 8 shell-reachability, 2 plane/framework, 1 priced deferral) plus the
-user-side unite-cocreator emission measurement (`issues/260805-2323_*_die-emissionsmessung…`).
+user-side unite-cocreator emission measurement (`260805-2323_*_die-emissionsmessung…`).
 
-*Reconciliation 260806-1152 (reconciler, workbench-wide pass): the closure note's count of 79 open issues was right, but its breakdown enumerates only 76 — it omitted `issues/260804-2100_*` (a ninth shell-classifier record) and `issues/260805-1150_*` (README pin, then still open) and counted the corpus one low. Current state at HEAD `cde5319`: **18 open** in this Circle — 6 routed corpus findings (3× `260805-1830_*`, 2× `260805-1839_*`, `260805-1859_*_das-guard-event-log…`), 9 shell-classifier records routed to `circles/260804-1205-shell-reachability-model` (8× `260804-*` plus `260804-2100_*`), the unowned advisory-clamp deferral `260803-1352_*`, the framework observation `260805-1548_*_beim-filen…`, and the user-side unite measurement `260805-2323_*`. Closed since the Circle closed: 60 corpus findings (Textschicht Circle), plus `260805-1150_*` and `260805-1548_*_der-plane-testfixture…` (this pass, fixes verified at HEAD).*
+*Reconciliation 260806-1152 (reconciler, workbench-wide pass): the closure note's count of 79 open issues was right, but its breakdown enumerates only 76 — it omitted `issues/260804-2100_*` (a ninth shell-classifier record) and `issues/260805-1150_*` (README pin, then still open) and counted the corpus one low. Current state at HEAD `cde5319`: **18 open** in this Circle — 6 routed corpus findings (3× `260805-1830_*`, 2× `260805-1839_*`, `260805-1859_*_das-guard-event-log…`), 9 shell-classifier records routed to `260804-1205-shell-reachability-model` (8× `260804-*` plus `260804-2100_*`), the unowned advisory-clamp deferral `260803-1352_*`, the framework observation `260805-1548_*_beim-filen…`, and the user-side unite measurement `260805-2323_*`. Closed since the Circle closed: 60 corpus findings (Textschicht Circle), plus `260805-1150_*_readme-nennt-als-pin-beispiel-eine-version-die-nie-getaggt-wurde.md_*` and `260805-1548_*_der-plane-testfixture…` (this pass, fixes verified at HEAD).*

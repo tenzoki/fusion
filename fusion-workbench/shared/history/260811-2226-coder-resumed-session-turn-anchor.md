@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 260811-2230
 **Agent:** coder
-**Records:** `shared/issues/260811-2143_c_…` (High), `shared/issues/260811-2144_c_…`
+**Records:** `260811-2143_*_…` (High), `260811-2144_*_…`
 **Verification:** `cd hooks && npm test` — 52 files, 1347 tests, exit 0
 
 ## What was wrong
@@ -42,7 +42,7 @@ session inherits** — same session, same `history_file` / `git_head_at_start` /
 `progress.turn`, no second `turn_start` for the Turn being re-entered, and step 3's drift
 check (the one the *user* sees, in the resume summary) is that Turn's boundary read.
 Phase 2 step 2 now says "every Turn **this session starts**" and points there. Shape 1 of
-`260811-2144` — emit a second `turn_start` — was rejected because it would count that Turn
+`260811-2144_*_a-resumed-session-re-enters-an-in-flight-turn-without-a-turn-start-so-the-boundary-drift-check-that-rides-it-never-fires.md` — emit a second `turn_start` — was rejected because it would count that Turn
 twice under the new anchor: the two halves have to agree, and this is the shape in which
 they do.
 

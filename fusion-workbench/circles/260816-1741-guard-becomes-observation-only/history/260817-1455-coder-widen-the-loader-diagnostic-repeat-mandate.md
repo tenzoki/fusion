@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-08-17
 **Circle:** 260816-1741-guard-becomes-observation-only
-**Task:** fix issue `260816-2318` against shipped v10.0.0 (goes out as v10.0.1)
+**Task:** fix issue `260816-2318_*_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md` against shipped v10.0.0 (goes out as v10.0.1)
 
 ## What changed
 

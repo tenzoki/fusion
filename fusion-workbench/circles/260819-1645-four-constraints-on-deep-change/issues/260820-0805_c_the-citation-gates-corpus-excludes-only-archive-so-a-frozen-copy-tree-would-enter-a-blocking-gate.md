@@ -38,7 +38,7 @@ failure mode the gate has no honest remedy for.
 **Affects:** `hooks/lib/__tests__/workbench-citation-lint.test.ts:81-100` (the four predicates and
 the single `ARCHIVE_PREFIX` exclusion)
 **Cross-references:** `skills/log-activity/SKILL.md:89` (the four-directory exclusion and its
-reason); `shared/issues/260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`
+reason); `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`
 (the same directory, missing from a different mechanism's list — evidence that the omission is a
 class rather than an accident)
 
@@ -56,7 +56,7 @@ would be the narrower change but the wrong one: the anchors would have to enumer
 home.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
 reproduces; latent rather than live, and this pass measured which.** `markdownFilesUnder`
 (`hooks/lib/__tests__/helpers/citation-scan.ts:752-761`) is a plain recursive walk with no exclusion
 of dot-directories, and `corpusFiles()` in the gate excludes `archive/` alone. `OPEN_ISSUE_RE` and

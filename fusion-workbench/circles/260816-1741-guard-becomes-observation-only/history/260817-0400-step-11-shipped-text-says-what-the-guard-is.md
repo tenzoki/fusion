@@ -3,18 +3,18 @@
 **Agent:** coder
 **Date:** 2026-08-17
 **Circle:** 260816-1741-guard-becomes-observation-only
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 11
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 11
 **Status:** Complete
 
 ## What was asked
 
 Bring every shipped text surface into line with a guard that decides nothing,
 working from step 11's own nine-file list plus six defect records that amend it:
-`260816-2124` (`bin/fusion-turn-budget`'s header), `260816-2125`
-(`hooks/lib/guard-state-file.ts`), `260816-2126` (`docs/upgrading-to-v9.md` and
-`docs/working-model.md:162`), `260816-2127` (`skills/setup/SKILL.md`'s attribution
-of the legacy flag), `260816-2315` (`hooks-wiring.test.ts`'s Bash justification)
-and `260816-2321` (two lines the step's line-scoped text left inside files it
+`260816-2124_*_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md` (`bin/fusion-turn-budget`'s header), `260816-2125_*_guard-state-file-names-the-deleted-escalation-module-as-one-of-its-three-live-callers.md`
+(`hooks/lib/guard-state-file.ts`), `260816-2126_*_the-v9-upgrade-note-tells-a-project-a-halt-still-blocks-and-still-clears-and-no-step-owns-it.md` (`docs/upgrading-to-v9.md` and
+`docs/working-model.md:162`), `260816-2127_*_the-setup-deletion-offer-names-one-of-the-two-mechanisms-that-could-have-raised-the-flag.md` (`skills/setup/SKILL.md`'s attribution
+of the legacy flag), `260816-2315_*_hooks-wiring-test-was-in-step-9s-list-was-not-edited-and-justifies-bash-by-a-mechanism-removed-on-260812.md` (`hooks-wiring.test.ts`'s Bash justification)
+and `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md` (two lines the step's line-scoped text left inside files it
 already opens). `CLAUDE.md` and everything under `rules/` were out of bounds:
 both belong to the curator at step 16.
 
@@ -119,7 +119,7 @@ around the restatement moved with it: "the other five" became four, "one exit
 among six" became five. Setup Step 5's guard check became a statement that there
 is no halted state to snapshot, naming `/fusion:setup` as what offers to delete a
 leftover flag. The Turn-budget paragraph at `:122` was corrected in full per
-`260816-2321`, not at the filename alone.
+`260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`, not at the filename alone.
 
 ### The rest
 
@@ -154,7 +154,7 @@ and `rules/` resolves to a heading that exists.
 ## What this step did not touch
 
 `CLAUDE.md` and `rules/` — step 16's, through `/fusion:curate`, and the Directive
-keeps them there. `260816-2115`'s `rules/` surface is left with its
+keeps them there. `260816-2115_*_the-why-the-message-is-english-argument-names-two-removed-mechanisms-as-its-examples.md`'s `rules/` surface is left with its
 `hooks/session-start.ts` twin, as instructed. `templates/fusion.json` and the
 root `fusion.json` landed in `6890ea2` and were not opened.
 

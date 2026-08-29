@@ -1,4 +1,4 @@
-# Orchestrator Session — 260813-1647
+# Orchestrator Session — 260813-1647-orchestrator-session.md
 
 **Directive:** (not yet stated — session started via /fusion:setup, awaiting user task)
 **Mode:** (not yet resolved)
@@ -35,4 +35,4 @@
 
 ## Session log
 
-- 260813-1647 Setup complete via /fusion:setup. No interrupted session. Awaiting the user's Directive.
+- 260813-1647-orchestrator-session.md Setup complete via /fusion:setup. No interrupted session. Awaiting the user's Directive.

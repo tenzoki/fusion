@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (on the user's answer, as a prerequisite to `260816-0719`)
-**Cross-references:** `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (the decision this unblocked); `install.sh`; `CLAUDE.md` `### HTTPS installer` and `## Release process` step 5
+**Cross-references:** `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md` (the decision this unblocked); `install.sh`; `CLAUDE.md` `### HTTPS installer` and `## Release process` step 5
 
 ---
 
@@ -35,7 +35,7 @@ a script and a policy is not a default.
 None was offered; this was put to the user directly as the prerequisite it is.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: `heads/main` stays the default install path, tags remain an opt-in pin. Consequence: a release-step check over `hooks/dist` is insufficient by construction, which eliminated option 3 of `260816-0719`. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: `heads/main` stays the default install path, tags remain an opt-in pin. Consequence: a release-step check over `hooks/dist` is insufficient by construction, which eliminated option 3 of `260816-0719`. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:
@@ -58,7 +58,7 @@ accept as a statement of policy. No sentence in `README.md`, `CLAUDE.md` or `doc
 
 One thing worth separating. The answer's **consequence** is already consumed and recorded: it
 eliminated option 3 of
-`shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`,
+`260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`,
 whose own `Answered:` line names this record for it. So the decision has done its work as a
 prerequisite; what is unrealised is only the sentence that makes the policy readable by someone who
 was not in the session.

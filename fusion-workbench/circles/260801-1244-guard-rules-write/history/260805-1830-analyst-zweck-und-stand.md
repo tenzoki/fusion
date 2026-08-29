@@ -17,7 +17,7 @@ Untersuchen, wofür fusion da ist, wie es tatsächlich eingesetzt wird (krk, coc
 
 ## Ergebnis
 
-- Analyse: `analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`
+- Analyse: `260805-1830-zweck-nutzung-und-stand-des-plugins.md`
 - Fünf Issues gefilt (siehe Analyse, Abschnitt "Gefilte Issues"): internals-Emission an Konsumenten-coder, 17/0-Guard-Bilanz in krk, staler Circle-Datensatz dieses Circles, Domänenheuristik, Rust in der coder-Beschreibung
 - Kernbefunde: Zweck wird im Einsatz erfüllt (krk: 20 Turns, 48 Tasks, 51 Commits, gelebte Issue-Disziplin); teuerste Extraschleife waren Turns 3–10 (cd-Modell-Härtung), Ursache Kostenmesser-Losigkeit ist durch Golden/Caps/Budget abgestellt; Spec trägt im Kern, D-g und C9 sind überholt; Auslieferung erreicht die Konsumenten erst mit `fusion --update` (Install steht auf 5.8.0)
 

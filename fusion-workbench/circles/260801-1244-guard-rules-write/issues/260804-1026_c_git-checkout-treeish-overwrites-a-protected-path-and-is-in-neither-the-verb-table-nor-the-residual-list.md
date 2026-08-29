@@ -4,11 +4,11 @@
 
 **Severity:** Medium
 **Domain:** code (security control)
-**Filed by:** reconciler, closing pass of session `history/260803-1737-orchestrator-session.md`
+**Filed by:** reconciler, closing pass of session `260803-1737-orchestrator-session.md`
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (`MUTATION_GIT_SUBCOMMANDS`); `rules/protected-path-discipline.md:429`; `README-hooks.md`
 **Kind:** PRE-EXISTING, older than this Circle.
 **Cross-references:**
-`260804-1024_o_…` (`git -C`, the sibling gap in the same verb's handling, found in the same pass),
+`260804-1024_*_…` (`git -C`, the sibling gap in the same verb's handling, found in the same pass),
 `rules/protected-path-discipline.md:77-81` (the git allow/deny table, which is accurate for every row it lists),
 `rules/protected-path-discipline.md:429` (the line that names the allowed form).
 
@@ -78,7 +78,7 @@ Direction 1 is the one that matches what `:429` says it wants, and it is the one
 
 ## Origin
 
-Found by the reconciler's documentation audit during the closing pass of session `history/260803-1737-orchestrator-session.md`, while verifying that each row of the document's "what stays allowed" section is true as a general claim and not only for the spelling it prints.
+Found by the reconciler's documentation audit during the closing pass of session `260803-1737-orchestrator-session.md`, while verifying that each row of the document's "what stays allowed" section is true as a general claim and not only for the spelling it prints.
 
 ---
 
@@ -90,4 +90,4 @@ Two costs, both stated as rules with open example sets in `rules/protected-path-
 
 **The branch classifier did not move.** `git-branch-guard.ts` and `shell-parse.ts` are untouched and the gold fixture reproduces byte for byte. `git checkout main`, `git checkout -b feature`, `git checkout --detach HEAD~3` and `git checkout -t origin/feature` are pinned as allows in the MUTATION suite, so if the two policies ever start reporting each other's permission a test says so — the pattern this issue's `## Test coverage` asked for.
 
-Full reasoning and the measurements: `decisions/260804-1323_i_…`, `## The second question`.
+Full reasoning and the measurements: `260804-1323_*_…`, `## The second question`.

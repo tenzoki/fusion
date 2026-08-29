@@ -12,7 +12,7 @@ Every sub-agent files its history into the active Circle, because the resolver c
 
 ## Measured
 
-Three sub-agents in succession, all while Circle `circles/260823-0023-settle-what-travels-between-checkouts/` was active, filed their session histories into that Circle's `history/` store. None of the three pieces of work arose from its Directive, which is about what travels between checkouts:
+Three sub-agents in succession, all while Circle `260823-0023-settle-what-travels-between-checkouts` was active, filed their session histories into that Circle's `history/` store. None of the three pieces of work arose from its Directive, which is about what travels between checkouts:
 
 - a `coder` making `skills/next/SKILL.md` Step 6.5 imperative, which repairs an activation defect
 - a `coder` writing the v10.6 release text
@@ -43,4 +43,4 @@ Not costed here, and the third is the cheapest and the weakest.
 The three differ in whether the question reaches the agent that writes or the party that reviews. Today it reaches neither by design, only by habit.
 
 ---
-Resolved: referred (decision) — whether a sub-agent's history follows the task's origin, and who states that origin, is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md
+Resolved: referred (decision) — whether a sub-agent's history follows the task's origin, and who states that origin, is the decision's question; 260824-2013_*_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md

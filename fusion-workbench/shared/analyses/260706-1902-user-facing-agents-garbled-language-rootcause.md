@@ -84,8 +84,8 @@ One boundary the reclassification must settle, filed as a decision (see below): 
 
 ## Filed artifacts
 
-- Issue: `fusion-workbench/issues/260706-1902[o]-consultant-chat-misrouted-to-longform-voice.md`
-- Decision: `fusion-workbench/decisions/260706-1902[o]-consultant-chat-longform-boundary.md`
+- Issue: `260706-1902[o]-consultant-chat-misrouted-to-longform-voice.md`
+- Decision: `260706-1902[o]-consultant-chat-longform-boundary.md`
 
 ## Sources
 

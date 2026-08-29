@@ -14,7 +14,7 @@ list:
 ```
 
 The quoting is right — `<<'FUSION_MSG_EOF'` with a quoted delimiter is exactly what stops `$var`
-expansion and backtick execution in the body, which is the defect `260810-1535` records. The
+expansion and backtick execution in the body, which is the defect `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md` records. The
 placement is not. A here-document introduced with `<<` (not `<<-`) requires its terminator at column
 0; `<<-` strips leading **tabs** only, never spaces, so there is no drop-in fix at the operator.
 And even where the terminator is dedented, three leading spaces on the body line become three
@@ -44,11 +44,11 @@ commit `<type>(<scope>):` prefix no longer sits at the start of the line.
 fence is top-level), and add one sentence: *the closing delimiter must be the whole line, at column
 0, with nothing before it.* Same for the body lines.
 
-**Cross-references.** `shared/issues/260810-1535_c_the-orchestrators-commit-procedure-truncates-any-
+**Cross-references.** `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-
 message-containing-an-apostrophe.md`; `agents/orchestrator.md:405` (the orchestrator's route, which
 avoids this entirely by using `Write`).
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 

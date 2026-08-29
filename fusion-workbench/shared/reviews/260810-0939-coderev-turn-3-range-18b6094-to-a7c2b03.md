@@ -12,7 +12,7 @@ reviewed; the concurrent edits in `agents/orchestrator.md`, `skills/next/SKILL.m
 Full `npm test` is **1 file red** — `lib/__tests__/circle-stash-git-exclusion.test.ts`,
 4 failures. Out of scope and in a file a concurrent task is editing; not filed, not
 diagnosed.
-**Prior review:** `shared/reviews/260810-0752-coderev-turn-2-range-ff70d3a-to-head.md`
+**Prior review:** `260810-0752-coderev-turn-2-range-ff70d3a-to-head.md`
 
 ---
 
@@ -48,8 +48,8 @@ two drift shapes that leave the script shipping 60 extensions still let the test
 
 All four in `shared/issues/` with `_o_` markers, timestamp `260810-0939`. Checked against
 the open records first; none duplicates one, and the two the dispatch named as already
-filed (`260810-0918_o_the-suite-total-moves-between-runs…`,
-`260810-0918_o_push-fixture-without-rebuild-map-never-reads-the-fixture…`) are not
+filed (`260810-0918_*_the-suite-total-moves-between-runs…`,
+`260810-0918_*_push-fixture-without-rebuild-map-never-reads-the-fixture…`) are not
 re-filed.
 
 ---
@@ -79,7 +79,7 @@ re-filed.
    and no `--rebuild-map`, `$rebuild` stays `0` and the refusal does not fire. Correct.
    Note that nothing *pins* it: no test asserts the non-refusal of that spelling. I did
    not file that as a coverage gap, because the behaviour it would pin is the subject of
-   the already-filed `260810-0918_o_push-fixture-without-rebuild-map-never-reads-the-
+   the already-filed `260810-0918_*_push-fixture-without-rebuild-map-never-reads-the-
    fixture-and-says-nothing.md`, and whichever way that issue is resolved will decide
    what the assertion should say.
 
@@ -141,7 +141,7 @@ mutate Plane. The doc paragraph sits under **"0. Dry run first — zero risk, no
 over the wire"**, before step 1 creates the disposable Circle. The `&&` in the snippet
 also swallows the `plan` step on the ordinary deferral (exit 10, no key or unreachable
 host). Filed:
-`shared/issues/260810-0939_o_the-rebuild-map-refusal-tells-the-operator-to-run-a-live-push-to-obtain-a-dry-run.md`
+`260810-0939_*_the-rebuild-map-refusal-tells-the-operator-to-run-a-live-push-to-obtain-a-dry-run.md`
 
 **M2 — the "declared but not parsed" guard is anchored like the regex it guards.**
 `hooks/lib/__tests__/fusion-count-sources.test.ts:80`. `startsWith(`${varName}=`)` is the
@@ -149,7 +149,7 @@ same left-anchor as `^${varName}="…"$`, so a declaration the regex cannot see 
 the filter either. Measured against the real script: indenting one `CODE_EXT=` line, or
 rewriting it to `CODE_EXT+=`, leaves bash computing the identical 60-extension value
 while `extensions()` returns 52 and throws nothing. Both are valid bash. Filed:
-`shared/issues/260810-0939_o_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md`
+`260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md`
 
 ### Low
 
@@ -160,7 +160,7 @@ both become `null`, and `[null] − [null]` is empty. Not reachable from live Pl
 map entry it writes is already a no-op (`map_get_id`'s `// empty`). What is lost is the
 last diagnostic. One `select` at extraction closes it and keeps `plane_id: null` out of
 the rebuilt map. Filed:
-`shared/issues/260810-0939_o_the-winner-subtraction-silences-a-real-collision-when-neither-entry-carries-an-id.md`
+`260810-0939_*_the-winner-subtraction-silences-a-real-collision-when-neither-entry-carries-an-id.md`
 
 **L2 — the fixture-seam header is a fifth surface the commit did not reach.**
 `bin/fusion-plane:143-146` documents the rebuild fixture as "same seam shape as
@@ -170,7 +170,7 @@ The suite records the asymmetry — the new test can only assert `.not.toBe(EXIT
 Also `:142` and `:2101` ("forces `--plan` for any push / seed") now force a usage error
 instead when `--rebuild-map` is present, on lines adjacent to the fixture env var in
 `usage()`. Filed:
-`shared/issues/260810-0939_o_the-fixture-seam-header-is-a-fifth-surface-and-still-names-the-spelling-the-refusal-rejects.md`
+`260810-0939_*_the-fixture-seam-header-is-a-fifth-surface-and-still-names-the-spelling-the-refusal-rejects.md`
 
 ---
 
@@ -184,7 +184,7 @@ inherits the blind spot rather than covering it. `38fe341`'s own commit message 
 the antidote and does not apply it: it distinguishes "matching nothing" from "matching
 some" for the *floors*, then anchors the replacement the same way as the regex. Worth
 noting against the open decision
-`260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
 
 **Refusing a contradiction is not the same as resolving it.** `4bf509e` correctly declines
 to pick a side between "replace the map" and "write nothing", and the decidability

@@ -14,7 +14,7 @@ that the contract section, read alone, appears to scope its own rule to two of t
 just enumerated.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`
+`260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`
 (R-14, the two sentences either side of this one, closed by `6deeb33`).
 
 ## What is there

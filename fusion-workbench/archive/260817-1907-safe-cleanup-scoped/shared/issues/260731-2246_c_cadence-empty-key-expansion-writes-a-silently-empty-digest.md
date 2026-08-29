@@ -88,7 +88,7 @@ it bites depends on the running agent substituting, which it evidently does ofte
 that the seven sibling skills work. This is a robustness gap, not a reproduced failure.
 
 ---
-Reconciliation 260731-2324 (reconciler, domain `code`) — **confirmed, stays `_o_`.** Independently re-verified against `skills/cadence/SKILL.md` as it stands at `17730b8`: all three cited sites are present and read as described — `:88` (`for d in $SCAN_HISTORY; do find "$WORKBENCH/$d" …`), `:91` (`"$WORKBENCH/activity-log-$USER.md"`), `:147` (`mkdir -p "$WORKBENCH/$OUT_MEMO"`). Step 2 carries the "Use the printed values literally" instruction at `:70`; step 3 carries no equivalent, exactly as the issue states. The house-pattern claim also holds — the seven cited sibling sites exist.
+Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **confirmed, stays `_o_`.** Independently re-verified against `skills/cadence/SKILL.md` as it stands at `17730b8`: all three cited sites are present and read as described — `:88` (`for d in $SCAN_HISTORY; do find "$WORKBENCH/$d" …`), `:91` (`"$WORKBENCH/activity-log-$USER.md"`), `:147` (`mkdir -p "$WORKBENCH/$OUT_MEMO"`). Step 2 carries the "Use the printed values literally" instruction at `:70`; step 3 carries no equivalent, exactly as the issue states. The house-pattern claim also holds — the seven cited sibling sites exist.
 
 Not fixed by anything in the v5.7.0 release; the release shipped the skill as reviewed. Nothing downstream depends on this being open. Placement and marker correct: filed to `shared/issues/` with no Circle active, which the Origin Rule and invariant 1 both give.
 
@@ -101,4 +101,4 @@ Resolved: in two halves, deliberately, because the defect had two.
 
 Cost stated rather than hidden: 670 bytes added to the rule set every agent loads on every dispatch. A first draft cost 896 and was trimmed.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (tasks T10 and T10b). Executor logs: `shared/history/260810-0330-coder-cadence-empty-key.md`, `shared/history/260810-0340-coder-conventions-empty-key-rule.md`.
+Session: `260810-0241-orchestrator-session.md` (tasks T10 and T10b). Executor logs: `260810-0330-coder-cadence-empty-key.md`, `260810-0340-coder-conventions-empty-key-rule.md`.

@@ -4,7 +4,7 @@
 **Domain:** knowledge
 **Status:** answered
 **Filed by:** consultant, from a report by the consuming project `unite-co-creator`, session 260806-1242
-**Cross-references:** `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the measured defect; marker wildcarded by the reconciler at 260807-1941, because the same session moved it `_o_` → `_c_` and the exact-marker form no longer resolved); `rules/fusion-workbench-conventions.md` `## Filename Patterns` (lines 185-208) and `## Timestamps` (lines 172-174); `bin/fusion-commit-lock` (the precedent)
+**Cross-references:** `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the measured defect; marker wildcarded by the reconciler at 260807-1941, because the same session moved it `_o_` → `_c_` and the exact-marker form no longer resolved); `rules/fusion-workbench-conventions.md` `## Filename Patterns` (lines 185-208) and `## Timestamps` (lines 172-174); `bin/fusion-commit-lock` (the precedent)
 
 ---
 
@@ -146,10 +146,10 @@ moves to `_i_` when the rule text lands.
 
 The cross-reference above was repaired in this pass: it named the defect by its pre-transition
 `_o_` marker, which the same session invalidated. Rewritten to the ratified wildcard form
-(`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`).
+(`260806-0015_*_zitierform-fuer-workbench-records.md`).
 
 ---
-Answered: shared/history/260807-1917-orchestrator-session.md `## Decisions answered` — premise falsified by measurement; the pattern stands and the answer is a citation rule.
+Answered: 260807-1917-orchestrator-session.md `## Decisions answered` — premise falsified by measurement; the pattern stands and the answer is a citation rule.
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
@@ -162,10 +162,10 @@ Superseded by: <set when status moves to _s_>
 section still carries the artifact-kind table, the `<sender>` rule and the `$OUT_MEMO`
 write-semantics note, and **no citation rule**. The condition this record set for itself — "moves
 to `_i_` when the rule text lands" — is unmet. It was explicitly scoped out of the language-split
-Directive (`archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` `## Out of Scope`) and
-remains open work from session 260807-1917.
+Directive (`archive/260817-1907-safe-cleanup-scoped/260807-2024_*_two-language-declarations.md` `## Out of Scope`) and
+remains open work from session 260807-1917-orchestrator-session.md.
 
-**This record's own cross-reference is now stale, and session 260807-2020 is what staled it.** The
+**This record's own cross-reference is now stale, and session 260807-2020-orchestrator-session.md is what staled it.** The
 header at line 7 cites `## Filename Patterns` at **lines 185-208**; the section now begins at
 **line 221** and runs to **245**. Step S1 of the language-split plan grew `## Project language` by
 roughly 36 lines, and every section below it moved. The `## Timestamps` citation in the same line
@@ -173,7 +173,7 @@ roughly 36 lines, and every section below it moved. The `## Timestamps` citation
 
 Not rewritten here, because the general case is the point rather than this one number: nothing in
 the suite reads a line citation. Filed as
-`shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
 which names this record as its first measured instance.
 
 ---
@@ -211,6 +211,6 @@ Three checks, each run against the tree rather than inferred from a commit subje
 2. **It reads as normative rather than as practice**, which is the precise gap the 260819-1400 reconciliation recorded when it wrote that the rule was followed throughout the corpus and "written down nowhere it can be read as normative". It sits in an always-on rule file every agent loads, it is in the imperative, and it states the negative case as well as the positive one.
 3. **Nothing this record forbade was done.** `git diff e209011..HEAD -- rules/fusion-workbench-conventions.md`, over the whole Circle range, is additions with a single exception, the `**Filed by:**` template line gaining a person half. The artifact-kind table is unchanged. No second resolution appeared, no ordinal suffix, no `bin/fusion-newname`, and no existing file was renamed for its name. One helper was added in the same Circle, `bin/fusion-identity`, and it mints a checkout identifier rather than a filename.
 
-**The measurement this record's answer rests on was re-taken and reproduces where it matters.** The corpus has grown from 579 record files to 876, and the count of stamps carried by more than one file rose from 84 to 111 of 545 distinct stamps. The row that decides this record is unchanged at zero: no two records share a full basename once the marker is normalised. That re-measurement, and the answer that authorised the rule text, are in `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`.
+**The measurement this record's answer rests on was re-taken and reproduces where it matters.** The corpus has grown from 579 record files to 876, and the count of stamps carried by more than one file rose from 84 to 111 of 545 distinct stamps. The row that decides this record is unchanged at zero: no two records share a full basename once the marker is normalised. That re-measurement, and the answer that authorised the rule text, are in `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`.
 
-**One thing left exactly as it stands.** The header of this record still cites `## Filename Patterns` at lines 185-208, and the section has moved twice since. It is the first measured instance of `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`, and repairing it here would remove the evidence that issue rests on.
+**One thing left exactly as it stands.** The header of this record still cites `## Filename Patterns` at lines 185-208, and the section has moved twice since. It is the first measured instance of `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`, and repairing it here would remove the evidence that issue rests on.

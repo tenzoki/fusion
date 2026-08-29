@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-08-19
 **Agent:** coder
-**Task:** Step 5 of `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md` — rewrite the marker position of every `stale-marker` citation in the repair corpus to the wildcard `_*_`.
+**Task:** Step 5 of `260819-2016_*_four-constraints-on-deep-change.md` — rewrite the marker position of every `stale-marker` citation in the repair corpus to the wildcard `_*_`.
 **HEAD at start:** `b6869aa`
 
 ## Corpus
@@ -15,7 +15,7 @@ excluding `archive/`. That selected **190 files** and 1 761 citation tokens.
 
 The plan measured 189 files and 242 dangling tokens at 260819-2016. The corpus has since gained one
 decision record and the stale-marker class has gained two hits, with nobody touching a citation —
-the drift the plan and decision `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+the drift the plan and decision `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 both predict.
 
 ## Before and after
@@ -39,14 +39,14 @@ file, where the letter ages and must be starred, from a **statement about a mark
 letter is the content and starring it deletes the statement. Nineteen hits are the second kind and
 were left, each named here:
 
-- `circles/260801-1244-curator/issues/260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md` (3, lines 19, 25, 26) — the right-hand column of that record's table is a verbatim quotation of the nine citations left literal elsewhere; it is the evidence the record exists to carry. The left-hand column of the same table names the *record edited by the pass* and is a pointer, so those three were starred. The two columns are deliberately spelled differently, and the table header says which is which.
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md` (2, line 65) — "still cites … Both targets are `_c_` at HEAD. Two literal markers, two dangling citations."
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` (3) — line 12 states the rename ("renamed … to `_c_`"); lines 17 and 77 sit inside fenced blocks and are the literal operand of the reproduction `grep`. Starring any of the three breaks what the line is for. The two ordinary pointers in the same record (lines 8 and 47) were starred.
-- `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` (3, lines 25, 26, 72) — the bullet counts occurrences of stale exact markers, and line 72 says outright that the marker moved after the line was written.
-- `shared/issues/260816-0119_*_the-lints-newly-widened-surface-still-stops-at-hooks-lib-tests-where-real-citations-have-gone-stale.md` (3, lines 28, 30, 53) — each quotes a stale citation that lives in a test file, together with the marker the target has now reached.
-- `shared/issues/260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md` (2, lines 17, 18) — each line is a rename written as `_o_ → _c_`.
-- `shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md` (2, line 102) — names two pointer fields whose spelled-out marker is the defect being reported.
-- `shared/issues/260818-0715_*_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md` (1, line 75) — quotes this record's own dead cross-reference and the marker it moved to.
+- `260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md` (3, lines 19, 25, 26) — the right-hand column of that record's table is a verbatim quotation of the nine citations left literal elsewhere; it is the evidence the record exists to carry. The left-hand column of the same table names the *record edited by the pass* and is a pointer, so those three were starred. The two columns are deliberately spelled differently, and the table header says which is which.
+- `260815-1247_*_the-implemented-decision-records-two-cross-references-were-broken-by-the-commit-that-transitioned-it.md` (2, line 65) — "still cites … Both targets are `_c_` at HEAD. Two literal markers, two dangling citations."
+- `260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` (3) — line 12 states the rename ("renamed … to `_c_`"); lines 17 and 77 sit inside fenced blocks and are the literal operand of the reproduction `grep`. Starring any of the three breaks what the line is for. The two ordinary pointers in the same record (lines 8 and 47) were starred.
+- `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` (3, lines 25, 26, 72) — the bullet counts occurrences of stale exact markers, and line 72 says outright that the marker moved after the line was written.
+- `260816-0119_*_the-lints-newly-widened-surface-still-stops-at-hooks-lib-tests-where-real-citations-have-gone-stale.md` (3, lines 28, 30, 53) — each quotes a stale citation that lives in a test file, together with the marker the target has now reached.
+- `260816-0105_*_a-sub-agents-staged-rename-is-absorbed-by-the-orchestrators-next-commit-and-the-staging-list-cannot-prevent-it.md` (2, lines 17, 18) — each line is a rename written as `_o_ → _c_`.
+- `260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md` (2, line 102) — names two pointer fields whose spelled-out marker is the defect being reported.
+- `260818-0715_*_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md` (1, line 75) — quotes this record's own dead cross-reference and the marker it moved to.
 
 One consequence is stated rather than hidden: in the last record the dead cross-reference itself
 (line 62) **was** starred, because it is an ordinary pointer. The self-observation at line 75 that

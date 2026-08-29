@@ -1,4 +1,4 @@
-# Orchestrator Session — 260719-1624
+# Orchestrator Session — 260719-1624-orchestrator-session.md
 
 **Directive:** (not yet given — Setup only; awaiting user's task)
 **Mode:** (unresolved — Phase 0 pending)

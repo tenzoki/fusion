@@ -7,7 +7,7 @@ Case folding bypasses the entire protected list on a case-insensitive filesystem
 **Filed by:** orchestrator, from a residual the Turn 2 coder measured and could not close in scope
 **Cross-references:** `hooks/guard.ts` CHECK 2, `hooks/lib/paths.ts` (`collapseSegments`,
 `matchesAny`), `hooks/lib/bash-mutation-guard.ts`,
-`circles/260801-1244-guard-rules-write/issues/260802-2230_p_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md`
+`260802-2230_*_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md`
 (the same class, textual side, closed by `49bb4da`), `rules/protected-path-discipline.md`,
 `README-hooks.md`
 
@@ -72,7 +72,7 @@ block any claim that `protectedPaths` is enforced, which `rules/protected-path-d
 already qualifies for unrecognised programs and does not qualify for this.
 
 ---
-Direction decided, not yet implemented: `circles/260801-1244-guard-rules-write/decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md` — the user chose unconditional case folding (option 2 of this issue's candidate list) at the Turn 3 closing gate, 2026-08-03. The issue stays open because the bypass is still live: the decision records the direction, and the code change plus the correction of the three documents that state the "purely textual" premise belong to a later Circle.
+Direction decided, not yet implemented: `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` — the user chose unconditional case folding (option 2 of this issue's candidate list) at the Turn 3 closing gate, 2026-08-03. The issue stays open because the bypass is still live: the decision records the direction, and the code change plus the correction of the three documents that state the "purely textual" premise belong to a later Circle.
 
 ---
 
@@ -80,7 +80,7 @@ Direction decided, not yet implemented: `circles/260801-1244-guard-rules-write/d
 
 Verified in code rather than inferred from the decision: `hooks/lib/paths.ts:37-38` (`matchesAny`) and `:77-79` (`collapseSegments`) contain no case handling of any kind, and `hooks/guard.ts` CHECK 2 (`:712`) matches against that pair. Neither write surface folds case. The measurement in `## What was measured` therefore still reproduces.
 
-**The decision and this issue point at each other, checked both ways.** This issue's `Direction decided` footer names `decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md`, which exists. That record's `**Cross-references:**` names this issue back, by its full current path including the `_o_` marker, which is correct while the marker stands. The record's `## Answer` chooses option 2 of this issue's candidate list, and its `## Realisation` says "Not implemented. The change belongs to a later Circle." Nothing in the pair claims the code has moved.
+**The decision and this issue point at each other, checked both ways.** This issue's `Direction decided` footer names `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`, which exists. That record's `**Cross-references:**` names this issue back, by its full current path including the `_o_` marker, which is correct while the marker stands. The record's `## Answer` chooses option 2 of this issue's candidate list, and its `## Realisation` says "Not implemented. The change belongs to a later Circle." Nothing in the pair claims the code has moved.
 
 **Why the marker stays `_o_` and not `_c_`.** An issue closes when the defect is gone, not when the direction is chosen. `rules/fusion-workbench-conventions.md` `## Issues vs Decisions` draws exactly this line: the decision record's answer event and its implementation event are distinct, and the defect this file names is the implementation side. Closing it here would leave a live protected-list bypass with no open record anywhere.
 
@@ -88,7 +88,7 @@ Verified in code rather than inferred from the decision: `hooks/lib/paths.ts:37-
 
 ---
 
-## Resolved — reconstructed by reconciliation 260804-1021, because the closing commit left no note
+## Resolved — reconstructed by reconciliation 260804-1021-reconciliation.md, because the closing commit left no note
 
 This issue was renamed `_o_` → `_c_` in `86a437a` with **zero content change** (`git log -M --find-renames=50% 6c447eb..HEAD` reports it as `R100`). The closure is substantively correct, but nothing in the file said so, and the file's own trailing sections still argued the opposite. The evidence is recorded here rather than left to the filename.
 

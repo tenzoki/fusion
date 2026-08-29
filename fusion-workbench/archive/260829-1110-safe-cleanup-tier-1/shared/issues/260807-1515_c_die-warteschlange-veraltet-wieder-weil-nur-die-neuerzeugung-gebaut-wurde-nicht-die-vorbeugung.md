@@ -4,11 +4,11 @@ Die Warteschlange ist wieder veraltet, weil aus dem Vorgängerbefund nur die Neu
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** reconciler, Abschluss-Pass zu `circles/260807-0923-guard-misst-statt-orakelt`, 260807-1515
+**Filed by:** reconciler, Abschluss-Pass zu `260807-0923-guard-misst-statt-orakelt`, 260807-1515
 **Affects:** `agents/orchestrator.md` (Phase 4), `skills/setup/SKILL.md`, `skills/next/SKILL.md`
 **Cross-references:**
-`shared/issues/260801-2038_c_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md` (der Vorgängerbefund, dessen Abschlussnotiz genau diesen Befund angefordert hat),
-`shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (dieselbe Klasse: Schreibvorgänge am Turn- und Circle-Rand, die eine Sitzung überspringen kann, ohne dass etwas bricht)
+`260801-2038_*_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md` (der Vorgängerbefund, dessen Abschlussnotiz genau diesen Befund angefordert hat),
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (dieselbe Klasse: Schreibvorgänge am Turn- und Circle-Rand, die eine Sitzung überspringen kann, ohne dass etwas bricht)
 
 ---
 
@@ -23,7 +23,7 @@ Die Warteschlange ist wieder veraltet, weil aus dem Vorgängerbefund nur die Neu
 **Open tasks:** 44 (11 in the active Circle, 33 unaffiliated backlog)
 ```
 
-Der genannte Circle trägt seit 260807-0923 den Marker `_s_` (abgelöst). `.active-circle` zeigt
+Der genannte Circle trägt seit 260807-0923-guard-misst-statt-orakelt den Marker `_s_` (abgelöst). `.active-circle` zeigt
 auf `260807-0923-guard-misst-statt-orakelt`. Der genannte Plan gehört zu dem abgelösten Circle
 und ist mit dem Mechanismuswechsel gegenstandslos geworden: seine Schritte 3 bis 11 bauen den
 Klassifizierer aus, den `ba7ccda` gelöscht hat.
@@ -77,7 +77,7 @@ Bedingung hängt statt an einer Ereignisliste. 1 und 3 ergänzen sie, sie konkur
 
 ## Warum im geteilten Speicher
 
-Aufgefallen beim Abschluss von `circles/260807-0923-guard-misst-statt-orakelt`, verursacht von
+Aufgefallen beim Abschluss von `260807-0923-guard-misst-statt-orakelt`, verursacht von
 dessen Directive nicht: der Mangel ist eine Eigenschaft davon, wie der Orchestrator und die
 beiden Skills eine Warteschlange am Circle-Rand behandeln, nicht der Guard-Arbeit, neben der er
 gefunden wurde. Herkunftsregel, wie schon bei beiden `260801-2038`-Befunden.
@@ -121,7 +121,7 @@ eigenem Antrieb gesetzt, der 260810-Lauf nicht, und beide waren gegenüber dem P
 Für welchen Circle eine Warteschlange *gebaut* wurde, ist aus ihrem Text nicht entscheidbar,
 wenn sie es nicht selbst festgehalten hat (`rules/critical-stance.md` §4). Das ist eine Zeile
 in einem Erzeuger, der außerhalb der Dateiliste dieser Aufgabe lag, und liegt als eigener
-Befund vor: `260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md`.
+Befund vor: `260810-0431_*_the-work-queue-does-not-record-the-ground-it-was-built-on.md`.
 Bis der landet, tragen die Zeilen 3 und 4 den kopflosen Fall mit dem schwächeren
 Zeitstempelvergleich, und der Abschnitt sagt das selbst, statt sich als Deckung zu lesen.
 

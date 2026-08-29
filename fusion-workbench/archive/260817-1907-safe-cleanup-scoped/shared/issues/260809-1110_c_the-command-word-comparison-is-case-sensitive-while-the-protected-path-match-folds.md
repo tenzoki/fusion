@@ -7,7 +7,7 @@
 **Filed by:** analyst, during the guard-enforced-policies analysis
 **Affects:** `hooks/lib/git-branch-guard.ts:166` (`invocation.name !== "git"`)
 **Cross-references:**
-`fusion-workbench/shared/analyses/260809-1103-guard-enforced-policies.md` §Findings 2b-3,
+`260809-1103-guard-enforced-policies.md` §Findings 2b-3,
 `hooks/guard.ts:615-622` (the sibling decision, taken the other way, for the protected-path match)
 
 ---
@@ -64,8 +64,8 @@ Folding the command word cannot widen an allow. It can only make more segments r
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Checked because this session rewrote the file it names.**
-`hooks/lib/git-branch-guard.ts` was rewritten in `9716ee5` (steps 2 and 3 of `shared/planning/260809-1229_c_plan-five-severe-guard-defects.md`), which touched `classifyCheckout` and the global-option walk and left the command-word comparison alone. `programName` in `hooks/lib/command-word.ts` still returns the basename as spelled, and no fold happens at the comparison. All four acceptance criteria remain unmet. `rules/git-branch-discipline.md` `## Why` now names this record explicitly as a measured defect inside the command form the classifier does classify, which is a documentation change and not a code one.
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Checked because this session rewrote the file it names.**
+`hooks/lib/git-branch-guard.ts` was rewritten in `9716ee5` (steps 2 and 3 of `260809-1229_*_plan-five-severe-guard-defects.md`), which touched `classifyCheckout` and the global-option walk and left the command-word comparison alone. `programName` in `hooks/lib/command-word.ts` still returns the basename as spelled, and no fold happens at the comparison. All four acceptance criteria remain unmet. `rules/git-branch-discipline.md` `## Why` now names this record explicitly as a measured defect inside the command form the classifier does classify, which is a documentation change and not a code one.
 
 ---
 Resolved: `programName` in `hooks/lib/command-word.ts` now folds the resolved command word
@@ -90,4 +90,4 @@ all deny; `RM -rf x`, `npm test`, `GIT status` and `GIT checkout HEAD -- foo.go`
 
 Consequence left standing on purpose: `rules/git-branch-discipline.md` `## Why` still describes
 this defect as measured and open, which is now false. That file is rewritten once, against the
-finished classifier, by `260809-1226`.
+finished classifier, by `260809-1226_*_the-rule-still-promises-a-branch-switch-cannot-be-smuggled-into-a-compound-command.md`.

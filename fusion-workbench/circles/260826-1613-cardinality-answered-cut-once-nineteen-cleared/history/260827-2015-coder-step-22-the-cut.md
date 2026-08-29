@@ -3,13 +3,13 @@
 **Date:** 2026-08-27 20:15
 **Agent:** coder
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
-**Plan:** `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`, step 22
-**Analysis:** `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/analyses/260827-1843-cut-candidates-for-skills-and-the-hook-tests.md`, sections 4 to 6
+**Plan:** `260827-1756_*_repair-the-twenty-open-defect-records.md`, step 22
+**Analysis:** `260827-1843-cut-candidates-for-skills-and-the-hook-tests.md`, sections 4 to 6
 **Status:** Complete
 
 ## What was done
 
-- `skills/`: S1 to S5, as approved. Step 1 of `skills/setup/SKILL.md` is the STOP line and a pointer to `$FUSION_SRC/rules/orchestrator-resume.md`; Step 0e keeps its eight cases, the precedence and the one-question rule, and its three bash blocks became one prelude plus a classification block plus one replace-or-stamp block with `MODE`; the two `$FUSION_SRC` paragraphs keep the read/run split and cite decisions `260820-2324` and `260810-1544` instead of narrating them. `skills/archive/SKILL.md` keeps the destination path, the rolled-not-selected sentence and both citations under *Rolling the guard event log*, and the "empty derivation is an error" rule under `shared_of`.
+- `skills/`: S1 to S5, as approved. Step 1 of `skills/setup/SKILL.md` is the STOP line and a pointer to `$FUSION_SRC/rules/orchestrator-resume.md`; Step 0e keeps its eight cases, the precedence and the one-question rule, and its three bash blocks became one prelude plus a classification block plus one replace-or-stamp block with `MODE`; the two `$FUSION_SRC` paragraphs keep the read/run split and cite decisions `260820-2324` and `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` instead of narrating them. `skills/archive/SKILL.md` keeps the destination path, the rolled-not-selected sentence and both citations under *Rolling the guard event log*, and the "empty derivation is an error" rule under `shared_of`.
 - Hook tests: R1 (three `growth()` cases duplicated in `surface-growth-bound.test.ts`), R4 (the duplicated `OUT_MEMO` case), N1 to N8 header shrinks with the keeps the analysis names (N1 points at `helpers/guard-harness.ts` `openCoverageGap`; N7 keeps "WHY CASE 5 EXISTS" whole). No assertion beyond R1 and R4 moved; the movement and arming logs, `legacy-halt-clearing.test.ts` and `hook-fail-open.test.ts` were not touched.
 - Bookkeeping: `fixtures/surface-growth.golden` regenerated (`UPDATE_SURFACE_GOLDEN=1`, then run without); no baseline map moved; `reference-resolution-lint.test.ts` `BASELINE` re-approved 1513 -> 1504 paths, anchors unmoved at 210, shares measured by single-file revert (setup -8, archive -1, hook tests 0). Plan step 22 marked `[DONE]`.
 

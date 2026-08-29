@@ -1,8 +1,8 @@
 # Implementation Plan: Plane bridge — opt-in idempotent spec-comment
 
 **Date:** 2026-07-22
-**Status:** Complete — all 5 steps done; commits 4d95a91, bf5dc5e, d75afed, dd6b092; decision 260722-2230_i_; coderev verdict clean; 315 tests passing; v5.6.0
-**Spec:** `fusion-workbench/shared/planning/260722-1943_o_spec-plane-spec-comment.md`
+**Status:** Complete — all 5 steps done; commits 4d95a91, bf5dc5e, d75afed, dd6b092; decision 260722-2230_*_thin-mirror-vs-comment-borne-full-spec.md; coderev verdict clean; 315 tests passing; v5.6.0
+**Spec:** `260722-1943_*_spec-plane-spec-comment.md`
 
 ## Directive
 
@@ -164,7 +164,7 @@ flowchart TD
     "$existing_id"; fi`. `existing_id` already holds the new id after a create (`:683`) and the
     mapped id on update/noop. The comment is gated only on kind+gate+state_ok — **not** on
     `write_scope`, so a seed-origin (state-only) Circle still gets it (C2-5) while its
-    description stays untouched (respects decision 260719-2313). **C2-1/C2-2/C2-5/C2-6.**
+    description stays untouched (respects decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md). **C2-1/C2-2/C2-5/C2-6.**
   - Extend the STATUS summary (`:948-956`): if `COMMENTS_SKIPPED > 0`, append a
     "N spec-comment(s) skipped" clause to the existing `label_note`, same shape. **C4-3.**
 - **Dependencies:** Step 1.
@@ -172,7 +172,7 @@ flowchart TD
   still returns before the tail; verify `existing_id` correctness across create/update/noop).
 
 ### Step 3 — [DONE] vitest coverage + fixtures
-<!-- DONE: hooks/lib/__tests__/fusion-plane.test.ts + 2 fixtures; npm test 315 passed (309 + 6 new); plan-test-6 INCLUDED; fixtures use {results:[…]} envelope not bare array — see history 260722-2225_coder_plane-spec-comment-step3.md -->
+<!-- DONE: hooks/lib/__tests__/fusion-plane.test.ts + 2 fixtures; npm test 315 passed (309 + 6 new); plan-test-6 INCLUDED; fixtures use {results:[…]} envelope not bare array — see history 260722-2225_coder_plane-spec-comment-step3.md_coder_plane-spec-comment-step3.md -->
 
 - **Executor:** coder
 - **Files:** `hooks/lib/__tests__/fusion-plane.test.ts`,
@@ -221,15 +221,15 @@ flowchart TD
 - **Review:** none required.
 
 ### Step 5 — [DONE] Decision record
-<!-- DONE: shared/decisions/260722-2230_i_thin-mirror-vs-comment-borne-full-spec.md; NOTE placement diverges from plan (shared/ not the Circle) — see Reconciliation Log -->
+<!-- DONE: 260722-2230_*_thin-mirror-vs-comment-borne-full-spec.md; NOTE placement diverges from plan (shared/ not the Circle) — see Reconciliation Log -->
 
 - **Executor:** coder
 - **Files:** one decision record `…_i_thin-mirror-vs-comment-borne-full-spec.md`
 - **Changes:** capture the architectural choice — the full brief lives in a comment (survives
   re-push via `build_write_body` never sending comments; no source-of-truth contention with the
-  description; respects decision 260719-2313 so it applies to seed-origin and fusion-owned issues
+  description; respects decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md so it applies to seed-origin and fusion-owned issues
   alike). Marker `_i_` (decided **and** realised by this change). **Placement per the Origin Rule:**
-  this work is the explicit continuation of decision 260719-2313, so file it into
+  this work is the explicit continuation of decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md, so file it into
   `circles/260719-1536-plane-mirror-integration/decisions/` (where the sibling `_i_` decisions
   live), **not** `shared/decisions/`. Deliverable 5.
 - **Dependencies:** none (can land first or last; independent of the code).
@@ -310,7 +310,7 @@ Closure (`_c_`, Status Complete) confirmed correct; all claimed work landed.
 - **S4** `dd6b092` — verified; touches `.claude-plugin/plugin.json` (5.5.1→5.6.0, confirmed on
   disk), `docs/plane-setup.md`, `templates/plane.config.yaml`. **Drift fixed:** inline header
   lacked `[DONE]` — added.
-- **S5** — decision record `shared/decisions/260722-2230_i_thin-mirror-vs-comment-borne-full-spec.md`
+- **S5** — decision record `260722-2230_*_thin-mirror-vs-comment-borne-full-spec.md`
   exists, marker `_i_`, `Implemented:` line cites dd6b092/bf5dc5e/4d95a91/d75afed (all match).
   **Drift fixed:** inline header lacked `[DONE]` — added.
 - **Tests:** `npm test` from `hooks/` → **315 passed (12 files)**, matching the plan's claim;
@@ -319,7 +319,7 @@ Closure (`_c_`, Status Complete) confirmed correct; all claimed work landed.
 
 **Divergence from plan (not an error, recorded):** Step 5 explicitly directed the decision into
 `circles/260719-1536-plane-mirror-integration/decisions/` (Origin Rule — continuation of the
-parent decision 260719-2313). It actually landed in `shared/decisions/`. With no active Circle
+parent decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md). It actually landed in `shared/decisions/`. With no active Circle
 this session (`.active-circle` absent) and the parent Circle already `_c_` closed, `bin/fusion-paths`
 resolves new decisions to `shared/` — filing into a closed Circle would have been the questionable
 move. The shared/ placement is the defensible live outcome; the plan text was written before that

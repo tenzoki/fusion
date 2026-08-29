@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md` → Schritt 5
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md` → Schritt 5
 (A5) sowie eine Nacharbeit an Schritt 1 (A5a)
 **Commits:** `f41c1f6` (A5a, 2026-08-05 10:53), `199ef22` (A5, 2026-08-05 10:54)
 

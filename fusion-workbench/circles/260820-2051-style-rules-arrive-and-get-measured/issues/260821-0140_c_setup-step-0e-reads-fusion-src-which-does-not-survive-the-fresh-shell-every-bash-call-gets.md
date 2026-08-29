@@ -23,11 +23,11 @@ There is also no inline test. Step 0e's block is the only one in this file that 
 **Verified at HEAD `7832553`** by reading `skills/setup/SKILL.md:14-29`, `:124`, `:161-173` and `:181-233`. Not verified by running Setup: this reviewer does not execute the skill.
 
 ---
-**Found by:** coderev, review of `7135a19..7832553`, review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
+**Found by:** coderev, review of `7135a19..7832553`, review file `260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
 **Owner:** `coder`.
 **Severity:** High. The comparison this Circle built silently classifies nothing, and reports it with the one token nobody handles.
 **Direction, not a prescription.** Two shapes, and the choice is the author's: re-call `bin/fusion-source-root` inside the block behind its `[ -x ]` guard, which is the pattern this file has already settled on twice (`:14-23`, and Step 3's domain detection); or keep the substitution instruction and open the block with an `[ -n "$FUSION_SRC" ]` test that fails loudly instead of falling into `absent`.
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md`; `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` part (b), the `[ -x ]` convention a re-call would follow.
+**Cross-references:** `260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md`; `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` part (b), the `[ -x ]` convention a re-call would follow.
 
 ---
 Resolved: Step 0e no longer reads `$FUSION_SRC` anywhere. All three of its shell blocks — the classification loop, the replace loop and the stamp loop — now open with `SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$(…)"`, the guarded-call shape this file had already settled on, and the classification block then refuses to proceed on an empty root: `[ -n "$SRC" ] || { echo "source-root-unresolved"; exit 0; }`. The record filed the classification loop; the replace and stamp loops carried the identical dereference and are fixed with it, the stamp loop being the one that would otherwise have written an empty checksum into `.asset-provenance`.

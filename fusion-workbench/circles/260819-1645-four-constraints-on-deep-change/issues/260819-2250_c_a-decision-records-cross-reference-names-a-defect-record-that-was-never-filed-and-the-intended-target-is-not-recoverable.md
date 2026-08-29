@@ -3,14 +3,14 @@ A decision record's cross-reference names a defect record that was never filed, 
 ---
 
 Filed by `coder` during step 7 of
-`circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`,
+`260819-2016_*_four-constraints-on-deep-change.md`,
 which resolves the citations that resolve to nothing. Measured at HEAD `4aae336`.
 
 ---
 
 ## What is wrong
 
-`shared/decisions/260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md`
+`260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md`
 carried, in its `**Cross-references:**` line, a path naming a defect record about the user-facing
 documentation lagging two releases and still describing a removed guard. **No file with that slug
 has ever existed in this repository.** `git log --all --diff-filter=A` over the workbench shows
@@ -25,7 +25,7 @@ written, and it points at a record that was described rather than filed.
 ## Why this is a defect and not a repair
 
 The curator already reached the same conclusion and stopped at the same place
-(`circles/260801-1244-curator/history/260814-1332-curator-run.md`, candidate C-class, tier
+(`260814-1332-curator-run.md`, candidate C-class, tier
 `candidate`): the closest surviving record is the documentation-step one, and calling that the
 intended target is speculation, not a citation. Step 7's rule is that no token stays standing
 because its target cannot be identified, so the path was dropped and its substance — what the
@@ -51,17 +51,17 @@ Neither is a mechanical repair, which is why this is filed rather than done.
 
 ## Where
 
-- `shared/decisions/260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md:7`
+- `260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md:7`
   — the cross-reference, now carrying the stamp and the description instead of the dead path.
-- `shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234` — the
+- `260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234` — the
   same dead path, in an analysis that is outside the repair corpus and was not touched by this
   step. It will need the same treatment whenever that surface is repaired.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open, reproduces
-in both places the record names.** `shared/decisions/260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md:7`
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open, reproduces
+in both places the record names.** `260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md:7`
 carries the repaired form: the stamp, the description and the finding that no such file exists, with
-no path. `shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234`
+no path. `260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md:234`
 still spells the dead path, as the record predicted. Neither of the two closure conditions has been
 met — nobody has named the intended record and nobody has re-measured the documentation-lag claim.
 The dispatch asked whether the target is covered by any repair corpus: it is not. The analysis sits
@@ -72,7 +72,7 @@ outside the citation gate's corpus (no `analyses/` clause), and the token is spe
 Progress 260820 (`coder`, Circle Turn 2) — **the second location is repaired. Neither closure
 condition is met, so this stays open.**
 
-`shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`, the `## Sources`
+`260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`, the `## Sources`
 bullet the record named, no longer spells the dead path. It carries the same treatment step 7 gave
 the decision record: the path dropped, the substance kept. The bullet now describes what was read,
 names the stamp `260813-0825`, states that no file with that slug has ever existed, and gives the
@@ -91,4 +91,4 @@ here. **No citation anywhere in this workbench now names the record that was nev
 was the scope of the repair, and it is complete.
 
 ---
-Resolved: moot — the intended target is not recoverable and the repair that dropped the dead token is complete in both locations; `shared/decisions/260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md`.
+Resolved: moot — the intended target is not recoverable and the repair that dropped the dead token is complete in both locations; `260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md`.

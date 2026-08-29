@@ -1,9 +1,9 @@
-# Orchestrator Session — 260804-1243
+# Orchestrator Session — 260804-1243-orchestrator-session.md
 
-**Directive:** Close the two git routes that fail open into the protected list. `260804-1024`: `git -C DIR` supplies a directory the model steps over and never records, so a relative operand resolves against the project root and off the list. `260804-1026`: `checkout` is in no mutation table, so `git checkout <treeish> -- rules/x.md` overwrites a protected file. Both are pre-existing and older than this Circle, both live in the same function, and the Turn 9 review put them in one pass.
+**Directive:** Close the two git routes that fail open into the protected list. `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md`: `git -C DIR` supplies a directory the model steps over and never records, so a relative operand resolves against the project root and off the list. `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md`: `checkout` is in no mutation table, so `git checkout <treeish> -- rules/x.md` overwrites a protected file. Both are pre-existing and older than this Circle, both live in the same function, and the Turn 9 review put them in one pass.
 **Mode:** issues
 **Status:** In progress
-**Predecessor session:** `circles/260801-1244-guard-rules-write/history/260804-1138-orchestrator-session.md`
+**Predecessor session:** `260804-1138-orchestrator-session.md`
 
 ## Setup snapshot
 
@@ -11,8 +11,8 @@
 |---|---|
 | Git HEAD at start | `d2962f3` |
 | Domain | `code` |
-| Active Circle | `circles/260801-1244-guard-rules-write` |
-| Anticipated Circle | `circles/260804-1205-shell-reachability-model`, filed last session |
+| Active Circle | `260801-1244-guard-rules-write` |
+| Anticipated Circle | `260804-1205-shell-reachability-model`, filed last session |
 | Guard | not halted |
 | Tests at start | 1252 across 24 files |
 

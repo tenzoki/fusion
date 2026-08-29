@@ -4,7 +4,7 @@
 **Agent:** shaper (anticipated-circle mode, dispatched via `/fusion:direct`)
 **Status:** Complete
 **HEAD at start:** `b91c01c`
-**Result:** `circles/260819-1645-four-constraints-on-deep-change/_a_circle.md`
+**Result:** `260819-1645-four-constraints-on-deep-change`
 
 ## The draft
 
@@ -65,7 +65,7 @@ All at HEAD `b91c01c`.
 ## Filed
 
 One decision record, filed inside the new Circle:
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_o_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
 The user's two answers settle what the gate scans and not what it does when an ordinary marker move
 changes the corpus under it. The same coupling is a live defect for the existing lint
 (`shared/issues/260816-0725_*`), whose pin has been re-approved twice rather than decoupled, so

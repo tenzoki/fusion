@@ -10,13 +10,13 @@ orchestrator's `git add` at all.
 
 ---
 
-**Measured, in session 260815-2147, commit `a19c867`.** That commit's staging list named
+**Measured, in session 260815-2147-orchestrator-session.md, commit `a19c867`.** That commit's staging list named
 `bin/monitor`, one test file, three issue renames and two history files. Its actual contents
 carry two further renames it never mentions, each showing `| 0` changed lines:
 
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1631_*_setups-resume-summary-still-asks-for-diverging-rows-that-no-step-produces.md`,
+- `260815-1631_*_setups-resume-summary-still-asks-for-diverging-rows-that-no-step-produces.md`,
   renamed `_o_` → `_c_` (from the setup/migrate task)
-- `shared/issues/260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`,
+- `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`,
   renamed `_o_` → `_c_` (from the breaker-populations task)
 
 Both rename entries are in `git show --stat a19c867`, which is where the old and new filenames
@@ -60,10 +60,10 @@ Option 1 alone is sufficient and needs no executor-prompt change, which argues f
 - `shared/issues/260811-0114_*` (the staging-drift check, which reports records *no* commit carries
   and is silent about records the *wrong* commit carries)
 
-Also seen: 260817-1613 by reconciler — recurred in session 260816-1841, commit `dbbad70`, and was filed a second time as `circles/260816-1741-guard-becomes-observation-only/issues/260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` without this record being found first. That record carries the newer measurement (six renames in one commit, four of them unnamed by its message, plus two unstaged annotation blocks absorbed with them) and a three-option remedy; this one carries the original 260815-2147 measurement. **They are one defect and want merging.**
+Also seen: 260817-1613 by reconciler — recurred in session 260816-1841-orchestrator-session.md, commit `dbbad70`, and was filed a second time as `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` without this record being found first. That record carries the newer measurement (six renames in one commit, four of them unnamed by its message, plus two unstaged annotation blocks absorbed with them) and a three-option remedy; this one carries the original 260815-2147-orchestrator-session.md measurement. **They are one defect and want merging.**
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:542` still commits with no pathspec and no surplus check over `git diff --cached --name-only`. The record-s own trailer records a recurrence in session 260816-1841 at commit `dbbad70`, filed separately under the guard Circle-s issue store, so the failure is reproducing rather than dormant. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:542` still commits with no pathspec and no surplus check over `git diff --cached --name-only`. The record-s own trailer records a recurrence in session 260816-1841-orchestrator-session.md at commit `dbbad70`, filed separately under the guard Circle-s issue store, so the failure is reproducing rather than dormant. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Resolved: fixed — Step 3b step 5 compares `git diff --cached --name-only` against the staging list before the held command and unstages the surplus; the class question (may a sub-agent stage at all) is `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md`; agents/orchestrator.md:621
+Resolved: fixed — Step 3b step 5 compares `git diff --cached --name-only` against the staging list before the held command and unstages the surplus; the class question (may a sub-agent stage at all) is `260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md`; agents/orchestrator.md:621

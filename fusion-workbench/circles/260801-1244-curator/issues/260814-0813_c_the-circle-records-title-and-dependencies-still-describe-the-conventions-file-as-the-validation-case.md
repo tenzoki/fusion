@@ -7,7 +7,7 @@ moving the validation case from capability C9 (reconcile, compact, partition and
 record still describe the old scope and now contradict the Directive above them.
 
 ---
-**Where.** `circles/260801-1244-curator/_*_circle.md`:
+**Where.** `260801-1244-curator`:
 
 - Line 1, the title: "The curator reconciles the three normative surfaces, and proves it on
   fusion's own conventions file". The proof is now the decision corpus: 82 records, none marked
@@ -30,22 +30,22 @@ reads out, so the portfolio will advertise a validation case this Circle no long
 who stops at the title gets the retired scope.
 
 **Not blocking activation.** The Directive and the Grounding are current, and the spec at
-`planning/260814-0738_*_spec-curator.md` is the single source of detail. This is a record that
+`260814-0738_*_spec-curator.md` is the single source of detail. This is a record that
 contradicts itself, not a Circle that is mis-scoped.
 
-**Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+**Filed by:** orchestrator, session `260813-2345-orchestrator-session.md`.
 
 ---
 **Reconciliation, 2026-08-14 (reconciler, verified at HEAD `18173e1`). Still open, both spots
 unchanged.**
 
-`circles/260801-1244-curator/_*_circle.md` line 1 still reads "…and proves it on fusion's own
+`260801-1244-curator` line 1 still reads "…and proves it on fusion's own
 conventions file", and `## Dependencies` still justifies the hard dependency on
 `260801-1244-rule-provenance-header` by the shards a partition would produce. The embedded Mermaid
 edge label still carries the same reasoning.
 
 The contradiction is now sharper than when this was filed, because the validation case has actually
-run: `circles/260801-1244-curator/history/260814-1332-curator-run.md` proved the agent on the
+run: `260814-1332-curator-run.md` proved the agent on the
 decision corpus, not on the conventions file, and the Turn-3 review judged both halves of the
 Directive met. So the title is not merely lagging a re-shape; it names a proof that a different
 artifact has since delivered.
@@ -63,4 +63,4 @@ unsettled.
 `_c_circle.md` line 1 still reads *"…and proves it on fusion's own conventions file"*; the `## Dependencies` prose still calls the partition "the first real exercise of that gate"; the Mermaid edge at `:71` still labels it `"lint gate checks the shards"`. The Circle closed `_c_` with the contradiction in it, and a terminal record is not edited — so this record is the correction, and it is where a reader of that title has to arrive. Nothing in the tree points them here.
 
 ---
-Resolved: moot — a terminal Circle record is not edited, and this record is the correction beside it; `circles/260801-1244-curator/_*_circle.md`.
+Resolved: moot — a terminal Circle record is not edited, and this record is the correction beside it; `260801-1244-curator`.

@@ -8,17 +8,17 @@ marker.
 
 | record | what closed it |
 |---|---|
-| `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md` | fix shape 1 landed in `4aae336`: `anchoredUnder` and `unsweep` in `hooks/lib/__tests__/helpers/citation-scan.ts` |
-| `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2321_*_a-citation-of-a-circle-record-produces-no-token-so-the-gate-cannot-see-the-form-the-repair-adopted.md` | `CIRCLE_REC_RE` and the `circle-record` kind landed in `46133dc` |
-| `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md` | all three legs of the answer landed: the fence exemption in `b6ed978`, the twenty-four rewrites in `0d4e0f2`, the failure message and the convention line in `bbfc912` |
+| `260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md` | fix shape 1 landed in `4aae336`: `anchoredUnder` and `unsweep` in `hooks/lib/__tests__/helpers/citation-scan.ts` |
+| `260819-2321_*_a-citation-of-a-circle-record-produces-no-token-so-the-gate-cannot-see-the-form-the-repair-adopted.md` | `CIRCLE_REC_RE` and the `circle-record` kind landed in `46133dc` |
+| `260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md` | all three legs of the answer landed: the fence exemption in `b6ed978`, the twenty-four rewrites in `0d4e0f2`, the failure message and the convention line in `bbfc912` |
 
 Each of the three carries the user's answer appended at its foot, so the answer is recorded; what is
 missing is the closure. The other two are correctly open: `260819-2250` names a reference in an
-analysis file the repair corpus does not cover, and `260819-2300` is explicitly not answered here.
+analysis file the repair corpus does not cover, and `260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md` is explicitly not answered here.
 
 The comparison that makes this a finding rather than a timing note: the same range **did** close two
-defect records it inherited — `circles/260816-1741-guard-becomes-observation-only/issues/260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
-and `shared/issues/260819-0001_*_an-executor-reached-for-git-stash-while-two-were-dispatched-in-parallel.md`
+defect records it inherited — `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
+and `260819-0001_*_an-executor-reached-for-git-stash-while-two-were-dispatched-in-parallel.md`
 each gained a `Resolved:` footer and the closed marker in `ad7ffed`. The records the Circle filed
 itself did not get the same treatment.
 

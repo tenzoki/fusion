@@ -4,8 +4,8 @@
 **Date:** 2026-08-10 03:40
 **Status:** Complete
 **Task:** T10b (second half of queue entry 10, `I:260731-2246-empty-key`)
-**Source record:** `fusion-workbench/shared/issues/260731-2246_o_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`
-**Predecessor:** `6a69717` (first half — the assertion inside `skills/cadence/SKILL.md`), logged in `fusion-workbench/shared/history/260810-0330-coder-cadence-empty-key.md`
+**Source record:** `260731-2246_*_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`
+**Predecessor:** `6a69717` (first half — the assertion inside `skills/cadence/SKILL.md`), logged in `260810-0330-coder-cadence-empty-key.md`
 
 ## What changed
 
@@ -55,7 +55,7 @@ The addition costs 670 bytes on the emitted rule set, paid by every agent on eve
 `cd hooks && npm test` — 905 passed, 2 failed (31 files, 29 passed).
 
 - `reference-resolution-lint` — **pre-existing, not mine.** One dangling citation at
-  `bin/fusion-plane:567` (`260719-1600_o_open-issue.md`). Another task is mid-edit on that
+  `bin/fusion-plane:567` (`260719-1600_*_open-issue.md`). Another task is mid-edit on that
   file; `git diff --stat` shows `bin/fusion-plane` with 126 changed lines that are not mine.
 - `rules-emission-golden` — **moved, and moved because of this change.** It pins the byte size
   of every emitted rule file per agent, so any deliberate edit to a rule file fails it until

@@ -43,7 +43,7 @@ moment of writing, which is precisely the property the shape exists to guarantee
 The failure mode is the one the rule already documents for `-u`, arrived at by another route:
 a renamed record's deletion is staged and nothing is added in its place, so the record leaves
 HEAD. The project has now measured this class three times — `git add -u` over a directory in
-the commit repaired as `f38f37d`, the eighteen-commit unstaged pair in `260811-0114`, and this.
+the commit repaired as `f38f37d`, the eighteen-commit unstaged pair in `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`, and this.
 
 ## What is not claimed
 

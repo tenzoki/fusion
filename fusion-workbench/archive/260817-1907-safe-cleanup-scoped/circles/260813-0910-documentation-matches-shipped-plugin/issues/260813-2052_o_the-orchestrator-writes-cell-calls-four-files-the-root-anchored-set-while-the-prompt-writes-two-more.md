@@ -51,7 +51,7 @@ the damage is "the": an enumeration of four presented as the set, against a layo
 listing six.
 
 This is the enumeration the step's own history record counted to reach "ten write targets"
-(`history/260813-2043-coder-…`, the orchestrator row), so the count rests on it.
+(`260813-2043-coder-…`, the orchestrator row), so the count rests on it.
 
 ## Scope
 
@@ -68,4 +68,4 @@ the next helper that needs project-wide state, and this one already had").
 Filed by: coderev (review of Circle Turn 3, range `22f892e..8d87192`, commit `8d87192`).
 
 ---
-Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `README-agents.md:39` still reads "the four root-anchored session files".
+Reconciled: 260813-2258-reconciliation.md — Still open, re-verified at HEAD `c0e4219`: `README-agents.md:39` still reads "the four root-anchored session files".

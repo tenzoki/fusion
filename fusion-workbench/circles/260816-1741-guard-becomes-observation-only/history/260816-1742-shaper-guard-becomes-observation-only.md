@@ -3,7 +3,7 @@
 **Date:** 2026-08-16
 **Status:** Complete
 **Mode:** anticipated-circle (dispatched via `/fusion:direct`)
-**Result:** `circles/260816-1741-guard-becomes-observation-only/_a_circle.md`
+**Result:** `260816-1741-guard-becomes-observation-only`
 
 ## The draft
 
@@ -19,11 +19,11 @@ and no `Promoted:` line was written.
 ## Grounding read before the questions
 
 The three decisions the draft names, all answered by the user on 2026-08-16 and recorded in
-`shared/history/260816-1500-orchestrator-session.md`:
+`260816-1500-orchestrator-session.md`:
 
-- `shared/decisions/260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`
-- `shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
-- `shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+- `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`
+- `260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`
+- `260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
 
 Code read: `hooks/guard.ts`, `hooks/lib/escalation.ts` (411 lines), `hooks/clear-halt.ts` (295),
 `hooks/lib/self-detect.ts`, `hooks/lib/config.ts` (742), `hooks/turn-budget.ts`, `hooks/config.json`,
@@ -53,7 +53,7 @@ Two shaper proposals stood unopposed: the monitor keeps rendering historical `gu
 ## No round 2 was asked for
 
 The open question from answer 3 is the destination of `orchestrator.maxTurns`. It was filed as
-`circles/260816-1741-guard-becomes-observation-only/decisions/260816-1742_o_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md`
+`260816-1742_*_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md`
 with five options, five constraints and no recommendation, which is what the user asked for. The
 Directive does not depend on the answer; the plan does, and the record says so. Asking a second
 round would have closed a question the user had deliberately left open.
@@ -62,10 +62,10 @@ round would have closed a question the user had deliberately left open.
 
 | Path | What it is |
 |---|---|
-| `circles/260816-1741-guard-becomes-observation-only/` | the Circle directory and its six artifact subdirectories |
-| `circles/260816-1741-guard-becomes-observation-only/_a_circle.md` | the anticipated Circle record |
-| `.../decisions/260816-1742_o_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` | the open decision the Circle carries |
-| `.../history/260816-1742-shaper-guard-becomes-observation-only.md` | this file |
+| `260816-1741-guard-becomes-observation-only` | the Circle directory and its six artifact subdirectories |
+| `260816-1741-guard-becomes-observation-only` | the anticipated Circle record |
+| `.../260816-1742_*_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` | the open decision the Circle carries |
+| `.../260816-1742-shaper-guard-becomes-observation-only.md` | this file |
 
 Nothing outside the new Circle was written or renamed.
 
@@ -81,7 +81,7 @@ consequence in fusion's own tree disappears with the stand-down and the halt tog
 
 ## Decision answered by the user, 2026-08-16 (orchestrator, inline)
 
-**`260816-1742_o_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md`
+**`260816-1742_*_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md`
 — option 1, a renamed project-root file.**
 
 `orchestrator.maxTurns` moves to a renamed file at the project root (working name `fusion.json`).

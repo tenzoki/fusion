@@ -54,7 +54,7 @@ time. A `git commit` that fails on an empty index or a rejecting pre-commit hook
 Whichever is chosen, `rules/workbench-stash-and-lock.md` `## Commit lock` moves with it in the same
 commit; it is the authoring home and currently disagrees.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 
@@ -68,7 +68,7 @@ the authoring home gives: depart from `with` only when the region that must stay
 internal control-flow `with` cannot express. This region has none. The second criterion the old
 text added — "an argument the session did not author as a literal" — is deleted, together with its
 premise: the message is not in the command, and has not been since step 3 moved it into a file. The
-`260810-1535` constraint is untouched — nothing inside the `bash -c` string is prose.
+`260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md` constraint is untouched — nothing inside the `bash -c` string is prose.
 
 Measured in a scratch repository, not in the working tree:
 

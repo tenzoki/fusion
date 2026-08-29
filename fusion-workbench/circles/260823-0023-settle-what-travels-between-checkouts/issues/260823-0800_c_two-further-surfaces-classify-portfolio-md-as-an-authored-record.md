@@ -2,7 +2,7 @@ Two further surfaces classify portfolio.md as an authored record, and C2 retires
 
 ---
 
-C2 moves `fusion-workbench/portfolio.md` from the records group to class L, live state that never leaves the checkout, and closes `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md` on that ground. That defect names one location, `rules/workbench-tracking.md`. Two other surfaces carry the same retired classification and are outside C2's acceptance criteria, so the closure leaves them standing.
+C2 moves `fusion-workbench/portfolio.md` from the records group to class L, live state that never leaves the checkout, and closes `260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md` on that ground. That defect names one location, `rules/workbench-tracking.md`. Two other surfaces carry the same retired classification and are outside C2's acceptance criteria, so the closure leaves them standing.
 
 ---
 

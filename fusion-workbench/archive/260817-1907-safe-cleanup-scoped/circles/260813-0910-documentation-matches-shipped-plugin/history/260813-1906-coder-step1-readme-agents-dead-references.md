@@ -3,8 +3,8 @@
 **Date:** 2026-08-13 19:06
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md` step 1
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md` step 1
 **Files changed:** `README-agents.md`
 
 ## What was corrected

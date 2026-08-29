@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `shared/analyses/260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`, `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+**Cross-references:** `260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`, `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 
 ---
 
@@ -22,7 +22,7 @@ The citation gate (shape 1, 260819) lets a citation of `shared/issues/X` resolve
 Any answer must keep `hooks/lib/__tests__/workbench-citation-lint.test.ts` decidable over the tree at HEAD, and must not reopen the deletion annotation rule in `rules/circle-records.md`.
 
 ---
-Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, reconciliation note).
 
 ---
-Answered: shared/decisions/260828-0904_*_does-the-mandated-citation-form-include-the-store-segment.md — option 3, user 2026-08-28: moot under the storeless form; a citation carries no store, so an archive move breaks nothing and the gate needs no archive lookup.
+Answered: 260828-0904_*_does-the-mandated-citation-form-include-the-store-segment.md — option 3, user 2026-08-28: moot under the storeless form; a citation carries no store, so an archive move breaks nothing and the gate needs no archive lookup.

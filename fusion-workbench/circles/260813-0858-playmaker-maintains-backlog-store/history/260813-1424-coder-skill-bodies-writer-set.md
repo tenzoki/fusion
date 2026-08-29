@@ -1,8 +1,8 @@
 # Coder — step 5: the two skill bodies that stated the old backlog writer set
 
 **Status:** Complete
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store`
-**Plan:** `planning/260813-1306_p_the-playmaker-maintains-the-backlog-store.md`, step 5
+**Circle:** `260813-0858-playmaker-maintains-backlog-store`
+**Plan:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md`, step 5
 **Executor:** `fusion:coder`
 
 ## What changed

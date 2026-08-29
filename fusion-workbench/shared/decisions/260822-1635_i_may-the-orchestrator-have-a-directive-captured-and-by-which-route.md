@@ -2,14 +2,14 @@
 
 ---
 **Domain:** code
-**Filed by:** user, at the close of session 260822-1009
+**Filed by:** user, at the close of session 260822-1009-orchestrator-session.md
 **Cross-references:**
-`shared/decisions/260813-0027_i_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`
+`260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`
 (the precedent: the same question asked of the shaper's mode 3, answered yes under a quoted-user
 condition);
-`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`
+`260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`
 (the measured gap this closes);
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the specification whose five
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the specification whose five
 Circles nobody could create at the moment they were specified);
 `agents/orchestrator.md` `## Re-sharpening an anticipated Circle (shaper portfolio-activation)`
 (the condition any answer here reuses);
@@ -25,13 +25,13 @@ The orchestrator cannot cause an anticipated Circle to come into being. It may t
 Directive prose (`agents/orchestrator.md:240`). Creating a Circle belongs to `/fusion:direct`, which
 dispatches the shaper's anticipated-circle mode.
 
-The gap was measured at the close of session 260822-1009. A specification defining five Circles was
+The gap was measured at the close of session 260822-1009-orchestrator-session.md. A specification defining five Circles was
 written and approved, its first Circle was planned and executed to completion, and the workbench held
 no Circle for any of the five. The orchestrator had specified them and could not create them. The
 closing report had to name that as a limitation and hand the user a command to run by hand.
 
 **The need is settled and is not what this record asks.** The permission is missing and the precedent
-exists: `260813-0027` asked exactly this of the shaper's mode 3 and answered yes, bounded by a
+exists: `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` asked exactly this of the shaper's mode 3 and answered yes, bounded by a
 condition. What is open is the **route**, and the routes differ in what they cost and in what they
 oblige other prompts to say.
 
@@ -83,7 +83,7 @@ decidable from existing text**, because no agent has invoked this skill before a
 say whether one can. It is decidable by trial, so the trial runs first and its result goes to a user
 gate before any prompt text is written.
 
-## Measurement, taken 260822-1635
+## Measurement, taken 260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md
 
 Verified at HEAD `ec02964`, before the trial run completed:
 
@@ -107,7 +107,7 @@ None on the route; that is the user's and it turns on the trial. What the filing
 that option 3 leaves a gap that has already been measured once, in the session that filed this record.
 
 ---
-Answered: shared/history/260822-1009-orchestrator-session.md — **Form A**, chosen by the user at a
+Answered: 260822-1009-orchestrator-session.md — **Form A**, chosen by the user at a
 gate on 260822 after the trial run the Decidability section required. The orchestrator invokes
 `/fusion:direct` as a skill; the skill runs the clarification rounds, dispatches the shaper and
 creates the Circle. Option 2 (Form A plus widening the skill body's opening sentence) was offered

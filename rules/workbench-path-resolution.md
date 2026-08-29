@@ -1,6 +1,6 @@
 # Path Resolution — the name namespace, the key table, and how a key set is derived
 
-**Provenance:** circles/260801-1244-guard-rules-write
+**Provenance:** 260801-1244-guard-rules-write
 
 **This document is the definition** for everything below: which name a consumer passes to
 `bin/fusion-paths`, what every emitted key means, and why the key set is read out of the

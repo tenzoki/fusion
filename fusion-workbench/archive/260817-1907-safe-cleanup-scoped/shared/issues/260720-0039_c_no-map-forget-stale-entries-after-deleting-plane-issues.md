@@ -10,7 +10,7 @@ Suggested fix: add `map --forget <natural-key>` (and possibly `map --prune`, dro
 
 Interim workaround (documented in `docs/plane-setup.md` `## First run` cleanup step): prune the map entry by hand after deleting test issues in Plane.
 
-Cross-references: `circles/260719-1536-plane-mirror-integration/planning/260719-2223_c_plan-plane-bounded-bridge.md` (Data Structures — the map); `docs/plane-setup.md` `## First run`. Surfaced 2026-07-20 while making the first-run procedure concrete.
+Cross-references: `260719-2223_*_plan-plane-bounded-bridge.md` (Data Structures — the map); `docs/plane-setup.md` `## First run`. Surfaced 2026-07-20 while making the first-run procedure concrete.
 
 ---
 Resolved: `05bb3b8` — `map --forget <natural-key>` removes one entry (exit 1 when the key is absent: a mutation that did not happen is a failed request, not a truthful query). `map --prune` added too: only a definitive HTTP 404 deletes; transport failure, 5xx, 429 and absent key all keep the entry and defer (C4). `docs/plane-setup.md` first-run cleanup now gives the real command instead of the hand-edit workaround.

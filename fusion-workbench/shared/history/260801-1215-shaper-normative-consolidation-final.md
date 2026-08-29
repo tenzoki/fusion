@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-01 12:15
 **Agent:** shaper (user-direct mode, third revision of a prior shaper output)
-**Output:** `shared/planning/260801-1122_o_spec-normative-consolidation.md` (revised in place)
-**Also filed:** `shared/issues/260801-1215_o_conventions-file-cites-three-records-that-do-not-resolve.md`
-**Prior runs:** `shared/history/260801-1122-shaper-normative-consolidation.md`, `shared/history/260801-1154-shaper-normative-consolidation-revision.md`
+**Output:** `260801-1122_*_spec-normative-consolidation.md` (revised in place)
+**Also filed:** `260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`
+**Prior runs:** `260801-1122-shaper-normative-consolidation.md`, `260801-1154-shaper-normative-consolidation-revision.md`
 
 ## Request
 
@@ -13,7 +13,7 @@ Write in the user's answers to the four questions the second pass raised (Q1 thr
 ## What was read
 
 - The spec and both prior shaper histories in full.
-- `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md` in full.
+- `260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md` in full.
 - `hooks/guard.ts:180-340` (the Bash branch, the self-detect stand-down, the protected-path check), `hooks/lib/git-branch-guard.ts:1-260` plus its export list, `hooks/lib/paths.ts`.
 - `bin/fusion-rules:1-150` (the pattern table and the header contract) and `:245-310` (the emission block).
 - `rules/context-manifest.md` in full.
@@ -67,6 +67,6 @@ Reported to the user in chat rather than written into the spec, since it is a ju
 
 ## Filed
 
-One issue: `shared/issues/260801-1215_o_conventions-file-cites-three-records-that-do-not-resolve.md`. It is a live defect independent of whether the curator is ever built, and C9 step 1 — which would otherwise cover it — is the closing work of the last of four Circles.
+One issue: `260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`. It is a live defect independent of whether the curator is ever built, and C9 step 1 — which would otherwise cover it — is the closing work of the last of four Circles.
 
 No decision records. Every decision was answered by the user in this round.

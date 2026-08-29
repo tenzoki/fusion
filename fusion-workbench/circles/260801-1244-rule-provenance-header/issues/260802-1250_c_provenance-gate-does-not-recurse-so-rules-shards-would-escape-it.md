@@ -28,7 +28,7 @@ The header comment at `:19-21` states the property that fails: "The file set is
 `rules/*.md`, derived by `readdirSync`, so a newly added rule file is in the set
 automatically." True only for a file at the top level.
 
-**Why it is dated.** `circles/260801-1244-curator/_a_circle.md:54` names this gate as the
+**Why it is dated.** `260801-1244-curator:54` names this gate as the
 check the shards must pass:
 
 > The closing work partitions the conventions file into shards, every shard carries a

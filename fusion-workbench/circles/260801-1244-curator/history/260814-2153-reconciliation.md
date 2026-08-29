@@ -4,8 +4,8 @@
 **Agent:** reconciler
 **Domain:** `code`
 **Verified against:** the working tree at HEAD `d90b794`
-**Session:** `shared/history/260813-2345-orchestrator-session.md`, range `d7786eb..d90b794`, 29 commits, 6 Turns, 13 tasks
-**Predecessor:** `circles/260801-1244-curator/history/260814-2017-reconciliation.md` (HEAD `41c224c`, verdict `review-needed`)
+**Session:** `260813-2345-orchestrator-session.md`, range `d7786eb..d90b794`, 29 commits, 6 Turns, 13 tasks
+**Predecessor:** `260814-2017-reconciliation.md` (HEAD `41c224c`, verdict `review-needed`)
 **Status:** Complete
 
 ---
@@ -42,7 +42,7 @@ commit that landed it.
 
 ### High 1 — the guard config pinned byte-identical to the template
 
-Record: `shared/issues/260814-2022_c_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`.
+Record: `260814-2022_*_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`.
 Closed by `f0d9d60`, which took option 1 of the three the record named.
 
 Four checks, all run rather than read:
@@ -61,7 +61,7 @@ Four checks, all run rather than read:
   is HEAD, so the two now agree. The first pass's finding was precisely that they did not.
 
 **What one green run does not establish.**
-`shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`
+`260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`
 records three agents meeting three different failure shapes under full-suite load, on clean HEAD,
 one of them a file that never executed. That record is open, predates this Circle's work and is
 caused by none of it. This pass ran the suite once and it was green; nothing about every run is
@@ -69,7 +69,7 @@ claimed from that.
 
 ### High 2 — the ten citations `bf9553f` staled
 
-Record: `circles/260801-1244-curator/issues/260814-2022_c_ten-citations-that-bf9553f-staled-still-stand-and-six-of-them-are-in-the-table-the-fix-corrected.md`.
+Record: `260814-2022_*_ten-citations-that-bf9553f-staled-still-stand-and-six-of-them-are-in-the-table-the-fix-corrected.md`.
 Closed by `b90ea28`.
 
 Every one of the ten target lines was read at HEAD by this pass, not sampled:
@@ -115,7 +115,7 @@ added the Turn-5 bullet to the Circle record, so `## Turn log` now runs Turn 1, 
 `Circle Turn log surface=6 entries record=6 turns run`, `drift=0`, `verdict=clean` — six bullets
 equalling six `turn_start` events by coincidence for the second time, because the continuation bullet
 is counted as a Turn. That is exactly the second half of
-`260814-2017_o_three-of-the-five-turns-…`, now confirmed by an independent second occurrence rather
+`260814-2017_*_three-of-the-five-turns-…`, now confirmed by an independent second occurrence rather
 than by its first. Both surfaces are the orchestrator's Phase-4 write; the reconciler may write
 neither.
 
@@ -129,11 +129,11 @@ record; see below. The `unusable=1` is the conceptrev plan evaluation, tracked i
 
 ## One new defect record
 
-`circles/260801-1244-curator/issues/260814-2153_o_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`
+`260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`
 
 Every Turn's fix commits were opened by the *next* Turn's review. Turn 6 is the last Turn, so its fix
 commit reaches closure unopened, and the coverage helper says so. The record separates this from
-`260814-2033_o`, which names a path where a review never ran: here the review ran, on the correct
+`260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md_o`, which names a path where a review never ran: here the review ran, on the correct
 range, reported `not-opened=none`, and the uncovered commit exists *because* it had findings and they
 were fixed. Three candidate answers are named and none is chosen, because the third of them changes
 what a `**Reviewed-range:**` field asserts and would be a decision rather than a repair.
@@ -151,35 +151,35 @@ pass, not a verified claim.
 
 | File | What changed |
 |---|---|
-| `circles/260801-1244-curator/planning/260814-0845_c_plan-curator.md` | third reconciliation entry at HEAD `d90b794`; the previous entry's one open condition, the red working tree, discharged |
-| `circles/260801-1244-curator/planning/260814-0738_c_spec-curator.md` | third reconciliation entry at HEAD `d90b794` |
-| `circles/260801-1244-curator/reviews/260814-2022-coderev-curator-turn-5.md` | per-finding annotation: F1, F2, F3 resolved with evidence; F4 standing |
-| `circles/260801-1244-curator/reviews/260814-2128-coderev-curator-turn-6.md` | per-finding annotation: F1, F3 resolved with evidence; F2 standing |
-| `circles/260801-1244-curator/issues/260814-2017_o_three-of-the-five-turns-…` | re-measurement appended: half repaired, Turn 6 now missing from both surfaces, masking recurred |
+| `260814-0845_*_plan-curator.md` | third reconciliation entry at HEAD `d90b794`; the previous entry's one open condition, the red working tree, discharged |
+| `260814-0738_*_spec-curator.md` | third reconciliation entry at HEAD `d90b794` |
+| `260814-2022-coderev-curator-turn-5.md` | per-finding annotation: F1, F2, F3 resolved with evidence; F4 standing |
+| `260814-2128-coderev-curator-turn-6.md` | per-finding annotation: F1, F3 resolved with evidence; F2 standing |
+| `260814-2017_*_three-of-the-five-turns-…` | re-measurement appended: half repaired, Turn 6 now missing from both surfaces, masking recurred |
 | `circles/260801-1244-curator/issues/260814-2017_o_the-newest-decision-record-carries-no-…-footer-block-…` | re-checked at HEAD, stands unchanged |
-| `shared/decisions/260810-1635_a_where-does-the-obligation-sit-…` | a sixth instance of its class recorded, the Turn-6 F1; marker unchanged at `_a_` |
-| `shared/history/260813-2345-orchestrator-session.md` | third `## Coherence` entry appended (append-only; this pass's only cross-agent write) |
+| `260810-1635_*_where-does-the-obligation-sit-…` | a sixth instance of its class recorded, the Turn-6 F1; marker unchanged at `_a_` |
+| `260813-2345-orchestrator-session.md` | third `## Coherence` entry appended (append-only; this pass's only cross-agent write) |
 
 Plus the one defect record named above.
 
 ## What this pass did not touch, and why
 
-`circles/260801-1244-curator/_t_circle.md`, `fusion-workbench/agentstate.yaml` and the session
+`260801-1244-curator`, `fusion-workbench/agentstate.yaml` and the session
 history's non-Coherence sections are outside the reconciler's write set. Four findings land on them
 and stay as records for the orchestrator's Phase-4 write: the Circle record's title and
-`## Dependencies` (`260814-0813_o`), its `## Grounding snapshot` lag on the answered growth-bound
-decision (`260814-0828_o`), the missing Turn entries (`260814-2017_o`), and the empty transition
+`## Dependencies` (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o`), its `## Grounding snapshot` lag on the answered growth-bound
+decision (`260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o`), the missing Turn entries (`260814-2017_o`), and the empty transition
 block on the newest decision record (`260814-2017_o`).
 
 **No marker was moved to `_c_` for a record whose remedy is a choice.** The one candidate in the
-Circle, `260814-1850_o_the-halt-that-guards-the-audit-trail-…`, is correctly filed as a defect and
-cites its closing decision `260814-1915_o`, which is still open and still carries no footer block.
+Circle, `260814-1850_*_the-halt-that-guards-the-audit-trail-…`, is correctly filed as a defect and
+cites its closing decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md_o`, which is still open and still carries no footer block.
 
 ---
 
 ## Coherence verdict
 
-Computed at session end and written to `shared/history/260813-2345-orchestrator-session.md`
+Computed at session end and written to `260813-2345-orchestrator-session.md`
 `## Coherence` as a **third** entry. The two earlier entries are left exactly as written: the first
 is the Turn-3 gate verdict, the second is the one the Rebalance decision was taken against, and
 overwriting either would remove the record that decision rests on.

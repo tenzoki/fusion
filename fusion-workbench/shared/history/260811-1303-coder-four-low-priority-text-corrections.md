@@ -41,7 +41,7 @@ Written into three places in the two files:
 
 **Frontmatter caution honoured.** The description value contains no `: ` sequence; the block parses to exactly `name` and `description`; `claude plugin validate .` passes with only the pre-existing CLAUDE.md-at-plugin-root warning.
 
-**Left open, filed rather than fixed.** `agents/orchestrator.md:346` lists the build manifests without `Cargo.toml`. It is a gap and not a contradiction — the ontocoder row does not claim a root `Cargo.toml`, and the table's tiebreaker at `:358` points at the coder — but the routing table is where the orchestrator actually decides this, and it should say so in a row. That file was outside this task's file set and the batch was dispatched on explicitly disjoint file sets, so the proposal went to `shared/issues/260811-1301_o_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`.
+**Left open, filed rather than fixed.** `agents/orchestrator.md:346` lists the build manifests without `Cargo.toml`. It is a gap and not a contradiction — the ontocoder row does not claim a root `Cargo.toml`, and the table's tiebreaker at `:358` points at the coder — but the routing table is where the orchestrator actually decides this, and it should say so in a row. That file was outside this task's file set and the batch was dispatched on explicitly disjoint file sets, so the proposal went to `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`.
 
 **Noticed, not filed.** `README-agents.md:29` describes `coderev` as reviewing "Go / TS / Python code" — the same omission one row down, for the reviewer rather than the executor. It is outside both the record's claim and the task's site list, and it is mentioned here rather than filed because the coder row's fix does not depend on it.
 
@@ -78,8 +78,8 @@ The tasklist header counters (`**Open tasks:**`, `**Blocked:**`) were deliberate
 - `agents/coder.md`
 - `README-agents.md`
 - `templates/investigator-capture-layout.md`
-- `fusion-workbench/shared/issues/260731-2246_c_…`, `260810-2200_c_…` (closed)
-- `fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1830_c_…` (closed in place)
-- `fusion-workbench/circles/260801-1244-rule-provenance-header/issues/260802-1256_c_…` (closed in place)
-- `fusion-workbench/shared/issues/260811-1301_o_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` (new)
+- `260731-2246_*_…`, `260810-2200_*_…` (closed)
+- `260805-1830_*_…` (closed in place)
+- `260802-1256_*_…` (closed in place)
+- `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` (new)
 - `fusion-workbench/tasklist.md`

@@ -5,7 +5,7 @@
 
 ## What was planned
 
-Produced the master implementation plan for the v5.x overhaul against the finalised umbrella spec (`shared/planning/260718-0437_o_spec-fusion-v5x-overhaul.md`, conceptrev-clean). Output: `shared/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md`.
+Produced the master implementation plan for the v5.x overhaul against the finalised umbrella spec (`260718-0437_*_spec-fusion-v5x-overhaul.md`, conceptrev-clean). Output: `260718-1001_*_master-plan-fusion-v5x-overhaul.md`.
 
 Sequenced all five circles as a DAG (two roots A+B, single sink E). Detailed the roots to executable step level; scoped C/D/E with acceptance + step outlines and marked exactly where file-level detail must wait on A's findings and B's landed mechanism.
 

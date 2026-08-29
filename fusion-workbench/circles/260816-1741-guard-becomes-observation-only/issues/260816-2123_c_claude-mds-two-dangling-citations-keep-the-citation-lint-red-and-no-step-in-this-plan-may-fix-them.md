@@ -46,7 +46,7 @@ Three shapes of answer, and the choice belongs to whoever holds the release gate
    second author into a file the Directive says has one.
 3. **Accept a red gate and record it.** Requires deciding, in writing, that this repository may
    tag a release over a known-red suite. This repository already carries
-   `shared/issues/260810-1618_o_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`,
+   `260810-1618_*_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`,
    so this is the option that needs the most explicit consent.
 
 What it costs if it stands: the Circle reaches step 15 with a red suite whose cause is correct
@@ -54,7 +54,7 @@ behaviour, the "is the suite green" question stops being answerable by running i
 red case in that file hides behind two that everybody has learned to expect.
 
 ---
-Also seen: 260816-2315 by coderev — the count is two only up to `3c2e1c6`; step 7b added `CLAUDE.md:30` with two more dangling paths and made the whole `fusion-guard.json` Layout row false. Recorded separately, with the four-citation measurement, in `260816-2317_o_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`.
+Also seen: 260816-2315_*_hooks-wiring-test-was-in-step-9s-list-was-not-edited-and-justifies-bash-by-a-mechanism-removed-on-260812.md by coderev — the count is two only up to `3c2e1c6`; step 7b added `CLAUDE.md:30` with two more dangling paths and made the whole `fusion-guard.json` Layout row false. Recorded separately, with the four-citation measurement, in `260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`.
 
 ---
 Resolved: option 1, the one this record recommended and the user chose at the Turn 1 coherence gate — `/fusion:curate` ran inside the Circle as plan step 16 and landed as `5763550`. The curator boundary held: `CLAUDE.md` was edited by the curator at its own gate, not by step 11.

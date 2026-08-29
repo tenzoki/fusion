@@ -1,13 +1,13 @@
 # Golden fixture regenerated after the curator's rule-file corrections
 
 **Agent:** coder
-**Date:** 260814-1352
-**Circle:** circles/260801-1244-curator
+**Date:** 260814-1352-coder-golden-regeneration.md
+**Circle:** 260801-1244-curator
 **Status:** Complete
 
 ## Task
 
-The curator's apply pass (`circles/260801-1244-curator/history/260814-1332-curator-run.md` §9)
+The curator's apply pass (`260814-1332-curator-run.md` §9)
 edited five project rule files. Three of them are emitted by `bin/fusion-rules`, so
 `hooks/lib/__tests__/fixtures/rules-emission.golden` — which pins the path set, the emission
 order, every file's byte size and every agent's total — no longer matched live measurement.
@@ -74,11 +74,11 @@ exit 0, 49 test files, 1030 tests, all passed, 72.76s.
 `npm test` runs `npm run build` first, and that rebuild left `hooks/dist` byte-identical.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Two counts above are wrong and are restated without a number, the
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). Two counts above are wrong and are restated without a number, the
 form decision `260814-0845` chose for this class. "Across all eighteen agent blocks" is "across every
 agent block": the fixture held seventeen when this was written and holds fifteen at 260824, one per
 prompt under `agents/`. "Edited five project rule files. Three of them are emitted by
 `bin/fusion-rules`" is "edited the project rule files the run's outcome table lists, of which
 `bin/fusion-rules` emits some": the table lists five entries across three files, and the helper emits
 two of the three, as the paragraph after the table already says. Filed as
-`circles/260801-1244-curator/issues/260814-1419_*_the-golden-regeneration-history-states-eighteen-agent-blocks-and-five-rule-files-and-the-artefact-has-seventeen-and-three.md`.
+`260814-1419_*_the-golden-regeneration-history-states-eighteen-agent-blocks-and-five-rule-files-and-the-artefact-has-seventeen-and-three.md`.

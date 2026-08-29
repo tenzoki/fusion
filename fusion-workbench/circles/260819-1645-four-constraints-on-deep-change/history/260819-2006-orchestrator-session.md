@@ -1,4 +1,4 @@
-# Orchestrator Session — 260819-2006
+# Orchestrator Session — 260819-2006-orchestrator-session.md
 
 **Directive:** See the Circle record's `## Directive` — four ways a deep change to fusion can go wrong unobserved are closed after this Circle.
 **Circle:** 260819-1645-four-constraints-on-deep-change
@@ -13,7 +13,7 @@
 | Turn budget | 12 |
 | Domain | code |
 | Active Circle | 260819-1645-four-constraints-on-deep-change (activated this session) |
-| Open decisions in scope | 1 in the Circle (`260819-1645_o_what-defines-the-citation-gates-corpus…`), 0 open in shared |
+| Open decisions in scope | 1 in the Circle (`260819-1645_*_what-defines-the-citation-gates-corpus…`), 0 open in shared |
 | Head-room | `agents/` ~3 300 of 18 000; hook-test surface green |
 
 ## Turns
@@ -26,9 +26,9 @@
 
 **Verdict:** coherent
 
-Computed 260820-0830 by the reconciler (domain `code`) at HEAD `04db0b0`, over the Circle range
+Computed 260820-0830-reconciliation.md by the reconciler (domain `code`) at HEAD `04db0b0`, over the Circle range
 `b91c01c..04db0b0`. Full evidence in
-`circles/260819-1645-four-constraints-on-deep-change/history/260820-0830-reconciliation.md`.
+`260820-0830-reconciliation.md`.
 
 **Edges**
 
@@ -59,12 +59,12 @@ Computed 260820-0830 by the reconciler (domain `code`) at HEAD `04db0b0`, over t
 - **Grounding↔Directive — 18 live decisions, 0 conflicting.** No live decision remains in this
   Circle; both it produced reached `_i_`. All 18 `_o_`/`_a_` records sit in `shared/`, and the two
   that bear directly on this Directive agree with it.
-  `shared/decisions/260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`
+  `260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`
   answered that probe-assertion is the convention and count-pinning the fallback; the new gate
   asserts zero violations recomputed on every run with no pin of any kind, which makes it the first
   gate built since that answer to follow it. Neither the gate nor the record cites the other, so the
   convention is still written down nowhere and the record correctly stays `_a_`.
-  `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+  `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
   answered option 1 — the gate is the answer, and the cost lands on whoever meets the red suite. The
   new gate is that shape on a second surface, and the corpus decision re-accepted the same cost in
   almost the same words one Circle later. Its phrase "the reference lint remains the whole
@@ -82,7 +82,7 @@ store is for. Convening a Rebalance over them would revise nothing.
 1. **The range is not fully covered by review.** `bin/fusion-review-coverage` over `b91c01c..HEAD`
    reports `commits=11`, `reviews=1`, `uncovered=1`, `verdict=uncovered`. The uncovered commit is
    `04db0b0`, and it touches `fusion-workbench/` only. Under the standing answer to
-   `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+   `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
    coverage is advisory and the gap is named at closure; under that record's other answered option,
    recorded and unrealised, a commit touching no shipped file would not count as uncovered at all.
    This does not block closure. It has to be written down.
@@ -120,7 +120,7 @@ above.
 ## Review coverage
 
 **Range:** `b91c01c..02439f3` — 17 commits.
-**Covered by:** `circles/260819-1645-four-constraints-on-deep-change/reviews/260820-0805-coderev-four-constraints-on-deep-change.md`, range `b91c01c..bbfc912`.
+**Covered by:** `260820-0805-coderev-four-constraints-on-deep-change.md`, range `b91c01c..bbfc912`.
 
 **Not covered — seven, named rather than counted:**
 

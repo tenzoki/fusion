@@ -3,12 +3,12 @@
 **Date:** 2026-08-18
 **Agent:** coder
 **Status:** Complete
-**Source:** `shared/decisions/260817-1613_a_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md` (option 2, with option 1's honesty applied); realisation fork answered as "add the section to the plan output format", which closes `shared/issues/260818-2343_o_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md`.
+**Source:** `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md` (option 2, with option 1's honesty applied); realisation fork answered as "add the section to the plan output format", which closes `260818-2343_*_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md`.
 
 ## What changed
 
 `agents/planner.md`
-- Added `## Where this Circle stops` to the plan output format, inside the fenced template between `## Implementation Steps` and `## Data Structures` — the position the one plan that invented the section used (`circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_c_the-compliance-guard-becomes-observation-only.md:346`). The placeholder asks for the conditions under which the Circle is finished plus any precondition a later act must satisfy, one clause per condition, each answerable yes or no.
+- Added `## Where this Circle stops` to the plan output format, inside the fenced template between `## Implementation Steps` and `## Data Structures` — the position the one plan that invented the section used (`260816-1915_*_the-compliance-guard-becomes-observation-only.md:346`). The placeholder asks for the conditions under which the Circle is finished plus any precondition a later act must satisfy, one clause per condition, each answerable yes or no.
 - Added a parenthetical paragraph after the template, beside the existing `**Decidability:**` paragraph, stating that nothing reads the section mechanically: no gate, lint, helper or agent step parses it, and the whole of its enforcement is a human answering the orchestrator's Phase-4 question. It names the measured failure in one clause (a plan made the review pass a precondition of the tag; v10.0.0 was tagged and pushed without the pass; a post-release reconciliation was what noticed).
 
 `agents/orchestrator.md`

@@ -5,8 +5,8 @@ The claim that nothing else cites the two decisions by a hard marker is false, i
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 2
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/history/260823-1243-coder-two-decision-records-close-as-implemented.md:53-55`, and the same claim in `a76ee8f`'s commit message
-**Cross-references:** `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`; `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+**Affects:** `260823-1243-coder-two-decision-records-close-as-implemented.md:53-55`, and the same claim in `a76ee8f`'s commit message
+**Cross-references:** `260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`; `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
 
 ---
 
@@ -43,16 +43,16 @@ Worth noting for the next pass that does this: none of the four files is in the 
 ---
 
 Resolved: 2026-08-23 by coder. The four citations were rewritten to the `_*_` wildcard form, in
-`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2239-reconciliation.md:52`,
-`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2219-analyst-two-checkout-isolation-measurement.md:34`,
-`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md:122`
+`260822-2239-reconciliation.md:52`,
+`260822-2219-analyst-two-checkout-isolation-measurement.md:34`,
+`260822-2204-orchestrator-session.md:122`
 and
-`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md:265`.
+`260822-2219-what-two-checkouts-of-one-project-actually-share.md:265`.
 A tree-wide search for both records under every hard marker now returns nothing outside `archive/` and
 outside this record's own fenced exhibit.
 
 **The false claim survives in two places, and only one of them was editable.** The copy in
-`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-1243-coder-two-decision-records-close-as-implemented.md`
+`260823-1243-coder-two-decision-records-close-as-implemented.md`
 now carries a correction appended beneath it. The sentence itself was left standing rather than
 rewritten, on the same reasoning the `Revised by:` convention gives for a closed issue: rewriting it
 would erase what was claimed instead of pointing at it. The copy in `a76ee8f`'s commit message cannot

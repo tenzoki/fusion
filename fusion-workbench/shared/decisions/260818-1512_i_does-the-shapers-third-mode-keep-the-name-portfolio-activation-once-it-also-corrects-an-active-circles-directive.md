@@ -4,13 +4,13 @@
 **Domain:** code
 **Status:** open
 **Filed by:** planner
-**Cross-references:** `shared/decisions/260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (the answered decision this plan realises), `shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md` (the plan that widens the mode), `agents/shaper.md` `## Four invocation modes` (mode 3), `agents/orchestrator.md` `## Re-sharpening an anticipated Circle (shaper portfolio-activation)`, `README-agents.md` `## Dispatch parameters`
+**Cross-references:** `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (the answered decision this plan realises), `260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md` (the plan that widens the mode), `agents/shaper.md` `## Four invocation modes` (mode 3), `agents/orchestrator.md` `## Re-sharpening an anticipated Circle (shaper portfolio-activation)`, `README-agents.md` `## Dispatch parameters`
 
 ---
 
 ## Question
 
-Decision `260818-1504` widens the shaper's third mode. Today the mode re-clarifies an
+Decision `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` widens the shaper's third mode. Today the mode re-clarifies an
 **anticipated** Circle's Directive ahead of activation, which is the occasion its name describes.
 After the widening it also corrects an **active** Circle's Directive while the record is still the
 only place that Directive is written, and activation is then nowhere in the picture. The name
@@ -80,12 +80,12 @@ Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>
 
 ---
-Answered: user gate, orchestrator session `shared/history/260818-1452-orchestrator-session.md`, 2026-08-18 — keep `portfolio-activation`. The rename would break every citation of the value, in the shaper's own detection contract, in the orchestrator's dispatch permission and in the dispatch-parameter roster, and a mode-detection value that no longer matches its citations fails silently by falling back to the heuristic. The accepted residual is named rather than argued away: after the widening the name describes half of what the mode does, and a reader meeting it for the first time expects it to have to do with activation.
+Answered: user gate, orchestrator session `260818-1452-orchestrator-session.md`, 2026-08-18 — keep `portfolio-activation`. The rename would break every citation of the value, in the shaper's own detection contract, in the orchestrator's dispatch permission and in the dispatch-parameter roster, and a mode-detection value that no longer matches its citations fails silently by falling back to the heuristic. The accepted residual is named rather than argued away: after the widening the name describes half of what the mode does, and a reader meeting it for the first time expects it to have to do with activation.
 
 ---
 Implemented: `95bebe1` — option 1. The wire value `portfolio-activation` is kept and the prose
 around it widened, which is exactly what the answer chose and what the plan
-`shared/planning/260818-1512_c_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`
+`260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`
 (`**Status:** Complete`) carried out.
 
 The value survives unchanged at every site the record enumerated: `agents/shaper.md:3`
@@ -113,5 +113,5 @@ dangles, which `hooks/lib/__tests__/reference-resolution-lint.test.ts` class (b)
 for the section heading in any case.
 
 The `**Status:** open` head field is left exactly as it stands, per
-`260818-2212_i_should-the-decision-records-status-field-exist-at-all-...`: a record written before
+`260818-2212_*_should-the-decision-records-status-field-exist-at-all-...`: a record written before
 the field left the template keeps it.

@@ -4,13 +4,13 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (session `260810-1402`)
-**Cross-references:** `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` (this record carries its parts b and c); `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance that produced part a1, now closed by `26ea3c3`)
+**Cross-references:** `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` (this record carries its parts b and c); `archive/260817-1907-safe-cleanup-scoped/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (the instance that produced part a1, now closed by `26ea3c3`)
 
 ---
 
 ## Question
 
-Decision `260810-0921` bundled three questions. Its part (a1) — tolerate and report a missing helper — was answered and is now realised in `26ea3c3`. Parts (b) and (c) were never answered and are carried here so they have a lifecycle of their own.
+Decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` bundled three questions. Its part (a1) — tolerate and report a missing helper — was answered and is now realised in `26ea3c3`. Parts (b) and (c) were never answered and are carried here so they have a lifecycle of their own.
 
 The record they came from could not carry them any longer. A decision record has one marker, and `_i_` is terminal: leaving two unanswered questions inside a record about to be marked implemented would have made the marker a lie in one direction or blocked the realised part in the other. That is the immediate reason this record exists, and the general form of it is worth stating: **a decision record that bundles separable questions cannot be tracked**, because its state is not a single value. Splitting is the repair; the alternative is a marker vocabulary with per-part states, which nothing in fusion has.
 
@@ -36,7 +36,7 @@ The record they came from could not carry them any longer. A decision record has
 None yet. Part (b) is the more consequential of the two and is the one that will keep costing a session per new helper; part (c) is narrower and only affects this repository's own development. They could be answered separately, and if they are, this record splits again rather than being marked half-implemented — which is the failure this record was created out of.
 
 ---
-Answered: user, session 260811-0752 (chat) — **Option 3 for part (b): state the convention in
+Answered: user, session 260811-0752-orchestrator-session.md (chat) — **Option 3 for part (b): state the convention in
 prose, enforce nothing.** A prompt calling a `bin/` helper guards the call and reports the absence
 in the fixed vocabulary; no lint is added. The record names the honest cost and it is accepted
 rather than argued away: a convention in prompt text can lose to task pressure, and it does not
@@ -69,7 +69,7 @@ asked to demonstrate.
 instruction is explicit: "file part (c) as its own decision when it is taken up." It has been taken
 up three times since — `skills/setup/SKILL.md:34`, `skills/next/SKILL.md:35` and
 `skills/cleanup/SKILL.md:33` each tell their reader that whether the work-tree preference reaches
-helper resolution "is part (c) of decision `260810-1544` and is **unanswered**; do not assume it",
+helper resolution "is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` and is **unanswered**; do not assume it",
 and `CLAUDE.md:37` says the same. Four shipped surfaces now point at an open question that has no
 record of its own, and this record cannot move to `_i_` while it is the only home for it, because
 `_i_` is terminal and would close a question nobody has decided.
@@ -80,7 +80,7 @@ then moves to `_i_` on part (b) alone, which is exactly the split its own paragr
 prescribes for a record whose state is not a single value.
 
 ---
-**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **Part (c) is now load-bearing for a shipped capability, which it was not when the record was answered.**
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **Part (c) is now load-bearing for a shipped capability, which it was not when the record was answered.**
 
 Circle `260824-0530-record-attribution-and-circle-claim` added `bin/fusion-identity` and made `rules/fusion-workbench-conventions.md` `### Who filed it` read it from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"` and, in that section's own words, "nowhere else". Measured here: `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]` is **false** in this repository, because `$FUSION_PLUGIN_ROOT` resolves to `/Users/k1/.fusion` and the installed copy predates the helper, while `./bin/fusion-identity` in the work tree exits 0 and prints `PERSON=Kai Stalmann <ks@qantr.com>` and `CHECKOUT=5e8248d7`.
 

@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** planner
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store`
-**Artifact revised in place:** `circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
+**Circle:** `260813-0858-playmaker-maintains-backlog-store`
+**Artifact revised in place:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
 
 ## What this run was
 
@@ -63,7 +63,7 @@ the shaper, carries no lint and has not drifted. The suite prediction is therefo
 
 ## One defect filed
 
-`shared/issues/260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`.
+`260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`.
 `skills/direct/SKILL.md:84` tells the reader the dispatched shaper runs its clarification flow with
 the user interactively, while `agents/shaper.md:119` states that a dispatched shaper receives no
 question channel and must return its questions instead. The record separates what was verified by

@@ -3,12 +3,12 @@
 **Agent:** coder
 **Date:** 2026-08-10 09:41
 **Status:** Complete
-**Task:** fix `260810-0505` — Step 7.6 swallowed the push exit code the branch exists to avoid
+**Task:** fix `260810-0505_*_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md` — Step 7.6 swallowed the push exit code the branch exists to avoid
 **Source record:**
-- `fusion-workbench/shared/issues/260810-0505_o_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md`
+- `260810-0505_*_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md`
 
 **Origin:** Not Circle work; no Circle active. Review finding (coderev, session
-`260810-0241`, Turn 1) against `8960e1a..HEAD`, on the fix committed in `b6bbae7`.
+`260810-0241-orchestrator-session.md`, Turn 1) against `8960e1a..HEAD`, on the fix committed in `b6bbae7`.
 
 ## What was wrong
 

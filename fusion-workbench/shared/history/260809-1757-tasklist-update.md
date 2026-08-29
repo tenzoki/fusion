@@ -75,7 +75,7 @@ Task 10 is filed with domain `knowledge` because its artifact is rule text. It i
 Where a record named a test file or a fixture, it became an acceptance criterion: the
 `451a07e` corpus baseline and its 145-to-142 count for task 6, the real-subprocess harness
 with an unwritable state directory for task 2, the shipped-protected-list assertion in
-`config.test.ts` for task 8, and the `260716-2005` quoted-heredoc cases that must stay
+`config.test.ts` for task 8, and the `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` quoted-heredoc cases that must stay
 green for task 4. Two records name work that must explicitly not be done — the
 prose-allow-list for task 4, and implementing before deciding for task 9 — and both
 prohibitions are stated in the task rather than left in the source record.

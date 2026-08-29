@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260816-1741-guard-becomes-observation-only`
+**Circle:** `260816-1741-guard-becomes-observation-only`
 **Date:** 2026-08-17
 
 ---
@@ -11,7 +11,7 @@
 
 Three pieces that had to land in the same commit as the curator's already-applied
 pass over `CLAUDE.md` and `rules/fusion-workbench-conventions.md` (run log
-`circles/260816-1741-guard-becomes-observation-only/history/260817-0845-curator-run.md`,
+`260817-0845-curator-run.md`,
 18 ledger entries, all approved at the user gate). Neither of the curator's two
 files was touched here.
 
@@ -111,7 +111,7 @@ third failure: the hook-tests line bound in that same file passed.
 - `hooks/dist/session-start.js`, `hooks/dist/session-start.d.ts` (rebuilt)
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts`
 - `hooks/lib/__tests__/fixtures/rules-emission.golden` (regenerated)
-- `fusion-workbench/circles/260816-1741-guard-becomes-observation-only/issues/260816-2115_c_the-why-the-message-is-english-argument-names-two-removed-mechanisms-as-its-examples.md`
+- `260816-2115_*_the-why-the-message-is-english-argument-names-two-removed-mechanisms-as-its-examples.md`
   (closed, renamed from `_o_`)
 
 Nothing was staged and nothing was committed.

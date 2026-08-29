@@ -35,7 +35,7 @@ explains itself. What is missing is the sentence that would have let them meet i
 **Affects:** `README-hooks.md:386` (`### Rebuilding after TS changes`); `CLAUDE.md`
 `## Where to look when something breaks`
 **Cross-references:**
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 (the accepted cost that makes the `CLAUDE.md` row worth its bytes)
 
 **Budget, since `CLAUDE.md` and `README-hooks.md` both sit outside the three bounded surfaces
@@ -49,7 +49,7 @@ One clause in `### Rebuilding after TS changes` naming the gate and what it prin
 edit" and whose cause column names the gate, the corpus and the two remedies its message carries.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
 reproduces.** `grep -rln 'committed-dist\|workbench-citation-lint' README.md README-hooks.md
 CLAUDE.md docs/` returns nothing. Two gates that can redden `npm test` for somebody who touched no
 code and no citation are named on no surface a reader would reach first. Marker unchanged.

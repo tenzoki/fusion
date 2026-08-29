@@ -73,7 +73,7 @@ gap worth tracking, and the defense arguably should not depend solely on PreTool
 
 ## Related
 
-- Analyst root-cause: `shared/analyses/260717-1935-branch-switch-guard-live-miss-root-cause.md`
+- Analyst root-cause: `260717-1935-branch-switch-guard-live-miss-root-cause.md`
 - Guard state was mutated by the diagnostic run (consecutiveBlocks 0→1); reset to baseline by
   the orchestrator after filing. Halt threshold is 3, so no halt occurred.
 
@@ -104,10 +104,10 @@ Root cause: the classifier cannot distinguish a branch target from a file target
 there is no `--` pathspec separator, so it blocks the ambiguous form conservatively.
 That blocks legitimate file restores.
 
-**Facet 3 (also live, already tracked separately as 260716-2005): heredoc text match.**
+**Facet 3 (also live, already tracked separately as 260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md): heredoc text match.**
 The classifier matched the git-command STRINGS inside a documentation heredoc (this very
 note) and blocked the append. It should match an actual command invocation, not command
-names quoted inside heredoc/prose. Cross-reference 260716-2005.
+names quoted inside heredoc/prose. Cross-reference 260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md.
 
 **Constraint on any fix (do not open a bypass):** branches can contain `/` (the current
 branch is `feature/plane`), so a naive "arg contains a slash -> allow" heuristic would let
@@ -124,7 +124,7 @@ a valid ref). Improve the block message either way.
 is a precision fix to the guard, not a loosening of the boundary.
 
 Status: facet 2 fixed in the commit that follows this note; facet 1 (harness under-firing)
-remains open pending an upstream report; facet 3 tracked at 260716-2005.
+remains open pending an upstream report; facet 3 tracked at 260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md.
 
 ---
 ## Closure (2026-07-18)
@@ -136,7 +136,7 @@ All three facets are now dispositioned; closing the umbrella issue.
   real branch (including one with a slash, or one sharing a name with a file) stays
   blocked. 63-test guard suite.
 - **Facet 3 (git-command strings matched inside heredoc/prose data regions)** — FIXED in
-  `3fdb7c1` (tracked as issue `260716-2005`, now closed). `stripDataRegions()` models
+  `3fdb7c1` (tracked as issue `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md`, now closed). `stripDataRegions()` models
   shell data regions. Guard suite 63 → 84.
 - **Facet 1 (harness sometimes does not invoke the PreToolUse Bash hook)** — ACCEPTED
   LIMITATION, not fusion-fixable. The shipped classifier blocks correctly WHEN invoked

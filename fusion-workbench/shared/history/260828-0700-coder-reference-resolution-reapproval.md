@@ -6,7 +6,7 @@
 
 ## Task
 
-The curator's apply pass (`shared/history/260828-0049-curator-run.md`, L01-L04) edited four sentences in `CLAUDE.md`. Re-approve `BASELINE` in `hooks/lib/__tests__/reference-resolution-lint.test.ts` from 1511/212 to what the gate reads now. Scope: that one line. No commit.
+The curator's apply pass (`260828-0049-curator-run.md`, L01-L04) edited four sentences in `CLAUDE.md`. Re-approve `BASELINE` in `hooks/lib/__tests__/reference-resolution-lint.test.ts` from 1511/212 to what the gate reads now. Scope: that one line. No commit.
 
 ## Measurement
 

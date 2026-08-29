@@ -1,7 +1,7 @@
-# Orchestrator Session — 260816-1841
+# Orchestrator Session — 260816-1841-orchestrator-session.md
 
 **Directive:** The compliance guard observes and never blocks (the Circle's own Directive,
-read from `circles/260816-1741-guard-becomes-observation-only/_t_circle.md`)
+read from `260816-1741-guard-becomes-observation-only`)
 **Mode:** (not yet resolved — Phase 0 pending)
 **Status:** In progress
 
@@ -13,12 +13,12 @@ read from `circles/260816-1741-guard-becomes-observation-only/_t_circle.md`)
 **Turn budget:** 12
 **Workbench domain:** code (code_files=111, data_files=12, counted_by=git-ls-files)
 
-**Active Circle:** `260816-1741-guard-becomes-observation-only`, activated at 260816-1841 via
+**Active Circle:** `260816-1741-guard-becomes-observation-only`, activated at 260816-1841-orchestrator-session.md via
 `/fusion:next` with an explicit target. The record moved `_a_` to `_t_`, its
 `**Status:**` head field was set to `active` in the same command, and
 `.active-circle` now names the directory.
 
-**Predecessor history file this session:** `shared/history/260816-1814-orchestrator-session.md`
+**Predecessor history file this session:** `260816-1814-orchestrator-session.md`
 holds the pre-activation Setup, when no Circle was active and the shared store was the whole
 scan. This file continues that session against the Circle.
 
@@ -28,7 +28,7 @@ scan. This file continues that session against the Circle.
 |---|---|
 | planning | empty — no plan exists yet |
 | issues | empty |
-| decisions | 1 answered: `260816-1742_a_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` |
+| decisions | 1 answered: `260816-1742_*_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` |
 | history | 1 shaper log, plus this file |
 | reviews, analyses | empty |
 
@@ -43,7 +43,7 @@ substantive warnings are carried forward:
 2. The second backlog entry's blocking chain now hangs on one record whose larger half is
    moot, because `hooks/lib/__tests__/queue-ground-lint.test.ts` was removed on 2026-08-15
    with the persisted work queue.
-3. The unreached work from the Bounded Closure of `260813-0910` is still carried by nobody.
+3. The unreached work from the Bounded Closure of `260813-0910-documentation-matches-shipped-plugin` is still carried by nobody.
 
 ## Session log
 
@@ -54,7 +54,7 @@ substantive warnings are carried forward:
 <!-- RECONCILER-OWNED -->
 
 Computed 2026-08-17 at Phase 3, over `3d41d4a..9ae7974`. Domain `code`. Full working in
-`circles/260816-1741-guard-becomes-observation-only/history/260817-1417-reconciliation.md`.
+`260817-1417-reconciliation.md`.
 
 **Verdict:** review-needed
 
@@ -67,10 +67,10 @@ Computed 2026-08-17 at Phase 3, over `3d41d4a..9ae7974`. Domain `code`. Full wor
   tests whose subject is removed (it survives, keeps two callers, and is green), and `:106-115`
   still omits `docs/working-model.md`, `README-agents.md:169` and `hooks/session-start.ts` from the
   text surfaces in scope (all three were in fact corrected). Three further defects stand against
-  the shipped surface at the released tag, `260816-2318` (Medium, the v10 migration notice reaches
+  the shipped surface at the released tag, `260816-2318_*_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md` (Medium, the v10 migration notice reaches
   a consuming project's chat through no mandate — `agents/orchestrator.md:132` unchanged),
-  `260816-2319` and `260816-2320`. Tracking drift found and corrected in this pass: 4 stale plan
-  markers, 1 stale plan status, 3 stale-open issues (`260816-2123`, `260816-2317`, `260817-1032`,
+  `260816-2319_*_the-answer-site-case-in-hook-fail-open-cannot-fail-on-the-violation-its-describe-block-names.md` and `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`. Tracking drift found and corrected in this pass: 4 stale plan
+  markers, 1 stale plan status, 3 stale-open issues (`260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`, `260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`, `260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`,
   all closed on verified evidence). 2 new defects filed.
 - **Artifact↔Directive:** OK. All 21 commits move toward the stated Directive with none orthogonal
   and none away. Traced end to end: `2f624ca` `9c79202` `ec3b6ad` `3c2e1c6` remove the verdict, the
@@ -82,9 +82,9 @@ Computed 2026-08-17 at Phase 3, over `3d41d4a..9ae7974`. Domain `code`. Full wor
   reaches no verdict on any path, and the tag `v10.0.0` at `e331332` is on `origin/main`.
 - **Grounding↔Directive:** OK. 30 active decision records (`_o_` + `_a_`) across all stores,
   0 conflicting. The three records this Circle executes are all `_i_` with cited commits
-  (`260809-1224`, and both `260812-1232`), as are the Circle's own three. A grep of every active
+  (`260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`, and both `260812-1232`), as are the Circle's own three. A grep of every active
   record for the removed mechanisms returns one hit,
-  `shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`,
+  `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`,
   and it cites `fusion-guard.json` as historical evidence inside its own argument rather than
   depending on the mechanism being live. Not a conflict.
 
@@ -100,12 +100,12 @@ happens to the three defects standing against a version that has already shipped
 3d41d4a` reports `uncovered=9` — Turn 3 received no review pass, and six of the nine uncovered
 commits touch 35 shipped files between them, one of which is the commit the tag points at. Under
 the recorded answer to
-`shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 (options 3 then 1, answered by the user on 2026-08-16) coverage is **advisory**: the gap is named
 in the closure note and does not flag the edge. That record exists precisely to stop this verdict
 varying on this evidence, and it was followed rather than reasoned around. The gap is filed
 separately as
-`circles/260816-1741-guard-becomes-observation-only/issues/260817-1417_o_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`,
+`260817-1417_*_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`,
 because the plan's own `## Where this Circle stops` named that review pass as a precondition of the
 tag and no record said the gate was crossed without it.
 
@@ -117,7 +117,7 @@ Computed 2026-08-17 at Phase 3, after the Rebalance, over the full session range
 `3d41d4a..d0f13fa` (27 commits). Domain `code`. **This section is appended beneath the first pass's
 `## Coherence` and does not replace it** — the first records the state at `9ae7974` that produced
 `review-needed` and the Rebalance; this one records the state at the released HEAD. Full working in
-`circles/260816-1741-guard-becomes-observation-only/history/260817-1618-reconciliation.md`.
+`260817-1618-reconciliation.md`.
 
 **Verdict:** review-needed
 
@@ -151,8 +151,8 @@ Computed 2026-08-17 at Phase 3, after the Rebalance, over the full session range
   `README-hooks.md` and in `docs/philosophy.md`" (`_t_circle.md:25-27`). `agents/curator.md:212` and
   `skills/curate/SKILL.md:110` both still say a write denied by the project's guard configuration is
   a `failed` entry. An agent prompt and a skill body, both named by that clause, both stating a
-  mechanism that cannot fire. Filed as `260817-1505`, **left open by explicit user decision against
-  the shipped release**. The other three left open (`260817-1507`, `260817-1508`, `260817-1509`) were
+  mechanism that cannot fire. Filed as `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`, **left open by explicit user decision against
+  the shipped release**. The other three left open (`260817-1507_*_the-turn-budget-helpers-authoritative-header-still-scopes-its-stderr-to-dropped-keys.md`, `260817-1508_*_the-archive-skills-event-log-description-names-three-retired-event-types-and-omits-both-live-ones.md`, `260817-1509_*_no-test-pins-the-repeat-to-the-user-mandate-that-already-shipped-narrow-once.md`) were
   read against the same clause and fall outside it: a helper's stderr scope, an omission in a log
   description whose present-perfect sentence stays true, and a missing test.
 - **Grounding↔Directive: OK.** 24 active decision records (`_o_` + `_a_`) in `$SCAN_DECISIONS`
@@ -173,12 +173,12 @@ judged definitively unreachable*. Neither fits: nothing here is unreachable, and
 one filed defect the user already chose to leave. **The vocabulary has no value for a Directive that
 is reachable and deliberately not reached**, which is a gap in a case split rather than a judgement
 call, and it is filed as
-`shared/issues/260817-1613_o_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md`.
+`260817-1613_*_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md`.
 
 **What each closure would mean, since the gate is the user's:**
 
 - **Bounded Closure (`_b_`)** — the Directive stands as written, the Circle closes acknowledging it
-  was not fully reached, and `260817-1505` plus the three adjacent defects are the recorded residue.
+  was not fully reached, and `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` plus the three adjacent defects are the recorded residue.
   This is the honest reading of what happened and needs no further Turn.
 - **Revise the Directive, then close `_c_`** — narrow the last clause to the surfaces that were in
   fact swept, so the record says what the Circle delivered. Equally honest, and it is what the
@@ -189,7 +189,7 @@ call, and it is filed as
 
 **Due in the same edit as the closure note, whichever marker is chosen.** `_t_circle.md` carries two
 literal-marker citations that no longer resolve: `:7` `**Active spec/plan:**` names
-`planning/260816-1915_p_…` and the plan is `_c_`, and `:167` names `decisions/260816-1742_o_…` and
+`260816-1915_*_…` and the plan is `_c_`, and `:167` names `260816-1742_*_…` and
 that record is `_i_`. The first is the pointer field `rules/circle-records.md` describes as
 degrading silently for `portfolio.md` rendering and orchestrator resume. Both are one token each,
 the record is being edited anyway, and after the transition they are permanent. Recorded on
@@ -210,7 +210,7 @@ carries it, and no behaviour moved.
 # Final summary (written at Phase 4, 2026-08-17)
 
 **Status:** Bounded Closure — one Directive clause reachable and deliberately not reached
-(`260817-1505`), by explicit user decision at the second Rebalance gate.
+(`260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`), by explicit user decision at the second Rebalance gate.
 
 The session was interrupted once and resumed. It kept this history file, the anchor `3d41d4a` and
 its work queue; the Turn count spans the interruption because it is taken from `turn_start` events
@@ -221,7 +221,7 @@ since the first `session_start` naming this file.
 Record counts are read off the stores at write time, never accumulated — the rule in
 `agents/orchestrator.md` that exists because a hand-kept pair once drifted by two in both
 directions and the endpoint check could not see it. Measured across **both** the Circle store and
-`shared/`, anchor `3d41d4a`, session start `260816-1841`.
+`shared/`, anchor `3d41d4a`, session start `260816-1841-orchestrator-session.md`.
 
 | Metric | Count |
 |--------|-------|
@@ -252,7 +252,7 @@ reproducing them after closure must do the same.
 
 All six uncovered commits fall *after* the last review's declared range, and a review cannot open
 the commit that adds it. Five of the six are workbench bookkeeping; `dcb0784` is a shipped-text fix
-and `d0f13fa` the release that carries it. Advisory under `shared/decisions/260815-2109`, and
+and `d0f13fa` the release that carries it. Advisory under `260815-2109`, and
 stated rather than counted, because a count is what let seven unreviewed commits read as one in the
 run that filed `260810-1205`.
 
@@ -262,8 +262,8 @@ Recorded because a session that only lists what it fixed is not a record.
 
 1. **Two commits carried renames their messages do not describe.** A sub-agent left work staged and
    `git commit` writes the whole index. `dbbad70` carries six renames, four of them unnamed — my
-   own count of four was itself wrong and the reconciler corrected it. Filed as `260817-1502`,
-   which then turned out to duplicate `shared/issues/260816-0105`, open since 2026-08-16 with its
+   own count of four was itself wrong and the reconciler corrected it. Filed as `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md`,
+   which then turned out to duplicate `260816-0105`, open since 2026-08-16 with its
    own measurement.
 2. **One commit message and the dashboard were written in German** while the artifact language is
    `en`. The reconciler had already filed `260817-1417` for an earlier instance in this same range;
@@ -273,13 +273,13 @@ Recorded because a session that only lists what it fixed is not a record.
 
 ## Remaining work
 
-Six defects stay open by user decision: `260816-2319`, `260816-2320`, `260817-1505`, `260817-1507`,
-`260817-1508`, `260817-1509`. `260817-1505` is the unmet Directive clause and sits in a terminal
+Six defects stay open by user decision: `260816-2319_*_the-answer-site-case-in-hook-fail-open-cannot-fail-on-the-violation-its-describe-block-names.md`, `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`, `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`, `260817-1507_*_the-turn-budget-helpers-authoritative-header-still-scopes-its-stderr-to-dropped-keys.md`,
+`260817-1508_*_the-archive-skills-event-log-description-names-three-retired-event-types-and-omits-both-live-ones.md`, `260817-1509_*_no-test-pins-the-repeat-to-the-user-mandate-that-already-shipped-narrow-once.md`. `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` is the unmet Directive clause and sits in a terminal
 Circle's issue store, so nothing carries it forward — the portfolio's `## Warnings` is the only
 surface naming it.
 
-Two questions were opened and not answered: `shared/decisions/260817-1613` (does a plan-stated
-precondition get any mechanism at all) and `shared/issues/260817-1613` (the verdict vocabulary has
+Two questions were opened and not answered: `260817-1613` (does a plan-stated
+precondition get any mechanism at all) and `260817-1613` (the verdict vocabulary has
 no value for a Directive that is reachable and deliberately not reached).
 
 ## Session Flow

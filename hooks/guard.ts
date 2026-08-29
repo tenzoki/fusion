@@ -148,7 +148,7 @@ async function main(): Promise<void> {
   // Which Claude Code session this row belongs to. Measured non-empty on both
   // tool hooks and equal to the SessionStart value within one session, so the
   // field this interface has always declared and never read is populated rather
-  // than vestigial — `circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`
+  // than vestigial — `260825-2214-can-a-hook-obtain-the-session-identifier.md`
   // finding (c). Set once here, before the first emit below and before the
   // top-level handler can reach one; `lib/events.ts` carries why the seam is a
   // module variable rather than a parameter, and why an unresolved value makes
@@ -188,7 +188,7 @@ async function main(): Promise<void> {
   // The cost, stated rather than discovered: a project left with a broken
   // configuration file gets one advisory per guarded tool call, Bash included,
   // which is a deliberate departure from the Bash allow path's zero-side-effect
-  // property (issues 260707-0750 / 260707-0751). That property protects
+  // property (issues 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md / 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md). That property protects
   // ordinary work in a CORRECTLY configured project from flooding the log; this
   // is not that, and silence here is the failure the spec rejects. The noise
   // stops when the file is fixed. A VALID project config leaves the innocuous
@@ -217,8 +217,8 @@ async function main(): Promise<void> {
   // call must have zero side-effect on guard state: it MUST NOT emit a
   // guard_allow event, because one append per Bash call floods events.jsonl and
   // buries the guard_advisory rows the monitor exists to surface (issue
-  // 260707-0751). Its sibling — that Bash must not reset the consecutive-block
-  // counter (issue 260707-0750) — is satisfied by there being no counter. Only
+  // 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md). Its sibling — that Bash must not reset the consecutive-block
+  // counter (issue 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md) — is satisfied by there being no counter. Only
   // the write-tool path below writes a row.
   if (isBash) {
     allow();

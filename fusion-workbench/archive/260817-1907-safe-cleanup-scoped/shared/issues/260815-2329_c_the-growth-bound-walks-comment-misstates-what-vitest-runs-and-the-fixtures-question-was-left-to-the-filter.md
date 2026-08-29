@@ -5,7 +5,7 @@ The growth-bound walk's comment misstates what vitest runs, and the fixtures que
 walk. The walk is right and the measured figure is unchanged. The comment justifying it is not:
 it says vitest's include is "a `.ts` file at ANY depth under `__tests__/` runs", and that is false —
 vitest's default include is `**/*.{test,spec}.?(c|m)[jt]s?(x)`, so a plain `.ts` at any depth is
-collected by nothing. The source record `260815-1935` stated this correctly; the fix's comment
+collected by nothing. The source record `260815-1935_*_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md` stated this correctly; the fix's comment
 restated it wrongly. The same comment is where a reader would look to decide whether `fixtures/`
 belongs inside the walk — the one question that record asked to be "answered deliberately, not by
 whichever filter is easiest to write" — and it does not answer it.

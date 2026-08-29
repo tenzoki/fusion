@@ -14,9 +14,9 @@ There is a second copy. `skills/cleanup/SKILL.md:114`:
 > code, `data` if data files dominate, else `code`. When unsure, default `code`.
 
 That is not the cascade Setup Step 5 runs. It is the cascade as it stood **before** `2910cf6`: both
-non-build domains ahead of any code count, which is exactly issue `260807-1942`. It also carries no
+non-build domains ahead of any code count, which is exactly issue `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md`. It also carries no
 `counted_by == "none"` case, so an unmeasurable project is silently read as "no code" — issue
-`260807-1951` in the same sentence.
+`260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` in the same sentence.
 
 Neither new gate can see it. `domain-cascade.test.ts:48` and `domain-cascade-order-lint.test.ts:58`
 both read `agents/orchestrator.md` and nothing else; `path-literal-lint.test.ts` reads skills for
@@ -45,12 +45,12 @@ this is, and the one that decides whether tests run is the stale one.
 
 (a) closes it; (b) is what stops the third copy. They are not exclusive.
 
-**Cross-references.** Decision `260810-1822_i_should-the-queue-ground-procedure-become-a-rule-file-
+**Cross-references.** Decision `260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-
 when-one-of-its-three-consumers-cannot-be-emitted-to.md` records the same shape for a different
 procedure and names the obstacle (`bin/fusion-rules` cannot emit to a skill) — a cascade rule file
 would hit it too.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 Resolved: Fix direction (a) and (b) together, since (a) alone leaves the module's claim false.
@@ -75,7 +75,7 @@ A second definition is representable — one shipped. What holds is a measuremen
 paraphrase spread across a table's rows is not caught, nor is anything outside `agents/` and
 `skills/`.
 
-Demonstrated on a copy of the tree, not in it (decision 260810-1820): with the pre-fix sentence
+Demonstrated on a copy of the tree, not in it (decision 260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md): with the pre-fix sentence
 written back into the copy's `skills/cleanup/SKILL.md`, `npx vitest run
 lib/__tests__/domain-cascade.test.ts` fails naming `skills/cleanup/SKILL.md:125`, its four domains,
 its three inputs, and the route to take instead. `npm test` on the real tree: exit 0.

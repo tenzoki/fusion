@@ -1,4 +1,4 @@
-# Orchestrator Session — 260825-2123
+# Orchestrator Session — 260825-2123-orchestrator-session.md
 
 **Directive:** See `**Active spec/plan:**` in the Circle record; until a plan exists, the record's
 `## Directive` states it. Capability C4 of the multi-user specification: presence travels between
@@ -8,7 +8,7 @@ checkouts, and the monitor reads only its own.
 
 ## Setup snapshot
 
-- Active Circle: `circles/260825-2023-presence-travels-monitor-filters-own-checkout`, activated this session
+- Active Circle: `260825-2023-presence-travels-monitor-filters-own-checkout`, activated this session
 - Claim: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7
 - Git HEAD at start: 8119fc2
 - Turn budget: max_turns=12 (resolved, no loader diagnostics)
@@ -24,13 +24,13 @@ checkouts, and the monitor reads only its own.
 | Open decisions (Circle + shared) | 4 |
 
 The one open plan is the specification itself,
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. The Circle's own stores are
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. The Circle's own stores are
 empty; every counted record is in `shared/`.
 
 ### Note on the first setup pass of this session
 
 This session ran Setup once before the activation, with no Circle active, and wrote
-`shared/history/260825-1820-orchestrator-session.md`. The activation changed every `OUT_*` and
+`260825-1820-orchestrator-session.md`. The activation changed every `OUT_*` and
 `SCAN_*` value, so Setup ran again and this file is the Circle's session history. The earlier file
 records the pre-activation portfolio work (`/fusion:next`, `/fusion:direct`).
 
@@ -91,9 +91,9 @@ presence also becomes a reduction task in test files it has no other reason to o
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: **flagged (Artifact at fault).** Eleven of eleven plan steps and nine of the ten discharge-able acceptance criteria verified on disk, fourteen of sixteen closures re-checked against the tree rather than their own prose, all fourteen holding. Three counts about this Circle's own mechanism are wrong at HEAD: `rules/workbench-tracking.md` says "Three readers apply that scoping" where four do (`agents/orchestrator.md:915`, `:1376` is the fourth); five shipped sites (`CLAUDE.md:43`, `bin/fusion-events:202`, `hooks/lib/events-query.ts:374` and two compiled copies) say the helper replaced "four copies of a whole-file `grep -c turn_start`" where `8119fc2` held two; and acceptance criterion 6 says the plan refers six defect records by path where it refers seven, made seven by `287f7ff`, the same commit that corrected it. The first two are filed as `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md` and `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`; the third is recorded in the plan's `## Reconciliation Log`. One further Grounding-side residual: `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` was discharged by `97407df` and carries no note saying so, which criterion 6 requires. Fifteen defect records stand open in the Circle, thirteen of them carried by the user's closure decision and two filed by this pass; none falsifies a Directive clause. **The Artifact is named at fault and the Grounding shares it**: plan step 9 instructed "Name the three readers by path" while plan step 8 of the same plan was building the fourth, so the executor followed a Grounding that was already one short.
+- Artifact↔Grounding: **flagged (Artifact at fault).** Eleven of eleven plan steps and nine of the ten discharge-able acceptance criteria verified on disk, fourteen of sixteen closures re-checked against the tree rather than their own prose, all fourteen holding. Three counts about this Circle's own mechanism are wrong at HEAD: `rules/workbench-tracking.md` says "Three readers apply that scoping" where four do (`agents/orchestrator.md:915`, `:1376` is the fourth); five shipped sites (`CLAUDE.md:43`, `bin/fusion-events:202`, `hooks/lib/events-query.ts:374` and two compiled copies) say the helper replaced "four copies of a whole-file `grep -c turn_start`" where `8119fc2` held two; and acceptance criterion 6 says the plan refers six defect records by path where it refers seven, made seven by `287f7ff`, the same commit that corrected it. The first two are filed as `260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md` and `260826-1127_*_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`; the third is recorded in the plan's `## Reconciliation Log`. One further Grounding-side residual: `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` was discharged by `97407df` and carries no note saying so, which criterion 6 requires. Fifteen defect records stand open in the Circle, thirteen of them carried by the user's closure decision and two filed by this pass; none falsifies a Directive clause. **The Artifact is named at fault and the Grounding shares it**: plan step 9 instructed "Name the three readers by path" while plan step 8 of the same plan was building the fourth, so the executor followed a Grounding that was already one short.
 - Artifact↔Directive: **OK.** The commits over `8119fc2..7774d56` move toward the stated Directive with nothing orthogonal to it. Each of its four clauses lands in named commits: presence in `97407df` (the reader) and `753932b` (the two surfaces); the monitor reading its own checkout in `7c1e993`; one Turn count in `dad5042` and `6deeb33`; identity on every emitted line in `8655ec2`, `753932b` and `72a9561`. `c649556` and `46de871` are the cut and the tests the user's decision required in the same Turn, `d751534` and `6deeb33` are review closures inside the same subject, and `287f7ff` and `7774d56` are the Circle's own closure records. No commit in the range serves a different goal.
-- Grounding↔Directive: **OK.** Twenty-four active decision records (`_o_` and `_a_`) across `shared/decisions/`, none conflicting with the Directive; the Circle's own store now holds none, its single record having moved to `_i_` in this pass. The four that bear closest on the Directive are all consistent with it: `shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` is the specification this Circle is capability C4 of, `shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` is the head-room question the Circle answered with an equal cut, `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` permits the `uncovered=4` this range carries with the gap named, and part (c) of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` stays deliberately unanswered, which the Circle relied on rather than contradicted.
+- Grounding↔Directive: **OK.** Twenty-four active decision records (`_o_` and `_a_`) across `shared/decisions/`, none conflicting with the Directive; the Circle's own store now holds none, its single record having moved to `_i_` in this pass. The four that bear closest on the Directive are all consistent with it: `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` is the specification this Circle is capability C4 of, `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` is the head-room question the Circle answered with an equal cut, `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` permits the `uncovered=4` this range carries with the gap named, and part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` stays deliberately unanswered, which the Circle relied on rather than contradicted.
 
 **Rebalance recommendation:** revise Artifact
 
@@ -111,12 +111,12 @@ be gated at all, not the two corrections.
 
 The section above is the record of what was true at `7774d56`, before the fix, and is left as written.
 This subsection re-issues the verdict over `e66f7d5`. Working notes at
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1219-reconciliation-confirmation.md`.
+`260826-1219-reconciliation-confirmation.md`.
 
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: **flagged (Artifact at fault).** All three causes named above are fixed and each was re-measured rather than accepted. `rules/workbench-tracking.md:59` now says four readers and keeps the asymmetry — three drop, one keeps — with the four verified at source (`hooks/lib/events-query.ts:146` `isOurs` under `countTurns:400` and inverted under `otherParties:250`, `bin/monitor:1291-1302`, `agents/orchestrator.md:915` with `:1376`). Both Turn-count quantities are right and stated separately at all five shipped sites, the two `hooks/dist/` copies byte-identical to `hooks/lib/events-query.ts:374`; two literal blocks confirmed at `8119fc2` by `git grep`, five sites confirmed at both revisions, and "four copies" survives nowhere shipped. Criterion 6 reads seven, and seven distinct defect-record paths stand above the `## Reconciliation Log` heading at line 296. The residual note on `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` is present, cites `97407df`, and its claim checks out against `hooks/lib/events-query.ts:392-434`. **One new count is wrong, and it is the seventh of the series:** `agents/orchestrator.md:1279`, the authoring home for the event-line contract, heads a paragraph "`person`, `checkout` and `session_id` stand on every line", says "none of the three is composed anywhere else", and states its rule as "A half that did not resolve makes its field absent rather than empty" — a two-member word over a three-member set, made wrong by this Circle's own `72a9561` and rewritten without being seen by `6deeb33`, the count-correction commit. Two shipped files cite that paragraph as the rule's authority instead of restating it (`hooks/lib/events.ts:90`, `rules/workbench-tracking.md:55`). Filed as `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1219_o_the-event-line-contracts-own-rule-sentence-says-a-half-of-a-set-this-circle-grew-to-three.md`. Sixteen defect records now stand open; none falsifies a Directive clause.
+- Artifact↔Grounding: **flagged (Artifact at fault).** All three causes named above are fixed and each was re-measured rather than accepted. `rules/workbench-tracking.md:59` now says four readers and keeps the asymmetry — three drop, one keeps — with the four verified at source (`hooks/lib/events-query.ts:146` `isOurs` under `countTurns:400` and inverted under `otherParties:250`, `bin/monitor:1291-1302`, `agents/orchestrator.md:915` with `:1376`). Both Turn-count quantities are right and stated separately at all five shipped sites, the two `hooks/dist/` copies byte-identical to `hooks/lib/events-query.ts:374`; two literal blocks confirmed at `8119fc2` by `git grep`, five sites confirmed at both revisions, and "four copies" survives nowhere shipped. Criterion 6 reads seven, and seven distinct defect-record paths stand above the `## Reconciliation Log` heading at line 296. The residual note on `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` is present, cites `97407df`, and its claim checks out against `hooks/lib/events-query.ts:392-434`. **One new count is wrong, and it is the seventh of the series:** `agents/orchestrator.md:1279`, the authoring home for the event-line contract, heads a paragraph "`person`, `checkout` and `session_id` stand on every line", says "none of the three is composed anywhere else", and states its rule as "A half that did not resolve makes its field absent rather than empty" — a two-member word over a three-member set, made wrong by this Circle's own `72a9561` and rewritten without being seen by `6deeb33`, the count-correction commit. Two shipped files cite that paragraph as the rule's authority instead of restating it (`hooks/lib/events.ts:90`, `rules/workbench-tracking.md:55`). Filed as `260826-1219_*_the-event-line-contracts-own-rule-sentence-says-a-half-of-a-set-this-circle-grew-to-three.md`. Sixteen defect records now stand open; none falsifies a Directive clause.
 - Artifact↔Directive: **OK.** Unchanged in substance and re-checked over the one new commit. `e66f7d5` touches `CLAUDE.md`, `bin/fusion-events`, `hooks/lib/events-query.ts` with its two compiled copies, `rules/workbench-tracking.md`, one test constant and the Circle's records — corrections to statements about the Directive's own mechanism, nothing orthogonal and nothing new in scope. The four clauses remain met in the commits the section above names.
 - Grounding↔Directive: **OK.** Unchanged. No decision record was filed, answered or superseded between `7774d56` and `e66f7d5`, so the twenty-four active records and the four bearing closest on the Directive stand exactly as read above.
 
@@ -127,17 +127,17 @@ This subsection re-issues the verdict over `e66f7d5`. Working notes at
 ## Portfolio update
 
 Playmaker ran at Phase 4 after the `_t_`→`_b_` transition at `8d06759`. History:
-`shared/history/260826-1301-playmaker-orchestrator-phase4.md`; `portfolio.md` regenerated whole.
+`260826-1301-playmaker-orchestrator-phase4.md`; `portfolio.md` regenerated whole.
 
 **The portfolio holds no non-terminal Circle.** Nineteen records: 15 closed-coherent, 3
 bounded, 1 superseded, and no anticipated or active one. C4 was the only anticipated record
-the 260825-2051 ranking had, and activating it consumed it. `Recommended next:` reads
+the 260825-2051-playmaker-direct-dispatch.md ranking had, and activating it consumed it. `Recommended next:` reads
 `(none)`, and the dependency-cycle check is recorded as vacuous rather than clean, because a
 graph with no nodes proves nothing.
 
 **No `## Parent grounding stale` note was written, for a structural reason.** That note is
 appended to a Circle record and no non-terminal record exists to receive one. The stale parent
-is `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, a plan, which the
+is `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, a plan, which the
 playmaker may not edit. It went to `## Warnings` with three measured departures: the spec still
 reads `**Status:** Partially Complete` with marker `_o_` although all five capabilities have
 run and every Circle is terminal; all seven C4 acceptance criteria are still written `[ ]`,
@@ -148,7 +148,7 @@ same spec ticks it elsewhere. Reconciling it is a reconciler dispatch or a hand 
 **The playmaker found an eighth wrong count, in this session's own closure note.** It reads
 "Sixteen defect records stay open" where fourteen are open, at the very commit that wrote it,
 inside the paragraph reporting the seven-instance pattern as the Circle's Bounded-Closure
-Artifact. Filed as `shared/issues/260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md`
+Artifact. Filed as `260826-1305_*_the-closure-note-reporting-seven-wrong-counts-states-an-eighth-in-the-paragraph-that-reports-them.md`
 and left uncorrected: the record is terminal and `rules/circle-records.md` holds that a
 contradiction preserved in a terminal record is evidence.
 
@@ -157,11 +157,11 @@ by later passes; this one was written by the party making the argument, in the s
 it, with all seven in front of it. And it was catchable from inside the paragraph, whose own
 following sentences enumerate 5, 2 and 7.
 
-**Backlog:** order unchanged, no rename needed. Rank 1 `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`,
-rank 2 `shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`, whose thesis C4 just
+**Backlog:** order unchanged, no rename needed. Rank 1 `260814-1733_*_bounded-executor-dispatches.md`,
+rank 2 `260814-1733_*_attach-the-rule-to-the-act.md`, whose thesis C4 just
 supplied evidence for and whose blocker has cleared further than the entry knows. Promoting it
 needs one act only the user can perform: reviving decision
-`shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
 from deferred to open by hand.
 
 **Where the fourteen open defects belong:** one Circle, not two and not distributed. No
@@ -192,7 +192,7 @@ across Turns. The four that are derived carry the command that took them.
 | Agent errors | 0 |
 | Human gates hit | 5 |
 
-Anchor `8119fc2`, session start `260825-2123`, so the figures span the interrupted
+Anchor `8119fc2`, session start `260825-2123-orchestrator-session.md`, so the figures span the interrupted
 predecessor as well as the resumption. `Issues created` counts every record whose own
 filename stamp is at or after the session start; `Issues resolved` and
 `Decisions implemented` count names that did not exist at the anchor. The counts run
@@ -217,10 +217,10 @@ toward on two named counterexamples, both removed in Turn 3.
 **Range:** `8119fc2..3f62a7d`, 24 commits, 4 reviews, `unusable=0`.
 
 **Covered by:**
-- `reviews/260826-0141-coderev-…` range `8119fc2..8655ec2`, covers 4
-- `reviews/260826-0910-coderev-…` range `b11bec6..72a9561`, covers 9
-- `reviews/260826-1116-coderev-…` range `8fb42ce..6deeb33`, covers 1, `not-opened=none`
-- `reviews/260826-1330-coderev-…` range `7774d56..e66f7d5`, covers 1
+- `260826-0141-coderev-…` range `8119fc2..8655ec2`, covers 4
+- `260826-0910-coderev-…` range `b11bec6..72a9561`, covers 9
+- `260826-1116-coderev-…` range `8fb42ce..6deeb33`, covers 1, `not-opened=none`
+- `260826-1330-coderev-…` range `7774d56..e66f7d5`, covers 1
 
 **Not covered:** nine commits, and **every one of them touches only `fusion-workbench/`**,
 verified per commit with `git show --stat --format= --name-only <c> | grep -v '^fusion-workbench/'`
@@ -231,11 +231,11 @@ closure, the decision filing, the Circle closure, and two defect filings.
 **This claim was false when the closure note made it** and is true now. `e66f7d5` touched
 seven shipped files and no review had opened it; the note was written from a coverage
 reading taken before that commit existed. Recorded at
-`shared/issues/260826-1315_*_the-closure-note-claims-every-code-commit-was-reviewed-and-one-was-not.md`,
+`260826-1315_*_the-closure-note-claims-every-code-commit-was-reviewed-and-one-was-not.md`,
 and the gap was then closed by the fourth review rather than left named.
 
 **Carried `**Not-opened:**`:** seven workbench records, no shipped file. The one that
-matters is `history/260826-1132-reconciliation.md`, the source of three numbers the last
+matters is `260826-1132-reconciliation.md`, the source of three numbers the last
 review re-measured against the tree instead of reading.
 
 ### What the session leaves open
@@ -246,7 +246,7 @@ Two await a user direction call. The rest are review findings, three of them fil
 the Circle closed.
 
 One open decision is the session's substantive inheritance:
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`.
+`260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`.
 Nine instances now stand behind it, three of them written by this orchestrator, two of
 those inside documents arguing that the pattern exists. The ninth is not a cardinality at
 all but a claim about coverage, which none of the record's four options reaches.

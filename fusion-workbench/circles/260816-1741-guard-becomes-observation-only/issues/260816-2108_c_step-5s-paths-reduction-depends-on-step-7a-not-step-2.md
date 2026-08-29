@@ -23,7 +23,7 @@ The plan's own `## Current State` table has this right. Its row reads "`matchesA
 (`findRelevantDecisions`)". Step 5's prose then attributes the loss to CHECK 3, which is a
 different site. `findRelevantDecisions` is deleted in **step 7a**, which is not landed and sits
 behind a user gate on two open questions
-(`260816-1915_o_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`
+(`260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`
 and the new configuration file's name).
 
 So a step-5 executor who reduces `paths.ts` to `foldCase` breaks the compile at
@@ -78,4 +78,4 @@ The second finding is carried, not fixed. `lib/__tests__/paths.test.ts` is now r
 exactly the four this issue named; the `foldCase` group is green. The plan amendment added the
 file to step 9, so it has an owner, but the red is live until step 9 lands.
 
-History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2156-step-7a-loader-reduced-and-step-5b-paths.md`.
+History: `260816-2156-step-7a-loader-reduced-and-step-5b-paths.md`.

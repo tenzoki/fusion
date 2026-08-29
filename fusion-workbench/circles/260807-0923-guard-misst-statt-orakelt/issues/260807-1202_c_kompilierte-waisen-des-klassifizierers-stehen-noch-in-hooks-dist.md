@@ -6,7 +6,7 @@ Ursache: `npm run build` ist `tsc`, und `tsc` schreibt in `outDir`, ohne dort au
 
 Zu tun: die vier Dateien löschen. Wenn `hooks/dist/` künftig verlässlich dem Quellstand entsprechen soll, gehört zusätzlich eine Aufräumung vor den Bau (etwa `rm -rf dist` im `build`-Skript) — das ist die eigentliche Ursache und nicht nur dieser eine Rest.
 ---
-Gefunden am 260807-1202 in Schritt 9 des Plans `260807-0931_o_plan-guard-misst-statt-orakelt.md`, bei der Nachprüfung am Baum, ob von den Commits `3dc5014` und `9a24c9b` wirklich nichts mehr steht. Alle sieben Quelldateien dieser beiden Commits sind gelöscht; die kompilierten Ausgaben von `hooks/lib/shell-reach.ts` und `hooks/lib/bash-mutation-guard.ts` sind der einzige Rest.
+Gefunden am 260807-1202 in Schritt 9 des Plans `260807-0931_*_plan-guard-misst-statt-orakelt.md`, bei der Nachprüfung am Baum, ob von den Commits `3dc5014` und `9a24c9b` wirklich nichts mehr steht. Alle sieben Quelldateien dieser beiden Commits sind gelöscht; die kompilierten Ausgaben von `hooks/lib/shell-reach.ts` und `hooks/lib/bash-mutation-guard.ts` sind der einzige Rest.
 
 Gemessen: `git ls-files hooks/dist/lib/` führt alle vier Dateien; `hooks/dist/` enthält keine einzige echte Importkante auf sie (die verbleibenden Treffer auf `bash-mutation-guard` und `shell-reach` in `dist/guard.js`, `dist/lib/protected-snapshot.js` und `dist/lib/rules-write-exemption.js` stehen sämtlich in Kommentarprosa, die den Rückbau beschreibt). `hooks/dist/guard.js` importiert `protected-snapshot.js` und nicht mehr den Klassifizierer, und `hooks/dist/lib/command-word.js` trägt `GRAMMAR_TERMINATORS` nicht mehr — das Kompilat ist also im Übrigen aktuell.
 

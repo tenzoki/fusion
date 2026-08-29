@@ -25,7 +25,7 @@ all name roots rather than the variable, so none of them needed rewording.
 
 ### 2. The second fault in the `.gitignore` comment block
 
-Per `shared/issues/260816-1051_*_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`.
+Per `260816-1051_*_the-gitignore-block-still-calls-both-consequences-lifecycle-skill-consequences-and-one-lost-its-consumer.md`.
 `.gitignore:65` attributed both consequences of the record-versus-live-state split to the
 lifecycle skills, while `rules/workbench-tracking.md:18` says the second lost its skill
 consumer when the two stash skills were removed on 2026-08-15 and is kept because it governs

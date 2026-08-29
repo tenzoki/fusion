@@ -42,7 +42,7 @@ its own escape hatch reachable.
 **A third, smaller mismatch.** The answers this gate collects are per-clause holds / does not hold.
 The documented `gate_response` vocabulary is proceed/skip/defer/modify, none of which fits. That is
 the same class as the already-open
-`shared/issues/260811-2306_o_the-check-in-emits-three-gate-response-decisions-outside-the-vocabulary-the-event-table-documents.md`,
+`260811-2306_*_the-check-in-emits-three-gate-response-decisions-outside-the-vocabulary-the-event-table-documents.md`,
 arriving through a second gate; the two want one answer about whether the table's vocabulary is a
 closed set or an illustration.
 
@@ -55,7 +55,7 @@ orchestrator prompt and one in the event table).
 per-clause rather than one of the four documented decisions. This adds no mechanism and no parser; it
 fixes what two existing events carry.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

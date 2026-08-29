@@ -351,7 +351,7 @@ The loaded German profile caps chat at 12 lines and gate prompts at 8; the shipp
 8 and 6.
 
 **This is cited, not refiled.** The record is
-`shared/issues/260814-1419_o_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
+`260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
 open since 2026-08-14.
 
 **It is not the cause of the sample's problems, and the report states that rather than letting
@@ -593,13 +593,13 @@ side effect.
 
 ## Filed Issues
 
-- `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+- `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
   states the case: the seven files every agent reads at dispatch carry 372 em-dashes against a
   permitted 23, and `rules/user-facing-output.md` violates its own clause in its first sentence.
-- `shared/decisions/260816-0740_o_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   states the case: 41 gates measure structure and none measures a prose property. The choice is
   between gating shipped prose, gating agent output, both, or neither.
-- `shared/issues/260816-0740_o_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`
+- `260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`
   states the case: `## Questions and gates` requires the question to be readable and the default
   to be marked, and never requires an option to name its cost, so a compliant prompt can still
   be undecidable.
@@ -647,14 +647,14 @@ recent, `shared/analyses/` four most recent, `agents/*.md`, `rules/*.md`,
 
 **Prior work cross-referenced, not duplicated.**
 
-- `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md` — the earlier
+- `260706-1902-user-facing-agents-garbled-language-rootcause.md` — the earlier
   root-cause analysis of the same complaint. It found a **routing** fault: the consultant sent
   its chat replies through the long-form profile. That fault is fixed
-  (`shared/decisions/260706-1902_i_consultant-chat-longform-boundary.md`). The present analysis
+  (`260706-1902_*_consultant-chat-longform-boundary.md`). The present analysis
   finds a different and complementary cause: correct routing to a profile whose surrounding
   corpus contradicts it. The two do not overlap, and the earlier one's closing observation
   stands, that sharpening a profile does not stop the wrong text from being imitated.
-- `shared/issues/260814-1419_o_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
+- `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
   covers the stale loaded profile. Verified still divergent at HEAD, and shown in finding 12 not
   to be the cause of the sample's faults.
 - `hooks/lib/__tests__/helpers/growth-bound.ts` — why a shrink cannot trip a bound.

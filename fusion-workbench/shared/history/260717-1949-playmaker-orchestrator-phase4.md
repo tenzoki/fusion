@@ -1,4 +1,4 @@
-# Playmaker session 260717-1949 (orchestrator-phase4)
+# Playmaker session 260717-1949-playmaker-orchestrator-phase4.md (orchestrator-phase4)
 
 **Status:** Complete
 **Trigger:** orchestrator-phase4 (Circle 1 `260716-1847-workbench-umbau` transitioned `[t]→[c]`)
@@ -20,12 +20,12 @@ Rationale (one line): sole anticipated Circle; its gate (Circle 1 closing) is cl
 
 ## Activation proposal appended
 
-- `## Activation proposal` appended to `circles/260717-1638-marker-format-ohne-glob-metazeichen/[a]-circle.md`. No `mv`, no `.active-circle` write (playmaker proposes; user/orchestrator commits).
+- `## Activation proposal` appended to `260717-1638-marker-format-ohne-glob-metazeichen[a]-circle.md`. No `mv`, no `.active-circle` write (playmaker proposes; user/orchestrator commits).
 
 ## Warnings emitted to portfolio
 
-- **glob-blast-radius-overlap** (coordination, not a cycle): marker-format Circle overlaps the open zsh-glob fix-plan `shared/planning/260717-1918[o]` at the skill/agent globs — distinct defect classes, same lines; land order matters at `skills/cleanup/SKILL.md` site 12 and the Circle-1 path-lint.
-- **open follow-on** (informational): `shared/issues/260717-1903[o]` (zsh-glob) and `shared/issues/260717-1938[o]` (branch-guard harness gap) remain open; neither blocks the marker-format Circle.
+- **glob-blast-radius-overlap** (coordination, not a cycle): marker-format Circle overlaps the open zsh-glob fix-plan `260717-1918[o]` at the skill/agent globs — distinct defect classes, same lines; land order matters at `skills/cleanup/SKILL.md` site 12 and the Circle-1 path-lint.
+- **open follow-on** (informational): `260717-1903[o]` (zsh-glob) and `260717-1938[o]` (branch-guard harness gap) remain open; neither blocks the marker-format Circle.
 - No dependency cycle (single non-terminal Circle, its one dependency terminal `[c]`).
 - No parent-grounding-stale (Circle 1 closed `[c]`, not `[b]` — no Bounded-Closure scan).
 
@@ -39,7 +39,7 @@ Rationale (one line): sole anticipated Circle; its gate (Circle 1 closing) is cl
 
 ## Un-filed anticipated undertaking noted
 
-- Circle 2 (Plane-push) — conceptually anticipated per D4 (`circles/260716-1847-workbench-umbau/decisions/260716-1847[a]-zuschnitt-...`), no `[a]` record, deferred pending open decision D3 `shared/decisions/260716-1847[o]-offline-verhalten-bei-plane-ausfall.md`. Noted in portfolio, not invented as a record.
+- Circle 2 (Plane-push) — conceptually anticipated per D4 (`260716-1847[a]-zuschnitt-...`), no `[a]` record, deferred pending open decision D3 `260716-1847[o]-offline-verhalten-bei-plane-ausfall.md`. Noted in portfolio, not invented as a record.
 
 ## Output
 

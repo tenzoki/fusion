@@ -49,7 +49,7 @@ Related, and probably the same fix: nothing in the step says what to do when the
 Extend the skip-and-report condition at `:235` from "already `bypassPermissions`" to "already carries
 a `defaultMode`": name the existing value in the question, say it will be replaced, and name the old
 value in the report. That keeps one merge implementation, which is the acceptance criterion the
-closed defect `shared/issues/260810-0326_c_…` was met on.
+closed defect `260810-0326_*_…` was met on.
 
 ---
 Resolved: `skills/setup/SKILL.md` Step 0g — the step now reads the existing `permissions.defaultMode` before asking, skips the question when it is already `bypassPermissions`, names any other existing value in the question and states that yes replaces it, sets the scalar only when absent or when the named replacement was consented to, names old beside new in the report, and scopes the "only add, never remove" guarantee to the `allow` list explicitly.

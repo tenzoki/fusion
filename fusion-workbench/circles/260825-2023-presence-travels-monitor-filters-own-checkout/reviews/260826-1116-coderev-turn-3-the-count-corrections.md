@@ -79,7 +79,7 @@ only route to what `<ID>` expands to, and in a consuming project it leads nowher
 `scanPluginPaths` resolves the bare token against `pluginRoot`, where the file exists.
 
 **Severity:** Medium. **Scope:** `skills/setup/SKILL.md`, two sites.
-**Filed:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1112_*_the-setup-skill-points-at-the-orchestrator-prompt-with-an-unrooted-path-the-body-forbids.md`
+**Filed:** `260826-1112_*_the-setup-skill-points-at-the-orchestrator-prompt-with-an-unrooted-path-the-body-forbids.md`
 
 ### M-2 — the setup skill calls `<ID>` "the pair", in the commit that removed that word elsewhere
 
@@ -99,7 +99,7 @@ session started at 04:47 while `72a9561` landed at 08:50, so the installed hook 
 one. The finding rests on the text.
 
 **Severity:** Medium. **Scope:** `skills/setup/SKILL.md`.
-**Filed:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1113_*_the-setup-skill-calls-the-id-fragment-the-pair-in-the-commit-that-removed-that-word-elsewhere.md`
+**Filed:** `260826-1113_*_the-setup-skill-calls-the-id-fragment-the-pair-in-the-commit-that-removed-that-word-elsewhere.md`
 
 ### L-1 — the event-log contract says "a half" in the sentence that now governs three fields
 
@@ -110,7 +110,7 @@ enumerated three fields. Nothing behaves wrongly — `:140` states the same rule
 "**No line, no key**".
 
 **Severity:** Low. **Scope:** `agents/orchestrator.md`.
-**Filed:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1114_*_the-event-log-contract-says-a-half-in-the-sentence-that-now-governs-three-fields.md`
+**Filed:** `260826-1114_*_the-event-log-contract-says-a-half-in-the-sentence-that-now-governs-three-fields.md`
 
 ### L-2 — the converted reconciler site drops the "`turns=0` is a real figure" clause
 
@@ -123,7 +123,7 @@ its first Turn" (`agents/orchestrator.md:107`, `skills/setup/SKILL.md:394`, verb
 refusing.
 
 **Severity:** Low. **Scope:** `agents/reconciler.md`.
-**Filed:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1115_*_the-converted-reconciler-site-drops-the-turns-zero-is-a-real-figure-clause-the-other-four-carry.md`
+**Filed:** `260826-1115_*_the-converted-reconciler-site-drops-the-turns-zero-is-a-real-figure-clause-the-other-four-carry.md`
 
 ## What was checked and found correct
 

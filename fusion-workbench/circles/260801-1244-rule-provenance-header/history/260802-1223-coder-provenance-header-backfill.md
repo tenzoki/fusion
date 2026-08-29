@@ -3,8 +3,8 @@
 **Date:** 2026-08-02 12:23
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-rule-provenance-header`
-**Plan:** `circles/260801-1244-rule-provenance-header/planning/260802-1131_o_plan-rule-provenance-header.md` — Step 1, now `[DONE]`
+**Circle:** `260801-1244-rule-provenance-header`
+**Plan:** `260802-1131_*_plan-rule-provenance-header.md` — Step 1, now `[DONE]`
 **HEAD at start:** `e8988d9`
 
 ## What was implemented
@@ -22,10 +22,10 @@ plan requires. No script, no `sed` loop.
 
 | File | Citation inserted at line 3 |
 |---|---|
-| `rules/agent-setup.md` | `circles/260718-1924-v5x-overhaul` |
-| `rules/context-lean-claude-md.md` | `circles/260718-1924-v5x-overhaul` |
-| `rules/context-manifest.md` | `circles/260718-1924-v5x-overhaul` |
-| `rules/protected-path-discipline.md` | `circles/260801-1244-guard-bash-inspection` |
+| `rules/agent-setup.md` | `260718-1924-v5x-overhaul` |
+| `rules/context-lean-claude-md.md` | `260718-1924-v5x-overhaul` |
+| `rules/context-manifest.md` | `260718-1924-v5x-overhaul` |
+| `rules/protected-path-discipline.md` | `260801-1244-guard-bash-inspection` |
 | `rules/critical-stance.md` | admission, `git:dac82b8` |
 | `rules/decision-record-examples.md` | admission, `git:b05b423` |
 | `rules/design-diagrams.md` | admission, `git:bd5f6e6` |

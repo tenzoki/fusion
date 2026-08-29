@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** answered
-**Filed by:** orchestrator (on the executor of the drift-lint residuals task of session `shared/history/260810-1646-orchestrator-session.md`)
-**Cross-references:** `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; the queued frozen-state task, filed as `shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+**Filed by:** orchestrator (on the executor of the drift-lint residuals task of session `260810-1646-orchestrator-session.md`)
+**Cross-references:** `260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`; `archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`; `rules/critical-stance.md` §4; the queued frozen-state task, filed as `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 
 ---
 
@@ -40,7 +40,7 @@ question is whether to build it.
    weakening fails, whatever words it uses.
    - Pros: the same move the write guard made when it stopped classifying shell commands and started
      comparing fingerprints (`rules/critical-stance.md` §4, and the Circle
-     `circles/260807-0923-guard-misst-statt-orakelt`). It converts an undecidable question into a
+     `260807-0923-guard-misst-statt-orakelt`). It converts an undecidable question into a
      decided one rather than approximating it better.
    - Cons: roughly 40 lines, plus a re-approval every time those four sentences are legitimately
      reworded. That cost is real and recurring, and it lands on whoever edits the prompt next.
@@ -56,7 +56,7 @@ question is whether to build it.
 ## Constraints
 
 - **Sequencing, and this is why the executor did not simply build it.** The queued frozen-state task
-  (`shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`)
+  (`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`)
   rewrites exactly this prose in `agents/orchestrator.md`. A pin landed
   now would hand that executor a red suite in a file it does not own. Whatever is chosen, the pin
   goes **after** the prompt task, not before.
@@ -82,7 +82,7 @@ Deferred:
 Superseded by:
 
 ---
-Answered: user decision, session `260810-1646` (`shared/history/260810-1646-orchestrator-session.md`)
+Answered: user decision, session `260810-1646-orchestrator-session.md` (`260810-1646-orchestrator-session.md`)
 — **option 2, pin the four sentences to an approved baseline, sequenced after
 the frozen-state task.**
 
@@ -112,15 +112,15 @@ Retired: `f45f76a` (Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`)
 written against no longer exists and neither do the four sentences it screened. The answer stands;
 its subject does not, and the three binding clauses above have nothing left to bind. Marker stays
 `_a_` — the annotation is scoped to `_a_` as well as `_i_` by
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+`260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
 (option 1, answered by the user 2026-08-20).
 
 ---
-**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`. `_a_` is correct and is
+**Reconciliation note — reconciler, 260811-0108-reconciliation.md, at HEAD `e2a34f0`. `_a_` is correct and is
 deliberately not advanced.**
 
 Checked, because the sequencing constraint is the whole point of this record. The prerequisite is
-`shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (closed since this record was written)
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (closed since this record was written)
 carries `_o_` on disk and is queued as task 2 of `fusion-workbench/tasklist.md`. No pin exists in
 `hooks/lib/__tests__/state-drift-detection-lint.test.ts` — the file's header at `:92-104` states the
 undecidability, names the pin as the answer, and records why it has not landed: it would hand the
@@ -147,11 +147,11 @@ is written against the text that task leaves behind. Circle
 `hooks/state-drift.ts` and `bin/fusion-state-drift`, in `f45f76a`. There is no drift check, no four
 sentences, and no lint to pin. The deletion was put to the user as a one-way door at the plan gate
 and accepted on the evidence that the three non-counter rows had never fired in either measured
-project (`shared/history/260814-2306-orchestrator-session.md:174`).
+project (`260814-2306-orchestrator-session.md:174`).
 
 **No marker was moved**, for the same reason recorded on
-`shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`: the open
-decision `circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`: the open
+decision `260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 owns the question of what marker this state takes, and answering it by renaming a record would
 pre-empt it.
 
@@ -161,14 +161,14 @@ that flag the Grounding↔Directive edge in this Circle's session-end Coherence 
 **Reconciliation 260815-2056 (reconciler, HEAD `bd07ee7`) — the open decision named in the note
 above has been answered, and it does not reach this record. Marker unchanged.**
 
-`circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 was answered by the user at this Circle's Rebalance gate: option 3, a `Retired:` annotation citing
 what removed the implementation, marker stays `_i_`. Twenty-five `_i_` records carry it after this
 pass. This record is not one of them. `Retired:` is defined against a removed *implementation*, and
 this record's answer was never realised — the record says so itself, in the closing sentence that
 made `_a_` → `_i_` conditional on a pin that `f45f76a` deleted the target of.
 
-The residual is filed as its own question: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+The residual is filed as its own question: `260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
 
 ---
 **Reconciliation 260819-1400 (reconciler, domain `code`, HEAD `e435f03` / `v10.3.0`) — re-verified;
@@ -186,11 +186,11 @@ baseline rather than screen it with a blacklist, on `rules/critical-stance.md` �
 own instance and is in force elsewhere: `hooks/lib/__tests__/reference-resolution-lint.test.ts:702`
 carries `BASELINE = { paths: 1178, anchors: 155, records: 102 }` asserted exactly, with a failure
 message that names re-approval as the expected response. Whether that shape becomes the convention
-is the separate open question `shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`,
+is the separate open question `260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`,
 which the user has since answered the other way (probe first, pin as fallback). So this record's
 *instance* is dead and its *principle* is live under another record's name.
 
-The residual question this record was parked behind, `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+The residual question this record was parked behind, `260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
 is **still `_o_`** at HEAD. This pass re-measured its population across all 21 `_a_` records in
 `shared/decisions/` and found no third instance beyond this record and
-`260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`.
+`260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`.

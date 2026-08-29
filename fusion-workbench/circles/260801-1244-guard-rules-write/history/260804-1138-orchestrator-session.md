@@ -1,9 +1,9 @@
-# Orchestrator Session — 260804-1138
+# Orchestrator Session — 260804-1138-orchestrator-session.md
 
-**Directive:** Answer decision `260804-0947` by its own recommendation, option 4: take the ten-line give-up now, closing `260804-0836` and `260804-0837`, and give the shell reachability model its own anticipated Circle rather than making it the eighth Turn of this one.
+**Directive:** Answer decision `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` by its own recommendation, option 4: take the ten-line give-up now, closing `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` and `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`, and give the shell reachability model its own anticipated Circle rather than making it the eighth Turn of this one.
 **Mode:** issues
 **Status:** In progress
-**Predecessor session:** `circles/260801-1244-guard-rules-write/history/260803-1737-orchestrator-session.md` (5 Turns, 11 commits, ended on the max-Turns circuit breaker, Coherence `review-needed`)
+**Predecessor session:** `260803-1737-orchestrator-session.md` (5 Turns, 11 commits, ended on the max-Turns circuit breaker, Coherence `review-needed`)
 
 ## Setup snapshot
 
@@ -11,9 +11,9 @@
 |---|---|
 | Git HEAD at start | `c43a6a2` |
 | Domain | `code` |
-| Active Circle | `circles/260801-1244-guard-rules-write` |
+| Active Circle | `260801-1244-guard-rules-write` |
 | Open issues in the Circle | 10, three of them High and live at HEAD |
-| Open decisions | `260803-1314_o`, `260803-1402_o` (both awaiting plan steps), `260804-0947_o` (this session answers it) |
+| Open decisions | `260803-1314_o`, `260803-1402_o` (both awaiting plan steps), `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md_o` (this session answers it) |
 | Guard | not halted; 0 consecutive blocks |
 | Tests at start | 1241 across 24 files |
 
@@ -24,11 +24,11 @@ option 4, which is option 1 plus a boundary: implement the cheap measured give-u
 plan the reachability model as its own unit of work.
 
 So this session takes **two** of the reconciliation's four conditions for a clean verdict and
-leaves the other two alone: `260804-1024` (`git -C` fails open) and `260804-1025` (the false
+leaves the other two alone: `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` (`git -C` fails open) and `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` (the false
 clause in the rule file) are not in scope, and neither is the review of `048f3db` and
 `cc012fc`. Naming that here so the next session does not have to re-derive what was left.
 
-`260804-0839` — the over-deny where the shell does guarantee the `cd` — is explicitly not
+`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` — the over-deny where the shell does guarantee the `cd` — is explicitly not
 fixed. It is a cost rather than a hazard, and option 4's argument is that it deserves the
 change that can do it properly rather than a bolt-on.
 

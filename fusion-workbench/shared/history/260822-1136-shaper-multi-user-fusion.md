@@ -13,11 +13,11 @@ The backlog entry the request cited does not exist and was verified absent twice
 
 ## What was produced
 
-- **Spec:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. Five Circles, a state partition over every entry of the workbench layout tree, the supersession step, the isolation-verification step, and a `**Decidability:**` line in the head.
+- **Spec:** `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`. Five Circles, a state partition over every entry of the workbench layout tree, the supersession step, the isolation-verification step, and a `**Decidability:**` line in the head.
 - **Two open decision records**, both blocking a named point in the spec:
-  - `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`, which blocks the close of Circle 2.
-  - `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`, which is answered at Circle 3's planning gate.
-- **One defect:** `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`.
+  - `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`, which blocks the close of Circle 2.
+  - `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`, which is answered at Circle 3's planning gate.
+- **One defect:** `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`.
 
 ## The measurements this round took at HEAD
 

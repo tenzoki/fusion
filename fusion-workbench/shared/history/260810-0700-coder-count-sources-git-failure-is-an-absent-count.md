@@ -7,8 +7,8 @@
 **Origin:** not Circle work — no Circle active; a Turn-1 review finding against work this
 session landed. Filed under `shared/` per the Origin Rule.
 
-**Source:** `shared/issues/260810-0459_c_fusion-count-sources-reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md`
-**Review:** `shared/reviews/260810-0512-coderev-turn-1-range-8960e1a-to-head.md`, Theme B, F5
+**Source:** `260810-0459_*_fusion-count-sources-reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md`
+**Review:** `260810-0512-coderev-turn-1-range-8960e1a-to-head.md`, Theme B, F5
 **Fixes:** `2910cf6` (the helper, two hours old)
 
 ---
@@ -114,7 +114,7 @@ session.
 
 `cd hooks && npm test` — exit 1. 967 of 968 pass. The single failure is
 `rules-emission-golden`, known and owned by the orchestrator this Turn
-(`shared/issues/260810-0455_o_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`);
+(`260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`);
 its diff is a byte-size drift in `rules/fusion-workbench-conventions.md`, a file this task did
 not touch. `fusion-count-sources.test.ts` alone: 17/17. No other test moved.
 
@@ -122,6 +122,6 @@ not touch. `fusion-count-sources.test.ts` alone: 17/17. No other test moved.
 
 - `bin/fusion-count-sources`
 - `hooks/lib/__tests__/fusion-count-sources.test.ts`
-- `fusion-workbench/shared/issues/260810-0459_o_…` → `_c_…` (plus the `Resolved:` note)
+- `260810-0459_*_…` → `_c_…` (plus the `Resolved:` note)
 
 Not committed — the orchestrator commits.

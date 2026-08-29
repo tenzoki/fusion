@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Task source:** user dispatch, closing `shared/issues/260807-2154_o_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md` and `shared/issues/260807-2155_o_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md`
+**Task source:** user dispatch, closing `260807-2154_*_the-artifact-language-is-mechanised-for-nine-agents-and-asserted-for-sixteen.md` and `260807-2155_*_three-language-claims-outside-the-authoring-home-still-describe-the-single-declaration.md`
 
 ## R2 — the artifact language now reaches the single-path agents
 
@@ -46,7 +46,7 @@ reference-resolution lint resolve unchanged.
 `README.md:26` and `install.sh:27` bumped from `tags/v6.0.1` to `tags/v6.1.0`, matching
 `.claude-plugin/plugin.json` `6.1.0`. The other two surfaces (marketplace `marketplace.json`
 and the git tag) are outside this repository and were not touched. Closes half of
-`shared/issues/260807-2154_o_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md`;
+`260807-2154_*_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md`;
 that record is the user's to update.
 
 ## Verification

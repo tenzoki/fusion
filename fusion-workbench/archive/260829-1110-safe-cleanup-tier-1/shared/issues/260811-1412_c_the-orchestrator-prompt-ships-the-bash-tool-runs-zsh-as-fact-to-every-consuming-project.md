@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, reviewing Turn 2 range `270c566..1d5eed6` (commit `7749845`, task 28)
 **Affects:** `agents/orchestrator.md:615`
-**Cross-references:** `rules/critical-stance.md` §3 (calibrated certainty); `shared/history/260811-1247-three-orchestrator-prompt-corrections.md`
+**Cross-references:** `rules/critical-stance.md` §3 (calibrated certainty); `260811-1247-three-orchestrator-prompt-corrections.md`
 
 ---
 

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator (Befund von `coder` in P-2)
-**Cross-references:** `fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md` (Schritt 7), `rules/fusion-workbench-conventions.md` `## Path Resolution`, `bin/fusion-paths`
+**Cross-references:** `260716-1910[p]-plan-workbench-umbau-circle-container.md` (Schritt 7), `rules/fusion-workbench-conventions.md` `## Path Resolution`, `bin/fusion-paths`
 
 ---
 
@@ -68,7 +68,7 @@ Damit hört das Key-Set auf, eine Aussage über einen Prompt zu sein, und wird z
 `SCAN_INVESTIGATIONS` existiert nicht, aber `conceptrev` liest Investigations. Weil `OUT_INVESTIGATION` unbedingt auf `shared/investigations` zeigt, dient derselbe Wert dem Lesen, und P-2 emittiert ihn deshalb an `conceptrev`. Ein `OUT_`-Schlüssel als Leseziel ist eine Unschönheit des Vertrags, kein Fehler. Gehört mit dieser Frage zusammen entschieden.
 
 ---
-Answered: history/260716-1800-orchestrator-session.md — Option 2 (Namensraum um Skill-Namen erweitern). Der Nutzer hat am Gate 2026-07-17 gewählt, gestützt auf die Evidenz aus P-7: kein Agent emittiert SCAN_CONSULT und SCAN_INVESTIGATIONS zugleich, `log-activity` ist unter Option 1 also nicht auflösbar. Damit sitzt jeder Key bei seinem Leser, und die Konventions-Regel (jedes gelesene Verzeichnis braucht einen SCAN_*-Key im Set des Lesenden) bleibt intakt. Der Orchestrator verliert OUT_MEMO, OUT_CIRCLE und SCAN_HISTORY, sobald die Skills ihre eigenen Keys erfragen. Gemeinsam mit der Ableitungs-Entscheidung (260717-0033) umgesetzt: die Namensraum-Erweiterung und die Ableitung greifen ineinander, weil `fusion-paths log-activity` seine Keys dann aus skills/log-activity/SKILL.md ableitet.
+Answered: 260716-1800-orchestrator-session.md — Option 2 (Namensraum um Skill-Namen erweitern). Der Nutzer hat am Gate 2026-07-17 gewählt, gestützt auf die Evidenz aus P-7: kein Agent emittiert SCAN_CONSULT und SCAN_INVESTIGATIONS zugleich, `log-activity` ist unter Option 1 also nicht auflösbar. Damit sitzt jeder Key bei seinem Leser, und die Konventions-Regel (jedes gelesene Verzeichnis braucht einen SCAN_*-Key im Set des Lesenden) bleibt intakt. Der Orchestrator verliert OUT_MEMO, OUT_CIRCLE und SCAN_HISTORY, sobald die Skills ihre eigenen Keys erfragen. Gemeinsam mit der Ableitungs-Entscheidung (260717-0033_*_derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md) umgesetzt: die Namensraum-Erweiterung und die Ableitung greifen ineinander, weil `fusion-paths log-activity` seine Keys dann aus skills/log-activity/SKILL.md ableitet.
 Implemented: f261a6a (derive key sets from prompts; skills become first-class names) — shipped in v4.0.0. Verifiziert durch reconciler 260717: `bin/fusion-paths` löst jeden der 14 Skills auf (fusion-paths.test.ts: "resolves every skill too, with no stderr", grün).
 Deferred:
 Superseded by:

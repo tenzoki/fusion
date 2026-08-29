@@ -45,7 +45,7 @@ a domain and pass it on, and the table credits two of them.
 ## The cause, and why it is one defect rather than four
 
 The `Declared at` column cites `agents/*.md` and nothing else, and the step's own history
-record (`history/260813-2043-coder-…`) lists what each row was read against: sixteen agent
+record (`260813-2043-coder-…`) lists what each row was read against: sixteen agent
 prompts and `bin/fusion-paths`. No skill body is in that list. The `Passed by` column is the
 one column whose ground truth lives outside the agent prompts, and it was populated from the
 prompts anyway — the passers it names are the ones an agent prompt happens to mention

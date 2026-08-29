@@ -1,4 +1,4 @@
-# Orchestrator Session — 260716-1800
+# Orchestrator Session — 260716-1800-orchestrator-session.md
 
 **Directive:** fusion an plane.so anbinden und die workbench so umbauen, dass alles zu einem Vorhaben an einem Ort liegt, ohne Kernfeatures und Hooks aufzugeben. Am Spec-Gate auf zwei Circles zugeschnitten; diese Sitzung führte Circle 1 (der Umbau) aus, Plane ist Circle 2.
 **Mode:** custom → shaping → planning → plan (Circle 1)
@@ -64,7 +64,7 @@ Der Bracket-Glob (`[t]` als Zeichenklasse) traf fünfmal, an fünf Stellen, von 
 
 ## Coherence
 
-<!-- Kein reconciler-Dispatch in Phase 3: der reconciler ist auf v4 umgestellt und löst über fusion-paths nach shared/ auf, diese workbench ist aber noch v3. Ein Dispatch würde in shared/ suchen (fast leer), während die 21 Issues und 8 Entscheidungen in den v3-Wurzelordnern liegen — genau die Falle aus issue 260717-0115. Reconciliation daher inline; die maßgebliche reconciler-Prüfung gehört in die nächste Sitzung nach /fusion:migrate. -->
+<!-- Kein reconciler-Dispatch in Phase 3: der reconciler ist auf v4 umgestellt und löst über fusion-paths nach shared/ auf, diese workbench ist aber noch v3. Ein Dispatch würde in shared/ suchen (fast leer), während die 21 Issues und 8 Entscheidungen in den v3-Wurzelordnern liegen — genau die Falle aus issue 260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md. Reconciliation daher inline; die maßgebliche reconciler-Prüfung gehört in die nächste Sitzung nach /fusion:migrate. -->
 
 **Aggregat-Verdikt:** coherent (aus den drei Per-Turn-Gates, alle ok; inline bestätigt).
 
@@ -200,7 +200,7 @@ sequenceDiagram
 
 | Surface | Count | Detail |
 |---|---|---|
-| Open issues (`[o]`/`[p]`) | 1 | `260707-1006[o]-pin-bash-allow-path-no-writeguard-side-effects-with-test.md` |
+| Open issues (`[o]`/`[p]`) | 1 | `260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md.md` |
 | Open plan steps | 0 | — |
 | Open decisions (`[o]`) | 0 | one `[i]` decision on file: `260706-1902[i]-consultant-chat-longform-boundary.md` |
 | Analyses | 1 | `260706-1902-user-facing-agents-garbled-language-rootcause.md` |

@@ -14,4 +14,4 @@ Cite `260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three
 
 The citation at `:885` resolves to one file.
 
-Resolved: 260827-2105, Turn 2 of this Circle, uncommitted at the time of writing (the orchestrator commits). `agents/orchestrator.md` `### Rebalance Gate` cites `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md` by starred path. `agents/orchestrator.md` 148 559 -> 148 749 bytes (+190, of which 142 is this citation and 48 the Gate-1 re-entry clause from `260827-2042_*_the-rebalance-re-entry-opens-at-gate-2…`).
+Resolved: 260827-2105-coder-turn-2-rebalance-re-entry-and-stub-citation.md, Turn 2 of this Circle, uncommitted at the time of writing (the orchestrator commits). `agents/orchestrator.md` `### Rebalance Gate` cites `260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md` by starred path. `agents/orchestrator.md` 148 559 -> 148 749 bytes (+190, of which 142 is this citation and 48 the Gate-1 re-entry clause from `260827-2042_*_the-rebalance-re-entry-opens-at-gate-2…`).

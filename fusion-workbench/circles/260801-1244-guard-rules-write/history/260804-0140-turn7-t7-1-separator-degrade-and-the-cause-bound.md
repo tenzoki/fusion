@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-04 01:40
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 4 of this session (the Circle's seventh)
-**Task:** T7-1 — implement `decisions/260803-2338` option 1 together with `issues/260803-1835`
+**Circle:** `260801-1244-guard-rules-write`, Turn 4 of this session (the Circle's seventh)
+**Task:** T7-1 — implement `260803-2338` option 1 together with `260803-1835`
 **Suite:** `npm test` — 1235 passed, 24 files, green (was 1197)
 **Status:** Complete
 
@@ -52,7 +52,7 @@ before the restore would have made every subshell containing a `cd` poison its p
 
 **`moved` is a `ShellState` field rather than a parallel boolean beside the saved scopes.**
 The parallel form is a second fact that can disagree with the first, which is the exact
-shape of `260803-2237` and of the defect the `DirStack` sum type was written to make
+shape of `260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md` and of the defect the `DirStack` sum type was written to make
 unwriteable. As a field it satisfies the invariant the module already states — a
 monotone boolean whose `true` is the whole-field unknown — and `cloneState` scopes it for
 free.
@@ -110,15 +110,15 @@ degrade, and then write nothing relative.
 
 ### The supersession, which was the part to get right
 
-`260801-1859` was an **issue**, not a decision record. Its whole argument lived in a
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was an **issue**, not a decision record. Its whole argument lived in a
 `Resolved:` line and two test comments. So there was nothing to rename `_i_` → `_s_`, and
 a reader arriving at the reversal would have found a test flipped from `expectAllAllow` to
 `expectAllDeny` with no trace of what it overrode.
 
 I wrote the record that should have existed:
-`decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
+`260804-0106_*_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
 It states the original argument as it was, both readings of the promised sentence, the
-measured cost of each, and why option 2 wins. `260801-1859` carries a note pointing at it
+measured cost of each, and why option 2 wins. `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` carries a note pointing at it
 that separates what stands (the defect was real; the sentence is now true; the
 visible/invisible consistency argument still decides it) from what was superseded (the
 bound was drawn around the program).
@@ -134,12 +134,12 @@ give-up "the sharpest form", which is the argument for reversing it rather than 
 
 ### The argument, in one paragraph
 
-`260801-1859` was right about the defect and imprecise about the repair. Its own words —
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was right about the defect and imprecise about the repair. Its own words —
 *an unrecognised program is allowed however unparseable its ARGUMENTS are* — are a claim
 about the caller's text. `cd $D && echo x > y.md` has no unparseable argument in it: `y.md`
 is an ordinary literal relative path. What failed to resolve is the guard's own working
 directory. The program bound is a proxy for the cause bound that agrees on every row
-`260801-1859` measured and disagrees on the one it did not.
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` measured and disagrees on the one it did not.
 
 The implementation is two lines of condition in pass 3: it now runs whenever the protected
 list is non-empty, and skips a target that is unresolved with `viaCwd: false` on a segment
@@ -160,7 +160,7 @@ with no recognised verb. `Target` has carried that distinction since it was writ
 `expectAllAllow` array as the second, so counting *failing `it` blocks* found two while
 counting *moved rows* finds three. Both my earlier measurement and the issue's record
 inherited the error; the issue now carries the correction. It does not change the decision
-— all three are pinned assertions of `260801-1859`, so the cost is the decision itself
+— all three are pinned assertions of `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`, so the cost is the decision itself
 rather than a false-positive budget — but "exactly two" was a claim I made without
 checking the right thing, which is the failure this Circle exists to correct.
 
@@ -191,7 +191,7 @@ newly allowed at `048f3db` (one of which overlaps), and T6-1's eleventh row
 The last two rows are the whole change, and they are pinned together in one test so the
 distinction cannot be read as an accident. ~~`curl -o rules/x.md` still denies on pass 1, so
 the rule is not looser on the visible case than on the invisible one — the property
-`260801-1859` was really protecting.~~
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was really protecting.~~
 
 > **Correction, 2026-08-04, task T8-1.** The struck sentence is false and was never
 > measured. `curl -o rules/x.md` **allows** — `curl` is not a table verb and `-o` is not a
@@ -255,10 +255,10 @@ Not by reading the tests.
 
 | Mutation | Failures |
 |---|---|
-| the separator give-up never fires (the `260803-2238` bypass returns) | **10** — 5 unit, 5 integration |
+| the separator give-up never fires (the `260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md` bypass returns) | **10** — 5 unit, 5 integration |
 | it fires for EVERY joiner, `&&` included (the model stops being exact) | **51** across 4 files |
-| pass 3 bounded by the PROGRAM again (`260801-1859` unreversed) | **16** — 4 unit, 12 integration |
-| pass 3 unbounded (the idiom `260801-1859` protected denies again) | **10** |
+| pass 3 bounded by the PROGRAM again (`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` unreversed) | **16** — 4 unit, 12 integration |
+| pass 3 unbounded (the idiom `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` protected denies again) | **10** |
 | the separator degrade displaces a stronger cause (`-P`, ambient `CDPATH`) | **2** |
 
 Mutations 1 and 3 fail **near-disjoint** sets — the degrade's own five rows against the
@@ -325,13 +325,13 @@ the cause; and both residual sentences in the long residual paragraph are correc
 
 ## Workbench
 
-- `decisions/260803-2338` → `_i_`, with an "after implementation" section recording that
+- `260803-2338` → `_i_`, with an "after implementation" section recording that
   the simulated cost table was exact and that the fourth escape closed only once
   `260803-1835` closed with it.
-- `decisions/260804-0106` filed `_i_` — the record `260801-1859` never had.
-- `issues/260803-1835` → `_c_`, `issues/260803-2238` → `_c_`, both with a `Resolved:`
+- `260804-0106` filed `_i_` — the record `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` never had.
+- `260803-1835` → `_c_`, `260803-2238` → `_c_`, both with a `Resolved:`
   section carrying the measured numbers rather than a claim.
-- `260801-1859` (in the sibling Circle) carries a supersession note pointing at the new
+- `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` (in the sibling Circle) carries a supersession note pointing at the new
   record and separating what stands from what does not.
 
 ---
@@ -342,7 +342,7 @@ the cause; and both residual sentences in the long residual paragraph are correc
    five-row cost and it is the whole of what option 1 buys against. `&&` clears every one.
 2. **A redirect target whose TOKEN cannot be read is still allowed** on a program outside
    the table — `echo x > "$F"` where `$F` may be `rules/x.md`. This is the deliberate half
-   of the bound and the promise `260801-1859` was filed to make true. It no longer grows:
+   of the bound and the promise `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was filed to make true. It no longer grows:
    a give-up on a directory does not open a redirect route any more.
 3. **A directory builtin the classifier cannot see as one.** `eval "cd rules"`, an alias or
    shell function named `cd`, a `cd` in a `source`d script. Unchanged, and the honest end

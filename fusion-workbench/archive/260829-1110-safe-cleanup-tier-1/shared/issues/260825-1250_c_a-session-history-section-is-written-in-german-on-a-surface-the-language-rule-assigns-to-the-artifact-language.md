@@ -1,13 +1,13 @@
 A session-history section is written in German on a surface the language rule assigns to the artifact language
 
 ---
-`shared/history/260825-0858-orchestrator-session.md` `## Ad-hoc: die .gitignore eines Consumers` is
+`260825-0858-orchestrator-session.md` `## Ad-hoc: die .gitignore eines Consumers` is
 German prose, heading included. `CLAUDE.md` declares `**Language:** de` and
 `**Artifact language:** en`, and `rules/fusion-workbench-conventions.md` `## Project language` puts
 session histories on the artifact side by name.
 ---
 **Filed by:** reconciler, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `rules/fusion-workbench-conventions.md` `## Project language` (the boundary); `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (the decision behind it)
+**Cross-references:** `rules/fusion-workbench-conventions.md` `## Project language` (the boundary); `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (the decision behind it)
 
 ## What the rule says and what the file does
 
@@ -18,8 +18,8 @@ language is `en`.
 
 The file's first two sections are English. The third, roughly the last fifty lines and everything
 added in `cfab17e`, is German: heading, prose and the closing paragraph. Counted with a small
-function-word probe, 57 hits in this file against 0 in `shared/history/260822-1009-orchestrator-session.md`
-and 0 in `shared/history/260824-1750-orchestrator-session.md`, the two orchestrator session histories
+function-word probe, 57 hits in this file against 0 in `260822-1009-orchestrator-session.md`
+and 0 in `260824-1750-orchestrator-session.md`, the two orchestrator session histories
 before it. So it is one file departing from a settled practice, not a practice nobody follows.
 
 ## Why it happens here of all places
@@ -46,4 +46,4 @@ the boundary exists for: that a reader of this project's record layer needs one 
 **Found by:** reconciler, session-end pass over `a99e680..cfab17e`, HEAD `cfab17e`.
 
 ---
-Resolved: both German sections of `shared/history/260825-0858-orchestrator-session.md` were rewritten in English, the artifact language this project declares. The orchestrator wrote them and the orchestrator corrected them, in the same session the reconciler filed this record.
+Resolved: both German sections of `260825-0858-orchestrator-session.md` were rewritten in English, the artifact language this project declares. The orchestrator wrote them and the orchestrator corrected them, in the same session the reconciler filed this record.

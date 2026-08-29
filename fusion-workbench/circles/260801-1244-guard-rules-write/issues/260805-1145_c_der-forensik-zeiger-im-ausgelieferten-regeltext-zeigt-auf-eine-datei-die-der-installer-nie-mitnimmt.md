@@ -7,8 +7,8 @@
 **Filed by:** coder, während Schritt 6 des Ausstiegsplans (Release-Vorbereitung 5.9.0)
 **Affects:** `rules/protected-path-discipline.md` (Zeilen 22 und 325), `rules/protected-path-internals.md` (Zeile 13), `README-hooks.md` (Zeilen 208 und 226), `install.sh` (Kopierliste, Zeilen 80–82)
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md` Schritt 2 und Schritt 3,
-`circles/260801-1244-guard-rules-write/decisions/260805-0709_i_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
+`260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md` Schritt 2 und Schritt 3,
+`260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
 
 ---
 
@@ -29,7 +29,7 @@ Plugin-Asset. Die Datei erreicht ein konsumierendes Projekt also nie.
 
 Der Pfad ist zusätzlich relativ und trägt den Namen **dieses** Circles. Selbst wenn er
 mitkopiert würde, löste er sich beim Konsumenten gegen dessen eigene Workbench auf, in der
-`circles/260801-1244-guard-rules-write/` nicht existiert und nie existieren wird.
+`260801-1244-guard-rules-write` nicht existiert und nie existieren wird.
 
 ## Warum das zählt
 
@@ -69,7 +69,7 @@ Drei Wege, alle mit Preis, keiner hier gewählt:
    ehrlich, aber sie bestätigt, dass der Konsument den Katalog nicht bekommt.
 2. **Die Forensik nach `docs/` verschieben.** `docs` steht auf der Kopierliste. Der
    Zuschnitt bliebe erhalten (`bin/fusion-rules` emittiert `docs/` an niemanden), und der
-   Zeiger würde beim Konsumenten auflösen. Widerspricht der Entscheidung `260805-0709`
+   Zeiger würde beim Konsumenten auflösen. Widerspricht der Entscheidung `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
    nicht im Kern — die entschied *nicht in `rules/`*, nicht *nicht ausgeliefert*.
 3. **Nichts tun.** Vertretbar nur, wenn der Katalog wirklich reines Review-Material für
    dieses Repo ist. Dann müssen aber die zwei `README-hooks.md`-Stellen weg, denn das
@@ -77,7 +77,7 @@ Drei Wege, alle mit Preis, keiner hier gewählt:
 
 Weg 2 sieht nach der Lösung aus, die die Zusage einlöst. **Das ist eine Ableitung aus der
 Kopierliste, keine geprüfte Empfehlung**, und die Entscheidung gehört zum Nutzer, weil sie
-die Entscheidung `260805-0709` berührt.
+die Entscheidung `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md` berührt.
 
 ## Warum nicht in dieser Session behoben
 
@@ -92,7 +92,7 @@ nicht unangekündigt in dessen Diff.
 
 Nicht Weg 1 („Halbsatz, Zeiger bleibt") und nicht Weg 2 („nach `docs/` verschieben"),
 sondern die vierte Möglichkeit, die der Nutzer am Gate wählte: **Zeiger entfernen, Herkunft
-nennen.** Kein Pfad ist besser als ein toter Pfad. Entscheidung `260805-0709` bleibt
+nennen.** Kein Pfad ist besser als ein toter Pfad. Entscheidung `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md` bleibt
 unberührt — die Forensik liegt weiterhin im Analysespeicher dieses Circles.
 
 Fünf Stellen geändert, genau die fünf aus `Affects:`; eine sechste Suche über alle

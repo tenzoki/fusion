@@ -3,11 +3,11 @@
 **Agent:** coder
 **Date:** 2026-08-10
 **Status:** Complete
-**Task:** T3 of session 260810-0241 — reorder the workbench-domain cascade so a project full of
+**Task:** T3 of session 260810-0241-orchestrator-session.md — reorder the workbench-domain cascade so a project full of
 code cannot be classified `strategic` on artifact counts alone. Not committed: left in the
 working tree by instruction.
 
-**Source issue:** `shared/issues/260807-1942_c_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md`
+**Source issue:** `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md`
 **Depends on:** T2 (`2910cf6`), which made the counts trustworthy. This task only moves them.
 
 **Base:** `2910cf6` plus T2's uncommitted follow-ups in the working tree.
@@ -56,7 +56,7 @@ once, for all three branches, and the `knowledge` branch stops repeating it. Tha
 `knowledge` condition in the new cascade is shorter, not weaker.
 
 The record's other, prior question — whether the domain should be declared once per project
-rather than detected at all — is untouched here and remains open. Decision `260809-1731`'s
+rather than detected at all — is untouched here and remains open. Decision `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`'s
 `Answered:` block already records that a `CLAUDE.md` domain declaration was proposed, was not the
 question the user answered, and is not authorised. Nothing in this task widens that.
 

@@ -7,7 +7,7 @@ there, deliberately, because that directory is unlike them in one way that has t
 it can be scanned.
 ---
 **Severity:** Low — the citations are in test-file comments, so a stale one misleads a reader rather
-than breaking behaviour. It is the same class as `260811-1755`, which is why it is filed rather than
+than breaking behaviour. It is the same class as `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md`, which is why it is filed rather than
 absorbed.
 **Domain:** code
 **Filed by:** coder, session `260816-0119`, while verifying that the four marker renames of that
@@ -26,11 +26,11 @@ records that have since moved**, against roughly two dozen that are synthetic fi
 are worth naming because they are ordinary rot, not fixtures:
 
 - `hooks/lib/__tests__/surface-growth-bound.test.ts:147` cites an issue record of the
-  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth` Circle by an `_o_` marker; that
+  `260815-0007-remove-eight-mechanisms-and-cap-growth` Circle by an `_o_` marker; that
   record is `_c_` and was already `_c_` before this session. Open the line for the exact citation.
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts:1011` carries a sample citation of the
   workbench-record citation-form decision
-  (`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`)
+  (`260806-0015_*_zitierform-fuer-workbench-records.md`)
   spelled with an `_a_` marker, and that record reached `_i_`.
 
 ## Why it was not simply included
@@ -50,14 +50,14 @@ fabricated ones.
 
 ## Related
 
-- `shared/issues/260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` — the same gap one directory up, closed in this session
-- `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` — the same gap in the other unscanned corpus
-- `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` — the upstream question about who follows a rename into the citing text
+- `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` — the same gap one directory up, closed in this session
+- `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md` — the same gap in the other unscanned corpus
+- `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` — the upstream question about who follows a rename into the citing text
 
-Also seen: 260817-1613 by reconciler — a second live instance in the same file, created by this session's own marker rename: `hooks/lib/__tests__/surface-growth-bound.test.ts:174` cites an issue record of the `circles/260816-1741-guard-becomes-observation-only` Circle by an `_o_` marker, and that record moved to `_c_` in `dbbad70`. Open the line for the exact citation. `npm test` is green (35 files, 653 tests) because `surface()` still stops at `hooks/lib/*.ts`, which is exactly the gap this record measures.
-
----
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still scans only `hooks/lib/*.ts` and top-level `hooks/*.ts`, and both stale citations the record names are still stale. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+Also seen: 260817-1613 by reconciler — a second live instance in the same file, created by this session's own marker rename: `hooks/lib/__tests__/surface-growth-bound.test.ts:174` cites an issue record of the `260816-1741-guard-becomes-observation-only` Circle by an `_o_` marker, and that record moved to `_c_` in `dbbad70`. Open the line for the exact citation. `npm test` is green (35 files, 653 tests) because `surface()` still stops at `hooks/lib/*.ts`, which is exactly the gap this record measures.
 
 ---
-Resolved: fixed — the two stale comment citations now spell the marker position `_*_` (`hooks/lib/__tests__/surface-growth-bound.test.ts`, the `260817-1032` issue; `hooks/lib/__tests__/reference-resolution-lint.test.ts`, the `260806-0015` decision sample); scanning `__tests__/` itself stays out of scope per `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`; `grep -n "_[oa]_" hooks/lib/__tests__/surface-growth-bound.test.ts hooks/lib/__tests__/reference-resolution-lint.test.ts`
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/reference-resolution-lint.test.ts` `surface()` still scans only `hooks/lib/*.ts` and top-level `hooks/*.ts`, and both stale citations the record names are still stale. Marker stays open. Log: `260817-1836-reconciliation.md`.
+
+---
+Resolved: fixed — the two stale comment citations now spell the marker position `_*_` (`hooks/lib/__tests__/surface-growth-bound.test.ts`, the `260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md` issue; `hooks/lib/__tests__/reference-resolution-lint.test.ts`, the `260806-0015` decision sample); scanning `__tests__/` itself stays out of scope per `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`; `grep -n "_[oa]_" hooks/lib/__tests__/surface-growth-bound.test.ts hooks/lib/__tests__/reference-resolution-lint.test.ts`

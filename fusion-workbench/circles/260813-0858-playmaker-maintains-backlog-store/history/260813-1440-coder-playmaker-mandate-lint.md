@@ -1,8 +1,8 @@
 # Coder — step 7: the lint that keeps the two mandates stated on both surfaces
 
 **Status:** Complete
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store`
-**Plan:** `planning/260813-1306_p_the-playmaker-maintains-the-backlog-store.md`, step 7
+**Circle:** `260813-0858-playmaker-maintains-backlog-store`
+**Plan:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md`, step 7
 **Executor:** `fusion:coder`
 
 ## What changed

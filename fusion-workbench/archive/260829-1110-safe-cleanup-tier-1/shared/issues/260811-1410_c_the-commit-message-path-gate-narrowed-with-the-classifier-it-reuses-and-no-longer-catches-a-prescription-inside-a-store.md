@@ -5,14 +5,14 @@
 **Domain:** code
 **Filed by:** coderev, reviewing Turn 2 range `270c566..1d5eed6` (commit `337c01b`)
 **Affects:** `hooks/lib/__tests__/commit-message-path.test.ts:83-91` — `workbenchMessagePaths()`
-**Cross-references:** `shared/issues/260811-1141_c_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` (the fix that caused this); `hooks/lib/staging-drift.ts:304-390` (`classify`)
+**Cross-references:** `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` (the fix that caused this); `hooks/lib/staging-drift.ts:304-390` (`classify`)
 
 ---
 
 ## The defect
 
 `workbenchMessagePaths()` reaches through the shipped `classify()` rather than transcribing its
-pattern — the right instinct, and the reason `260810-0510`'s trap was avoided here. But the two
+pattern — the right instinct, and the reason `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`'s trap was avoided here. But the two
 callers ask different questions:
 
 - **`classify()`'s question** — "is this file on disk a leftover commit message?" The answer since
@@ -59,7 +59,7 @@ of any kind — and `classify()` calls it for its own last branch. The gate in
 commit-message-shaped path anywhere inside the workbench, stores included.
 
 **Why this shape and not the other.** The cheap repair was to give the gate its own regex, and it
-was rejected: two spellings of one concept, free to drift apart, is the `260810-0510` trap and the
+was rejected: two spellings of one concept, free to drift apart, is the `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` trap and the
 reason the gate reached through `classify()` in the first place. Exporting the shared sub-question
 keeps that property — there is still exactly one `COMMIT_MESSAGE` in the tree, and nothing in the
 gate can disagree with the classifier about what a commit-message name is — while letting each
@@ -72,13 +72,13 @@ would agree about every string anyone thought to write a fixture for.
 topic slug says "commit message" is flagged again. Across `agents/*.md` and `skills/*/SKILL.md`
 there are exactly two such lines today and both carry a defect word, so the `finds none` assertion
 passes unchanged (1271 tests, `npm test` exit 0). What the widening does is shift load onto that
-line-level keyword exemption, whose breadth is already filed as `260811-1149`; the positive control
+line-level keyword exemption, whose breadth is already filed as `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`; the positive control
 now asserts that dependency explicitly rather than leaving it latent, so whoever answers `1149`
 meets it instead of discovering it.
 
 **What was deliberately not widened.** `classify()` keeps its store scoping. The two callers' false
 positives are not comparable: one costs a developer an exemption entry at test time, the other told
-the model to delete three authored records (`260811-1141`). The new
+the model to delete three authored records (`260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`). The new
 `negative control: a prescription INSIDE a store fails it too` pins both directions in one test —
 the gate flags `fusion-workbench/shared/consult/commit-message.txt`, and `classify()` still reads
 the same path on disk as an unstaged `record`.

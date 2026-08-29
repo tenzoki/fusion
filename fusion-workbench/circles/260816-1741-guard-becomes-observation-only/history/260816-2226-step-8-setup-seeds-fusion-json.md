@@ -4,8 +4,8 @@
 **Agent:** coder
 **Date:** 2026-08-16
 **Circle:** 260816-1741-guard-becomes-observation-only
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 8
-**Gate answer realised:** `circles/260816-1741-guard-becomes-observation-only/decisions/260816-1916_a_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md` option 1
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 8
+**Gate answer realised:** `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md` option 1
 
 ## What changed
 
@@ -38,6 +38,6 @@ No test asserts a skill body's run-time behaviour, which the plan states plainly
 
 ## Not touched
 
-Step 3's legacy-halt offer (step 1, landed `05d848b`), every other step of the skill body, every test file, `bin/fusion-turn-budget` (its header is issue `260816-2124`, step 11), and the gate decision record's marker — step 13 owns the `_a_`→`_i_` transition and it needs a commit hash this task does not produce.
+Step 3's legacy-halt offer (step 1, landed `05d848b`), every other step of the skill body, every test file, `bin/fusion-turn-budget` (its header is issue `260816-2124_*_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`, step 11), and the gate decision record's marker — step 13 owns the `_a_`→`_i_` transition and it needs a commit hash this task does not produce.
 
 Nothing was committed.

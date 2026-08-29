@@ -103,7 +103,7 @@ to `default-voice-en.yaml`, and "das Langform-Schreibprofil" still names it corr
 weight.
 
 The plan asked for it literally. Step S8 of
-`shared/planning/260807-2024_c_two-language-declarations.md:166` says "Replace the filename with a
+`260807-2024_*_two-language-declarations.md:166` says "Replace the filename with a
 language-neutral reference to **'the long-form writing profile'**". `Langform-Schreibprofil` is that
 phrase in German. The editing agent did not choose a new term; it translated the one the plan named.
 
@@ -145,7 +145,7 @@ because the same sentence would justify 6.0.2 equally well.
 newline present, `claude plugin validate .` green.
 
 **Finding (Medium):** the other version surfaces did not move. Filed as
-`shared/issues/260807-2154_o_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md`.
+`260807-2154_*_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md`.
 `marketplace.json:42`, `install.sh:27`, `README.md:26` and the tag set all still read 6.0.1, while
 the HEAD commit titles itself a release. The plan deferred these to a user-run release gate twice
 (step S11 and Out of Scope), so the issue is a tracking record for the deferred half rather than a
@@ -168,8 +168,8 @@ their line budget.
 
 **Consequence, observation only, not filed.** Three line citations into `chat-voice-en.yaml` are now
 off by two, all in historical workbench records that describe the file as it stood:
-`shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md:27` and `:95`, and
-`shared/issues/260706-1902_c_consultant-chat-misrouted-to-longform-voice.md:26`, all citing
+`260706-1902-user-facing-agents-garbled-language-rootcause.md:27` and `:95`, and
+`260706-1902_*_consultant-chat-misrouted-to-longform-voice.md:26`, all citing
 `chat-voice-en.yaml:36-42` for `C04`, which now sits at 37-44. The issue is closed and the analysis
 is a historical record; neither is a live instruction. Recorded here so a later reader is not
 misled, deliberately not filed as a defect.
@@ -177,7 +177,7 @@ misled, deliberately not filed as a defect.
 ### 6. The reference has no landing point in its target (Low)
 
 Filed as
-`shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`.
+`260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`.
 
 Neither `default-voice-en.yaml` nor `default-voice-de.yaml` contains the phrase "long-form writing
 profile", and neither declares a `scope:` key although both chat profiles declare
@@ -196,7 +196,7 @@ copy of and needs the user's approval first. The comment-only half needs none.
 ### 7. The correction never reaches an existing consumer (Medium)
 
 Filed as
-`shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md`.
+`260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md`.
 
 `/fusion:setup` copies stylometric profiles only when absent (`skills/setup/SKILL.md:135-138`, with
 line 140 stating the intent), `/fusion:migrate` names `stilwerk/` in its never-touch list
@@ -243,8 +243,8 @@ Nothing here blocks the change under review. It is correct as committed.
 `c54ead9`. The version-pin finding is resolved: `.claude-plugin/plugin.json:3`, the marketplace
 entry at `tenzoki/claude-plugins@0c091d9`, `install.sh:27` and `README.md:26` all read `6.1.0`, and
 tag `v6.1.0` exists locally and on the remote at `fd74b89` — four version surfaces coherent, closed
-as `shared/issues/260807-2154_c_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md`.
+as `260807-2154_*_plugin-json-says-6-1-0-while-tag-marketplace-and-both-pin-examples-say-6-0-1.md`.
 The two structured-data findings remain open and were re-verified line by line; see the
 reconciliation notes appended to
-`shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md` and
-`shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`.
+`260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` and
+`260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`.

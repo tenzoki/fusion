@@ -7,9 +7,9 @@
 **Filed by:** analyst, independent assessment A1 of C5b
 **Affects:** `hooks/lib/config.ts:145-168` (`DEFAULTS.guard.protectedPaths` is the empty list), `:277` and `:286` (the merge and the leaf fallback); `templates/fusion-guard.json` `_override`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md` `### The merge semantics, assessed as a design`,
-`shared/planning/260801-1122_o_spec-normative-consolidation.md:299` (the merge rule as specified),
-plan `260802-1856_o_plan-guard-rules-write.md` `### Q2` (where the consequence is stated for `defaultSensitivity` and not for `protectedPaths`)
+`260804-1600-c5b-independent-assessment.md` `### The merge semantics, assessed as a design`,
+`260801-1122_*_spec-normative-consolidation.md:299` (the merge rule as specified),
+plan `260802-1856_*_plan-guard-rules-write.md` `### Q2` (where the consequence is stated for `defaultSensitivity` and not for `protectedPaths`)
 
 ---
 

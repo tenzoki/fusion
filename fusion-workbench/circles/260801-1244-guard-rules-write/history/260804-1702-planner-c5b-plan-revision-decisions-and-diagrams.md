@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-04 17:02
 **Agent:** planner
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Status:** Complete
-**Target (revised in place):** `circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md`
+**Target (revised in place):** `260804-1633_*_plan-c5b-remediation-and-ship.md`
 
 ---
 
@@ -14,10 +14,10 @@ Revised the existing plan in place rather than filing a second one. Two inputs a
 
 ## Inputs read
 
-- `decisions/260804-1630_a_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` — option 1, per-leaf fallback across project, plugin, `DEFAULTS`.
-- `decisions/260804-1631_a_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` — option 1, the project layer may not set `guard.enabled`, with a mandatory diagnostic.
-- `reviews/260804-1644-conceptrev-plan-c5b-remediation-and-ship.md` — verdict `tangled`, five named repairs plus a recurrence note.
-- `decisions/260803-1314_o_...` (open) and its two reconciliation entries, to test whether Step 4's conditionality survives.
+- `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` — option 1, per-leaf fallback across project, plugin, `DEFAULTS`.
+- `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` — option 1, the project layer may not set `guard.enabled`, with a mandatory diagnostic.
+- `260804-1644-conceptrev-plan-c5b-remediation-and-ship.md` — verdict `tangled`, five named repairs plus a recurrence note.
+- `260803-1314_*_...` (open) and its two reconciliation entries, to test whether Step 4's conditionality survives.
 - `hooks/lib/config.ts` at HEAD `53b3765`, the `DEFAULTS` block and the merge at `:277-300`, to check the leaf-provenance claim rather than assert it.
 
 ## Steps changed, and why
@@ -42,7 +42,7 @@ All five the evaluator named, plus the transitive-edge policy.
 3. Three arrow shapes for three obligations — solid for a hard gate, thick for a gate conditional on an open decision, dotted for a preference that gates nothing — with the convention stated in prose above the graph.
 4. One transitive policy, stated: every edge is one name in one `Dependencies` line and every name is one edge, direct prerequisites only. Checked both ways by hand; 18 edges, 18 declarations.
 5. `260803-1402` added as a fourth decision node with its edge to Step 7.
-6. Diagram 1's caption reconciled with the six defects it draws, and the `F<n>` identifiers documented as mapping to `260804-160<n>`, which turns the apparent `F5` gap into a stated scope decision. Its three inbound merge edges gained precedence ordinals, which puts the rule decision `260804-1630` answered onto the edges that embody it.
+6. Diagram 1's caption reconciled with the six defects it draws, and the `F<n>` identifiers documented as mapping to `260804-160<n>`, which turns the apparent `F5` gap into a stated scope decision. Its three inbound merge edges gained precedence ordinals, which puts the rule decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` answered onto the edges that embody it.
 
 Both blocks rendered with `mmdc` 11.16.0: diagram 1 unchanged at 18 nodes and 17 edges, diagram 2 at 12 nodes and 18 edges, both acyclic and orphan-free.
 
@@ -50,7 +50,7 @@ The evaluator's suggested `subgraph` partition was tried and rejected on evidenc
 
 ## Filed
 
-`shared/issues/260804-1702_o_the-diagram-self-check-tests-shape-and-never-tests-agreement-with-the-prose.md`. The evaluator noted this is the second consecutive evaluation in this Circle finding a dependency drawn nowhere. `rules/design-diagrams.md`'s self-check asks five questions about the graph in isolation and none about agreement with the prose, so it cannot catch the class and in fact rewards it — a graph missing an edge scores better on every one of the five. Shared store, not the Circle: a defect in the plugin's authoring rule, found beside this Directive rather than caused by it.
+`260804-1702_*_the-diagram-self-check-tests-shape-and-never-tests-agreement-with-the-prose.md`. The evaluator noted this is the second consecutive evaluation in this Circle finding a dependency drawn nowhere. `rules/design-diagrams.md`'s self-check asks five questions about the graph in isolation and none about agreement with the prose, so it cannot catch the class and in fact rewards it — a graph missing an edge scores better on every one of the five. Shared store, not the Circle: a defect in the plugin's authoring rule, found beside this Directive rather than caused by it.
 
 ## What did not change
 

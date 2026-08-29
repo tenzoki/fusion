@@ -16,7 +16,7 @@ reports "unavailable" for a session that stopped before its first Turn is report
 a measured figure exists.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`
+`260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`
 (the record `6deeb33` closed).
 
 ## What is there

@@ -1,9 +1,9 @@
-# Tasklist rebuild — 260811-0903
+# Tasklist rebuild — 260811-0903-tasklist-update.md
 
 **Agent:** taskplanner (domain `code`)
 **Git HEAD:** `7785330`
 **Active Circle:** none — no `.active-circle` pointer, so every `OUT_*` resolved into `shared/`
-**Output:** `fusion-workbench/tasklist.md` (2872 lines, replacing the 260810-1723 queue entirely)
+**Output:** `fusion-workbench/tasklist.md` (2872 lines, replacing the 260810-1723-tasklist-update.md queue entirely)
 
 ## What was scanned
 
@@ -38,12 +38,12 @@ none was moved and none is proposed for moving.
 **The test suite is red at HEAD and no record says so.** `cd hooks && npm test` at `7785330`:
 41 files, 1142 tests, **1 failed**, 88.04s. `hooks/lib/__tests__/reference-resolution-lint.test.ts`
 fails on one dangling citation — `skills/setup/SKILL.md:45` names
-`260717-0115_o_live-workbench-split-across-two-layouts-during-conversion.md`, a record whose marker
+`260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md`, a record whose marker
 moved to `_c_` in the last session.
 
 It matters beyond its size. `agents/coder.md:78-80` derives `Result: done` from the suite's exit code,
 so every executor dispatched before this is fixed reports `blocked` whatever it touched. That is
-precisely the defect queued record `260810-0703` describes, and it converted from latent to active
+precisely the defect queued record `260810-0703_*_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md` describes, and it converted from latent to active
 between the two queue builds. It is task 1, and the queue says plainly that it precedes everything
 whose acceptance is an exit code.
 
@@ -56,7 +56,7 @@ close-without-work section now warns about this and names the wildcard form as t
 Two records need no code change. Both still carry `_o_` on disk; renaming that marker is the
 reconciler's call.
 
-**`260804-0842`** (git gold fixture, guard-rules-write Circle) — **obsolete**. All four things it acts
+**`260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md`** (git gold fixture, guard-rules-write Circle) — **obsolete**. All four things it acts
 on were deleted by the v6.0.0 measurement rewrite and by `7598073`: the fixture
 (`hooks/lib/__tests__/fixtures/git-verdicts-head.json`), the test (`git-branch-guard.test.ts`), the
 classifier (`hooks/lib/bash-mutation-guard.ts`) and the segmenter (`hooks/lib/shell-parse.ts`).
@@ -72,7 +72,7 @@ reported `strategic` for five straight days across four sessions."*
 
 ## Partly resolved — still queued, with the discharged half named
 
-- **`260811-0114`** (uncommitted queue rebuild): `60f47c2` committed `tasklist.md` and its history file
+- **`260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`** (uncommitted queue rebuild): `60f47c2` committed `tasklist.md` and its history file
   and `.commit-msg-tmp` is gone, so the immediate state is repaired. The record itself says that
   "closes nothing"; the three durable questions stay queued as task 5.
 - **`260803-1352`** (unclamped guard advisory): both sites it names and the clamp they skip
@@ -80,7 +80,7 @@ reported `strategic` for five straight days across four sessions."*
   `hooks/tracker.ts:508`, where `rulesWriteDetail(exempted)` is unbounded and there is now no clamp in
   the codebase at all. Queued as task 18 with corrected coordinates.
 - **`260805-1548`** (no duplicate check at filing time): **unblocked**. Its blocking decision
-  `260805-1559` moved to `_i_` — the rules-emission ratchet became a growth budget that reports rather
+  `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` moved to `_i_` — the rules-emission ratchet became a growth budget that reports rather
   than fails (`3163281`) — and the decision's own note says the withheld paragraph is now landable.
   The record's "why it isn't in there" section is stale and should be struck in the same pass. Queued
   as task 20, ungated.
@@ -100,7 +100,7 @@ waits on one, the entry names the decision by path and states what cannot be sta
 Twenty-eight tasks carry a gate. Six are partial — part of the work is ungated and named separately.
 Three of the gates are new since the last queue and form one cluster: the source-root branch, its
 missing reach into two more skill bodies, and the domain one-liner in four bodies are one design
-question (`260810-2145`), which is why they are chained rather than listed side by side.
+question (`260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`), which is why they are chained rather than listed side by side.
 
 Two tasks route to nobody: the live Plane body check needs the configured instance, and the emission
 measurement needs a machine this session cannot reach.
@@ -109,7 +109,7 @@ measurement needs a machine this session cannot reach.
 
 All 69 were checked against the working tree at `7785330` by reading the file or running the command
 the record cites; every queue entry carries a `**Verified:**` line saying what was read or run. Of the
-40 records carried over from the 260810-1723 queue, all 40 were re-run rather than trusted — every one
+40 records carried over from the 260810-1723-tasklist-update.md queue, all 40 were re-run rather than trusted — every one
 is still open. Reconciliation notes inside records were treated as history, not as current truth,
 which is what surfaced the three "the record is right and its coordinates are wrong" cases above.
 

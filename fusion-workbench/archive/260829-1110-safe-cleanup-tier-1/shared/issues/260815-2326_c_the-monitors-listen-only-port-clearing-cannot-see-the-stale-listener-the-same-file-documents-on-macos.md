@@ -85,7 +85,7 @@ unresolved half (coder, 2026-08-16).
 
 1. *The claim is not "a test-suite comment" — it is a measurement, and the record for it exists.*
    `bin/monitor:1264` is a restatement of
-   `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0820_c_monitor-bind-0000-bricht-loopback-verbindungen-neun-tests-rot.md`,
+   `260806-0820_*_monitor-bind-0000-bricht-loopback-verbindungen-neun-tests-rot.md`,
    whose `Resolved:` note records the state measured on this development machine on 2026-08-06:
    a non-loopback listener of a process without Local Network permission parked in CLOSED, never
    LISTEN, dropping inbound SYNs *even from 127.0.0.1*, with a loopback bind exempt. Nine tests

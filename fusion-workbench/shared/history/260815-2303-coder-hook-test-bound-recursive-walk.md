@@ -1,9 +1,9 @@
 # Coder — the hook-test bound walks its own tree
 
-**Stamp:** 260815-2303
+**Stamp:** 260815-2303-coder-hook-test-bound-recursive-walk.md
 **Agent:** coder
 **Status:** Complete
-**Source record:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1935_c_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md`
+**Source record:** `260815-1935_*_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md`
 **Files changed:** `hooks/lib/__tests__/surface-growth-bound.test.ts`, `README-hooks.md`
 
 ## What the defect was

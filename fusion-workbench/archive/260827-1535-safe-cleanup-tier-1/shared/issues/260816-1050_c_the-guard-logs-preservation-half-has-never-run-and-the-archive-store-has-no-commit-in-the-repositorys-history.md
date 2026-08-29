@@ -46,7 +46,7 @@ it — sits in a single ignored, untracked, unbounded file. A fresh clone does n
 -xdf` deletes it. `git stash --all` sweeps it (`rules/fusion-workbench-conventions.md:83` says so
 explicitly about ignored paths). That is precisely the outcome that classifying the log as a *record*
 rather than as live state was meant to prevent, per decision
-`shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`.
+`260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`.
 
 ## What is and is not being claimed
 
@@ -80,15 +80,15 @@ Three options, and picking one is the work:
 Option 3 should be settled before 1 or 2, because it decides whether this is a text problem or a
 mechanism problem.
 
-**Related, and distinct:** `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`
+**Related, and distinct:** `260801-1020_*_scan-keys-never-reach-the-archive-store.md`
 is about no `SCAN_*` key resolving into `archive/`. That record assumes the store fills up over time.
 This one measures that it never has.
 
 **Found by:** coderev, reviewing `433e206..b18a8cf`
-(`shared/reviews/260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F2).
+(`260816-1049-coderev-tracked-workbench-split-and-kept-line.md`, F2).
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `fusion-workbench/archive/` is empty on disk, `git log --all -- fusion-workbench/archive` returns no commit, and `.guard-state/events.jsonl` stands at about 18 250 lines, untracked. The roll has still never fired. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `fusion-workbench/archive/` is empty on disk, `git log --all -- fusion-workbench/archive` returns no commit, and `.guard-state/events.jsonl` stands at about 18 250 lines, untracked. The roll has still never fired. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: The preservation half has now run, and both measured claims are false at HEAD `e435f03`.

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** reconciler
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_c_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `circles/260801-1244-curator/issues/260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`, `circles/260801-1244-curator/issues/260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`, `circles/260801-1244-curator/issues/260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `shared/history/260814-2306-orchestrator-session.md` (three `## Coherence` sections)
+**Cross-references:** `260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`, `260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`, `260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `260814-2306-orchestrator-session.md` (three `## Coherence` sections)
 
 ---
 
@@ -134,7 +134,7 @@ both passes split it by hand. The record's own prediction that an unfiltered num
 with every time it fires" held on both.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — options 3 then 1: filter the uncovered set to commits touching shipped files, keep coverage advisory with the gap named in the closure note. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — options 3 then 1: filter the uncovered set to commits touching shipped files, keep coverage advisory with the gap named in the closure note. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:
@@ -182,7 +182,7 @@ and two goldens, and stands. One uncovered shipped commit, in the commit that la
 review itself ordered.
 
 **That shape is this record's own cross-referenced case, met again.**
-`circles/260801-1244-curator/issues/260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`
+`260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`
 names exactly it: the commit that discharges a review's findings is the one commit no review opens, because
 the review that would cover it is the one that ordered the work. Nothing here is new evidence for a
 different answer; it is a fourth data point for the one already given.
@@ -194,10 +194,10 @@ This is the fourth consecutive verdict computed under this rule and the fourth t
 which is the consistency the record was filed to buy.
 
 ---
-**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **Fifth consecutive check; option 1 applied again, option 3 still absent from the helper.** `grep -in 'shipped' hooks/lib/review-coverage.ts` returns nothing, so the uncovered set is still filtered by coverage alone and the shipped-file split was again performed by hand.
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **Fifth consecutive check; option 1 applied again, option 3 still absent from the helper.** `grep -in 'shipped' hooks/lib/review-coverage.ts` returns nothing, so the uncovered set is still filtered by coverage alone and the shipped-file split was again performed by hand.
 
 Measured over `e209011..cf7a5b0`: `commits=18 reviews=2 unusable=0 uncovered=1 verdict=uncovered`. Split by hand — `cf7a5b0` touches four files, all under `fusion-workbench/` (the second review file and the three records it filed), so the filtered set is **empty**. There is no uncovered shipped commit in this Circle at all, which is the first time in the five checks that the hand split has emptied the set.
 
 **Applied as answered.** Coverage is advisory, so the uncovered commit does not flag the Artifact↔Grounding edge of this session's Coherence verdict, and it is carried as a named residual for the Circle's `## Closure note`.
 
-**One new consequence this record did not predict, and it is filed.** The Circle's plan wrote a release precondition in the letter of `uncovered=0`, which this record answered eight days earlier is advisory; and the review commit's own message quoted `uncovered=0 verdict=covered`, true when measured and false the moment the commit landed. Record: `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`. Separately, `agents/orchestrator.md` Step 3c still tells every session that this decision is unfiled, eight days after it was answered; filed as `shared/issues/260824-1637_*_an-always-loaded-prompt-states-that-the-uncovered-range-decision-is-unfiled-eight-days-after-it-was-answered.md`.
+**One new consequence this record did not predict, and it is filed.** The Circle's plan wrote a release precondition in the letter of `uncovered=0`, which this record answered eight days earlier is advisory; and the review commit's own message quoted `uncovered=0 verdict=covered`, true when measured and false the moment the commit landed. Record: `260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`. Separately, `agents/orchestrator.md` Step 3c still tells every session that this decision is unfiled, eight days after it was answered; filed as `260824-1637_*_an-always-loaded-prompt-states-that-the-uncovered-range-decision-is-unfiled-eight-days-after-it-was-answered.md`.

@@ -31,7 +31,7 @@ judgement.
 
 Two commands of this run, about two minutes apart, saw different states.
 
-- At the inventory pass, `circles/260824-0530-record-attribution-and-circle-claim/` carried
+- At the inventory pass, `260824-0530-record-attribution-and-circle-claim` carried
   `_a_circle.md` and `fusion-workbench/.active-circle` was absent.
 - At the next pass, the same directory carried `_t_circle.md` and `.active-circle` named it.
 
@@ -63,8 +63,8 @@ it been ranked, it would have been rank 1 of 1 on both heuristics: both `## Depe
 (`260823-0023-settle-what-travels-between-checkouts`,
 `260822-1921-measure-what-two-checkouts-share`) resolve to existing directories whose records carry
 `_c_`, so the dependencies-closed flag is clear; and the two `_o_` decisions its Grounding cites
-(`shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
-`shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`)
+(`260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
+`260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`)
 are both placed at the first Turn's planning gate by the Circle's own Grounding and by the
 specification, rather than blocking activation.
 
@@ -83,8 +83,8 @@ Read from `shared/backlog/`: three entries, two live.
 Distinct ideas found inside the live entries: two, one per entry. Duplicate groups: none. Items
 handed to `## Warnings` as defect-shaped or decision-shaped: none.
 
-**Top-ranked entry: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`.** Its analysis is
-already on disk (`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`), so it can
+**Top-ranked entry: `260814-1733_*_bounded-executor-dispatches.md`.** Its analysis is
+already on disk (`260812-0303-simplify-speed-and-why-rules-do-not-hold.md`), so it can
 be shaped today rather than needing fresh investigation before it could be sized. It carries one idea,
 so `Recommended to shape:` was rendered with the `/fusion:direct` invocation under it.
 
@@ -95,12 +95,12 @@ neither was moved.
 
 ### Confirmed operations proposed and not performed
 
-- `defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
+- `defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
 
 Reason no confirmation was held: the dispatch prompt carried no `**Confirmed operations:**` block, and
 this run has no channel to ask the user directly. The obstruction behind the proposal was verified
 again this run by reading both filenames: the decision carries `_d_` and the defect record it waits on
-(`shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`)
+(`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`)
 carries `_o_`.
 
 ## Dependency cycles

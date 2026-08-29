@@ -2,7 +2,7 @@
 
 ---
 `753932b` replaced the two literal identity fields with one `<ID>` fragment in "all three emit
-templates" and closed `260826-0136` on that basis. There are four. The fourth was created two
+templates" and closed `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md` on that basis. There are four. The fourth was created two
 commits earlier, in `c2be6f8`, and still carries `\"person\":\"<PERSON>\",\"checkout\":\"<CHECKOUT>\"`
 unconditionally — in `/fusion:setup`, which is the documented entry point for a session and therefore
 the site that most often writes the line.
@@ -15,9 +15,9 @@ time in one Circle that a count taken over `agents/orchestrator.md` missed the `
 rendering of the same procedure.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`
+`260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`
 (the record closed as covering all three);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
+`260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
 (the same shape, same Circle: three sites counted in the prompt, a fourth standing in the skill body).
 
 ## What was measured
@@ -38,7 +38,7 @@ converted the three orchestrator sites and did not touch it.
 at `agents/orchestrator.md:139`, and extended with `session_id` at `:140`. The skill body reads the
 identity at Step 0i (`skills/setup/SKILL.md:346-355`) and its Step 5 prose (`:480`) cites
 `agents/orchestrator.md` `### 2. Structured Event Log` for "the unresolved-half rule included" — a
-pointer to a rule the template beside it cannot execute. That is the exact shape `260826-0136`
+pointer to a rule the template beside it cannot execute. That is the exact shape `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md`
 described: the rule is restated and not expressed.
 
 ## Why the skill body is the site that matters most
@@ -52,7 +52,7 @@ a distinct party by `measurePresence`.
 
 The unresolved half is not exotic. It is the ordinary state of an install one release behind the
 tree that added the helper, measured in
-`shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`,
+`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`,
 where `bin/fusion-identity` is absent and the wrapper's sentinel is 127.
 
 ## Fix direction

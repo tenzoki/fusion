@@ -1,6 +1,6 @@
 # Context manifest — topic-scoped selective loading
 
-**Provenance:** circles/260718-1924-v5x-overhaul
+**Provenance:** 260718-1924-v5x-overhaul
 
 > Authored once here, cited from `bin/fusion-rules` and the agent Setup prose.
 > This is the convention for the **optional** `./rules/context-manifest.yaml` a

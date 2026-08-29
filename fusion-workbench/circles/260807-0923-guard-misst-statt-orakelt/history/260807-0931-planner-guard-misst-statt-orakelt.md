@@ -3,7 +3,7 @@
 **Datum:** 2026-08-07
 **Agent:** planner
 **Status:** Complete
-**Ergebnis:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`
+**Ergebnis:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`
 
 ## Auftrag
 

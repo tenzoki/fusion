@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md` `### Step 4`
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260802-1856_*_plan-guard-rules-write.md` `### Step 4`
 
 ## What was implemented
 
@@ -84,7 +84,7 @@ surfaced by the first caller that can pass more than one path. Filed, not fixed 
 `## Findings`.)
 
 The deferred criterion at
-`shared/planning/260801-1122_o_spec-normative-consolidation.md:316` is closed by the first
+`260801-1122_*_spec-normative-consolidation.md:316` is closed by the first
 two rows: a shell move of a rule file into `retired/` is blocked with the flag unset and
 allowed with it set, emitting exactly one `guard_advisory`.
 
@@ -131,7 +131,7 @@ first is filed as an issue.
    (`hooks/lib/rules-write-exemption.ts:140-145`). The plural label is substituted into a
    singular article. The Bash path is the first caller that can pass more than one path, so
    the write-tool path never showed it. Filed as
-   `circles/260801-1244-guard-rules-write/issues/260802-2213_o_rules-write-detail-says-a-protected-rule-paths-for-a-multi-path-list.md`.
+   `260802-2213_*_rules-write-detail-says-a-protected-rule-paths-for-a-multi-path-list.md`.
 2. **The plan's claim about which pass denies `rm -rf rules` is wrong** (plan line 222:
    "through the ancestor pass at `bash-mutation-guard.ts:1252`"). It denies in **pass 1**:
    `isProtected` (`hooks/lib/bash-mutation-guard.ts:897-906`) retries a non-slash operand

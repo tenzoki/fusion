@@ -3,14 +3,14 @@
 ---
 **Domain:** code
 **Status:** implemented
-**Filed by:** orchestrator (raised by the user mid-Turn, 260807-0825)
+**Filed by:** orchestrator (raised by the user mid-Turn, 260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md)
 **Cross-references:**
-- `circles/260804-1205-shell-reachability-model/_t_circle.md` — the Circle this question suspends
-- `circles/260804-1205-shell-reachability-model/planning/260806-2353_o_plan-shell-reachability-model.md` — the plan, steps 1 and 2 landed, 3 through 11 unstarted
-- `circles/260801-1244-guard-rules-write/issues/260805-1830_o_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md` — the measured false-alarm rate
-- `circles/260801-1244-guard-rules-write/reviews/260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md` §`### The boundary, by coverage` — the standing statement of what is out of reach by nature
+- `260804-1205-shell-reachability-model` — the Circle this question suspends
+- `260806-2353_*_plan-shell-reachability-model.md` — the plan, steps 1 and 2 landed, 3 through 11 unstarted
+- `260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md` — the measured false-alarm rate
+- `260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md` §`### The boundary, by coverage` — the standing statement of what is out of reach by nature
 - `rules/protected-path-discipline.md` §`## Where this check does not reach` — the guard's own concession
-- `circles/260804-1205-shell-reachability-model/decisions/260807-0250_i_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md` — a sub-question of the current approach, answered by measurement during this session
+- `260807-0250_*_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md` — a sub-question of the current approach, answered by measurement during this session
 
 ---
 
@@ -31,7 +31,7 @@ they point in opposite directions.
 
 ## What this session measured
 
-Verified during the session of 260806-2158, and cited rather than summarised:
+Verified during the session of 260806-2158-orchestrator-session.md, and cited rather than summarised:
 
 1. **The approximation keeps producing holes as it grows.** The plan needed two repair passes
    before any classifier code moved. The design as approved by the user contained five holes
@@ -41,7 +41,7 @@ Verified during the session of 260806-2158, and cited rather than summarised:
 2. **The instrument still cannot express the worst case.** The corpus generates 93,744
    commands and cannot produce the operand shape where those five holes lived: a path that is
    protected where the shell actually stands and harmless where the model thinks it stands.
-   Filed at `circles/260804-1205-shell-reachability-model/issues/260807-0251_o_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`.
+   Filed at `260807-0251_*_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`.
 3. **The benefit does not reach the observed friction.** In four days of a real consuming
    project the guard fired seventeen times and every one was a false alarm. All seventeen
    belong to the unresolvable-operand class, which this Circle's Directive explicitly leaves
@@ -106,9 +106,9 @@ Deferred:
 Superseded by:
 
 ---
-Answered: Der Nutzer hat am 260807-0923 im Chat Option 3 gewählt (nachher erkennen statt vorher
+Answered: Der Nutzer hat am 260807-0923-guard-misst-statt-orakelt im Chat Option 3 gewählt (nachher erkennen statt vorher
 vorhersagen), erweitert um den vollständigen Rückbau des Klassifizierers. Umgesetzt wird sie im
-Circle `circles/260807-0923-guard-misst-statt-orakelt/`, der diesen Circle ablöst. Zwei
+Circle `260807-0923-guard-misst-statt-orakelt`, der diesen Circle ablöst. Zwei
 Randbedingungen kamen mit der Antwort: die grobe Vorwarnung aus der vorgeschlagenen Variante C
 entfällt ausdrücklich, weil sie der Keim wäre, aus dem das Orakel nachwächst; und das
 MECE-Prinzip wird als Abschnitt in `rules/critical-stance.md` verankert statt als eigene
@@ -121,7 +121,7 @@ Die fünf Commits im Einzelnen: `2d55c66` nimmt `fusion-workbench/.guard-state/*
 
 Beide Randbedingungen der Antwort sind eingehalten. Die erklärende Ablehnung besteht fort und ist stärker als erwartet: der PostToolUse-Hook kann über `hookSpecificOutput.additionalContext` einen Text an das Modell zurückgeben, gemessen gegen Claude Code 2.1.224, sodass der Rückfall auf Halt plus Ereignis nicht gebraucht wurde. Die grobe Vorwarnung aus Variante C ist nicht gebaut worden; der Halt-Zweig auf der Bash-Oberfläche, der noch `mutation.mutates` fragte, ist mit dem Klassifizierer gefallen.
 
-Die beiden Commits des abgelösten Circles, `3dc5014` und `9a24c9b`, sind nicht per `git revert` zurückgenommen, sondern vorwärts abgeräumt. Am Baum nachgeprüft am 260807-1202: alle sieben Quelldateien, die sie anlegten, sind gelöscht (`hooks/lib/shell-reach.ts`, `hooks/lib/__tests__/shell-reach.test.ts`, `helpers/reachability-corpus.ts`, `helpers/shell-witness.ts`, `reachability-corpus.test.ts`, `fixtures/mutation-verdicts-head.json`, dazu `hooks/lib/bash-mutation-guard.ts` aus der Zeit davor); `GRAMMAR_TERMINATORS`, das `9a24c9b` in `hooks/lib/command-word.ts` einfügte, ist mit `ba7ccda` wieder entfallen; die Modultabellenzeile, die `9a24c9b` in `README-hooks.md` einfügte, ist mit `436d78c` entfallen. Ein Rest steht: die kompilierten Waisen `hooks/dist/lib/shell-reach.{js,d.ts}` und `hooks/dist/lib/bash-mutation-guard.{js,d.ts}`, 4.088 Zeilen, sind weiter in git verzeichnet, weil `tsc` das Ausgabeverzeichnis nicht aufräumt. Sie werden von nichts mehr importiert; als Befund abgelegt unter `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1202_o_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md`.
+Die beiden Commits des abgelösten Circles, `3dc5014` und `9a24c9b`, sind nicht per `git revert` zurückgenommen, sondern vorwärts abgeräumt. Am Baum nachgeprüft am 260807-1202: alle sieben Quelldateien, die sie anlegten, sind gelöscht (`hooks/lib/shell-reach.ts`, `hooks/lib/__tests__/shell-reach.test.ts`, `helpers/reachability-corpus.ts`, `helpers/shell-witness.ts`, `reachability-corpus.test.ts`, `fixtures/mutation-verdicts-head.json`, dazu `hooks/lib/bash-mutation-guard.ts` aus der Zeit davor); `GRAMMAR_TERMINATORS`, das `9a24c9b` in `hooks/lib/command-word.ts` einfügte, ist mit `ba7ccda` wieder entfallen; die Modultabellenzeile, die `9a24c9b` in `README-hooks.md` einfügte, ist mit `436d78c` entfallen. Ein Rest steht: die kompilierten Waisen `hooks/dist/lib/shell-reach.{js,d.ts}` und `hooks/dist/lib/bash-mutation-guard.{js,d.ts}`, 4.088 Zeilen, sind weiter in git verzeichnet, weil `tsc` das Ausgabeverzeichnis nicht aufräumt. Sie werden von nichts mehr importiert; als Befund abgelegt unter `260807-1202_*_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md`.
 
 ---
-Retired: `60c9cd8` (shared/planning/260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md) — von den beiden Haelften der Antwort steht nur die negative. Der Klassifizierer ist gefallen und bleibt gefallen; die Messung, die ihn ersetzen sollte, ist selbst entfernt: `hooks/lib/protected-snapshot.ts`, der Fingerabdruck vor und nach jedem Werkzeugaufruf, das Zurueckschreiben und die Regel-Ausnahme, die `309ee28` eigens auf die Messseite umgehaengt hatte. `README-hooks.md:286` zaehlt sie namentlich auf und schliesst mit "Nothing replaced any of it". Gemessen statt orakelt wird heute gar nicht mehr.
+Retired: `60c9cd8` (260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md) — von den beiden Haelften der Antwort steht nur die negative. Der Klassifizierer ist gefallen und bleibt gefallen; die Messung, die ihn ersetzen sollte, ist selbst entfernt: `hooks/lib/protected-snapshot.ts`, der Fingerabdruck vor und nach jedem Werkzeugaufruf, das Zurueckschreiben und die Regel-Ausnahme, die `309ee28` eigens auf die Messseite umgehaengt hatte. `README-hooks.md:286` zaehlt sie namentlich auf und schliesst mit "Nothing replaced any of it". Gemessen statt orakelt wird heute gar nicht mehr.

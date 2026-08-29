@@ -2,14 +2,14 @@
 
 **Date:** 2026-08-20 23:54
 **Agent:** analyst
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
 **Task:** plan step 2, register the protocol and capture the pre-repair window before any repair lands
 **HEAD at start:** `fac97f4`
 **Status:** Complete
 
 ## What was produced
 
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`,
+`260820-2354-prose-register-measurement-protocol.md`,
 4114 prose words, 0 prose em-dashes.
 
 Nothing else was written. No code, rule, spec, plan or decision record was touched, and no commit was

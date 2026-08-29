@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-14
 **Status:** Complete
-**Spec:** `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md`
+**Spec:** `260814-0738_*_spec-curator.md`
 **Circle:** `260801-1244-curator`
 **Executors:** coder, ontocoder (the active set; every step below resolves to `coder`, and `## Executor routing` says why no step reaches `ontocoder`)
 
@@ -26,9 +26,9 @@ Seven capabilities are in scope: C1, C2, C3, C6, C7, C10, C11. Four are out and 
 
 Measured at HEAD `e321a54` on 2026-08-14 by reading the five files directly: the universal core emits 86 466 bytes against a floor of 63 654, so it stands 10 812 over its 75 654 budget. That figure agrees with the spec's table for the core-only role. The three role-specific files stand at `design-diagrams.md` 5 673 against a baseline of 5 673, `circle-records.md` 11 958 against 9 302, and `workbench-stash-and-lock.md` 12 957 against 9 250. Every role's whole overshoot is therefore core growth, and no role's role-specific growth reaches its head-room on its own.
 
-**The arming question is answered.** `circles/260801-1244-curator/decisions/260814-0738_a_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` carries the answered marker: the user chose option 1 on 2026-08-14 at an orchestrator gate. The baseline is re-set once, at the moment of arming, and the 2026-08-14 overshoot is written into the file as text so the standing cleanup request survives the number moving. The spec's `## User Decisions Pending` and the Circle record's `## Grounding snapshot` still describe the question as open; both lags are filed as `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`. C10 below is planned against the answer.
+**The arming question is answered.** `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` carries the answered marker: the user chose option 1 on 2026-08-14 at an orchestrator gate. The baseline is re-set once, at the moment of arming, and the 2026-08-14 overshoot is written into the file as text so the standing cleanup request survives the number moving. The spec's `## User Decisions Pending` and the Circle record's `## Grounding snapshot` still describe the question as open; both lags are filed as `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`. C10 below is planned against the answer.
 
-**The Circle record's title is stale.** It still names the conventions file as the validation case, which C11 replaced. Filed as `circles/260801-1244-curator/issues/260814-0813_o_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`. Nothing in this plan reads the title.
+**The Circle record's title is stale.** It still names the conventions file as the validation case, which C11 replaced. Filed as `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`. Nothing in this plan reads the title.
 
 **Adding a seventeenth agent is not a free act, and the tree enforces that.** Five mechanical gates fail the moment `agents/curator.md` exists and until the fleet's registrations follow it:
 
@@ -270,14 +270,14 @@ The corpus figures move. The spec measured 82 decision records on 2026-08-14 and
 | Arming the bound on a re-set baseline can be read later as the silent raise the instrument warns against. | The four recording surfaces of question 8, and the overshoot preserved as text rather than only as a number that has moved. |
 | The nominal advisory head-room per role becomes 24 000 across two halves once the report is narrowed to extras. | Stated in the plan rather than hidden. Only the core's 12 000 blocks, the report never blocked anything, and no second threshold is invented without a measurement behind it. |
 | The curator's remit boundary against `/fusion:revise-claude-md` and against the reconciler is prose in a prompt, and prose in a prompt is overridable under task pressure. | The boundary is restated on both sides: the curator's `## Scope` names both owners, and step 2 amends `agents/consultant.md`, which is the surface that today names `analyst` as the sole decision-record author. Beyond that, the gate is the enforcement, as it is for every judgement in this design. |
-| The Circle record's title still advertises the retired validation case, and `portfolio.md` renders that title. | Filed as issue `260814-0813`. Nothing in this plan reads the title, and resolving it belongs to the shaper or the orchestrator, whose write access to those sections is the reason it was left. |
+| The Circle record's title still advertises the retired validation case, and `portfolio.md` renders that title. | Filed as issue `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`. Nothing in this plan reads the title, and resolving it belongs to the shaper or the orchestrator, whose write access to those sections is the reason it was left. |
 
 ---
 
 ## Open Questions
 
-- [x] **How the twenty-seven unparsed "sixteen agents" claims are treated.** Five digit claims are re-derived by the enumeration lint and simply have to match the tree. The other twenty-seven are prose in which "sixteen" is a synonym for "every agent", and the project's own derive-over-correct doctrine says a figure a sentence does not need should leave rather than be corrected. Correcting them costs an edit now and the same edit at every future agent addition; removing the figure costs a slightly larger edit now and nothing afterwards. Filed as `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, with the reasoning and a recommendation. Step 2 proceeds with the in-place correction absent an answer, which is the reversible branch. **Answered on 2026-08-14 at the plan gate: option 2.** The five lint-derived claims were corrected to seventeen and the figure was removed from the unasserted occurrences; the cut log's historical measurements were left untouched. Landed in step 2.
-- [ ] Whether the hard dependency on `260801-1244-rule-provenance-header` survives on grounds other than the retired partition. Issue `260814-0813` raises it and explicitly does not settle it. Nothing in this plan depends on the answer: that Circle has closed, and the provenance headers it produced are available to C2 as evidence source 8 today.
+- [x] **How the twenty-seven unparsed "sixteen agents" claims are treated.** Five digit claims are re-derived by the enumeration lint and simply have to match the tree. The other twenty-seven are prose in which "sixteen" is a synonym for "every agent", and the project's own derive-over-correct doctrine says a figure a sentence does not need should leave rather than be corrected. Correcting them costs an edit now and the same edit at every future agent addition; removing the figure costs a slightly larger edit now and nothing afterwards. Filed as `260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, with the reasoning and a recommendation. Step 2 proceeds with the in-place correction absent an answer, which is the reversible branch. **Answered on 2026-08-14 at the plan gate: option 2.** The five lint-derived claims were corrected to seventeen and the figure was removed from the unasserted occurrences; the cut log's historical measurements were left untouched. Landed in step 2.
+- [ ] Whether the hard dependency on `260801-1244-rule-provenance-header` survives on grounds other than the retired partition. Issue `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md` raises it and explicitly does not settle it. Nothing in this plan depends on the answer: that Circle has closed, and the provenance headers it produced are available to C2 as evidence source 8 today.
 
 ---
 
@@ -302,7 +302,7 @@ step marks were not trusted; each was re-derived from the tree and from the comm
 own stated acceptance.
 
 **The decision this plan's `## Open Questions` filed is implemented.**
-`circles/260801-1244-curator/decisions/260814-0845_i_are-the-sixteen-agent-claims-corrected-or-derived-away.md`
+`260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`
 was checked against the tree, not against its own `Implemented:` line. Option 2 landed as claimed:
 `grep -rn 'sixteen'` over `agents/ rules/ skills/ hooks/lib/ CLAUDE.md README*.md docs/
 .claude-plugin/` returns eight hits, of which five are the cut log's historical measurements in
@@ -319,9 +319,9 @@ the dependency Circle closed on 2026-08-02 and its provenance headers were avail
 the spec beside it invalidates every citation that spelled their open markers literally. Three of
 those live in surfaces the reconciler may not write and are the orchestrator's to repoint at
 Phase 4: `fusion-workbench/agentstate.yaml` (`plan_context.plan_file` and
-`current_task.source_file`) and `circles/260801-1244-curator/_t_circle.md`
+`current_task.source_file`) and `260801-1244-curator`
 (`**Active spec/plan:**`). The rest are enumerated in
-`circles/260801-1244-curator/issues/260814-1450_o_renaming-the-spec-and-plan-to-closed-broke-twenty-citations-that-spelled-the-open-marker.md`.
+`260814-1450_*_renaming-the-spec-and-plan-to-closed-broke-twenty-citations-that-spelled-the-open-marker.md`.
 
 **Two internal citations of the arming decision, treated differently and deliberately.** The
 `## Open Questions` pointer at the foot of this plan was starred to `_*_` by this pass, because it
@@ -350,7 +350,7 @@ this entry records what was re-checked rather than assumed.
 - **The full suite is green at HEAD and red in the working tree**, for a reason outside this plan:
   an uncommitted `orchestrator.maxTurns` line in the root `fusion-guard.json` breaks the
   byte-identity pin in `hooks/lib/__tests__/config.test.ts:1325-1336`. Filed as
-  `circles/260801-1244-curator/issues/260814-2017_o_an-uncommitted-turn-budget-edit-to-fusion-guard-json-makes-the-suite-red-at-the-working-tree-while-head-is-green.md`.
+  `260814-2017_*_an-uncommitted-turn-budget-edit-to-fusion-guard-json-makes-the-suite-red-at-the-working-tree-while-head-is-green.md`.
   `git show HEAD:fusion-guard.json | diff - templates/fusion-guard.json` is empty, so no commit in
   this plan's range carries the failure.
 - **The second open question is still open** and still does not block closure: whether the hard
@@ -377,7 +377,7 @@ commits carries a plan step; all four repair findings against work the plan alre
   52 964 → 53 124 bytes and the fixture was regenerated in the same commit (`b90ea28`), leaving
   10 903 of head-room by the Turn-6 review's arithmetic, which this pass did not re-derive.
 - **The suite's own reliability is a known open record, and one green run is not a claim about
-  every run.** `shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`
+  every run.** `260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`
   records three agents meeting three different failure shapes under load, on clean HEAD. This pass's
   run was green; nothing beyond that is asserted from it.
 - **The second open question is still open**, unchanged by all four commits: whether the hard

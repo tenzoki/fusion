@@ -130,7 +130,7 @@ move the number.
 What the user experiences as Setup is `session_start` to `scope_resolved`, and that is **16 minutes
 median, 24.4 mean, over 24 sessions**. That interval contains Setup, then Phase 0 scope resolution,
 then a confirmation gate that waits on a human. So the honest statement is that Setup itself is a
-few minutes and the wait around it is twenty. Filed issue `260812-0253_o_setup-takes-far-too-long`
+few minutes and the wait around it is twenty. Filed issue `260812-0253_*_setup-takes-far-too-long`
 is correct that nothing measures it; it is wrong to locate the cost in the shell calls.
 
 ## The three largest costs
@@ -206,14 +206,14 @@ and 177 `task_start` lines in this project, 95 and 79 in krk. **36 percent of ta
 finished having never been announced started.** Two instructions, one file, one context, one agent.
 `task_done` rides the act of finishing. `task_start` is a standalone obligation before the act.
 
-**Two.** `shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1.md`. Three of four session
+**Two.** `260801-2038_*_session-bookkeeping-froze-at-turn-1.md`. Three of four session
 surfaces stopped updating after Turn 1 while three Turns and sixteen commits ran. The record's own
 diagnostic: *"event emission is a per-action call that cannot be forgotten without the action
 failing, whereas the other three are end-of-Turn writes that a session can skip without anything
 breaking."* Same session, same context, one obligation held and three did not. It happened again
 two days later on a second session.
 
-**Three.** `shared/decisions/260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+**Three.** `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
 A rule was written into the file every agent loads at commit `e99f0ef` and broken three commits
 later at `ff70d3a` by an agent that had loaded it. That agent's own account, quoted in the record:
 *"loading a rule is not reading it, and reading it at Setup is not recall forty minutes later while
@@ -287,8 +287,8 @@ The user is right that adding a length rule is refuted. The length rule exists a
 ## Recommendation for this week
 
 Answer decision `260810-0710`, which asks exactly this question and is deferred pending three
-lint-quality issues. **Two of the three are already closed** (`260810-0502_c`, `260810-0503_c`);
-only `260810-0510_o` remains. Close it, then take option 1 with the record's own bound: a rule that
+lint-quality issues. **Two of the three are already closed** (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md_c`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md_c`);
+only `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md_o` remains. Close it, then take option 1 with the record's own bound: a rule that
 constrains a mechanical, syntactic property lands with an executable check or it does not land.
 
 Apply it first to `task_start`, because that one instance fixes the ETA (section 4), costs one
@@ -322,8 +322,8 @@ stop having one rather than to build a third module that checks whether it was.
 
 # 4. The two reported defects, with causes
 
-Both are filed already, as `260812-0253_o_the-monitors-eta-is-not-computed…` and
-`260812-0253_o_the-monitor-is-no-longer-reachable-on-localhost`. Neither was fixed. Each now has a
+Both are filed already, as `260812-0253_*_the-monitors-eta-is-not-computed…` and
+`260812-0253_*_the-monitor-is-no-longer-reachable-on-localhost`. Neither was fixed. Each now has a
 cause a record can carry.
 
 ## The ETA
@@ -418,15 +418,15 @@ recommendation in section 3 belongs as the answer to the existing deferred decis
   krk `.guard-state/events.jsonl` (16,076 tool calls).
 - `bin/monitor:527, 719-859, 806, 812, 924-965, 1158-1164, 1190, 1212-1214, 1293`, traced and probed live.
 - `agents/orchestrator.md:14, 19, 465, 1291`; the 16 agent prompts sized at HEAD.
-- `shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-…`;
-  `shared/decisions/260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`;
-  `shared/issues/260810-0502_c`, `260810-0503_c`, `260810-0510_o`.
-- `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`, cited throughout.
+- `260801-2038_*_session-bookkeeping-froze-at-turn-1-…`;
+  `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`;
+  `260810-0502_c`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md_c`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md_o`.
+- `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`, cited throughout.
 - `git log`, 299 commits since 2026-08-01, classified by surface touched.
 
 ## Open questions
 
-- [ ] Does `260810-0510` close, and does the user take option 1 of `260810-0710`? Everything in
+- [ ] Does `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` close, and does the user take option 1 of `260810-0710`? Everything in
       section 3 depends on that answer.
 - [ ] What fraction of the 98,443-byte always-on floor is inert? Two rules measured as never
       followed, two as followed. The remainder is untested and the test is cheap.

@@ -7,14 +7,14 @@ Commit `6049d3e` offers one piece of evidence that it repunctuated rather than r
 2. **The capitalisation.** "Ten clauses that became their own sentence take a capital, and one `see` loses one where two parentheticals merged." Exactly ten tokens gain a capital and **zero** lose one. The only `see` whose case changed is at `:14` and it gained a capital. The `see` inside the merged parenthetical at `:9` was lowercase before and after.
 3. **The replacement set.** "32 of 38 removed in 29 replacements, each one of the four the file's own clause at `:130` prescribes." The four are a comma, a colon, parentheses, or two sentences. One replacement used a semicolon: `:9` merged `(see …)` into `…**Artifact language:**`; see `rules/…`)`, and the file's semicolon count moves 7 to 8.
 
-Points 1 and 2 are repeated verbatim in the progress note appended to `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`, which is an open record a later pass will read as its starting state.
+Points 1 and 2 are repeated verbatim in the progress note appended to `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`, which is an open record a later pass will read as its starting state.
 
 ---
-**Found by:** coderev, review of `b18a8cf..6049d3e`, review file `shared/reviews/260816-1330-coderev-repunctuation-and-gate-contract.md`.
+**Found by:** coderev, review of `b18a8cf..6049d3e`, review file `260816-1330-coderev-repunctuation-and-gate-contract.md`.
 **Owner:** `coder`, which wrote both the commit message and the progress note. The commit message is immutable; the progress note is not.
 **Severity:** Low. Nothing in the file is wrong. The cost is that the evidence a reviewer is pointed at cannot be re-derived, on a change whose entire defence is that its evidence can be checked.
 **Filed in the shared store** per the Origin Rule: no Circle is active.
-**Cross-references:** `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` (carries the two inaccurate sentences in its progress note); `rules/critical-stance.md` §3 (an unchecked claim dressed as a checked one).
+**Cross-references:** `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md` (carries the two inaccurate sentences in its progress note); `rules/critical-stance.md` §3 (an unchecked claim dressed as a checked one).
 
 **Verified at HEAD `6049d3e`.** Seven tokenisations of `git show 52b8665:rules/user-facing-output.md` against `git show 6049d3e:rules/user-facing-output.md`, each returning an identical stream:
 
@@ -69,15 +69,15 @@ six remaining em-dashes are the four exhibits at `:21`, `:33`, `:141`, `:182` an
 mentions at `:130`, exactly as claimed.
 
 **One correction to this record's own citations**, of the class
-`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
 tracks: the `see` sites are at `:9` and `:12`, not `:9` and `:14`. The finding is unaffected.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The progress note in `260816-0740_*_…em-dash-ceiling…md:82` still carries the unreproducible figure. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The progress note in `260816-0740_*_…em-dash-ceiling…md:82` still carries the unreproducible figure. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-**Correction appended 260821-0322** (coder, plan step 16 of
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+**Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md** (coder, plan step 16 of
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
 This is the corrected statement of record for the two sentences point 1 and point 2 name. Nothing
 above is rewritten, here or in the record that carries the same two sentences: the wrong sentence is
 the evidence that it was wrong, and deleting it would remove the finding while looking like a fix.
@@ -104,20 +104,20 @@ the corrected form the record asks for. No count was re-run for this note, so it
 measurement and claims none.
 
 **Where an uncorrected copy still stands.** Points 1 and 2 are repeated verbatim in the progress
-note on `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
+note on `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
 which this note does not touch. A reader who reaches that copy first has no pointer here; closing
 that gap is a separate correction on a separate record and is not part of plan step 16, whose file
 set names this record and not that one.
 
 ---
-**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `260821-0416-reconciliation.md`).
 **STAYS `_o_`, against plan step 16's `Closes:` line, which claims it.**
 
-Step 16 of `circles/260820-2051-style-rules-arrive-and-get-measured` names this record in its
-`Closes:` and its correction landed here, at the `Correction appended 260821-0322` block. The record
+Step 16 of `260820-2051-style-rules-arrive-and-get-measured` names this record in its
+`Closes:` and its correction landed here, at the `Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md` block. The record
 does not ask for a correction here. Its *What the fix is* paragraph asks for the progress note **on
 the open record** to be corrected, and point 1 names which record that is:
-`shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
+`260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
 "an open record a later pass will read as its starting state".
 
 Re-measured: `sed -n '82p'` on that file still reads "identical at 2733 tokens: ten clauses that
@@ -131,4 +131,4 @@ left. The record closes when the note at `260816-0740_*_…:82` carries the corr
 is one appended block on a record already open for other reasons.
 
 ---
-Resolved: fixed — the progress note on the open corpus record now carries the corrected statement (identity without a total; ten tokens gained a capital, none lost one); shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:231
+Resolved: fixed — the progress note on the open corpus record now carries the corrected statement (identity without a total; ten tokens gained a capital, none lost one); 260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md:231

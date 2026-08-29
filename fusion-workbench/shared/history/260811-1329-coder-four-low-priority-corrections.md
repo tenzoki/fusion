@@ -1,7 +1,7 @@
 # coder — four low-priority corrections: one seam documented, one stand-down moved, two counts fixed
 
 **Status:** Complete
-**Session:** `260811-1329`
+**Session:** `260811-1329-coder-four-low-priority-corrections.md`
 **Agent:** coder
 **Tasks:** 26 (`I:260810-1030-comments-fixture`), 36 (`I:260805-1839-tracker-standdown`),
 29 (`I:260810-0751-three-counts`), 34 (`I:260811-0109-review-totals-ten`) — disjoint file sets,
@@ -86,7 +86,7 @@ text silently, and the record stays closed.
 Low reads 6 and the sentence reads "Eleven findings, eleven records filed". Counted off the body:
 twelve labelled bullets, of which the `M3` at `agents/orchestrator.md:429` is marked folded into `H2`
 and filed no record, leaving eleven with a record each;
-`ls shared/issues/260810-1918_?_*.md | wc -l` → 11, all `_c_`.
+`ls 260810-1918_?_*.md | wc -l` → 11, all `_c_`.
 
 The reconciler's annotation was left exactly as written — it describes the document at `e2a34f0` and
 is the only record of what the table said when the count was taken — and a dated correction section
@@ -122,6 +122,6 @@ range nobody re-opened look covered.
 - `bin/fusion-plane`
 - `hooks/tracker.ts`, `hooks/lib/self-detect.ts`, `hooks/lib/__tests__/churn-key-anchor.test.ts`
 - `hooks/dist/tracker.js`, `hooks/dist/lib/self-detect.js`, `hooks/dist/lib/self-detect.d.ts` (rebuild)
-- `fusion-workbench/shared/issues/260810-0710_c_the-drift-checks-last-line-…md`
-- `fusion-workbench/shared/reviews/260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`
+- `260810-0710_*_the-drift-checks-last-line-…md`
+- `260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`
 - four source records closed `_o_` → `_c_`; `fusion-workbench/tasklist.md` tasks 26, 29, 34, 36 ticked

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator
-**Cross-references:** `shared/issues/260810-0457_c_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md` (the defect that surfaced this, now closed); `shared/issues/260807-1939_c_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md` (the commit that made rebuild a recovery path again); `shared/history/260810-0715-coder-plane-map-read-write-split.md`
+**Cross-references:** `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md` (the defect that surfaced this, now closed); `260807-1939_*_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md` (the commit that made rebuild a recovery path again); `260810-0715-coder-plane-map-read-write-split.md`
 
 ---
 
@@ -16,7 +16,7 @@ The known case is the seed-origin binding: `fusion-plane seed` records which Pla
 
 Commit `f320db2` made rebuild a usable recovery path for the first time (before it, a verbatim rebuild restored precisely the mapping a state transition had invalidated). That is what makes this worth deciding now: a path nobody could use had no cost, and a path people will now reach for does.
 
-The immediate defect — a colliding UUID dropped silently, with no ordering and no report — is fixed (`260810-0457`). The executor deliberately did **not** also change replace to merge, on the ground that broadening a recovery path's contract inside a task about not destroying UUIDs is the wrong place for it. It made the loss loud instead: every discarded binding is named, with the `seed --record-origin` line that restores it.
+The immediate defect — a colliding UUID dropped silently, with no ordering and no report — is fixed (`260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md`). The executor deliberately did **not** also change replace to merge, on the ground that broadening a recovery path's contract inside a task about not destroying UUIDs is the wrong place for it. It made the loss loud instead: every discarded binding is named, with the `seed --record-origin` line that restores it.
 
 So the question is whether "loud" is the right final answer, or an interim one.
 
@@ -46,7 +46,7 @@ None yet. The honest state is that option 1 is shipped and adequate, and that th
 
 ---
 Deferred: until the first real recovery is run against a workbench that has seeded from Plane.
-User, session 260811-0752 (chat).
+User, session 260811-0752-orchestrator-session.md (chat).
 
 **Trigger.** Re-open the first time `fusion-plane push --rebuild-map` is run in anger against a
 workbench holding entries that Plane cannot reconstruct. That event supplies the one input the

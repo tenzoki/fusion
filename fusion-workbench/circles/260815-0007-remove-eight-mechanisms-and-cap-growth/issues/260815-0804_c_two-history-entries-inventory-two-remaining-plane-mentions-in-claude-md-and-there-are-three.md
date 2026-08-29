@@ -12,10 +12,10 @@ the two surfaces now contradict each other.
 **Severity:** Low — no shipped behaviour depends on it, but the curator's pass at gate G1 is told the
 list is two long, and the surface that survives is the one that disagrees with the rule file.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`reviews/260815-0804-coderev-plane-mirror-removal.md`)
+**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`260815-0804-coderev-plane-mirror-removal.md`)
 **Owner:** `curator` at gate G1; the correction to the two history entries is `coder`'s or nobody's
-**Affects:** `CLAUDE.md:73`; `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0742-coder-remove-plane-mirror-code-and-prose.md:124`; `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0751-ontocoder-remove-plane-data-files-and-fixtures.md:73`
-**Cross-references:** `rules/circle-records.md:30`, where the same justification was removed by `d0ddabb`; `issues/260815-0803_o_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md` — `ontorev`'s record on the same file, covering rows 51 and 52 and the reason no gate sees them. This record is the **third** row that neither of us was told about, and the only one whose claim is now contradicted by a rule file. The two are adjacent, not duplicates: theirs is about the instrument, this one is about a surviving statement.
+**Affects:** `CLAUDE.md:73`; `260815-0742-coder-remove-plane-mirror-code-and-prose.md:124`; `260815-0751-ontocoder-remove-plane-data-files-and-fixtures.md:73`
+**Cross-references:** `rules/circle-records.md:30`, where the same justification was removed by `d0ddabb`; `260815-0803_*_two-claude-md-inventory-rows-went-stale-and-neither-lint-gate-can-see-them.md` — `ontorev`'s record on the same file, covering rows 51 and 52 and the reason no gate sees them. This record is the **third** row that neither of us was told about, and the only one whose claim is now contradicted by a rule file. The two are adjacent, not duplicates: theirs is about the instrument, this one is about a surviving statement.
 
 **Verified 2026-08-15 at HEAD `7c12d6a`**, by grep over the whole tree excluding `fusion-workbench/`,
 `.git/`, `node_modules/` and `hooks/dist/`. Three `CLAUDE.md` hits, not two.
@@ -64,4 +64,4 @@ rewriting one after the fact has its own cost. Whichever, the curator's G1 ledge
 ---
 Resolved: The third mention, CLAUDE.md's "immutable natural key for the Plane mirror" clause, was rewritten into the past tense in e8052e7; the record offers its only other ask, correcting the two history-entry counts, as explicitly optional.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

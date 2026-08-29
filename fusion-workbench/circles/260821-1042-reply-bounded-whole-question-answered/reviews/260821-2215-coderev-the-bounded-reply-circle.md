@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-21
 **Sender:** coderev
-**Circle:** circles/260821-1042-reply-bounded-whole-question-answered
+**Circle:** 260821-1042-reply-bounded-whole-question-answered
 **Reviewed-range:** `e764637..de0c6f6`
-**Not-opened:** `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_is-claude-mds-register-repair-inside-this-circle.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_a_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-2004_o_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1812-planner-the-plan-for-the-bounded-reply.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2010-coder-repair-four-citations-broken-by-activation.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2020-analyst-the-reply-length-baseline-is-frozen.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `fusion-workbench/shared/history/260821-1536-playmaker-direct-dispatch.md`, `fusion-workbench/shared/issues/260821-1810_o_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`
+**Not-opened:** `260821-2020-reply-length-baseline.md`, `260821-1108_*_is-claude-mds-register-repair-inside-this-circle.md`, `260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`, `260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`, `260821-1108_*_which-surfaces-may-this-circle-change.md`, `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`, `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, `260821-1642-orchestrator-session.md`, `260821-1812-planner-the-plan-for-the-bounded-reply.md`, `260821-2010-coder-repair-four-citations-broken-by-activation.md`, `260821-2020-analyst-the-reply-length-baseline-is-frozen.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `260821-1536-playmaker-direct-dispatch.md`, `260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`
 
 `e764637..de0c6f6` is the dispatched `e764637..HEAD` with both ends resolved. One further bound on the list above: `hooks/lib/__tests__/reference-resolution-lint.test.ts` was opened at its header (`:1-240`), its anchor scanner (`:413-474`), its baseline comment stack and assertion (`:820-990`), and not in the 700 lines of case fixtures between and after those.
 
@@ -31,9 +31,9 @@ Five records filed to this Circle's issue store. A concurrent `ontorev` pass fil
 
 `rules/user-facing-output.md:95` tells a writer whose plain-text gate exceeds eight lines to move it into `AskUserQuestion`, "which is not line-capped this way". `## Length` caps that surface's parts and never its sum: `:101` the stem and each option label, `:102` each `description`. A four-option gate is permitted 6 + 4 × (4 + 2) = 30 lines against the plain-text gate's 8, for the same decision, on the same screen. `:108`, the sentence step 2 rewrote, says "Every cap above is the budget for the whole output it names" — which is false for those two entries, because they name parts.
 
-The plan surveyed for this and stopped one sentence short. `planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md:22` reads the bullet at `:95` and reports that it "already writes its arithmetic as a total". Its arithmetic does. Its second sentence is the escape.
+The plan surveyed for this and stopped one sentence short. `260821-1805_*_plan-reply-bounded-whole-question-answered.md:22` reads the bullet at `:95` and reports that it "already writes its arithmetic as a total". Its arithmetic does. Its second sentence is the escape.
 
-Consequence for closure: `planning/…:185` says `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is closed "both halves". The length half is not closed while this stands, and that record's own reconciliation of 260821-0412 had already observed the `AskUserQuestion` caps are per-field.
+Consequence for closure: `planning/…:185` says `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is closed "both halves". The length half is not closed while this stands, and that record's own reconciliation of 260821-0412 had already observed the `AskUserQuestion` caps are per-field.
 
 ### 2. The prose does not pass its own gate
 
@@ -53,9 +53,9 @@ The clause states its rule correctly and an agent will act on it. The Circle's D
 
 Step 6 measured it, named it in full and wrote it into its own history log — the one place `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing` says a defect may not live. No record carried it.
 
-Two things about the ten lines, on the question of whether they were worth it. First, the justification does not hold as stated: `history/260821-2147-coder-the-corpus-is-measured.md:197` says "the gate demands a written attribution for every baseline move". It does not. `hooks/lib/__tests__/reference-resolution-lint.test.ts:919-929` asks only that the numbers be checked and committed with the edit. The comment is that file's convention, which is a good one, and it was a choice that could have been sized as one. Second, the two blocks could have been one: both moves land in a single commit and only the final triple `{1258, 163, 116}` is committed, so the intermediate `{1257, 162, 116}` appears nowhere in history. Green-at-each-step (the user's own call, recorded at `history/260821-2108-…:10-15`) forced a per-step number update; it did not force a per-step comment block.
+Two things about the ten lines, on the question of whether they were worth it. First, the justification does not hold as stated: `260821-2147-coder-the-corpus-is-measured.md:197` says "the gate demands a written attribution for every baseline move". It does not. `hooks/lib/__tests__/reference-resolution-lint.test.ts:919-929` asks only that the numbers be checked and committed with the edit. The comment is that file's convention, which is a good one, and it was a choice that could have been sized as one. Second, the two blocks could have been one: both moves land in a single commit and only the final triple `{1258, 163, 116}` is committed, so the intermediate `{1257, 162, 116}` appears nowhere in history. Green-at-each-step (the user's own call, recorded at `260821-2108-…:10-15`) forced a per-step number update; it did not force a per-step comment block.
 
-On sufficiency for a reader a year out, both comments are adequate. Comment 1 names the class that moved, the step, the Circle, the attribution method and the counter-check; it does not name the cited record, but `## Length` still carries the citation, so it is findable. Comment 2 names the exact token and both classes it fed. One thing the four-line trim dropped: "No scanner, exemption or class changed", the clause that says the instrument did not move. It survives in `history/260821-2120-…:76` but not in the file a future reader opens. Four of the file's re-approval blocks carry that formula, so it is a habit rather than a rule; within this pair it is an inconsistency, comment 1 having it and comment 2 not.
+On sufficiency for a reader a year out, both comments are adequate. Comment 1 names the class that moved, the step, the Circle, the attribution method and the counter-check; it does not name the cited record, but `## Length` still carries the citation, so it is findable. Comment 2 names the exact token and both classes it fed. One thing the four-line trim dropped: "No scanner, exemption or class changed", the clause that says the instrument did not move. It survives in `260821-2120-…:76` but not in the file a future reader opens. Four of the file's re-approval blocks carry that formula, so it is a habit rather than a rule; within this pair it is an inconsistency, comment 1 having it and comment 2 not.
 
 ### 4. Progress tracking is four steps behind
 
@@ -67,7 +67,7 @@ Commit `de0c6f6` is titled "the plan's progress" and marked steps 3 and 5 `[DONE
 
 **`260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md` — Low.**
 
-`history/260821-2145-…:108-110` defends the hook-test bound with 18 314 lines "across `lib/__tests__/*.test.ts`". The bound counts `hooks/lib/__tests__/**.ts`, helpers included, and stood at 20 364. The step's claim is true and its evidence measures a different set; a reader taking the number for the bound computes 2 061 lines of head-room where there are 11.
+`260821-2145-…:108-110` defends the hook-test bound with 18 314 lines "across `lib/__tests__/*.test.ts`". The bound counts `hooks/lib/__tests__/**.ts`, helpers included, and stood at 20 364. The step's claim is true and its evidence measures a different set; a reader taking the number for the bound computes 2 061 lines of head-room where there are 11.
 
 ## What I checked and found sound
 
@@ -83,17 +83,17 @@ Named because the dispatch asked for a verdict on each, and a verified negative 
 ## Two observations that are not defects
 
 - **`C04` still says "Details go to the end or to a file, not the opening lines"** (`stilwerk/chat-voice-en.yaml:43`, `chat-voice-de.yaml:44`), two lines after pointing at `## Length` for the caps. Read strictly it is placement, which `## Information architecture` point 4 also mandates, so it contradicts nothing. Read in context it is the last place in the corpus where "move it to the end" sits directly under a shortness instruction. It was outside step 4's scope and is worth a look by whoever next opens those files.
-- **The stated reason for shortening the heading citation does not survive measurement, though the choice does.** `history/260821-2120-…:29-30` gives as a third reason that the shorter spelling "keeps an em-dash out of the file". `bin/fusion-prose-metric` does not count an em-dash inside an inline code span; I checked with a two-file fixture, one carrying the full heading in backticks and reading 0, one carrying a bare em-dash and reading 1. The other two reasons, prefix resolution and the `agents/planner.md:65` precedent, are sound and carry the choice on their own.
+- **The stated reason for shortening the heading citation does not survive measurement, though the choice does.** `260821-2120-…:29-30` gives as a third reason that the shorter spelling "keeps an em-dash out of the file". `bin/fusion-prose-metric` does not count an em-dash inside an inline code span; I checked with a two-file fixture, one carrying the full heading in backticks and reading 0, one carrying a bare em-dash and reading 1. The other two reasons, prefix resolution and the `agents/planner.md:65` precedent, are sound and carry the choice on their own.
 
 ## Open obligations before this Circle closes
 
-- `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is still `_o_` with no `Resolved:` note, and the plan makes steps 2, 3 and 5 responsible for closing it. Finding 1 says its length half is not yet closable.
+- `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is still `_o_` with no `Resolved:` note, and the plan makes steps 2, 3 and 5 responsible for closing it. Finding 1 says its length half is not yet closable.
 - The stopping criterion on the four growth bounds cannot be met as written. The closure note should say what happened rather than repeat it.
 - The plan owes `[DONE]` on four steps, then `**Status:** Complete` and `_o_` → `_c_`.
 
 ## A fault of my own, recorded here and on its class record
 
-Filing my first two records, I ran `sed -i '' … *.md` over this Circle's `issues/` directory to normalise citation markers in my own files. A concurrent `ontorev` was filing into the same directory at the same time, and all seven files now carry my write mtime. The five I did not author are untracked, so no original exists to compare against; the only substitution the command could make in them is `260821-1805_o_plan-reply` to `260821-1805_*_plan-reply`, which is the wildcard form the conventions prescribe, so nothing broke and nothing was lost. It was still not mine to write. Appended as `Also seen:` to `shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`, which is the same class.
+Filing my first two records, I ran `sed -i '' … *.md` over this Circle's `issues/` directory to normalise citation markers in my own files. A concurrent `ontorev` was filing into the same directory at the same time, and all seven files now carry my write mtime. The five I did not author are untracked, so no original exists to compare against; the only substitution the command could make in them is `260821-1805_*_plan-reply` to `260821-1805_*_plan-reply`, which is the wildcard form the conventions prescribe, so nothing broke and nothing was lost. It was still not mine to write. Appended as `Also seen:` to `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`, which is the same class.
 
 ## Recommended sequencing
 
@@ -117,12 +117,12 @@ review's five findings did after Turn 3, without rewriting any of them.
 - Finding 4, the plan's progress: **closed for the step markers, and this pass took the rest.** All
   six steps carry `[DONE]`. `**Status:**` moved from `Draft` to `Complete` today. The `_o_` to `_c_`
   rename is blocked by fifteen marker-literal citations, measured and filed as
-  `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
+  `260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
 - Finding 5, the 18 314 count: **still open and unfixed** in the step log it names.
 
 The three open obligations this review listed before closure: the fourth route is closed, the growth
 disclosure is filed and re-measured, and the plan is `Complete` in its header but not yet renamed.
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 stays open, with a reconciliation appended to it stating exactly what landed and what closing would
 assert.
 

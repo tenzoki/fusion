@@ -1,14 +1,14 @@
 A bounded Circle holds a Draft spec with 49 unreconciled criteria that no scan reaches
 
 ---
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
+`260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
 carries `**Status:** Draft`, the `_o_` marker, ten capabilities and 49 acceptance criteria, none of
 them ticked. Its Circle reached Bounded Closure on 260821 and at least one of its capabilities is
 demonstrably on disk. The Circle is terminal, so `bin/fusion-paths` emits no `SCAN_*` that reaches
 the file.
 ---
 **Filed by:** reconciler, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/_b_circle.md` `## Closure note`; `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md` (the pass that reconciled the plan and not the spec); `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (the open decision this is an instance of)
+**Cross-references:** `260820-2051-style-rules-arrive-and-get-measured` `## Closure note`; `260821-0416-reconciliation.md` (the pass that reconciled the plan and not the spec); `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` (the open decision this is an instance of)
 
 ## What the tree holds
 
@@ -23,7 +23,7 @@ the two extra outcomes a later fix split out of the sixth. Not one of C1's six b
 
 ## Why the Circle's own reconciliation did not catch it
 
-`circles/260820-2051-.../history/260821-0416-reconciliation.md` opens on exactly this class of fault
+`circles/260820-2051-.../260821-0416-reconciliation.md` opens on exactly this class of fault
 and finds it in the neighbouring file: *"The plan header never left `Draft`, against seventeen
 `[DONE]` step markings."* It set the plan's header and closed the plan, which now carries `_c_`. The
 spec beside it was not opened. The Circle record's `**Active spec/plan:**` names the plan, so a pass
@@ -34,7 +34,7 @@ that follows that field reaches the plan and nothing above it.
 The Circle carries `_b_`. `bin/fusion-paths` resolves `SCAN_PLANS` to the active Circle's store and
 `shared/`, and neither is this one, so no future reconciler, taskplanner or playmaker scan opens the
 file. Whether a terminal Circle's stores enter any scan set is an open question in its own right, at
-`circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`
+`260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`
 — which is itself inside a terminal Circle and therefore unreachable by the same argument.
 
 ## What this record does and does not claim
@@ -78,4 +78,4 @@ work this record tracks.
 
 ---
 
-Resolved: 260827-1845 (plan step 6 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`). The 49 criteria were measured once, against HEAD `0fb5085`, in `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/analyses/260827-1807-the-style-rules-spec-measured-against-the-tree.md`: 36 met, 12 not met, 1 not applicable, each row with its evidence. The spec itself is not edited and its boxes stay unticked, by the user's direction under `circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` `## Answer` (option 5): `rules/circle-records.md` `## State Markers — circles` now states that a terminal Circle's spec and plan are history, read as evidence and never reconciled in place, reachable only by naming the Circle as `bin/fusion-paths`' second argument. An unticked box there is no longer outstanding work by rule, which is what this record asked for as its second direction.
+Resolved: 260827-1845 (plan step 6 of `260827-1756_*_repair-the-twenty-open-defect-records.md`). The 49 criteria were measured once, against HEAD `0fb5085`, in `260827-1807-the-style-rules-spec-measured-against-the-tree.md`: 36 met, 12 not met, 1 not applicable, each row with its evidence. The spec itself is not edited and its boxes stay unticked, by the user's direction under `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md` `## Answer` (option 5): `rules/circle-records.md` `## State Markers — circles` now states that a terminal Circle's spec and plan are history, read as evidence and never reconciled in place, reachable only by naming the Circle as `bin/fusion-paths`' second argument. An unticked box there is no longer outstanding work by rule, which is what this record asked for as its second direction.

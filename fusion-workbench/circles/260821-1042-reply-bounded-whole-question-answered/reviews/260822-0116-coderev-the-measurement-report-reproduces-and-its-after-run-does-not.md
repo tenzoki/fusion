@@ -3,7 +3,7 @@
 **Date:** 2026-08-22 01:16
 **Agent:** coderev
 **Reviewed-range:** `084c626..dbf259a`
-**Not-opened:** `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0028-ontocoder-c06-renamed-and-paid-for-by-its-own-restatement.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0105-ontocoder-c05-and-c04-pointers-respelled-bare-and-anchors-dropped.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2202_c_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_c_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`, `stilwerk/chat-voice-de.yaml`, `stilwerk/chat-voice-en.yaml`, `fusion-workbench/stilwerk/chat-voice-de.yaml`, `fusion-workbench/stilwerk/chat-voice-en.yaml`
+**Not-opened:** `260822-0028-ontocoder-c06-renamed-and-paid-for-by-its-own-restatement.md`, `260822-0105-ontocoder-c05-and-c04-pointers-respelled-bare-and-anchors-dropped.md`, `260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`, `260821-2204_*_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`, `stilwerk/chat-voice-de.yaml`, `stilwerk/chat-voice-en.yaml`, `fusion-workbench/stilwerk/chat-voice-de.yaml`, `fusion-workbench/stilwerk/chat-voice-en.yaml`
 
 The eight unopened files are the profile task and its two closed records, held by a parallel
 ontorev and excluded by this review's dispatch. Every other file in the range was opened whole.
@@ -106,7 +106,7 @@ into a clean directory.
 
 **4. The version-gap fold dropped the `bin/fusion-rules` half.** Medium. Filed as
 `260822-0116_*_the-fold-of-the-version-gap-records-dropped-the-fusion-rules-half-and-the-closure-note-says-nothing-was-lost.md`.
-This answers the dispatch's question about `260822-0026_c_`: **something was lost.** The closed
+This answers the dispatch's question about `260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`: **something was lost.** The closed
 record names 22 unreleased lines of `bin/fusion-rules` and calls them "the second half and the more
 consequential one, because `fusion-rules` runs at every agent's Setup in every project". The
 surviving record `260822-0035` never names the helper. The gap is functional: the installed copy

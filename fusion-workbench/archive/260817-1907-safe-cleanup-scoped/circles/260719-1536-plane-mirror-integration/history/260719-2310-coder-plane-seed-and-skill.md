@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-19
 **Circle:** 260719-1536-plane-mirror-integration
-**Plan:** planning/260719-2223_p_plan-plane-bounded-bridge.md — Step 5
+**Plan:** 260719-2223_*_plan-plane-bounded-bridge.md — Step 5
 **Status:** Complete
 
 ## What was implemented

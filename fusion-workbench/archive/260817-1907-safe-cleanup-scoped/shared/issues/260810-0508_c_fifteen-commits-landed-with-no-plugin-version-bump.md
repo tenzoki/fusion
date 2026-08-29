@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `.claude-plugin/plugin.json`
 **Cross-references:** `CLAUDE.md` `## Layout` (the `plugin.json` row) and `## Release process`
 
@@ -30,7 +30,7 @@ Two documented mechanisms key on the version, and both are misled by this state:
   marketplace install silently keeps serving the old copy, which `CLAUDE.md`'s troubleshooting table
   already lists as a known symptom.
 
-There is also a live consequence tonight, filed separately: `shared/issues/260810-0352_o_…` records
+There is also a live consequence tonight, filed separately: `260810-0352_*_…` records
 that Setup Step 5 calls a helper the installed copy does not have. The gap between work tree and
 installed copy is exactly what a version bump plus a release closes, and this record is the other half
 of that one.
@@ -40,10 +40,10 @@ of that one.
 Decide whether tonight's range is a release. If it is, run the documented release process — bump
 `plugin.json`, bump `marketplace.json`, refresh the two `FUSION_REF=tags/v<version>` pin examples,
 tag, and pull the marketplace cache clone. If it is not, no action is needed beyond noting that no
-session should expect these changes to be live, which is what `260810-0352` says from the other side.
+session should expect these changes to be live, which is what `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` says from the other side.
 
 **Do not bump before `npm test` is green** — see
-`260810-0455_o_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`.
+`260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`.
 Step 0 of the release process is "Validate first."
 
 ---
@@ -51,4 +51,4 @@ Resolved: ed87d87 — the range became a release. plugin.json, the marketplace c
 
 The guard-adjacent caution in the release process is satisfied: this range changes hooks/clear-halt.ts, and both e39b3fe and 49e5b1d verify it by spawning the compiled script in throwaway projects rather than against this repository, where the stand-down would make the test unrepresentative.
 
-This also closes the other half of shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md, whose workaround was exactly this release.
+This also closes the other half of 260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md, whose workaround was exactly this release.

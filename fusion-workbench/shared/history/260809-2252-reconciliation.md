@@ -1,4 +1,4 @@
-# Reconciliation — orchestrator session 260809-1725, commit range `6b94e17..HEAD`
+# Reconciliation — orchestrator session 260809-1725-orchestrator-session.md, commit range `6b94e17..HEAD`
 
 **Date:** 2026-08-09 22:52
 **Agent:** reconciler
@@ -85,7 +85,7 @@ delivers the sentence.
 The omitted fifteenth site is `hooks/guard.ts:857-864`, the CHECK 3 low/medium advisory, which
 the commit converted itself and which is the identical shape to the CHECK 2 advisory it does
 count. The error runs in the safe direction — the fix reaches further than it claims — but the
-count sits in a shipped document (`README-hooks.md:175`), so it is filed as `260809-2258`.
+count sits in a shipped document (`README-hooks.md:175`), so it is filed as `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`.
 
 One narrative claim is wrong and was not filed: the three records "between them named four"
 sites, where their `Affects` lines name five. It lives only in a history record and a prose
@@ -121,7 +121,7 @@ is eleven, the other five predating the commit.
 `if((1<<2))`, `for((`, `while((`, `until((` and `elif((` with no blank defeat it: bash executes
 the following line, the lexer blanks it, and a `git switch` standing there is **allowed**.
 Verified end-to-end through the shipped `PreToolUse` hook from a scratch project root outside
-this repository, so the self-detect stand-down could not mask it. Filed as `260809-2300`, High.
+this repository, so the self-detect stand-down could not mask it. Filed as `260809-2300_*_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`, High.
 
 ---
 
@@ -129,8 +129,8 @@ this repository, so the self-detect stand-down could not mask it. Filed as `2608
 
 | # | What | Correction |
 |---|---|---|
-| 1 | Six records closed by pure rename (`\| 0` in the diffstat) — no `Resolved:` footer, acceptance boxes unticked. `260809-1825`, `2044`, `2045`, `2046`, `2047`, `2048`. A reader opening a `_c_` record saw up to six unmet criteria. | Each criterion re-derived against HEAD, boxes ticked, a reconciler-attributed footer appended stating what was measured and how. All 21 criteria across the six records are met. |
-| 2 | Decision `260809-2004` carried `**Status:** open` while its marker was `_i_` and its Implemented footer cited `c353196`. Its cross-reference still pointed at the `_o_` filename of an issue closed by the same commit. | Header set to `implemented`, cross-reference marker corrected, both annotated as the reconciler's. |
+| 1 | Six records closed by pure rename (`\| 0` in the diffstat) — no `Resolved:` footer, acceptance boxes unticked. `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md`, `2044`, `2045`, `2046`, `2047`, `2048`. A reader opening a `_c_` record saw up to six unmet criteria. | Each criterion re-derived against HEAD, boxes ticked, a reconciler-attributed footer appended stating what was measured and how. All 21 criteria across the six records are met. |
+| 2 | Decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` carried `**Status:** open` while its marker was `_i_` and its Implemented footer cited `c353196`. Its cross-reference still pointed at the `_o_` filename of an issue closed by the same commit. | Header set to `implemented`, cross-reference marker corrected, both annotated as the reconciler's. |
 | 3 | Issue `260809-2243` (stray `</content>`) named only `docs/philosophy.md:52`. `README.md:151` carries the identical tag from the identical commit (`43ee3b5`), and README is the more-read surface. | Annotated with the second site and the provenance query that establishes it. Stays `_o_`. |
 | 4 | The `coderev` review carried no disposition for its six findings. | Annotated with a disposition table and the one site M3's fix did not reach. Findings themselves untouched. |
 
@@ -142,17 +142,17 @@ this repository, so the self-detect stand-down could not mask it. Filed as `2608
 | 2 | `agentstate.yaml` frozen at 17:58 — `turn: 1`, `tasks_done: 0`, `commits: 0`, `current_task.status: running` on a task closed hours ago. `orchestrator-live.md` frozen at 21:36, showing Turn 2's first task `[RUNNING]` after all three landed. | Same reason. Both are orchestrator-owned session state. |
 | 3 | `tasklist.md` header says `**Open tasks:** 10` with all ten marked `[x] done` below. | Owned by `taskplanner`, and not under `$SCAN_PLANS`. Cosmetic — the per-task markers are correct. |
 | 4 | Three July records in `shared/issues/` and four in `circles/260801-1244-guard-rules-write/issues/` are `_c_` with no resolution note. | Pre-existing, outside this session's commit range. The Circle ones sit in a closed Circle. |
-| 5 | Decision `260809-2004` still carries an empty template footer block (`Answered:` / `Implemented:` / …) above its filled ones. | Cosmetic; deleting content is outside this role's remit. |
+| 5 | Decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` still carries an empty template footer block (`Answered:` / `Implemented:` / …) above its filled ones. | Cosmetic; deleting content is outside this role's remit. |
 | 6 | Churn and cross-file events stop in `events.jsonl` at 17:15Z, roughly 76 minutes **before** `c353196` removed the detector — and the hooks run from the installed copy at `~/.fusion`, which still contains `cross-file.js`. The cause was not established. | Could not be checked cheaply. Recorded as an unexplained observation rather than a claim; it bears on nothing verified above, since every measurement in this reconciliation ran against a freshly built or explicitly extracted `dist`. |
 
 ## New issues filed
 
 | Record | Severity | One line |
 |---|---|---|
-| `260809-2300_o_the-arithmetic-command-span-is-recognised-only-after-a-blank-…` | **High** | `if((1<<2))` and four siblings defeat the arithmetic span; a `git switch` on the next line is allowed |
-| `260809-2255_o_the-branch-policy-verification-left-an-active-halt-…` | Medium | `escalation.json` reads `haltActive: true`, 24 consecutive blocks, while both status surfaces say the guard is OK |
-| `260809-2252_o_the-tracker-noise-list-still-says-it-excludes-two-metrics-…` | Low | `hooks/tracker.ts:92-94` still describes a two-metric exclusion; only churn reads it |
-| `260809-2258_o_readme-hooks-says-fourteen-ordering-sites-…` | Low | The shipped count is one short of the class the same commit converted |
+| `260809-2300_*_the-arithmetic-command-span-is-recognised-only-after-a-blank-…` | **High** | `if((1<<2))` and four siblings defeat the arithmetic span; a `git switch` on the next line is allowed |
+| `260809-2255_*_the-branch-policy-verification-left-an-active-halt-…` | Medium | `escalation.json` reads `haltActive: true`, 24 consecutive blocks, while both status surfaces say the guard is OK |
+| `260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-…` | Low | `hooks/tracker.ts:92-94` still describes a two-metric exclusion; only churn reads it |
+| `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-…` | Low | The shipped count is one short of the class the same commit converted |
 
 ## Two things that were checked and are *not* discrepancies
 
@@ -168,14 +168,14 @@ this repository, so the self-detect stand-down could not mask it. Filed as `2608
 ## Coherence verdict
 
 **`review-needed`**, recommendation **revise Artifact**. Written in full to the `## Coherence`
-section of `shared/history/260809-1725-orchestrator-session.md`, which is the canonical location
+section of `260809-1725-orchestrator-session.md`, which is the canonical location
 the orchestrator reads at Phase 3.
 
 In short: the Directive was sound and the session reached it; the Grounding under it is
 consistent (7 active decisions, none conflicting); what is unfinished is the work. Two things
-carry the verdict — `260809-2300`, a live deny-to-allow that Turn 2's own regression fix did not
+carry the verdict — `260809-2300_*_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md`, a live deny-to-allow that Turn 2's own regression fix did not
 close, and the fact that **no `coderev` pass ran over Turn 2 at all**, whose three commits
 include a fifteen-site change to the fail-open ordering of the security boundary. This
 reconciliation checked those commits against the acceptance criteria in their records and found
-them met. That is not a review, and `260809-2300` is what turned up on the one commit where
+them met. That is not a review, and `260809-2300_*_the-arithmetic-command-span-is-recognised-only-after-a-blank-so-if-and-for-defeat-it.md` is what turned up on the one commit where
 someone looked outside the criteria.

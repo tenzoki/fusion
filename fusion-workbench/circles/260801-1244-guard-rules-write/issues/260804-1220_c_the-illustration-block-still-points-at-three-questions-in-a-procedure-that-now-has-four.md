@@ -7,7 +7,7 @@
 **Filed by:** coderev, incremental review of `4f1007f`
 **Affects:** `rules/protected-path-discipline.md:218`
 **Kind:** NEW in `4f1007f`. The commit turned three questions into four at `:182` and updated the sibling count sentence at `:193` ("Two words" → "Three words"), but left the back-reference at `:218` untouched.
-**Cross-references:** `260804-1025_o_…` (the same section, different clause); `260804-1027_o_…` (the same class — a count or recipe that went stale one Turn after it was written).
+**Cross-references:** `260804-1025_*_…` (the same section, different clause); `260804-1027_*_…` (the same class — a count or recipe that went stale one Turn after it was written).
 
 ---
 
@@ -43,7 +43,7 @@ The sentence is the file's own instruction for using the rule instead of the tab
 is the sentence an agent reaches when its command is not in the illustration block. "The
 three questions" names a set that no longer exists, three lines below a block of four. The
 cheapest wrong reading is that the reader stops at question 3 — which is exactly the
-question `260804-1025` says overclaims — and never reaches question 4.
+question `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` says overclaims — and never reaches question 4.
 
 No behaviour depends on it. This is a Low finding about the file that is loaded into every
 agent's context on every dispatch in every consuming project, filed because that is the
@@ -69,7 +69,7 @@ questions and the table are the only two places in the file that state a count, 
 edited by the same commit whenever the procedure changes. A review instruction — when the
 question list changes, grep the file for every back-reference to its length — is the honest
 control, and it belongs in the Step 9 documentation task with the instruction
-`260804-1025` already asks for.
+`260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` already asks for.
 
 ## Origin
 
@@ -83,7 +83,7 @@ review of `4f1007f`.
 **This issue's `**Affects:**` line no longer holds, and that is the first thing to record.**
 Step 2 split `rules/protected-path-discipline.md` into three layers and the illustration
 block travelled to
-`circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md`.
+`260805-0717-protected-path-forensics.md`.
 So the sentence is not at `rules/protected-path-discipline.md:218` and the correction
 landed in the analysis instead. The four questions themselves stayed in the core file, so
 the two halves of this issue are now in two files.

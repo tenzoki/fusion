@@ -8,7 +8,7 @@ line-ending side effect neither the prose nor the commit message mentions.
 and the `!n` first-match guard limits the damage even without one. Filed because the sentence is the only
 statement of the bound a reader gets.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `skills/next/SKILL.md` (the activation block and the paragraph under it)
 
@@ -48,7 +48,7 @@ State the guard that actually holds ("the first match in the file, and never pas
 heading"), or bound the head block on `^#` so a record with any heading closes it.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/next/SKILL.md:218` and `:226` still carry the same one-liner and the same prose. Both halves reproduce on a CRLF fixture with no heading: the protection comes from the line guard rather than a heading stop, and the rewritten line loses its carriage return. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/next/SKILL.md:218` and `:226` still carry the same one-liner and the same prose. Both halves reproduce on a CRLF fixture with no heading: the protection comes from the line guard rather than a heading stop, and the rewritten line loses its carriage return. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: The subject was deleted rather than corrected. `95bebe1` ("feat(circles): the record's

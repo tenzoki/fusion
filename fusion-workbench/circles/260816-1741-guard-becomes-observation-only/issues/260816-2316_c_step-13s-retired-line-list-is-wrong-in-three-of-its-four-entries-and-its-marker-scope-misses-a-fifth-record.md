@@ -3,26 +3,26 @@ Step 13's `Retired:` list is wrong in three of its four entries, and its `_i_` s
 ---
 
 Step 13 instructs: *"A `Retired:` line with **no rename**, the marker staying `_i_`: every record
-whose implementation this plan deletes. Found at HEAD: `260804-1631_i_…`, `260804-1630_i_…`,
-`260803-1419_i_…` and `260802-1912_i_…`. Re-derive the list rather than trusting it: `grep` the
+whose implementation this plan deletes. Found at HEAD: `260804-1631_*_…`, `260804-1630_*_…`,
+`260803-1419_*_…` and `260802-1912_*_…`. Re-derive the list rather than trusting it: `grep` the
 decision stores for the identifiers this plan deletes."* Checked at HEAD, all four in
 `circles/260801-1244-guard-rules-write/decisions/`:
 
 | Record | State at HEAD | What step 13 would do | Correct |
 |---|---|---|---|
-| `260804-1631_i_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` | no `Retired:` line | add one | yes — `guard.enabled` went in `fab8a4b` |
-| `260804-1630_i_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` | no `Retired:` line | add one | **no** — see below |
-| `260803-1419_i_how-should-the-protected-path-check-treat-the-case-of-a-path.md` | **already carries** `Retired: 60c9cd8` at `:123` | add a second | no |
-| `260802-1912_i_does-the-self-protection-floor-apply-before-the-config-file-exists.md` | **already carries** `Retired: 60c9cd8` at `:95` | add a second | no |
+| `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` | no `Retired:` line | add one | yes — `guard.enabled` went in `fab8a4b` |
+| `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` | no `Retired:` line | add one | **no** — see below |
+| `260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` | **already carries** `Retired: 60c9cd8` at `:123` | add a second | no |
+| `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` | **already carries** `Retired: 60c9cd8` at `:95` | add a second | no |
 
-**The dangerous one is `260804-1630`.** Its answer — the per-leaf merge, and the rule that a
+**The dangerous one is `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`.** Its answer — the per-leaf merge, and the rule that a
 dropped key, an omitted key and an unwritten file are three spellings of one behaviour — is
 **live code at HEAD**, and `hooks/lib/config.ts` cites the record three times in the present tense
 as the obligation that shape rests on:
 
-- `:46-49` — "What the leaf walk changed … was the granularity at which 'declared' is read … Decision `260804-1630`, answered option 1 at the plan gate on 2026-08-04."
-- `:70-73` — "That equivalence is an obligation of `260804-1630`, not an implementation convenience: it is what keeps the whole seam expressible as one sentence."
-- `:363-367` — "Decision `260804-1630` requires that equivalence rather than merely permitting it."
+- `:46-49` — "What the leaf walk changed … was the granularity at which 'declared' is read … Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, answered option 1 at the plan gate on 2026-08-04."
+- `:70-73` — "That equivalence is an obligation of `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, not an implementation convenience: it is what keeps the whole seam expressible as one sentence."
+- `:363-367` — "Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` requires that equivalence rather than merely permitting it."
 
 The walk itself survives at `:479-486`, deliberately kept as the shape rather than collapsed into
 a `??` (`:51-53`). What this plan deleted is the record's *setting* — the three-layer merge and
@@ -36,7 +36,7 @@ count of any record in the store. The instruction that was meant to catch a wron
 would confirm this entry.
 
 **A fifth record the step cannot reach.**
-`260804-1632_d_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`
+`260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`
 is `_d_` (deferred), so it falls outside step 13's three transitions, all of which start at `_a_`
 or `_i_`. Its question was deleted by step 7a with `findRelevantDecisions`, and
 `hooks/lib/paths.ts:36-41` already says so: *"Its subject was deleted with the match, so the
@@ -50,7 +50,7 @@ on a rule the code still cites.
 **Scope:** workbench decision records (`ontocoder`'s step). No shipped code changes.
 
 **Cross-references:**
-- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 13
+- `260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 13
 - `hooks/lib/config.ts:46-49`, `:70-73`, `:363-367`, `:479-486`
 - `hooks/lib/paths.ts:36-41`
 
@@ -59,34 +59,34 @@ Resolved: this record was read before step 13 was executed and overrode the step
 dispatch instructed. All five findings were acted on; three of them produced no edit, which is the
 point of the record.
 
-- **`260804-1631_i_may-a-project-file-set-guard-enabled-…`** gained the `Retired:` line, citing
+- **`260804-1631_*_may-a-project-file-set-guard-enabled-…`** gained the `Retired:` line, citing
   `fab8a4b`, with no rename. It is the step's one correct entry and the only `Retired:` line written
   in this pass.
-- **`260804-1630_i_what-does-a-project-guard-object-inherit-…` was left untouched.** The four sites
+- **`260804-1630_*_what-does-a-project-guard-object-inherit-…` was left untouched.** The four sites
   this record names were read at HEAD before deciding, not taken from the record: `hooks/lib/config.ts`
-  cites the decision in the present tense at `:46-49` ("Decision `260804-1630`, answered option 1"),
-  at `:70-73` ("that equivalence is an obligation of `260804-1630`") and at `:363-367` ("requires that
+  cites the decision in the present tense at `:46-49` ("Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, answered option 1"),
+  at `:70-73` ("that equivalence is an obligation of `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`") and at `:363-367` ("requires that
   equivalence rather than merely permitting it"), and the per-leaf walk survives at `:479-486` with
   `??` and the declared-narrowing note intact. Only the record's setting was deleted; its answer is
   live code.
-- **`260803-1419_i_…` and `260802-1912_i_…` were left untouched.** Each already carries
+- **`260803-1419_*_…` and `260802-1912_*_…` were left untouched.** Each already carries
   `Retired: 60c9cd8`, at `:123` and `:95` respectively, and a second line was not added.
 - **The step's re-derivation safeguard was not run.** As measured here, a grep of the decision stores
-  for the identifiers this plan deletes returns `260804-1630` with the highest hit count in the store,
+  for the identifiers this plan deletes returns `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` with the highest hit count in the store,
   so the instruction written to catch a wrong list would have confirmed the one entry that must not
   carry a line. Every candidate was checked against the code instead.
-- **`260804-1632_d_should-findrelevantdecisions-fold-case-…` was left untouched, deliberately.** The
+- **`260804-1632_*_should-findrelevantdecisions-fold-case-…` was left untouched, deliberately.** The
   vocabulary in `rules/fusion-workbench-conventions.md` `## Inline State Tracking` holds no instrument
   for a deferred question whose subject was deleted: `Retired:` cites what removed an *implementation*
   and a deferred question has none, `Superseded by:` needs a later decision and there is none, and
   `Deferred:` is already on the record. Stretching `Retired:` onto a marker other than `_i_` is
   precisely option 1 of
-  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
+  `260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`,
   which is open and whose recommendation declines it. That record's scope is `_a_`; this instance is
   `_d_`, so answering it would have to widen the scope, and that is a decision rather than an
   annotation. The fact itself is already recorded where a reader meets it, in `hooks/lib/paths.ts:36-41`.
   Named here as the residual this pass leaves standing, rather than absorbed.
 
 The step's remaining transitions were executed as written: six records `_a_` → `_i_`, one `_a_` → `_s_`,
-and the two `shared/issues/260812-1546_*_…` records closed. History:
-`circles/260816-1741-guard-becomes-observation-only/history/260817-0530-step-13-decision-records-annotated.md`.
+and the two `260812-1546_*_…` records closed. History:
+`260817-0530-step-13-decision-records-annotated.md`.

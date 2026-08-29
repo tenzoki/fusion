@@ -44,7 +44,7 @@ present in the tree today. The record asked for two files and got three, which i
   `hooks/` against the tree's enumeration, is untouched. Nothing checks the exhaustiveness claim.
 
 **The state is worse than before the addition, not better**, and the successor record says so:
-`circles/260801-1244-curator/issues/260814-1419_o_three-plane-files-entered-the-layout-tree-and-neither-of-the-two-per-surface-arguments-below-it-was-extended.md`.
+`260814-1419_*_three-plane-files-entered-the-layout-tree-and-neither-of-the-two-per-surface-arguments-below-it-was-extended.md`.
 That record instructs "do not refile it, this record is the new state". Both are therefore live and
 describe one job; whoever picks it up should close them together.
 

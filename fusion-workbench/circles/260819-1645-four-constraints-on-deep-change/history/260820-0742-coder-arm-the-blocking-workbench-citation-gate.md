@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260819-1645-four-constraints-on-deep-change`
-**Step:** 9 of `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`, plus the convention line from the recurrence answer at the foot of `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`
+**Circle:** `260819-1645-four-constraints-on-deep-change`
+**Step:** 9 of `260819-2016_*_four-constraints-on-deep-change.md`, plus the convention line from the recurrence answer at the foot of `260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`
 **HEAD at start:** `0d4e0f2`
 
 ---
@@ -13,7 +13,7 @@
 `hooks/lib/__tests__/workbench-citation-lint.test.ts`, 241 lines, the second caller of
 `scanRecordCitations`. It asserts zero violations over the live workbench corpus, recomputed
 from the tree on every run, with no baseline and no approvable number — decision
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 option 1, as answered. Eight cases: the zero-violation assertion, the `WORKBENCH_PRESENT`
 degradation, a vacuity guard, and five that pin the corpus predicate itself.
 
@@ -56,7 +56,7 @@ stale citations).
 ## `GATE_KINDS` widened, and what it cost
 
 `stamp-name` joins the list in `hooks/lib/__tests__/helpers/citation-scan.ts`, per decision
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+`260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
 option 2. `stamp-bare` is now the only kind outside the gate, and it is outside by argument
 rather than by accident.
 
@@ -162,7 +162,7 @@ the three boundary cases). `agents/` and `skills/` were not touched beyond the +
 **Added 260820** (`coder`, Circle Turn 2). This section reported "green" for the always-on rule
 set and stopped there, while every step that touched the hook-test surface reported a number.
 The missing figure, on the more expensive of the two surfaces, is the defect
-`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-step-that-spent-the-always-on-rule-budget-reported-green-without-the-figure-its-siblings-report.md`.
+`260820-0805_*_the-step-that-spent-the-always-on-rule-budget-reported-green-without-the-figure-its-siblings-report.md`.
 
 Always-on rule set: **6 206 bytes left**, and the spend above was 987 of them. Measured today,
 and the five files are untouched since this step, so the figure is this step's own outcome. The
@@ -172,7 +172,7 @@ core stands at 92 367 bytes — `agent-setup.md` 3 499, `fusion-workbench-conven
 98 573. Before the spend the surface stood at 7 193, which reconciles exactly against the +987.
 
 *One figure that circulated is a different quantity, not a disagreement.* The reconciliation
-pass of 260820-0830 reported 99 720 bytes by `bin/fusion-rules coder | xargs wc -c`. That
+pass of 260820-0830-reconciliation.md reported 99 720 bytes by `bin/fusion-rules coder | xargs wc -c`. That
 command is the whole floor a dispatch pays in this repository, and it includes this project's
 own chat voice profile at 7 353 bytes: 92 367 + 7 353 = 99 720. The bound measures the five
 shipped core files alone, because a project-side profile is not the plugin's text to bound.

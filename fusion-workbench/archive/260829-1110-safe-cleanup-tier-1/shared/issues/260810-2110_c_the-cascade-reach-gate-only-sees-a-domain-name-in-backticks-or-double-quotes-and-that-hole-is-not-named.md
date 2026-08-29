@@ -55,9 +55,9 @@ that it is complete about what is *not* checked.
 
 **Cross-references.** `hooks/lib/domain-cascade.ts:616-645, 647-708`;
 `hooks/lib/__tests__/domain-cascade.test.ts:498-702`; `README-hooks.md:179`;
-`shared/issues/260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`.
+`260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 Resolved: partly by widening, partly by naming — and the split is the honest part.

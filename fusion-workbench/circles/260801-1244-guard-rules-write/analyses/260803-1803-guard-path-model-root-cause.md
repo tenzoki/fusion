@@ -3,7 +3,7 @@
 **Date:** 2026-08-03 18:03
 **Type:** Root Cause, with a comparative evaluation of the three candidate directions
 **Status:** Complete
-**Requested by:** orchestrator (task T4-1, Circle `circles/260801-1244-guard-rules-write`)
+**Requested by:** orchestrator (task T4-1, Circle `260801-1244-guard-rules-write`)
 
 ---
 
@@ -13,7 +13,7 @@ One defect class has been found four times in this Circle, three fixes have ship
 three shipped docstrings that describe those fixes as complete against the class are false at
 HEAD. The task asked whether a single structural change closes the class, or whether the
 narrowing the Turn 3 review proposed is genuinely the right next move. It also asked where
-two neighbouring open issues sit relative to that answer: `260802-2320` (case folding) and
+two neighbouring open issues sit relative to that answer: `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (case folding) and
 `260803-1251` (the lexical collapse inside `fs-locator.absolute()`).
 
 ## Recommendation, first
@@ -72,9 +72,9 @@ Placing the four instances against that split:
 
 | # | Issue | Root cause | Fix that closed it |
 |---|---|---|---|
-| 1 | `260802-2229` planted symlink | Q-where was answered with Q-match's text answer. No filesystem was consulted at all. | gate 2 (`49bb4da`) |
-| 2 | `260802-2230` un-collapsed protected match | Q-match was answered on an un-normalised string, so the glob missed. | `collapseSegments` (`49bb4da`) |
-| 3 | `260802-2330` lexical `..` collapse | The normalisation that makes Q-match right destroyed the component Q-where needs. | gate 0 plus the `spelledAs` argument (`3b0f9e7`) |
+| 1 | `260802-2229_*_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md` planted symlink | Q-where was answered with Q-match's text answer. No filesystem was consulted at all. | gate 2 (`49bb4da`) |
+| 2 | `260802-2230_*_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md` un-collapsed protected match | Q-match was answered on an un-normalised string, so the glob missed. | `collapseSegments` (`49bb4da`) |
+| 3 | `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` lexical `..` collapse | The normalisation that makes Q-match right destroyed the component Q-where needs. | gate 0 plus the `spelledAs` argument (`3b0f9e7`) |
 | 4 | `260803-1431` `cd -P` operand | Same as 3, except the spelling was already destroyed upstream of the operand, inside the working-directory model. | open |
 
 Instance 2 runs in the opposite direction from the hypothesis. Its fix **added** a lexical
@@ -305,7 +305,7 @@ nobody has enumerated fails closed rather than being modelled wrongly.
 
 ## Where the two neighbouring issues sit
 
-**`260802-2320`, case folding: separate, and it should stay a separate task.** It is a
+**`260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md`, case folding: separate, and it should stay a separate task.** It is a
 Q-match defect, the same root cause as instance 2. The chosen fix folds case unconditionally
 inside `matchesAny` and `collapseSegments` in `paths.ts`. It touches no part of the classifier's
 working-directory model, and the working-directory fix touches no part of `paths.ts`. There is
@@ -318,7 +318,7 @@ lexical `resolve()` inside the component whose whole job is answering Q-where. T
 recommendation does not close it and does not make it reachable. Gate 0 still refuses every
 `..` spelling before `locate` is called, and the reconciler already verified that the `cd -P`
 route consumes its `..` inside `resolveDir` before `Target.spelled` exists. It stays Low and
-open. Its real cost is unchanged and worth restating: it makes direction 2 of `260802-2330`
+open. Its real cost is unchanged and worth restating: it makes direction 2 of `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`
 ("resolve the path as spelled") strictly larger than that issue estimated, so anyone who later
 wants `..` to be legal in a rule path has to fix `absolute()` first.
 
@@ -340,18 +340,18 @@ a docstring somewhere claimed otherwise.
 
 ## Filed Issues
 
-- `circles/260801-1244-guard-rules-write/issues/260803-1803_o_the-classifier-asserts-a-working-directory-cdpath-and-pushd-n-invalidate.md` — the two new entrances, measured, with the reach table.
+- `260803-1803_*_the-classifier-asserts-a-working-directory-cdpath-and-pushd-n-invalidate.md` — the two new entrances, measured, with the reach table.
 
 ## Filed Decisions
 
-- `circles/260801-1244-guard-rules-write/decisions/260803-1803_o_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md` — the ambient-`CDPATH` contract question.
+- `260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md` — the ambient-`CDPATH` contract question.
 
 ## Sources
 
-Issues and decisions, all under `circles/260801-1244-guard-rules-write/`:
-`issues/260802-2229_c_…`, `issues/260802-2230_c_…`, `issues/260802-2330_c_…`,
-`issues/260803-1431_o_…`, `issues/260802-2320_o_…`, `issues/260803-1251_o_…`,
-`decisions/260803-1419_a_…`, `reviews/260803-1431-coderev-turn3-guard-boundary.md`.
+Issues and decisions, all under `260801-1244-guard-rules-write`:
+`260802-2229_*_…`, `260802-2230_*_…`, `260802-2330_*_…`,
+`260803-1431_*_…`, `260802-2320_*_…`, `260803-1251_*_…`,
+`260803-1419_*_…`, `260803-1431-coderev-turn3-guard-boundary.md`.
 
 Code, at HEAD:
 `hooks/lib/paths.ts:77-95` (`collapseSegments`, `canonicalise`);

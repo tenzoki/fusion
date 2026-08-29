@@ -3,8 +3,8 @@
 **Date:** 260807-2024
 **Agent:** planner (dispatched, non-interactive)
 **Directive:** user, 260807-2024 — split fusion's single `**Language:**` declaration in two so chat language and persisted-artifact language resolve independently, and make `bin/fusion-rules` honour the split.
-**Plan:** `shared/planning/260807-2024_o_two-language-declarations.md`
-**Input decision:** `shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (answered by the user 260807-1925)
+**Plan:** `260807-2024_*_two-language-declarations.md`
+**Input decision:** `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` (answered by the user 260807-1925)
 
 ## What was planned
 

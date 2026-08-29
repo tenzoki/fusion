@@ -1,8 +1,8 @@
-# Playmaker run 260824-1721: Phase 4 portfolio refresh after C3 closed
+# Playmaker run 260824-1721-playmaker-orchestrator-phase4.md: Phase 4 portfolio refresh after C3 closed
 
 **Status:** Complete
 **Trigger:** `orchestrator-phase4`, dispatched after
-`circles/260824-0530-record-attribution-and-circle-claim` closed `_t_` to `_c_` at commit `46aa04c`.
+`260824-0530-record-attribution-and-circle-claim` closed `_t_` to `_c_` at commit `46aa04c`.
 **Domain bias:** `code`, parsed from the dispatch prompt's `**Domain:**` line.
 **Mandate held:** the narrow one. No `**Confirmed operations:**` block on the dispatch prompt and no
 channel to the user, so no split, merge, close or deferral was performed.
@@ -39,8 +39,8 @@ normal post-closure state and raises no pointer warning.
 **Top-ranked anticipated Circle: none.** No record carries the anticipated marker, so Step 3 had an
 empty candidate set. No `## Activation proposal` was written to any Circle record.
 
-**Top-ranked backlog entry: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`.** It ranks
-first because `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` already
+**Top-ranked backlog entry: `260814-1733_*_bounded-executor-dispatches.md`.** It ranks
+first because `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` already
 splits and disposes of the filed idea, so shaping it needs one narrowing question rather than fresh
 analysis. That is the domain-`code` bias plus the Step 2b adaptation: an idea citing records already
 on disk outranks one that would need investigation before it could be sized.
@@ -70,9 +70,9 @@ defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/de
 Reason no confirmation is held: this is a Phase 4 orchestrator dispatch, which carries no
 `**Confirmed operations:**` block and offers no channel to put the question to the user. Both halves
 of the obstruction were re-verified this run:
-`shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
 still carries `_d_`, and
-`shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
+`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 is still `_o_`.
 
 ## Circle-record writes
@@ -85,7 +85,7 @@ appended to any record.
   search being run.
 - **Parent-Grounding-stale events: none**, on two independent grounds. The closing Circle closed
   coherent and not bounded, verified against
-  `circles/260824-0530-record-attribution-and-circle-claim/_c_circle.md` rather than taken from the
+  `260824-0530-record-attribution-and-circle-claim` rather than taken from the
   dispatch: the record carries `_c_` and its closure note opens "Closed coherent". Separately, the
   propagation scan looks for non-terminal parents citing a bounded child, and there are none, so
   neither Bounded-Closure Circle in this workbench has a parent to flag.
@@ -132,14 +132,14 @@ exists in the target, by prefix match with the heading level not compared.
 whether the target's content supports the claim made about it, and the heading check additionally
 misses a whole token shape. The three instances, all filed 260824:
 
-- `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_both-override-call-sites-cite-a-section-that-does-not-define-the-sentence-they-must-write.md`.
+- `260824-1538_*_both-override-call-sites-cite-a-section-that-does-not-define-the-sentence-they-must-write.md`.
   The heading exists and the gate passes, but the section does not define the sentence. Repaired; carries `_c_`.
-- `shared/issues/260824-1506_*_the-anchor-gate-silently-skips-every-var-rooted-citation-on-an-assumption-the-path-gate-falsifies.md`.
+- `260824-1506_*_the-anchor-gate-silently-skips-every-var-rooted-citation-on-an-assumption-the-path-gate-falsifies.md`.
   The heading check never sees a `$VAR/`-rooted citation. Four exist in the shipped surface. Open.
-- `shared/issues/260824-1637_*_an-always-loaded-prompt-states-that-the-uncovered-range-decision-is-unfiled-eight-days-after-it-was-answered.md`.
+- `260824-1637_*_an-always-loaded-prompt-states-that-the-uncovered-range-decision-is-unfiled-eight-days-after-it-was-answered.md`.
   A false assertion about a record, carrying no citation for any gate to look at. Open.
 
 The backlog holds nothing equivalent, so nothing was ranked in its place.
-`shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md` is adjacent and is not the same idea: it
+`260814-1733_*_attach-the-rule-to-the-act.md` is adjacent and is not the same idea: it
 says a rule written as prose governs nothing without a mechanism at the moment of the act, while this
 says a mechanism that does run measures a proxy for what the rule requires.

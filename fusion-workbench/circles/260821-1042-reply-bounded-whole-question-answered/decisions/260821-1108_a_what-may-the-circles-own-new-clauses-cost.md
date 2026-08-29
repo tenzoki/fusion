@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/_*_circle.md`
+**Cross-references:** `260821-1042-reply-bounded-whole-question-answered`
 
 ---
 
@@ -33,8 +33,8 @@ the gate: the alternative is option 3, which is exactly what the preceding Circl
 
 This also means the Circle carries a cut in its own plan, and the cut has to come from the same corpus
 it is repairing. The open decision
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`
+`260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`
 asks the general form of this question and is answered here only for this Circle.
 
 ---
-Answered: this record — the user answered at a gate in session `shared/history/260820-2103-orchestrator-session.md` on 260821, before the Circle was activated. Their words, not the orchestrator's reading of them.
+Answered: this record — the user answered at a gate in session `260820-2103-orchestrator-session.md` on 260821, before the Circle was activated. Their words, not the orchestrator's reading of them.

@@ -38,4 +38,4 @@ operator's own rc chatter cannot corrupt what `jq` reads.
 ---
 Resolved: bin/fusion-plane:2263 (seed_defer_manual), the function that printed the fragile command string, was deleted in d0ddabb.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

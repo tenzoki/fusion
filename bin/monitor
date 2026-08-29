@@ -147,7 +147,7 @@ CHECKOUT_ID_FILE = os.path.join(BASE_DIR, ".checkout-id")
 #     itself was drawing had stopped being written. NOTHING EMITS THIS ANY MORE.
 #     hooks/tracker.ts measured agentstate.yaml, the active Circle's Turn log
 #     and the session history against git and orchestrator-events.jsonl on every
-#     guarded tool call (issue 260801-2038, measured six times); the measurement
+#     guarded tool call (issue 260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md, measured six times); the measurement
 #     was removed on 2026-08-15 with the hand-maintained session counters that
 #     were its subject.
 #
@@ -169,7 +169,7 @@ CHECKOUT_ID_FILE = os.path.join(BASE_DIR, ".checkout-id")
 #   - A review gap (review_coverage) and an unstaged record (staging_drift)
 #     are the two siblings of state_drift that outlived it. hooks/tracker.ts
 #     still emits both, throttled on signature so a persisting miss is one
-#     row, and the record that led to them (issue 260811-1143) argued that a
+#     row, and the record that led to them (issue 260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md) argued that a
 #     staging_drift row is the one whose subject can be LOST: a record that
 #     missed its commit survives only in the working tree. Until they joined
 #     this set both were written to events.jsonl and read by nothing, which is
@@ -625,7 +625,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     // routinely: a JSON fragment, a SyntaxError, a quoted path. Interpolated
     // into an attribute one truncated there, so localStorage stored a prefix,
     // the next render recomputed the whole key, matched nothing, and the row
-    // came back. Dismissal silently never stuck (issue 260817-1217).
+    // came back. Dismissal silently never stuck (issue 260817-1217_*_the-monitors-dismiss-keys-are-html-escaped-as-text-so-a-quote-in-a-warning-truncates-the-attribute.md).
     var keys = [];
     for (var j = 0; j < visible.length; j++) {
       var w = visible[j];
@@ -1022,7 +1022,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   // had gone (restarted on another port, the machine asleep, the socket closed
   // under a suspended tab) kept every row of its last render, and the panel
   // asserted a state that had stopped being true with nothing to say so
-  // (issue 260822-0849, option 1). Every successful poll stamps the time; a
+  // (issue 260822-0849_*_the-dashboard-poll-swallows-every-failure-so-a-dead-page-keeps-showing-its-last-warnings-forever.md, option 1). Every successful poll stamps the time; a
   // failed one reads the stamp, and once it is older than three intervals the
   // status bar says so in place of the last "Updated:" claim. The rows stay:
   // they were true when rendered and the mark says how long ago that was.
@@ -1322,7 +1322,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
              push this session's most recent events out of the window.
 
         All four were measured, with commands and output, in
-        circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md,
+        260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md,
         which also measured that sorting by ts alone does NOT repair them: it
         moved reading 1 from vague to wrong. The question is which session a
         line belongs to, and no ordering of the same bytes answers it. So the

@@ -24,7 +24,7 @@ Each is a substitution slot. None carries a branch, and no line anywhere in the 
 
 **Why the rule matters and where the miss shows.** `hooks/lib/events-query.ts:102-104` drops a field whose value is the empty string, so the two readers built in this same range degrade correctly. `bin/monitor` (plan step 7, not yet written) is specified to "drop the lines whose `checkout` is present and differs from this checkout's" — a reader written to that sentence literally, against a line carrying `"checkout":""`, drops nothing and is right by accident rather than by contract.
 
-The unresolved half is not hypothetical: it is `bin/fusion-identity` exits 3, 4 and 5, and the missing-helper case that `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` measures as the ordinary state of an install one release behind.
+The unresolved half is not hypothetical: it is `bin/fusion-identity` exits 3, 4 and 5, and the missing-helper case that `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` measures as the ordinary state of an install one release behind.
 
 **Fix direction.** Show the omission in the one template that is executable, `:231`, rather than restating the rule a fourth time: build the two fields into a shell variable that is empty when the value did not resolve, or give the template a second form for the unresolved case. `agents/*.md` has 1 595 bytes of head-room left after this range, so the cheap form is the one to take.
 
@@ -38,7 +38,7 @@ Revised by: `6deeb33` — the `Resolved:` note above says "All three emit sites 
 fourth existed at the time it was written: `skills/setup/SKILL.md:483`, which this record's own
 `**Scope.**` line had named as inheriting the same template at plan step 4. It was still carrying the
 two literal fields, was found by the Turn 2 code review, filed as
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`,
+`260826-0906_*_a-fourth-session-start-emit-template-was-created-in-this-range-and-left-out-of-the-id-conversion.md`,
 and converted in `6deeb33`. All four now carry `<ID>`; verified at HEAD `7774d56` by
 `grep -rn '<ID>'` over `agents/`, `skills/`, `rules/`, `bin/`, `docs/`, `templates/`, both READMEs
 and `CLAUDE.md`. The defect stays closed and its `Resolved:` note is left unedited: only the count in

@@ -1,7 +1,7 @@
 The Turn-count defect names three sites and a fourth carries the identical whole-file count
 
 ---
-`shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+`260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
 declares `**Affects:** agents/orchestrator.md:91, :496, :1060` and was closed with
 `Resolved: referred (C4)`. A fourth site carries the same `grep -c '"event":"turn_start"'` over
 the whole file, in `skills/setup/SKILL.md` Step 1 sub-step 2, and no record names it. An executor
@@ -13,11 +13,11 @@ prompt of `/fusion:setup` reporting the project's lifetime Turn count as the int
 **Severity:** Medium. The omitted site is the one a user meets through `/fusion:setup`, which is the
 documented entry point for a session, so it is at least as reachable as the three that were named.
 **Cross-references:**
-`shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+`260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
 (the closed record whose stated reach is short);
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
+`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
 (the note that the proposed positional repair does not survive the union merge);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
 step 5, which repairs all four sites through one implementation
 
 ## What was measured

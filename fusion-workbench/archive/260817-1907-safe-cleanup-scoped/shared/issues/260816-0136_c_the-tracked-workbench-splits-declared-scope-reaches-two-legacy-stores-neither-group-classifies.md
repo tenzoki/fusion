@@ -42,7 +42,7 @@ Resolved (part 1 only): `rules/fusion-workbench-conventions.md:74` now scopes th
 Part 2 (`.gitignore:67` — drop `tasklist.md`, add `.fusion-setup`) is NOT done: `.gitignore` was outside this pass's permitted file set. It remains open work and needs a follow-up.
 
 ---
-**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — the `_p_` marker is correct. Part 1 is
+**Reconciliation 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`) — the `_p_` marker is correct. Part 1 is
 on disk, part 2 is not.**
 
 - **Part 1, verified.** `rules/fusion-workbench-conventions.md:74` reads *"the split below ranges
@@ -57,15 +57,15 @@ on disk, part 2 is not.**
 **One thing the fix direction did not know.** `.gitignore:69`, two lines below the comment part 2
 corrects, writes `/fusion:archive` where `rules/fusion-workbench-conventions.md:81` now reads "the
 archive step of `/fusion:cleanup`". It is the residual of open record
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`.
+`260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`.
 One pass over that comment block discharges both records' `.gitignore` halves; whoever takes part 2
 should take it.
 
-Also seen: 260816-0713 by coderev — the `d83c1b4` rewrite closes the scope gap (the two groups now tile the ten non-artifact root entries exactly), but the replacement clause "and the two above, all simply tracked" asserts that a tracked workbench tracks `stashes/` and `.migration-v2-backup/`. Nothing supports that and neither store exists in this repository, so the claim is untestable where it was written.
+Also seen: 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md by coderev — the `d83c1b4` rewrite closes the scope gap (the two groups now tile the ten non-artifact root entries exactly), but the replacement clause "and the two above, all simply tracked" asserts that a tracked workbench tracks `stashes/` and `.migration-v2-backup/`. Nothing supports that and neither store exists in this repository, so the claim is untestable where it was written.
 
 ---
 Resolved (part 2, and the appended `Also seen:` clause): closed at HEAD `433e206`+1 by session
-`shared/history/260816-0804-orchestrator-session.md`.
+`260816-0804-orchestrator-session.md`.
 
 - **`.gitignore:67`** — the KEPT line now reads `orchestrator-events.jsonl, portfolio.md,
   .fusion-setup.` `tasklist.md`, removed from fusion on 2026-08-15, is gone; `.fusion-setup` is
@@ -124,4 +124,4 @@ halves are on disk and were re-checked rather than read from the note above.**
 
 One stale path in the record above: the 260815-1633 reconciliation note cites this file at its old
 `_p_` name. Left as written, per open decision
-`shared/decisions/260816-0119_o_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`.
+`260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`.

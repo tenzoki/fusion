@@ -7,10 +7,10 @@ the old placement and are green.
 ---
 **Severity:** Medium — the orchestrator prompt is what an agent executes, so behaviour is correct; but
 `README-agents.md` is what a user reads and `CLAUDE.md` is this repository's own normative surface, and
-both now describe a mechanism that no longer exists. It is also the exact class `260811-2304` was filed
+both now describe a mechanism that no longer exists. It is also the exact class `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md` was filed
 for, re-created at two new sites in the commit that closed it.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `README-agents.md:169`, `CLAUDE.md:38`, `hooks/lib/__tests__/turn-budget-lint.test.ts`
 
@@ -49,7 +49,7 @@ Rewrite both sentences to the Turn-start placement, and decide whether the lint'
 two READMEs and `CLAUDE.md`. If it does, the "must also say check-in" exemption cannot carry over as-is.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `README-agents.md:169` and `CLAUDE.md:38` both still say every Turn boundary, contradicting `agents/orchestrator.md:647`, and `hooks/lib/__tests__/turn-budget-lint.test.ts:47` still scopes the scan to the orchestrator prompt alone. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `README-agents.md:169` and `CLAUDE.md:38` both still say every Turn boundary, contradicting `agents/orchestrator.md:647`, and `hooks/lib/__tests__/turn-budget-lint.test.ts:47` still scopes the scan to the orchestrator prompt alone. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — both sentences now place the check-in at the start of a Turn as Phase 2 step 1, and the lint surface stays the orchestrator prompt (widening was weighed in the plan's triage and declined); `CLAUDE.md:38`, `README-agents.md:170`

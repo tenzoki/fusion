@@ -2,7 +2,7 @@ The Turn-1 review's totals say ten findings and it filed eleven, and two differe
 
 ---
 
-`fusion-workbench/shared/reviews/260810-1918-coderev-turn-1-range-5ef92eb-940d522.md` carries:
+`260810-1918-coderev-turn-1-range-5ef92eb-940d522.md` carries:
 
 | Severity | Count |
 |---|---|
@@ -31,7 +31,7 @@ different findings.
 **Why it matters, given every finding did reach a record.** Nothing was lost — the eleven records
 exist and closed, which is what `git log --name-status` and the marker inventory both show. What is
 wrong is the review's own summary, and a summary is what the next reader trusts instead of counting.
-The session history for `260810-1646` says "Review findings: 11 filed by `coderev`", so the history
+The session history for `260810-1646-orchestrator-session.md` says "Review findings: 11 filed by `coderev`", so the history
 and the review disagree by one and the history is the one that is right.
 
 **This is a reproduction, not a new class.** Queued task 37 of `fusion-workbench/tasklist.md` is
@@ -39,7 +39,7 @@ and the review disagree by one and the history is the one that is right.
 `260810-1632-coderev-turn-1-range-430d73a-to-head.md`. The same defect recurred in the next review
 the same day, which is evidence for the task's premise: a hand-tallied totals table drifts from the
 findings under it, and no gate reads either. It is also the same shape as
-`260810-2110_c_the-citation-rooting-commit-and-its-own-record-both-say-seven-citations-and-there-are-eight.md`
+`260810-2110_*_the-citation-rooting-commit-and-its-own-record-both-say-seven-citations-and-there-are-eight.md`
 — a count written beside the thing it counts, by hand.
 
 **Fix direction, not prescribed.** Correcting this one table is a two-character edit and closes
@@ -50,15 +50,15 @@ split still comes from the labels, so the labels have to be unique, which the du
 they are not guaranteed to be.
 
 **Cross-references.** `fusion-workbench/tasklist.md` task 37;
-`shared/issues/260810-1544_o_…` is unrelated;
-`shared/issues/260810-2110_c_the-citation-rooting-commit-and-its-own-record-both-say-seven-citations-and-there-are-eight.md`
-(same class, different surface); `shared/history/260810-1646-orchestrator-session.md` Turn 1 (says
+`260810-1544_*_…` is unrelated;
+`260810-2110_*_the-citation-rooting-commit-and-its-own-record-both-say-seven-citations-and-there-are-eight.md`
+(same class, different surface); `260810-1646-orchestrator-session.md` Turn 1 (says
 11, and is right).
 
-**Filed by:** reconciler, final reconciliation of session `260810-1646`, at HEAD `e2a34f0`.
+**Filed by:** reconciler, final reconciliation of session `260810-1646-orchestrator-session.md`, at HEAD `e2a34f0`.
 ---
 
-Resolved: the review's table reads Low 6 and the sentence under it reads "Eleven findings, eleven records filed". Counted off the body: twelve labelled bullets under `## Findings by theme` — `H1`, `H2`, `M1`, `M2`, `M3` twice, `L1`–`L6` — of which the `M3` at `agents/orchestrator.md:429` is marked folded into `H2` and filed no record, leaving eleven findings with a record each. `ls fusion-workbench/shared/issues/260810-1918_?_*.md | wc -l` → 11, all `_c_`.
+Resolved: the review's table reads Low 6 and the sentence under it reads "Eleven findings, eleven records filed". Counted off the body: twelve labelled bullets under `## Findings by theme` — `H1`, `H2`, `M1`, `M2`, `M3` twice, `L1`–`L6` — of which the `M3` at `agents/orchestrator.md:429` is marked folded into `H2` and filed no record, leaving eleven findings with a record each. `ls 260810-1918_?_*.md | wc -l` → 11, all `_c_`.
 
 A dated correction section was appended below the reconciler's annotation, and that annotation was left exactly as written: it describes the document at `e2a34f0` and is the only record of what the table said when the count was taken.
 

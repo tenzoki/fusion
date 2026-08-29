@@ -2,11 +2,11 @@
 
 **Status:** Complete
 **Agent:** coder
-**Date:** 260821-1505
+**Date:** 260821-1505-attribution-comment-for-the-paths-re-approval.md
 
 ## What this was
 
-The re-approval logged in `shared/history/260821-1455-re-approve-two-text-gate-baselines.md`
+The re-approval logged in `260821-1455-re-approve-two-text-gate-baselines.md`
 moved `BASELINE.paths` from 1255 to 1257 in
 `hooks/lib/__tests__/reference-resolution-lint.test.ts` and deliberately left the
 file's own convention unmet: each re-approval carries a comment above `BASELINE`

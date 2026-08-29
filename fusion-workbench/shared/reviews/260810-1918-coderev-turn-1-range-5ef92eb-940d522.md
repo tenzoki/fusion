@@ -1,4 +1,4 @@
-# Code review — session `260810-1646` Turn 1, range `5ef92eb..940d522`
+# Code review — session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`
 
 **Sender:** coderev
 **Scope:** the plugin's own source across all 7 commits of the range. Workbench records and history
@@ -54,7 +54,7 @@ Eleven findings, eleven records filed under `shared/issues/260810-1918_o_*`.
   gate reads it.** `hooks/lib/domain-cascade.ts:19-31` and `README-hooks.md:179` both claim drift is
   "unrepresentable". Both new gates read only `agents/orchestrator.md`. KRK reaches `code` at Setup
   and `strategic` at cleanup, in the same session.
-  → `260810-1918_o_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`
+  → `260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md`
 
 - **M3 — `agents/orchestrator.md:429` adds a second criterion for choosing the lock form that
   `rules/workbench-stash-and-lock.md:135`, the authoring home, does not carry.** Folded into H2.
@@ -65,54 +65,54 @@ Eleven findings, eleven records filed under `shared/issues/260810-1918_o_*`.
   lock only in prose.** After step 3 the message is in a file and reaches git as `-F <literal path>`
   — the case line 429 says `with` stays correct for. The two skills prove it. The four-command block
   at `:419-426` has no `trap` and no `||`; a failed `git add` holds the lock for 60s.
-  → `260810-1918_o_step-3b-drops-the-lock-form-that-releases-on-any-exit-for-a-reason-that-does-not-apply.md`
+  → `260810-1918_*_step-3b-drops-the-lock-form-that-releases-on-any-exit-for-a-reason-that-does-not-apply.md`
 
 - **M1 — `agents/orchestrator.md:402` still sends the bugfixer-success path to "step 3 (stage +
   commit)"**, which is now "write the commit message".
-  → `260810-1918_o_the-bugfixer-success-path-still-points-at-step-3-which-is-no-longer-stage-and-commit.md`
+  → `260810-1918_*_the-bugfixer-success-path-still-points-at-step-3-which-is-no-longer-stage-and-commit.md`
 
 - **M2 — the staging instruction became a shell comment**, and `f38f37d`'s claim that Step 3b
   "already forbids in substance" a directory-wide `-u` does not hold: the surviving text names only
   `-A`.
-  → `260810-1918_o_the-explicit-staging-instruction-became-a-shell-comment-and-still-does-not-forbid-add-u.md`
+  → `260810-1918_*_the-explicit-staging-instruction-became-a-shell-comment-and-still-does-not-forbid-add-u.md`
 
 - **L5 — `skills/commit/SKILL.md:84-88` shows the heredoc indented inside a list**, where a verbatim
   copy indents the message and puts the terminator off column 0.
-  → `260810-1918_o_the-commit-skills-heredoc-example-is-indented-so-a-verbatim-copy-never-terminates.md`
+  → `260810-1918_*_the-commit-skills-heredoc-example-is-indented-so-a-verbatim-copy-never-terminates.md`
 
 ### Silence where the same range chose to speak
 
 - **M3 — `bin/monitor:1244` `sleep 0.5` is the one command left unguarded before `wait`.** Non-
   fractional `sleep` (BusyBox without `FEATURE_FANCY_SLEEP`, Solaris, AIX) exits 1 under `set -e` —
-  the same orphaned-server symptom as `260810-1558`, one line further down.
-  → `260810-1918_o_sleep-0-5-is-the-remaining-command-that-can-exit-the-monitor-wrapper-before-wait.md`
+  the same orphaned-server symptom as `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md`, one line further down.
+  → `260810-1918_*_sleep-0-5-is-the-remaining-command-that-can-exit-the-monitor-wrapper-before-wait.md`
 
 - **L1 — the monitor launcher swallows both "absent" and "failed" without a word**, while
   `skills/setup/SKILL.md:251` and `agents/orchestrator.md:126,142` establish the opposite convention
   in the same range.
-  → `260810-1918_o_the-monitor-launcher-goes-silent-where-the-same-session-established-naming-the-gap.md`
+  → `260810-1918_*_the-monitor-launcher-goes-silent-where-the-same-session-established-naming-the-gap.md`
 
 ### Citation rooting
 
 - **L2 — the rooting reached two of three skills**, and the paragraph announcing the rule ends with
   a bare `skills/cleanup/SKILL.md:11`.
-  → `260810-1918_o_the-citation-rooting-reached-two-of-three-skills-and-its-own-example-is-unrooted.md`
+  → `260810-1918_*_the-citation-rooting-reached-two-of-three-skills-and-its-own-example-is-unrooted.md`
 
 - **L3 — inside this repository the rooted citations now read the installed copy**, reversing the
   work-tree preference `bin/fusion-rules` / `bin/fusion-paths` were given for exactly this reason.
   Correct for consumers; a regression here. Currently masked by both copies being 7.2.0.
-  → `260810-1918_o_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`
+  → `260810-1918_*_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`
 
 ### Gates
 
 - **L4 — `domain-cascade.test.ts:321-335` asserts a git checkout**, not a property of the code.
   `bin/fusion-count-sources` exits 2 by design outside a work tree; the test reads that as failure.
-  → `260810-1918_o_the-live-cascade-test-asserts-a-git-checkout-and-fails-in-any-tree-without-one.md`
+  → `260810-1918_*_the-live-cascade-test-asserts-a-git-checkout-and-fails-in-any-tree-without-one.md`
 
 - **L6 — `SKIP_LICENCES` misses every negation that does not spell "not"** — "isn't", "not
   required", "except when", "as time allows", "no longer needed", "dropped", "sparingly", "provided
   that". Filed as the header's own standing instruction asks.
-  → `260810-1918_o_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`
+  → `260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`
 
 ## Cross-cutting observations
 
@@ -121,7 +121,7 @@ Eleven findings, eleven records filed under `shared/issues/260810-1918_o_*`.
 fail-loud on every unanticipated construct, no truthiness, the absent count modelled as the string
 it is, short-circuit matching Python. It is defeated not by anything in its grammar but by the gate's
 *reach*: it reads one file, and the decision is stated in two. The same reach question decides H1,
-L2 and the already-filed decision `260810-1822` about the queue-ground procedure. A gate that reads
+L2 and the already-filed decision `260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md` about the queue-ground procedure. A gate that reads
 `agents/*.md` and `skills/*/SKILL.md` — the file set `path-literal-lint.test.ts` already
 enumerates — would cover all three.
 
@@ -150,11 +150,11 @@ and neither is obviously right.
 
 ---
 
-**Filed by:** coderev, session `260810-1646`.
+**Filed by:** coderev, session `260810-1646-orchestrator-session.md`.
 
 ---
 
-## Reconciliation annotation — reconciler, 260811-0108, at HEAD `e2a34f0`
+## Reconciliation annotation — reconciler, 260811-0108-reconciliation.md, at HEAD `e2a34f0`
 
 Findings are not rewritten here. Two facts about this document, both measured:
 
@@ -167,7 +167,7 @@ its own.
 **The Totals table undercounts by one and reuses a label.** Low is 6 (`L1`–`L6`), not 5, so the table
 sums to 11 and the sentence "Ten findings, ten records filed" is short by one against the eleven
 records on disk. `M3` names two different findings. Filed as
-`shared/issues/260811-0109_o_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md`;
+`260811-0109_*_the-turn-1-reviews-totals-say-ten-findings-and-it-carries-eleven.md`;
 same class as queued task 37.
 
 ---
@@ -182,7 +182,7 @@ table said when the count was taken.
 Counted again here, off the body rather than off the annotation: twelve labelled bullets under
 `## Findings by theme` — `H1`, `H2`, `M1`, `M2`, `M3` twice, `L1`–`L6` — of which the `M3` at
 `agents/orchestrator.md:429` is marked folded into `H2` and filed no record. That leaves eleven
-findings with a record each, and `ls shared/issues/260810-1918_?_*.md | wc -l` answers 11.
+findings with a record each, and `ls 260810-1918_?_*.md | wc -l` answers 11.
 
 Two things this correction deliberately does not do. The duplicate `M3` label is left standing,
 because the eleven filed records cite these labels and renaming one would break the citation to fix

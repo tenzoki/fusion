@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** ontorev (Turn 3 review, range `5d29b6d..518926d`)
 **Affects:** `hooks/lib/__tests__/rules-emission-golden.test.ts` `RULE_BASELINE["design-diagrams.md"]` and the `ROLES` entry for `design-diagrams.md`; `## Re-baselining: the two events at which the baseline moves` in the same file
-**Cross-references:** `circles/260801-1244-curator/decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` (the arming that set the doctrine)
+**Cross-references:** `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` (the arming that set the doctrine)
 
 ---
 
@@ -61,4 +61,4 @@ Whichever is chosen, `ROLES`'s `design-diagrams.md` comment should say that the 
 The doctrine question is still unrecorded: `hooks/lib/__tests__/helpers/growth-bound.ts` names exactly two moments at which a baseline moves — after a cleanup, and at a one-time arming — and an *incidental* shrink is neither. No decision record in any store asks whether one should re-baseline. Until it does, a shrink silently buys future growth, which is the one direction the bounds were built to price.
 
 ---
-Resolved: referred (decision) — whether an incidental shrink re-baselines is the decision's question; shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md
+Resolved: referred (decision) — whether an incidental shrink re-baselines is the decision's question; 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md

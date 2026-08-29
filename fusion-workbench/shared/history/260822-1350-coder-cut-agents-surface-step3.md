@@ -3,8 +3,8 @@
 **Date:** 2026-08-22
 **Agent:** coder
 **Status:** Complete
-**Source:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 3
-**Ledger:** `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`, its `agents/` section
+**Source:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 3
+**Ledger:** `260822-1226-cut-ledger-for-three-bounded-surfaces.md`, its `agents/` section
 
 ## What changed
 
@@ -31,7 +31,7 @@ files and the final consolidated review — left `agents/coderev.md` and `agents
 new `rules/review-contract.md`, emitted to those two agents and to nobody else. This is not a
 removal. The two reviewers load the same text at Setup, byte for byte; what falls is the measured
 surface, not their context. The user accepted it on that statement at Gate A, and the record is
-`shared/decisions/260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md`.
+`260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md`.
 
 ## Measurements
 

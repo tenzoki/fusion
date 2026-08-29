@@ -3,7 +3,7 @@
 **Date:** 2026-08-14
 **Agent:** shaper, portfolio-activation mode
 **Status:** Complete
-**Circle:** `circles/260801-1244-curator`
+**Circle:** `260801-1244-curator`
 **HEAD at start:** `d7786eb`
 
 ---
@@ -23,8 +23,8 @@ The run spanned two dispatches. Round one surveyed the tree and returned four cl
 
 ## What was written
 
-- **Spec:** `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md`. Seven capabilities: C1, C2, C3, C6 and C7 carried from the earlier spec with their original numbers, plus C10 (the growth bound) and C11 (the validation case). Carrying the original numbers rather than renumbering keeps every existing citation of them in the workbench resolving.
-- **Decision record:** `circles/260801-1244-curator/decisions/260814-0738_o_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. One open question the run could not derive away, filed with three options and a recommendation.
+- **Spec:** `260814-0738_*_spec-curator.md`. Seven capabilities: C1, C2, C3, C6 and C7 carried from the earlier spec with their original numbers, plus C10 (the growth bound) and C11 (the validation case). Carrying the original numbers rather than renumbering keeps every existing citation of them in the workbench resolving.
+- **Decision record:** `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. One open question the run could not derive away, filed with three options and a recommendation.
 - **Circle record:** `## Directive` and `## Grounding snapshot` replaced in place, and `**Active spec/plan:**` re-pointed at the new spec. No other section touched.
 
 ## Measurements taken this run
@@ -52,7 +52,7 @@ The dispatch handed this run two figures that did not survive checking, and both
 
 - **The Circle record's title line is now wrong.** It reads "and proves it on fusion's own conventions file", and the validation case is the decision corpus. The portfolio-activation mode permits editing two sections and one field, and the title is none of them, so it stands.
 - **The `## Dependencies` section is stale** in the same way. It describes the conventions-file partition as this Circle's closing work and names three dependencies that have all closed coherently. Out of scope for the same reason.
-- **The earlier spec `shared/planning/260801-1122_o_spec-normative-consolidation.md` was left alone.** It covers four Circles and remains the record of the three that closed. Retiring it is not this run's act.
+- **The earlier spec `260801-1122_*_spec-normative-consolidation.md` was left alone.** It covers four Circles and remains the record of the three that closed. Retiring it is not this run's act.
 
 ## One question left open
 

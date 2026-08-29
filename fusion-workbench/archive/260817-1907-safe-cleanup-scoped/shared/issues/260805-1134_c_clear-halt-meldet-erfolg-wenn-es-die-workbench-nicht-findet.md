@@ -42,9 +42,9 @@ Nutzer den richtigen Befehl am falschen Ort ausführt und eine Erfolgsmeldung be
 ## Warum das die Klasse ist, die dieser Circle die Woche über geschlossen hat
 
 Ein Werkzeug meldet normalen Betrieb, während es nichts getan hat. Dieselbe Form wie
-`260804-1607` (ein fail-open Guard war auf dem Dashboard unsichtbar), wie
-`260804-1601` (ein Projekt schreibt auf, dass der Guard an ist, und schaltet damit den Schutz
-ab) und wie `260802-2334` (eine formgültige `escalation.json` liess den Guard komplett
+`260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md` (ein fail-open Guard war auf dem Dashboard unsichtbar), wie
+`260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md` (ein Projekt schreibt auf, dass der Guard an ist, und schaltet damit den Schutz
+ab) und wie `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` (eine formgültige `escalation.json` liess den Guard komplett
 fail-open laufen). In allen vier Fällen ist die Ausgabe nicht falsch, sondern beantwortet eine
 andere Frage als die gestellte.
 

@@ -18,7 +18,7 @@ sentence was written:
 fusion-workbench/shared/issues/260717-0115_o_live-workbench-split-across-two-layouts-during-conversion.md
 ```
 
-That record closed in the previous session, so on disk it is now `…260717-0115_c_….md` and the
+That record closed in the previous session, so on disk it is now `…260717-0115_*_….md` and the
 citation pointed at a path that no longer exists. `reference-resolution-lint.test.ts:669` — the gate
 that asserts no shipped text carries a dangling reference — reported it as its single finding, and a
 single finding is enough to make the whole run red.
@@ -64,8 +64,8 @@ grep -rn '_[opadcibs]_' skills/ agents/ rules/ | grep 'fusion-workbench/'
 Six hits, none of them a citation of a real record. Four name the `.active-circle` pointer or a
 Circle directory in prose (`agents/orchestrator.md:219,575`, `agents/playmaker.md:3`,
 `rules/fusion-workbench-conventions.md:86`); two are invented worked examples in
-`rules/decision-record-examples.md:13,74` (`260501-1430_o_vector-store-pick.md`,
-`261107-0915_o_vector-store-revisit.md`) that describe no record on disk. The lint agrees — it
+`rules/decision-record-examples.md:13,74` (`260501-1430_*_vector-store-pick.md`,
+`261107-0915_*_vector-store-revisit.md`) that describe no record on disk. The lint agrees — it
 reports nothing further. That half of the acceptance clause is satisfied as it stands, with no edit
 needed.
 

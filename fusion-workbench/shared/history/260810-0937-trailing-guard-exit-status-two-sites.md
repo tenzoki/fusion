@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Started:** 260810-0937
+**Started:** 260810-0937-trailing-guard-exit-status-two-sites.md
 **Base commit:** `a7c2b03`
 
 ---
@@ -16,8 +16,8 @@ Both sites hit their non-zero path on the *ordinary* case.
 
 Source records (markers left untouched — the user renames them after validating):
 
-- `shared/issues/260810-0710_o_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`
-- `shared/issues/260810-0506_o_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`
+- `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`
+- `260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`
 
 ## What changed
 
@@ -33,7 +33,7 @@ With no queue at the root — the ordinary case for a fresh workbench — the bl
 and the failing command was the `printf` that writes `.active-circle`, the single most
 consequential write in the skill.
 
-**3. Same site, the resolver bypass** named in `260810-0506` §2. The site spelled
+**3. Same site, the resolver bypass** named in `260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md` §2. The site spelled
 `tasklist.md` literally; it now uses `$TASKLIST`. Because the prompt now names the key, the
 resolver's key-set derivation emits it — measured before and after:
 
@@ -98,7 +98,7 @@ queue-retirement-empty-key domain-cascade-order-lint executor-verification-repor
 `260810-0710` raises a third question: whether this shape earns a lint in
 `hooks/lib/__tests__/`. Not written, per instruction. The record argues against adding one
 before deciding whether the existing cohort of prose-parsing lints earns its keep, and two
-open records (`260810-0502`, `260810-0510`) are about exactly that cohort. My reading is
+open records (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`) are about exactly that cohort. My reading is
 recorded in the report to the user; the user files it as a decision if wanted.
 
 ## Files changed

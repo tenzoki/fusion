@@ -1,7 +1,7 @@
 # Coder — C3 step 5: the helper's exit table, tested inside the line budget
 
 **Status:** Complete
-**Task:** Plan step 5 of `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`
+**Task:** Plan step 5 of `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`
 **Executor:** coder
 
 ## What was built
@@ -50,7 +50,7 @@ and fail on a runner with no global identity.
 **The concurrent mint.** Step 4 exercised twenty parallel invocations by hand and got one
 identifier. A test of it forks twenty children, costs seconds of wall-clock on every full run, and
 lands squarely in the load-sensitive flakiness this suite already has filed
-(`shared/issues/260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`).
+(`260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`).
 The property a caller can actually observe — one identifier across successive calls — is covered by
 the mint-once case, and the atomicity underneath it is a property of `set -C`, not of this script.
 The reasoning is written into the file's header so the next reader does not re-open the question.

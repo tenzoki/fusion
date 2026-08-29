@@ -5,7 +5,7 @@ The plan is `Status: Complete` with every step `[DONE]` and still carries the `_
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 2
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md:4`
+**Affects:** `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md:4`
 **Cross-references:** `rules/fusion-workbench-conventions.md:387`, which states both halves of the transition
 
 ---
@@ -32,7 +32,7 @@ Answer one question and act on the answer. If the marker is meant to move when t
 ---
 
 Resolved: 2026-08-23 by coder. The plan's filename marker was moved from `_o_` to `_c_` with `mv`:
-`circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`.
+`260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`.
 
 **The question this record asks was answered the first way, and the rule text was not touched.** The
 marker moves when the last step lands, which is what `rules/fusion-workbench-conventions.md`

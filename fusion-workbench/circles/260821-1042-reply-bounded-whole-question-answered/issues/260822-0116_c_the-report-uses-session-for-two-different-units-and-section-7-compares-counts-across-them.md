@@ -5,7 +5,7 @@ The report uses "session" for two different units, and section 7 compares counts
 **Severity:** Medium
 **Domain:** code
 **Filed by:** coderev, reviewing `084c626..dbf259a`
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` sections 1, 5 and 7, and recommendation 1
+**Affects:** `260822-0035-three-before-figures-and-the-after-measurement-defined.md` sections 1, 5 and 7, and recommendation 1
 **Cross-references:** the same report's section 6, whose executability defect is filed separately at `260822-0116_*_the-after-runs-records-per-session-arm-names-a-join-between-transcripts-and-session-stamps-that-does-not-exist.md`
 
 ---
@@ -70,7 +70,7 @@ by reading sections 1, 5 and 7 and recommendation 1.
 ---
 
 Resolved: both steps the record asks for are in
-`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`.
+`260822-0035-three-before-figures-and-the-after-measurement-defined.md`.
 `## Scope` now defines the two units by name, an **orchestrator session** being one `session_start`
 event and a **transcript** being one Claude Code corpus file, with a table of both before-window
 counts and the statement that the collision at 52 is two populations of equal size and not one

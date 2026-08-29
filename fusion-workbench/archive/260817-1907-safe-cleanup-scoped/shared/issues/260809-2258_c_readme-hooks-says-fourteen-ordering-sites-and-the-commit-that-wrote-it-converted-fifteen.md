@@ -8,8 +8,8 @@
 **Affects:** `README-hooks.md:175` (the `lib/fail-open.ts` row)
 **Cross-references:**
 `f9c4214` (wrote both the sentence and the fifteenth site);
-`shared/history/260809-2230-ordering-fix-verdict-before-the-record-of-it.md` (its attribution table lists fourteen and omits the same site);
-`shared/issues/260809-2045_c_…`, `260809-2046_c_…`, `260809-1825_c_…` (the three records the commit closed — all three re-verified CONFIRMED, so this is a counting error and not a coverage gap)
+`260809-2230-ordering-fix-verdict-before-the-record-of-it.md` (its attribution table lists fourteen and omits the same site);
+`260809-2045_*_…`, `260809-2046_*_…`, `260809-1825_*_…` (the three records the commit closed — all three re-verified CONFIRMED, so this is a counting error and not a coverage gap)
 
 ---
 
@@ -59,4 +59,4 @@ the first bundles two sites). Not filed separately; not worth an edit to a histo
       does not go stale on the next conversion.
 
 ---
-Resolved: Fixed by dropping the count rather than correcting it, which is the second of the two fix directions this record offered. `README-hooks.md:185` (the `lib/fail-open.ts` row) now reads "The ordering rule both hooks run on ... every site inside `main`" and carries no numeral; `grep -c "fourteen" README-hooks.md` is 0 at HEAD `2552586`. A description that names the scope cannot go stale on the next conversion, which is what the record asked for. Verified by reconciliation pass 260817-1836 (`shared/history/260817-1836-reconciliation.md`).
+Resolved: Fixed by dropping the count rather than correcting it, which is the second of the two fix directions this record offered. `README-hooks.md:185` (the `lib/fail-open.ts` row) now reads "The ordering rule both hooks run on ... every site inside `main`" and carries no numeral; `grep -c "fourteen" README-hooks.md` is 0 at HEAD `2552586`. A description that names the scope cannot go stale on the next conversion, which is what the record asked for. Verified by reconciliation pass 260817-1836 (`260817-1836-reconciliation.md`).

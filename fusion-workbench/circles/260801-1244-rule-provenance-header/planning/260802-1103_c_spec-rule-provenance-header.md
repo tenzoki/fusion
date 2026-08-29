@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-02
 **Status:** Complete
-**Circle:** `circles/260801-1244-rule-provenance-header`
-**Source:** C8 of `shared/planning/260801-1122_o_spec-normative-consolidation.md`, refined by one user clarification round on 2026-08-02. This document supersedes C8's four open questions and is the input the planner works from. Everything C8 states that is not restated or corrected here still holds.
+**Circle:** `260801-1244-rule-provenance-header`
+**Source:** C8 of `260801-1122_*_spec-normative-consolidation.md`, refined by one user clarification round on 2026-08-02. This document supersedes C8's four open questions and is the input the planner works from. Everything C8 states that is not restated or corrected here still holds.
 
 ## Directive
 
@@ -55,9 +55,9 @@ One line, anywhere in the first ten lines of the file. The canonical written for
 
 Three citation forms are accepted. The distinction between them is what the file's history supports, not the author's preference.
 
-**Form 1, a decision record.** A workbench-relative path to a record under a decisions store, for example `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`. This is the form that carries the capability's stated payoff, because the record's marker changes to `_s_` when the decision is superseded and the rule becomes a visible retirement candidate. No file in the current backfill uses this form. See "Accepted limitations" below, which states plainly why.
+**Form 1, a decision record.** A workbench-relative path to a record under a decisions store, for example `260801-1020_*_provenance-header-on-rule-files.md`. This is the form that carries the capability's stated payoff, because the record's marker changes to `_s_` when the decision is superseded and the rule becomes a visible retirement candidate. No file in the current backfill uses this form. See "Accepted limitations" below, which states plainly why.
 
-**Form 2, a Circle.** A Circle **directory** name, for example `circles/260718-1924-v5x-overhaul`. The directory name is used rather than the record filename because the directory is stable across the Circle's whole lifecycle while the record filename carries a marker that changes. A reader who follows the citation reads whichever `*_circle.md` is present and sees the state from its name.
+**Form 2, a Circle.** A Circle **directory** name, for example `260718-1924-v5x-overhaul`. The directory name is used rather than the record filename because the directory is stable across the Circle's whole lifecycle while the record filename carries a marker that changes. A reader who follows the citation reads whichever `*_circle.md` is present and sees the state from its name.
 
 **Form 3, the admission plus the introducing commit.** For a file with no recoverable motivating record:
 
@@ -65,7 +65,7 @@ Three citation forms are accepted. The distinction between them is what the file
 **Provenance:** No motivating record recoverable; introduced in `git:<short-hash>`.
 ```
 
-The commit is a secondary, admission-scoped citation. It is not a general endorsement of git as the provenance mechanism. D3 (`shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`) considered git history as the *primary* mechanism and rejected it, and nothing here reverses that. Git is admitted only inside the admission form, where the alternative is a header a reader cannot follow anywhere.
+The commit is a secondary, admission-scoped citation. It is not a general endorsement of git as the provenance mechanism. D3 (`260801-1020_*_provenance-header-on-rule-files.md`) considered git history as the *primary* mechanism and rejected it, and nothing here reverses that. Git is admitted only inside the admission form, where the alternative is a header a reader cannot follow anywhere.
 
 #### The gate
 
@@ -103,10 +103,10 @@ Every citation below was verified on 2026-08-02 by `git log --diff-filter=A` aga
 
 | Rule file | Form | Citation |
 |---|---|---|
-| `agent-setup.md` | Circle | `circles/260718-1924-v5x-overhaul` |
-| `context-lean-claude-md.md` | Circle | `circles/260718-1924-v5x-overhaul` |
-| `context-manifest.md` | Circle | `circles/260718-1924-v5x-overhaul` |
-| `protected-path-discipline.md` | Circle | `circles/260801-1244-guard-bash-inspection` |
+| `agent-setup.md` | Circle | `260718-1924-v5x-overhaul` |
+| `context-lean-claude-md.md` | Circle | `260718-1924-v5x-overhaul` |
+| `context-manifest.md` | Circle | `260718-1924-v5x-overhaul` |
+| `protected-path-discipline.md` | Circle | `260801-1244-guard-bash-inspection` |
 | `critical-stance.md` | admission + commit | `git:dac82b8` |
 | `decision-record-examples.md` | admission + commit | `git:b05b423` |
 | `design-diagrams.md` | admission + commit | `git:bd5f6e6` |
@@ -114,15 +114,15 @@ Every citation below was verified on 2026-08-02 by `git log --diff-filter=A` aga
 | `git-branch-discipline.md` | admission + commit | `git:4950ffa` |
 | `user-facing-output.md` | admission + commit | `git:c18a946` |
 
-The four Circle citations are the only ones available for those files. `circles/260718-1924-v5x-overhaul` holds one decision record, `260718-2150_i_reviewers-history-log-step.md`, which concerns the reviewers' history-log step and did not motivate any of the three files that cite the Circle. `circles/260801-1244-guard-bash-inspection` holds no decision records at all. So no file in the backfill can be upgraded from a Circle citation to a record citation.
+The four Circle citations are the only ones available for those files. `260718-1924-v5x-overhaul` holds one decision record, `260718-2150_*_reviewers-history-log-step.md`, which concerns the reviewers' history-log step and did not motivate any of the three files that cite the Circle. `260801-1244-guard-bash-inspection` holds no decision records at all. So no file in the backfill can be upgraded from a Circle citation to a record citation.
 
-The six admission citations belong to files that predate the workbench decision store entirely. The oldest record anywhere in the workbench is dated 260621; all six files were introduced before it. Later records that mention these files by name were checked and rejected: they postdate the file and describe it rather than having caused it. `shared/analyses/260717-1935-branch-switch-guard-live-miss-root-cause.md` is the clearest instance, arriving three weeks after `git-branch-discipline.md`.
+The six admission citations belong to files that predate the workbench decision store entirely. The oldest record anywhere in the workbench is dated 260621; all six files were introduced before it. Later records that mention these files by name were checked and rejected: they postdate the file and describe it rather than having caused it. `260717-1935-branch-switch-guard-live-miss-root-cause.md` is the clearest instance, arriving three weeks after `git-branch-discipline.md`.
 
 #### What the conventions file documents
 
 A new section of `rules/fusion-workbench-conventions.md` states the keyword, the three accepted citation forms, the first-ten-lines position rule with its rationale, the admission form's exact wording, and the fact that the gate reads the plugin's `rules/` only.
 
-That section carries a `Binding decision:` line citing `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`. The section that mandates provenance therefore states its own. This is the criterion that makes the convention self-demonstrating, and it is the reason the section note and the file header must not be collapsed into one mechanism: the conventions file's own `Provenance:` header is the admission form, because the file predates its own convention by three months, while the section documenting the convention has a real record to cite.
+That section carries a `Binding decision:` line citing `260801-1020_*_provenance-header-on-rule-files.md`. The section that mandates provenance therefore states its own. This is the criterion that makes the convention self-demonstrating, and it is the reason the section note and the file header must not be collapsed into one mechanism: the conventions file's own `Provenance:` header is the admission form, because the file predates its own convention by three months, while the section documenting the convention has a real record to cite.
 
 #### Acceptance criteria
 
@@ -133,9 +133,9 @@ The eight criteria from C8, restated with the count corrected and with the four 
 - [x] The gate fails when a file in the plugin's `rules/` directory has no matching line in its first ten lines. The failure message names the offending file and states the fix, including the admission form for the case where no record is recoverable.
 - [x] The gate passes on the backfilled corpus and `npm test` is green.
 - [x] A rule file with no header fails the suite, demonstrated by a fixture rather than by adding a real file to `rules/`. A fixture whose only `Provenance:` line sits at line 11 or later also fails, and a fixture carrying a `Cross-references:` or `Binding decision:` line and no `Provenance:` line also fails.
-- [x] The convention text states the curator's obligation to write a header whenever it creates a rule file and to preserve or update the existing header whenever it edits one. The curator does not exist yet. It is built in `circles/260801-1244-curator`, so this Circle owes the written obligation and the curator Circle owes the behaviour.
+- [x] The convention text states the curator's obligation to write a header whenever it creates a rule file and to preserve or update the existing header whenever it edits one. The curator does not exist yet. It is built in `260801-1244-curator`, so this Circle owes the written obligation and the curator Circle owes the behaviour.
 - [x] `bin/fusion-rules` is unchanged. It continues to emit paths without reading file content.
-- [x] The conventions-file section documenting the convention cites `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` as its motivating record, in the existing section-scoped `Binding decision:` form.
+- [x] The conventions-file section documenting the convention cites `260801-1020_*_provenance-header-on-rule-files.md` as its motivating record, in the existing section-scoped `Binding decision:` form.
 
 #### Decisions made
 
@@ -150,7 +150,7 @@ The eight criteria from C8, restated with the count corrected and with the four 
 ## Constraints
 
 - The gate reads the plugin's own `rules/` directory. It cannot reach a consuming project's `./rules/` or `.claude/rules/`, whose files are in no test set fusion controls. For consuming projects the header is documented convention backed by the curator's discipline, and a project gains header-based evidence only for rules written or edited after adopting it.
-- The backfill edits ten files under `rules/`, which is a protected path in a consuming project. In this repository the write guard stands down for both the write tools and shell mutations (`hooks/lib/self-detect.ts:18-33`), so no exemption flag is needed. D2 (`shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`) is not on this Circle's path.
+- The backfill edits ten files under `rules/`, which is a protected path in a consuming project. In this repository the write guard stands down for both the write tools and shell mutations (`hooks/lib/self-detect.ts:18-33`), so no exemption flag is needed. D2 (`260801-1020_*_may-any-fusion-writer-touch-rules.md`) is not on this Circle's path.
 - Inventing or reconstructing a decision record for any of the six files that lack one is out of bounds by C8's own terms. An invented rationale is the fiction the capability exists to prevent.
 - `bin/fusion-rules` must not start reading file content. The header is inert to path emission.
 
@@ -160,7 +160,7 @@ Four, each a consequence of a settled decision rather than an open question. The
 
 **The gate does not read the value.** Presence of the keyword is the whole check. A header that cites nothing useful passes.
 
-**Dead citations go uncaught.** A pure text scan takes no dependency on the workbench directory and resolves no path, which keeps the test suite in the same shape as the existing `hooks/lib/__tests__/path-literal-lint.test.ts`. The cost is that a header pointing at a record that was moved, renamed, or archived out of reach continues to pass. The archive coupling C8 describes is therefore untouched by this Circle rather than solved by it. It is latent in this repository, because the archive store holds zero files, verified 2026-08-02, and it is already live in any consuming project with a populated archive. The underlying defect is filed at `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` and is not refiled here.
+**Dead citations go uncaught.** A pure text scan takes no dependency on the workbench directory and resolves no path, which keeps the test suite in the same shape as the existing `hooks/lib/__tests__/path-literal-lint.test.ts`. The cost is that a header pointing at a record that was moved, renamed, or archived out of reach continues to pass. The archive coupling C8 describes is therefore untouched by this Circle rather than solved by it. It is latent in this repository, because the archive store holds zero files, verified 2026-08-02, and it is already live in any consuming project with a populated archive. The underlying defect is filed at `260801-1020_*_scan-keys-never-reach-the-archive-store.md` and is not refiled here.
 
 **No backfilled file uses the decision-record form, so the superseded check has no live instance when this Circle closes.** Four files cite a Circle and six carry the admission plus a commit. A Circle directory carries no marker at all, and a commit carries no marker either, so neither citation supports the mechanical "the motivating decision was superseded, this rule is a retirement candidate" reading that is the header's stated payoff. That payoff becomes available for rule files written after the convention lands, whose authors have a record to cite. This is a real gap between what the capability promises and what the backfill delivers on day one, and it is not closed by any of the four answers.
 
@@ -173,7 +173,7 @@ Four, each a consequence of a settled decision rather than an open question. The
 - Changing, moving, or generalising the two `Binding decision:` section notes.
 - Fixing the archive coupling. It has its own issue record.
 - Reconstructing motivating records for the six files that have none.
-- Partitioning `rules/fusion-workbench-conventions.md` into shards. That is C9, in `circles/260801-1244-curator`, and it depends on this gate existing first.
+- Partitioning `rules/fusion-workbench-conventions.md` into shards. That is C9, in `260801-1244-curator`, and it depends on this gate existing first.
 - Building the curator, which owns the forward obligation the convention text states.
 
 ## Open for Planner
@@ -186,13 +186,13 @@ Four, each a consequence of a settled decision rather than an open question. The
 
 ## User Decisions Pending
 
-None. The four questions C8 left open were answered on 2026-08-02 and are recorded above. The fourth is closed at `circles/260801-1244-rule-provenance-header/decisions/260802-1018_a_what-a-rule-file-with-no-recoverable-record-cites.md`.
+None. The four questions C8 left open were answered on 2026-08-02 and are recorded above. The fourth is closed at `260802-1018_*_what-a-rule-file-with-no-recoverable-record-cites.md`.
 
 ---
 
 ## Reconciliation Log
 
-**260802-1413 (reconciler, domain `code`) — Status Draft → Complete, marker `_o_` → `_c_`. All eight acceptance criteria ticked on verified evidence.**
+**260802-1413-reconciliation.md (reconciler, domain `code`) — Status Draft → Complete, marker `_o_` → `_c_`. All eight acceptance criteria ticked on verified evidence.**
 
 Each criterion was re-checked against the tree at `b568ad9`. The evidence, one line per criterion:
 
@@ -203,18 +203,18 @@ Each criterion was re-checked against the tree at `b568ad9`. The evidence, one l
 5. **Three negative fixtures, no real headerless file.** Present, in-memory. Nothing was added to `rules/`; `ls -1 rules/` still returns exactly the ten backfilled files.
 6. **Curator obligation written down.** `rules/fusion-workbench-conventions.md` "Whoever writes a rule file writes its header."
 7. **`bin/fusion-rules` unchanged.** `git diff --name-only e8988d9..HEAD -- bin/` returns nothing across the whole Circle.
-8. **Section-scoped `Binding decision:`.** `rules/fusion-workbench-conventions.md:592`, citing `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`, which resolves.
+8. **Section-scoped `Binding decision:`.** `rules/fusion-workbench-conventions.md:592`, citing `260801-1020_*_provenance-header-on-rule-files.md`, which resolves.
 
 ### The accepted limitations, re-checked rather than assumed
 
 Two of the four are now measurable, and one of them is the Circle's honest ceiling.
 
-**"No backfilled file uses the decision-record form, so the superseded check has no live instance."** Confirmed, and it is permanent for this corpus rather than a day-one gap that later closes. Four files cite a Circle directory (`circles/260718-1924-v5x-overhaul` ×3, `circles/260801-1244-guard-bash-inspection` ×1); a directory carries no marker. Six cite `git:<hash>`; a commit carries no marker. The spec's own paragraph at `#### The backfill set is ten files, not nine` already established that neither cited Circle holds a decision record that motivated any of those files, so no citation in the backfill can be *upgraded* to form 1 later. The mechanical retirement check therefore exists for rule files written from now on and for none of the ten that exist today.
+**"No backfilled file uses the decision-record form, so the superseded check has no live instance."** Confirmed, and it is permanent for this corpus rather than a day-one gap that later closes. Four files cite a Circle directory (`260718-1924-v5x-overhaul` ×3, `260801-1244-guard-bash-inspection` ×1); a directory carries no marker. Six cite `git:<hash>`; a commit carries no marker. The spec's own paragraph at `#### The backfill set is ten files, not nine` already established that neither cited Circle holds a decision record that motivated any of those files, so no citation in the backfill can be *upgraded* to form 1 later. The mechanical retirement check therefore exists for rule files written from now on and for none of the ten that exist today.
 
-**"Dead citations go uncaught."** Now demonstrated inside the conventions file itself rather than argued in the abstract. Two of the three `Binding decision:` lines in that file resolve to nothing: `:328` uses a pre-v4 root type-folder path, and `:688` names a record (`260519-1100_a_circle-stash-pop-design.md`) that `find` locates nowhere in the workbench. Filed as issue `260802-1252`, left `_o_` by user decision, cross-referenced to `circles/260801-1244-curator`.
+**"Dead citations go uncaught."** Now demonstrated inside the conventions file itself rather than argued in the abstract. Two of the three `Binding decision:` lines in that file resolve to nothing: `:328` uses a pre-v4 root type-folder path, and `:688` names a record (`260519-1100_*_circle-stash-pop-design.md`) that `find` locates nowhere in the workbench. Filed as issue `260802-1252_*_binding-decision-formalised-while-both-existing-instances-are-dead.md`, left `_o_` by user decision, cross-referenced to `260801-1244-curator`.
 
 **Verified as still latent:** the archive coupling. The archive store holds zero files, so no citation can be archived out of reach yet.
 
 ### One spec claim the work overtook
 
-`#### The position rule` states the corpus's longest opening blockquote runs to line 8 in `context-manifest.md`, "with one line to spare". Step 1's insertion made that false in the same Circle — the blockquote now runs 5 to 10 and the margin is zero. Caught by review as issue `260802-1253` and corrected at both live sites (`cc004fc` for the test comment, `7703330` for the conventions prose). The spec text above is deliberately **not** retro-edited: it records what was true when it was written, per the plan's own risk table.
+`#### The position rule` states the corpus's longest opening blockquote runs to line 8 in `context-manifest.md`, "with one line to spare". Step 1's insertion made that false in the same Circle — the blockquote now runs 5 to 10 and the margin is zero. Caught by review as issue `260802-1253_*_the-line-8-blockquote-rationale-is-false-in-the-commit-that-states-it.md` and corrected at both live sites (`cc004fc` for the test comment, `7703330` for the conventions prose). The spec text above is deliberately **not** retro-edited: it records what was true when it was written, per the plan's own risk table.

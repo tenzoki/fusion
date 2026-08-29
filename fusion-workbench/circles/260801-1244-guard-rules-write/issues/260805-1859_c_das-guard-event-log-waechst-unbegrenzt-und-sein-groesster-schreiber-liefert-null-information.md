@@ -45,7 +45,7 @@ to lose. Reading only the tail in `bin/monitor` has the same shape from the read
 panel caps each event class separately, so a fixed tail window can contain no `guard_halt`
 while the whole file does, and the one event meaning "the guard stopped an agent" would
 silently leave the dashboard. The choice needs a human, so it is
-`shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`
+`260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`
 — four options, with this record's own measurement re-taken, and the recommendation of
 archiving rather than truncating.
 

@@ -4,7 +4,7 @@ The German AI04 clause reads as a calque of the English one
 
 **Severity:** Low
 **Domain:** data
-**Filed by:** ontorev, reviewing step 4 of plan `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Filed by:** ontorev, reviewing step 4 of plan `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Affects:** `stilwerk/chat-voice-de.yaml:125-126` and `fusion-workbench/stilwerk/chat-voice-de.yaml:125-126`
 
 ---
@@ -52,13 +52,13 @@ Rewrite the clause, staying inside the file's budget:
 
 That is 1 byte shorter than the sentence it replaces and drops the second `Default-`
 compound. Whether it should also carry the operative test that
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2203_o_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`
+`260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`
 asks for is that record's question, not this one's; fix that one first if both are taken.
 
 ---
 Resolved: 260821-2251 by ontocoder — the German clause was rewritten inside the single-test
 rewrite this record asked to be taken first
-(`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`),
+(`260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`),
 so the sentence proposed here is not the sentence that landed. What it asked for did land.
 The entry now reads:
 

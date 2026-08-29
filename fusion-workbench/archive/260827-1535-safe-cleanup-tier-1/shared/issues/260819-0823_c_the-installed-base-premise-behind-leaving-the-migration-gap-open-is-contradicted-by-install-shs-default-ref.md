@@ -4,7 +4,7 @@ The "no released version" premise behind leaving the migration gap open is contr
 
 `260819-0041_*_the-decision-record-status-removal-got-none-of-the-three-migration-surfaces-…` was
 deliberately left open. The recorded reason, in
-`shared/history/260818-2301-orchestrator-session.md` and again in `06ab15b`'s commit message, is:
+`260818-2301-orchestrator-session.md` and again in `06ab15b`'s commit message, is:
 
 > v10.2.0 is tagged on an ancestor, so the removal is in no released version, and both available
 > moves state something false — a v10.2 note tells an installed base it carries a change it does
@@ -50,8 +50,8 @@ Verified at HEAD `83488e9` by `git rev-list -n1 v10.2.0`, `git merge-base --is-a
 and, if it is amended anywhere, `260819-0041`'s own body — to rest on the version string rather than
 on the tag. The release-time obligation the open record carries is unchanged.
 
-Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
+Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301-orchestrator-session.md`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
 
 ---
-Resolved: fixed — the session history carries the corrected reasoning (the version string, not the tag, is what does not distinguish who has the change); shared/history/260818-2301-orchestrator-session.md:323
+Resolved: fixed — the session history carries the corrected reasoning (the version string, not the tag, is what does not distinguish who has the change); 260818-2301-orchestrator-session.md:323

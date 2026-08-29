@@ -3,7 +3,7 @@ Setup's claim branch leaves a Circle claimed by this checkout unstated where nex
 `skills/setup/SKILL.md:351` splits the claim read two ways: `Claimed ` naming another identity, and "`Unclaimed`, or no field". A `**Claim:**` opening with `Claimed ` and naming *this* checkout falls through both. `skills/next/SKILL.md:207` closes the same split with three cases, the third being "this checkout's own identity", so the two readers of one field describe different case-spaces.
 ---
 **Filed by:** coderev
-**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+**Attribution backfilled 260825 (not written by the filing agent):** `coderev` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 Found reviewing `0f5889e..3fba5c6`, the two commits that close the C3 Circle's high-severity findings. The sentence was edited at `3fba5c6`, which repaired its citation and left the split as it stood.
 
@@ -26,7 +26,7 @@ Found reviewing `0f5889e..3fba5c6`, the two commits that close the C3 Circle's h
 Fix direction: state the third case in Step 0i and say what it does, matching the shape `skills/next/SKILL.md:207` uses. Cheapest form is one clause on the existing sentence, "`Unclaimed`, no field, or this checkout's own identity behaves as today", which costs `skills/` about thirty bytes against the surface that shrank 92 at `3fba5c6`. Confirm that "behaves as today" is in fact what is wanted for the third case before writing it; if it is not, the branch needs its own sentence.
 
 ---
-**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — **STAYS `_o_`.** Both sides re-read at HEAD. `skills/setup/SKILL.md:351` splits the claim two ways, `Claimed ` naming another identity and `Unclaimed`-or-absent, and says nothing about `Claimed ` naming this checkout. `skills/next/SKILL.md:207` closes with "`Unclaimed`, an absent field, or this checkout's own identity is the mismatch above and is reported as one", which is the third case. The asymmetry stands.
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `260824-1637-reconciliation.md`) — **STAYS `_o_`.** Both sides re-read at HEAD. `skills/setup/SKILL.md:351` splits the claim two ways, `Claimed ` naming another identity and `Unclaimed`-or-absent, and says nothing about `Claimed ` naming this checkout. `skills/next/SKILL.md:207` closes with "`Unclaimed`, an absent field, or this checkout's own identity is the mismatch above and is reported as one", which is the third case. The asymmetry stands.
 
 ---
 Resolved: fixed — Step 0i names the third case, `Claimed ` with this checkout's own identity, and says it behaves as today, matching the three-way split `/fusion:next` Step 6.1 uses; `skills/setup/SKILL.md:357`

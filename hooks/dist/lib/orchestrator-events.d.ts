@@ -12,7 +12,7 @@
  * on zero lines although the SessionStart hook that supplies it had shipped.
  * The mandate was right and the work departed from it — the project's own
  * reconciler had already filed that as a defect
- * (`shared/history/260825-1430-reconciliation.md`). The repair is not a louder
+ * (`260825-1430-reconciliation.md`). The repair is not a louder
  * mandate; it is moving the mechanical rows to a writer that cannot forget.
  *
  * Three row kinds are machine-written now, and only three:

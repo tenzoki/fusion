@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-09 19:42
 **Task:** `I:260801-1020-claude-rules` (queue task 8)
-**Source:** `shared/issues/260801-1020_p_guard-protects-rules-but-not-claude-rules.md`
+**Source:** `260801-1020_*_guard-protects-rules-but-not-claude-rules.md`
 **Status:** Complete
 
 ## What was done
@@ -46,9 +46,9 @@ The record judged resolution 2 right only if a reason exists that nobody wrote d
 places were checked and none carries one:
 
 1. **The records that name the asymmetry both call it a defect.** The analysis this issue was
-   filed from — `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`,
+   filed from — `260801-1020-normative-surface-drift-gap-analysis.md`,
    Question 3 — closes with "A defect surfaced while checking this". The answered decision
-   `shared/decisions/260801-1020_i_may-any-fusion-writer-touch-rules.md` lists it under
+   `260801-1020_*_may-any-fusion-writer-touch-rules.md` lists it under
    Constraints: "`.claude/rules/**` is currently unprotected (see the linked issue). That
    defect should be fixed independently, and its fix narrows option 3's appeal, since
    trimming `protectedPaths` would then expose more."
@@ -88,7 +88,7 @@ behaviour rather than a surprise, but nothing told a consumer to re-check after 
 `rules/protected-path-discipline.md:11` enumerates the shipped list as eight entries and is
 now incomplete. The queue's scope note says a statement made false by a task is a finding to
 file, not scope to absorb, so it is filed:
-`shared/issues/260809-1942_o_protected-path-discipline-enumerates-the-shipped-list-and-now-omits-one-entry.md`.
+`260809-1942_*_protected-path-discipline-enumerates-the-shipped-list-and-now-omits-one-entry.md`.
 `README-hooks.md:260` names four of the entries inside a different argument, already omitted
 four, and reads as illustrative — checked and left alone.
 

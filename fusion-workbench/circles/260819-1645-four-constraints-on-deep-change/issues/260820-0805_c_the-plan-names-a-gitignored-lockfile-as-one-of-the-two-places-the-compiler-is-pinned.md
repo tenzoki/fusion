@@ -24,7 +24,7 @@ wrong is a measurement in a plan that later readers will take as a description o
 **Domain:** code
 **Filed by:** `coderev`, reviewing `b91c01c..bbfc912`
 **Owner:** `coder`
-**Affects:** `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`
+**Affects:** `260819-2016_*_four-constraints-on-deep-change.md`
 `## Current State`, the paragraph beginning "The compiler is pinned in one of the two places"
 **Cross-references:** `.gitignore:7`; `hooks/lib/__tests__/committed-dist.test.ts:44-47` (the header
 paragraph that states the correct reading)
@@ -38,11 +38,11 @@ Correct the sentence in place, in the tense it was written in — the plan is a 
 run, so the repair is a clause naming what the measurement missed, not a rewrite that erases it.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
 reproduces.** `.gitignore` excludes `package-lock.json` in its Dependencies block and
 `git ls-files hooks/package-lock.json` returns nothing. The plan's `## Current State` still reads
 "pinned in one of the two places that matter", naming the lockfile as one of them. The decision
-record `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
+record `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
 already carries the correction in its `Implemented:` block; the plan does not. Marker unchanged.
 
 ---

@@ -5,10 +5,10 @@
 **Status:** Complete
 **Task:** Turn 3, R4
 **Source records:**
-- `fusion-workbench/shared/issues/260810-0743_o_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md` (High)
-- `fusion-workbench/shared/issues/260810-0744_o_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md` (Medium)
-- `fusion-workbench/shared/issues/260810-0750_o_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md` (Low, folded in)
-- `fusion-workbench/shared/reviews/260810-0752-coderev-turn-2-range-ff70d3a-to-head.md` F1, F3, F7
+- `260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md` (High)
+- `260810-0744_*_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md` (Medium)
+- `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md` (Low, folded in)
+- `260810-0752-coderev-turn-2-range-ff70d3a-to-head.md` F1, F3, F7
 
 **Origin:** Not Circle work; no Circle active. Findings against `c923935`, one commit old.
 
@@ -52,7 +52,7 @@ became reachable, which is the whole fix at those sites. Two call sites needed t
 propagating it would have aborted the run — contradicting the file's own C4 doctrine. Both sites
 now `defer` instead: the create branch's note carries the created issue's UUID and its board URL
 with *do not create another*, because that is the exact loss the record predicts (the next push's
-`map_get_id` misses and fusion POSTs a second issue — issue `260807-1939` from the write side).
+`map_get_id` misses and fusion POSTs a second issue — issue `260807-1939_*_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md` from the write side).
 
 **The Medium (F3) — `map_view` in a subshell.** The header already named this hazard, for the
 return value only. **The code moved to the header, not the reverse** — the same direction
@@ -72,7 +72,7 @@ the getter's:
 The temp-file leak is now closed structurally rather than by a counter: at most one fold file
 exists per run, in the parent, where the `EXIT` trap does run.
 
-**The Low the reviewer named without a record (F7, filed as `260810-0750`).** Both spec-comment
+**The Low the reviewer named without a record (F7, filed as `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md`).** Both spec-comment
 sites now read `build_comment_body`'s status. The dry-run site's pipe is split in two statements;
 the live site in `upsert_spec_comment` had the same hole one level up (an empty `$body` would have
 been PATCHed over the brief) and is gated the same way. Both route to `comment_skip`, which exists
@@ -95,7 +95,7 @@ string is not. Both the code comment and the test say what was measured.
 - `outbox_drain_circle` read `jq`'s status before the result replaced the outbox. With `|| true`
   there, a malformed outbox left an empty `$tmp`, which was moved over the file and then deleted
   for being empty — a read-and-repair path destroying the human record it was walking, which is
-  the shape of `260810-0456`. The `mv` is checked too. Neither failure is fatal: the outbox is a
+  the shape of `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`. The `mv` is checked too. Neither failure is fatal: the outbox is a
   human record, not a correctness queue, so a drain that could not run says so and leaves the notes.
 - `outbox_append` no longer lets a failed `>>` out. It fails on exactly the unwritable workbench
   the new `map_set` deferrals describe, and under `set -e` that aborted the run — the crash C4
@@ -173,8 +173,8 @@ Nothing committed and nothing renamed, per the task.
 
 ## Left open
 
-The three source records stay `_o_`. `260810-0743` and `260810-0744` are fixed here in full;
-`260810-0750` is fixed as well, but its trailing instruction — name the two `[ -f ]`-guarded pointer
+The three source records stay `_o_`. `260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md` and `260810-0744_*_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md` are fixed here in full;
+`260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md` is fixed as well, but its trailing instruction — name the two `[ -f ]`-guarded pointer
 reads `ea492e6`'s message also mentions — is **not** done. Checked, not assumed: `bin/fusion-plane`
 has eleven `[ -f ]` guards and none of them reads a pointer file (`.active-circle`); the phrase does
 not describe anything in this file. The likeliest site is `bin/fusion-paths:227-229`, which is

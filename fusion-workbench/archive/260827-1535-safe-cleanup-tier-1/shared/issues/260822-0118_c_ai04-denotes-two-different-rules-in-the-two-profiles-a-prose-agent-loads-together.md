@@ -4,9 +4,9 @@ AI04 denotes two different rules in the two profiles a prose agent loads togethe
 
 **Severity:** Medium
 **Domain:** data
-**Filed by:** ontorev, reviewing `084c626..dbf259a`, review file `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
+**Filed by:** ontorev, reviewing `084c626..dbf259a`, review file `260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
 **Affects:** `stilwerk/chat-voice-en.yaml:118-125`, `stilwerk/chat-voice-de.yaml:121-128`, `stilwerk/default-voice-en.yaml:165-175`, `stilwerk/default-voice-de.yaml:168-180`, and the four `fusion-workbench/stilwerk/` copies
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2251_c_the-rules-blacklist-gloss-names-three-part-lists-while-ai04-now-governs-enumeration.md` (the rule-side half of the same divergence, closed); `shared/issues/260821-2207_o_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
+**Cross-references:** `260821-2251_*_the-rules-blacklist-gloss-names-three-part-lists-while-ai04-now-governs-enumeration.md` (the rule-side half of the same divergence, closed); `260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
 
 ---
 
@@ -85,7 +85,7 @@ correctly unfixed; one placement question is raised rather than acted on.**
 The record is filed in `shared/`. Its load-bearing half was caused by this Circle's Directive, not
 found beside it. `git log -S'Mechanical enumeration' -- stilwerk/chat-voice-en.yaml` returns exactly
 one commit, `1daf063` (2026-08-21, "AI04 states one test where it had carried two remedies"), which
-is inside `circles/260821-1042-reply-bounded-whole-question-answered` and is the commit that widened
+is inside `260821-1042-reply-bounded-whole-question-answered` and is the commit that widened
 chat `AI04` from the three-part figure to enumeration generally. The Circle record's own
 `## Grounding snapshot` table lists chat `AI04` before that change as "the mechanical tricolon",
 which is what the writing profile still says. Under the Origin Rule the AI04 divergence belongs in

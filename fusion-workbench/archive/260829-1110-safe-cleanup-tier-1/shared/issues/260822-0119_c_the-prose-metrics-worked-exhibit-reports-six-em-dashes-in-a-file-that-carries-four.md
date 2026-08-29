@@ -4,9 +4,9 @@ The prose metric's worked exhibit reports six em-dashes in a file that carries f
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** ontorev, reviewing `084c626..dbf259a`, review file `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
+**Filed by:** ontorev, reviewing `084c626..dbf259a`, review file `260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md`
 **Affects:** `bin/fusion-prose-metric:66-67` and `:112-120`
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` (why nothing catches this); `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
+**Cross-references:** `260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` (why nothing catches this); `260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
 
 ---
 
@@ -81,7 +81,7 @@ Two shapes, and they are not the same decision.
    sentence's job is to show what the YAML exclusion rule does, and any file with exhibits does
    that. Naming the revision is the project's own remedy for a measured figure that is true of a
    moment, used in the residual note of
-   `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2214_c_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`.
+   `260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`.
 
 Owner is `coder`, not `ontocoder`: the fix is prose in a bash header, and no structured data
 changes. The four YAML profiles are correct as they stand and must not be edited to make the

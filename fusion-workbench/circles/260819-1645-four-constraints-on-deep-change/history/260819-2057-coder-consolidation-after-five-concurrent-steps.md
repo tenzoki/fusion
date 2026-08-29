@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Circle:** 260819-1645-four-constraints-on-deep-change
-**Plan:** `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_o_four-constraints-on-deep-change.md`
+**Plan:** `260819-2016_*_four-constraints-on-deep-change.md`
 **HEAD at start:** `b6869aa`
 
 ## What this was
@@ -31,7 +31,7 @@ at `b6869aa` and rerunning the gate:
 
 Step 4's three tokens were verified against the diff and against the measurement,
 and all three are in `rules/circle-records.md`: `bin/fusion-rules` (class (a)),
-`shared/history/260819-1400-reconciliation-circles.md` and the binding decision
+`260819-1400-reconciliation-circles.md` and the binding decision
 `260805-1548` (both class (c)). The per-file figures sum exactly to the observed
 movement.
 

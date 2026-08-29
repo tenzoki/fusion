@@ -75,6 +75,6 @@ first on `PATH` for the whole suite: the marker file was never created, so a ful
 opens **zero** tabs, observed rather than inferred.
 
 One residual was found and left standing, filed as
-`260810-1558_o_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-…`: under
+`260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-…`: under
 `set -euo pipefail` a missing `open` exits the wrapper before `wait $SERVER_PID` and
 orphans the server. Pre-existing; the new gate narrows its reach to the interactive case.

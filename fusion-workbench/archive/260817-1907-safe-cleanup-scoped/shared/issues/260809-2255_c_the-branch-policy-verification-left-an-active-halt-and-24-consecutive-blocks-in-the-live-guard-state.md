@@ -8,11 +8,11 @@
 **Affects:**
 `fusion-workbench/.guard-state/escalation.json` (the state itself);
 `fusion-workbench/orchestrator-live.md` (reports `Guard: OK (0 blocks)`);
-`fusion-workbench/shared/history/260809-1725-orchestrator-session.md` (Setup snapshot, `Guard | OK (haltActive: false, 0 consecutive blocks)`)
+`260809-1725-orchestrator-session.md` (Setup snapshot, `Guard | OK (haltActive: false, 0 consecutive blocks)`)
 **Cross-references:**
-`shared/planning/260809-1229_c_plan-five-severe-guard-defects.md` — "That harness is the sanctioned verification surface for everything in this plan", which is the discipline these probes went around;
-`shared/issues/260809-2049_o_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md` — the clearing path this state will be handed to;
-`shared/reviews/260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md` — the review that probed the classifier and reported the probes as measurements
+`260809-1229_*_plan-five-severe-guard-defects.md` — "That harness is the sanctioned verification surface for everything in this plan", which is the discipline these probes went around;
+`260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md` — the clearing path this state will be handed to;
+`260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md` — the review that probed the classifier and reported the probes as measurements
 
 ---
 
@@ -63,7 +63,7 @@ on. The harness has the same classifier and no shared counter.
 ## Suggested direction
 
 1. Clear the halt through `hooks/clear-halt.ts` (a human action, per the guard's own contract),
-   and record it. Note that `260809-2049` is open against exactly this path.
+   and record it. Note that `260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md` is open against exactly this path.
 2. Decide whether branch-policy probes belong in the harness. If the answer is yes, say so where
    the plan already says it for the write half, so the next verification pass reads one rule
    rather than inferring the exception.
@@ -80,13 +80,13 @@ on. The harness has the same classifier and no shared counter.
 ---
 Reconciliation 260810-1205 (reconciler, domain `code`) — **first acceptance criterion met, second not. Stays `_o_`.**
 
-Criterion 1 — met. `fusion-workbench/.guard-state/escalation.json` at `ed87d87` reads `"haltActive": false, "consecutiveBlocks": 0`, against the `true / 24` this record quotes. The clearing is recorded in `shared/history/260810-0844-orchestrator-session.md` `### Guard history note`, which names the 2026-08-09 22:14 human intervention and states that the events in `recentEvents` are residue of a policy that no longer exists. The residue itself is correct to leave: `recentEvents` is a log, and the events happened.
+Criterion 1 — met. `fusion-workbench/.guard-state/escalation.json` at `ed87d87` reads `"haltActive": false, "consecutiveBlocks": 0`, against the `true / 24` this record quotes. The clearing is recorded in `260810-0844-orchestrator-session.md` `### Guard history note`, which names the 2026-08-09 22:14 human intervention and states that the events in `recentEvents` are residue of a policy that no longer exists. The residue itself is correct to leave: `recentEvents` is a log, and the events happened.
 
-Criterion 2 — not met, and not attempted this session. No verification-surface rule names the branch policy, because the policy was deleted (`7598073`) before a rule could be written for it. That leaves the criterion satisfiable only in the general form — *a policy is verified through the sanctioned harness, not through live probes against the running project* — which is the same class question that `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` carries from the other direction.
+Criterion 2 — not met, and not attempted this session. No verification-surface rule names the branch policy, because the policy was deleted (`7598073`) before a rule could be written for it. That leaves the criterion satisfiable only in the general form — *a policy is verified through the sanctioned harness, not through live probes against the running project* — which is the same class question that `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` carries from the other direction.
 
 Closure candidate for the user: if criterion 2 is judged moot with the policy gone, this record closes on criterion 1 alone. The reconciler does not make that call, because the criterion is written as a rule obligation and not as a state fact.
 
 ---
 Resolved: Acceptance 1 is met — .guard-state/escalation.json reads haltActive false and 0 consecutive blocks with a recorded halt_cleared event — and acceptance 2's subject, the git branch/worktree policy, was deleted on 260809.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

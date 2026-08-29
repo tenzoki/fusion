@@ -11,7 +11,7 @@ Read the Circle record, the shaper's history file, every rule `bin/fusion-rules 
 
 Measured the four growth bounds with each test's own baseline map: `agents/` 10 745 bytes, `skills/` 3 220 bytes, hook tests 40 lines, always-on core 431 bytes. Ran `npm test`: 42 files, 732 tests, green.
 
-Wrote the plan to `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`: fifteen steps, one triage table assigning every one of the 220 records a step, an ending and its files. Eight decision records are to be filed by the analyst in step 1; six ideas are collected for the user to file as backlog entries; six measurements are closed as unfixable from this repository with their commands stated.
+Wrote the plan to `260824-1905_*_plan-close-every-open-defect.md`: fifteen steps, one triage table assigning every one of the 220 records a step, an ending and its files. Eight decision records are to be filed by the analyst in step 1; six ideas are collected for the user to file as backlog entries; six measurements are closed as unfixable from this repository with their commands stated.
 
 Ran `workbench-citation-lint`, `plan-stopping-section-lint` and `marker-format-lint` against the plan: green.
 

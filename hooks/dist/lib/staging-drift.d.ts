@@ -1,12 +1,12 @@
 /**
- * Staging drift — the measurement behind issue `260811-0114`.
+ * Staging drift — the measurement behind issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`.
  *
  * ## The defect this answers
  *
- * The 17:23 queue rebuild of session `260810-1646` — the root-anchored
+ * The 17:23 queue rebuild of session `260810-1646-orchestrator-session.md` — the root-anchored
  * `tasklist.md` of the day, 2128 lines, 1409 insertions against the committed
  * copy — and its companion history file
- * `shared/history/260810-1723-tasklist-update.md` never entered a commit. The
+ * `260810-1723-tasklist-update.md` never entered a commit. The
  * queue the whole session worked from survived only in the working tree, for
  * eighteen commits, and nothing would have noticed if an ordinary
  * `git checkout -- fusion-workbench/` had taken it. A third file,
@@ -36,7 +36,7 @@
  * explicitly excluded by the issue's own acceptance. It has to be a
  * measurement of the result, which is the move the guard already made when it
  * stopped predicting writes from a command's text and started fingerprinting
- * paths (`circles/260807-0923-guard-misst-statt-orakelt`).
+ * paths (`260807-0923-guard-misst-statt-orakelt`).
  *
  * ## The trigger is HEAD, and it is measured rather than predicted
  *
@@ -47,7 +47,7 @@
  *   - **Every tool call would cry wolf.** An unstaged record *mid-Turn* is the
  *     normal and correct state: a coder writes an issue file, and Step 3b
  *     stages it minutes later. A check that fires on its commonest path is one
- *     its reader learns to ignore (issue `260810-0710`, and
+ *     its reader learns to ignore (issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md`, and
  *     `lib/review-coverage.ts` deciding the same question the same way).
  *   - **Reading the command would be the classifier again.** Deciding from a
  *     shell string whether it will move HEAD is the undecidable question the
@@ -78,7 +78,7 @@
  *     workbench is not, and `.commit-msg-tmp` is what improvising instead
  *     leaves behind. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
- *     message", and told the model to delete it (issue `260811-1141`).
+ *     message", and told the model to delete it (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`).
  *   - `record` — an authored artifact: a Circle's `*_circle.md`, or anything
  *     under an artifact store. These are what a staging list is supposed to
  *     name.
@@ -141,7 +141,7 @@ export declare const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>
  *   - **`classify`** asks *"is this file on disk a leftover commit message?"*
  *     and answers location-first, so this test runs last, over only what
  *     `LIVE_STATE`, `stashes/`, `ROOT_RECORDS` and `STORES` all declined to
- *     claim. Issue `260811-1141` is why: unscoped, the class swallowed authored
+ *     claim. Issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` is why: unscoped, the class swallowed authored
  *     records whose topic slug says "commit message" and the model was told to
  *     delete them.
  *   - **`commit-message-path.test.ts`** asks *"does a shipped prompt PRESCRIBE
@@ -150,9 +150,9 @@ export declare const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>
  *     is precisely the case the location test forgives.
  *
  * That gate reached the pattern through `classify` and so inherited the
- * scoping, silently losing the in-a-store case (issue `260811-1410`). The cheap
+ * scoping, silently losing the in-a-store case (issue `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md`). The cheap
  * repair — transcribing the regex into the test — would put two spellings of
- * one concept in the tree, which is the trap `260810-0510` was filed about and
+ * one concept in the tree, which is the trap `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` was filed about and
  * the reason the gate reached through `classify` to begin with. So the name
  * question becomes its own export instead: **one pattern, and each caller
  * composes the scoping its own question needs.** Nothing here can drift from
@@ -223,7 +223,7 @@ export interface StagingReport {
  * them the record reporting this very defect — and `stagingSentence` then told
  * the model to delete them. Two failures in one, because the classes are
  * exclusive: the destructive instruction, and the silent suppression of the
- * unstaged `record` fault that same file actually was. Issue `260811-1141`.
+ * unstaged `record` fault that same file actually was. Issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`.
  *
  * The distinguishing fact was never the name. A leftover message file is one no
  * store owns; an authored record is one a store does. That is a question about
@@ -253,7 +253,7 @@ export declare function classify(rel: string, sessionHistory: string): {
  *
  * `--untracked-files=all` rather than the default: without it git collapses an
  * untracked directory to a single entry, and the file that has to be named —
- * `shared/history/260810-1723-tasklist-update.md`, inside a directory git was
+ * `260810-1723-tasklist-update.md`, inside a directory git was
  * already tracking — is exactly the case where naming the file rather than its
  * directory is the whole report. The issue's own reproduction used the same
  * flag.

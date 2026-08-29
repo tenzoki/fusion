@@ -1,8 +1,8 @@
 # Turn 10, T10-1 — the two pre-existing git routes into the protected list
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Task:** T10-1, dispatched by the orchestrator — close `260804-1024` (High, `git -C`) and `260804-1026` (Medium, `git checkout <treeish>`), both pre-existing and older than this Circle.
+**Circle:** `260801-1244-guard-rules-write`
+**Task:** T10-1, dispatched by the orchestrator — close `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` (High, `git -C`) and `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md` (Medium, `git checkout <treeish>`), both pre-existing and older than this Circle.
 **Status:** Complete
 **Suite:** `npm test` — 24 files, **1299 passed**, 0 failed (baseline at HEAD `cc012fc`: 1252).
 
@@ -38,7 +38,7 @@ own working directory" section, the corrected `:518` promise line, two residual 
 
 ## The design question, and why the answer is a fourth option
 
-`260804-1024` offered three directions. Both of the real ones were built and measured
+`260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` offered three directions. Both of the real ones were built and measured
 against `HEAD` over the same corpus — 811,210 distinct commands × 2 environments:
 
 | Variant | newly deny | newly ALLOW |
@@ -59,7 +59,7 @@ Direction 1 costs 173,610 commands that the union allows, and they are ordinary 
 
 The union's rule: *an operand is checked against every directory the guard can attribute
 to the invocation; a directory fact may only ever add reach, never remove it.* Argued and
-costed in `decisions/260804-1323_i_…`.
+costed in `260804-1323_*_…`.
 
 ## Finding 2 — the promise
 
@@ -74,18 +74,18 @@ burned by — it removes a special case rather than adding one.
 The costs are two, both stated as rules with open example sets: only the literal `HEAD` is
 proven inert, and without `--` the first positional is the tree-ish.
 
-No decision was made silently: the reasoning is in `decisions/260804-1323_i_…`,
+No decision was made silently: the reasoning is in `260804-1323_*_…`,
 `## The second question`.
 
 ## Three things found while in there
 
 - **`git --namespace foo rm rules/x.md` deleted a protected rule** and allowed. Same eight
   lines, same class. Closed structurally (not by adding a row for `--namespace`, which
-  would leave the class) and filed as `260804-1333_c_…` for the tracker.
+  would leave the class) and filed as `260804-1333_*_…` for the tracker.
 - **`GIT_WORK_TREE=rules git clean -fdx` deletes `rules/x.md`** and still allows. NOT
   closed — it is a different mechanism (the classifier reads no variable but `CDPATH`,
   which is an argued exception), and closing it properly needs `command-word.ts`, which the
-  branch classifier shares and T10-1's scope excludes. Filed as `260804-1332_o_…` (High)
+  branch classifier shares and T10-1's scope excludes. Filed as `260804-1332_*_…` (High)
   and added to both residual lists.
 - **`git clean -fdx` with no pathspec was a wrong residual.** It was listed as naming "no
   directory the ancestor check can compare"; measured, `clean` deletes from the current
@@ -124,10 +124,10 @@ Also measured and recorded as INERT, so a later reader does not add it on plausi
 
 ## Not done, and whose it is
 
-- No commit — the orchestrator commits after validation. `decisions/260804-1323_i_…`
+- No commit — the orchestrator commits after validation. `260804-1323_*_…`
   carries an `Implemented:` line with the hash left pending for it.
 - `hooks/dist/` restored to HEAD (`git checkout HEAD -- hooks/dist`), including the
   partial rebuild a previous agent's test run had left in the tree. `npm test` runs `tsc`,
   so a rebuild happens on every run; Plan Step 10 owns the real one.
 - Out of scope and untouched: `git-branch-guard.ts`, `shell-parse.ts`, `command-word.ts`,
-  issues `260804-1025` / `1220` / `1221` / `1222` / `1223`, plan steps 6 to 10.
+  issues `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` / `1220` / `1221` / `1222` / `1223`, plan steps 6 to 10.

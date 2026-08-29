@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-04 16:44
 **Sender:** conceptrev
-**Target:** `circles/260801-1244-guard-rules-write/planning/260804-1633_o_plan-c5b-remediation-and-ship.md`
+**Target:** `260804-1633_*_plan-c5b-remediation-and-ship.md`
 **Verdict:** tangled
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (`mmdc` 11.16.0, both blocks render, exit 0)
 
@@ -31,7 +31,7 @@ Diagram 2: six sources (`D1`, `D2`, `D3`, `S1`, `S3`, `S5`), one sink (`S8`). Un
 
 Step 4's dependency line at 221 reads "decision `260803-1314`, and Step 2, where the effective list is assembled." The graph draws only the first half. `S4`'s in-edges are `{D3}`; `S2`'s out-edges are `{S6, S7}`; there is no path from `S2` to `S4` at all. The dependency is real rather than decorative: Step 4's option 2 subtracts a project's declared protected entries from the exempt set, and the effective list it subtracts from is what Step 2 assembles.
 
-The consequence lands precisely on this gate. The plan splits four open decisions into two that block code and two that do not, and it tells the user at 395 to answer the second pair "so the shipped documentation states a chosen boundary." A user who takes that advice, answers `260803-1314` with option 2 or 3, and reads the graph to see what opened up will find `S4` with its one prerequisite satisfied. Nothing opened up. Step 4 still waits on Step 2, which waits on `260804-1630` and `260804-1631`.
+The consequence lands precisely on this gate. The plan splits four open decisions into two that block code and two that do not, and it tells the user at 395 to answer the second pair "so the shipped documentation states a chosen boundary." A user who takes that advice, answers `260803-1314` with option 2 or 3, and reads the graph to see what opened up will find `S4` with its one prerequisite satisfied. Nothing opened up. Step 4 still waits on Step 2, which waits on `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` and `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md`.
 
 The correction is one edge, `S2 --> S4`. It does not create a cycle: `S4` reaches only `S6` and `S7`, and neither reaches `S2`.
 
@@ -68,13 +68,13 @@ The graph is the surface a user scans to ask "what am I deciding, and what does 
 
 **6. Diagram 1 draws six of the eight defects under a heading that promises eight. (Medium)**
 
-The section heading at 43 is "Where the eight new defects sit," and the prose at 45 says the assessment "filed eight defects." The graph carries six: `F1`, `F2`, `F3`, `F4`, `F6`, `F7`, for `260804-1601` through `-1604`, `-1606` and `-1607`. Absent are `260804-1605`, which the closes table routes to Step 6, and `260804-1608`, which the same table records as already closed by this planning session.
+The section heading at 43 is "Where the eight new defects sit," and the prose at 45 says the assessment "filed eight defects." The graph carries six: `F1`, `F2`, `F3`, `F4`, `F6`, `F7`, for `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md` through `-1604`, `-1606` and `-1607`. Absent are `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`, which the closes table routes to Step 6, and `260804-1608_*_plan-step-7-is-unmarked-and-the-plan-header-contradicts-its-own-step-markers.md`, which the same table records as already closed by this planning session.
 
 The scoping is defensible. Both omitted defects sit outside the loader-and-enforce path the graph draws, one being a template-text defect and the other a marker correction. What misleads is the pairing of a heading that says eight with a picture that shows six, compounded by the node identifiers running `F1, F2, F3, F4, F6, F7`. The gap where `F5` would sit reads as an authoring slip rather than a scope decision, so a reader who counts cannot tell whether two defects were placed elsewhere or forgotten. Either name the two in a sentence under the graph, or retitle it for the path it actually draws.
 
 **7. Diagram 1's three inbound merge edges hide the precedence that one open decision is about. (Low)**
 
-`PFILE --> MERGE` is labelled "JSON.parse, then CAST." The two edges beside it, `PLUG --> MERGE` and `DEF --> MERGE`, are bare. What separates those three layers is their precedence, and precedence is the entire subject of decision `260804-1630`. The `MERGE` node label does carry it in text, "merge per TOP-LEVEL KEY then per-leaf fallback to DEFAULTS," so the fact is recoverable, and the graph is drawing current behaviour under a "Current State" heading, which is correct. Recorded Low because ordinal labels on the three edges would put the disputed rule on the edges that embody it.
+`PFILE --> MERGE` is labelled "JSON.parse, then CAST." The two edges beside it, `PLUG --> MERGE` and `DEF --> MERGE`, are bare. What separates those three layers is their precedence, and precedence is the entire subject of decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`. The `MERGE` node label does carry it in text, "merge per TOP-LEVEL KEY then per-leaf fallback to DEFAULTS," so the fact is recoverable, and the graph is drawing current behaviour under a "Current State" heading, which is correct. Recorded Low because ordinal labels on the three edges would put the disputed rule on the edges that embody it.
 
 **Correctly handled, and worth naming so the planner does not treat these as defects.**
 
@@ -92,7 +92,7 @@ Both graphs are acyclic. For a work order gated on user decisions and for a conf
 
 The topology is sound in both graphs, so this is edge repair rather than a redesign. Five changes, all in diagram 2 except the last.
 
-1. **Add `S2 --> S4`.** This is the finding-1 correction and the one that changes the gate answer. Once drawn, `S4` is visibly blocked by the same two decisions that block `S2`, and the honest reading of the graph becomes: answering `260803-1314` alone unblocks nothing, and Steps 1, 3 and 5 are the whole of the available work until `260804-1630` and `260804-1631` are answered.
+1. **Add `S2 --> S4`.** This is the finding-1 correction and the one that changes the gate answer. Once drawn, `S4` is visibly blocked by the same two decisions that block `S2`, and the honest reading of the graph becomes: answering `260803-1314` alone unblocks nothing, and Steps 1, 3 and 5 are the whole of the available work until `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` and `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` are answered.
 
 2. **Settle Step 5 against Step 7, then make all four statements agree.** Either add `S5 --> S7` and correct Step 5's heading, Open Question 1 and the `S5 --> S8` label, or strike Step 5 from Step 7's dependency line and leave the graph as drawn. The second is the likely correct one on the evidence in the document, but it is the planner's call, not the evaluator's.
 
@@ -100,12 +100,12 @@ The topology is sound in both graphs, so this is edge repair rather than a redes
 
 4. **Add the fourth decision node and `D4 --> S7`**, so the graph and the "four decision records are open" sentence agree.
 
-5. **In diagram 1, reconcile the caption with the six drawn defects** by naming `260804-1605` and `260804-1608` and where they went, or by retitling the section to the path the graph draws.
+5. **In diagram 1, reconcile the caption with the six drawn defects** by naming `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md` and `260804-1608_*_plan-step-7-is-unmarked-and-the-plan-header-contradicts-its-own-step-markers.md` and where they went, or by retitling the section to the path the graph draws.
 
 One structural addition is worth considering beyond the repairs. The partition the user actually needs, startable now against blocked on a decision, lives only in the sentence at 168. Two `subgraph` blocks around `{S1, S3, S5}` and the rest would put it in the picture. This is the same finding the prior evaluation of the predecessor plan raised as its finding 3, where the Turn boundary the diagram existed to justify was drawn nowhere in it. The recurrence is worth naming: in both plans the work-order graph is read at a gate for a partition it does not draw.
 
 ## Notes on scope of this evaluation
 
-The prior `conceptrev` verdict in this Circle, `reviews/260802-1909-conceptrev-plan-guard-rules-write.md`, covers the predecessor plan at `planning/260802-1856_o_plan-guard-rules-write.md` and returned acceptable. Its finding 2 was a single missing dependency edge whose declaration was incomplete, judged latent because the proposed Turn split happened to enforce the ordering anyway. That verdict is not re-litigated. This plan's Steps 7 and 8 supersede the predecessor's Steps 9 and 10, so the earlier work-order graph is no longer the live one. The escalation from acceptable to tangled rests on the difference the earlier report itself drew: the missing edge here is live rather than latent, and it falls on the question the gate is convened to answer.
+The prior `conceptrev` verdict in this Circle, `260802-1909-conceptrev-plan-guard-rules-write.md`, covers the predecessor plan at `260802-1856_*_plan-guard-rules-write.md` and returned acceptable. Its finding 2 was a single missing dependency edge whose declaration was incomplete, judged latent because the proposed Turn split happened to enforce the ordering anyway. That verdict is not re-litigated. This plan's Steps 7 and 8 supersede the predecessor's Steps 9 and 10, so the earlier work-order graph is no longer the live one. The escalation from acceptable to tangled rests on the difference the earlier report itself drew: the missing edge here is live rather than latent, and it falls on the question the gate is convened to answer.
 
 This evaluation judges the two diagrams against `rules/design-diagrams.md` and against the plan's own dependency declarations at lines 178, 189, 205, 221, 233, 245, 257 and 281. Both Mermaid blocks were rendered with `mmdc` 11.16.0 and the node and edge counts above are the renderer's. The plan's factual claims about the codebase were not re-checked, with one exception load-bearing for finding 2: Step 7's file list and its eleven obligations were read and contain no reference to `bin/monitor`, the dashboard, or `guard_error`. The line numbers the plan cites in `hooks/`, its verified-claims table at 97, and its account of the harness were not verified.

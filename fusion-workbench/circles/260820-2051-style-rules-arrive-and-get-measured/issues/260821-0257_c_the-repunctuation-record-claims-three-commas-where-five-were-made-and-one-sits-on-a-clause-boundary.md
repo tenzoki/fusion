@@ -3,7 +3,7 @@ The repunctuation record claims three commas where five were made, and one of th
 ---
 
 Commit `b393a45`'s history record
-(`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0217-coder-three-always-on-rule-files-reach-their-ceiling.md`,
+(`260821-0217-coder-three-always-on-rule-files-reach-their-ceiling.md`,
 section "The two failure modes the first repunctuation pass introduced") states:
 
 > Three commas were used, all in `rules/critical-stance.md`, and every one sits on an `X, not Y`
@@ -31,7 +31,7 @@ replacements and the sixth is the `),` at `:41`.
 of a disjunction between two full clauses: *a case split is disjoint and complete* **or** *the
 question is cut wrong*. A comma before `or` joining two independent clauses is grammatical but
 weaker, and this is the same class as
-`shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`,
+`260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`,
 which the record cites as the standard it was checked against. The sibling commit `c226949` applied
 that standard correctly in the same Turn: its four commas are all non-clause-boundary and each is
 named in full in its own record.
@@ -40,19 +40,19 @@ named in full in its own record.
 The comma reads acceptably; the record's account of it does not.
 
 ---
-**Found by:** coderev, review gate R1 of `circles/260820-2051-style-rules-arrive-and-get-measured`,
-review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
+**Found by:** coderev, review gate R1 of `260820-2051-style-rules-arrive-and-get-measured`,
+review file `260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
 **Owner:** `coder`. Two changes: correct the record's paragraph, and reconsider `:47`.
 **Severity:** Medium. The file is not wrong at `:5`, `:29`, `:38` or `:51`. The cost is that the
 record a later pass reads as its starting state describes a check that was not the check performed,
 on exactly the criterion this Circle exists to hold.
 **Filed in the Circle store** per the Origin Rule: the work was dispatched under this Circle's Directive.
 **Cross-references:**
-`shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`
+`260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`
 (the standard cited, still open);
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md`
+`260821-0149_*_the-repunctuation-records-evidence-paragraph-carries-a-count-that-does-not-reconcile-with-its-own-table.md`
 (the same class from Turn 1, still open);
-`shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`.
+`260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`.
 
 **Verified at HEAD `c226949`.** The token streams of `rules/critical-stance.md` before and after
 `b393a45` are 1 619 tokens on both sides with three differing positions, all case-only, so every
@@ -63,11 +63,11 @@ leaves a heading in two sentences. The mark that preserves the disjunction witho
 semicolon, which is **not** on the four-mark list at `rules/user-facing-output.md:130` — so this one
 needs a judgement rather than a substitution, and the honest options are to keep the comma and say so
 in the record, or to spend one of the file's marks here instead of at `:17`. The file's permit is 1
-and it is currently spent (see the sibling issue filed at `260821-0258`).
+and it is currently spent (see the sibling issue filed at `260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md`).
 
 **What must not be done instead.** Restoring the em-dash at `:47` without moving the one at `:17`
 into an excluded region. The file measures 1 in 1 529 words against a permit of 1; a second prose
 mark makes it `over`.
 
 ---
-Resolved: fixed — the history record carries the appended correction, five commas with two on clause boundaries, and the heading comma at `:47` stays; circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0217-coder-three-always-on-rule-files-reach-their-ceiling.md:77
+Resolved: fixed — the history record carries the appended correction, five commas with two on clause boundaries, and the heading comma at `:47` stays; 260821-0217-coder-three-always-on-rule-files-reach-their-ceiling.md:77

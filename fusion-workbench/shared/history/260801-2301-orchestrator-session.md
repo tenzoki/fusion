@@ -1,4 +1,4 @@
-# Orchestrator Session — 260801-2301
+# Orchestrator Session — 260801-2301-orchestrator-session.md
 
 **Directive:** (not yet stated — Setup ran on `/fusion:setup` with no task attached)
 **Mode:** (unresolved — Phase 0 pending)
@@ -28,7 +28,7 @@
 
 Heuristic inputs: `commits_wb=0`, `analyses=7`, `issues_open=17`, `decisions_open=0`, `code_files=3` (hooks/*.ts at depth 2; the full TypeScript surface under `hooks/lib/` is deeper than the heuristic's probe), `data_files=0`.
 
-The literal heuristic returns `strategic` on the second branch (`analyses > 0 and commits == 0`). That branch misfires here: `commits_wb` is 0 only because `fusion-workbench/` is gitignored in this repo, not because no execution has happened. The condition is testing "has this workbench ever been committed" as a proxy for "is this a code project", and the proxy is invalid for any project that gitignores its workbench. Filed as a live concern already: `shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md`. This project builds TypeScript hooks and bash helpers, so `code` is the correct domain, and the prior session used `code` as well.
+The literal heuristic returns `strategic` on the second branch (`analyses > 0 and commits == 0`). That branch misfires here: `commits_wb` is 0 only because `fusion-workbench/` is gitignored in this repo, not because no execution has happened. The condition is testing "has this workbench ever been committed" as a proxy for "is this a code project", and the proxy is invalid for any project that gitignores its workbench. Filed as a live concern already: `260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md`. This project builds TypeScript hooks and bash helpers, so `code` is the correct domain, and the prior session used `code` as well.
 
 ## Rules loaded
 

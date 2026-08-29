@@ -4,9 +4,9 @@
 
 **Severity:** Low — comments only; every assertion in the file is correct and passing
 **Domain:** code
-**Filed by:** orchestrator, from a finding the executor of task T6 reported outside its own scope (session `260810-0844`, Turn 2)
+**Filed by:** orchestrator, from a finding the executor of task T6 reported outside its own scope (session `260810-0844-orchestrator-session.md`, Turn 2)
 **Affects:** `hooks/lib/__tests__/circle-stash-git-exclusion.test.ts:176-177` and `:188`
-**Cross-references:** commit `72b798e` (which corrected the same two claims in the skill body); `shared/issues/260810-0505_c_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md`
+**Cross-references:** commit `72b798e` (which corrected the same two claims in the skill body); `260810-0505_*_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md`
 
 ---
 

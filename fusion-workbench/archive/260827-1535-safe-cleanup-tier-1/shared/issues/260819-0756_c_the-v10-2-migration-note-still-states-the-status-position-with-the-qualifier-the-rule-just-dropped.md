@@ -11,7 +11,7 @@ unconditional and names the transition case explicitly: leave the field exactly 
 including when you transition the record, because the drifted headers are the evidence the removal
 was decided on. The reason for the change is that the excluded case was the only one an agent ever
 meets, so the rule as qualified said nothing about the situation it was written for
-(`shared/issues/260819-0041_c_the-status-position-carves-an-exception-for-a-record-you-are-transitioning-and-never-says-what-it-is.md`).
+(`260819-0041_*_the-status-position-carves-an-exception-for-a-record-you-are-transitioning-and-never-says-what-it-is.md`).
 
 ---
 
@@ -30,7 +30,7 @@ Two candidate resolutions:
 2. Leave it entirely, and rely on the note being version-scoped by its filename. Cheapest, and
    defensible for a document nobody re-reads; costs nothing until someone does.
 
-Found by the executor of task U3 in session `260818-2301`, outside its file set, and reported rather
+Found by the executor of task U3 in session `260818-2301-orchestrator-session.md`, outside its file set, and reported rather
 than acted on. No Circle active, so it is filed in the shared store under the Origin Rule.
 
 ---

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** circles/260719-1536-brest-unite-co-creator-conversion/planning/260719-1917_*_unite-context-loading-conversion.md; bin/fusion-rules (lines 116-127, 295-299)
+**Cross-references:** 260719-1917_*_unite-context-loading-conversion.md; bin/fusion-rules (lines 116-127, 295-299)
 
 ---
 
@@ -64,7 +64,7 @@ This is unite's convention to own, so the choice is the user's.
 Answered: (open — pending user direction)
 
 ---
-Answered: user approved plan gate "Freigeben, Standard" (session 260719-1632) — accept coding-frontend.md as always-on (pattern-loaded via the `coding` token, ~2 KB), keep it out of the manifest to avoid double-emission, document the exclusion in the manifest header.
+Answered: user approved plan gate "Freigeben, Standard" (session 260719-1632-orchestrator-session.md) — accept coding-frontend.md as always-on (pattern-loaded via the `coding` token, ~2 KB), keep it out of the manifest to avoid double-emission, document the exclusion in the manifest header.
 
 ---
 Implemented: `06734571` (add `rules/context-manifest.yaml`). Verified on disk 2026-07-19: `coding-frontend.md` is absent from the manifest `units:` list (appears only inside the header's "INTENTIONAL OMISSIONS" comment) and is pattern-loaded always-on — confirmed by acceptance check 5 (`$FR coder` with no topic emits `./rules/coding-frontend.md`) and check 6 (no duplicate emission). `_a_` → `_i_`.

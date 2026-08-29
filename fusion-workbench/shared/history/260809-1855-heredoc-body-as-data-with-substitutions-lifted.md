@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** tasklist task 4, `I:260809-1111-heredoc`
-**Source record:** `fusion-workbench/shared/issues/260809-1111_p_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md`
+**Source record:** `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md`
 
 ---
 
@@ -111,7 +111,7 @@ issue names. The fixture is the evidence that it moved nothing else.
   body") lost its asymmetry: both delimiter forms now blank, so both expect the
   same two segments.
 - `git-branch-guard.test.ts` — six cases appended to the existing
-  `260716-2005` describe, which is where the other half of this family already
+  `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` describe, which is where the other half of this family already
   lives. Two of them are the pair that cannot be green by accident: one body that
   contains both a prose mention and a substitution (denies), and the same body
   with the substitution removed (allows).

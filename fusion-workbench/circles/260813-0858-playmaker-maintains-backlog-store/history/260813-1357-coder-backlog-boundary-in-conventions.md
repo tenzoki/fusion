@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13
 **Status:** Complete
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store`
-**Plan:** `circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_p_the-playmaker-maintains-the-backlog-store.md` (step 1, now `[DONE]`)
+**Circle:** `260813-0858-playmaker-maintains-backlog-store`
+**Plan:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` (step 1, now `[DONE]`)
 
 ## What changed
 

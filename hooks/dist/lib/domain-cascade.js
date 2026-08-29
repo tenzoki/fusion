@@ -10,7 +10,7 @@
 // (`elif code_files < 0`) above a restored pre-fix order, an inverted condition
 // (`code_files == 0` in the `> 0` slot), a dead threshold (`> 100000`), and the
 // token appearing only in a trailing comment.
-// Issue: fusion-workbench/shared/issues/260810-0503_*_the-domain-cascade-lint-
+// Issue: 260810-0503_*_the-domain-cascade-lint-
 // is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md.
 //
 // This module makes the cascade runnable. It does NOT restate it.
@@ -36,7 +36,7 @@
 // second definition is representable and one existed: `skills/cleanup/SKILL.md`
 // carried the cascade as a single prose sentence, in the pre-fix order and with
 // no absent-count case, so one project got two different domains out of one
-// session (issue 260810-1918). It predated the claim denying it, and both gates
+// session (issue 260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md). It predated the claim denying it, and both gates
 // read `agents/orchestrator.md` alone, so neither could see it. Running the
 // prompt's own block keeps THIS file from being a second copy; it says nothing
 // about any other consumer.
@@ -66,8 +66,8 @@
 // taken, and its header forbids reporting that as a zero. Modelling it as the
 // string it actually is means a branch that reads it arithmetically THROWS
 // rather than silently comparing. That is the executable form of the
-// `counted_by == "none"` line's load-bearing position (issue 260807-1951,
-// decision 260809-1731): move a count branch above it and the absent-count case
+// `counted_by == "none"` line's load-bearing position (issue 260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md,
+// decision 260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md): move a count branch above it and the absent-count case
 // stops returning `code` and starts raising.
 // ---------------------------------------------------------------------------
 export class CascadeError extends Error {
@@ -97,7 +97,7 @@ export const DOMAINS = ["code", "data"];
 //                          same reason the count names are kept: a copy
 //                          written only in the two retired outcomes is a
 //                          stale copy the reach gate must see (issue
-//                          260815-1501). `cascadeBlocks` keeps deriving from
+//                          260815-1501_*_the-reach-gate-is-blind-to-a-copy-written-only-in-the-retired-domain-names-and-reach-holes-does-not-say-so.md). `cascadeBlocks` keeps deriving from
 //                          DOMAINS alone, or the definition site stops parsing.
 //   RETIRED_COUNT_NAMES  — the grammar no longer accepts these as inputs, but
 //                          `inputsNamedIn` still recognises them, because the
@@ -105,7 +105,7 @@ export const DOMAINS = ["code", "data"];
 //                          is a STALE one restating the four-outcome cascade.
 //                          Dropping them would make exactly that copy invisible
 //                          to the reach gate, which is the one shape it was
-//                          built for (issue 260810-1918).
+//                          built for (issue 260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md).
 // ---------------------------------------------------------------------------
 /** Domain values the cascade may no longer assign. */
 export const RETIRED_DOMAINS = ["strategic", "knowledge"];
@@ -606,11 +606,11 @@ export function countsFromHelperOutput(stdout) {
 // It is `REACH` below, and `REACH` is data rather than prose for a specific
 // reason: the claim about this gate has now been broader than the gate twice in
 // a row. The first version said a second definition was unrepresentable while
-// one sat in `skills/cleanup/SKILL.md` (issue 260810-1918). The second replaced
+// one sat in `skills/cleanup/SKILL.md` (issue 260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade-in-the-pre-fix-order-and-no-gate-reads-it.md). The second replaced
 // that with a scoped measurement naming three holes, and a review measured a
 // fourth against the shipped build — a domain name outside backticks or double
 // quotes was invisible, which is the plainest second copy anyone would write
-// (issues 260810-2110, three of them).
+// (issue `260810-2110_*_the-cascade-reach-gate-only-sees-a-domain-name-in-backticks-or-double-quotes-and-that-hole-is-not-named.md` and two siblings from the same review).
 //
 // So every line of the claim now carries probes, and `domain-cascade.test.ts`
 // runs them: each `covered` probe must fire, each `holes` probe must NOT fire,

@@ -8,8 +8,8 @@
 **Affects:** `hooks/lib/bash-mutation-guard.ts:1661-1668` (`stepDir` returns the causeless `CWD_UNKNOWN`), `:1628` (`CwdUnknownCause`), `:1033-1043` (`unknownCwdReason`), `:3076-3082` (the reason dispatch)
 **Kind:** NEW in `613d6fd`. It added a fourth way to lose the working directory and did not give it a cause.
 **Cross-references:**
-`decisions/260803-1803_i_…` (the `CDPATH` decision, which established that a cause a reader cannot find in the command needs its own reason),
-`issues/260803-2238_c_…` and `decisions/260803-2338_i_…` (the same argument for `unproven-cd`),
+`260803-1803_*_…` (the `CDPATH` decision, which established that a cause a reader cannot find in the command needs its own reason),
+`260803-2238_*_…` and `260803-2338_*_…` (the same argument for `unproven-cd`),
 `rules/protected-path-discipline.md:118` (the doc row that gets this right: "`git -C $D rm x.md` (relative, unknown directory)").
 
 ---

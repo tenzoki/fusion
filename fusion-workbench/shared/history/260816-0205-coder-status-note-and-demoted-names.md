@@ -53,7 +53,7 @@ labelled with its pipeline step and selector, and the record names them as delib
 
 ## Not done, and deliberately
 
-The tracking record `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
+The tracking record `260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
 was not touched. Its residual table is fully done, but it never surveyed `README-agents.md:71-72`
 and it still does not survey the three code-comment sites (`hooks/lib/events.ts:70`,
 `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`, `.gitignore:69`). It is a reconciler

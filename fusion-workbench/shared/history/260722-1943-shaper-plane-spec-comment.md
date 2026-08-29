@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-22 19:43
 **Mode:** user-direct (design forks pre-decided by user; no clarification round)
-**Output:** `shared/planning/260722-1943_o_spec-plane-spec-comment.md`
+**Output:** `260722-1943_*_spec-plane-spec-comment.md`
 
 ## Request
 
@@ -20,7 +20,7 @@ AskUserQuestion round was run.
   home for the full spec — no source-of-truth conflict with the description).
 - `push --closure` (`:882-885`) — accepted no-op placeholder; its block comment named the
   comments-body shape as the sole blocker. Now cleared.
-- Decision `circles/260719-1536-plane-mirror-integration/decisions/260719-2313_i_...` —
+- Decision `260719-2313_*_...` —
   Option 1 (seed-origin = state-only description writes) with Option 3 (this spec-comment)
   as the planned continuation once the comments body was verified. Respected: a comment
   never touches the description.

@@ -4,9 +4,9 @@ The C04/C05 anchor split is verified in English and asserted for German, where i
 
 **Severity:** Low
 **Domain:** data
-**Filed by:** ontorev, reviewing `dbf259a..d6b867e`, review file `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0251-ontorev-the-moved-clause-and-the-restored-anchor.md`
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0117_c_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md:94-96`, and the same claim restated in `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0200-ontocoder-c04s-fourth-sentence-moves-and-its-section-pointer-returns.md:38-39`
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md:133-136` (the review that credited `dbf259a` with removing an English heading string from German prose); `shared/issues/260822-0115_o_the-german-chat-profile-names-the-referent-three-ways-where-the-english-names-it-once.md` and `shared/issues/260822-0120_o_the-german-blacklist-forbids-an-ordinary-connective-where-the-english-forbids-a-discourse-marker.md` (the open German-register records; this is a different fault and does not restate either)
+**Filed by:** ontorev, reviewing `dbf259a..d6b867e`, review file `260822-0251-ontorev-the-moved-clause-and-the-restored-anchor.md`
+**Affects:** `260822-0117_*_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md:94-96`, and the same claim restated in `260822-0200-ontocoder-c04s-fourth-sentence-moves-and-its-section-pointer-returns.md:38-39`
+**Cross-references:** `260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md:133-136` (the review that credited `dbf259a` with removing an English heading string from German prose); `260822-0115_*_the-german-chat-profile-names-the-referent-three-ways-where-the-english-names-it-once.md` and `260822-0120_*_the-german-blacklist-forbids-an-ordinary-connective-where-the-english-forbids-a-discourse-marker.md` (the open German-register records; this is a different fault and does not restate either)
 
 ---
 
@@ -33,7 +33,7 @@ anchorless does not apply to German `C05`.
 **A second, German-only argument was reversed without being addressed.** `dbf259a`'s own message
 counted it as a gain that the rewrite "removed an English heading string sitting inside German
 prose", and the review at
-`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md:133-136`
+`260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md:133-136`
 named `C05` after `dbf259a` among the things the German gets right and called that half of the
 commit the one it had no objection to. German `C04` now reads
 `in user-facing-output.md unter "## Length" und werden hier nicht wiederholt`
@@ -63,10 +63,10 @@ correctly added to `260821-2204_c_`, one file over.
 **No change to the four profiles is proposed.** Do not restore German `C05`'s anchor on the
 strength of this record; that would trade a written-down reason for a byte cost, and the byte
 budget in
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
+`260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
 is already spent to −8 and −10.
 
-Append a note to `260822-0117_c_` that states, in one paragraph:
+Append a note to `260822-0117_*_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md` that states, in one paragraph:
 
 1. the character-for-character claim holds for `stilwerk/chat-voice-en.yaml:46` and not for
    `stilwerk/chat-voice-de.yaml:48`, where the removed anchor was the English heading;
@@ -82,19 +82,19 @@ that was never written.
 ---
 Resolved: The disposition is this record, plus a `Revised by:` note on the record it corrects. No text changed.
 
-`260822-0117_c_` gains an appended block stating the three points this record asks for: the
+`260822-0117_*_the-anchor-removal-argument-holds-for-c05-and-not-for-c04.md` gains an appended block stating the three points this record asks for: the
 character-for-character claim holds for `stilwerk/chat-voice-en.yaml:46` against
 `rules/user-facing-output.md:34` and not for `stilwerk/chat-voice-de.yaml:48`, where the removed
 anchor was the English heading; German `C05` stays anchorless because its own name translates that
 heading, not because the anchor duplicated it; and German `C04` puts an English heading string back
 into German prose (`stilwerk/chat-voice-de.yaml:43`), a cost `dbf259a` and the review at
-`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md:133-136`
+`260822-0121-ontorev-the-c06-rename-and-the-respelled-pointers.md:133-136`
 had both booked as a gain, taken because `## Length` exists in no other language.
 
 That record keeps its `_c_` marker and its original `Resolved:` note, per
 `rules/fusion-workbench-conventions.md` `## Inline State Tracking`. The four profiles were not
 touched: no route was open to choose between, only a reason that had never been written, which is
 why this record proposed no change and none was made. Its second-named target, the same claim in
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0200-ontocoder-c04s-fourth-sentence-moves-and-its-section-pointer-returns.md:38-39`,
+`260822-0200-ontocoder-c04s-fourth-sentence-moves-and-its-section-pointer-returns.md:38-39`,
 is left as written for the same reason the parallel gap in `260822-0251_c_` is: the dispatch scoped
 the annotation to the issue record.

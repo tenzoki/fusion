@@ -49,7 +49,7 @@ to be answered and could not be closed on an answer nobody can produce here. Fil
 record rather than as a paragraph in a closed one — the mistake `260815-2327_c_*` was filed about.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1372-1387` still carries the unverified claim, the harness pin `MONITOR_BIND: "127.0.0.1"` is live at `hooks/lib/__tests__/monitor-warnings-panel.test.ts:290`, and `wildcardLoopbackUsable()` still guards the wildcard bind. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:1372-1387` still carries the unverified claim, the harness pin `MONITOR_BIND: "127.0.0.1"` is live at `hooks/lib/__tests__/monitor-warnings-panel.test.ts:290`, and `wildcardLoopbackUsable()` still guards the wildcard bind. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: unfixable — settling it needs a macOS host whose shell is denied Local Network permission, a change to the user's system that no agent makes; the measurement command stands in `## What would settle it` above.

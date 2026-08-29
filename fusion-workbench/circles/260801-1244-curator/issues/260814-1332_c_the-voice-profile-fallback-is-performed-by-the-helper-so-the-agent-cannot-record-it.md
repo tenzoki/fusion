@@ -2,7 +2,7 @@ The voice-profile fallback is performed by the helper, so the agent cannot recor
 ---
 `rules/fusion-workbench-conventions.md:257` requires an agent whose resolved voice profile is missing to fall back to the `-en.yaml` variant and "record a single line in its session history file noting the fallback". The agent performs neither half. `bin/fusion-rules` does the fallback itself and emits only the resolved path, so an agent receiving `chat-voice-en.yaml` cannot tell a fallback from a project that declared `en`. The obligation is unreachable as written.
 ---
-**Found by:** curator, survey run `circles/260801-1244-curator/history/260814-1332-curator-run.md` (ledger entry L24–L28 group, entry L28)
+**Found by:** curator, survey run `260814-1332-curator-run.md` (ledger entry L24–L28 group, entry L28)
 **Owner:** `coder` — the fix is in `bin/fusion-rules`, which the curator's remit excludes.
 
 **Verified 2026-08-14 at HEAD `ae21c87`,** `bin/fusion-rules` `emit_voice_profile()`, lines 313-320:
@@ -40,14 +40,14 @@ Both branches print a bare path and nothing else. The emission format is one pat
 
 ---
 
-**Half-closed 2026-08-21 (coder, step 4 of `circles/260820-2051-style-rules-arrive-and-get-measured`) — STAYS `_o_`.** Option 1 landed: `emit_voice_profile` in `bin/fusion-rules` now prints one line to standard error on the fallback branch, naming the family, the requested variant and the resolved one, with standard output byte-identical in every case. The event is detectable. Two cases in `hooks/lib/__tests__/rules-voice-profile.test.ts` hold both halves of that.
+**Half-closed 2026-08-21 (coder, step 4 of `260820-2051-style-rules-arrive-and-get-measured`) — STAYS `_o_`.** Option 1 landed: `emit_voice_profile` in `bin/fusion-rules` now prints one line to standard error on the fallback branch, naming the family, the requested variant and the resolved one, with standard output byte-identical in every case. The event is detectable. Two cases in `hooks/lib/__tests__/rules-voice-profile.test.ts` hold both halves of that.
 
 **What the record still asks for is a rule edit this step's file list excludes, and it is two edits, not one.** First, the sentence in `rules/fusion-workbench-conventions.md` `## Project language` that cites this record — "It emits only the resolved path, so an agent cannot today tell a fallback from a project that declared `en`" — became false with that commit and still stands. Second, and this is the half the record's title is about: the obligation itself is gone from the rule. Commit `1a36fe4` replaced "the agent falls back to the `-en.yaml` variant of that same family **and records a single line in its session history file noting the fallback**" with the description of the defect, so the rule now refers to "the history line this rule asks for" while asking for no such line. An agent can detect the fallback and is instructed by nothing to record it.
 
-Closing this now would assert a reachable obligation where there is no obligation. It closes when that paragraph is rewritten to state the mechanism as it stands and to put the history-line ask back, or to drop the ask deliberately — and dropping it is a constraint removal that needs a decision, exactly as this record's option 2 already says. The history log for the mechanism half is `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0035-coder-voice-profile-fallback-says-so-on-stderr.md`.
+Closing this now would assert a reachable obligation where there is no obligation. It closes when that paragraph is rewritten to state the mechanism as it stands and to put the history-line ask back, or to drop the ask deliberately — and dropping it is a constraint removal that needs a decision, exactly as this record's option 2 already says. The history log for the mechanism half is `260821-0035-coder-voice-profile-fallback-says-so-on-stderr.md`.
 
 ---
-**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `260821-0416-reconciliation.md`).
 **STAYS `_o_`, against plan step 4's `Closes:` line. The coder's own half-closed note was right and
 is upheld on independent evidence.**
 
@@ -72,7 +72,7 @@ Closing now would assert a reachable obligation where no obligation stands, whic
 the fault this record was opened on. It closes when that paragraph is rewritten to state the
 mechanism as it is and either restores the history-line ask or drops it deliberately, and dropping
 it is the constraint removal option 2 already says needs a decision. Fault 1 is filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0042_*_the-always-on-rule-states-two-things-about-the-voice-profile-fallback-that-stopped-being-true.md`.
+`260821-0042_*_the-always-on-rule-states-two-things-about-the-voice-profile-fallback-that-stopped-being-true.md`.
 
 ---
 Resolved: fixed — the paragraph states the mechanism as it stands (the helper names the fallback on standard error) and restores the ask: an agent that keeps a session history records that line once; rules/fusion-workbench-conventions.md:253

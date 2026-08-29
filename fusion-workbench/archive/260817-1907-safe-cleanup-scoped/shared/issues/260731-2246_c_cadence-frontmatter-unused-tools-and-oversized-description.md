@@ -72,7 +72,7 @@ enumeration, the source enumeration and the resolver mention.
   key entirely for the same situation. Cosmetic inconsistency only, not worth an edit.
 
 ---
-Reconciliation 260731-2324 (reconciler, domain `code`) — **confirmed, stays `_o_`.** `skills/cadence/SKILL.md:4` still lists `[Bash, Read, Glob, Grep, Write]`; neither `Glob` nor `Grep` is named in the body. Description length re-measured across all 16 skills: cadence 891 chars of value, next-longest `skills/migrate/SKILL.md` at 346, then `circle-stash` 286 and `seed-from-plane`/`cleanup` at 264. The issue's table reports 904/359/299/277 — those figures count the whole `description:` line including the 13-character key, so every row is 13 higher. The finding is unaffected: the ratio is 2.6x, and cadence is the outlier by a wide margin either way.
+Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **confirmed, stays `_o_`.** `skills/cadence/SKILL.md:4` still lists `[Bash, Read, Glob, Grep, Write]`; neither `Glob` nor `Grep` is named in the body. Description length re-measured across all 16 skills: cadence 891 chars of value, next-longest `skills/migrate/SKILL.md` at 346, then `circle-stash` 286 and `seed-from-plane`/`cleanup` at 264. The issue's table reports 904/359/299/277 — those figures count the whole `description:` line including the 13-character key, so every row is 13 higher. The finding is unaffected: the ratio is 2.6x, and cadence is the outlier by a wide margin either way.
 
 Skill count note: the issue says "measured across all 15 skills"; there are 16 with cadence itself included. Arithmetic detail only, no bearing on the finding.
 

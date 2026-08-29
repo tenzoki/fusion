@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator
-**Cross-references:** shared/issues/260802-0920_c_next-skill-activates-a-circle-without-updating-its-status-field.md (the defect this question outlived), agents/orchestrator.md `## Circle head fields`, skills/next/SKILL.md Step 6.2, rules/circle-records.md `## Circle record template`
+**Cross-references:** 260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md (the defect this question outlived), agents/orchestrator.md `## Circle head fields`, skills/next/SKILL.md Step 6.2, rules/circle-records.md `## Circle record template`
 
 ---
 
@@ -73,8 +73,8 @@ longer a live wound. This is a good candidate for the next Circle that touches C
 another reason, rather than for a Circle of its own.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: drop the field, filename marker becomes the only source; timed to the next Circle that touches Circle records for another reason. User answered inline 2026-08-16.
-Implemented: `shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md` step 6, 2026-08-18 — no commit hash is cited because the executor does not commit; the orchestrator's Phase-2 Step-3b commit for this plan carries the change. The trigger the answer named fired: that plan's steps 1, 2 and 4 touch the record template, the head-fields table and `/fusion:next` Step 6.2, which are the three sites the answer listed. `**Status:**` is gone from the template in `rules/circle-records.md`, from the head-fields table and its maintenance paragraph in `agents/orchestrator.md` (including the Phase-4 closure write), from the `awk` rewrite in `skills/next/SKILL.md` Step 6.2, and from the frontmatter fill in `agents/shaper.md`'s anticipated-circle mode. The filename marker is the only source of a Circle's state. Records written before the removal keep a field nothing writes and nothing reads; every one of the three surfaces now says to leave it alone rather than correct it.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: drop the field, filename marker becomes the only source; timed to the next Circle that touches Circle records for another reason. User answered inline 2026-08-16.
+Implemented: `260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md` step 6, 2026-08-18 — no commit hash is cited because the executor does not commit; the orchestrator's Phase-2 Step-3b commit for this plan carries the change. The trigger the answer named fired: that plan's steps 1, 2 and 4 touch the record template, the head-fields table and `/fusion:next` Step 6.2, which are the three sites the answer listed. `**Status:**` is gone from the template in `rules/circle-records.md`, from the head-fields table and its maintenance paragraph in `agents/orchestrator.md` (including the Phase-4 closure write), from the `awk` rewrite in `skills/next/SKILL.md` Step 6.2, and from the frontmatter fill in `agents/shaper.md`'s anticipated-circle mode. The filename marker is the only source of a Circle's state. Records written before the removal keep a field nothing writes and nothing reads; every one of the three surfaces now says to leave it alone rather than correct it.
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>

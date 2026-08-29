@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Date:** 260808-0136
+**Date:** 260808-0136-gitignore-fu-exception-and-orchestrator-rs-java.md
 **Scope constraint:** only `.gitignore` and `agents/orchestrator.md` (a parallel coder dispatch held `hooks/`)
 
 ---
@@ -12,7 +12,7 @@
 Two independent defects, each fixed exactly as its own record specified. Nothing committed; both
 issue records left open (`_o_`) at the user's instruction.
 
-### Defect 1 — `shared/issues/260716-1940_o_stale-bin-fu-exception-in-gitignore.md`
+### Defect 1 — `260716-1940_*_stale-bin-fu-exception-in-gitignore.md`
 
 `.gitignore` carried `!bin/fu`, an un-ignore exception for the project-local launcher removed in
 v3.20.0, plus a comment describing that launcher as copied from `bin/fu` at Setup.
@@ -42,7 +42,7 @@ Method note: `git check-ignore -v` returns exit 0 when *any* pattern matches, in
 so the verdict must be read from the non-verbose form. Reading the exit code of the `-v` form
 inverts the answer for every negated path.
 
-### Defect 2 — `shared/issues/260807-1943_o_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md`
+### Defect 2 — `260807-1943_*_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md`
 
 Added `.rs` and `.java` at the two sites the record names, in the ordering `coder.md` and
 `planner.md` already use (`.go, .ts, .tsx, .py, .js, .rs, .java, …`):

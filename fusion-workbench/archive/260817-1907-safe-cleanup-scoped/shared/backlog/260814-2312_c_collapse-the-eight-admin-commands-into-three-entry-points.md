@@ -1,8 +1,8 @@
 # Collapse the eight administrative commands into three entry points
 
 **Domain:** code
-**Filed by:** user (directed in conversation 260814-2312, written by consultant on that instruction)
-**Related:** `shared/backlog/260814-1733_p_radical-simplification.md` — this is a sub-step of that
+**Filed by:** user (directed in conversation 260814-2312_*_collapse-the-eight-admin-commands-into-three-entry-points.md, written by consultant on that instruction)
+**Related:** `260814-1733_*_radical-simplification.md` — this is a sub-step of that
 simplification and should be shaped as part of it, not on its own axis
 
 The eight commands the user names as the administrative surface — `setup`, `unlock`, `cleanup`,
@@ -16,7 +16,7 @@ The measured structure. `skills/cleanup/SKILL.md:152-168` reads and executes `ar
 `revise-claude-md` (full three-pass) and `log-activity` inline as its Steps 4, 5 and 6, so a user who
 types `/fusion:cleanup` never types those three. `unlock` writes the permission settings a project
 needs once, and an open issue already says Setup must seed that file
-(`shared/issues/260810-0326_o_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`);
+(`260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`);
 `skills/setup/SKILL.md` mentions `unlock` nowhere, so the two halves of one job do not know about
 each other. `cadence` is read-only on every input and writes only its own digest
 (`skills/cadence/SKILL.md:254-255`), which makes it a reading command rather than an administrative
@@ -38,4 +38,4 @@ is the part that needs shaping.
 Not verified: that reducing the visible names to three actually makes the system easier to operate.
 What is verified is only that three of the eight are already steps of a fourth.
 
-Promoted: circles/260815-0007-remove-eight-mechanisms-and-cap-growth — the administrative surface collapses to three names as the sub-step of that simplification it declared itself to be; curate replaces revise-claude-md as the one gated path to CLAUDE.md.
+Promoted: 260815-0007-remove-eight-mechanisms-and-cap-growth — the administrative surface collapses to three names as the sub-step of that simplification it declared itself to be; curate replaces revise-claude-md as the one gated path to CLAUDE.md.

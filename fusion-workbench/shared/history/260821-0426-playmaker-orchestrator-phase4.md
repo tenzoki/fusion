@@ -1,4 +1,4 @@
-# Playmaker run 260821-0426: portfolio refresh after the style-rules Circle closed bounded
+# Playmaker run 260821-0426-playmaker-orchestrator-phase4.md: portfolio refresh after the style-rules Circle closed bounded
 
 **Status:** Complete
 **Agent:** playmaker
@@ -72,7 +72,7 @@ bounded Circles now hold a named leftover with no carrier:
 
 - The style-rules Circle's fourth Directive outcome, deferred with an exact pre-registration whose
   value decays if a later Circle re-derives the threshold instead of inheriting it.
-- The guard Circle's unmet clause, `260817-1505`, six days old, recording that two shipped surfaces
+- The guard Circle's unmet clause, `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`, six days old, recording that two shipped surfaces
   still describe a write denied by a project's guard configuration, which no shipped code can do.
 
 ## Warnings emitted to the portfolio
@@ -111,8 +111,8 @@ none of the four bounds is red today. The `agents/` figure is the one the dispat
 it matters for ranking: any Circle that edits an agent prompt has under 2 000 bytes to spend.
 
 Two open defects in the just-closed Circle write into `skills/setup/SKILL.md`, the surface with 30
-bytes left: `260821-0148` and `260821-0302`. A third, `260821-0143`, names the same file. One more,
-`260821-0144`, states in its own title that the hook-test surface had 43 of 2 500 lines left when it
+bytes left: `260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md` and `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md`. A third, `260821-0143_*_the-provenance-record-is-verified-with-a-command-whose-answer-depends-on-the-cwd-nobody-states.md`, names the same file. One more,
+`260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`, states in its own title that the hook-test surface had 43 of 2 500 lines left when it
 was filed; the figure is 32 today.
 
 ### The three doubled decision records
@@ -145,7 +145,7 @@ both outside this agent's scope, so the condition is surfaced and nothing was wr
   Directives, one bounding dispatch length and the other binding a rule to an executable check.
 - Items handed to `## Warnings` as defect-shaped or decision-shaped: 0 from the live entries.
 
-**Top-ranked entry:** `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`, recommended.
+**Top-ranked entry:** `260814-1733_*_bounded-executor-dispatches.md`, recommended.
 It is the only live idea that can be shaped today without a user act having to come first, its
 evidence is on disk and already sized, and it holds the recommended marker from the previous run.
 
@@ -161,7 +161,7 @@ costs one.
 
 **Citations re-verified.** Every path cited by the two live entries resolves against the store,
 checked by expanding the wildcard marker form. The closed entry
-`shared/backlog/260811-0826_*_observations.md` still carries the two dangling tokens the previous
+`260811-0826_*_observations.md` still carries the two dangling tokens the previous
 refresh reported, both in the split note a playmaker run appended on 260814-1733 with the marker
 spelled out: one target has since moved to the recommended marker, the other was promoted to Circle
 `260815-0007-remove-eight-mechanisms-and-cap-growth` and no longer exists in the store. Repairing a
@@ -176,14 +176,14 @@ closed entry's body is not one of this agent's operations.
 | `shared/decisions/`, open | 0 | n/a |
 | Circle decision stores, open | 11 | n/a |
 
-Open defect volume is 169 against 153 at the 260820-1126 refresh. All eleven open decisions sit in
+Open defect volume is 169 against 153 at the 260820-1126-playmaker-direct-dispatch.md refresh. All eleven open decisions sit in
 `260820-2051-style-rules-arrive-and-get-measured`. The three the previous refresh flagged as
 carrier-less have since been answered, which is the movement behind the doubled-record finding above.
 
 ## Write order
 
 This log was written before `portfolio.md`, which is the reorder named as fix shape 1 in
-`shared/issues/260820-1133_*_the-playmaker-writes-the-portfolio-citing-a-history-file-it-has-not-written-yet.md`.
+`260820-1133_*_the-playmaker-writes-the-portfolio-citing-a-history-file-it-has-not-written-yet.md`.
 The portfolio's `**Generated:**` header cites this file, and the file existed before the citation was
 written. The defect record stays open: this run chose the order for its own output and decided
 nothing about the prompt, which still specifies the writes the other way round.

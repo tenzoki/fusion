@@ -9,7 +9,7 @@
 `bin/fusion-plane:1451-1453` (`orphans`), `bin/fusion-plane:1463-1467`
 (`JQ_REBUILD_REPORT`'s orphan line)
 **Cross-references:** commit `98c8b3f`; closed issue
-`260810-0939_c_the-winner-subtraction-silences-a-real-collision-when-neither-entry-carries-an-id.md`
+`260810-0939_*_the-winner-subtraction-silences-a-real-collision-when-neither-entry-carries-an-id.md`
 (the finding this closed)
 
 ---

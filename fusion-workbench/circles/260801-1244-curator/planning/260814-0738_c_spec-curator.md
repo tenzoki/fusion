@@ -5,9 +5,9 @@
 **Activated from Circle:** 260801-1244-curator
 **Source:** The user's original proposal that fusion gain an agent which reads the project's history and the current state of the discussion, judges what must change and what remains, and consolidates the three normative surfaces that drift, contradict each other, and grow into a standing context tax. Re-shaped on 2026-08-14 in the shaper's portfolio-activation mode, after three playmaker runs found the Circle's Grounding falsified and its validation case gone.
 
-**Relationship to the earlier spec.** `shared/planning/260801-1122_o_spec-normative-consolidation.md` covered four Circles. Three of them have closed, and that spec stays where it is as their record. This document is the surviving remainder re-shaped for the one Circle still open, and it is the only spec the planner works from for `260801-1244-curator`. Capability identifiers carried over from the earlier spec keep their original numbers (C1, C2, C3, C6, C7) so that every citation of them elsewhere in the workbench still resolves. The two capabilities added on 2026-08-14 take fresh numbers (C10, C11) rather than filling the gaps, for the same reason. C4, C5, C8 and C9 are absent by decision, and `## Out of Scope` says what happened to each.
+**Relationship to the earlier spec.** `260801-1122_*_spec-normative-consolidation.md` covered four Circles. Three of them have closed, and that spec stays where it is as their record. This document is the surviving remainder re-shaped for the one Circle still open, and it is the only spec the planner works from for `260801-1244-curator`. Capability identifiers carried over from the earlier spec keep their original numbers (C1, C2, C3, C6, C7) so that every citation of them elsewhere in the workbench still resolves. The two capabilities added on 2026-08-14 take fresh numbers (C10, C11) rather than filling the gaps, for the same reason. C4, C5, C8 and C9 are absent by decision, and `## Out of Scope` says what happened to each.
 
-**Prior decisions this spec builds on and does not reopen:** D1 (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`), a writing agent rather than a report-only detector. D-a, D-c, D-d, D-f and D-h from the earlier spec, which fixed the remit boundary, the review-gate shape, the user-invoked cadence and the agent's name.
+**Prior decisions this spec builds on and does not reopen:** D1 (`260801-1020_*_where-does-normative-consistency-live.md`), a writing agent rather than a report-only detector. D-a, D-c, D-d, D-f and D-h from the earlier spec, which fixed the remit boundary, the review-gate shape, the user-invoked cadence and the agent's name.
 
 ---
 
@@ -133,7 +133,7 @@ Implementing a derivation is coder work. Where the derivation needs a helper, a 
 4. `git log --follow` on each rule file and on `CLAUDE.md`, and `git blame` when a single paragraph is in question.
 5. Reviews and analyses under `$SCAN_REVIEWS` and `$SCAN_ANALYSES`.
 6. `fusion-workbench/orchestrator-events.jsonl`, corroborating only. Its detail strings are summaries, so an event may support a finding but may never be its only evidence.
-7. The archive store. No scan key resolves into it (`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`, still open), so the agent reads the archive directory directly. Skipping it makes the agent blinder the longer a project has run, which inverts its purpose.
+7. The archive store. No scan key resolves into it (`260801-1020_*_scan-keys-never-reach-the-archive-store.md`, still open), so the agent reads the archive directory directly. Skipping it makes the agent blinder the longer a project has run, which inverts its purpose.
 8. The provenance header on a rule file. The header names the decision record, Circle or analysis that motivated the rule. Where the named record carries the superseded marker, the rule is a Tier 2 retirement candidate with no reconstruction required. All twelve of the plugin's rule files carry a header today.
 
 **The thin spot, stated honestly.** For a consuming project's `./rules/` and `.claude/rules/`, sources 1 to 3 and 7 may be empty and source 4 may be uninformative, because those files can have been hand-authored outside any fusion session or copied from `templates/`. Behaviour there: Tier 1 changes still apply, and Tier 2 and Tier 3 findings are downgraded to candidates and reported. The agent does not reconstruct a rationale it cannot cite. The provenance convention narrows the gap forward and does not close it backward, because its lint gate lives in the plugin's own test suite and cannot reach a consuming project.
@@ -255,7 +255,7 @@ Implementing a derivation is coder work. Where the derivation needs a helper, a 
 
 **Description:** The always-on rule set gains a hard byte budget. Exceeding it fails the test suite instead of printing a report. Role-specific rule text keeps the report-only treatment it has today.
 
-**Why the capability exists.** Compaction is a one-off act. This project has measured twice what happens without a bound: the partition that cut the conventions file from 51 416 bytes to 34 671 on 2026-08-05 had been undone within a week, and `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` measured the same shape on the largest deletion the project ever performed, where the deleted lines were back above their pre-deletion peak within four days. Its conclusion was that the binding constraint is the rate of addition rather than the size of the system. A curator without a bound buys about a week.
+**Why the capability exists.** Compaction is a one-off act. This project has measured twice what happens without a bound: the partition that cut the conventions file from 51 416 bytes to 34 671 on 2026-08-05 had been undone within a week, and `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` measured the same shape on the largest deletion the project ever performed, where the deleted lines were back above their pre-deletion peak within four days. Its conclusion was that the binding constraint is the rate of addition rather than the size of the system. A curator without a bound buys about a week.
 
 **The instrument already exists and already measures the right thing.** `hooks/lib/__tests__/rules-emission-golden.test.ts` computes the universal core as the intersection of all sixteen agents' emissions, derives each role's floor from a hand-maintained per-file baseline, and grants each role 12 000 bytes of head-room. Exceeding the head-room prints a named report and fails nothing, by an explicit decision recorded in that file. This capability changes that decision for one part of the measurement and leaves the rest of it alone.
 
@@ -334,7 +334,7 @@ This is the shaper's inference, not the user's stated choice, and it is filed as
 - **The always-on floor is 93 819 bytes per agent at the leanest role and 129 172 at the heaviest** (measured 2026-08-14 with `bin/fusion-rules <agent> | xargs wc -c`). The conventions file is 55 percent of the leanest floor. `CLAUDE.md`, at 55 239 bytes, is now larger than the conventions file, and it is loaded by every Claude session in this project rather than by fusion's rule mechanism.
 - **207 lines across 63 files cite the conventions file**, 106 of them by section name, measured across `agents/`, `skills/`, `rules/`, `bin/`, `hooks/`, `docs/`, `templates/`, `CLAUDE.md`, the README files and `.claude-plugin/`, excluding compiled output. Every one has to resolve after any edit, and the curator may not edit most of those surfaces, so for them it produces a rewrite list and a coder applies it.
 - **The workbench is tracked in this project**, 1 130 files. That is a project decision rather than a fusion property, so no requirement in this spec may assume it.
-- **The archive store is empty**, 0 files, and no scan key reaches it (`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`, open). C2 requires the archive to be read, so the agent reads it directly and the planner must handle that the resolver does not supply the path. In this project that source currently yields nothing.
+- **The archive store is empty**, 0 files, and no scan key reaches it (`260801-1020_*_scan-keys-never-reach-the-archive-store.md`, open). C2 requires the archive to be read, so the agent reads it directly and the planner must handle that the resolver does not supply the path. In this project that source currently yields nothing.
 - **The guard's protected-path half no longer exists.** The write-tool deny, the before-and-after fingerprint, the write-back, the `FUSION_ALLOW_RULES_WRITE` exemption and the `guard.protectedPaths` configuration leaf were all removed on 2026-08-12. Every surviving reference in `hooks/` is a comment, a test fixture string or a historical note; no live code reads the variable, verified on 2026-08-14. Nothing in the guard now resists a rule-file write in any project, and the git diff is the only bound. Every acceptance criterion in the earlier spec that asserted a block is therefore dead and is not carried forward.
 - **All twelve plugin rule files carry a provenance header**, and the lint gate exists. The header is available to C2 as evidence source 8 from day one in this repository.
 - **`bin/fusion-rules` never reads a rule file's content.** Any lifecycle mechanism depending on the helper parsing a marker or a status header would require changing the helper, which C1 puts outside the curator's remit.
@@ -343,7 +343,7 @@ This is the shaper's inference, not the user's stated choice, and it is filed as
 - **`.claude/rules/` does not exist in this repository**, so a run here exercises the `./rules/` half of the rule surface and reports the other half as absent.
 - **Fusion has no precedence semantics between rule sources**, stated deliberately in `bin/fusion-rules`. C3 reports precedence-undecided pairs and does not invent a precedence rule to resolve them.
 - **The Origin Rule governs where the agent's own outputs land.** Decision records, history files and the change ledger resolve through `bin/fusion-paths`, never through a named store path. The path-lint test fails the build if a store literal appears in an agent prompt or a skill body.
-- **Turn logs are unevenly populated** (`shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md`, open). An evidence pass that walks Turn logs mechanically will under-report, which is why C2 lists closure notes as a separate source.
+- **Turn logs are unevenly populated** (`260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`, open). An evidence pass that walks Turn logs mechanically will under-report, which is why C2 lists closure notes as a separate source.
 - **The golden test's own hard gates are historical facts and are never raised.** `RELEASE_CAP` at 105 354 and `DRIFT_CEILING` at 145 144 stay where they are, and C10 adds a third gate rather than moving either.
 
 ---
@@ -382,10 +382,10 @@ This is the shaper's inference, not the user's stated choice, and it is filed as
 
 ## User Decisions Pending
 
-- [x] **How C10's bound is armed.** The spec specifies a one-time re-baseline at the moment of arming, so the bound governs growth from that point, and it records the 2026-08-14 overshoot as text so the standing cleanup request survives. Two alternatives were considered and rejected in the spec's reasoning: performing an 11 KB cut of the always-on set first, which reintroduces the compaction work the user removed from scope, and arming the bound while the suite is red, which nobody would accept. The specified behaviour overrides a position recorded in `hooks/lib/__tests__/rules-emission-golden.test.ts`, so it is filed for confirmation as `circles/260801-1244-curator/decisions/260814-0738_o_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. Confirm or redirect before the planner plans C10. Nothing else in the spec depends on the answer.
+- [x] **How C10's bound is armed.** The spec specifies a one-time re-baseline at the moment of arming, so the bound governs growth from that point, and it records the 2026-08-14 overshoot as text so the standing cleanup request survives. Two alternatives were considered and rejected in the spec's reasoning: performing an 11 KB cut of the always-on set first, which reintroduces the compaction work the user removed from scope, and arming the bound while the suite is red, which nobody would accept. The specified behaviour overrides a position recorded in `hooks/lib/__tests__/rules-emission-golden.test.ts`, so it is filed for confirmation as `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. Confirm or redirect before the planner plans C10. Nothing else in the spec depends on the answer.
 
 **Answered on 2026-08-14 at an orchestrator gate: option 1**, the one-time re-baseline. Recorded in
-`circles/260801-1244-curator/decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
+`260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
 which carries both an `Answered:` and an `Implemented:` line and now holds the implemented marker.
 The record's path in the pending item above spells the open marker and no longer resolves; it is
 left as written, because rewriting the citation is prose work outside this pass and the record is
@@ -404,8 +404,8 @@ plan's own step marks or the Turn log.
 | Capability | Verified how | Evidence |
 |---|---|---|
 | C1 — the curator agent, its remit and boundaries | file exists, 32 356 bytes, frontmatter is `name` + `description` only | `agents/curator.md`; commit `6ba9d77` |
-| C2 — evidence tiers and derive-over-correct | exercised end to end by the C11 run: 28 tier-1 entries, 13 candidates never offered | `circles/260801-1244-curator/history/260814-1332-curator-run.md`; commit `1a36fe4` |
-| C3 — cross-surface contradiction detection | the one unresolvable contradiction the run met was filed as a decision record, not edited | `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` |
+| C2 — evidence tiers and derive-over-correct | exercised end to end by the C11 run: 28 tier-1 entries, 13 candidates never offered | `260814-1332-curator-run.md`; commit `1a36fe4` |
+| C3 — cross-surface contradiction detection | the one unresolvable contradiction the run met was filed as a decision record, not edited | `260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` |
 | C6 — review gate, revert path, wrong-prune detection | the gate held: 28 proposed, 28 approved, 0 applied without approval, and the staleness check aborted the first apply attempt before writing | run file §8-§9; commit `1a36fe4` |
 | C7 — invocation surface and cadence | all three shapes reachable: top level, `/fusion:curate`, and orchestrator dispatch | `skills/curate/SKILL.md:3`; `agents/orchestrator.md:4`, `:236`, `:1399-1401`; commits `44b9967`, `5a1ec16` |
 | C10 — growth bound on the always-on set | `growth()` extracted, hard assertion armed, the five core baseline entries re-set with an inline `2026-08-14 arming` comment each, the three role entries untouched | `hooks/lib/__tests__/rules-emission-golden.test.ts:470-482`, `:651-653`; commit `5c843e6` |
@@ -421,7 +421,7 @@ all passing, no `RULE-TEXT BUDGET` report for any role.
   settle them. No edit is made here; the plan is the answer's home.
 - The `## User Decisions Pending` box above is ticked as of this pass. The same lag persists on the
   Circle record's `## Grounding snapshot`, which the reconciler may not write. That surface is the
-  remaining half of `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`,
+  remaining half of `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`,
   which therefore stays open.
 
 ---
@@ -441,11 +441,11 @@ seven still hold, and C7 gained a surface it did not have at the first pass.
   of the remaining head-room and the bound held.
 - **C11's residual is unchanged and remains a residual, not a defect.** The corpus-wide
   zero-superseded claim is filed as
-  `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
+  `260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
   still open. That is the spec's own stated second admissible form of the answer.
 - **The `## User Decisions Pending` box stays ticked** and the same lag on the Circle record's
   `## Grounding snapshot` still stands, so
-  `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
+  `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
   stays open for the orchestrator's Phase-4 write.
 
 ---
@@ -463,8 +463,8 @@ capabilities re-checked, all seven still hold.
   is the behaviour C10 was armed to produce.
 - **C11's residual is unchanged and remains a residual.** The corpus-wide zero-superseded claim is
   still filed as
-  `circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
+  `260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
   still open, still the spec's own second admissible form of the answer.
 - **The `## User Decisions Pending` lag still stands**, so
-  `circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
+  `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`
   stays open for the orchestrator's Phase-4 write. Nothing in Turn 6 reached either surface.

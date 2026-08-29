@@ -69,18 +69,18 @@ first is the smallest and would need `haltActive` treated as monotonic within a
 call, which matches how `coerceState` already leans (`hooks/lib/escalation.ts:96-101`).
 
 Cross-references:
-`shared/analyses/260809-1101-guard-support-layer.md` (finding 5);
-`circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md`;
+`260809-1101-guard-support-layer.md` (finding 5);
+`260807-0945_*_integritaet-des-eskalationsspeichers.md`;
 `rules/protected-path-discipline.md`.
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
 The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.
 
 ---
 
-Resolved 260809-1927 (coder): the first of the three candidates — the save re-reads
+Resolved 260809-1927-escalation-save-merges-a-parallel-halt.md (coder): the first of the three candidates — the save re-reads
 the file and merges, rather than replacing it. `saveEscalation` in
 `hooks/lib/escalation.ts` now loads the current file, writes the caller's object on
 top of it, and keeps two things the caller could not know about:
@@ -155,7 +155,7 @@ the halt flag, was declined for a smaller reason — it would have kept `haltAct
 safe and still lost the `recentEvents` entry that explains it, so the event merge would
 have been needed anyway.
 
-Sits with `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md`
+Sits with `260807-0945_*_integritaet-des-eskalationsspeichers.md`
 without conflict, and that decision stays open. It asks a different question — how the
 store survives an agent that deliberately clears it — and none of its four options is
 foreclosed here: the merge asks `guard-state-file.ts` where the file is, so moving the

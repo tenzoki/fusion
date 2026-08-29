@@ -2,9 +2,9 @@
 
 **Status:** Complete
 **Agent:** coder
-**Date:** 260813-1612
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store`
-**Source:** `circles/260813-0858-playmaker-maintains-backlog-store/reviews/260813-1545-coderev-playmaker-maintains-backlog-store.md`, findings 1, 3, 2, 7, 8 and the prose suggestion against finding 10.
+**Date:** 260813-1612-coder-five-review-findings-before-closure.md
+**Circle:** `260813-0858-playmaker-maintains-backlog-store`
+**Source:** `260813-1545-coderev-playmaker-maintains-backlog-store.md`, findings 1, 3, 2, 7, 8 and the prose suggestion against finding 10.
 
 ## What was asked
 
@@ -161,4 +161,4 @@ reconciler's act at Circle closure, against this log and the commit it produces.
 Findings 4, 5, 6 and 9 stay open, as do their records. Finding 10's record stays open too:
 this work took the review's suggestion against the prose deliverable, and whether that closes
 the record is the reconciler's call, not mine. Six records were left untouched in all — those
-five plus the reconciler's `260813-1545_o_the-deferred-version-bump-has-no-carrier-…`. No version bump. No commit. Nothing under `bin/` and no plan file touched.
+five plus the reconciler's `260813-1545_*_the-deferred-version-bump-has-no-carrier-…`. No version bump. No commit. Nothing under `bin/` and no plan file touched.

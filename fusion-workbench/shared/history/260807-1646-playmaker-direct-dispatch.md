@@ -31,7 +31,7 @@ beantwortet, D2 und D3 sind umgesetzt) und besteht die Abhängigkeitsprüfung: a
 Abhängigkeiten tragen `_c_`. Nach der Code-Heuristik steht er sauber; aktivierbar ist er nicht.
 
 **Empfehlung:** neu schärfen, nicht aktivieren. Und die Neu-Schärfung erst nach der Antwort auf
-`shared/decisions/260807-1515_o_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, weil
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, weil
 deren Gegenstand mit dem des Circles zusammenfällt.
 
 ## Zyklen und Propagation
@@ -46,15 +46,15 @@ deren Gegenstand mit dem des Circles zusammenfällt.
 Der Dispatch-Prompt nannte drei Lagebestandteile, die zu prüfen waren. Ergebnis:
 
 1. **`GIT_WORK_TREE=` als höchstbewerteter offener Defekt — trifft nicht mehr zu.** Der Befund
-   `circles/260801-1244-guard-rules-write/issues/260804-1332_c_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`
+   `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`
    trägt den Marker `_c_`. Die Schließnotiz begründet ihn sachlich und nicht formal: der Erkenner
    ist mit `ba7ccda` gelöscht, und die Messung sieht die veränderte Datei danach, gleich auf
    welchem Weg. Bestätigt in Abschnitt II der Reconciliation
-   `circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md`, Zeile
-   zum Befund `260804-1332`. Der Mechanismuswechsel hat ihn also erledigt, nicht nur entschärft.
+   `260807-1526-reconciliation.md`, Zeile
+   zum Befund `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`. Der Mechanismuswechsel hat ihn also erledigt, nicht nur entschärft.
    Kein eigener Circle nötig.
 2. **Der höchstbewertete offene Befund ist stattdessen der Stash-Fehler**,
-   `shared/issues/260717-0030_o_git-stash-include-untracked-can-sweep-the-stash-directory.md`,
+   `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`,
    und er hat sich verschärft. Er hielt fest, fusions eigene Workbench sei ignoriert und damit in
    der einen sicheren Konfiguration. `git check-ignore` verneint das heute, und `git ls-files`
    zählt 612 versionierte Dateien unter `fusion-workbench/`, seit `e8988d9` (260801). Damit sitzt
@@ -65,7 +65,7 @@ Der Dispatch-Prompt nannte drei Lagebestandteile, die zu prüfen waren. Ergebnis
 
 ## Angehängt an Circle-Datensätze
 
-- `circles/260801-1244-curator/_a_circle.md` — `## Activation proposal` angehängt. Inhalt: die
+- `260801-1244-curator` — `## Activation proposal` angehängt. Inhalt: die
   Reihung als einziger Kandidat, die fünf widerlegten Grounding-Aussagen mit Messwerten, der
   geschlossene Motivations-Defekt, was inhaltlich Bestand hat, und die Reihenfolge
   Sprachentscheidung vor Neu-Schärfung. Kein Marker umbenannt, `.active-circle` nicht angefasst.
@@ -81,7 +81,7 @@ Der Dispatch-Prompt nannte drei Lagebestandteile, die zu prüfen waren. Ergebnis
    der Projektsprache im Regelkorpus (`shared/decisions/260807-1515_o_*`).
 5. 39 offene Befunde liegen in keinem aktiven Circle: 23 im geteilten Speicher, 16 in
    Issue-Speichern geschlossener Circles.
-6. `shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md` ruht auf
+6. `260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md` ruht auf
    einer Prämisse, die sich geändert hat, und ist ungeprüft.
 7. `tasklist.md` existiert nicht mehr; die Vorbeugung gegen erneutes Veralten ist ungebaut,
    festgehalten in `shared/issues/260807-1515_o_*`.

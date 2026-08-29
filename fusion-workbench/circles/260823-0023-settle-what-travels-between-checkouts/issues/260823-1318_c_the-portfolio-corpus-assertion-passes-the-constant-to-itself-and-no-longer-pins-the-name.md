@@ -6,7 +6,7 @@ The portfolio corpus assertion passes the constant to itself, so it no longer pi
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 2
 **Affects:** `hooks/lib/__tests__/workbench-citation-lint.test.ts:286`
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`, the record this line repaired
+**Cross-references:** `260823-1110_*_the-untracked-portfolio-turns-npm-test-red-in-every-fresh-clone-of-this-repository.md`, the record this line repaired
 
 ---
 

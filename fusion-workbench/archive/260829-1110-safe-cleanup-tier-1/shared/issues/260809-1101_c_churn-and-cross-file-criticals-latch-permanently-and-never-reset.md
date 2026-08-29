@@ -41,7 +41,7 @@ result is consumed only by the emit loop at `hooks/tracker.ts:432-448`, and
 `block`, `recordBlock`, `raiseHalt` or the hook response.
 
 Two consequences beyond log size. The dashboard's warnings panel holds thirty
-rows (`260802-2232_c`), so a permanently-firing critical pushes real
+rows (`260802-2232_*_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md_c`), so a permanently-firing critical pushes real
 `guard_block` and `guard_halt` rows off it. And the warning loses its meaning as
 a signal: a level that is always on reports nothing about the current session,
 which is the question `agents/orchestrator.md:113` asks the churn file at Setup.
@@ -60,24 +60,24 @@ Fix direction: one decision precedes the fix. Either the counters get a reset
 boundary (session start, a commit, or an explicit checkpoint that finally calls
 `resetCrossFile`), or the total-level thresholds are dropped and only the
 session-level ones survive, or cross-file is removed outright. The analysis
-`shared/analyses/260809-1101-guard-support-layer.md` notes that cross-file has no
+`260809-1101-guard-support-layer.md` notes that cross-file has no
 reader outside its own accumulation, which makes removal a smaller change than
 repair.
 
 Cross-references:
-`shared/analyses/260809-1101-guard-support-layer.md` (finding 1, target C3);
-`circles/260801-1244-guard-rules-write/issues/260805-1859_o_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md`;
-`circles/260801-1244-guard-rules-write/issues/260802-2232_c_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md`;
+`260809-1101-guard-support-layer.md` (finding 1, target C3);
+`260805-1859_*_das-guard-event-log-waechst-unbegrenzt-und-sein-groesster-schreiber-liefert-null-information.md`;
+`260802-2232_*_advisory-rows-share-the-30-row-warnings-panel-and-can-bury-blocks.md`;
 `README-hooks.md` (Churn Detection).
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
 The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.
 
 ---
 Resolved: Both latches are gone, each by the route decision
-`260809-2004` chose for its own counter (task 9, `I:260809-1101-latching`).
+`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` chose for its own counter (task 9, `I:260809-1101-latching`).
 
 **Churn** keeps `totalChanges` and loses only the comparison that latched. The
 `totalChangesWarning` / `totalChangesCritical` pair left `analyzeChurn`, the
@@ -107,4 +107,4 @@ Measurement 7 of the decision — the Setup thrashing read ranking a deleted fil
 — is NOT fixed here and was not left unmentioned: it has a second cause the
 decision did not see (the churn key is derived from `process.cwd()`, so one file
 accumulates several keys) and it needs its own decision. Filed as
-`shared/issues/260809-2023_o_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.
+`260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`.

@@ -5,8 +5,8 @@ The hand-written Grounding correction breaks the paragraph's own "two costs" sca
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 4 (`a2a18f9..2ec2bc2`)
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/_t_circle.md:29-31` (`## Grounding snapshot`)
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md`, the factual defect in the same three lines; `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`, why this was written by hand
+**Affects:** `260823-0023-settle-what-travels-between-checkouts:29-31` (`## Grounding snapshot`)
+**Cross-references:** `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md`, the factual defect in the same three lines; `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md`, why this was written by hand
 
 ---
 
@@ -48,7 +48,7 @@ Read `_t_circle.md:26-32` byte-for-byte, including trailing whitespace (`grep -n
 
 ## Direction, not a prescription
 
-If `:30` is opened for the count correction that `260823-1635_*` asks for, take these in the same edit — they are the same three lines and the same deadline, and a second pass over a frozen Grounding is not available.
+If `:30` is opened for the count correction that `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*` asks for, take these in the same edit — they are the same three lines and the same deadline, and a second pass over a frozen Grounding is not available.
 
 Recast `:29`'s promise to match what the paragraph now says: one accepted cost, plus the correction. Backtick the four literals and drop the trailing space. Either scope the convention list the way `skills/setup/SKILL.md` scopes it, or shorten it to the parts that hold unconditionally — read first, write only in the directory Setup ran in, report either way — and let the reader open Step 0g for the rest, which is what a worked convention is for.
 

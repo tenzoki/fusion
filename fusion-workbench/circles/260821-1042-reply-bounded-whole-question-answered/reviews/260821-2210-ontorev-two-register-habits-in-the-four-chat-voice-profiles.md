@@ -1,13 +1,13 @@
 # Two register habits in the four chat voice profiles
 
 **Reviewed-range:** `e764637..de0c6f6`
-**Not-opened:** `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_is-claude-mds-register-repair-inside-this-circle.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_what-may-the-circles-own-new-clauses-cost.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_which-surfaces-may-this-circle-change.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_a_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-2004_o_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1812-planner-the-plan-for-the-bounded-reply.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2010-coder-repair-four-citations-broken-by-activation.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2020-analyst-the-reply-length-baseline-is-frozen.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2108-coder-regenerate-two-golden-fixtures-after-step-2.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2120-coder-the-reply-answers-the-question-that-was-put.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md`, `fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `fusion-workbench/shared/history/260821-1536-playmaker-direct-dispatch.md`, `fusion-workbench/shared/issues/260821-1810_o_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`, `hooks/lib/__tests__/fixtures/rules-emission.golden`
+**Not-opened:** `260821-2020-reply-length-baseline.md`, `260821-1042-reply-bounded-whole-question-answered`, `260821-1108_*_is-claude-mds-register-repair-inside-this-circle.md`, `260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`, `260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`, `260821-1108_*_which-surfaces-may-this-circle-change.md`, `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`, `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, `260821-1642-orchestrator-session.md`, `260821-1812-planner-the-plan-for-the-bounded-reply.md`, `260821-2010-coder-repair-four-citations-broken-by-activation.md`, `260821-2020-analyst-the-reply-length-baseline-is-frozen.md`, `260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md`, `260821-2108-coder-regenerate-two-golden-fixtures-after-step-2.md`, `260821-2120-coder-the-reply-answers-the-question-that-was-put.md`, `260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md`, `260821-2147-coder-the-corpus-is-measured.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `260821-1536-playmaker-direct-dispatch.md`, `260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`, `hooks/lib/__tests__/fixtures/rules-emission.golden`
 
 **Sender:** ontorev
 **Date:** 2026-08-21
-**Scope as dispatched:** step 4 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` — the four chat voice profiles. The `Not-opened:` list is everything else the range touched; the dispatch narrowed the scope and no earlier review carried anything in.
+**Scope as dispatched:** step 4 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md` — the four chat voice profiles. The `Not-opened:` list is everything else the range touched; the dispatch narrowed the scope and no earlier review carried anything in.
 
-**Partly opened, and named here rather than in the list above:** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` (its step-4 acceptance, `## Current State` budget and risk table, not the whole plan) and `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`surface()`, `PLUGIN_PATH_BODY`, the `BASELINE` and its re-approval notes, not the whole file). Opened in full: the four profiles, `rules/user-facing-output.md`, `hooks/lib/__tests__/fixtures/surface-growth.golden`, the step's own log at `.../history/260821-2132-ontocoder-two-register-habits-in-four-profile-files.md`, and the corpus notes in `hooks/lib/__tests__/workbench-citation-lint.test.ts`, which the range did not touch.
+**Partly opened, and named here rather than in the list above:** `260821-1805_*_plan-reply-bounded-whole-question-answered.md` (its step-4 acceptance, `## Current State` budget and risk table, not the whole plan) and `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`surface()`, `PLUGIN_PATH_BODY`, the `BASELINE` and its re-approval notes, not the whole file). Opened in full: the four profiles, `rules/user-facing-output.md`, `hooks/lib/__tests__/fixtures/surface-growth.golden`, the step's own log at `.../260821-2132-ontocoder-two-register-habits-in-four-profile-files.md`, and the corpus notes in `hooks/lib/__tests__/workbench-citation-lint.test.ts`, which the range did not touch.
 
 ## Summary
 
@@ -45,7 +45,7 @@ that no longer describes what is under it. Seven records filed, five in the Circ
 
 ### A. The two new clauses (Medium ×3)
 
-**A1 — AI04's old remedy does not answer its new fault.** `circles/…/issues/260821-2203_o_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`
+**A1 — AI04's old remedy does not answer its new fault.** `circles/…/260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`
 
 `stilwerk/chat-voice-en.yaml:122-124`, `chat-voice-de.yaml:124-126`. The dispatch asked whether
 the instruction says what it means to say or reads as the old rule with words added. It reads as
@@ -58,7 +58,7 @@ checked against, unlike every other blacklist entry in the file, which names an 
 and the gloss plus the one example cover only the one-item case, leaving the three-findings case
 the entry exists for unstated.
 
-**A2 — C06's new clause is the only copy of a rule, on the half no fallback covers.** `circles/…/issues/260821-2201_o_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
+**A2 — C06's new clause is the only copy of a rule, on the half no fallback covers.** `circles/…/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`
 
 `stilwerk/chat-voice-en.yaml:65-66`, `chat-voice-de.yaml:66-67`. The step's own log states the
 premise: "the profile can be absent from a workbench entirely". `rules/user-facing-output.md:32`
@@ -69,7 +69,7 @@ bullet at `:80` carries C06's first half and nothing about restating a claim; a 
 `twice|restate|repeat|redundan` across the rule returns one hit, `:93`, about a different subject.
 So for a project with no `stilwerk/`, "one formulation per claim" reaches no reader.
 
-**A3 — Two entry names no longer cover their instructions.** `circles/…/issues/260821-2202_o_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
+**A3 — Two entry names no longer cover their instructions.** `circles/…/260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md`
 
 The dispatch asked whether a second rule has been smuggled into C06. Partly. The two halves are
 adjacent but fail differently: *one name per thing* fails by variation, making the reader prove
@@ -82,7 +82,7 @@ near-neutral renames are proposed in the record.
 
 ### B. What the C05 cut created (Medium ×1)
 
-**B1 — the cut traded self-contained text for citations nothing resolves.** `circles/…/issues/260821-2204_o_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`
+**B1 — the cut traded self-contained text for citations nothing resolves.** `circles/…/260821-2204_*_the-c05-cut-traded-self-contained-text-for-citations-on-a-surface-no-gate-reads.md`
 
 The cut itself is right, and the record says so: the old instruction restated the rule at length
 and, after step 2, contradicted it, claiming a sketch does not count against the line cap while
@@ -106,7 +106,7 @@ C04 carries the same spelling at `chat-voice-en.yaml:41`, so a fix should take b
 
 ### C. The German register (Low ×1)
 
-**C1 — one of the two German clauses is a calque.** `circles/…/issues/260821-2205_o_the-german-ai04-clause-reads-as-a-calque-of-the-english-one.md`
+**C1 — one of the two German clauses is a calque.** `circles/…/260821-2205_*_the-german-ai04-clause-reads-as-a-calque-of-the-english-one.md`
 
 Judged as a German reader would, the two clauses came out differently. **C06 is good**
 (`chat-voice-de.yaml:66-67`): "Ebenso eine Formulierung pro Aussage: zweimal gesagt wird sie nicht
@@ -121,7 +121,7 @@ in this project loads, since `CLAUDE.md` declares `**Language:** de`.
 
 ### D. Nearby, not caused by this step (Low ×2, filed in `shared/`)
 
-**D1 — the German profiles name the wrong dash.** `shared/issues/260821-2206_o_the-german-voice-profiles-name-en-dash-as-the-character-to-avoid-while-every-other-surface-counts-em-dash.md`
+**D1 — the German profiles name the wrong dash.** `260821-2206_*_the-german-voice-profiles-name-en-dash-as-the-character-to-avoid-while-every-other-surface-counts-em-dash.md`
 
 `chat-voice-de.yaml:82` and `default-voice-de.yaml:143` both instruct "Gedankenstriche (–)", and
 that character is U+2013 EN DASH. `bin/fusion-prose-metric` counts U+2014 only,
@@ -131,7 +131,7 @@ U+2014 and its second (`:89`) two U+2013. Nothing is red today — both German p
 em-dashes — so this is a wrong instruction rather than a failing measurement. Pre-existing; AI02 is
 not part of step 4.
 
-**D2 — the rule's inventory of the profile is short by three entries.** `shared/issues/260821-2207_o_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
+**D2 — the rule's inventory of the profile is short by three entries.** `260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
 
 `rules/user-facing-output.md:18` names eight of the nine blacklist entries; AI08 "Announcing
 structure" is absent and appears in no revision of the file. `:19` names four of the six whitelist
@@ -156,7 +156,7 @@ and it is filed separately because its fix is a different edit with its own cost
 
 ## What no gate covers, stated rather than left to be found
 
-Per `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
+Per `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
 no gate or test enforces any of this, and none was proposed here. Every finding above was
 established by reading, by a one-off measurement, or by running an existing gate that is green.
 The one gate change any record proposes — B1 route 2 — extends an existing citation lint's corpus

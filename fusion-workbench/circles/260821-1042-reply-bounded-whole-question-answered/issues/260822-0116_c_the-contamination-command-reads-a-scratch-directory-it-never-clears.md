@@ -5,7 +5,7 @@ The contamination command reads a scratch directory it never clears
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing `084c626..dbf259a`
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 4, the `PRIMED` pipeline
+**Affects:** `260822-0035-three-before-figures-and-the-after-measurement-defined.md` section 4, the `PRIMED` pipeline
 
 ---
 

@@ -3,12 +3,12 @@
 **Date:** 2026-08-23 13:02
 **Agent:** analyst
 **Status:** Complete
-**Circle:** `circles/260823-0023-settle-what-travels-between-checkouts`
+**Circle:** `260823-0023-settle-what-travels-between-checkouts`
 **Dispatched by:** orchestrator, plan step 9
 
 ## What was asked
 
-Run step 9 of `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`: build a two-checkout harness the way C1 built its own, answer the Circle's last acceptance criterion, answer the specification's open question about `bin/monitor`, and file rather than repair anything found. No source change.
+Run step 9 of `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`: build a two-checkout harness the way C1 built its own, answer the Circle's last acceptance criterion, answer the specification's open question about `bin/monitor`, and file rather than repair anything found. No source change.
 
 ## What was done
 
@@ -28,8 +28,8 @@ The `bin/monitor` dependence is real and sharper than the question assumed. A ru
 
 ## Artifacts
 
-- Report: `circles/260823-0023-settle-what-travels-between-checkouts/analyses/260823-1302-two-checkouts-one-event-log-and-what-the-monitor-makes-of-it.md`
-- Defect filed: `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`
+- Report: `260823-1302-two-checkouts-one-event-log-and-what-the-monitor-makes-of-it.md`
+- Defect filed: `260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`
 
 ## Bounds
 

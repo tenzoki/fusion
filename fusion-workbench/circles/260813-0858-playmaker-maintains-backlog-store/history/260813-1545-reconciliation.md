@@ -1,9 +1,9 @@
-# Reconciliation — session 260813-0806, before the Circle closes
+# Reconciliation — session 260813-0806-orchestrator-session.md, before the Circle closes
 
 **Date:** 2026-08-13 15:45
 **Domain:** code
-**Session:** `shared/history/260813-0806-orchestrator-session.md`
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store/` (active, closing)
+**Session:** `260813-0806-orchestrator-session.md`
+**Circle:** `260813-0858-playmaker-maintains-backlog-store` (active, closing)
 **Range verified:** `1c2d555..2a029eb`, 8 commits
 
 ## Counts
@@ -40,28 +40,28 @@ were run rather than inferred:
    Circle. Reasoned in full in the plan's own log.
 3. **`## Open Questions` item 1, release timing**, was answered at the Turn-3 release gate and left
    unchecked. Checked, with the answer and its commit.
-4. **`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`**,
+4. **`260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`**,
    `_a_` → `_i_`. The realising commit is `b995049`; the citation names the resolver key (run, not
    inferred), the prompt lines, the conventions marker-writer table and the lint that keeps them
    agreeing. It carries one qualification: the capability is realised and has never been exercised.
-5. **`circles/…/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-…`**, `_a_` → `_i_`.
+5. **`circles/…/260813-0858_*_does-a-non-interactive-playmaker-run-…`**, `_a_` → `_i_`.
    Its `Implemented:` field was an empty placeholder waiting for exactly this.
-6. **`shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-…`**,
+6. **`260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-…`**,
    `_a_` → `_i_`. Its second clause, *maintained by the playmaker*, was the half that only landed
    now; *with no new agent* holds, the roster is still sixteen.
-7. **`shared/issues/260813-1051_*_an-unguarded-mktemp-…`** — its `**Affects:**` lines had drifted
+7. **`260813-1051_*_an-unguarded-mktemp-…`** — its `**Affects:**` lines had drifted
    by `d6dd193` (`:360/:363/:379` → `:395/:400/:409`; `map_view` `:850` → `:927`) and its
    enumeration named one surviving unguarded `mktemp` where the file carries **six**. Both
    corrected by re-listing every `mktemp` in `bin/fusion-plane`.
-8. **`shared/issues/260813-0913_*_a-dependency-between-two-circles-…`** — all three "no party may
+8. **`260813-0913_*_a-dependency-between-two-circles-…`** — all three "no party may
    write it" claims re-verified at HEAD and confirmed; one stale citation to `_a_circle.md`
    corrected.
-9. **`shared/issues/260813-0825_*_the-v8-1-0-documentation-step-…`** — all five rows of
+9. **`260813-0825_*_the-v8-1-0-documentation-step-…`** — all five rows of
    `## Update 260813-1500` re-read against HEAD, both sides. All five stand.
 
 ## What I filed
 
-`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`
+`260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`
 
 The bump to `8.2.0` is named in exactly two places: step 9 of the plan being closed, and one
 context sentence in an issue whose acceptance section does not mention it. The documentation Circle
@@ -147,7 +147,7 @@ mid-flight state without saying so.
 
 ## Correction 10, added after the concurrent review landed
 
-`circles/260813-0858-playmaker-maintains-backlog-store/reviews/260813-1545-coderev-playmaker-maintains-backlog-store.md`
+`260813-1545-coderev-playmaker-maintains-backlog-store.md`
 **overcounts its own findings by one.** Its `## Totals` table reads High 1 / Medium 5 / Low 5 = 11
 and its summary says "eleven issues filed"; the findings section enumerates ten, and ten records
 carrying `**Filed by:** coderev` are on disk (1 High, 5 Medium, 4 Low). The eleventh file sharing

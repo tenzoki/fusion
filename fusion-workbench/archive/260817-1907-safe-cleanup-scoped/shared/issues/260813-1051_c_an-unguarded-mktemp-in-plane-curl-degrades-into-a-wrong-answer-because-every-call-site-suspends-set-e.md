@@ -4,9 +4,9 @@
 
 **Severity:** Low — the headline defect is fixed; what remains is a leak on abnormal exit and one unguarded `mktemp` on an earlier path
 **Domain:** code
-**Filed by:** coderev, reviewing `7342fdd` (`shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md`)
+**Filed by:** coderev, reviewing `7342fdd` (`260813-1051-coderev-plane-curl-response-via-temp-file.md`)
 **Affects:** `bin/fusion-plane:360` (new in `7342fdd`), `bin/fusion-plane:363` (pre-existing, same shape), `bin/fusion-plane:379` (the unchecked `cat`)
-**Cross-references:** `shared/issues/260813-1051_o_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md` (the same two lines, a different fault)
+**Cross-references:** `260813-1051_*_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md` (the same two lines, a different fault)
 
 ---
 

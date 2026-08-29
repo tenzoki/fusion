@@ -7,7 +7,7 @@
 **Filed by:** analyst, during the guard-enforced-policies analysis
 **Affects:** `hooks/lib/git-branch-guard.ts` (`classifyCheckout`)
 **Cross-references:**
-`fusion-workbench/shared/analyses/260809-1103-guard-enforced-policies.md` §Findings 2b-1,
+`260809-1103-guard-enforced-policies.md` §Findings 2b-1,
 `rules/git-branch-discipline.md:24-28` (the allow-list this over-reads),
 `hooks/lib/__tests__/git-branch-guard.test.ts:85-94` (the tests that cover the flags without the separator)
 
@@ -82,9 +82,9 @@ subshells, and the same against a resolver that would resolve every operand —
 plus the real-git rows in `guard-bash-integration.test.ts`. Fusion's own revert
 spelling is covered from the other side by "leaves fusion's own revert spelling
 allowed". Step 6 of
-`shared/planning/260809-1229_*_plan-five-severe-guard-defects.md` corrected the
+`260809-1229_*_plan-five-severe-guard-defects.md` corrected the
 allow-list entry in `rules/git-branch-discipline.md`, which had presented the
 `--` separator as the primary, unambiguous discriminator without qualification.
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — closure confirmed against the tree.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — closure confirmed against the tree.**
 All four acceptance criteria verified at HEAD `fb262d8`. The five HEAD-moving flags (`-b`, `-B`, `--detach`, `--orphan`, `-`) are scanned at `hooks/lib/git-branch-guard.ts:372-383`, above the `args.includes("--")` allow at `:384`. `git checkout HEAD -- <file>` falls through to the separator check unchanged. The describe block "a trailing `--` does not withdraw a HEAD-moving flag" (`hooks/lib/__tests__/git-branch-guard.test.ts:448`) and "leaves fusion's own revert spelling allowed" (`:496`) both pass. `rules/git-branch-discipline.md` `## What stays allowed` now qualifies the separator form with "as long as no branch-creating or detaching flag stands in front of the separator" and cites this record.

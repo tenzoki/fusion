@@ -2,8 +2,8 @@
 
 **Agent:** coder
 **Date:** 2026-08-21 02:42
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
-**Plan:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, step 12
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
+**Plan:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, step 12
 **Status:** Complete
 
 ## What was done
@@ -14,7 +14,7 @@ One file, one pass, one commit's worth of edits. 109 of the file's 115 prose em-
 |---|---|---|---|---|
 | `rules/fusion-workbench-conventions.md` | 115 in 7 840 words | 6 in 7 738 | 7 | 57 371 to 57 055 |
 
-`bin/fusion-prose-metric` is the authority for every count above. The ceiling is read per file, per `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`.
+`bin/fusion-prose-metric` is the authority for every count above. The ceiling is read per file, per `260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`.
 
 ## What each mark became
 
@@ -34,7 +34,7 @@ Both open records were read before starting, and each replacement was checked ag
 
 ### Vague pronoun openers
 
-`shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` asks that no replacement sentence open with a bare demonstrative or pronoun standing for a whole preceding clause.
+`260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md` asks that no replacement sentence open with a bare demonstrative or pronoun standing for a whole preceding clause.
 
 Eleven sentence splits were made. Their openers are `And` (five times), `Never`, `The answer`, `The underscore`, `No second file`, `If interrupted`, and `And then`. None is a demonstrative or a pronoun.
 
@@ -42,7 +42,7 @@ The reviewer's correction to that record was respected: a pronoun opener is **no
 
 ### A mark weaker than the clause it replaced
 
-`shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` asks that a dash carrying a strong break become a colon or a full stop and never a comma, and that parentheses be used only where the bracketed text is genuinely removable.
+`260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` asks that a dash carrying a strong break become a colon or a full stop and never a comma, and that parentheses be used only where the bracketed text is genuinely removable.
 
 The four commas are accounted for above and none carries a clause boundary. For the parentheses, the removability test was applied to each: in every one of the 20, the sentence stands complete and grammatical with the bracketed text deleted. The record's own `:112` case, a *definitional* appositive that must not read as illustration, was met with a colon rather than parentheses wherever the appositive ends a clause. `:239` is the worked instance: `all mean the same thing — not declared — and then` became `all mean the same thing: not declared. And then`, so the definition keeps its force and the coordinated clause becomes its own sentence, instead of the parentheses that would have made the definition look optional.
 
@@ -59,13 +59,13 @@ Four are section headings, and their spelling is an address other files hold.
 | 284 | `\| Portfolio \| \`$PORTFOLIO\` \| fixed \| — \|` | The em-dash is a data cell, the not-applicable glyph in the State-marker column, standing where the other rows read `yes` or `no`. It is not prose punctuation, and replacing it would change the table's data rather than its marks. |
 | 450 | `- When a review confirms a plan step, issue, or decision is done — the reviewing agent marks it.` | All four prescribed marks fail here. A comma would put a clause boundary on a comma in a line that already carries three, which is what the second open record forbids. A colon between a fronted `when` clause and its main clause is ungrammatical. A split leaves the `when` clause a fragment. Parentheses change the meaning. |
 
-**One thing about the four headings has to be stated plainly rather than implied.** Only the first is protected by a gate. The other three were probed the same way, one at a time, and every test stayed green when they were changed. Their 58 occurrences across 46 files live in workbench records and in two hook-test comments, and no program resolves any of them. They were kept because 58 pointers would have gone quietly dead, which is exactly the citation drift `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` tracks, not because anything would have caught it.
+**One thing about the four headings has to be stated plainly rather than implied.** Only the first is protected by a gate. The other three were probed the same way, one at a time, and every test stayed green when they were changed. Their 58 occurrences across 46 files live in workbench records and in two hook-test comments, and no program resolves any of them. They were kept because 58 pointers would have gone quietly dead, which is exactly the citation drift `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` tracks, not because anything would have caught it.
 
 That is six of the seven the file's word count permits. The seventh was not spent: no remaining mark had a reason of this kind, and a mark kept for tidiness would be a mark kept for no reason.
 
 ## The contradiction in the step's own acceptance
 
-Step 12 asks for the metric at or under seven **and** for the tables to be unchanged. 21 of the 115 marks are inside table cells, the word count is fixed because no word may change, so the permit stays 7 and freezing the tables puts the floor at 21. The two cannot both hold. The step was implemented under the structural reading of "unchanged" (same rows, same order, same cells, same data; mark-only edits inside a cell in scope), which is the only reading that satisfies both halves and the one the step's own "114 replacements" implies. Filed as `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0242_*_step-12s-two-acceptance-criteria-cannot-both-hold-because-21-of-the-115-em-dashes-are-in-table-cells.md`, with the three reasons that reading is the intended one.
+Step 12 asks for the metric at or under seven **and** for the tables to be unchanged. 21 of the 115 marks are inside table cells, the word count is fixed because no word may change, so the permit stays 7 and freezing the tables puts the floor at 21. The two cannot both hold. The step was implemented under the structural reading of "unchanged" (same rows, same order, same cells, same data; mark-only edits inside a cell in scope), which is the only reading that satisfies both halves and the one the step's own "114 replacements" implies. Filed as `260821-0242_*_step-12s-two-acceptance-criteria-cannot-both-hold-because-21-of-the-115-em-dashes-are-in-table-cells.md`, with the three reasons that reading is the intended one.
 
 ## Evidence
 

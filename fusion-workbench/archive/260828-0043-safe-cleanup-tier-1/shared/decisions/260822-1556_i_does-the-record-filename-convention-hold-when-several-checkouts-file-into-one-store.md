@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** reconciler, session-end pass over `370bfc5..9f65463`
-**Cross-references:** `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` (the settled answer this record asks about); `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the arrangement that narrows its evidence base); `shared/issues/260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md` (the failure mode, already observed once under one writer)
+**Cross-references:** `260807-0158_*_how-is-a-unique-record-filename-obtained.md` (the settled answer this record asks about); `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the arrangement that narrows its evidence base); `260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md` (the failure mode, already observed once under one writer)
 
 ---
 
@@ -76,7 +76,7 @@ Superseded by:
 Retired:
 
 ---
-Answered: `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 2 — option 2, taken at C3's planning gate: the citation form is written down as normative rule text and no filename changes.
+Answered: `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 2 — option 2, taken at C3's planning gate: the citation form is written down as normative rule text and no filename changes.
 
 ## Answer (user, 260824)
 
@@ -96,7 +96,7 @@ one sentence of rule text rather than a mechanism, and it is why the answer cost
 
 ### The failure is observed, not projected
 
-`shared/issues/260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`
+`260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`
 records one Turn log that cited a shared stamp and resolved to the closed record of the pair while
 the open one was the live obligation. A citation that resolves to the wrong record of the right
 shape reads as correct, which is why this class is worse than a dangling pointer and why habit is
@@ -134,7 +134,7 @@ what the answer turns on, and the direction is up before a single second checkou
 
 The identifier goes in the record body and never in a filename. That condition was attached by the
 user at the round-3 gate and is stated in
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md:173` `### C3`, with its
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md:173` `### C3`, with its
 reason: a dead field in a body is a historical note, while a dead component of a filename is a
 reference that designates nothing. Option 3 puts the person into the filename, so it was ruled out
 by that condition before any comparison of its merits ran. It is recorded here, as it is in the
@@ -169,7 +169,7 @@ failure that has already occurred once.
 
 ### What this unblocks
 
-`shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` set a condition for
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md` set a condition for
 itself and restated it in three successive reconciliations: it moves to `_i_` when the
 cite-by-full-filename rule lands in `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
 Taking option 2 is what meets that condition. That record's marker moves at step 12 of the plan, on
@@ -190,10 +190,10 @@ The hash was checked against its own diff with `git show`, not read off its subj
 
 > **Cite a record by its full filename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. No two records share a full basename once the marker is normalised, so the naming convention holds and only the citation form was ever at fault. **No pattern above changes.**
 
-It carries the re-measured figures from this record's own table, 111 of 545 across 876 files, and the row that leaves `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` intact, zero files sharing a full basename once the marker is normalised.
+It carries the re-measured figures from this record's own table, 111 of 545 across 876 files, and the row that leaves `260807-0158_*_how-is-a-unique-record-filename-obtained.md` intact, zero files sharing a full basename once the marker is normalised.
 
 **The three conditions this answer set for itself were checked against the tree and all hold.** `git diff e209011..HEAD -- rules/fusion-workbench-conventions.md`, over the Circle's whole commit range, is additions with one exception, and that exception is the `**Filed by:**` template line gaining its person half. The artifact-kind table is untouched. No identifier entered a filename, no corpus-wide rename ran, and nothing mints a name.
 
 **What the answer said it would not change, it did not.** No test was altered by `2b055a0` beyond the two regenerated goldens and one re-approved citation baseline, and the question of whether the citation gate should additionally fail on an ambiguous resolution is still undecided and still unfiled.
 
-**`### What this unblocks` is discharged in the same pass as this line.** `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` moves to `_i_` on the same commit, which is the condition it set for itself and restated in three reconciliations.
+**`### What this unblocks` is discharged in the same pass as this line.** `260807-0158_*_how-is-a-unique-record-filename-obtained.md` moves to `_i_` on the same commit, which is the condition it set for itself and restated in three reconciliations.

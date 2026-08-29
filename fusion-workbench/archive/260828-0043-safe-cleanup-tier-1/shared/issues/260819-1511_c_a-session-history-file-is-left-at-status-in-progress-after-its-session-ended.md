@@ -2,7 +2,7 @@ A session history file is left at `**Status:** In progress` after its session en
 
 ---
 
-`shared/history/260815-2147-orchestrator-session.md:5` reads `**Status:** In progress`. That session
+`260815-2147-orchestrator-session.md:5` reads `**Status:** In progress`. That session
 ended; `rules/fusion-workbench-conventions.md` `## History Logging` requires the status line to be set
 to `Complete` as the final step, and says why: if the session is interrupted before it, completion
 state is lost.
@@ -22,8 +22,8 @@ a different file, and was being closed when this was found.
 **Scope:** `shared/history/`. Correcting this one file is a one-line edit; deciding whether the
 final-status obligation needs to ride something is not, and is not proposed here.
 
-Found by the Circle-store reconciliation of session `260818-2301`, which could not file it at the time:
+Found by the Circle-store reconciliation of session `260818-2301-orchestrator-session.md`, which could not file it at the time:
 its write scope was `circles/*/` and a sibling reconciler held `shared/issues/`.
 
 ---
-Resolved: fixed — the status line is set to Complete with a dated note; shared/history/260815-2147-orchestrator-session.md:5 and shared/history/260815-2147-orchestrator-session.md:248
+Resolved: fixed — the status line is set to Complete with a dated note; 260815-2147-orchestrator-session.md:5 and 260815-2147-orchestrator-session.md:248

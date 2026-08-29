@@ -11,7 +11,7 @@ not by the pass it describes.** The stamp is the time of writing rather than the
 work, deliberately: a backdated filename would make a missing record look like one that was
 always there, which is the same substitution the pass itself refused to make on the records it
 annotated. The facts below come from `3d4b181` and its diff, from
-`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`,
+`260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`,
 and from a re-measurement at HEAD.
 
 ## Why the pass wrote no record of its own
@@ -28,7 +28,7 @@ install copy at 260825-0829 carries a real person half and therefore lands in th
 column. It moves the total from 70 to 71 and the person count from 25 to 26; it cannot move
 the 31, because the 31 is defined by an absence the new file does not have. The first pass's
 own record,
-`shared/history/260825-1241-reconciliation.md`, is already in that window and already in the
+`260825-1241-reconciliation.md`, is already in that window and already in the
 compliant column, which is the counter-example that settles it.
 
 What the reasoning correctly identified is that a measurement stated as a bare number is
@@ -42,7 +42,7 @@ re-ran it at `3d4b181` and read 70 / 25 / 14 / 31, unchanged.
 record's `**Filed by:**` line in all thirty-one, names the agent that filed the record, states
 that the person half is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried
 no `bin/fusion-identity` at the time, and cites
-`shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 Its opening clause reads *"Attribution backfilled 260825 (not written by the filing agent)"*,
 so the annotation is not mistakable for what the filing agent wrote. That was the pass's
 central judgement and it was the right one: a backfilled line indistinguishable from a
@@ -78,7 +78,7 @@ reading is what produced the first pass's wrong split.
 - In all 31 the line sits exactly one line below `**Filed by:**`, and no record in the set
   already carried a person half.
 - The cited defect record resolves on disk.
-- All 31 filename stamps fall between `260824-1621` and `260824-2155`. The claimed window is
+- All 31 filename stamps fall between `260824-1621_*_the-filing-rules-residual-branch-promises-a-person-line-that-exit-5-does-not-print.md` and `260824-2155`. The claimed window is
   real: `bin/fusion-identity` entered the work tree in `3ba7a46` at 2026-08-24 11:30:31 and
   the installed copy carries mtime 2026-08-25 08:29. Not one record falls outside it.
 - `cd hooks && npm test`: 43 files, 760 tests, exit 0. The three citation and plan lints pass

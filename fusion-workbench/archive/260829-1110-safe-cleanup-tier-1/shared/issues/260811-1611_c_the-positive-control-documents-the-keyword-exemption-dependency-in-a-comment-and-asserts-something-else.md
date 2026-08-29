@@ -7,8 +7,8 @@
 **Filed by:** coderev (Turn 3 review, range `7d9efc8..adaa545`)
 **Affects:** `hooks/lib/__tests__/commit-message-path.test.ts:225-231` (the positive control's new assertion), `:190` (the exemption the dependency is on)
 **Cross-references:**
-`shared/issues/260811-1410_c_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` (the finding `3b30f5e` closed);
-`shared/issues/260811-1149_o_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md` (the open record the dependency lands on)
+`260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` (the finding `3b30f5e` closed);
+`260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md` (the open record the dependency lands on)
 
 ---
 
@@ -49,7 +49,7 @@ skills/commit/SKILL.md:88    hits=fusion-workbench/.commit-msg-tmp   exempt=left
 ```
 
 Two lines, one keyword. Drop `leftover` from the exemption — a plausible outcome of answering
-`260811-1149`, which is filed against that regex being *too broad* — and `it("finds none")` turns
+`260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`, which is filed against that regex being *too broad* — and `it("finds none")` turns
 red with the message *"a shipped prompt names a commit-message file inside fusion-workbench/ without
 marking it as the defect"*, while the positive control stays green. Whoever answers `1149` discovers
 the dependency from a failure in a different test, which is exactly the outcome the commit says was

@@ -1,6 +1,6 @@
-# Orchestrator Session — 260707-0957
+# Orchestrator Session — 260707-0957-orchestrator-session.md
 
-**Directive:** Resume the interrupted guard-side-effect fix (issues 260707-0750 + 0751) and complete the update.
+**Directive:** Resume the interrupted guard-side-effect fix (issues 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md + 0751) and complete the update.
 **Mode:** custom (resume interrupted work)
 **Status:** Complete
 
@@ -20,8 +20,8 @@ session picked up from the uncommitted working tree.
 - **Committed bf18fc0** — `fix(hooks): Bash guard allow-path no longer mutates write-guard state`.
   Files: `hooks/guard.ts`, `hooks/dist/guard.js` (workbench is gitignored here, so issue
   closures are workbench-only state).
-- **Closed** `260707-0750[c]` and `260707-0751[c]` with `Resolved: bf18fc0` notes.
-- **Filed follow-up** `260707-1006[o]` — pin the Bash allow-path no-side-effect invariant with
+- **Closed** `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md` and `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md` with `Resolved: bf18fc0` notes.
+- **Filed follow-up** `260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md` — pin the Bash allow-path no-side-effect invariant with
   a test (both closed issues requested it; guard.ts exports nothing, so it needs a subprocess
   harness or an export+mock refactor — real test-infra work, deliberately not folded into the
   fix commit).
@@ -55,8 +55,8 @@ To activate: `fusion --update`, then start a fresh `fusion` session. Cross-check
 - **Git HEAD:** dbf98f6 — `fix(hooks): wire branch/worktree guard to Bash + launcher exports FUSION_PLUGIN_ROOT`
 - **Working tree (uncommitted):** `hooks/dist/guard.js`, `hooks/guard.ts` (modified — likely WIP from prior interrupted session)
 - **Open issues:** 2
-  - `260707-0750[o]-bash-allow-resets-block-counter-defeats-halt-escalation.md`
-  - `260707-0751[o]-guard-allow-bash-events-flood-events-jsonl.md`
+  - `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md.md`
+  - `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md.md`
 - **Open decisions:** 0 (`260706-1902[i]` is implemented/terminal)
 - **Open plans:** 0
 - **Circles:** 0 anticipated, 0 active → no portfolio hint printed

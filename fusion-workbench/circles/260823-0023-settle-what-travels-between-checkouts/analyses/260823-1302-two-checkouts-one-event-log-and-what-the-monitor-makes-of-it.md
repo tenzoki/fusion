@@ -3,7 +3,7 @@
 **Date:** 2026-08-23 13:02
 **Type:** Feasibility
 **Status:** Complete
-**Requested by:** orchestrator, running step 9 of `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
+**Requested by:** orchestrator, running step 9 of `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
 
 ## Verdict
 
@@ -31,7 +31,7 @@ Can a person produce two checkouts of one project, run a session in each, push b
 
 Measured on macOS 15.7.7 (Darwin 24.6.0), git 2.49.0, node v24.2.0, against this repository at HEAD `a76ee8f`. Everything was built under a scratch directory outside the repository and deleted at the end. Nothing was created inside `/Users/k1/Projects/productive/fusion`, and no source file was changed.
 
-The harness follows C1's method (`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope`): a purpose-built scratch project with a full workbench, a local bare remote, and sibling clones. The project's `.gitignore` carries this repository's `fusion-workbench` block copied verbatim, so the tracked split under test is the one fusion's own tree applies, `portfolio.md` included.
+The harness follows C1's method (`260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope`): a purpose-built scratch project with a full workbench, a local bare remote, and sibling clones. The project's `.gitignore` carries this repository's `fusion-workbench` block copied verbatim, so the tracked split under test is the one fusion's own tree applies, `portfolio.md` included.
 
 **Two mechanisms were run rather than reproduced.** `/fusion:setup` Step 0h and the Step 0 marker write were extracted verbatim from `skills/setup/SKILL.md` by script and executed unmodified in each clone. Declaring the merge driver by hand would have verified a different thing. `computeETA` and `parseUTCTs` were extracted verbatim from `bin/monitor` and run under node, and the monitor itself was run as a server against a clone's workbench and read over its own HTTP interface.
 
@@ -277,7 +277,7 @@ C1 recorded this as its own finding and named the consequence: `/fusion:setup` r
 
 **Every remaining reader of the log needs the same missing input.** The dashboard status, the ETA, the event panel, the sequence diagram and the Turn count all need to know which session a line belongs to. Repairing them one at a time produces five local answers to one question, which is the special-case sprawl `rules/critical-stance.md` §2 names. The fork belongs in front of the user once, before any of the five is touched.
 
-**The recorded repair direction for the Turn count is now half wrong.** Both `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` and `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` offer sorting by `ts` as a way out. The measurement above says sorting does not separate the sessions, so only the other half of that direction survives, a window that does not depend on file order.
+**The recorded repair direction for the Turn count is now half wrong.** Both `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` and `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md` offer sorting by `ts` as a way out. The measurement above says sorting does not separate the sessions, so only the other half of that direction survives, a window that does not depend on file order.
 
 **Setup's merge-driver write reaches further than the checkout that runs it.** Because `.gitattributes` is tracked, one Setup run declares the driver for every later checkout of that project. The step's own risk register treats the write as visible in the maintainer's next diff, which holds, but the reach is one project rather than one working copy.
 
@@ -289,7 +289,7 @@ C1 recorded this as its own finding and named the consequence: `/fusion:setup` r
 
 ## Filed Issues
 
-- `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` — the monitor reads a merged log as one session, so the dashboard status, the ETA, the paired-duration average and the event window each report another checkout's state; sorting by `ts` does not repair it.
+- `260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` — the monitor reads a merged log as one session, so the dashboard status, the ETA, the paired-duration average and the event window each report another checkout's state; sorting by `ts` does not repair it.
 
 ## Sources
 
@@ -305,10 +305,10 @@ Measured, in a scratch tree outside this repository (deleted after the run):
 
 Read:
 
-- `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 9 and `## Where this Circle stops`
-- `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope` and `## Findings` section 7
-- `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
-- `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+- `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 9 and `## Where this Circle stops`
+- `260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope` and `## Findings` section 7
+- `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
+- `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
 - `skills/setup/SKILL.md` Step 0 and Step 0h
 - `bin/monitor`: `computeETA`, `_parse_mode`, `_read_warnings`, `do_GET`, `updateStatus`
 - `agents/orchestrator.md`: the event-emission convention and the Phase-4 diagram step

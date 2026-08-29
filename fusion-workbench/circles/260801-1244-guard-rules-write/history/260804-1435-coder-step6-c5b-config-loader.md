@@ -1,7 +1,7 @@
 # Step 6 — the C5b configuration loader
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write` — plan Step 6, first work on the Directive's second half
+**Circle:** `260801-1244-guard-rules-write` — plan Step 6, first work on the Directive's second half
 **Date:** 260804, 14:05–14:40
 **Status:** Complete
 **Outcome:** **Built and verified through the harness.** `npm test` green at **1341 passed, 25 files** (baseline 1299, 24 files). A project with no `fusion-guard.json` is byte-identical to before, asserted against a transcribed pre-Step-6 loader rather than eyeballed. Two issues filed, no decision moved.
@@ -12,7 +12,7 @@
 
 **A project without a configuration file is byte-identical to today.** Measured two ways: a unit case comparing `JSON.stringify` of the effective config against a verbatim transcription of the pre-Step-6 loader run over the same shipped `hooks/config.json`, and a direct probe of the default resolution in this repository. The comparison fails under mutation, so it is a measurement and not a vacuous pass.
 
-**Of the three decisions, Step 6 answers one and makes a second live without answering it.** `260802-1912` (does the floor apply before the file exists) is realised in code exactly as the user answered it. `260803-1314` (may a project protect a path inside its own rule directory against the flag) is **not** answered — but Step 6 turns it from hypothetical into shipped default behaviour, which is a change in its status even though no line of it was decided. `260803-1402` (should the classifier inspect a read operand) is untouched and unaffected.
+**Of the three decisions, Step 6 answers one and makes a second live without answering it.** `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (does the floor apply before the file exists) is realised in code exactly as the user answered it. `260803-1314` (may a project protect a path inside its own rule directory against the flag) is **not** answered — but Step 6 turns it from hypothetical into shipped default behaviour, which is a change in its status even though no line of it was decided. `260803-1402` (should the classifier inspect a read operand) is untouched and unaffected.
 
 **Every acceptance criterion was checked through the harness against a throwaway project root, not in this repository.** Nothing in this repository was edited to see what the guard would do, and no `fusion-guard.json` exists at this repository's root. Two cases deliberately run the *same* configuration in both places to show the difference rather than assume it.
 
@@ -77,7 +77,7 @@ Step 6's dependency on Step 1 turned out to be already fully paid. `makeProject`
 
 ## The decisions
 
-### `260802-1912` — the self-protection floor. **Answered by this step's code.**
+### `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` — the self-protection floor. **Answered by this step's code.**
 
 The record's option 1 is what `hooks/lib/config.ts` implements: `floorApplies = projectConfigPath !== null && existsSync(projectConfigPath)`. Both halves are asserted through the guard:
 
@@ -122,9 +122,9 @@ Two things the plan got exactly right, worth recording because this Circle's cit
 
 ## Two issues filed
 
-**`260804-1427_o_` — the accepted floor residual reaches the guard's own state directory.** Medium. Decision `260802-1912` bounds its residual as "an agent may create a `fusion-guard.json` that narrows `protectedPaths`". The narrowing also drops `fusion-workbench/.guard-state/**`, where `consecutiveBlocks` and `haltActive` live, so the reach is the escalation machinery and not only the file list. Measured through the real guard in four tool calls and asserted in the suite. The bound that *does* hold is also measured and recorded in the same issue: a halted guard blocks the narrowing write itself, on both surfaces, so an agent cannot narrow its way out of a halt it is already in. Filed rather than fixed because widening the floor from one path to two is a choice about what a project may configure, and the spec authorises exactly one.
+**`260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md` — the accepted floor residual reaches the guard's own state directory.** Medium. Decision `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` bounds its residual as "an agent may create a `fusion-guard.json` that narrows `protectedPaths`". The narrowing also drops `fusion-workbench/.guard-state/**`, where `consecutiveBlocks` and `haltActive` live, so the reach is the escalation machinery and not only the file list. Measured through the real guard in four tool calls and asserted in the suite. The bound that *does* hold is also measured and recorded in the same issue: a halted guard blocks the narrowing write itself, on both surfaces, so an agent cannot narrow its way out of a halt it is already in. Filed rather than fixed because widening the floor from one path to two is a choice about what a project may configure, and the spec authorises exactly one.
 
-**`260804-1432_o_` — `lib/paths.ts` says two case-sensitive matches are unreachable "until the per-project loader lands".** Low. Step 6 is that loader, so the sentence is now false: a project can populate `guard.categoryPaths` and `decisions`, both matched by the case-sensitive `matchesAny` in `findRelevantDecisions`. Two separable things are owed — the sentence, and the decision the docstring itself asked for. `hooks/lib/paths.ts` is outside this step's scope, and the second is a decision rather than a line.
+**`260804-1432_*_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md` — `lib/paths.ts` says two case-sensitive matches are unreachable "until the per-project loader lands".** Low. Step 6 is that loader, so the sentence is now false: a project can populate `guard.categoryPaths` and `decisions`, both matched by the case-sensitive `matchesAny` in `findRelevantDecisions`. Two separable things are owed — the sentence, and the decision the docstring itself asked for. `hooks/lib/paths.ts` is outside this step's scope, and the second is a decision rather than a line.
 
 ---
 

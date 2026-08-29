@@ -48,7 +48,7 @@ The instruction attached to the list is *"name the cause the block reported, nev
 inferred"*, and the model does copy the `why=` field through, so no wrong cause reaches the user
 today. The cost is on the next reader of this paragraph: it is the one place the two causes are
 explained, and a session diagnosing `no-anchor-in-agentstate` on a project outside git will not find
-that case listed under the value it got. That is precisely the failure `260811-1406` was filed
+that case listed under the value it got. That is precisely the failure `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` was filed
 against, one layer up — a stated cause list that does not correspond to the branch that fires.
 
 ## Suggested direction
@@ -73,7 +73,7 @@ anchor only in a git repository, so no `git_head_at_start` is written at all";
 `workbench-not-in-anchor-commit` keeps the two causes it can reach, an untracked workbench and an
 anchor that has left this repository's history. The conjunction is gone.
 
-Landed on top of `260811-1610`, which split the block's gate, so the branch a project outside git
+Landed on top of `260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`, which split the block's gate, so the branch a project outside git
 reaches now also prints its filed counts.
 
 Gated twice in `hooks/lib/__tests__/record-counts-measurement.test.ts`. Behaviour: a fixture with no

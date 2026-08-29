@@ -5,8 +5,8 @@ The window to correct the Grounding's false claim closes with the Circle, and th
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 3
-**Affects:** `circles/260823-0023-settle-what-travels-between-checkouts/_t_circle.md` `## Grounding snapshot`; `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md:253` (the `## Open Questions` bullet that defers it)
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, the record left open; `rules/circle-records.md` `### The Directive is a pointer once a spec exists` ("a terminal record is history and is never edited"); `README-agents.md:25` and `agents/shaper.md:28`
+**Affects:** `260823-0023-settle-what-travels-between-checkouts` `## Grounding snapshot`; `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md:253` (the `## Open Questions` bullet that defers it)
+**Cross-references:** `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`, the record left open; `rules/circle-records.md` `### The Directive is a pointer once a spec exists` ("a terminal record is history and is never edited"); `README-agents.md:25` and `agents/shaper.md:28`
 
 ---
 
@@ -41,7 +41,7 @@ Resolved: the correction landed inside the window. `2ec2bc2` made a first attemp
 `a40b330` completed it, both while the record still carries `_t_`, so the first of the two shapes this
 record named was taken — not the closure-note fallback. `## Grounding snapshot` now states the fact
 truly, verified at `skills/setup/SKILL.md` Steps 0f and 0g rather than taken from either commit
-message (see `260823-1635_*` for that verification).
+message (see `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*` for that verification).
 
 The deferral this record was filed against is therefore discharged by outcome rather than by anyone
 writing the deadline down. That distinction is deliberate and is why this note says so: nothing in
@@ -50,9 +50,9 @@ becomes unwritable at the rename. It took a human edit and an explicit user over
 correction made, which is the evidence that the deadline is still undocumented rather than the
 evidence that it does not need to be.
 
-**The window is still open and still has an occupant.** `260823-1642_*` names two residuals in the
+**The window is still open and still has an occupant.** `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md_*` names two residuals in the
 same three lines — the paragraph's "two costs" scaffolding and a convention list that states
 unscoped what `skills/setup/SKILL.md` scopes — and both freeze at the same rename. Closing this
 record does not close that one.
 
-Closed by reconciler, second Coherence pass, 260823-2130.
+Closed by reconciler, second Coherence pass, 260823-2130-reconciliation.md.

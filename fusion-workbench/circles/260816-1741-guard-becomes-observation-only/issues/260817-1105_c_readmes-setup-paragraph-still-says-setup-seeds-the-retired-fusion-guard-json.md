@@ -23,9 +23,9 @@ guard as a live property; this line presents neither — it presents a *file* th
 which is a different property. Step 12 edited `README.md` `## Install` to add the v10 upgrade
 pointer at `:28` and did not reach `:67`. Step 14 opened the file for the pin example at `:26`.
 `reference-resolution-lint` cannot see it: `fusion-guard.json` written without a directory is not a
-path, which is the same limit issue `260816-2321` records in two other places.
+path, which is the same limit issue `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md` records in two other places.
 
-**Severity:** Medium, and higher than the comment-level staleness filed under `260816-2321`.
+**Severity:** Medium, and higher than the comment-level staleness filed under `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`.
 `README.md` is the first surface a new user reads, this line is inside the instruction block that
 tells them what to commit, and following it means committing a file fusion does not read while the
 file that carries their Turn budget goes unmentioned at the point of setup.
@@ -38,7 +38,7 @@ a guard configuration. `README.md:104` already carries the wording to reuse.
 **Cross-references:**
 - `README.md:67`, `:104`, `:111`
 - `skills/setup/SKILL.md:171`, `:178`, `:185`, `:190`
-- `circles/260816-1741-guard-becomes-observation-only/issues/260816-2321_c_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
+- `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
   (the same lint limit, in two other places)
 
 ---

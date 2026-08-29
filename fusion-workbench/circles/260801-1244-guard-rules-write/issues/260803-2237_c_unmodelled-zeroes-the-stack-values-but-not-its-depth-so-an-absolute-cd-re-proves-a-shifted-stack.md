@@ -4,7 +4,7 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coderev, Turn 5 incremental review of `circles/260801-1244-guard-rules-write`
+**Filed by:** coderev, Turn 5 incremental review of `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only)
 **Kind:** PRE-EXISTING since `a79ff1a` (Turn 4). Reproduces identically at `cb2c8ad` and at HEAD — this Turn neither caused it nor closed it, but this Turn's corrected audit recipe states the property it violates.
 **Cross-references:**
@@ -13,8 +13,8 @@ shapes 1 and 4), `:1737-1745` (what the recipe says it does not certify), `:1291
 (`resolveDir`, where an absolute operand re-proves the cwd), `:1807-1820` (`popd`);
 `hooks/lib/__tests__/bash-mutation-guard.test.ts:2252-2263` (the depth table, which lists
 `pushd -n DIR depth +1` and does not test it);
-`issues/260803-2039_c_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates…`
-(the sibling this extends), `issues/260803-1803_c_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate…`.
+`260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates…`
+(the sibling this extends), `260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate…`.
 
 ---
 
@@ -147,7 +147,7 @@ it names as the answer, actually delivers it.
 
 ---
 
-## Resolved — task T6-1, `history/260803-2340-turn6-t6-1-wrapper-give-up-and-stack-depth.md`
+## Resolved — task T6-1, `260803-2340-turn6-t6-1-wrapper-give-up-and-stack-depth.md`
 
 **Neither candidate direction as written. A TYPE, so the invalid state cannot be
 constructed.** `ShellState.dirStack` is no longer `Cwd[]`; it is

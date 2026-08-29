@@ -11,9 +11,9 @@ a string key two prompt call sites are now instructed to branch on.
 **Severity:** High.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-0141-coderev-c4-the-event-log-reader-and-the-writer-on-every-line.md`
+`260826-0141-coderev-c4-the-event-log-reader-and-the-writer-on-every-line.md`
 (findings H-1, M-1, M-2, M-3, M-4, all discharged in this file);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`,
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`,
 step 10 (the case list) and step 5 (the four call sites that read `scope=`);
 `hooks/lib/__tests__/fusion-events.test.ts:13-16` (the stated exclusion list).
 
@@ -70,12 +70,12 @@ buys:
 3. `turns` with no `agentstate.yaml` and with no `history_file` in it — exit 3, empty stdout.
 
 The hook-test surface is the bound. This addition needs a cut in the same Turn under
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`,
+`260825-2140_*_where-do-c4s-hook-test-lines-come-from-when-the-cut-only-circles-room-is-spent.md`,
 option 2, which the user answered for the last addition and whose terms this one falls under too.
 
 ## One note on a neighbouring record
 
-`260826-0848` asks for a case that pins `hooks/session-id.ts`'s channel by spawning the built module.
+`260826-0848_*_the-fourth-sessionstart-command-is-asserted-by-nothing-and-its-own-suite-warns-about-exactly-that.md` asks for a case that pins `hooks/session-id.ts`'s channel by spawning the built module.
 That is the only form available: `sessionIdLine` is exported at `hooks/session-id.ts:71` but `:94`
 runs `main()` at module load and `main()` awaits `process.stdin`, so an importing test would hang.
 The export buys nothing and is not worth removing — `session-start.ts` exports `subdirectoryWarning`

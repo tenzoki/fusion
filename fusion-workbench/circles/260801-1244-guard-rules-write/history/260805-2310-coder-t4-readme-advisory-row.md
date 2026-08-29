@@ -4,7 +4,7 @@ Status: Complete
 
 ## Task
 
-Resolve `issues/260805-2248_o_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md`: `README-hooks.md:138` claimed a declared empty `protectedPaths` list stands the shell protected-path check down "fail-closed rule included", contradicted by the floor added in the same sentence.
+Resolve `260805-2248_*_readme-advisory-zeile-behauptet-fail-closed-steht-ab-obwohl-der-floor-ihn-am-leben-haelt.md`: `README-hooks.md:138` claimed a declared empty `protectedPaths` list stands the shell protected-path check down "fail-closed rule included", contradicted by the floor added in the same sentence.
 
 ## What was done
 
@@ -15,11 +15,11 @@ Resolve `issues/260805-2248_o_readme-advisory-zeile-behauptet-fail-closed-steht-
 
 ## Deliberately not touched
 
-`rules/protected-path-discipline.md:41` — same false half-sentence, but it belongs to Circle 260805-2005-textschicht's issue `260805-1840_o_ppd-leere-liste-steht-den-check-nicht-ab.md`, already filed.
+`rules/protected-path-discipline.md:41` — same false half-sentence, but it belongs to Circle 260805-2005-textschicht's issue `260805-1840_*_ppd-leere-liste-steht-den-check-nicht-ab.md`, already filed.
 
 ## Changed files
 
 - `README-hooks.md` (line 138, one table row)
-- `circles/260801-1244-guard-rules-write/issues/260805-2248_c_readme-advisory-zeile-…` (footer + rename)
+- `260805-2248_*_readme-advisory-zeile-…` (footer + rename)
 
 Not committed, per task instruction.

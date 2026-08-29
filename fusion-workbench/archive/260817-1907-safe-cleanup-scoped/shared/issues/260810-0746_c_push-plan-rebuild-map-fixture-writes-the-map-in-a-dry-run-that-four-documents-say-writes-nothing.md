@@ -4,9 +4,9 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** `bin/fusion-plane:1377-1382`
-**Cross-references:** commit `c923935`; `shared/issues/260810-0456_c_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`
+**Cross-references:** commit `c923935`; `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`
 
 ---
 

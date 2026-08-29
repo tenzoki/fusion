@@ -9,7 +9,7 @@ happen.**
 
 ## Context
 
-Filed while closing `shared/issues/260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`,
+Filed while closing `260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`,
 whose fix is Step 0g. That record's own measurement, taken on 2026-08-10 against Claude Code 2.1.226, is
 where the doubt comes from, and it is stated there rather than inferred here:
 
@@ -20,7 +20,7 @@ where the doubt comes from, and it is stated there rather than inferred here:
   interactive mode gates the Agent tool where print mode does not.
 
 The answered decision
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`
+`260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`
 carries the same doubt under *Not established*, in one sentence: "whether the approval-dialog problem still
 exists at all. If the dialogs are gone, part (a) is answering a dead question and option 3 becomes honest."
 The user answered the decision anyway, which was the right call for a question that had to be settled before
@@ -54,7 +54,7 @@ permission-free. If that is what happens, it affects far more than Setup.
 
 The record's `## Acceptance` demands a scratch project with no `.claude/` anywhere in its ancestry, run **interactively**, on the then-current Claude Code, recording the version and which tools raised dialogs. None of that is in this repository and nothing in this repository can produce it: an agent pass cannot observe an interactive approval dialog, and a non-interactive run answers a different question.
 
-Searched and not found: `grep -rln 'approval dialog' fusion-workbench/` returns only this record, its source decision `260815-0029_i_…`, the closing issue `shared/issues/260810-0326_c_…`, one history file, and the archived tasklist. No measurement record exists in any store.
+Searched and not found: `grep -rln 'approval dialog' fusion-workbench/` returns only this record, its source decision `260815-0029_*_…`, the closing issue `260810-0326_*_…`, one history file, and the archived tasklist. No measurement record exists in any store.
 
 Meanwhile the thing the measurement would justify or retire is still shipping: `skills/setup/SKILL.md:194` is `## Step 0g — Offer to seed the project's permission file`, and it asks every fresh project the question this record wants re-grounded.
 

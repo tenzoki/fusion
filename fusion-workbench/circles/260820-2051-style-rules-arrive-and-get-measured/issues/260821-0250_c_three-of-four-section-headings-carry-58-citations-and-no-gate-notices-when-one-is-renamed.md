@@ -10,7 +10,7 @@ the suite green, and their 58 citations would have gone silently dead.
 
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0242-coder-the-conventions-file-reaches-its-em-dash-ceiling.md`
+**Cross-references:** `260821-0242-coder-the-conventions-file-reaches-its-em-dash-ceiling.md`
 
 ## How it surfaced
 
@@ -31,7 +31,7 @@ anchors saw only one of the four. A rename would be a one-word edit with 58 dead
 and a green suite.
 
 This is the same class as
-`shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`,
 approached from the anchor side rather than the line-number side.
 
 ## Acceptance
@@ -44,4 +44,4 @@ approached from the anchor side rather than the line-number side.
   is cheap, and whatever is built should be checkable the same way.
 
 ---
-Resolved: referred (decision) — shipped anchors are gated by `reference-resolution-lint`, and workbench anchors are the decision's corpus question; circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md
+Resolved: referred (decision) — shipped anchors are gated by `reference-resolution-lint`, and workbench anchors are the decision's corpus question; 260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md

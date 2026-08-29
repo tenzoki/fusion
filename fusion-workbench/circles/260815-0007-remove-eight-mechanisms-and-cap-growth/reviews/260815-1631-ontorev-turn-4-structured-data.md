@@ -2,7 +2,7 @@
 
 **Sender:** ontorev
 **Reviewed-range:** `518926d..1e29572`
-**Not-opened:** `.gitignore`, `agents/coder.md`, `agents/coderev.md`, `agents/curator.md`, `agents/ontocoder.md`, `agents/ontorev.md`, `agents/playmaker.md`, `agents/reconciler.md`, `agents/taskplanner.md`, `bin/fusion-review-coverage`, `bin/fusion-source-root`, `bin/fusion-staging-drift`, `bin/fusion-state-drift`, `bin/monitor`, `docs/philosophy.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1530-coder-remove-persisted-tasklist.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1559-coder-remove-session-counters-and-drift-machinery.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1617-coder-collapse-administrative-surface.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_o_design-diagrams-md-fell-839-bytes-below-its-baseline-and-the-doctrine-has-no-event-for-a-shrink.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_o_plan-step-9s-mechanical-acceptance-grep-fails-at-head-on-a-step-marked-done.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_o_the-emission-comment-says-five-diagram-producers-and-the-selector-two-hundred-lines-above-it-picks-four.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1455_o_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1501_o_four-cardinal-words-still-count-items-the-removals-deleted-and-no-gate-reads-a-cardinal-word.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1501_o_setup-step-5s-worked-example-says-this-repository-counts-88-source-files-and-the-helper-beside-it-returns-118.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1501_o_the-reach-gate-is-blind-to-a-copy-written-only-in-the-retired-domain-names-and-reach-holes-does-not-say-so.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`, `hooks/dist/lib/domain-cascade.js`, `hooks/dist/lib/events.d.ts`, `hooks/dist/lib/git.d.ts`, `hooks/dist/lib/git.js`, `hooks/dist/lib/guard-state-file.d.ts`, `hooks/dist/lib/guard-state-file.js`, `hooks/dist/lib/review-coverage.d.ts`, `hooks/dist/lib/review-coverage.js`, `hooks/dist/lib/staging-drift.d.ts`, `hooks/dist/lib/staging-drift.js`, `hooks/dist/lib/state-drift.d.ts`, `hooks/dist/lib/state-drift.js`, `hooks/dist/lib/state-file.d.ts`, `hooks/dist/lib/state-file.js`, `hooks/dist/review-coverage.d.ts`, `hooks/dist/review-coverage.js`, `hooks/dist/staging-drift.d.ts`, `hooks/dist/staging-drift.js`, `hooks/dist/state-drift.d.ts`, `hooks/dist/state-drift.js`, `hooks/dist/tracker.d.ts`, `hooks/dist/tracker.js`, `hooks/lib/__tests__/commit-message-path.test.ts`, `hooks/lib/__tests__/guard-state-shape.test.ts`, `hooks/lib/__tests__/helpers/guard-harness.ts`, `hooks/lib/__tests__/hook-fail-open.test.ts`, `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, `hooks/lib/__tests__/path-literal-lint.test.ts`, `hooks/lib/__tests__/queue-commit-ownership-lint.test.ts`, `hooks/lib/__tests__/queue-ground-lint.test.ts`, `hooks/lib/__tests__/queue-ground-producer.test.ts`, `hooks/lib/__tests__/queue-retirement-empty-key.test.ts`, `hooks/lib/__tests__/review-coverage-mandate.test.ts`, `hooks/lib/__tests__/state-drift-detection-lint.test.ts`, `hooks/lib/__tests__/state-drift.test.ts`, `hooks/lib/__tests__/turn-budget-lint.test.ts`, `hooks/lib/domain-cascade.ts`, `hooks/lib/git.ts`, `hooks/lib/guard-state-file.ts`, `hooks/lib/review-coverage.ts`, `hooks/lib/staging-drift.ts`, `hooks/lib/state-drift.ts`, `hooks/review-coverage.ts`, `hooks/staging-drift.ts`, `hooks/state-drift.ts`, `hooks/tracker.ts`, `README-agents.md`, `README-hooks.md`, `README.md`, `rules/workbench-path-resolution.md`, `settings.json`, `skills/archive/SKILL.md`, `skills/cleanup/SKILL.md`, `skills/curate/SKILL.md`, `skills/help/SKILL.md`, `skills/log-activity/SKILL.md`, `skills/next/SKILL.md`, `skills/revise-claude-md/SKILL.md`, `skills/setup/SKILL.md`, `skills/unlock/SKILL.md`
+**Not-opened:** `.gitignore`, `agents/coder.md`, `agents/coderev.md`, `agents/curator.md`, `agents/ontocoder.md`, `agents/ontorev.md`, `agents/playmaker.md`, `agents/reconciler.md`, `agents/taskplanner.md`, `bin/fusion-review-coverage`, `bin/fusion-source-root`, `bin/fusion-staging-drift`, `bin/fusion-state-drift`, `bin/monitor`, `docs/philosophy.md`, `260815-1530-coder-remove-persisted-tasklist.md`, `260815-1559-coder-remove-session-counters-and-drift-machinery.md`, `260815-1617-coder-collapse-administrative-surface.md`, `260815-1455_*_design-diagrams-md-fell-839-bytes-below-its-baseline-and-the-doctrine-has-no-event-for-a-shrink.md`, `260815-1455_*_plan-step-9s-mechanical-acceptance-grep-fails-at-head-on-a-step-marked-done.md`, `260815-1455_*_the-emission-comment-says-five-diagram-producers-and-the-selector-two-hundred-lines-above-it-picks-four.md`, `260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`, `260815-1501_*_four-cardinal-words-still-count-items-the-removals-deleted-and-no-gate-reads-a-cardinal-word.md`, `260815-1501_*_setup-step-5s-worked-example-says-this-repository-counts-88-source-files-and-the-helper-beside-it-returns-118.md`, `260815-1501_*_the-reach-gate-is-blind-to-a-copy-written-only-in-the-retired-domain-names-and-reach-holes-does-not-say-so.md`, `260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`, `hooks/dist/lib/domain-cascade.js`, `hooks/dist/lib/events.d.ts`, `hooks/dist/lib/git.d.ts`, `hooks/dist/lib/git.js`, `hooks/dist/lib/guard-state-file.d.ts`, `hooks/dist/lib/guard-state-file.js`, `hooks/dist/lib/review-coverage.d.ts`, `hooks/dist/lib/review-coverage.js`, `hooks/dist/lib/staging-drift.d.ts`, `hooks/dist/lib/staging-drift.js`, `hooks/dist/lib/state-drift.d.ts`, `hooks/dist/lib/state-drift.js`, `hooks/dist/lib/state-file.d.ts`, `hooks/dist/lib/state-file.js`, `hooks/dist/review-coverage.d.ts`, `hooks/dist/review-coverage.js`, `hooks/dist/staging-drift.d.ts`, `hooks/dist/staging-drift.js`, `hooks/dist/state-drift.d.ts`, `hooks/dist/state-drift.js`, `hooks/dist/tracker.d.ts`, `hooks/dist/tracker.js`, `hooks/lib/__tests__/commit-message-path.test.ts`, `hooks/lib/__tests__/guard-state-shape.test.ts`, `hooks/lib/__tests__/helpers/guard-harness.ts`, `hooks/lib/__tests__/hook-fail-open.test.ts`, `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, `hooks/lib/__tests__/path-literal-lint.test.ts`, `hooks/lib/__tests__/queue-commit-ownership-lint.test.ts`, `hooks/lib/__tests__/queue-ground-lint.test.ts`, `hooks/lib/__tests__/queue-ground-producer.test.ts`, `hooks/lib/__tests__/queue-retirement-empty-key.test.ts`, `hooks/lib/__tests__/review-coverage-mandate.test.ts`, `hooks/lib/__tests__/state-drift-detection-lint.test.ts`, `hooks/lib/__tests__/state-drift.test.ts`, `hooks/lib/__tests__/turn-budget-lint.test.ts`, `hooks/lib/domain-cascade.ts`, `hooks/lib/git.ts`, `hooks/lib/guard-state-file.ts`, `hooks/lib/review-coverage.ts`, `hooks/lib/staging-drift.ts`, `hooks/lib/state-drift.ts`, `hooks/review-coverage.ts`, `hooks/staging-drift.ts`, `hooks/state-drift.ts`, `hooks/tracker.ts`, `README-agents.md`, `README-hooks.md`, `README.md`, `rules/workbench-path-resolution.md`, `settings.json`, `skills/archive/SKILL.md`, `skills/cleanup/SKILL.md`, `skills/curate/SKILL.md`, `skills/help/SKILL.md`, `skills/log-activity/SKILL.md`, `skills/next/SKILL.md`, `skills/revise-claude-md/SKILL.md`, `skills/setup/SKILL.md`, `skills/unlock/SKILL.md`
 
 The `hooks/dist/*` entries are compiled build output, listed for completeness rather than because a
 reviewer should read them. The `hooks/lib/**`, `agents/*.md`, `README*.md`, `skills/**`, `bin/`
@@ -22,7 +22,7 @@ Derived from the four hashes the dispatch supplied rather than computed: `git re
 9955e8f^` = `518926d`, and `1e29572` is the last of the four. `518926d..1e29572` tiles all four
 uncovered commits exactly. This is the first Turn in four whose dispatched range needed no
 correction, because it named commits instead of a range —
-`260815-1455_o_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`
+`260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`
 is the record that asked for exactly this and it can be closed on this evidence.
 
 ## Summary
@@ -161,16 +161,16 @@ but invisibly in a diff"), which is the right disposition and needs no record.
 
 | Transition | Record | Verdict |
 |---|---|---|
-| `_a_`→`_i_` | `circles/…/decisions/260815-0007_i_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md` | correct |
-| `_a_`→`_i_` | `circles/…/decisions/260815-0029_i_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md` | correct |
-| `_o_`→`_c_` | `shared/issues/260810-0326_c_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md` | correct |
-| move + `_c_` | `fusion-workbench/tasklist.md` → `shared/planning/260815-1524_c_retired-tasklist.md` | correct placement, missing header field — Low filed |
+| `_a_`→`_i_` | `circles/…/260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md` | correct |
+| `_a_`→`_i_` | `circles/…/260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md` | correct |
+| `_o_`→`_c_` | `260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md` | correct |
+| move + `_c_` | `fusion-workbench/tasklist.md` → `260815-1524_*_retired-tasklist.md` | correct placement, missing header field — Low filed |
 
 **The `Implemented:` citations resolve.** Both name section headings that exist:
 `skills/cleanup/SKILL.md:178` `## Step 5 — Reconcile CLAUDE.md (the one gate)` and `:57`
 `## Autonomy and safety`; `skills/setup/SKILL.md:192` `## Step 0g — Offer to seed the project's
 permission file`. Both `Answered:` lines above them resolve too:
-`shared/history/260814-2306-orchestrator-session.md:103` is the `## Decision answered at the
+`260814-2306-orchestrator-session.md:103` is the `## Decision answered at the
 activation gate` heading and `:153` is `## Plan gate — approved, with four answers`.
 
 **On the commissioned question — is a path acceptable where a commit hash is not available?
@@ -224,8 +224,8 @@ two records this Turn transitioned:**
 
 | Marker | `**Status:**` says | Record |
 |---|---|---|
-| `_i_` | `answered` | `circles/…/decisions/260815-0007_i_does-fusion-cleanup-block-at-the-claude-md-gate…` |
-| `_i_` | `answered` | `circles/…/decisions/260815-0029_i_what-permission-grant-does-setup-seed…` |
+| `_i_` | `answered` | `circles/…/260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate…` |
+| `_i_` | `answered` | `circles/…/260815-0029_*_what-permission-grant-does-setup-seed…` |
 
 **Two of two again, and now four of four across two Turns.** Turn 2 held the count flat at 35 across
 nine commits because it transitioned no decision. Turn 3 transitioned two and both landed in the
@@ -234,7 +234,7 @@ records — it is the current default outcome of a correct transition, because t
 the header field have no shared write moment.
 
 **Not refiled**, per Turn 3's disposition and the standing record
-`shared/issues/260811-2146_o_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`.
+`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`.
 What is new is the evidence for acting: five measurements, and every transition since the record was
 filed has added to it. The third record changed this Turn, the `_o_`→`_c_` defect, is outside this
 measurement (issues carry no `**Status:**` field) and is clean.
@@ -302,20 +302,20 @@ here.
 
 | Severity | Record |
 |---|---|
-| High | `260815-1631_o_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md` |
-| Medium | `260815-1631_o_the-live-agentstate-yaml-still-carries-the-progress-block-the-commit-that-renamed-it-retired.md` |
-| Medium | `260815-1631_o_one-of-the-four-derivation-rows-points-at-a-hand-maintained-field-in-the-same-file.md` |
-| Low | `260815-1631_o_two-test-fixtures-still-build-agentstate-yaml-with-the-progress-block-step-11-retired.md` |
-| Low | `260815-1631_o_the-control-block-is-documented-as-holding-no-counts-beside-a-field-defined-as-an-integer-counter.md` |
-| Low | `260815-1631_o_the-retired-tasklist-carries-a-closed-marker-without-the-status-header-that-marker-requires.md` |
-| Low | `260815-1631_o_the-installer-copy-list-names-a-license-file-the-tree-has-never-shipped.md` |
+| High | `260815-1631_*_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md` |
+| Medium | `260815-1631_*_the-live-agentstate-yaml-still-carries-the-progress-block-the-commit-that-renamed-it-retired.md` |
+| Medium | `260815-1631_*_one-of-the-four-derivation-rows-points-at-a-hand-maintained-field-in-the-same-file.md` |
+| Low | `260815-1631_*_two-test-fixtures-still-build-agentstate-yaml-with-the-progress-block-step-11-retired.md` |
+| Low | `260815-1631_*_the-control-block-is-documented-as-holding-no-counts-beside-a-field-defined-as-an-integer-counter.md` |
+| Low | `260815-1631_*_the-retired-tasklist-carries-a-closed-marker-without-the-status-header-that-marker-requires.md` |
+| Low | `260815-1631_*_the-installer-copy-list-names-a-license-file-the-tree-has-never-shipped.md` |
 
 ## Standing classes this range added to — cross-referenced, not refiled
 
-- **`shared/issues/260811-2146_o_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker…`**
+- **`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker…`**
   — two new instances, 37 → 39 of 90. Four of four transitions across Turns 3 and 4. Measurement in
   check 5.
-- **`circles/…/issues/260815-1455_o_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`**
+- **`circles/…/260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`**
   — **satisfied by this Turn's dispatch**, which named the four hashes instead of a range and needed
   no correction. It should be transitioned `_o_` → `_c_` with a `Resolved:` footer citing that change,
   not left open on a practice that has now worked.
@@ -381,23 +381,23 @@ replays two completed steps.
 Confirmed against the tree, not against the markers on the records.
 
 **The High — `agentstate.yaml`'s queue content.** Corrected and closed at
-`issues/260815-1631_c_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md`.
+`260815-1631_*_the-work-queue-misstates-three-of-seventeen-tasks-and-is-now-the-only-durable-copy.md`.
 Verified at HEAD: sixteen of the seventeen entries now carry their true status and commit. **The
 seventeenth does not, and the class has recurred within the same Turn:** P-15 landed as `9306f0a`
 and both `current_task` and `work_queue[16]` still read `running`, with the file's `Updated:` stamp
 three commits behind. Filed as
-`issues/260815-1913_o_the-work-queue-misstates-p-15-again-one-turn-after-the-same-class-was-closed.md`.
+`260815-1913_*_the-work-queue-misstates-p-15-again-one-turn-after-the-same-class-was-closed.md`.
 This review's own reasoning is what makes the recurrence matter: `dd312eb` made this field the
 queue's only durable copy and `f45f76a` deleted the check that compared it against git, both in this
 Turn.
 
 **The shape Medium — the retired `progress:` block.** Closed at
-`issues/260815-1631_c_the-live-agentstate-yaml-still-carries-the-progress-block-the-commit-that-renamed-it-retired.md`.
+`260815-1631_*_the-live-agentstate-yaml-still-carries-the-progress-block-the-commit-that-renamed-it-retired.md`.
 Verified: the live file carries `control:` with `turn_start_head`, `paused_at_task` and
 `directive_revisions_this_session`, and no `progress:` key. The comment above it correctly says the
 counter fields left with `f45f76a`.
 
-**The derivation-table Medium** — `issues/260815-1631_o_one-of-the-four-derivation-rows-points-at-a-hand-maintained-field-in-the-same-file.md`
+**The derivation-table Medium** — `260815-1631_*_one-of-the-four-derivation-rows-points-at-a-hand-maintained-field-in-the-same-file.md`
 stands. The `work_queue[].status` row still derives a tally from a hand-maintained field in the same
 file, and the recurrence recorded above is that row's failure mode arriving.
 
@@ -410,4 +410,4 @@ run by this pass is **40 files, 751 tests, all passed**, 64.00 s.
 This review noted the marketplace manifest untouched at `8.2.0` because no commit in its range
 reached it. Step 15 bumped `plugin.json`, `install.sh:27` and `README.md:26` to `9.0.0` and left the
 marketplace clone at `8.2.0` deliberately. Filed as
-`issues/260815-1913_o_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md`.
+`260815-1913_*_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md`.

@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
-**Task:** plan step 17 of `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
+**Task:** plan step 17 of `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
 **Working tree at HEAD:** `abdf1ad` (the orchestrator commits)
 
 ## What the gap was
@@ -29,9 +29,9 @@ The shape copied is `agents/playmaker.md`'s, the shortest of the seven at 644 by
 
 ## The marker move, and who cited it
 
-The defect record closed by this step moved `_o_` to `_c_`, so four literal citations of its old name went stale. Two of them sit inside the citation gate's corpus and were rewritten to the `_*_` wildcard form: the Circle's own spec at `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, and the open issue `shared/issues/260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md`, which cites the record as the precedent for declining to weaken a rule.
+The defect record closed by this step moved `_o_` to `_c_`, so four literal citations of its old name went stale. Two of them sit inside the citation gate's corpus and were rewritten to the `_*_` wildcard form: the Circle's own spec at `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, and the open issue `260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md`, which cites the record as the precedent for declining to weaken a rule.
 
-The other two sit in `circles/260801-1244-curator/history/260814-1332-curator-run.md` and were left alone. A history file is a record of what was true when it was written, it is outside the gate's corpus, and repairing it would rewrite it. `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md` already used the wildcard form and needed nothing.
+The other two sit in `260814-1332-curator-run.md` and were left alone. A history file is a record of what was true when it was written, it is outside the gate's corpus, and repairing it would rewrite it. `260820-2324_*_plan-style-rules-arrive-and-get-measured.md` already used the wildcard form and needed nothing.
 
 `cd hooks && npx vitest run lib/__tests__/workbench-citation-lint.test.ts` was run before the rename (green), and again after the rename and the two repairs (green).
 
@@ -40,10 +40,10 @@ The other two sit in `circles/260801-1244-curator/history/260814-1332-curator-ru
 - `agents/curator.md`
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts` (baseline re-approval plus its note)
 - `hooks/lib/__tests__/fixtures/surface-growth.golden`
-- `fusion-workbench/circles/260801-1244-curator/issues/260814-1332_c_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` (resolved note appended, renamed from `_o_`)
-- `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md` (step 17 marked `[DONE]`)
-- `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_o_spec-style-rules-arrive-and-get-measured.md` (citation repair)
-- `fusion-workbench/shared/issues/260816-1330_o_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` (citation repair)
+- `260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md` (resolved note appended, renamed from `_o_`)
+- `260820-2324_*_plan-style-rules-arrive-and-get-measured.md` (step 17 marked `[DONE]`)
+- `260820-2249_*_spec-style-rules-arrive-and-get-measured.md` (citation repair)
+- `260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md` (citation repair)
 
 ## The reference-resolution pin, re-approved
 

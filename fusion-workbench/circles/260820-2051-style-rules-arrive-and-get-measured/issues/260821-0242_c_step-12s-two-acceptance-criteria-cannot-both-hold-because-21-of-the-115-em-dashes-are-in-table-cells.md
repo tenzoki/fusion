@@ -22,7 +22,7 @@ At the step's starting state the file carried 115 prose em-dashes in 7 840 prose
 
 **What would settle it.** Either wording, chosen deliberately: replace "the tables are unchanged" with "no table row's data changes and no row is added, removed or reordered; mark-only edits inside a cell are in scope", or state a permitted count that a frozen-table pass can reach. The first matches what was built.
 
-**Cross-references:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md` step 12; `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0242-coder-the-conventions-file-reaches-its-em-dash-ceiling.md` (the pass, with the table-row evidence).
+**Cross-references:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md` step 12; `260821-0242-coder-the-conventions-file-reaches-its-em-dash-ceiling.md` (the pass, with the table-row evidence).
 
 ---
-Resolved: moot — the plan is closed and the reading applied is recorded above; `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md` step 12.
+Resolved: moot — the plan is closed and the reading applied is recorded above; `260820-2324_*_plan-style-rules-arrive-and-get-measured.md` step 12.

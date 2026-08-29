@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_wem-gehoert-die-circle-aktivierung.md (the binding decision that made the mode user-direct-only); circles/260801-1244-guard-rules-write/issues/260805-1839_*_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md (closed by removing the dispatcher claims); agents/shaper.md mode 3; circles/260801-1244-curator (the Circle that surfaced this)
+**Cross-references:** 260806-0015_*_wem-gehoert-die-circle-aktivierung.md (the binding decision that made the mode user-direct-only); 260805-1839_*_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md (closed by removing the dispatcher claims); agents/shaper.md mode 3; 260801-1244-curator (the Circle that surfaced this)
 
 ---
 
@@ -75,7 +75,7 @@ AskUserQuestion is not automation. Option 1 is defensible and costs nothing to k
 right answer if re-sharpening an anticipated Circle turns out to be rare, which the single
 measured instance here cannot settle.
 
-## Field note — 260813-0027
+## Field note — 260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md
 
 Asked at the gate that surfaced this, the user chose to invoke shaper directly rather than have
 the orchestrator dispatch it. That settles today's path and does not answer the question: the
@@ -87,11 +87,11 @@ before is one measured instance of the friction, and the user's willingness to a
 **Reconciliation evidence, 2026-08-14 (reconciler, verified at HEAD `18173e1`). Still open, and the
 prohibited path was taken while it was open.**
 
-Session `shared/history/260813-2345-orchestrator-session.md` `## User decisions recorded this
+Session `260813-2345-orchestrator-session.md` `## User decisions recorded this
 session` records: "The user directed a shaper run in portfolio-activation mode from inside this
 session. The shaper returned two clarification rounds; the orchestrator relayed both, since a
 **dispatched sub-agent** cannot reach the user." The result landed as commit `f273b9a`, which
-rewrote `circles/260801-1244-curator/_t_circle.md`'s `## Directive` and `## Grounding snapshot` —
+rewrote `260801-1244-curator`'s `## Directive` and `## Grounding snapshot` —
 exactly the two sections mode 3 is the sanctioned writer of.
 
 That is the path `agents/shaper.md` forbids in two places: the frontmatter description
@@ -104,7 +104,7 @@ prompt either.
 **What this adds to the record.** It is a second measured instance of the case the question was
 filed from, and this time the path was not merely blocked — it was taken, by the user's direction,
 through the orchestrator, and it worked. The outcome is on disk and was reviewed: the re-sharpened
-Grounding is the one the whole Circle then ran against, and the playmaker run at 260814-0823
+Grounding is the one the whole Circle then ran against, and the playmaker run at 260814-0823-playmaker-direct-dispatch.md
 recommended activation on the strength of it. So the empirical answer to "is the user-initiated
 path travelling through the orchestrator harmful" is, on one instance, no.
 
@@ -115,7 +115,7 @@ user. What is established is that the corpus now contains one execution of the d
 so the question is no longer hypothetical and the two prompts and the practice disagree.
 
 ---
-Answered: shared/history/260813-2345-orchestrator-session.md `## Coherence` → Rebalance gate,
+Answered: 260813-2345-orchestrator-session.md `## Coherence` → Rebalance gate,
 2026-08-14 — **option 2, narrowly.** The orchestrator may dispatch the shaper's
 portfolio-activation mode, but only when the user's answer at a gate named the mode, and the
 dispatch prompt records that the user initiated it. The user chose this at the Rebalance gate that
@@ -176,12 +176,12 @@ Turn-4 review found still forbidding it and Turn 5 corrected in `9f4cdac`. All t
 at HEAD.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `Answered:` footer above cites a location that does not hold the
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The `Answered:` footer above cites a location that does not hold the
 answer and a trigger that postdates the gate; it stands as written, and this is the correction.
 **Where the answer is recorded:** `fusion-workbench/orchestrator-events.jsonl`, the `gate_response`
 event at `2026-08-14T13:13:35` ("Rebalance gate: revise Grounding") and the `rebalance_grounding`
 event at the same timestamp, which names option 2 and this record; the cited `## Coherence` section of
-`shared/history/260813-2345-orchestrator-session.md` is the reconciler's verdict and records no user
+`260813-2345-orchestrator-session.md` is the reconciler's verdict and records no user
 answer. **The ordering:** what preceded the gate was the per-Turn `coherence_review` recorded `ok` and
 the net-negative `circuit_breaker`, both at 12:42:06; the reconciler's `review-needed` verdict was
 written at 14:57, one hour and forty-four minutes after the gate, and could not have triggered it.

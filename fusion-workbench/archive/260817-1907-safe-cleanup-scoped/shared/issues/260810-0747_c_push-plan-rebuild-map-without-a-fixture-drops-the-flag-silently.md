@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** `bin/fusion-plane:1384-1396`
 **Cross-references:** commit `c923935`; `bin/fusion-plane:1504-1506` (the doctrine it contradicts)
 
@@ -34,7 +34,7 @@ This is the doctrine `map_forget` states for the same file, twelve hundred lines
 
 ## Suggested fix direction
 
-Whatever is decided for `260810-0746` (the fixture path writing under `--plan`) settles this too:
+Whatever is decided for `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md` (the fixture path writing under `--plan`) settles this too:
 if the combination is a usage error, this spelling errors with it; if the rebuild is planned
 rather than performed, say so on stdout as an op. Silence is the one answer that contradicts the
 file's own rule.

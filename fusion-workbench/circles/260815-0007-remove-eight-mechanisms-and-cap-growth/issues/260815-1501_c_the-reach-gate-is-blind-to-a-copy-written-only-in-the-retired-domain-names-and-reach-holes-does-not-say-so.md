@@ -4,10 +4,10 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** `coderev`, review of `5d29b6d..518926d`, review file `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`
+**Filed by:** `coderev`, review of `5d29b6d..518926d`, review file `260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md`
 **Owner:** `coder`
 **Affects:** `hooks/lib/domain-cascade.ts:1013` (`DOMAIN_LITERAL_RE`), `hooks/lib/domain-cascade.ts:1104` (`REACH.holes`), and the rendered paragraph in `README-hooks.md:207-232`
-**Cross-references:** `shared/issues/260810-1918_*` (the `skills/cleanup/SKILL.md` second copy the reach gate was built for); the three `260810-2110` records (the bare-word hole measured against the shipped build); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1440-coder-step9-domain-values.md`
+**Cross-references:** `shared/issues/260810-1918_*` (the `skills/cleanup/SKILL.md` second copy the reach gate was built for); the three `260810-2110` records (the bare-word hole measured against the shipped build); `260815-1440-coder-step9-domain-values.md`
 
 ---
 

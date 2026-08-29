@@ -23,7 +23,7 @@ record:
 The decision-record removal appears in none of them. A reader on v10.2.0 who upgrades past this
 commit gets a template change to a second record kind, announced nowhere.
 
-**It is not an oversight of the answering decision.** `260818-2212`'s `Answered:` footer states the
+**It is not an oversight of the answering decision.** `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`'s `Answered:` footer states the
 change surface as "two rule files" and the realisation held to it exactly, which is correct
 discipline. The gap is that nothing carries the release-time obligation forward: `CLAUDE.md`'s
 `docs/` row says a migration note is "written only when a release removes something an installed base
@@ -45,10 +45,10 @@ the version this ships in, which is not decided yet — so this is a release-tim
 immediate edit, and it needs to be visible at that moment rather than now.
 
 This is the second half of the same cause as
-`shared/issues/260819-0038_o_the-gitignore-comment-still-says-…`: a change realised precisely inside
+`260819-0038_*_the-gitignore-comment-still-says-…`: a change realised precisely inside
 a stated change surface, with the surfaces *outside* it that describe the same fact left standing.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

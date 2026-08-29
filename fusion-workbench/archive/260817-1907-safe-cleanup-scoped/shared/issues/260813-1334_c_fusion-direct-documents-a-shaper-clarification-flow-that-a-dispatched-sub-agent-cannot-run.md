@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Status:** open
-**Filed by:** planner (found while planning `circles/260813-0858-playmaker-maintains-backlog-store/`)
-**Cross-references:** `skills/direct/SKILL.md:81`-`:93`; `agents/shaper.md:118`-`:119`; `circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
+**Filed by:** planner (found while planning `260813-0858-playmaker-maintains-backlog-store`)
+**Cross-references:** `skills/direct/SKILL.md:81`-`:93`; `agents/shaper.md:118`-`:119`; `260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
 ---
 
 ## What is wrong
@@ -27,7 +27,7 @@ record states that it dispatched `fusion:shaper` as a sub-agent twice in the cur
 both runs returned their clarification questions as report text rather than asking them, that the
 second run said outright it had no way to put a question to the user, and that the orchestrator then
 relayed the questions through `AskUserQuestion` and passed the answers back on a second dispatch.
-Nothing on disk carries that observation: `shared/history/260813-0806-orchestrator-session.md`
+Nothing on disk carries that observation: `260813-0806-orchestrator-session.md`
 mentions the shaper once, about an unrelated point, and no history file under `shared/history/` or
 any Circle records a shaper run returning questions. Whoever fixes this should either reproduce the
 dispatch or take the documentation contradiction alone as sufficient, since the fix is the same
@@ -50,7 +50,7 @@ what a shaper dispatched by `/fusion:direct` does with a question.
 
 The working shape already exists twice in the plugin: the orchestrator relays the shaper's returned
 questions through `AskUserQuestion` and re-dispatches with the answers, and
-`circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
+`260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
 step 4 plans the same shape for `/fusion:next` and the playmaker. A fix here gives
 `skills/direct/SKILL.md` a relay step between its dispatch and its confirmation step, and names the
 skill in the shaper's `## Tool Discipline` enumeration so the agent knows a relay exists.

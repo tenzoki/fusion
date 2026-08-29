@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the answered decision this refines); `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md` step 8; `agents/shaper.md` mode 4 (anticipated-circle); `skills/direct/SKILL.md`
+**Cross-references:** `260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the answered decision this refines); `260812-1720_*_circle-first-placement-and-the-backlog-store.md` step 8; `agents/shaper.md` mode 4 (anticipated-circle); `skills/direct/SKILL.md`
 
 ---
 

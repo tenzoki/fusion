@@ -3,8 +3,8 @@
 **Status:** Complete
 **Agent:** coder
 **Domain:** code
-**Task:** `I:260811-1615`, tasklist entry 17
-**Source record:** `shared/issues/260811-1615_c_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`
+**Task:** `I:260811-1615_*_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`, tasklist entry 17
+**Source record:** `260811-1615_*_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`
 **Circle:** none active — every store resolved into `shared/`
 
 ---

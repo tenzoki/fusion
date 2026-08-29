@@ -8,7 +8,7 @@ it would consult admits exists, and the one text that is correct, `CLAUDE.md`, i
 one the advisory sends anybody to.
 ---
 **Filed by:** curator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `hooks/lib/config.ts:349-361` (the loader's four); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1247_*_the-churn-leaves-were-removed-without-a-retirement-entry-and-the-retirement-table-could-not-have-held-one.md` (the record the fourth member's own code comment cites); `shared/history/260825-1453-curator-run.md` `## 9` (the survey that found it)
+**Cross-references:** `hooks/lib/config.ts:349-361` (the loader's four); `260815-1247_*_the-churn-leaves-were-removed-without-a-retirement-entry-and-the-retirement-table-could-not-have-held-one.md` (the record the fourth member's own code comment cites); `260825-1453-curator-run.md` `## 9` (the survey that found it)
 
 ## What was measured
 
@@ -73,11 +73,11 @@ which is the one sequencing constraint here.
 
 Worth considering with the fix rather than instead of it: nothing asserts that the prose in
 either JSON file matches `RETIRED_TOP_LEVEL_KEYS`, and a fifth retirement would go stale the
-same way. `shared/decisions/260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
+same way. `260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
 is the same question about a different table and is answered but not implemented.
 
 **Severity:** Low in consequence, medium in reach. Nothing malfunctions; a user reading the
 file fusion tells them to edit is told something false about the file they are editing.
 
 ---
-Resolved: 260827. `agents/orchestrator.md:114`'s parenthesis now names four keys, `churn` last; the two `_retired` strings in `fusion.json` and `templates/fusion.json` were corrected by the ontocoder in the same commit (plan `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`, steps 13a and 13b). The "worth considering" pin between the JSON prose and `RETIRED_TOP_LEVEL_KEYS` is declined: the hook-test growth bound has one line free, and `shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md` is the same question, answered and unrealised; a pin here would realise it piecemeal on a different table.
+Resolved: 260827. `agents/orchestrator.md:114`'s parenthesis now names four keys, `churn` last; the two `_retired` strings in `fusion.json` and `templates/fusion.json` were corrected by the ontocoder in the same commit (plan `260827-1756_*_repair-the-twenty-open-defect-records.md`, steps 13a and 13b). The "worth considering" pin between the JSON prose and `RETIRED_TOP_LEVEL_KEYS` is declined: the hook-test growth bound has one line free, and `260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md` is the same question, answered and unrealised; a pin here would realise it piecemeal on a different table.

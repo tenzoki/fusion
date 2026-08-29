@@ -4,8 +4,8 @@
 **Domain:** code
 **Status:** closed
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260801-1244-curator/planning/260814-0845_c_plan-curator.md
-**Active session history:** shared/history/260813-2345-orchestrator-session.md
+**Active spec/plan:** 260814-0845_*_plan-curator.md
+**Active session history:** 260813-2345-orchestrator-session.md
 
 ---
 
@@ -30,7 +30,7 @@ A fusion-governed project can ask one agent, the `curator`, to reconcile its thr
 | 131 lines in 42 files cite the conventions file, 70 by section | 207 lines in 63 files, 106 by section, none by line number | `grep -rn` over `agents/ skills/ rules/ bin/ hooks/ docs/ templates/ CLAUDE.md README*.md .claude-plugin/`, excluding compiled output |
 | Four sections are named by no prompt | three; `## Issue and Decision Filing` is now cited by `agents/planner.md:65` | `grep` per section name |
 | The workbench is neither tracked nor gitignored | tracked, 1 130 files | `git ls-files fusion-workbench/ \| wc -l` |
-| `archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md` is the strongest argument for the reconcile step | closed | marker on the filename |
+| `archive/260817-1907-safe-cleanup-scoped/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md` is the strongest argument for the reconcile step | closed | marker on the filename |
 | The shards are produced by C9 | four already sit in `rules/`, and the per-agent scoping table exists in `bin/fusion-rules` | `ls rules/` |
 | The archive store is an evidence source | 0 files, and no scan key reaches it | `find fusion-workbench/archive -type f` |
 | The decision corpus spans three months | 39 days, 2026-07-06 to 2026-08-13 | earliest and latest filename stamps |
@@ -45,17 +45,17 @@ A fusion-governed project can ask one agent, the `curator`, to reconcile its thr
 
 **What this Circle does not buy, stated so it is not expected.** It does not shrink the conventions file or any other always-on rule. The compaction and partition work is out of scope, and the growth bound governs the rate of addition rather than the size of the corpus. The curator's evidence tiers cannot justify a size-driven cut, and the earlier spec is explicit that widening them to reach "this reads long" is the exact failure they exist to prevent.
 
-**One question is open and is the user's to answer before the planner plans the growth bound.** Arming the bound on a corpus already over budget requires either a one-time re-baseline at the moment of arming, or an unscoped cut of roughly 11 KB that reintroduces the work C9's retirement removed. The spec specifies the first and records the reasoning; the choice is filed as `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. Nothing else in the spec depends on the answer.
+**One question is open and is the user's to answer before the planner plans the growth bound.** Arming the bound on a corpus already over budget requires either a one-time re-baseline at the moment of arming, or an unscoped cut of roughly 11 KB that reintroduces the work C9's retirement removed. The spec specifies the first and records the reasoning; the choice is filed as `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`. Nothing else in the spec depends on the answer.
 
 **Spec and its prior inputs** (cited where they live, per the Origin Rule, not copied):
 
-- Spec: `circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md`. The single spec the planner works from for this Circle.
-- Earlier spec: `archive/260817-1907-safe-cleanup-scoped/shared/planning/260801-1122_*_spec-normative-consolidation.md`. Covered four Circles, three now closed. It stays as their record and is not retired by this Circle.
-- Gap analysis: `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`. The measured drift this body of work responds to.
-- Growth analysis: `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`. The finding that the binding constraint is the rate of addition rather than the size of the system, which is what the growth bound answers.
-- **D1** — `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`. A writing agent, not a report-only detector.
+- Spec: `260814-0738_*_spec-curator.md`. The single spec the planner works from for this Circle.
+- Earlier spec: `archive/260817-1907-safe-cleanup-scoped/260801-1122_*_spec-normative-consolidation.md`. Covered four Circles, three now closed. It stays as their record and is not retired by this Circle.
+- Gap analysis: `260801-1020-normative-surface-drift-gap-analysis.md`. The measured drift this body of work responds to.
+- Growth analysis: `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`. The finding that the binding constraint is the rate of addition rather than the size of the system, which is what the growth bound answers.
+- **D1** — `260801-1020_*_where-does-normative-consistency-live.md`. A writing agent, not a report-only detector.
 
-Two issues the gap analysis filed are still open and constrain this work without being part of it: `shared/issues/260801-1020_*_scan-keys-never-reach-the-archive-store.md` and `shared/issues/260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`. The other two it filed have closed.
+Two issues the gap analysis filed are still open and constrain this work without being part of it: `260801-1020_*_scan-keys-never-reach-the-archive-store.md` and `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`. The other two it filed have closed.
 
 ## Dependencies
 
@@ -63,7 +63,7 @@ Two issues the gap analysis filed are still open and constrain this work without
 
 **`260801-1244-guard-rules-write`** — soft dependency. The curator is buildable and testable in this repository without it, because the write guard stands down here (`hooks/lib/self-detect.ts:18-33`). The exemption is needed for the agent's rule-file writes and its retirement moves to be exercisable in a consuming project, which is where the acceptance criteria that assert a block have to run.
 
-Transitively this Circle also waits on `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`, since the rules-write Circle depends on it.
+Transitively this Circle also waits on `archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection`, since the rules-write Circle depends on it.
 
 ```mermaid
 flowchart LR
@@ -74,17 +74,17 @@ flowchart LR
 
 ## Turn log
 
-- Turn 1 (session 260813-2345): commits f273b9a..5b81f5a, of which 6ba9d77, 44b9967 and 5b81f5a
+- Turn 1 (session 260813-2345-orchestrator-session.md): commits f273b9a..5b81f5a, of which 6ba9d77, 44b9967 and 5b81f5a
   carry plan steps 1 to 4; Coherence verdict recorded at the per-Turn gate; session history:
-  `shared/history/260813-2345-orchestrator-session.md`. Three tasks done, none errored, none skipped.
+  `260813-2345-orchestrator-session.md`. Three tasks done, none errored, none skipped.
   Plan step 5, arming the growth bound, was deliberately held for Turn 2 so that no rule-file edit
   arising from the Turn-1 review could land above an already-set baseline. `coderev` filed seven
   defects, all in shipped text and none in behaviour; the severe one is that the curator is absent
   from the orchestrator's dispatch allowlist, which leaves two of its three invocation shapes
   unreachable and spec criterion C7 unmet.
 
-- Turn 2 (session 260813-2345): commits 249e606..5c843e6; Coherence verdict recorded at the
-  per-Turn gate; session history: `shared/history/260813-2345-orchestrator-session.md`. Two tasks
+- Turn 2 (session 260813-2345-orchestrator-session.md): commits 249e606..5c843e6; Coherence verdict recorded at the
+  per-Turn gate; session history: `260813-2345-orchestrator-session.md`. Two tasks
   done. T5 closed all seven Turn-1 defects, the severe one by registering the curator at four sites
   in `agents/orchestrator.md`, verified by a headless smoke dispatch with a control rather than by
   reading. T4 removed a stale derived count from `rules/circle-records.md` and then armed the growth
@@ -94,17 +94,17 @@ flowchart LR
   judged the Directive's build half met and its proof half not begun: the C11 validation run against
   the project's own decision corpus has not been performed and no curator run file exists.
 
-- Turn 3 (session 260813-2345): commits 7421f51..2a8a2f7; Coherence verdict recorded at the
-  per-Turn gate; session history: `shared/history/260813-2345-orchestrator-session.md`. One task done,
+- Turn 3 (session 260813-2345-orchestrator-session.md): commits 7421f51..2a8a2f7; Coherence verdict recorded at the
+  per-Turn gate; session history: `260813-2345-orchestrator-session.md`. One task done,
   one blocked. T6 closed the three Turn-2 defects, correcting prose to match the mechanism rather
   than the reverse, with a measured net effect of zero bytes on the always-on corpus. T7, the C11
   proof run, could not start: `Agent(fusion:curator)` is not reachable from the session that built
   the curator, because a session's agent roster is read at start from the installed plugin copy and
   pinned for its whole life. Filed as
-  `issues/260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
+  `260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
   The user chose to update the install and perform C11 in a fresh session; the Circle stays active.
 
-- Turn 3, continued (session 260813-2345, resumed 260814-1311): commits e101761..0301909. T7, the
+- Turn 3, continued (session 260813-2345-orchestrator-session.md, resumed 260814-1311): commits e101761..0301909. T7, the
   C11 proof run, ran to completion after the install was updated to 8.2.0 and `fusion:curator`
   became reachable. The survey proposed 28 corrections, all tier 1, across `CLAUDE.md`, nineteen
   shared decision records and three project rule files; the user approved all of them at the gate
@@ -114,10 +114,10 @@ flowchart LR
   through its own supported path, and the growth bound armed in T4 held with roughly 11 500 bytes
   remaining. The survey's verdict on the Directive's question is that no living decision record
   supersedes another and that this is structural, filed as
-  `decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`.
-  Run file: `circles/260801-1244-curator/history/260814-1332-curator-run.md`.
+  `260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`.
+  Run file: `260814-1332-curator-run.md`.
 
-- Turn 4 (session 260813-2345): commits 18173e1..6d433c2; the Rebalance gate that ended Turn 3 chose
+- Turn 4 (session 260813-2345-orchestrator-session.md): commits 18173e1..6d433c2; the Rebalance gate that ended Turn 3 chose
   to revise Grounding, and this Turn realised what that answer required. T9 conditionalised both
   absolute statements in `agents/shaper.md` and gave `agents/orchestrator.md` the dispatch contract
   it had no occurrence of, in one commit `bf9553f`, so no unreachable dispatcher claim could exist
@@ -131,13 +131,13 @@ flowchart LR
   inheritance model stated in `README-agents.md` and `CLAUDE.md`, and the halt it guards fails
   silently in the dangerous direction.
 
-- Turn 5 (session 260813-2345): commits 9f4cdac..41c224c; session history:
-  `shared/history/260813-2345-orchestrator-session.md`. One task done, none errored. T10 took the
+- Turn 5 (session 260813-2345-orchestrator-session.md): commits 9f4cdac..41c224c; session history:
+  `260813-2345-orchestrator-session.md`. One task done, none errored. T10 took the
   four coherence findings the Turn-3 and Turn-4 reviews left. Three of them closed in `9f4cdac`:
   the dispatch roster in `README-agents.md` stopped forbidding a dispatch the mechanism permits,
   the shaper's mode-3 reachability claim in Phase 0b.1 was conditionalised, and the layout tree's
   consumer column was generalised. The fourth was measured unsound rather than closed, and became
-  `decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`;
+  `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`;
   `41c224c` carried the records. The session then stopped without running Step 3c, so this Turn's
   review and the Phase-3 reconciliation were performed after the resume of 260814-2009. `coderev`
   reviewed `d5b71f1..41c224c`, which took coverage of the whole session range to complete, cleared
@@ -152,8 +152,8 @@ flowchart LR
   `review-needed` on the two open High findings. The user chose to revise the Artifact rather than
   close bounded, which opened Turn 6.
 
-- Turn 6 (session 260813-2345, resumed 260814-2009): commits f0d9d60..d90b794; Coherence verdict
-  `ok` at the per-Turn gate; session history: `shared/history/260813-2345-orchestrator-session.md`.
+- Turn 6 (session 260813-2345-orchestrator-session.md, resumed 260814-2009): commits f0d9d60..d90b794; Coherence verdict
+  `ok` at the per-Turn gate; session history: `260813-2345-orchestrator-session.md`.
   Three tasks done, none errored. The Turn exists because the Phase-3 verdict came back
   `review-needed` on two High findings and the user chose to revise the Artifact rather than close
   bounded. T11 stopped `hooks/lib/__tests__/config.test.ts` pinning this repository's
@@ -179,21 +179,21 @@ flowchart LR
 ## Activation proposal
 
 **Als nächster Circle gereiht, aber nicht zur Aktivierung vorgeschlagen — playmaker-Lauf
-260807-1646 (Auslöser: direct-dispatch, Domänen-Bias `code`).**
+260807-1646-playmaker-direct-dispatch.md (Auslöser: direct-dispatch, Domänen-Bias `code`).**
 
 Dies ist der einzige geplante Circle im Portfolio. Nach der Code-Heuristik steht er sauber da:
 seine Grounding zitiert keine offene Entscheidung, und alle drei Abhängigkeiten
 (`260801-1244-rule-provenance-header` hart, `260801-1244-guard-rules-write` weich, transitiv
-`archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md`) sind kohärent geschlossen. Der Rang ist damit unstrittig und
+`archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection`) sind kohärent geschlossen. Der Rang ist damit unstrittig und
 aussagearm, denn es gibt keinen zweiten Kandidaten. Aktivierbar ist der Circle nicht, und der
-Grund ist seit dem Lauf 260806-2259 gewachsen.
+Grund ist seit dem Lauf 260806-2259-playmaker-user-fusion-next.md gewachsen.
 
 **Bekannt war eine Lücke: der fehlende Validierungsfall.** C9 Schritt 3 und 4, Partition und
 Zuschnitt der Konventionsdatei, hat coder von Hand erledigt. Damit fehlt dem Circle sein erster
 echter Auftrag und zugleich sein Beweis, und Entscheidung D-g der Spec ist hinfällig. Quelle:
-`circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` `## Dependencies`.
+`260805-2005-textschicht-gegen-code-nachziehen` `## Dependencies`.
 
-**Neu ist, dass die Messwerte der Grounding nicht mehr stimmen.** Am 260807-1646 gegen HEAD
+**Neu ist, dass die Messwerte der Grounding nicht mehr stimmen.** Am 260807-1646-playmaker-direct-dispatch.md gegen HEAD
 `a94f142` am Baum nachgemessen, nicht abgeleitet:
 
 | Aussage der Grounding | Gemessen 260807 |
@@ -211,19 +211,19 @@ der Bearbeitung ins eigene Sitzungsprotokoll zu schreiben, und er hat das Archiv
 Ruhestandsziel ausgeschlossen.
 
 **Ein sechster Punkt betrifft die Motivation, nicht die Zahlen.** Die Grounding führt den
-Befund `archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`
+Befund `archive/260817-1907-safe-cleanup-scoped/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`
 als „the strongest available argument that the reconcile step is worth doing". Er trägt heute
 den Marker `_c_` und ist geschlossen.
 
 **Was Bestand hat.** Die Fähigkeiten C1 bis C3, C6 und C7 bleiben als zusammenhängender Rest
 sinnvoll, und der Bedarf ist belegt statt behauptet: im beobachteten Konsumprojekt cocreator
 stehen 65 offene Befunde, rund 25 offene Entscheidungen und drei Monate Drift, gemessen in
-`circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`.
+`260805-1830-zweck-nutzung-und-stand-des-plugins.md`.
 Was fehlt, ist ein neuer Zuschnitt: eine Directive ohne C9, ein neuer Validierungsfall, und eine
 Grounding, die auf einer frischen Messung ruht statt auf der vom 260801.
 
 **Eine Reihenfolge, die vor der Neu-Schärfung liegt.** Die offene Entscheidung
-`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` fragt,
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` fragt,
 wie weit die Projektsprache `de` in das durchgehend englische Regelkorpus reicht und was in einem
 Repository gilt, das seine eigenen Regeln ausliefert. Ihr Gegenstand ist genau der Gegenstand
 dieses Circles, nämlich Regeldateien und `CLAUDE.md`. Wer den Zuschnitt vor der Antwort macht,
@@ -233,14 +233,14 @@ Vorgeschlagenes Vorgehen: erst die Sprachentscheidung beantworten, dann den shap
 Circle ansetzen, dann `/fusion:next`. Playmaker benennt nur; die Neu-Schärfung ist Shaper-Arbeit
 und die Aktivierung deine.
 
-## Activation proposal (playmaker run 260813-0007)
+## Activation proposal (playmaker run 260813-0007-playmaker-direct-dispatch.md)
 
-**Ranked first and still not proposed for activation — playmaker run 260813-0007 (trigger:
+**Ranked first and still not proposed for activation — playmaker run 260813-0007-playmaker-direct-dispatch.md (trigger:
 direct-dispatch, domain bias `code`).** This section is appended beside the proposal from run
-260807-1646 rather than replacing it; that one is the earlier state of the same question. It is
+260807-1646-playmaker-direct-dispatch.md rather than replacing it; that one is the earlier state of the same question. It is
 written in English because the artifact language of this project is `en` and a Circle record is a
 persisted file for the project's own use. The 260807 section is German, which was the reading
-before decision `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+before decision `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
 was implemented.
 
 **One thing improved since 260807.** That run asked for the language decision to be answered before
@@ -264,7 +264,7 @@ undone. Measured across the twelve commits that touched the file since then: 35 
 39 507 on 260807, 41 680 on 260810, 46 124 on 260811, and 49 992 on 260812. The file regained
 14 324 bytes in six days and now sits about 4 KB below where the partition found it. The project's
 own analysis
-`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` measured
+`260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` measured
 the same shape on the largest removal this project ever performed, where the deleted lines were
 back above their pre-deletion peak within four days, and concluded that the binding constraint is
 the rate of addition rather than the size of the system.
@@ -276,15 +276,15 @@ scope capabilities are worth having on their own with regrowth accepted.
 
 **Also unchanged from 260807.** The closing work C9 was carried out by hand by an executor, so this
 Circle has lost both its first real job and its proof of capability
-(`circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md` `## Dependencies`), and
+(`260805-2005-textschicht-gegen-code-nachziehen` `## Dependencies`), and
 decision D-g of the spec is void. The defect record the Grounding calls "the strongest available
 argument that the reconcile step is worth doing",
-`archive/260817-1907-safe-cleanup-scoped/shared/issues/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`, is
+`archive/260817-1907-safe-cleanup-scoped/260801-1215_*_conventions-file-cites-three-records-that-do-not-resolve.md`, is
 closed.
 
 **What holds.** Capabilities C1 through C3, C6 and C7 remain a coherent remainder. All three
 dependencies are closed coherent: `260801-1244-rule-provenance-header` on 260802,
-`260801-1244-guard-rules-write` on 260805, and transitively `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md` on
+`260801-1244-guard-rules-write` on 260805, and transitively `archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection` on
 260801. The Grounding cites no open decision record.
 
 **Proposed order:** put the shaper on this Circle in portfolio-activation mode for a Directive
@@ -297,13 +297,13 @@ record. The six artifact subdirectories the Circle record template requires (`pl
 `decisions/`, `history/`, `reviews/`, `analyses/`) are absent, so the first agent dispatched here
 has to invent them.
 
-## Activation proposal (playmaker run 260813-2326)
+## Activation proposal (playmaker run 260813-2326-playmaker-direct-dispatch.md)
 
-**Ranked first and still not proposed for activation. Playmaker run 260813-2326, trigger direct-dispatch, domain bias `code`.** Appended beside the sections from runs 260807-1646 and
-260813-0007 rather than replacing them; the three are successive states of one question.
+**Ranked first and still not proposed for activation. Playmaker run 260813-2326-playmaker-direct-dispatch.md, trigger direct-dispatch, domain bias `code`.** Appended beside the sections from runs 260807-1646-playmaker-direct-dispatch.md and
+260813-0007-playmaker-direct-dispatch.md rather than replacing them; the three are successive states of one question.
 
 **What changed is the field, not this Circle.** The other anticipated Circle,
-`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`
+`archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin`
 (live under `circles/` at the time of this run; archived by the 260817-1907 sweep), reached
 Bounded Closure this evening with nine of ten plan steps done. This record is now the only Circle in the portfolio that is
 neither terminal nor active. Ranking it first therefore says nothing about it: there is no second
@@ -312,7 +312,7 @@ candidate to beat.
 **Nothing in this record moved, and the falsification is now on its sixth consecutive run.**
 Re-measured against the working tree at HEAD `431805b`, not carried forward from the previous run:
 
-| Claim in the Grounding snapshot | Measured 260813-2326 |
+| Claim in the Grounding snapshot | Measured 260813-2326-playmaker-direct-dispatch.md |
 |---|---|
 | `rules/fusion-workbench-conventions.md` holds 54 401 bytes | 51 920 bytes |
 | The file has 32 second-level headings | 24 |
@@ -320,9 +320,9 @@ Re-measured against the working tree at HEAD `431805b`, not carried forward from
 | The shards are produced by the closing work C9 | four already sit in `rules/` |
 | The workbench is neither tracked nor gitignored | tracked since `e8988d9` |
 
-**One ordering constraint named at run 260813-1756 is unchanged.** Reaching the shaper's
+**One ordering constraint named at run 260813-1756-playmaker-direct-dispatch.md is unchanged.** Reaching the shaper's
 portfolio-activation mode from inside an orchestrator session is the subject of the open record
-`shared/decisions/260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`.
+`260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`.
 The user can run the shaper directly with the mode contract regardless; the open question is only
 whether the orchestrator may.
 
@@ -332,33 +332,33 @@ Grounding measured this week, and an answer on whether the Directive needs a rat
 component. Then run `/fusion:next`. Playmaker only names this. The re-sharpening is shaper work and
 the activation is yours.
 
-## Activation proposal (playmaker run 260814-0823)
+## Activation proposal (playmaker run 260814-0823-playmaker-direct-dispatch.md)
 
-**Recommended for activation. Playmaker run 260814-0823, trigger direct-dispatch, domain bias
-`code`.** Appended beside the sections from runs 260807-1646, 260813-0007 and 260813-2326 rather
+**Recommended for activation. Playmaker run 260814-0823-playmaker-direct-dispatch.md, trigger direct-dispatch, domain bias
+`code`.** Appended beside the sections from runs 260807-1646-playmaker-direct-dispatch.md, 260813-0007-playmaker-direct-dispatch.md and 260813-2326-playmaker-direct-dispatch.md rather
 than replacing them. Those three each ranked this Circle first and declined to propose it. This one
 proposes it, and the reason is that the work those runs asked for has been done.
 
 **What changed, in one commit.** `f273b9a` landed the shaper's portfolio-activation pass of
-2026-08-14, recorded at `circles/260801-1244-curator/history/260814-0738-shaper-curator.md`. It
+2026-08-14, recorded at `260814-0738-shaper-curator.md`. It
 discharged all three standing blockers at once. The Grounding snapshot was re-measured against HEAD
 `d7786eb` on the day it was written, so the falsification this record carried on nine consecutive
 runs is gone. The validation case is new and is the project's own decision corpus, 82 records of
 which none is marked superseded, which replaces the capability C9 proof that another Circle
-performed by hand. And the rate-bounding question the run at 260813-0007 raised is answered inside
+performed by hand. And the rate-bounding question the run at 260813-0007-playmaker-direct-dispatch.md raised is answered inside
 the Directive as capability C10, a growth bound on the always-on rule set that turns the existing
 budget report into a failing test.
 
 **The Circle now has the founding documents it lacked.** A spec at
-`circles/260801-1244-curator/planning/260814-0738_*_spec-curator.md`, seven capabilities, with the
+`260814-0738_*_spec-curator.md`, seven capabilities, with the
 head field pointing at it. All six artifact subdirectories exist, so the housekeeping gap the run at
-260813-0007 noticed is closed.
+260813-0007-playmaker-direct-dispatch.md noticed is closed.
 
 **On the code heuristic it scores clean, and this time the score means something.** All three
 dependencies are closed coherent: `260801-1244-rule-provenance-header` on 260802,
-`260801-1244-guard-rules-write` on 260805, and transitively `archive/260817-1907-safe-cleanup-scoped/circles/260801-1244-guard-bash-inspection/_c_circle.md` on
+`260801-1244-guard-rules-write` on 260805, and transitively `archive/260817-1907-safe-cleanup-scoped/260801-1244-guard-bash-inspection` on
 260801. The Grounding snapshot cites no open decision record. Its one decision,
-`circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
+`260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
 carries the answered marker: the user chose option 1, a one-time re-baseline at the moment of
 arming, at an orchestrator gate on 2026-08-14. First place is still uncontested, since this remains
 the only non-terminal Circle in the portfolio, but the rank is no longer the only thing supporting
@@ -373,7 +373,7 @@ contradiction, and it costs one edit to each. It does not block activation; it b
 nobody corrects it first.
 
 **One filed defect touches what the portfolio renders.**
-`circles/260801-1244-curator/issues/260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`
+`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`
 records that this record's title and its `## Dependencies` section still name the conventions file
 as the proof, which the Directive above them no longer claims. The title is what `portfolio.md`
 renders and what `/fusion:next` reads aloud, so until it is corrected the portfolio advertises a
@@ -391,11 +391,11 @@ documents. Playmaker only proposes. The rename of this record to the active mark
 ## Closure note
 
 **Closed coherent (`_c_`) on 260814-2200**, session history
-`shared/history/260813-2345-orchestrator-session.md`, closing commit range
+`260813-2345-orchestrator-session.md`, closing commit range
 `d7786eb..d90b794` (29 commits over six Turns).
 
 **Phase-3 verdict: `coherent`**, issued at the third reconciliation pass
-(`history/260814-2153-reconciliation.md`) after the two High findings that produced the
+(`260814-2153-reconciliation.md`) after the two High findings that produced the
 `review-needed` verdict at the first pass were closed and verified against the tree rather than
 against their markers. All three edges OK: 26 Artifact-vs-Grounding claims re-derived, 28 of 29
 commits aiming at the Directive with the one exception already classified orthogonal at the Turn-3
@@ -414,9 +414,9 @@ recorded as `decisions/260814-1332_o_*`.
 
 **What the Circle carries forward.** 21 open defect records in this Circle's store and two open
 decisions, none of them blocking. The decisions are
-`decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
+`260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`,
 which the curator's own proof run raised, and
-`decisions/260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`,
+`260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`,
 which Turn 5 filed rather than closing a finding it had measured unsound. The defect records are they are the ordinary yield of six review passes over a corpus this
 size. Two are worth naming because they concern the instruments rather than the Artifact. The hooks
 suite fails non-deterministically on repeated full runs including on clean HEAD, measured by three

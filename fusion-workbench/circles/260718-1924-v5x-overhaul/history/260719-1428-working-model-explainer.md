@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Circle:** 260718-1924-v5x-overhaul (active)
-**Plan:** planning/260719-1416_p_plan-circle-e-rest-docs-cleanup-v5-close.md § Turn 1, step 1
+**Plan:** 260719-1416_*_plan-circle-e-rest-docs-cleanup-v5-close.md § Turn 1, step 1
 **Directive slice:** create the plain, user-facing working-model explainer at its decided home.
 
 ## What was done

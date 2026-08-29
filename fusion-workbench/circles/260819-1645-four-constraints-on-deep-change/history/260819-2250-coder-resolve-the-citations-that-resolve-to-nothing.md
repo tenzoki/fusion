@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-08-19
 **Agent:** coder
-**Task:** Step 7 of `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`, plus two things the plan does not carry: the 21 citations that changed class when step 6b landed, and the prose of the one `wrong-store` hit whose wrong path was its own statement.
+**Task:** Step 7 of `260819-2016_*_four-constraints-on-deep-change.md`, plus two things the plan does not carry: the 21 citations that changed class when step 6b landed, and the prose of the one `wrong-store` hit whose wrong path was its own statement.
 **HEAD at start:** `4aae336`
 
 ## Corpus and driver
@@ -56,13 +56,13 @@ written.
   `archive/260817-1907-safe-cleanup-scoped/circles/`, verified before any edit.
 - **11 citations truncated with three ASCII dots** where the grammar reads only `…`. The record
   each names is on disk; the dots are the whole defect, which is the open record
-  `shared/issues/260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`
+  `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`
   measuring itself.
 - **6 citations of a session history file written without a code span**, so the sentence's own full
   stop was swallowed into the token and a path that exists resolved to nothing. Backticks, and
   in one head field a reworded clause, since that field's house form carries no backticks.
 - **1 citation whose stamp was wrong when it was written** — `260814-1210` for a record filed at
-  `260814-1200`, the defect `circles/260801-1244-curator/issues/260814-1450_*_…` claim 4 has
+  `260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`, the defect `260814-1450_*_…` claim 4 has
   carried since 14 August.
 - **3 more marker or store corrections** folded into the lines above.
 
@@ -71,7 +71,7 @@ citation that could not be repaired *as* a citation, because the token was the e
 a pointer:
 
 - Two records quote synthetic fixtures and fabricated worked examples verbatim
-  (`990101-0101_o_never-existed`, a `rag-sanitisation` example in
+  (`990101-0101_*_never-existed`, a `rag-sanitisation` example in
   `rules/decision-record-examples.md`). The parser cannot tell a quoted fixture from a citation, so
   the fixtures are now named by stamp and description.
 - Two illustrate a citation *form* with a stamp that names nothing and never did
@@ -90,8 +90,8 @@ is a record that was never written, which is not a deletion. `rules/circle-recor
 it would have asserted a deletion that did not happen. Step 6 reported the same for its class.
 
 **One defect filed**, where none of the three applied cleanly:
-`circles/260819-1645-four-constraints-on-deep-change/issues/260819-2250_*_a-decision-records-cross-reference-names-a-defect-record-that-was-never-filed-and-the-intended-target-is-not-recoverable.md`.
-`shared/decisions/260813-0826_*_…:7` cross-referenced a defect record about the user-facing
+`260819-2250_*_a-decision-records-cross-reference-names-a-defect-record-that-was-never-filed-and-the-intended-target-is-not-recoverable.md`.
+`260813-0826_*_…:7` cross-referenced a defect record about the user-facing
 documentation lagging two releases. No file with that slug exists in any commit; `799fded` added
 exactly two records at that stamp and neither is it. The curator reached the same wall on
 2026-08-14 and stopped there, and so did this pass: the path was dropped under treatment 2 and the
@@ -103,7 +103,7 @@ Step 6b's tolerance for one `archive/<sweep>/` level turned 21 `dangling` hits i
 which is step 5's class with step 5's treatment. Re-measured here rather than taken from that log:
 **23** hits in the wider reading were `stale-marker` and not in step 5's list of nineteen. The two
 beyond 6b's count are both in
-`shared/decisions/260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md` and
+`260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md` and
 point at `260816-0719`, which this session's own step 1 moved `_a_` → `_i_` after step 5 had run.
 They are the same class arriving by a different route.
 
@@ -115,14 +115,14 @@ the marker its target carries today, which is the repair that goes stale again.
 `### Citation form in the portfolio` — starring a statement deletes its content. Named individually,
 because a deliberate leave that is not named is indistinguishable from one that was missed:
 
-- `circles/260801-1244-curator/issues/260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md`,
+- `260814-1419_*_nine-open-marker-citations-were-left-literal-on-lines-where-their-siblings-were-starred.md`,
   **lines 18, 21, 22 and 24** — the right-hand column of that record's table, which is a verbatim
   quotation of the nine citations left literal elsewhere and is the evidence the record exists to
   carry. Step 5 left lines 19, 25 and 26 of the same column for the same reason and could not have
   seen these four, because their targets were archived and the hits read `dangling` at the time. The
   left-hand column of that table names the record *edited by* the pass and is a pointer; those were
   starred by step 5 and are untouched here.
-- `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`,
+- `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`,
   **line 24** — the head of the bullet whose subject *is* the stale exact marker
   (`a **stale exact marker** — …_o_… seven times for a file that has been _c_ since it completed`).
   Step 5 left lines 25 and 26, the continuation of the same bullet.
@@ -139,8 +139,8 @@ citations inside `_a_` decisions that the narrow reading does not look at.
 
 ## The one `wrong-store` hit, which was a prose problem
 
-`circles/260801-1244-curator/issues/260814-2153_*_…:77` read *"One correction that belongs to
-whoever picks this up. Decision `260815-2109` cites this record as `shared/issues/260814-2153_o_…`.
+`260814-2153_*_…:77` read *"One correction that belongs to
+whoever picks this up. Decision `260815-2109` cites this record as `260814-2153_*_…`.
 No such path exists"* — a paragraph whose wrong path was its own subject. Step 6 fixed the citation
 it complains about, so the paragraph was describing finished work and asking for it at the same
 time.
@@ -152,7 +152,7 @@ token, and the record's own finding is untouched. Correcting the quoted path ins
 made the record assert something false about the present, which is the failure the dispatch named.
 
 The same shape appeared once more, unasked for, in
-`circles/260801-1244-curator/issues/260814-1450_*_…`. Its claim 4 *is* the wrong stamp at
+`260814-1450_*_…`. Its claim 4 *is* the wrong stamp at
 `_c_circle.md:104`, and repairing that citation made the claim historical. The wrong stamp is kept
 where the record reports it — as a stamp, which resolves to nothing and is never a violation, not as
 a path, which was a third copy of the dead citation — and a dated correction note is appended. The
@@ -170,7 +170,7 @@ marker does not move: the record's other three sub-claims are unchanged.
   set. **It is not a fix for the asymmetry**, and step 9's gate will inherit it: a citation of an
   archived Circle *directory* is still unexpressible, exactly as a citation of an archived record
   was before 6b.
-- **`shared/analyses/260813-0831-…:234` carries the same never-filed path** and was not touched.
+- **`260813-0831-…:234` carries the same never-filed path** and was not touched.
   Analyses are not in either corpus reading. It is named in the defect record.
 - **`stamp-name` hits were not touched.** They are step 8.
 

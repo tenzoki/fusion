@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `shared/analyses/260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`, `shared/issues/260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md`, `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md`
+**Cross-references:** `260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`, `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md`, `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md`
 
 ---
 
@@ -15,7 +15,7 @@ Twelve shipped lines in seven files tell an agent that one of fusion's own recor
 
 1. **Provenance** — shipped citations name fusion's own workbench explicitly (`fusion's workbench: …`) and never a consumer resolver key; an agent is told not to look for them. Pros: honest, no run-time cost. Cons: 12 lines to reword, and a lint to keep the key form out.
 2. **Pointer** — fusion ships the cited records (or their substance) so the citation resolves in a consumer. Pros: the Grounding travels. Cons: ships workbench content, growth against the surface bounds.
-3. **Substance inline** — pull the decision's substance into the prompt line and drop the citation (the form decision `260805-0709` already prescribes for dead paths). Pros: no pointer to break. Cons: prompt growth per line.
+3. **Substance inline** — pull the decision's substance into the prompt line and drop the citation (the form decision `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md` already prescribes for dead paths). Pros: no pointer to break. Cons: prompt growth per line.
 
 ## Constraints
 
@@ -26,7 +26,7 @@ The always-on rule set and `agents/` carry failing growth bounds; option 2 and 3
 Option 1, with the analysis's prior verdict (260818-0715) as precedent that fusion-internal identifiers should not reach a consumer as instructions.
 
 ---
-Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, reconciliation note).
 
 ---
-Answered: shared/decisions/260828-0904_a_are-shipped-record-citations-provenance-or-pointers-for-a-consuming-agent.md — option 1, user 2026-08-28: shipped record citations are provenance for fusion's maintainers; they name fusion's own workbench and never a consumer resolver key, and a lint forbids `$SCAN_*` beside a record stamp in shipped text.
+Answered: 260828-0904_*_are-shipped-record-citations-provenance-or-pointers-for-a-consuming-agent.md — option 1, user 2026-08-28: shipped record citations are provenance for fusion's maintainers; they name fusion's own workbench and never a consumer resolver key, and a lint forbids `$SCAN_*` beside a record stamp in shipped text.

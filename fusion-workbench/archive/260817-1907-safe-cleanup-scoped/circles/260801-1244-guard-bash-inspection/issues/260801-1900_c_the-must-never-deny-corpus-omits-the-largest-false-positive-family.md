@@ -66,7 +66,7 @@ check stands down in this repository (`guard-bash-integration.test.ts:389` asser
 also where nobody is positioned to notice a pattern and file it, which is the argument for the
 corpus carrying the weight rather than field reports.
 
-**Related.** `260801-1859_o_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`
+**Related.** `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`
 is the same family seen from the behaviour side.
 
 **Found by** coderev on the `17730b8..e31c0f3` review, by reclassifying every corpus entry against

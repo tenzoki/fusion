@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Dispatched by:** orchestrator
-**Plan:** `shared/planning/260812-1232_p_remove-the-protected-path-half-of-the-compliance-guard.md`, steps 4–5
+**Plan:** `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, steps 4–5
 
 ---
 

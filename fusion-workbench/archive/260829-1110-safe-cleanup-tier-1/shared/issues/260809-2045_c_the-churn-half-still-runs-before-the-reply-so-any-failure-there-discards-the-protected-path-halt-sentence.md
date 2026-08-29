@@ -7,9 +7,9 @@
 **Filed by:** coderev (incremental review of `6b94e17..HEAD`)
 **Affects:** `hooks/tracker.ts:717-721` — `measured` is computed, then `trackChurn(input)` runs, then `respond(measured ?? undefined)`
 **Cross-references:**
-`fusion-workbench/shared/issues/260809-1101_c_churn-and-cross-file-state-are-cast-not-coerced-so-a-shape-valid-file-swallows-the-halt-message.md` (the same outcome, one cause, closed by `9bf7ca1`),
+`260809-1101_*_churn-and-cross-file-state-are-cast-not-coerced-so-a-shape-valid-file-swallows-the-halt-message.md` (the same outcome, one cause, closed by `9bf7ca1`),
 `hooks/lib/fail-open.ts` (states "verdict first, reporting after" for the top-level handler),
-`fusion-workbench/shared/issues/260809-1825_o_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` (the same shape on the PreToolUse side)
+`260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` (the same shape on the PreToolUse side)
 
 ---
 
@@ -77,7 +77,7 @@ uncaught — hence the guarded call rather than a bare one.
 Worth deciding at the same time, since it is the same seam: whether
 `saveEscalation` inside `measureProtectedPaths` should also be best-effort, so
 that an unwritable state directory costs the halt record but not the sentence.
-That question is `260809-1825`'s, and this record should be resolved with it
+That question is `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md`'s, and this record should be resolved with it
 rather than independently.
 
 ## Acceptance criteria
@@ -102,9 +102,9 @@ footer are the reconciler's.
 - Criterion 2 — CONFIRMED. The churn failure follows the reply on stderr as
   `[tracker] Error: Error: EISDIR: … rename '…churn.json.tmp' -> '…churn.json'`.
 - Criterion 3 — CONFIRMED. `hooks/lib/__tests__/hook-fail-open.test.ts:311-360`,
-  `"delivers the protected-path sentence with churn.json unwritable (260809-2045)"`, and it
+  `"delivers the protected-path sentence with churn.json unwritable (260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md)"`, and it
   asserts the enforcement as well as the sentence (`:355-356`).
 
-The question this record deferred to `260809-1825` — whether `saveEscalation` inside
+The question this record deferred to `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` — whether `saveEscalation` inside
 `measureProtectedPaths` should also be best-effort — was answered in the same commit at
 `hooks/tracker.ts:583`, with the failure carried into the halt wording rather than swallowed.

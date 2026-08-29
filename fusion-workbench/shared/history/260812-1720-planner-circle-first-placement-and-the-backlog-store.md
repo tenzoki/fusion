@@ -8,9 +8,9 @@ at 260812-1620 describe. They are one design and neither is implementable alone.
 
 ## Inputs read
 
-- `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`
+- `260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`
   — answered: option 1, the Circle comes first; the twelve existing Circles are migrated.
-- `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
+- `260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
   — answered: option 2, `shared/backlog/` as a store with the playmaker consolidating; no
   seventeenth agent; option 4 (retiring `taskplanner` into it) explicitly left undecided.
 - Rules: `agent-setup.md`, `fusion-workbench-conventions.md`, `decision-record-examples.md`,
@@ -25,7 +25,7 @@ at 260812-1620 describe. They are one design and neither is implementable alone.
 
 ## Output
 
-`shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` — 14 steps,
+`260812-1720_*_circle-first-placement-and-the-backlog-store.md` — 14 steps,
 three Mermaid diagrams (the promotion lifecycle and its writers, the backlog entry's state
 machine, the migration's decision procedure), one human gate at step 11.
 
@@ -77,13 +77,13 @@ agent gains an obligation to file backlog entries. Everything else is addition.
 
 ## Filed alongside
 
-- Decision `260812-1720_o_when-exactly-does-the-anticipated-circle-come-into-existence.md` —
+- Decision `260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md` —
   before the shaper's first question, or before its first write. The plan implements the second
   reading and step 8 depends on the answer.
-- Decision `260812-1720_o_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`
+- Decision `260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`
   — the migration's only real question. Steps 12 and 13 do nothing if the answer is "leave it".
-- Defect `260812-1720_o_the-migration-premise-in-the-circle-placement-decision-does-not-match-the-workbench.md`
-- Defect `260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+- Defect `260812-1720_*_the-migration-premise-in-the-circle-placement-decision-does-not-match-the-workbench.md`
+- Defect `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
 
 ## Not done
 

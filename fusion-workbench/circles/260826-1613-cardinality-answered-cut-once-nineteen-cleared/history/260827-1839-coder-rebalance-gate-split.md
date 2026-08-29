@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
-**Plan:** `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md` step 9
-**Decision:** `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md` (option 2)
+**Plan:** `260827-1756_*_repair-the-twenty-open-defect-records.md` step 9
+**Decision:** `260827-1756_*_how-does-the-rebalance-gate-present-four-moves-under-a-three-option-cap.md` (option 2)
 
 ## What changed
 
@@ -19,4 +19,4 @@
 
 ## Residual
 
-`shared/history/260825-1453-curator-run.md:209` cites the closed record as `260825-1259_o_*`; the citation lint passed with it, so it was left alone.
+`260825-1453-curator-run.md:209` cites the closed record as `260825-1259_o_*`; the citation lint passed with it, so it was left alone.

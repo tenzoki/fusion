@@ -1,7 +1,7 @@
 The Turn-3 review states five findings and a three-two split while carrying six and a four-two split
 
 ---
-`circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md` `## Summary` opens with
+`260814-1419-coderev-curator-turn-3.md` `## Summary` opens with
 "Five findings, none in behaviour". Its `## Totals` section then says "Three are filed under
 `circles/260801-1244-curator/issues/` and two under `shared/issues/`". Both counts are wrong against
 the same document's own table, its own numbered findings, its own closing section, its commit
@@ -30,7 +30,7 @@ not a careful reader", and whose finding 6 is a history file stating eighteen ag
 there are seventeen. The same class landed in the document that named it, twice, in the two places a
 reader looks first. It is the third instance in this Circle of a hand-written count going stale or
 wrong inside the artifact that argues against hand-written counts, after
-`circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`
+`260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`
 and finding 6 itself.
 
 **Severity:** Low. No finding is missing — all six are numbered, described and filed. Only the two
@@ -45,7 +45,7 @@ without a count: "Findings, none in behaviour" and "Filed under the Circle's iss
 sixteen-agent claims and what the T6 repair in `2a8a2f7` chose for the arming prose. Correcting five
 to six leaves the same sentence able to go wrong the next time a finding is added or withdrawn.
 
-**Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
+**Filed by:** reconciler, session `260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the review it describes
 was produced by executing this Circle's Directive.
 
@@ -54,9 +54,9 @@ was produced by executing this Circle's Directive.
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Both wrong sentences stand verbatim; only an annotation was added beneath them.**
 
-`reviews/260814-1419-coderev-curator-turn-3.md:19` still opens "Five findings"; `:30` still says "Three are filed under `circles/260801-1244-curator/issues/` and two under `shared/issues/`". Counted at HEAD: four under this Circle's `issues/` at that stamp, two under `shared/issues/` — six, split four-two.
+`260814-1419-coderev-curator-turn-3.md:19` still opens "Five findings"; `:30` still says "Three are filed under `circles/260801-1244-curator/issues/` and two under `shared/issues/`". Counted at HEAD: four under this Circle's `issues/` at that stamp, two under `shared/issues/` — six, split four-two.
 
 A reconciliation note at `:164` records the contradiction and points here, which is the correct handling for a review file (annotate, never rewrite the finding). What keeps the record open is that the two counts a reader meets first are still the wrong ones.
 
 ---
-Resolved: fixed — the two summary sentences read six and four-two, with a dated note beside the existing annotation; circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md:19, circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md:30 and circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md:173
+Resolved: fixed — the two summary sentences read six and four-two, with a dated note beside the existing annotation; 260814-1419-coderev-curator-turn-3.md:19, 260814-1419-coderev-curator-turn-3.md:30 and 260814-1419-coderev-curator-turn-3.md:173

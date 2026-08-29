@@ -6,8 +6,8 @@
 **Filed by:** ontorev (Turn 3 review, range `5d29b6d..518926d`)
 **Affects:** `agents/orchestrator.md` Step 3c and Phase 4 (the `bin/fusion-review-coverage` read and the review dispatch built from it); `fusion-workbench/orchestrator-events.jsonl:1542-1543`
 **Cross-references:**
-`shared/issues/260810-1205_c_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` (the record the coverage tool was built for — closed, and this is the failure mode one layer up: the measurement is right and the dispatch derived from it is not);
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-1247-ontorev-turn-2-structured-data.md` and `260815-1251-coderev-turn-2-build-churn-and-stash.md` (the two prior corrections)
+`260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` (the record the coverage tool was built for — closed, and this is the failure mode one layer up: the measurement is right and the dispatch derived from it is not);
+`260815-1247-ontorev-turn-2-structured-data.md` and `260815-1251-coderev-turn-2-build-churn-and-stash.md` (the two prior corrections)
 
 ---
 

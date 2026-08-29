@@ -1,4 +1,4 @@
-# Code review — session `260810-1646` Turn 2, range `da8c9db..b3cc034`
+# Code review — session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`
 
 **Sender:** coderev
 **Scope:** the plugin's own source across all 5 commits of the range. Workbench records and history
@@ -40,7 +40,7 @@ Re-measured, not accepted:
   `b3cc034`, none lost, none renamed away; each new content is an exact byte-prefix match of its old
   content, so every change was an append plus a marker rename. Eleven are `_c_`, one (`…citation-
   rooting-reached-two-of-three-skills…`) is `_p_`, which matches `b3cc034`'s stated deliberate
-  remainder. The glob incident of `260810-2024` left no residue.
+  remainder. The glob incident of `260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md` left no residue.
 - **The lock form releases on every exit path it can reach.** `bin/fusion-commit-lock:323` really is
   `trap 'do_release …' EXIT INT TERM`, set inside the `with` branch; `"$@" || rc=$?` captures a
   failing command and the explicit release runs before `exit "$rc"`. A `SIGKILL` still leaks, and the
@@ -74,13 +74,13 @@ Re-measured, not accepted:
   `b3cc034`. Seven is not the prose-only count either; that is six. The finding the record makes —
   coverage shrank with the suite green throughout — is correct and important. Its only number is
   wrong.
-  → `260810-2110_o_the-citation-rooting-commit-and-its-own-record-both-say-seven-citations-and-there-are-eight.md`
+  → `260810-2110_*_the-citation-rooting-commit-and-its-own-record-both-say-seven-citations-and-there-are-eight.md`
 
 - **L2 — `45d76f0` says eleven licence patterns; twelve were added, and the docstring calls eleven
   items "the eight forms".** `SKIP_LICENCES` went 16 → 26: five left, fifteen arrived, three of those
   being widened re-spellings. "Eleven" is reachable only by counting the two contraction regexes as
   one, which the new control at `:676-707` explicitly does not do.
-  → `260810-2110_o_the-skip-licence-commit-says-eleven-patterns-and-twelve-were-added-and-the-docstring-calls-eleven-items-eight-forms.md`
+  → `260810-2110_*_the-skip-licence-commit-says-eleven-patterns-and-twelve-were-added-and-the-docstring-calls-eleven-items-eight-forms.md`
 
 ### The reach gate: what it measures and what it still cannot see
 
@@ -95,21 +95,21 @@ argument with a measurement and names three holes. It does not name all of them.
   `agents/taskplanner.md:127` writes them bare. The same shape appears on the input side: a fully
   backticked paraphrase naming its evidence in unlisted words (*"open questions outnumber defects"*)
   also passes, which is a different case from the named "paraphrase naming no input".
-  → `260810-2110_o_the-cascade-reach-gate-only-sees-a-domain-name-in-backticks-or-double-quotes-and-that-hole-is-not-named.md`
+  → `260810-2110_*_the-cascade-reach-gate-only-sees-a-domain-name-in-backticks-or-double-quotes-and-that-hole-is-not-named.md`
 
 - **M1 — the detector is line-scoped and a hard-wrapped sentence splits.** The named hole is "a
   paraphrase spread across the ROWS of a table". A two-line wrap of one sentence is the same hole and
   is not named; measured, it passes. The header's argument for the line cut is about tables and does
   not carry to a wrap, and the fix for a wrap (a two-line sliding window) does not re-admit the
   tables.
-  → `260810-2110_o_the-cascade-reach-gate-is-line-scoped-and-this-repositorys-own-prose-is-hard-wrapped.md`
+  → `260810-2110_*_the-cascade-reach-gate-is-line-scoped-and-this-repositorys-own-prose-is-hard-wrapped.md`
 
 - **L5 — the file set is justified as "the files an agent executes", and `rules/` is that too.**
   `rules/agent-setup.md` makes reading every emitted rule mandatory, so a rule file is a consumer.
   Measured: no rule file, README or `CLAUDE.md` states the cascade today, so this is a reasoning
   defect rather than a live second definition — but the stated reason reads as though the class were
   closed when it is not.
-  → `260810-2110_o_the-cascade-gates-file-set-is-justified-as-the-files-an-agent-executes-which-is-also-true-of-rules.md`
+  → `260810-2110_*_the-cascade-gates-file-set-is-justified-as-the-files-an-agent-executes-which-is-also-true-of-rules.md`
 
 ### Silence where the same session chose to speak
 
@@ -121,7 +121,7 @@ argument with a measurement and names three holes. It does not name all of them.
   most consequential reads. It contradicts `rules/fusion-workbench-conventions.md` `## Path
   Resolution` → *Where the call belongs*, and departs from the `[ -x ]`-guard convention `26ea3c3`
   established three commits earlier in the same session.
-  → `260810-2110_o_fusion-src-resolves-to-the-empty-string-with-no-report-when-fusion-plugin-root-is-unset.md`
+  → `260810-2110_*_fusion-src-resolves-to-the-empty-string-with-no-report-when-fusion-plugin-root-is-unset.md`
 
 - **M4 — the 26 skip licences contain no pattern for permission.** Thirty-six probes measured
   passing, including "you **may** run the drift check", "**consider** running", "**is recommended**",
@@ -129,7 +129,7 @@ argument with a measurement and names three holes. It does not name all of them.
   `only if` the list has carried all along — the exact defect shape the motivating issue described
   for `unless`, reproduced inside the repair that closed it. The header's honesty about the list
   being a blacklist holds; the gap is that the whole vocabulary is negation-shaped.
-  → `260810-2110_o_the-skip-licence-list-has-no-pattern-for-permission-and-misses-only-when-beside-the-only-if-it-carries.md`
+  → `260810-2110_*_the-skip-licence-list-has-no-pattern-for-permission-and-misses-only-when-beside-the-only-if-it-carries.md`
 
 ### The commit path
 
@@ -139,13 +139,13 @@ argument with a measurement and names three holes. It does not name all of them.
   layout rule explicitly allows a workbench root below the git toplevel; in such a project every
   staging list composed from `git diff --name-only` fails the pathspec, and the obvious repair an
   agent reaches for is a directory argument — which Step 4 has just spent a paragraph forbidding.
-  → `260810-2110_o_moving-git-add-inside-the-lock-wrapper-changes-the-directory-it-runs-in-and-the-prompt-does-not-say-so.md`
+  → `260810-2110_*_moving-git-add-inside-the-lock-wrapper-changes-the-directory-it-runs-in-and-the-prompt-does-not-say-so.md`
 
 - **L3 — the heredoc fix breaks the numbered list it sits in.** Moving `skills/commit/SKILL.md:84-96`
   to column 0 ends the procedure list, so step 6's two `fusion-commit-lock` commands render outside
   the step that introduces them and `7. Show result` starts a new list. The shell reasoning in the new
   paragraph is correct; the document structure is the cost.
-  → `260810-2110_o_the-heredoc-example-was-de-indented-to-column-0-and-that-terminates-the-numbered-list-it-sits-in.md`
+  → `260810-2110_*_the-heredoc-example-was-de-indented-to-column-0-and-that-terminates-the-numbered-list-it-sits-in.md`
 
 ### One decision, four statements — again
 
@@ -153,27 +153,27 @@ argument with a measurement and names three holes. It does not name all of them.
   the stated justification.** `skills/cleanup/SKILL.md:65-71` joins `next`, `direct` and
   `seed-from-plane`. Cleanup's version adds `DOMAIN_SOURCE`, so the four are already not identical on
   the day the fourth landed.
-  → `260810-2110_o_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`
+  → `260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`
 
 ### Wording
 
 - **L1 — `skills/cleanup/SKILL.md:63` says "step 4 below removes `agentstate.yaml`"**, where the
   removal is Step 1's item 4 and the same sentence's "Step 3" means the top-level heading. The commit
   message gets it right ("its Step 1.4"); the shipped text does not.
-  → `260810-2110_o_the-cleanup-domain-capture-cites-step-4-for-a-deletion-that-happens-in-step-1-item-4.md`
+  → `260810-2110_*_the-cleanup-domain-capture-cites-step-4-for-a-deletion-that-happens-in-step-1-item-4.md`
 
 ## Cross-references to records already open
 
 Not refiled:
 
 - The staging rule is stated for `git add` and not for `mv` or `git rm`, which is exactly what the
-  glob incident turned on — `260810-2024`, whose own text makes the point.
+  glob incident turned on — `260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`, whose own text makes the point.
 - `rules/workbench-stash-and-lock.md:135` still names Step 3b as the worked example of the explicit
-  lock form, which Step 3b no longer uses — `260810-2025`.
-- The monitor's new browser-gap line has no executable gate — `260810-2027`.
+  lock form, which Step 3b no longer uses — `260810-2025_*_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`.
+- The monitor's new browser-gap line has no executable gate — `260810-2027_*_the-monitors-browser-gap-line-has-no-executable-gate.md`.
 - `ROOT_VAR_RE` does not know `$FUSION_SRC` — `260810-2029` (its count is H1 above).
 - The source-root branch has no single home — `260810-2030`.
-- The load-sensitive commit-lock timing case named itself this Turn — `260810-1135`, third
+- The load-sensitive commit-lock timing case named itself this Turn — `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`, third
   observation appended, nothing widened. Correct handling.
 
 ## Cross-cutting observations
@@ -190,7 +190,7 @@ prose rather than measured.
 **The project keeps discovering "one decision, several statements" and keeps closing it one instance
 at a time.** Four instances are now in play: the cascade (closed, with holes), the source root
 (`260810-2030`, open), the domain one-liner (L4, new), and the marker-rename authority
-(`260810-2024`, open). Each has been filed with the same diagnosis and each is being answered
+(`260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`, open). Each has been filed with the same diagnosis and each is being answered
 separately. The common shape — a criterion with one implementation and several restatements, no
 mechanism keeping them equal — is now well enough evidenced to be worth one design pass rather than
 four fixes.
@@ -211,7 +211,7 @@ sites go silent on an unset root, and the guard convention to fix it already exi
 back.
 
 **Next cleanup pass:** M3 (one sentence in Step 4), M1, M4, L5. M4 should be weighed against the
-baseline-pin proposal in `260810-2032` rather than answered with more patterns.
+baseline-pin proposal in `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` rather than answered with more patterns.
 
 **Bookkeeping, cheap:** H1, L1, L2, L3.
 
@@ -220,11 +220,11 @@ four skill bodies is a thicker case for one `bin/` helper than either was alone.
 
 ---
 
-**Filed by:** coderev, session `260810-1646`, Turn 2.
+**Filed by:** coderev, session `260810-1646-orchestrator-session.md`, Turn 2.
 
 ---
 
-## Reconciliation annotation — reconciler, 260811-0108, at HEAD `e2a34f0`
+## Reconciliation annotation — reconciler, 260811-0108-reconciliation.md, at HEAD `e2a34f0`
 
 Findings are not rewritten here.
 

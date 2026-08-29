@@ -1,8 +1,8 @@
 # coder — documentation and the agent-facing rule (plan step 7)
 
 **Date:** 2026-08-01 18:36
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 7
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 7
 **Status:** Complete
 
 ## What was written
@@ -124,7 +124,7 @@ writing an ordinary document, and no history log named it. Both the rule and the
 say so, with the fix: quote the delimiter when the body contains shell-looking text.
 
 Not filed as an issue — the behaviour is asserted on purpose and shares its rationale with
-the closed `shared/issues/260716-2005_c_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md`.
+the closed `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md`.
 
 ## What the rule tells an agent to do instead
 

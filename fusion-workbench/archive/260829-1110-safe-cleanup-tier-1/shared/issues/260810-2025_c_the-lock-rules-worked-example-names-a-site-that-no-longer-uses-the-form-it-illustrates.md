@@ -8,7 +8,7 @@ orchestrator Phase 2 Step 3b)."*
 
 The criterion is right. The parenthetical is now wrong twice over.
 
-Step 3b was rewritten this session (`260810-1918_c_step-3b-drops-the-lock-form…`) to take the lock
+Step 3b was rewritten this session (`260810-1918_*_step-3b-drops-the-lock-form…`) to take the lock
 through `with` again, so the one site the rule names as its worked example of the explicit form no
 longer uses the explicit form at all. And the retry it points at sits at step 2, outside the held
 region, which begins at step 5 — so even before the rewrite, that retry was not an instance of
@@ -18,7 +18,7 @@ control-flow *inside* the lock. It was never the example the sentence needed.
 
 **Why this is worth a record rather than a passing edit.** The parenthetical is the only worked
 example the rule offers, and a reader reaching for the explicit form will read it as the licence.
-That is how Step 3b came to use the explicit form in the first place: the executor of `260810-1535`
+That is how Step 3b came to use the explicit form in the first place: the executor of `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md`
 took "internal control-flow" as covering the bugfixer retry, and the reason was recorded in the
 prompt rather than checked against the rule. The wrong example produced the wrong call site, then the
 call site was cited back as evidence.
@@ -39,7 +39,7 @@ but it is the same drift.
 reason to edit rules casually. Whoever takes this touches a rule file and should read
 `rules/rule-file-provenance.md` first.
 
-**Filed by:** orchestrator, session `260810-1646`, on the Turn-2 commit-procedure executor's proposal.
+**Filed by:** orchestrator, session `260810-1646-orchestrator-session.md`, on the Turn-2 commit-procedure executor's proposal.
 
 ---
 **Second gap in the same section, found in Turn 3 and belonging to the same pass.** `## Commit lock`
@@ -60,7 +60,7 @@ sentence — this rule file is the authoring home, and the two call sites should
 restate it. Whoever edits the worked example above should state the `cd` in the same pass.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Both halves still hold, and the file moved without them being fixed. The rule is now `rules/commit-lock.md` (renamed from `workbench-stash-and-lock.md` on 2026-08-15); its worked example at `:42` still names the orchestrator Phase 2 Step 3b retry-after-bugfixer as internal control flow, while `agents/orchestrator.md:546` uses the `with` form there. The second half is worse than unfixed: the fact that `with` performs a `cd`, and that pathspecs must therefore be absolute, is documented at the call site (`agents/orchestrator.md:537`) and still absent from the rule file that is its stated authoring home.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). Both halves still hold, and the file moved without them being fixed. The rule is now `rules/commit-lock.md` (renamed from `workbench-stash-and-lock.md` on 2026-08-15); its worked example at `:42` still names the orchestrator Phase 2 Step 3b retry-after-bugfixer as internal control flow, while `agents/orchestrator.md:546` uses the `with` form there. The second half is worse than unfixed: the fact that `with` performs a `cd`, and that pathspecs must therefore be absolute, is documented at the call site (`agents/orchestrator.md:537`) and still absent from the rule file that is its stated authoring home.
 
 ---
 Resolved: fixed — the false worked example is dropped and the criterion left bare (no shipped site holds the lock across control flow), 'before staging' became 'in the held command', and the `cd` the `with` form performs is stated in the rule with the absolute-pathspec consequence; rules/commit-lock.md:42, rules/commit-lock.md:44

@@ -10,7 +10,7 @@
 
 ## What was asked
 
-Step 1 of `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md`:
+Step 1 of `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`:
 write `bin/fusion-prose-metric`, a bash and awk helper that turns the prose em-dash counting rule
 from a shell line quoted inside a completed analysis into an executable, and add one `## Layout`
 row for it in `CLAUDE.md`. Report and never gate. No new hook test file. No reuse of

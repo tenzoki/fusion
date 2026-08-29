@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 2026-08-15
-**Source:** circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md, step 6
+**Source:** 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md, step 6
 **HEAD at start:** `04ea182`
 
 ## What was done

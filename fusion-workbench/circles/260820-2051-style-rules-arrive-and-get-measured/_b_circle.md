@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_c_plan-style-rules-arrive-and-get-measured.md
-**Active session history:** shared/history/260820-2103-orchestrator-session.md
+**Active spec/plan:** 260820-2324_*_plan-style-rules-arrive-and-get-measured.md
+**Active session history:** 260820-2103-orchestrator-session.md
 
 ---
 
@@ -24,7 +24,7 @@ number was available. The factual form of the first is "Schritt 8 fand neun Pros
 Plan führte vier." Neither sample carries an em-dash. `rules/user-facing-output.md` already
 requires the factual form, as point 1 of its readability gate, and nothing checks it. That is
 the same condition
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 opens with: the style rules are the only normative surface in this project that is stated and
 never gated.
 
@@ -49,7 +49,7 @@ Measured today, the two chat profiles diverge and the two long-form profiles do 
 loaded German profile says gate prompts up to 8 lines and chat replies up to 12; the shipped one
 says 6 and 8, and adds the clause "Klare Formulierungen, kein Jargon", which no agent in this
 repository has ever loaded. The condition is open as
-`shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
+`260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
 unchanged since 2026-08-14 and re-verified by the reconciler on 2026-08-17.
 
 Three independent causes hold it in place.
@@ -68,7 +68,7 @@ Three independent causes hold it in place.
 
 ### One claim in the open record has expired and must be annotated rather than repeated
 
-`shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
+`260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
 states that even a forced copy would not help, because `$FUSION_PLUGIN_ROOT` points at the
 installed 8.2.0 tarball rather than the work tree. That was accurate on 2026-08-14. It is not
 accurate today: all four files under `~/.fusion/stilwerk/` are byte-identical with the work
@@ -99,14 +99,14 @@ are the always-on set for every agent: the five unindented `emit_if_exists` call
 `bin/fusion-rules` at all, and `design-diagrams.md` and `circle-records.md` are conditional
 emissions reaching a derived audience. The seven-file table in the analysis is labelled
 always-on and is not the always-on set, which is filed as
-`shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
+`260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
 Whichever files the repunctuation pass covers, the corpus it covers has to be named correctly
 first, because the measurement's surface is defined by that name.
 
 The single repaired file is `rules/user-facing-output.md`, taken from 38 em-dashes to 6 in
 `6049d3e`. At 2.1 per 1000 it still sits above its own ceiling.
 
-**Correction appended 260821-0322** (coder, plan step 15). *The set above is right and is stated as
+**Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md** (coder, plan step 15). *The set above is right and is stated as
 a list; state it as its derivation, and name `CLAUDE.md` inside the always-on prose.* The always-on
 set is the unindented `emit_if_exists` calls in `bin/fusion-rules` plus the unconditional
 `emit_voice_profile "chat-voice" "$CHAT_LANG"` call, resolved against the project's chat language.
@@ -117,7 +117,7 @@ stale, which is the root cause this Circle was opened on.
 `CLAUDE.md` is always-on prose an agent holds and is outside the derivation. No helper emits it;
 Claude Code loads it as project instructions, so no change to `bin/fusion-rules` adds or removes
 it. Its prose is not repaired in this Circle, by
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+`260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
 option 3. Measured at HEAD `86edaac` with `bin/fusion-prose-metric`, the authoritative counter
 since plan step 1, which excludes fenced code, inline code spans, block quotes and YAML example
 values from both counts: the six emitted files carry 8 prose em-dashes over 13 292 prose words,
@@ -129,34 +129,34 @@ prose words an agent holds and 94 per cent of the em-dashes left in them. The ta
 
 Three concern the repunctuation itself and one concerns the record of it:
 
-- `shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`
-- `shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`
-- `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
-- `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
+- `260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`
+- `260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`
+- `260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
+- `260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 
 The last of these is settled by the user's line-cap decision below, and its correction belongs as
 an appended note on a history file rather than a rewrite of it.
 
 ### What the measurement is, and what it is not
 
-Recommendation 4 of `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` defines
+Recommendation 4 of `260816-0740-rhetorical-register-of-agent-output.md` defines
 it: after the corpus repair lands, re-run the Sources measurement against the next session's
 history files. Finding 10 predicts that the output rate falls with the corpus rate. The answer recorded on
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 warns that a weak dose does not test the inference, and that warning has grown stronger rather than weaker: 2 563 repaired words inside a
 corpus of 22 763 was already weak, and `rules/workbench-tracking.md` has been added to the
 emitted set since. The whole-corpus scope the user chose is what makes the measurement able to
 carry a result.
 
-**Correction appended 260821-0322** (coder, plan step 15). *The clause "`rules/workbench-tracking.md`
+**Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md** (coder, plan step 15). *The clause "`rules/workbench-tracking.md`
 has been added to the emitted set since" is inverted, and the caution it supports still stands on
 its other half.* That file is emitted to no agent. `grep -c workbench-tracking bin/fusion-rules`
 returns 0 at HEAD `86edaac`, and `b200902` moved text **out** of the emitted set rather than into
 it: its own commit message records the always-on set falling from 98 874 to 95 458 bytes per
 dispatch. The audience was settled by
-`shared/decisions/260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`,
+`260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`,
 whose answer is no agent, and the condition is filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
+`260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
 The corpus did not grow. What keeps the dose caution alive is `CLAUDE.md`, which no helper emits
 and which this Circle does not repair, so the whole-corpus scope named in the next sentence covers
 the emitted six and not the largest single conditioning file.
@@ -173,16 +173,16 @@ the emitted six and not the largest single conditioning file.
    without one Setup cannot distinguish a local adaptation from a stale copy. Options 2, 3 and 4
    from the user's draft are not pursued; option 4, a work-tree preference for `stilwerk/`, would
    also require answering part (c) of
-   `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`,
+   `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`,
    which is deliberately unanswered.
 4. **The refresh path covers every asset `/fusion:setup` copies into the workbench**, not the four
    profiles alone. The class is general, and closing it for `stilwerk/` alone leaves
-   `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
+   `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
    half closed.
 5. **The line-cap conflict resolves in favour of the rule, at 8 and 12.** The chat profiles stop
    restating the numbers and cite `rules/user-facing-output.md` `## Length` instead. One number,
    one surface. This closes
-   `shared/issues/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`,
+   `260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`,
    whose part 2 (the German profile diverged from the English beyond translation, and left
    trailing whitespace) is repaired in the same pass.
 6. **`rules/user-facing-output.md` gains a checkable test for the opening sentence**, in the
@@ -191,7 +191,7 @@ the emitted six and not the largest single conditioning file.
 7. **The four defects from the first pass are repaired inside this Circle.**
 8. **A null measurement does not build a gate inside this Circle.** Where the output rate does
    not fall with the corpus rate, the Circle records the number on
-   `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+   `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
    and re-opens the gate question with a result rather than an inference. Option 1 of that record,
    a blocking test over the shipped prose, is a later Circle's work in either branch.
 
@@ -217,7 +217,7 @@ editing a baseline, which is authored in `hooks/lib/__tests__/helpers/growth-bou
 `## Project language` settles the analogous case, and the answered decision carries it forward.
 Session histories, reviews and closed records keep the register they were written in. The
 correction to
-`shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
+`260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 is an appended note for the same reason.
 
 **A gate for prose is not authorised yet.** The answered decision makes the measurement a
@@ -234,7 +234,7 @@ work. Which executors a plan step gets is the planner's `**Executors:**` decisio
 
 ## Dependencies
 
-No Circle blocks this one. `circles/260819-1645-four-constraints-on-deep-change` is active and
+No Circle blocks this one. `260819-1645-four-constraints-on-deep-change` is active and
 independent in subject, and it is cited here for one shared constraint rather than as a
 precondition: both Circles spend from the same four growth budgets, and that Circle's own
 Grounding measures `agents/*.md` at roughly 3 300 bytes of head-room. Where the two run close
@@ -242,25 +242,25 @@ together, the second one to write pays the tighter bill.
 
 ## Turn log
 
-- Turn 1 (session 260820-2103): commits `fac97f4`..`d66763b`; eight plan steps, the counting program,
+- Turn 1 (session 260820-2103-orchestrator-session.md): commits `fac97f4`..`d66763b`; eight plan steps, the counting program,
   the registered protocol with its pre-repair window, Setup's provenance stamp and comparison, the
   fallback made detectable, and the four profiles revised, repunctuated and refreshed through the
   mechanism. Coherence verdict: review-needed. The review of all thirteen commits found the mechanism
   carrying the first Directive outcome did not run as written. Session history:
-  `shared/history/260820-2103-orchestrator-session.md`
-- Turn 2 (session 260820-2103): commits `3464575`..`HEAD`; the two High findings repaired and verified
+  `260820-2103-orchestrator-session.md`
+- Turn 2 (session 260820-2103-orchestrator-session.md): commits `3464575`..`HEAD`; the two High findings repaired and verified
   under the condition that produced them, four rule files brought to their per-file ceiling, the
   fact-first test and the gate-clause arithmetic written into the rule, seven records corrected by
   appended note, the curator prompt's enumeration, and the final measurement. Review gate R1 confirmed
   the repunctuation did not reproduce the earlier pass's two content defects and did reproduce its
   evidence defect. Coherence verdict: bounded-closure-proposed. Session history:
-  `shared/history/260820-2103-orchestrator-session.md`
+  `260820-2103-orchestrator-session.md`
 
 ## Closure note
 
 **Bounded Closure**, 260821. Session history:
-`shared/history/260820-2103-orchestrator-session.md`. Reconciliation:
-`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`.
+`260820-2103-orchestrator-session.md`. Reconciliation:
+`260821-0416-reconciliation.md`.
 Verdict reached independently by the reconciler, not adopted from the orchestrator's proposal.
 
 **What the Circle reached.** Three of the Directive's four outcomes. A change to a stylometric profile
@@ -271,7 +271,7 @@ cent of that fall is dilution. `rules/user-facing-output.md` states the conditio
 sentence fails its fact-first requirement, so the requirement can be applied rather than interpreted.
 
 **What it could not reach, and why that is structural.** The fourth outcome is a measured number on
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.
 Its post-repair window opens only once a Circle conditioned by the repaired corpus has written session
 prose, and no such Circle can exist while this is the only active one of thirteen. The Circle did the
 half that had to happen first and could never be reconstructed afterwards: it registered the protocol,

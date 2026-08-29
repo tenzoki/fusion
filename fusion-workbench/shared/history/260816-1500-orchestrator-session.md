@@ -1,4 +1,4 @@
-# Orchestrator Session — 260816-1500
+# Orchestrator Session — 260816-1500-orchestrator-session.md
 
 **Directive:** (not yet stated — Setup run via /fusion:setup; awaiting the user's task)
 **Mode:** (not yet resolved)
@@ -33,20 +33,20 @@
 
 ### 260814-2017 — parent spec closes when its last Circle does?
 
-**Answer: option 1.** The spec `shared/planning/260801-1122_o_spec-normative-consolidation.md`
+**Answer: option 1.** The spec `260801-1122_*_spec-normative-consolidation.md`
 is renamed `_c_` and carries a closing note naming the three retirements (C4 retired by user
 decision 2026-08-14, C5c's subject deleted 2026-08-12, C9 performed by hand and put out of scope).
 The user accepted the stated cost: `_c_` reads as delivered to anyone who does not open the file,
 and the mandatory note is the whole of the mitigation. Implementation is queued, not yet performed.
 
-### 260815-2312 — should the Circle record's `**Status:**` field exist at all?
+### 260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md — should the Circle record's `**Status:**` field exist at all?
 
 **Answer: option 1, without urgency.** The field goes; the filename marker becomes the only
 source. The user chose the "next Circle that touches Circle records for another reason" timing
 over a Circle of its own, so the status quo after `282ef42` stands until then. Implementation is
 deferred by that timing and needs an explicit position on the records already carrying the field.
 
-### 260815-2322 — can a commit stand green alone when the golden is a per-file inventory?
+### 260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md — can a commit stand green alone when the golden is a per-file inventory?
 
 **Answer: option 1.** The green unit is the Turn, not the commit, and the golden's failure text
 gains the sentence saying so and naming regeneration as a Turn-end act. The user accepted the
@@ -81,7 +81,7 @@ against the growth bound armed at `0609945`.
 Re-open trigger, carried from the record's own recommendation: if the next two Circles close over
 uncovered ranges and reconciliation finds nothing in them, that is evidence against this answer.
 
-### 260809-1224 — is the decision-governed escalation (CHECK 3) live or retired?
+### 260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md — is the decision-governed escalation (CHECK 3) live or retired?
 
 **Re-opened and answered: option 1, retired.** The record was deferred by the user on 2026-08-11
 with an explicit re-open trigger: a measurement over the reachable consuming projects, where a
@@ -92,7 +92,7 @@ answered under the trigger's own terms: remove CHECK 3 and its four configuratio
 
 Marker moves `_d_` → `_a_`: the deferral ended when its trigger fired, and the record now carries
 an answer rather than a postponement. This unblocks recommendation C5 of
-`shared/analyses/260809-1101-guard-support-layer.md`, blocked since 9 August.
+`260809-1101-guard-support-layer.md`, blocked since 9 August.
 
 The stated cost, accepted: a consuming project that had populated the keys would lose their
 effect silently, and the measurement covers the two projects reachable from this machine rather
@@ -131,7 +131,7 @@ threshold the record named stays uncrossed.
 The cost the user accepted is specific and measured: the breakage lands on a later session that
 did not cause it, a one-character mismatch reddens a 750-test suite, and behind `agents/coder.md`'s
 report shape every executor dispatched in that state reports `blocked` regardless of what it
-achieved (`shared/issues/260810-0703`). The live third instance at `hooks/guard.ts:307` resolves
+achieved (`260810-0703`). The live third instance at `hooks/guard.ts:307` resolves
 only because its target has not moved yet.
 
 ### 260816-0711 — is count-pinning the convention for every gate that reports what it examined?
@@ -184,10 +184,10 @@ staging the build is what makes concurrent suite runs in one checkout safe.
 Two answers raised questions of their own, filed per the mandatory-filing rule rather than left
 inside the records that raised them:
 
-- `shared/decisions/260816-1707_o_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`
+- `260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`
   — open. Blocks the move approved in `260816-0711`: `bin/fusion-rules` serves agents only, and this
   rule's consumers are a human and a skill.
-- `shared/decisions/260816-1707_a_which-install-path-is-the-authoritative-one-for-end-users.md`
+- `260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md`
   — answered on filing. Writes down the policy that `260816-0719` refused to infer from a default.
 
 ## Status

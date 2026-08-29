@@ -3,7 +3,7 @@
 **Date:** 2026-08-14 10:51
 **Status:** Complete
 **Circle:** `260801-1244-curator`
-**Review:** `circles/260801-1244-curator/reviews/260814-1023-coderev-curator-turn-1.md`
+**Review:** `260814-1023-coderev-curator-turn-1.md`
 **HEAD at start:** `249e606`
 **Agent:** coder
 
@@ -102,9 +102,9 @@ each exit 0 after the prompt edits.
 transitioning one". Seventeen agents minus the three named in the sentence above it is fourteen,
 so the figure is stale, and it went stale when this Circle's Turn 1 added the curator. Turn 1's
 count pass could not have caught it: decision
-`260814-0845_i_are-the-sixteen-agent-claims-corrected-or-derived-away.md` surveyed occurrences of
+`260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md` surveyed occurrences of
 "sixteen" and "seventeen", and this sentence spells a derived number instead. Filed as
-`circles/260801-1244-curator/issues/260814-1051_o_the-circle-records-other-thirteen-agents-count-went-stale-when-the-curator-was-added.md`
+`260814-1051_*_the-circle-records-other-thirteen-agents-count-went-stale-when-the-curator-was-added.md`
 rather than fixed here, because it is outside the seven this task was dispatched for and because
 correcting it edits an emitted rule file, which moves a golden-fixture byte pin next door to the
 arming task.

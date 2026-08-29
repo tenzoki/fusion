@@ -74,7 +74,7 @@ Always-on core, measured at HEAD:
 
 ## Noticed, not mine
 
-`fusion-workbench/shared/issues/260818-2104_o_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`
+`260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`
 appeared in the working tree during this run, filed by the orchestrator against
 `skills/cleanup/SKILL.md`. Untouched here; recorded so the extra untracked file in the next
 `git status` is not mistaken for a stray write of this task.

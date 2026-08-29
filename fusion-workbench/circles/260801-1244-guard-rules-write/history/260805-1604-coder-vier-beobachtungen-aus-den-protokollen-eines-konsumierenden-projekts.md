@@ -43,7 +43,7 @@ bleibt — und hat damit die Archivierungs-Option in anderer Verpackung. Die Emp
 Record ist entsprechend die Archivierung, mit der ausdrücklichen Einschränkung, dass sie
 die Antwort überstimmt, die der Nutzer dem Shaper auf genau diese Rückfrage gegeben hat.
 
-`decisions/260805-1548_o_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+`260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
 
 ## 2 — Archiv im Portfolio: Defekt, nicht offene Frage
 
@@ -78,7 +78,7 @@ Konventionsdatei, die Autorenheimat des Layouts. Sie wurde geschrieben und wiede
 zurückgenommen — siehe unten. Die Regel steht damit an zwei Orten als Prosa und nirgends
 als Konvention.
 
-`issues/260805-1548_c_playmaker-liest-den-eingefrorenen-archiv-store-und-mischt-ihn-in-die-lebende-bestandsaufnahme.md`
+`260805-1548_*_playmaker-liest-den-eingefrorenen-archiv-store-und-mischt-ihn-in-die-lebende-bestandsaufnahme.md`
 
 ## 3 — Doppeltes Filen: Defekt mit brauchbarer Formulierung, aber nicht anwendbar
 
@@ -91,7 +91,7 @@ verschluckter Defekt kostet mehr als ein Duplikat.
 
 Belegt am eigenen Fall: dieser Record wurde nach der entworfenen Regel gefiled, die
 Auflistung kostete einen Befehl und fand einen verwandten Befund
-(`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`), kein Duplikat.
+(`260801-1020_*_scan-keys-never-reach-the-archive-store.md`), kein Duplikat.
 
 **Nicht angewandt.** `hooks/lib/__tests__/rules-emission-golden.test.ts` pinnt jede
 Role-Cap auf den gemessenen Höchststand und lässt kein zusätzliches Byte in einer immer
@@ -104,7 +104,7 @@ schlechterer Tausch als den Befund offen zu lassen.
 Anders als bei Punkt 2 gibt es keinen kostenfreien Ort: die Filing-Pflicht gilt für jeden
 Agenten, der filet.
 
-`issues/260805-1548_o_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
+`260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
 
 ## 4 — `config_valid`: der Code wich, nicht der Kommentar
 
@@ -121,14 +121,14 @@ gingen unmittelbar in einen Netzaufruf über, den diese Konfiguration nicht best
 und meldeten dann "unreachable" oder "HTTP 404" — die falsche Ursache. Der Dry-Run-Pfad
 ruft `config_valid` nicht auf.
 
-Der Kommentar beschreibt, was die Funktion können muss, damit `260805-1436` nicht
-passiert. Und seit `260805-1436` die Vorlage auf benannte Auslieferungswerte umgestellt
+Der Kommentar beschreibt, was die Funktion können muss, damit `260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md` nicht
+passiert. Und seit `260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md` die Vorlage auf benannte Auslieferungswerte umgestellt
 hat, ist er erfüllbar: es steht fest, welche drei Zeichenketten eine unausgefüllte Vorlage
 trägt.
 
 **Gleichheitstest, keine Heuristik** — das ist der Kern. `http://localhost:9999` und ein
 vierbuchstabiger Slug *sehen aus* wie Platzhalter und sind eine laufende Konfiguration;
-genau diese Lesart hat `260805-1436` Geld gekostet. Der Test vergleicht gegen drei
+genau diese Lesart hat `260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md` Geld gekostet. Der Test vergleicht gegen drei
 bekannte Zeichenketten und gegen nichts sonst. Geprüft: die drei stehen seit `eb9cf59`
 unverändert, `ec0561a` hat nur die Kommentare daneben geändert — der Test deckt jede je
 ausgelieferte Vorlagenversion ab.
@@ -148,7 +148,7 @@ Und gegen die ausgefüllte Konfiguration dieses Repositories, unverändert gült
 config valid:     yes (base=http://localhost:9999 ws=fusion-local project=8f0fc1f4-5efe-41ef-b1d8-fbc4194ca240)
 ```
 
-`issues/260805-1548_c_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md`
+`260805-1548_*_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md`
 
 ### Zwei Nebenwirkungen von Punkt 4
 
@@ -161,7 +161,7 @@ Das Test-Fixture trägt selbst die Null-UUID und wurde von der neuen Prüfung zu
 abgelehnt; vier Live-Pfad-Tests kippten von Exit 10 auf Exit 1. Das Fixture ist eine
 `.yaml` und gehört `ontocoder` — nicht angefasst, stattdessen füllt `freshWorkbench()`
 das Feld in der tmp-Kopie. Als Befund an `ontocoder` gefiled:
-`issues/260805-1548_o_der-plane-testfixture-traegt-den-platzhalter-den-config-valid-jetzt-ablehnt.md`
+`260805-1548_*_der-plane-testfixture-traegt-den-platzhalter-den-config-valid-jetzt-ablehnt.md`
 
 ## Der Ratchet, als eigener Record
 
@@ -176,7 +176,7 @@ Die Frage — was passieren soll, wenn ein Befund Regeltext verlangt und kein eh
 Schnitt danebenliegt — ist eine Budget-Entscheidung über eine geteilte Last und gehört dem
 Nutzer. Ohne Empfehlung aufgenommen, mit der Messung als Beitrag.
 
-`decisions/260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`
+`260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md`
 
 ## Geändert
 
@@ -199,12 +199,12 @@ Sechs, für vier Auftragspunkte plus zwei bei der Arbeit entstandene:
 
 | Datei | Art | Marker |
 |---|---|---|
-| `decisions/260805-1548_o_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md` | Decision | offen |
-| `issues/260805-1548_c_playmaker-liest-den-eingefrorenen-archiv-store-und-mischt-ihn-in-die-lebende-bestandsaufnahme.md` | Issue | geschlossen |
-| `issues/260805-1548_o_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md` | Issue | offen |
-| `issues/260805-1548_c_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md` | Issue | geschlossen |
-| `issues/260805-1548_o_der-plane-testfixture-traegt-den-platzhalter-den-config-valid-jetzt-ablehnt.md` | Issue | offen, für `ontocoder` |
-| `decisions/260805-1559_o_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` | Decision | offen |
+| `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md` | Decision | offen |
+| `260805-1548_*_playmaker-liest-den-eingefrorenen-archiv-store-und-mischt-ihn-in-die-lebende-bestandsaufnahme.md` | Issue | geschlossen |
+| `260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md` | Issue | offen |
+| `260805-1548_*_config-valid-verspricht-non-placeholder-ish-und-prueft-nur-auf-nicht-leere.md` | Issue | geschlossen |
+| `260805-1548_*_der-plane-testfixture-traegt-den-platzhalter-den-config-valid-jetzt-ablehnt.md` | Issue | offen, für `ontocoder` |
+| `260805-1559_*_der-regeltext-ratchet-laesst-keine-erweiterung-zu-und-heute-war-die-erste-noetige.md` | Decision | offen |
 
 **Zur Ablage.** Alle sechs liegen im Circle-Store, obwohl keiner aus dessen Directive
 (guard-rules-write) stammt — die Herkunftsregel führte streng genommen nach `shared/`.

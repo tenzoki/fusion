@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** planner
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md` § Grounding snapshot item 6; `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 9; `agents/orchestrator.md:434`; `agents/planner.md` `## Executor Agents`; `README-agents.md` `## Dispatch parameters`
+**Cross-references:** `260815-0007-remove-eight-mechanisms-and-cap-growth` § Grounding snapshot item 6; `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 9; `agents/orchestrator.md:434`; `agents/planner.md` `## Executor Agents`; `README-agents.md` `## Dispatch parameters`
 
 ---
 
@@ -86,7 +86,7 @@ the true figure is zero, option 2 is the honest answer and option 1 is a line of
 buying nothing. That count is cheap to take and worth taking before answering.
 
 ---
-Answered: shared/history/260814-2306-orchestrator-session.md:153 — Option 1: the orchestrator passes **Executors:** coder, ontocoder, analyst on every planner dispatch and the planner routes a step to analyst when that step produces a strategic deliverable. The orchestrator-side condition is deleted. Answered by the user at the plan gate.
+Answered: 260814-2306-orchestrator-session.md:153 — Option 1: the orchestrator passes **Executors:** coder, ontocoder, analyst on every planner dispatch and the planner routes a step to analyst when that step produces a strategic deliverable. The orchestrator-side condition is deleted. Answered by the user at the plan gate.
 Implemented: 0894d0d — option 1 landed: `agents/orchestrator.md:396` now prefixes `**Executors:** coder, ontocoder, analyst` on every planner dispatch with no condition, the `analyst` row of the Agent Routing Table at `:453` dropped its executor-set condition, `agents/planner.md` `## Executor Agents` states that the orchestrator always passes all three and that the routing judgement is the plan's, and the `planner` / `**Executors:**` row of `README-agents.md` `## Dispatch parameters` was rewritten in the same change.
 Deferred:
 Superseded by:

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** coderev
-**Cross-references:** `shared/issues/260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md`; `shared/issues/260811-1143_o_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`; commits `8a49fd5`, `afd7c2e`, `cac41ef`; `hooks/lib/guard-state-file.ts`
+**Cross-references:** `260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md`; `260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`; commits `8a49fd5`, `afd7c2e`, `cac41ef`; `hooks/lib/guard-state-file.ts`
 
 ---
 
@@ -123,7 +123,7 @@ chassis is built first.** Three copies is where this codebase drew the line the 
 Implemented: `hooks/lib/git.ts`, `hooks/lib/guard-state-file.ts:103-161`, `hooks/tracker.ts:776-857` — see the block at the foot of this file
 
 ---
-Answered: user, session 260811-0752 (chat) — **Option 2.** Build only the two pieces that already
+Answered: user, session 260811-0752-orchestrator-session.md (chat) — **Option 2.** Build only the two pieces that already
 have an owner: move the throttle store onto `hooks/lib/guard-state-file.ts`, and extract one
 `lib/git.ts` for the `execFileSync` wrapper. The tracker's three `measure…ForModel` bodies, the
 three CLI mains and the three `bin/` wrappers stay as they are. Option 1, the full chassis, is
@@ -131,8 +131,8 @@ taken at the fourth module, and the trigger is written down as the thing that de
 new measurement is a sibling at all. This follows the record's own recommendation.
 
 ---
-Implemented: coder, session 260811-0752, task 2 of the queue, realising record
-`shared/issues/260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`.
+Implemented: coder, session 260811-0752-orchestrator-session.md, task 2 of the queue, realising record
+`260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`.
 Cited by path rather than by commit hash: the executor does not commit, the orchestrator does.
 
 **Option 2, both pieces.**
@@ -177,4 +177,4 @@ the review-coverage trigger firing on its own path alone, all three throttle fil
 tracker exit 0 and each measurement re-reporting once, and the three `bin/` wrappers unchanged.
 `hooks/dist/**` rebuilt and re-checked self-contained.
 
-**History:** `shared/history/260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`
+**History:** `260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`

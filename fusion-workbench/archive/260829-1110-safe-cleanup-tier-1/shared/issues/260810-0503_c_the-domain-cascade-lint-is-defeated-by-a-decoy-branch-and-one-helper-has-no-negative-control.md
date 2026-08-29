@@ -4,7 +4,7 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `hooks/lib/__tests__/domain-cascade-order-lint.test.ts` — `firstIndex` (`:67`), `assertCodeCountFirst` (`:74-89`), `assertAbsentCountFirst` (`:92-104`), the negative-control block (`:138-146`)
 **Cross-references:** commit `31d8bb3`; `shared/issues/260807-1942_*` (the defect the lint guards)
 
@@ -28,7 +28,7 @@ therefore pass, all confirmed by probing the helpers directly:
 - **An inverted condition.** `elif code_files == 0: domain = "code"` in the `code_files > 0` slot
   passes. Order preserved, meaning inverted.
 - **A dead threshold.** `elif code_files > 100000: domain = "code"` passes. Every real project falls
-  through to the artifact branches — issue `260807-1942` reinstated with the suite green.
+  through to the artifact branches — issue `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` reinstated with the suite green.
 
 ## Second defect: one helper is never shown to reject anything
 
@@ -54,7 +54,7 @@ throw, so this is a gap in the test rather than in the helper.
 The fixture claim at `:125-136` ("the cascade exactly as it stood at `2910cf6`") is substantially
 **true** — checked against `git show 2910cf6:agents/orchestrator.md:131-136`, byte-identical modulo
 trailing comments and indentation that `branchesFrom` trims anyway. That is better than the sibling
-lint filed as `260810-0502`, and worth saying.
+lint filed as `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, and worth saying.
 
 The cascade itself is sound: read as a chain it is disjoint and complete, with a final `else`, so
 `rules/critical-stance.md` §4 is satisfied by the design. The lint is the weak part, not the change.
@@ -76,7 +76,7 @@ Either way, add the missing negative control for `assertAbsentCountFirst`.
 
 ---
 
-## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+## Reconciliation — `260810-0819`, session `260810-0241-orchestrator-session.md` Phase 3
 
 **Still accurate. All three defeats reproduce, and there is a fourth.**
 `hooks/lib/__tests__/domain-cascade-order-lint.test.ts` has not been touched since `31d8bb3`;
@@ -97,7 +97,7 @@ and the cascade in the prompt is comment-heavy, so `elif issues_count < 0: domai
 code_files not read` satisfies the order assertion. "Can still reach all four domains" (`:115-122`)
 passes in every case too, because all four `domain = "..."` assignments survive.
 
-So the decisive answer is yes: **`260807-1942` can be reinstated in full with the suite green.**
+So the decisive answer is yes: **`260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` can be reinstated in full with the suite green.**
 
 `:143-145` remains a second positive assertion (`.not.toThrow()` on `assertAbsentCountFirst`);
 nothing in the file demonstrates that helper rejecting anything. The record's own concession also
@@ -106,7 +106,7 @@ than the sibling lint can say.
 
 ---
 
-## Resolved — `260810-1646`, session `260810-1646-orchestrator-session.md` Turn 1
+## Resolved — `260810-1646-orchestrator-session.md`, session `260810-1646-orchestrator-session.md` Turn 1
 
 **Fix direction 2, taken.** The cascade is no longer linted as prose; it is executed.
 
@@ -125,7 +125,7 @@ domain fails loudly instead of quietly narrowing what the gate covers.
    frontend (11), whose data side was never measured, reach `code` for every data count that does
    not trip the documented ratio. Every `code`/`data` scenario carries the artifact profile that
    produced the original defect (122 commits, 3 open decisions against 1 open defect record), so a
-   `strategic` answer anywhere is `260807-1942` returning. One case measures this repository live
+   `strategic` answer anywhere is `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` returning. One case measures this repository live
    through `bin/fusion-count-sources`.
 2. **No dead branch** — every branch fires for some input across a 5 000-case sweep. A branch that
    can never fire is not decision logic.
@@ -152,7 +152,7 @@ job by design, not an oversight.
 
 **The second defect is closed too.** `assertAbsentCountFirst` now has a real negative control: a
 cascade with `if code_files > 0` standing above the `counted_by == "none"` branch, expected to
-throw, matched on `260807-1951` — an issue ID only that helper emits. The pre-fix `.not.toThrow()`
+throw, matched on `260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md` — an issue ID only that helper emits. The pre-fix `.not.toThrow()`
 assertion is kept alongside it, since the pre-fix absent-count position genuinely was correct.
 
 `agents/orchestrator.md` was **not** edited: locating the block by its content needs no marker, and

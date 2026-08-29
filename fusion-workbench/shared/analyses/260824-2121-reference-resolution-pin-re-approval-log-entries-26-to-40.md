@@ -3,14 +3,14 @@
 **Date:** 2026-08-24 21:21
 **Type:** Record
 **Status:** Complete
-**Requested by:** coder, step 15 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`
+**Requested by:** coder, step 15 of `260824-1905_*_plan-close-every-open-defect.md`
 
 ## What this is
 
 The second roll of the attribution log that `hooks/lib/__tests__/reference-resolution-lint.test.ts`
 keeps above `const BASELINE`. The first roll,
-`shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`, states
-the convention and the decision that chose it (`shared/decisions/260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
+`260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`, states
+the convention and the decision that chose it (`260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`,
 option 2); nothing here restates either. Between 2026-08-22 and 2026-08-23 the log gained the
 fifteen entries below, 92 lines on a surface whose head-room stood at 10 lines when step 15 needed
 about 55 for the two tests the Turn 1 review asked for (`bin/fusion-session-domain` and the no-git
@@ -125,5 +125,5 @@ The tokens are in the new `## How you ask the user anything` section of `agents/
 `agents/shaper.md` entering that prompt one more time, and the +1 anchor is that section citing
 `rules/user-facing-output.md` `## Length`. Recovered by `git log -S'paths: 1295'` and the diff of
 that commit, not from memory, and it is the same class `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_c_*`
-closed the day before (issue `shared/issues/260824-2145_c_*_the-reference-resolution-pin-chain-has-an-unaccounted-plus-one-between-the-c2-closing-pass-and-c3-step-3.md`).
+closed the day before (issue `260824-2145_*_*_the-reference-resolution-pin-chain-has-an-unaccounted-plus-one-between-the-c2-closing-pass-and-c3-step-3.md`).
 The line lives here rather than in the test file because the hook-test surface has no head-room.

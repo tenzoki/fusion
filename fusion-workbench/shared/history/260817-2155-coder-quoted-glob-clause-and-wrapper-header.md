@@ -7,8 +7,8 @@
 **Dispatched by:** the user, top-level (task T3)
 **Domain:** code
 **Task:** Fix the two Low findings from the review of `bd2db5c..6b6436d`:
-`shared/issues/260817-2147_*_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md`
-and `shared/issues/260817-2147_*_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md`.
+`260817-2147_*_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md`
+and `260817-2147_*_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md`.
 Session's last task, no review pass follows. No commit; leave the tree for the cleanup pipeline.
 
 ---
@@ -38,7 +38,7 @@ All four forbidden names now reach a clause, which is the acceptance. The record
 wording was taken as given; it costs six words.
 
 **This supersedes the judgement recorded one task earlier.** `260817-2130`'s resolution note and
-`history/260817-2138-coder-staging-sentence-per-shape-justification.md` both state a deliberate
+`260817-2138-coder-staging-sentence-per-shape-justification.md` both state a deliberate
 decision *not* to name the quoted form separately, on the ground that the over-staging routing
 already covered it. The reviewer's counter is that the routing named a **closed pair** — "`-A` and
 a directory argument" — which a quoted glob is not a member of, so the coverage was asserted and
@@ -63,7 +63,7 @@ loosenings the same way the emitted text used to, and is false for three of them
 
 The incident stays, the mechanism stays, the generalisation goes. The commit hash was **kept** as
 provenance: this is a `bin/` header in fusion's own repository read by a fusion developer, not
-emitted text reaching a consuming project's session, so `260817-2110`'s rule against fusion IDs in
+emitted text reaching a consuming project's session, so `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md`'s rule against fusion IDs in
 model-facing output does not reach it — and the filed defect was the over-attribution, not the
 citation. The per-shape enumeration was deliberately not imported: the header is a summary, and the
 enumeration belongs where the sentence is emitted.
@@ -103,7 +103,7 @@ row of it.
 - `hooks/lib/staging-drift.ts`
 - `hooks/dist/lib/staging-drift.js`
 - `bin/fusion-staging-drift`
-- `fusion-workbench/shared/issues/260817-2147_c_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md` (Resolved note, `_o_` -> `_c_`)
-- `fusion-workbench/shared/issues/260817-2147_c_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md` (Resolved note, `_o_` -> `_c_`)
+- `260817-2147_*_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md` (Resolved note, `_o_` -> `_c_`)
+- `260817-2147_*_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md` (Resolved note, `_o_` -> `_c_`)
 
-`260817-2131` (the lint gate) was out of scope and stays open. Nothing was staged or committed.
+`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the lint gate) was out of scope and stays open. Nothing was staged or committed.

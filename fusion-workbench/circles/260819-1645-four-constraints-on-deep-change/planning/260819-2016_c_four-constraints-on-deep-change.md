@@ -2,14 +2,14 @@
 
 **Date:** 2026-08-19
 **Status:** Complete
-**Spec:** none. Planned from the Circle record `circles/260819-1645-four-constraints-on-deep-change/_t_circle.md`, whose Directive and Grounding snapshot are the contract.
+**Spec:** none. Planned from the Circle record `260819-1645-four-constraints-on-deep-change`, whose Directive and Grounding snapshot are the contract.
 **Decidability:** Constraint 1's load-bearing question is "is the committed `hooks/dist` the compilation of the committed source", and it is decidable, on one condition. A compile is a function of source, configuration and compiler version. Source and artifact are both in the git object store and can be read without touching the working tree. The configuration is committed. The compiler version is the only free variable, and the answering decision names it as the thing that would redden the suite for no defect. Step 1 removes it as a variable by pinning `typescript` to an exact version and asserting, before the comparison runs, that the compiler about to be used is that one. A mismatch is then a separate, separately-named failure ("the toolchain is not the pinned one") rather than a wrong answer to the question. Verified at HEAD `b91c01c`: two compiles of the identical extracted tree produced byte-identical output, and that output equals the committed `hooks/dist` in all 36 files. Constraint 4's question, "does this citation name a record that exists", is decidable for the three token classes `scanRecordCitations` reads and undecidable for a bare timestamp, which is why `citation-scan.ts` partitions those out and no step here judges them. Constraint 3 is the one place where nothing is decided by a mechanism: whether an executor ran a whole-tree git command is only answerable by reading the command's text, which is the undecidable question this repository deleted a classifier over on 2026-08-09. Constraint 3 is therefore a written obligation and this plan claims no enforcement for it.
 
 ## Directive
 
 The Circle record carries it in full. In one line: four ways a deep change to fusion can go wrong unobserved are closed, by asserting the compiled artifact against its source, by putting all four write tools through the guard in a test, by telling every executor at dispatch that whole-tree git commands are not its tools, and by putting the workbench's own citations under a gate and repairing what that gate would find.
 
-Four settled points arrive with the dispatch and are not reopened here. Constraint 1 takes option 2 of decision `shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`. Constraint 3's prohibition goes into the orchestrator's dispatch obligations rather than into the executor prompts, on every executor dispatch. Constraint 4 builds a blocking test in `npm test` and repairs the dead citations in the live surfaces, leaving session histories and `archive/` as they are. The deletion obligation from `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md` is in scope.
+Four settled points arrive with the dispatch and are not reopened here. Constraint 1 takes option 2 of decision `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`. Constraint 3's prohibition goes into the orchestrator's dispatch obligations rather than into the executor prompts, on every executor dispatch. Constraint 4 builds a blocking test in `npm test` and repairs the dead citations in the live surfaces, leaving session histories and `archive/` as they are. The deletion obligation from `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md` is in scope.
 
 ## Current State
 
@@ -38,7 +38,7 @@ Everything below was measured in this planning run, at HEAD `b91c01c`, against t
 
 The Grounding's 1 711 tokens and 245 dangling reproduce under the second reading, at the commit before this session's own records entered the tree. The corpus is defined by state markers and by files that ordinary work creates, so the count moved between the shaper's run and this one without anybody touching a citation. That is direct evidence for the sibling decision's own reasoning about count pins, and it is measurement rather than argument.
 
-**The gate would judge fewer tokens than the repair scope names.** `scanRecordCitations` filters on `GATE_KINDS`, which holds `record`, `bare-record` and `circle-dir`. Over the wider corpus it returns **209 violations across 81 files**. The `partition()` figure of 242 additionally counts 33 `stamp-name` tokens, a class the gate does not read. The gap is filed as decision `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md` and is the second question the user answers at this gate.
+**The gate would judge fewer tokens than the repair scope names.** `scanRecordCitations` filters on `GATE_KINDS`, which holds `record`, `bare-record` and `circle-dir`. Over the wider corpus it returns **209 violations across 81 files**. The `partition()` figure of 242 additionally counts 33 `stamp-name` tokens, a class the gate does not read. The gap is filed as decision `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md` and is the second question the user answers at this gate.
 
 The 209 break down as follows, and the breakdown is what makes the repair three steps rather than one:
 
@@ -48,7 +48,7 @@ The 209 break down as follows, and the breakdown is what makes the repair three 
 | wrong store | 49 | mechanical: the scanner names the record's actual path |
 | resolves to nothing | 62 | judgement, one of three treatments per token |
 
-**The archive filter is narrower than its defect record says.** `skills/archive/SKILL.md` checks `CLAUDE.md` alone, by `grep -F` on the basename and the workbench-relative path. The rule is stated at `:112`, executed at `:185-187` and restated at `:282`. It does not read the shipped tree, and it reads the workbench not at all. The record `shared/issues/260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md` now carries a `Revised by:` line saying so. Every step below is planned against the code.
+**The archive filter is narrower than its defect record says.** `skills/archive/SKILL.md` checks `CLAUDE.md` alone, by `grep -F` on the basename and the workbench-relative path. The rule is stated at `:112`, executed at `:185-187` and restated at `:282`. It does not read the shipped tree, and it reads the workbench not at all. The record `260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md` now carries a `Revised by:` line saying so. Every step below is planned against the code.
 
 **The deletion obligation exists as an answer and as nothing else.** `rules/circle-records.md` says nothing about deletion, no skill supports it, and no agent prompt carries it, which the reconciliation pass of 2026-08-19 measured and recorded in the decision record's own footer.
 
@@ -152,7 +152,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
 
 4. [DONE] **Write down the deletion and archival annotation form**
    - Executor: `coder`
-   - Files: `rules/circle-records.md`, and the decision record `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+   - Files: `rules/circle-records.md`, and the decision record `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
    - Changes: add a short section to `rules/circle-records.md` realising the operative half of that decision. It states three things. A deliberately deleted Circle leaves no directory, no record and no marker, and the vocabulary deliberately has no case for it. The obligation sits on the surviving references rather than on the deleted object, because an instruction inside the object cannot survive the object. Whoever deletes annotates every surviving citation with the fact and the date, in a stated literal form that step 7 then reuses.
    - After the text lands, append `Implemented: <path>:<line> — …` to the decision record and rename its marker from `_a_` to `_i_`, per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`. Leave its existing `**Status:** open` head field exactly as it stands: it predates the field's removal and is evidence for it.
    - Reachability residual, stated and not closed here: `rules/circle-records.md` is emitted to `orchestrator`, `playmaker` and `shaper`, so a human deleting a Circle by hand still reads nothing. The decision's own closing paragraph left a `/fusion:circle-delete` skill open, and this plan neither builds it nor closes that question.
@@ -163,7 +163,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
 5. [DONE] **Repair the 98 stale-marker citations**
    - Executor: `coder`
    - Files: workbench records across the repair corpus. Drive the file list from the scanner rather than from a written list.
-   - Changes: for every hit whose status is `stale-marker`, rewrite the marker position in the citation to the wildcard `_*_`. This is the form decision `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` prescribes for a marker that moves, and it is the fix the scanner itself names on each violation. Do not rewrite the citation to the record's current marker: that repair goes stale again on the record's next transition, which is what produced 98 of these.
+   - Changes: for every hit whose status is `stale-marker`, rewrite the marker position in the citation to the wildcard `_*_`. This is the form decision `260806-0015_*_zitierform-fuer-workbench-records.md` prescribes for a marker that moves, and it is the fix the scanner itself names on each violation. Do not rewrite the citation to the record's current marker: that repair goes stale again on the record's next transition, which is what produced 98 of these.
    - **Run over the wider corpus reading**, meaning decisions with marker `_o_` or `_a_`, so the repair satisfies either answer to the open corpus question.
    - Acceptance: a rerun of the scan over the same corpus reports zero `stale-marker` hits. Report the before and after counts.
    - Dependencies: none.
@@ -180,7 +180,7 @@ The shared build tree appears in neither diagram, which is the constraint decisi
    - Files: workbench records across the repair corpus, driven by the scanner.
    - Changes: every remaining `dangling` hit of kind `record`, `bare-record` or `circle-dir` gets exactly one of three treatments, and every treatment ends with the token either gone or resolving.
      1. **Correct the path** when the target is identifiable, which is usually the case for a record that moved into `archive/` in a sweep. Cite it where it now is.
-     2. **Pull the citation's substance into the text and drop the dead path**, which is what decision `circles/260801-1244-guard-rules-write/decisions/260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md` established and what the scanner's own fix text names.
+     2. **Pull the citation's substance into the text and drop the dead path**, which is what decision `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md` established and what the scanner's own fix text names.
      3. **Annotate as deliberately removed**, in the form step 4 writes down, when the target was deleted rather than moved.
    - No token is left standing because its target could not be identified. When none of the three applies cleanly, use treatment 2 and file a defect in `$OUT_ISSUE` naming the record and the lost reference. A token left in place is a red gate at step 9.
    - Acceptance: a rerun reports zero violations from `scanRecordCitations` over the repair corpus, in both corpus readings.
@@ -251,11 +251,11 @@ Steps 3, 4 and 10 change shipped text and are verified by the gates that already
 
 ## Open Questions
 
-- [ ] **What defines the gate's corpus, and what happens when a marker move changes it.** Open at `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`. This plan does not answer it and does not assume an answer. What each option changes here:
+- [ ] **What defines the gate's corpus, and what happens when a marker move changes it.** Open at `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`. This plan does not answer it and does not assume an answer. What each option changes here:
   - **Option 1, zero dangling recomputed on every run.** Steps 1 through 9 run as written and step 10 does not exist. Step 9 carries no count. The accepted cost is that a `/fusion:cleanup` archive sweep can turn `npm test` red, and so can a newly filed record carrying a bad citation.
   - **Option 2, zero dangling plus archive and deletion annotations.** Steps 1 through 9 as written, plus step 10, which adds a workbench scan to `skills/archive/SKILL.md` and makes it a writer of records it did not create. The largest option, and the only one under which archiving stops breaking the build. Step 4 already carries the deletion half, so option 2 adds the archive half alone.
   - **Option 3, an exact count pin.** Steps 1 through 9 run, step 10 does not exist, and step 9 additionally writes a baseline number and its re-approval message. The repair steps are unchanged, because a pin over an unrepaired corpus would pin 209 dangling citations as approved. This is the option the sibling record argues against on this repository's own measured history, and this planning run adds one measurement to that history: the corpus count moved by three tokens between the shaper's run and this one with no citation touched.
-- [ ] **Does the gate judge the `stamp-name` class?** Filed this run at `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`. It decides whether step 8's 33 tokens are held by anything and whether step 9 touches `GATE_KINDS`, which both callers share. Answer it at the same gate as the one above; the two are independent and neither presumes the other.
+- [ ] **Does the gate judge the `stamp-name` class?** Filed this run at `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`. It decides whether step 8's 33 tokens are held by anything and whether step 9 touches `GATE_KINDS`, which both callers share. Answer it at the same gate as the one above; the two are independent and neither presumes the other.
 - [ ] **Which reading of "the open decisions" the corpus predicate takes**, `_o_` alone or `_o_` together with `_a_`. Noted on the corpus decision as an `Also seen:` line rather than filed separately, because it is part of that question. It is recorded here because only the wider reading reproduces the Grounding's figures, and because the repair steps deliberately run over the wider one so that either answer is satisfied.
 - [ ] **Whether a `/fusion:circle-delete` skill should support the deletion the annotation form describes.** Left open by the answer in `260805-1548` itself and not closed by this plan. Step 4 writes the obligation into a rule file that three agents read, which leaves a human deleting a Circle by hand still reading nothing.
 
@@ -265,7 +265,7 @@ Every step routes to `coder`, and that is a result rather than an oversight. The
 
 ## Reconciliation Log
 
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`, working tree clean).
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`, working tree clean).
 Scope: this Circle's stores plus the four records elsewhere that the range `b91c01c..04db0b0`
 transitioned. Every claim below was checked against the tree, not against the step's own report.
 

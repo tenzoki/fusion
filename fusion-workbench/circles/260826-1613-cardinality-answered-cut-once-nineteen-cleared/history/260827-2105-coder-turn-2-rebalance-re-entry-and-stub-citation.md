@@ -1,8 +1,8 @@
 # coder — Turn 2: Rebalance re-entry opens at Gate 1; stub cites by starred path
 
-**Date:** 260827-2105
+**Date:** 260827-2105-coder-turn-2-rebalance-re-entry-and-stub-citation.md
 **Agent:** coder
-**Circle:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared
+**Circle:** 260826-1613-cardinality-answered-cut-once-nineteen-cleared
 **Status:** Complete
 
 ## Implemented

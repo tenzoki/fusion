@@ -32,7 +32,7 @@ so the likely outcome is a degradation nobody has observed rather than a failure
 the sentence is wrong in a way that is measured for one case and unmeasured for the other, and saying
 so is more use than a guess in either direction.
 
-Filed by the orchestrator of session `260819-2006` from the executor's report while realising three
+Filed by the orchestrator of session `260819-2006-orchestrator-session.md` from the executor's report while realising three
 answered decisions. No Circle is active, so it goes to the shared store under the Origin Rule.
 
 ---

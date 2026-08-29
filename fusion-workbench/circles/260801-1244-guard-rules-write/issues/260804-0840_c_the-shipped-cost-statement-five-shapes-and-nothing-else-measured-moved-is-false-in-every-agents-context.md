@@ -4,11 +4,11 @@
 
 **Severity:** Medium
 **Domain:** code (documentation that ships into every consuming project)
-**Filed by:** coderev, Turn 7 review of `circles/260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
+**Filed by:** coderev, Turn 7 review of `260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
 **Affects:** `rules/protected-path-discipline.md:168-176`, `README-hooks.md:184`,
 `hooks/lib/__tests__/bash-mutation-guard.test.ts` (the case named "costs exactly these
-five ordinary shapes"), `history/260804-0140-turn7-…` ("18 verdicts"),
-`decisions/260804-0106…` ("zero rows of the 119-command ordinary-agent corpus")
+five ordinary shapes"), `260804-0140-turn7-…` ("18 verdicts"),
+`260804-0106…` ("zero rows of the 119-command ordinary-agent corpus")
 **Kind:** REGRESSION of accuracy introduced by `c9c44a3`.
 
 ---
@@ -60,8 +60,8 @@ class of newly-denying commands is not five shapes and is not eighteen.
 
 Three families are absent from **both** shipped cost tables:
 
-1. **The `&&`-newline continuation** (`260804-0838`) — a false deny.
-2. **A conditional body or a pipeline inside an `&&` chain** (`260804-0839`) — false denies.
+1. **The `&&`-newline continuation** (`260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md`) — a false deny.
+2. **A conditional body or a pipeline inside an `&&` chain** (`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`) — false denies.
 3. **A redirection to a literal relative target after an unproven `cd`.** This is the
    cross product of the two halves of the Turn. The degrade table shows no redirection
    row; the cause-split table shows three rows and every one of them carries a `$`. So
@@ -84,7 +84,7 @@ and add a redirection row (`cd hooks; npm test > out.log`) to the table. Same in
 to something the assertion supports, e.g. "pins the five shapes shown to the user at the
 gate".
 
-The `decisions/260804-0106` claim "zero rows of the 119-command ordinary-agent corpus"
+The `260804-0106` claim "zero rows of the 119-command ordinary-agent corpus"
 should be annotated with what that corpus did and did not contain — a 30-row corpus
 built without looking at it moves 10 rows.
 
@@ -99,7 +99,7 @@ there is denied fail-closed"), followed by three ordered questions that decide a
 then a deny/allow illustration block headed **"Illustrations, not a list"** which says in
 so many words that the set is open. The three families the review found missing are in it:
 the redirection-to-a-literal-relative-target rows (`cd hooks; npm test > out.log`), the
-`260804-0839` over-denies, and the bare-newline joiner. The section also states plainly why
+`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` over-denies, and the bare-newline joiner. The section also states plainly why
 the old claim was false — a corpus harvested from the suite can only reproduce what the
 suite contains — and records that a generated cross-product moved 10 of 30 ordinary shapes.
 
@@ -117,7 +117,7 @@ rows were added to it (`cd hooks; npm test > out.log`, `cd hooks; npm ci > insta
 `cd hooks && npx tsc | tee typecheck.log`). Its "nothing else in a 4203-command corpus
 moved" comment is gone.
 
-`decisions/260804-0106` — the "zero rows of the 119-command ordinary-agent corpus" claim
+`260804-0106` — the "zero rows of the 119-command ordinary-agent corpus" claim
 now carries an annotation saying what that corpus did and did not contain.
 
 Every row above was measured through the real classifier before being written down.

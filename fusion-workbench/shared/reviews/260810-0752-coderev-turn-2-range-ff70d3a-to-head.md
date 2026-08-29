@@ -1,10 +1,10 @@
-# Code review — `ff70d3a..HEAD`, session `260810-0241` Turn 2
+# Code review — `ff70d3a..HEAD`, session `260810-0241-orchestrator-session.md` Turn 2
 
 **Sender:** coderev
 **Range:** `ff70d3a..HEAD`, 6 commits, 8 non-workbench files (+1 245 / −172)
 **Origin:** Not Circle work. No Circle active — filed to `shared/`.
 **Suite state at review time:** `npm test` **green** — 993 passed, 0 failed, 38 files
-**Prior review:** `shared/reviews/260810-0512-coderev-turn-1-range-8960e1a-to-head.md`
+**Prior review:** `260810-0512-coderev-turn-1-range-8960e1a-to-head.md`
 
 ---
 
@@ -26,7 +26,7 @@ state the byte cost rather than absorb it, absorbed 1 749 bytes on the orchestra
 Neither is the careless-commit kind. Both are the structural condition Turn 1 named: an author
 that cannot see the commit beside it, applying a rule outward while breaking it inward. That
 pattern is now four Turn-1 instances plus two more here, and the decision filed tonight
-(`260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`) is the
+(`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`) is the
 right place for it.
 
 ### Totals
@@ -39,7 +39,7 @@ right place for it.
 | Low | 6 |
 | **Total filed** | **9** |
 
-All nine are in `shared/issues/` with `_o_` markers, timestamps `260810-0743` … `260810-0751`.
+All nine are in `shared/issues/` with `_o_` markers, timestamps `260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md` … `260810-0751_*_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md`.
 Checked against the 41 open records first; none duplicates an existing one.
 
 ---
@@ -64,7 +64,7 @@ with respect to `$MAP`: it never writes, creates or replaces it."* Verified thre
   UUID on stderr. This is the F2 defect, gone.
 - **One command still reaches a writer on a path that reads as read-only**, and it is a test seam:
   `push --plan --rebuild-map --fixture <f>` rewrote the map in the reproduction, because the
-  fixture rebuild sits deliberately ahead of the dry-run gate (`:1379-1382`). Filed as `260810-0746`,
+  fixture rebuild sits deliberately ahead of the dry-run gate (`:1379-1382`). Filed as `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md`,
   Low, because `--fixture` is documented as a test seam — but four separate documents state the
   "a dry run writes nothing" property without that qualification, including `docs/plane-setup.md`.
 
@@ -84,7 +84,7 @@ execution rather than by reading:
 
 So the winner does not depend on API result order, which is what F3 asked for. The one case where
 the three keys genuinely tie is the same issue appearing twice in the response, and there the
-*ordering* is still fine while the *report* is not — filed as `260810-0748`, Low.
+*ordering* is still fine while the *report* is not — filed as `260810-0748_*_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md`, Low.
 
 ### Claim 3 — the negative control is `git show ff70d3a:agents/orchestrator.md` through the same extractor. **Verified. Genuine.**
 
@@ -93,7 +93,7 @@ through the same `extractBashBlock` the live assertions use; `:281-304` then ass
 pre-fix block lands the queue at the workbench root and aims the `mv` at `/`. Run in isolation:
 9 passed, 0 skipped, including all three pre-fix controls.
 
-This is the claim I caught overstated three times in Turn 1 (`260810-0502`, `-0503`, `-0510`).
+This is the claim I caught overstated three times in Turn 1 (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `-0503`, `-0510`).
 Here it is true, and the test is the strongest artefact in the range: it extracts the prompt's own
 bash and runs it, with `mkdir`/`mv` stand-ins confining the two runs that would otherwise write to
 `/`. One documented limit, not a defect: in a repo without the commit (an installed copy, a
@@ -117,7 +117,7 @@ The residual is the neighbouring case. Measured: `CODE_EXT` parses 60 extensions
 assignment lines against a floor of 50, so two lines can stop matching — a `${CODE_EXT}` spelling,
 a trailing comment — while the test still passes over reduced coverage, which is the drift the
 parse exists to prevent. `DATA_EXT` (19 from 3 lines, floor 15) is not exposed. Filed as
-`260810-0749`, Low, with a structural fix that removes both magic floors.
+`260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md`, Low, with a structural fix that removes both magic floors.
 
 ---
 
@@ -126,7 +126,7 @@ parse exists to prevent. `DATA_EXT` (19 from 3 lines, floor 15) is not exposed. 
 ### Theme A — The class each commit closed, re-entered inside it
 
 **F1 · High · `map_put` reports success on a failed write.**
-`260810-0743_o_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md`
+`260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md`
 
 `bin/fusion-plane:733-739`. `mv "$1" "$MAP"` runs, and four assignments follow it, the last
 returning 0. So `map_put` always succeeds, `map_write` always succeeds, and every caller's
@@ -145,12 +145,12 @@ The map is unchanged. Both surfaces a caller reads assert a migration that did n
 Why High: `map_set` reaches the same chain on the live push path (`:1039`, `:1043`, `:1778`).
 *Inference, from the call chain rather than a live Plane run:* a lost write there means the new
 issue's UUID never enters the map, the next push's `map_get_id` returns empty, and fusion POSTs a
-second Plane issue — issue `260807-1939`, which is the defect this entire line of work exists to
+second Plane issue — issue `260807-1939_*_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md`, which is the defect this entire line of work exists to
 close, re-entered from the write side. And it is F5's shape verbatim, one commit after `ea492e6`
 removed F5's shape from `bin/fusion-count-sources`.
 
 **F2 · Medium · the golden's approval names the wrong cohorts and absorbs 1 749 bytes.**
-`260810-0745_o_the-golden-approval-names-the-wrong-cohorts-and-absorbs-1749-bytes-on-the-largest-agent.md`
+`260810-0745_*_the-golden-approval-names-the-wrong-cohorts-and-absorbs-1749-bytes-on-the-largest-agent.md`
 
 `2d103be`'s subject is *"approved rather than absorbed"*, and the approval statement is the commit.
 Read off the golden it commits:
@@ -178,7 +178,7 @@ the golden test prints no cleanup report.
 ### Theme B — The Plane read/write split, in the parts the tests do not reach
 
 **F3 · Medium · `map_view`'s cache and cleanup die in the subshell every caller runs it in.**
-`260810-0744_o_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md`
+`260810-0744_*_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md`
 
 The sharpest measured finding in the range. `map_get_id`, `map_get_state`, `map_get_origin` and
 `map_json` all call `map_view`, and all four are always invoked as `$(…)` — a subshell. Every
@@ -202,21 +202,21 @@ that arrives 24 times; and four `jq` passes over the whole map per lookup where 
 one per run. `map_view`'s own header names this hazard at `:682-684` — for the return-value case
 only.
 
-**F4 · Low · `push --plan --rebuild-map --fixture` writes the map.** `260810-0746_…`
+**F4 · Low · `push --plan --rebuild-map --fixture` writes the map.** `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md_…`
 Reproduced. Contradicts `bin/fusion-plane:104-107`, `:1371-1375`, `map_report_fold`'s stderr line
 and `docs/plane-setup.md:187-192`, all four of which state the property unqualified. The `reads
 never write` describe covers four spellings and not this one.
 
-**F5 · Low · `push --plan --rebuild-map` without a fixture drops the flag silently.** `260810-0747_…`
+**F5 · Low · `push --plan --rebuild-map` without a fixture drops the flag silently.** `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md_…`
 Exit 0, map unchanged, nothing on either stream. `map_forget`'s own header, in the same file,
 states the opposite doctrine: *"an absent key is a reported failure … never a silent no-op,
 because the caller asked for a mutation that did not happen."*
 
-**F6 · Low · the rebuild collision report names a dropped UUID that was kept.** `260810-0748_…`
+**F6 · Low · the rebuild collision report names a dropped UUID that was kept.** `260810-0748_*_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md_…`
 When one issue appears twice in the response: *"kept UUID-SAME, DROPPED UUID-SAME … close it by
 hand."* An operator who follows it closes the live issue. The ordering is fine; the report is not.
 
-**F7 · Low · an unreadable record yields an empty Plane comment.** `260810-0750_…`
+**F7 · Low · an unreadable record yields an empty Plane comment.** `260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md_…`
 `bin/fusion-plane:961`, a masked pipe with no `pipefail`, bypassing the `comment_skip` that exists
 for this outcome. `ea492e6` named this site in its own message and closed with *"The first has no
 record yet."* It still had none at the end of the Turn, which is the one case
@@ -225,11 +225,11 @@ exception. Reporting it in a commit message is better than swallowing it and is 
 
 ### Theme C — Records about counting
 
-**F8 · Low · the extension parse guards against nothing, not against less.** `260810-0749_…`
+**F8 · Low · the extension parse guards against nothing, not against less.** `260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md_…`
 Claim 5's residual, measured above.
 
 **F9 · Low · the record about counting instances of a shape gives three different counts.**
-`260810-0751_…`
+`260810-0751_*_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md_…`
 `260810-0710` opens *"It is the third instance of one shape tonight … read the three together"*,
 lists two, and then says *"Both arrived in Turn 1"*. `8d66265`'s message says "second". The count
 is the argument, and this session already produced `05c013d`, whose subject is a list that called
@@ -281,7 +281,7 @@ same file"*. It was working in the **same code block, six lines above the defect
 (`3df0c17` edits `:856-862`; the defect is `:868`). "Same file" reads as incidental proximity and
 understates it. Neither point makes the deferral a dodge.
 
-**The decision (`260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it`)
+**The decision (`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it`)
 defers honestly and is the right artefact.** Carrying no recommendation is not evasion here: it
 names three options with pros and cons, three constraints, and — the part that makes it a decision
 rather than a shrug — the specific dependency that has to resolve first, namely the fate of the
@@ -300,7 +300,7 @@ version is worse: both of its two examples come from the same lint (`state-drift
 presented as two. The decision record fixes that by adding the third.
 
 The tilt: *"tonight it produced four and got two right."* That counts `domain-cascade-order-lint`
-among the two it got right. I rated it **"half a gate"** and filed `260810-0503` because an
+among the two it got right. I rated it **"half a gate"** and filed `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` because an
 unsatisfiable decoy branch defeats `firstIndex` outright and its second helper has no negative
 control at all. Counting it as right is the more generous of the two readings available. It does
 not change the decision's argument — the argument only needs "this project can produce decorative
@@ -333,11 +333,11 @@ stderr and never count; and `map_put`'s failure path has no test at all because 
 write fail. The suite is green and the coverage is real; the gaps are one step past the property
 each test was written to prove.
 
-**4. Two long-lived Turn 1 findings were sequenced past, and one of them correctly.** `260810-0504`
+**4. Two long-lived Turn 1 findings were sequenced past, and one of them correctly.** `260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
 (where the tracked-workbench section lives) is still open while the golden it would change was
 regenerated — a deliberate reversal of my Turn 1 sequencing, argued in the commit on the ground
 that a red suite across a session boundary is worse than a second fixture diff. I agree with the
-reversal. `260810-0507` (`docs/plane-setup.md` documenting the marker-bearing key) sat untouched in
+reversal. `260810-0507_*_plane-setup-doc-still-documents-the-marker-bearing-key-so-map-forget-fails-as-written.md` (`docs/plane-setup.md` documenting the marker-bearing key) sat untouched in
 a commit that edited 40 lines of that same file, which is a cheaper miss.
 
 ---
@@ -346,34 +346,34 @@ a commit that edited 40 lines of that same file, which is a cheaper miss.
 
 **Before any release or tag**
 
-1. **F1** (`260810-0743`) — `map_put`. One line. It is the only finding here whose failure mode is
+1. **F1** (`260810-0743_*_map-put-reports-success-on-a-failed-write-so-map-write-s-error-branch-never-fires.md`) — `map_put`. One line. It is the only finding here whose failure mode is
    a second Plane issue created against a human's board, and it defeats four already-written error
    branches.
-2. **F3** (`260810-0744`) — the `map_view` leak. It has a real resource cost today on any workbench
+2. **F3** (`260810-0744_*_map-view-s-cache-and-cleanup-die-in-the-subshell-every-caller-runs-it-in.md`) — the `map_view` leak. It has a real resource cost today on any workbench
    with a legacy map, and it drowns the report that is the operator's only handle on a dropped UUID.
-3. **F2** (`260810-0745`) — restate the golden approval. Cheap, and it is the record a future
+3. **F2** (`260810-0745_*_the-golden-approval-names-the-wrong-cohorts-and-absorbs-1749-bytes-on-the-largest-agent.md`) — restate the golden approval. Cheap, and it is the record a future
    reader will use to answer "what did this cost and who approved it".
 
 **Next Turn**
 
-4. F4 + F5 (`260810-0746`, `-0747`) together — one decision about what `--plan` means when combined
+4. F4 + F5 (`260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md`, `-0747`) together — one decision about what `--plan` means when combined
    with `--rebuild-map` settles both.
-5. F7 (`260810-0750`) — and name the two `[ -f ]`-guarded pointer reads `ea492e6` mentioned while
+5. F7 (`260810-0750_*_an-unreadable-record-yields-an-empty-plane-comment-instead-of-the-skip-that-exists-for-it.md`) — and name the two `[ -f ]`-guarded pointer reads `ea492e6` mentioned while
    the executor's context still exists.
-6. F8 (`260810-0749`) — before the next language is added to `CODE_EXT`.
+6. F8 (`260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md`) — before the next language is added to `CODE_EXT`.
 
 **Cleanup**
 
-7. F6 (`260810-0748`), F9 (`260810-0751`).
+7. F6 (`260810-0748_*_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md`), F9 (`260810-0751_*_the-record-about-counting-instances-of-a-shape-gives-three-different-counts.md`).
 
-**Still open from Turn 1 and untouched by this Turn:** `260810-0458` (F4, the natural key's two
+**Still open from Turn 1 and untouched by this Turn:** `260810-0458_*_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md` (F4, the natural key's two
 derivations — pair it with whichever plane fix lands first), `-0501`, `-0502`, `-0503`, `-0504`,
 `-0505`, `-0506`, `-0507`, `-0508`, `-0509`, `-0510`, `-0511`. Turn 1's own sequencing still
 applies to them.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `**Range:**` line says 6 commits;
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The `**Range:**` line says 6 commits;
 `git rev-list --count ff70d3a..c923935`, HEAD at this review's write time, returns 5. The nine
 findings and the file counts in the same header are right. The count stays typed, as the Turn 1
 review's totals do; the correction is this note. Filed as the second instance in
-`shared/issues/260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`.
+`260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`.

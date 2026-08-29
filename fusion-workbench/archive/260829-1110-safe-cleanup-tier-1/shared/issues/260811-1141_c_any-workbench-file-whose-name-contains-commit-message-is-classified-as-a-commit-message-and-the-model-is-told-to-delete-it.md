@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, review of `7785330..cac41ef` (Turn 1)
 **Affects:** `hooks/lib/staging-drift.ts:208`, `:306-315`, `:536-542`; `agents/orchestrator.md` `## Staging check` class table; `hooks/lib/__tests__/commit-message-path.test.ts:68-76`
-**Cross-references:** issue `260811-0114` (the record this module answers); commit `cac41ef`
+**Cross-references:** issue `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` (the record this module answers); commit `cac41ef`
 
 ---
 
@@ -54,7 +54,7 @@ Two failures at once, and the second hides the first.
 1. **The instruction is destructive.** The model is told to delete an authored session record. The
    guard's protected-path measurement does not cover `fusion-workbench/`, so nothing stops it.
 2. **The real fault is suppressed.** The classes are exclusive. That same file *is* an unstaged
-   record — exactly the defect `260811-0114` was filed about — and because it landed in the
+   record — exactly the defect `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` was filed about — and because it landed in the
    `commit-message` class it never appears in the `record` list, never reaches the "add these paths
    to the next Step 3b staging list" sentence, and is not in `report.faults` as a record.
 

@@ -1,9 +1,9 @@
-# Reconciliation — 260824-2159
+# Reconciliation — 260824-2159-reconciliation.md
 
 **Domain:** code
 **Range:** `571f945..5ad6185` (24 commits, HEAD `5ad6185`), Circle `260824-1853-close-every-open-defect`
-**Directive:** plan `## Directive`, read from `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`
-**Session file:** `shared/history/260824-1750-orchestrator-session.md` (`## Coherence` appended there)
+**Directive:** plan `## Directive`, read from `260824-1905_*_plan-close-every-open-defect.md`
+**Session file:** `260824-1750-orchestrator-session.md` (`## Coherence` appended there)
 
 ## Counts
 

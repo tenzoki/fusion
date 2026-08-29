@@ -3,11 +3,11 @@
 ---
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260807-0923-guard-misst-statt-orakelt`
+**Circle:** `260807-0923-guard-misst-statt-orakelt`
 **Ausgangspunkt:** Directive des Nutzers, ausdrücklich zweistufig: erst messen, dann entscheiden
 **HEAD zu Beginn:** `e684eae` (release: v6.0.0)
 **Befund:** `circles/260801-1244-guard-rules-write/issues/260804-2100_o_*`
-**Reconciliation:** `circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md` § IV
+**Reconciliation:** `260807-1526-reconciliation.md` § IV
 
 ---
 
@@ -79,10 +79,10 @@ damit der Satz gemessen ist.
   bleibt stehen (sie handelt von der *Route*, und für Routen gilt sie) und ist jetzt um den
   Absatz ergänzt, der sagt, dass die Muster gegen die **Projektwurzel** gelesen werden, in
   beide Richtungen, und dass das gemessen ist.
-- `circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md` — Nachtrag im Grounding. Die
+- `260807-0923-guard-misst-statt-orakelt` — Nachtrag im Grounding. Die
   Directive-Prosa selbst ist unangetastet: sie ist das Wort des Nutzers, und ihre Aussage
   stimmt jetzt. Der Nachtrag sagt, worauf sie ruht und was der Rest ist.
-- `.../history/260807-1526-reconciliation.md` § IV — Nachtrag: die Ableitung ist bestätigt und
+- `.../260807-1526-reconciliation.md` § IV — Nachtrag: die Ableitung ist bestätigt und
   behoben, die Divergenz, die zu `review-needed` geführt hat, ist geschlossen.
 - `circles/260801-1244-guard-rules-write/issues/260804-2100_o_*` — Messung eingetragen.
   **Bleibt `_o_`.** Beide Klauseln des Titels sind falsch geworden, aber die

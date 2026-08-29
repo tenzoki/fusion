@@ -3,7 +3,7 @@
 **Agent:** coder
 **Date:** 2026-08-09
 **Status:** Complete
-**Plan:** `shared/planning/260809-1229_*_plan-five-severe-guard-defects.md`, Step 6 (the last)
+**Plan:** `260809-1229_*_plan-five-severe-guard-defects.md`, Step 6 (the last)
 **Commits:** none — this step was left uncommitted for the orchestrator
 
 ---
@@ -25,20 +25,20 @@ their starting state was itself stale in four places.
   gap. It states what the measurement compares (what the path *is*: absent, a
   link pointing *there*, or *these* bytes, asked of the path itself and never of
   what it points at), why that needs no catalogue of phrasings, and cites
-  `260809-1104` / `260809-1231` as closed. The old overstatement is not
+  `260809-1104_*_a-symlink-in-place-of-a-protected-file-writes-through-it-and-removes-the-path-from-the-watched-set.md` / `260809-1231_*_the-restore-writes-through-a-symlinked-parent-directory-which-the-final-component-check-does-not-cover.md` as closed. The old overstatement is not
   reinstated: a following paragraph says this is a claim about the question, not
   a promise about the machinery, that every gap this rule ever had to admit was
   found at the fingerprint/filesystem seam, and that finding another is a defect
   to file rather than a route to take.
 - New section `## What is written back, and what is only reported` — the
-  narrowing from `shared/decisions/260809-1527_*_should-the-revert-narrow-….md`.
+  narrowing from `260809-1527_*_should-the-revert-narrow-….md`.
   `Bash` keeps the full write-back and nothing there was narrowed; the four
   write tools write back the payload's path and leave a *different* changed
   protected path standing. Both branches raise the same halt and neither is
   silent.
 - The two prices became `## What the measurement costs` with a third: the window
   is the whole tool call and is not exclusively the agent's, with the measured
-  example from `260809-1107` (a human's editor save written back over, session
+  example from `260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md` (a human's editor save written back over, session
   halted, no agent write in the sequence). The preserved copy is named, with its
   location and its retention bound, so an agent hands the user a path instead of
   reconstructing content from memory.
@@ -52,9 +52,9 @@ their starting state was itself stale in four places.
   included.
 - The allow-list entry that presented `--` as the primary, unambiguous
   discriminator is qualified: it settles the ambiguous form only, and evidence
-  that HEAD moves is unconditional (`260809-1105`, closed).
+  that HEAD moves is unconditional (`260809-1105_*_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`, closed).
 - The measured-passages paragraph in `## Why` lists one open defect
-  (`260809-1110`, the case-sensitive command word) instead of three. The two
+  (`260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md`, the case-sensitive command word) instead of three. The two
   that closed are mentioned as closed rather than enumerated as ways through.
 - New section `## One deny you will not have expected: the unknown-global-option
   rule` — the cost of the resumed walk, stated as a rule with an **open** example
@@ -70,8 +70,8 @@ The third obligation's second half — the "do not rephrase" item that rested on
 guarantee only step 2 made true — had already been rewritten in `10cbf24` and
 needed no further edit.
 
-Two exact-marker citations in `hooks/lib/git-branch-guard.ts` (`260809-1105_o_`,
-`260809-1106_o_`) were rewritten to the `_*_` wildcard form, because the
+Two exact-marker citations in `hooks/lib/git-branch-guard.ts` (`260809-1105_*_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`,
+`260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`) were rewritten to the `_*_` wildcard form, because the
 reference-resolution lint scans that file and the closures below move both
 markers.
 
@@ -89,11 +89,11 @@ markers.
 
 ## Closed
 
-`260809-1104`, `260809-1105`, `260809-1106`, `260809-1107`, `260809-1108`, each
+`260809-1104_*_a-symlink-in-place-of-a-protected-file-writes-through-it-and-removes-the-path-from-the-watched-set.md`, `260809-1105_*_a-trailing-separator-lifts-the-branch-deny-so-git-checkout-b-name-runs.md`, `260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`, `260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`, `260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md`, each
 with a `Resolved:` line naming its commit and its pinning tests, marker `_o_` →
-`_c_`. `260809-1231` was closed too: it was outside the five, but step 1 carried
+`_c_`. `260809-1231_*_the-restore-writes-through-a-symlinked-parent-directory-which-the-final-component-check-does-not-cover.md` was closed too: it was outside the five, but step 1 carried
 it, and its four acceptance criteria are met by the parent-chain refusal and the
 test that drives it.
 
-Left open on purpose: `260809-1109`, `260809-1110`, `260809-1111`, `260809-1548`
+Left open on purpose: `260809-1109_*_both-hooks-fail-silent-instead-of-open-when-the-guard-state-directory-is-unwritable.md`, `260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md`, `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md`, `260809-1548_*_an-unknown-global-option-carrying-its-own-value-should-not-also-consume-the-next-word.md`
 — none is part of this plan.

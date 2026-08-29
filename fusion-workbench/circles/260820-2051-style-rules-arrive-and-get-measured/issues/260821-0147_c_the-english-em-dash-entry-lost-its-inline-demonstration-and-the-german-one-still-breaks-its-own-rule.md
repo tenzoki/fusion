@@ -11,7 +11,7 @@ before: The telegraphic-with-parentheses pattern (clause — jargon aside — cl
 after:  The telegraphic-with-parentheses pattern (clause, jargon aside, clause, compressed reason)
 ```
 
-Judged against the criterion in `shared/issues/260816-1330_o_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`, this is the one replacement of the eight that costs something, and the executor says so in `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0112-ontocoder-gloss-and-repunctuation-of-the-four-profiles.md` ("Line 86, and what it costs"). This record agrees with the finding and disagrees with the reasoning offered for accepting it.
+Judged against the criterion in `260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`, this is the one replacement of the eight that costs something, and the executor says so in `260821-0112-ontocoder-gloss-and-repunctuation-of-the-four-profiles.md` ("Line 86, and what it costs"). This record agrees with the finding and disagrees with the reasoning offered for accepting it.
 
 What the three em-dashes carried was not subordination. They were the demonstrandum: the entry names a pattern whose defining feature is the em-dash joint, and the parenthetical rendered the joints. With commas, `(clause, jargon aside, clause, compressed reason)` is a four-item list that demonstrates nothing, and a reader who does not already know the pattern cannot recover it from the entry's prose.
 
@@ -34,11 +34,11 @@ The instruction forbids `–` U+2013 and then uses `–` three times in its own 
 **Verified at HEAD `7832553`** by reading `stilwerk/chat-voice-en.yaml:82-90`, `stilwerk/chat-voice-de.yaml:83-92`, `rules/user-facing-output.md:29` and `:132`, and by `bin/fusion-prose-metric stilwerk/*.yaml`, which returns `chat-voice-de.yaml 0 628 0.0 0 ok`.
 
 ---
-**Found by:** coderev, review of `7135a19..7832553`, review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
+**Found by:** coderev, review of `7135a19..7832553`, review file `260821-0145-coderev-turn-1-prose-metric-setup-step-0e-and-the-repunctuation.md`.
 **Owner:** `ontocoder`. Both halves are edits to shipped YAML profile text.
 **Severity:** Low-Medium. The English half is a text-quality regression on the surface whose conditioning effect is this Circle's own premise. The German half is a file stating a rule and breaking it in the same entry.
 **Direction, not a prescription.** The English half has a repair on the file's own prescribed list that costs no em-dash and no word count: the `:29` form, which names the mark. The German half has no repair inside step 7's scope, because `–` is neither what the metric counts nor what step 7 was scoped to touch, so it needs a scope decision before it needs an edit. Restoring em-dashes to the English entry is ruled out by criterion 1.
-**Cross-references:** `shared/issues/260816-1330_o_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` (the precedent this was judged against); the step's own history record, named above, which records both halves honestly.
+**Cross-references:** `260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md` (the precedent this was judged against); the step's own history record, named above, which records both halves honestly.
 
 ---
 Resolved: fixed — both AI02 sketches name the mark instead of using it, in the form of rules/user-facing-output.md:29 (a clause, an em-dash, a jargon aside, another em-dash, a compressed reason); stilwerk/chat-voice-en.yaml:81-83, stilwerk/chat-voice-de.yaml:84-86, mirrored to fusion-workbench/stilwerk/

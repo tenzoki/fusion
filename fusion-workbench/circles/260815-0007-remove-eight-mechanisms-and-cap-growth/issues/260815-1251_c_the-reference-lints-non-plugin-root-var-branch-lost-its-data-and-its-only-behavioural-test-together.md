@@ -13,7 +13,7 @@ would find it.
 
 **Severity:** Low — the branch is inert until a shadowing variable reappears, and the comment says so; what is lost is the demonstration.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1251-coderev-turn-2-build-churn-and-stash.md`)
+**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`260815-1251-coderev-turn-2-build-churn-and-stash.md`)
 **Owner:** `coder`
 **Affects:** `hooks/lib/__tests__/reference-resolution-lint.test.ts:265-274`, `:301`, `:535-560`
 
@@ -75,7 +75,7 @@ only coupling to fix is the module-level constant. I did not write it.
 ## Related
 
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts:265-274`, `:301`, `:535-560`
-- `history/260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md` — the run that removed
+- `260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md` — the run that removed
   both halves, and which names the removal of the case
 
 ---

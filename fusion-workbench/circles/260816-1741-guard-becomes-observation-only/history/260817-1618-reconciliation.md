@@ -5,7 +5,7 @@
 **Domain:** `code`
 **Trigger:** orchestrator Phase 3, after the Rebalance the first pass's `review-needed` verdict caused
 **Range verified:** `3d41d4a..d0f13fa` — 27 commits after the anchor, six of them new since the first pass
-**Predecessor:** `circles/260816-1741-guard-becomes-observation-only/history/260817-1417-reconciliation.md`
+**Predecessor:** `260817-1417-reconciliation.md`
 **Status:** Complete
 
 ## Verdict in one line
@@ -66,8 +66,8 @@ Filed as `issues/260817-1502_*`, annotated there in full. The short form:
 
 **Six renames, not four.** `git show --name-status --find-renames dbbad70` returns seven paths:
 `_t_circle.md` modified, the two `260816-1917_*` records renamed *with* content (`R065`, `R052`),
-and four pure renames at 100 % similarity that the message never names — `260816-2123`,
-`260816-2317`, `260817-1032` and the plan `260816-1915_p_` → `_c_`.
+and four pure renames at 100 % similarity that the message never names — `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`,
+`260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`, `260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md` and the plan `260816-1915_p_` → `_c_`.
 
 **The absorption is one step wider than "four staged renames".** The two named records' similarity
 indices are below 100 because each also carries the reconciler's unstaged
@@ -88,12 +88,12 @@ step 16 marked `[DONE]` under `**Status:** Complete`.
 exit 0, `git status --porcelain --untracked-files=all` is empty, and
 `git rev-list --left-right --count origin/main...HEAD` is `0 0`. Nothing was staged by this pass;
 the one rename it performed used `mv`, not `git mv`, precisely because `git mv` stages and staging
-is the defect `260817-1502` records.
+is the defect `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` records.
 
 **It is a re-filing.** `shared/issues/260816-0105_*` filed the same defect on 2026-08-16, from
-session 260815-2147 and commit `a19c867`, with the same mechanism and the same reading of why
+session 260815-2147-orchestrator-session.md and commit `a19c867`, with the same mechanism and the same reading of why
 Step 3b steps 4 and 5 do not reach it. The duplicate check that the filing convention mandates was
-not run before `260817-1502` was written. Both records are now cross-annotated; they are one defect
+not run before `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` was written. Both records are now cross-annotated; they are one defect
 and want merging.
 
 ## 3. Review coverage over the extended range
@@ -129,7 +129,7 @@ not because it changes the verdict.
 
 ## 4. Issue triage
 
-**Closed (1).** `260817-1417_o_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`
+**Closed (1).** `260817-1417_*_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`
 → `_c_`. Its own option 2 was executed at Turn 4 as `70f17da`: the review opened twelve commits,
 subsuming all nine uncovered and all six that touched shipped files, including the one `v10.0.0`
 points at. Five findings came out of it and one shipped inside v10.0.1. The historical fact stands
@@ -137,23 +137,23 @@ and is stated in the footer — what closed is the gap, not the history.
 
 **Open and annotated (7).** Every one re-measured at HEAD rather than re-asserted:
 
-- `260817-1505` — both sentences stand verbatim at `agents/curator.md:212` and
+- `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md` — both sentences stand verbatim at `agents/curator.md:212` and
   `skills/curate/SKILL.md:110`. **This is the one open item inside the Circle's own Directive.**
-- `260817-1507` — `bin/fusion-turn-budget:14` still scopes its stderr to what the loader "had to
+- `260817-1507_*_the-turn-budget-helpers-authoritative-header-still-scopes-its-stderr-to-dropped-keys.md` — `bin/fusion-turn-budget:14` still scopes its stderr to what the loader "had to
   drop", while the two surfaces in the same class moved at `01932d6`.
-- `260817-1508` — `skills/archive/SKILL.md:130` and `:132` unchanged; neither live event type
+- `260817-1508_*_the-archive-skills-event-log-description-names-three-retired-event-types-and-omits-both-live-ones.md` — `skills/archive/SKILL.md:130` and `:132` unchanged; neither live event type
   appears anywhere in the file.
-- `260817-1509` — the suite is still 35 files and 653 tests, the same count as before `01932d6`, so
+- `260817-1509_*_no-test-pins-the-repeat-to-the-user-mandate-that-already-shipped-narrow-once.md` — the suite is still 35 files and 653 tests, the same count as before `01932d6`, so
   no test arrived with the fix.
-- `260816-2319`, `260816-2320` — unchanged since the first pass, re-measured by reading the files.
-- `260817-1502` — annotated with the full measurement above; the remedy is a three-option choice and
+- `260816-2319_*_the-answer-site-case-in-hook-fail-open-cannot-fail-on-the-violation-its-describe-block-names.md`, `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md` — unchanged since the first pass, re-measured by reading the files.
+- `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` — annotated with the full measurement above; the remedy is a three-option choice and
   stays undecided.
-- `260817-1417_o_one-commit-…-german` — still one of twenty-seven; the six new commits are all
+- `260817-1417_*_one-commit-…-german` — still one of twenty-seven; the six new commits are all
   English, and the commit is published, so nothing is repairable in place.
 
 The first four are open **by explicit user decision against a shipped release**, not by drift.
 
-**Nothing was misfiled as an issue that should be a decision** — with one qualification. `260817-1502`
+**Nothing was misfiled as an issue that should be a decision** — with one qualification. `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md`
 carries a defect half that is settled and a remedy half that is a three-option choice with pros and
 cons, which is a decision record's shape. It is not moved here: the incident it records is a defect
 and the record is the only place the measurement lives. If the merge with
@@ -162,13 +162,13 @@ in `issues/` or splits.
 
 ## 5. New records (2)
 
-- `shared/issues/260817-1613_o_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md`
+- `260817-1613_*_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md`
   — Medium. The aggregate verdict has three values and this Circle falls between them: not
   `coherent` (a Directive clause is unmet), not `bounded-closure-proposed` as defined (nothing is
   unreachable), and `review-needed` only by elimination, whose recommendation mapping then points
   away from the honest closure. A gap in a case split, which `rules/critical-stance.md` §4 classes
   as a defect rather than as polish. It decides a permanent marker, so it is not cosmetic.
-- `shared/decisions/260817-1613_o_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`
+- `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`
   — the undischarged half of the closed `260817-1417`. This plan's `## Where this Circle stops` made
   the review pass a precondition of the tag, nothing read the clause, and the release went out. The
   same plan's third reason for stopping at the work tree cited a defect this project had already
@@ -182,18 +182,18 @@ file, and one of them means an existing record is itself a duplicate:
 
 - `shared/issues/260816-0119_o_*` (the citation lint stops at `hooks/lib/__tests__/`) — a second
   live instance, created by this session's own rename: `surface-growth-bound.test.ts:174` cites
-  `260817-1032_o_…`, and that record moved to `_c_` in `dbbad70`. `npm test` is green because
+  `260817-1032_*_…`, and that record moved to `_c_` in `dbbad70`. `npm test` is green because
   `surface()` still stops at `hooks/lib/*.ts`, which is exactly what that record measures.
 - `shared/issues/260811-2105_o_*` (Circle records carry stale citations, and it names the
   `**Active …:**` fields specifically) — two live instances in `_t_circle.md`: `:7` names
-  `planning/260816-1915_p_…` and the plan is `_c_`; `:167` names `decisions/260816-1742_o_…` and
+  `260816-1915_*_…` and the plan is `_c_`; `:167` names `260816-1742_*_…` and
   that record is `_i_`. **Both are due before the closure transition**, for the same reason the two
   corrected enumerations were: after it the record is history. The record's other five citations use
   the ratified `_*_` wildcard form and all resolve.
-- `shared/issues/260816-0105_o_*` — the prior filing of `260817-1502`, as above.
+- `shared/issues/260816-0105_o_*` — the prior filing of `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md`, as above.
 
 That check is the cheapest step in the filing convention and it prevented two of three intended
-filings this pass. It was not run before `260817-1502` was written.
+filings this pass. It was not run before `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` was written.
 
 ## 7. Checked and found not to be defects
 
@@ -211,10 +211,10 @@ Stated so the next pass does not re-derive them.
   works, unlike the two enumerations, which had no counter-statement anywhere.
 - **`skills/archive/SKILL.md`'s mention of `guard_block`, `guard_halt`, `halt_cleared`** is
   historically true in the present perfect and its argument for the roll is still correct. The defect
-  in `260817-1508` is the omission of the two live types, not the mention of the three retired ones.
+  in `260817-1508_*_the-archive-skills-event-log-description-names-three-retired-event-types-and-omits-both-live-ones.md` is the omission of the two live types, not the mention of the three retired ones.
 
 ## Coherence
 
 The three-edge verdict is written to the orchestrator's session history file,
-`circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md`
+`260816-1841-orchestrator-session.md`
 `## Coherence — second pass`, appended beneath the first pass's section rather than replacing it.

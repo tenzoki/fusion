@@ -1,8 +1,8 @@
 # Bound how long an executor runs before returning to the orchestrator
 
 **Domain:** code
-**Filed by:** user (hand-written, 260811-0826), split out by playmaker 260814-1733
-**Related:** `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`, `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`
+**Filed by:** user (hand-written, 260811-0826_*_observations.md), split out by playmaker 260814-1733
+**Related:** `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`, `260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`
 
 The user's own proposed fix, written in the original dump as the one line marked off with arrows:
 "Memory muss bei jedem Request mitgesendet werden. Die Agenten dürfen keine langen Operationen
@@ -18,4 +18,4 @@ the same analysis, which finds that the rules did not decay over a long dispatch
 force in the first place. Shaping this therefore means putting a Directive narrower than the filed
 wording to the user and getting agreement on the narrowing.
 
-Split from `shared/backlog/260811-0826_*_observations.md`.
+Split from `260811-0826_*_observations.md`.

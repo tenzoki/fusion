@@ -9,7 +9,7 @@ because the spec and this session's `## Coherence` section cite this record by n
 measured` gives the current figures and why three passes disagreed about them.
 ---
 **Filed by:** reconciler, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C3` (the acceptance criterion this leaves unmet); `rules/fusion-workbench-conventions.md` `### Who filed it` (the obligation); `bin/fusion-identity` (the helper); `circles/260824-0530-record-attribution-and-circle-claim/_c_circle.md` (the Circle that landed the rule)
+**Cross-references:** `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C3` (the acceptance criterion this leaves unmet); `rules/fusion-workbench-conventions.md` `### Who filed it` (the obligation); `bin/fusion-identity` (the helper); `260824-0530-record-attribution-and-circle-claim` (the Circle that landed the rule)
 
 ## What was measured
 
@@ -39,7 +39,7 @@ was true for that session: the helper reached `~/.fusion` only on 260825 at 08:2
 carrying that note was filed on 260824.
 
 The 31 are not. Six agents are represented: `ontorev` (10), `analyst` (8, all the `260824-2013_o_*`
-decisions in `circles/260824-1853-close-every-open-defect/`), `coderev` (7), `reconciler` (3),
+decisions in `260824-1853-close-every-open-defect`), `coderev` (7), `reconciler` (3),
 `coder` (2) and `ontocoder` (1). No `planner` record exists anywhere in the window; the entry naming
 one in the superseded breakdown was an artefact of that pass, not a record on disk. By kind the 31
 are 21 issues, 8 decisions, 1 review and 1 session history, and all 31 are stamped `260824`. Every
@@ -52,7 +52,7 @@ reach question this record leaves open below, and it is why two honest passes ov
 
 All 31 were annotated on 260825 with a retrospective line naming the filing agent and the absent
 helper, citing
-`shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 The backfill adds a separate line and leaves every `**Filed by:**` line untouched, so the table above
 still reads the same after it.
 
@@ -65,8 +65,8 @@ measured twice and printing every distinct line form rather than bucketing, repo
 not moved between them.
 
 Two of the three differences are now accounted for. **31 against 29** is exactly two files: the
-review `circles/260824-0530-record-attribution-and-circle-claim/reviews/260824-1625-coderev-c3-two-fix-commits.md`
-and the history `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`.
+review `260824-1625-coderev-c3-two-fix-commits.md`
+and the history `260824-1637-reconciliation.md`.
 Both carry a `**Filed by:**` line and both satisfy the predicate; a pass that reads only
 marker-bearing issue and decision filenames does not see them. **31 against 28** is three records the
 first pass credited with a stated reason; its own totals are otherwise sound, since 17 + 28 and
@@ -85,7 +85,7 @@ reason may be stated. Until then, cite the predicate and the file list, not the 
 `### C3`'s third acceptance criterion is *"Every agent that files a record writes the field"*. It is
 the one criterion of the seven that is a claim about behaviour rather than about text, and it is the
 only one of the seven that is not met. Its second half is separately stale — it prescribes `$USER`,
-and `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
+and `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
 replaced that with the git identity — but a corrected second half does not repair the first.
 
 ## What a fix would have to decide, and it is not obvious
@@ -111,4 +111,4 @@ produce, in 31 of the 70 records written since it landed.
 
 ---
 
-Resolved: 260827-1845 (plan step 8 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_*_repair-the-twenty-open-defect-records.md`, realising `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` `## Answer`, option 2). The reach is written down: `rules/fusion-workbench-conventions.md` `### Who filed it` names the kinds that owe the field as every kind whose template carries the line, and those templates now all carry it: defects and decisions already did, `rules/review-contract.md` mandates `**Filed by:**` as its third header field, and `## History Logging` requires it on the session history entry. A count over the obligation is therefore taken over those four kinds, which settles the 31-against-29 disagreement in favour of 31 (the review and the history both owe the field). No gate is added, for the two reasons the decision's constraints state: `hooks/lib/__tests__/` had 1 line free at `0fb5085`, and the miss branch the 31 records fell through (a `bin/fusion-identity` absent from the installed copy) is closed by the v10.8.0 identity export in `hooks/session-start.ts`, which hands every agent `FUSION_PERSON` at SessionStart, so a gate would police a case that no longer arises in the ordinary way. The 31 backfilled records stay as they are; the boundary is forward-looking. Not repaired here: `agents/coderev.md`, `agents/ontorev.md` and `CLAUDE.md` still say "the two mandated header fields" of the review contract; that count is now three and those files are outside this step's scope.
+Resolved: 260827-1845 (plan step 8 of `260827-1756_*_repair-the-twenty-open-defect-records.md`, realising `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` `## Answer`, option 2). The reach is written down: `rules/fusion-workbench-conventions.md` `### Who filed it` names the kinds that owe the field as every kind whose template carries the line, and those templates now all carry it: defects and decisions already did, `rules/review-contract.md` mandates `**Filed by:**` as its third header field, and `## History Logging` requires it on the session history entry. A count over the obligation is therefore taken over those four kinds, which settles the 31-against-29 disagreement in favour of 31 (the review and the history both owe the field). No gate is added, for the two reasons the decision's constraints state: `hooks/lib/__tests__/` had 1 line free at `0fb5085`, and the miss branch the 31 records fell through (a `bin/fusion-identity` absent from the installed copy) is closed by the v10.8.0 identity export in `hooks/session-start.ts`, which hands every agent `FUSION_PERSON` at SessionStart, so a gate would police a case that no longer arises in the ordinary way. The 31 backfilled records stay as they are; the boundary is forward-looking. Not repaired here: `agents/coderev.md`, `agents/ontorev.md` and `CLAUDE.md` still say "the two mandated header fields" of the review contract; that count is now three and those files are outside this step's scope.

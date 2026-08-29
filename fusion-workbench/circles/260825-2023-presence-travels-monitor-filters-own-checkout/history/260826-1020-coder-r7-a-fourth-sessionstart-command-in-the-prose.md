@@ -6,7 +6,7 @@
 **Checkout:** 5e8248d7
 **Date:** 2026-08-26 10:20
 **Circle:** 260825-2023-presence-travels-monitor-filters-own-checkout
-**Dispatch:** Turn 3, task R-7 — defect `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0846_*_a-fourth-sessionstart-command-lands-and-four-prose-sites-still-say-there-are-three.md`.
+**Dispatch:** Turn 3, task R-7 — defect `260826-0846_*_a-fourth-sessionstart-command-lands-and-four-prose-sites-still-say-there-are-three.md`.
 
 ## Whether the record's list was complete
 

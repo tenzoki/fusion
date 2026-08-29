@@ -1,7 +1,7 @@
 # T4-4 — `fs-locator` collapses `..` lexically
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write` — Turn 1, fourth task
+**Circle:** `260801-1244-guard-rules-write` — Turn 1, fourth task
 **Date:** 260803, 19:00–19:25
 **Status:** Complete
 **Outcome:** **Fixed.** Three instances, not one; the third was reachable at HEAD.
@@ -10,7 +10,7 @@
 
 ## What was asked
 
-Resolve `260803-1251_p_fs-locator-collapses-dotdot-lexically-…` either by fixing
+Resolve `260803-1251_*_fs-locator-collapses-dotdot-lexically-…` either by fixing
 it or by establishing that fixing it now was the wrong trade and recording that.
 Both outcomes were declared acceptable. The issue argued for leaving it: the
 defect was unreachable behind gate 0, and closing it would change what

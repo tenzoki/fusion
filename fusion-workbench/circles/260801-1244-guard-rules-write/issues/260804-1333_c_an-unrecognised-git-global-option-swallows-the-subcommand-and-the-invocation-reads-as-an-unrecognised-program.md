@@ -8,8 +8,8 @@
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (`resolveGit`)
 **Kind:** PRE-EXISTING, and older than this Circle. The flag walk has had this shape since it was written.
 **Cross-references:**
-`260804-1024_c_…` (the sibling gap in the same eight lines, and the reason this one was met at all),
-`decisions/260804-1323_i_…` (`## Answer`, third bullet — the structural answer and its cost).
+`260804-1024_*_…` (the sibling gap in the same eight lines, and the reason this one was met at all),
+`260804-1323_*_…` (`## Answer`, third bullet — the structural answer and its cost).
 
 ---
 

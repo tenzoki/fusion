@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-19 20:38
 **Status:** Complete
-**Circle:** `circles/260819-1645-four-constraints-on-deep-change`
-**Task:** plan step 2, `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_o_four-constraints-on-deep-change.md`
-**Closes:** `circles/260816-1741-guard-becomes-observation-only/issues/260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
+**Circle:** `260819-1645-four-constraints-on-deep-change`
+**Task:** plan step 2, `260819-2016_*_four-constraints-on-deep-change.md`
+**Closes:** `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
 **HEAD at start:** `b6869aa`
 
 ## What changed

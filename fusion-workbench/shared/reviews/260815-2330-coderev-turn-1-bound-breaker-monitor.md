@@ -42,11 +42,11 @@ disagree, and a comment that misstates the runner it appeals to.
 Four issues filed, all in `shared/issues/` (no Circle is active, so the Origin Rule places them
 there):
 
-- `260815-2325_o_the-monitors-ipv4-fallback-reinstates-the-defect-the-dual-stack-bind-removed-and-says-nothing.md`
-- `260815-2326_o_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`
-- `260815-2327_o_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md`
-- `260815-2328_o_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`
-- `260815-2329_o_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`
+- `260815-2325_*_the-monitors-ipv4-fallback-reinstates-the-defect-the-dual-stack-bind-removed-and-says-nothing.md`
+- `260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`
+- `260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md`
+- `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`
+- `260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`
 
 (Five files; `2328` carries the Medium breaker finding with the Low example finding folded in as its
 part 2, because both are fixed in one pass over the same twenty lines of `agents/orchestrator.md`
@@ -78,11 +78,11 @@ The dispatch asked for the claims to be tested rather than read. They were.
   in code — five lines of expression against seven — with four lines of comment added. The
   expression is clearer than what it replaced.
 
-The one thing wrong is in those four comment lines, and it is filed as `260815-2329`: they say
+The one thing wrong is in those four comment lines, and it is filed as `260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`: they say
 vitest's include means "a `.ts` file at ANY depth under `__tests__/` runs". `hooks/vitest.config.mjs`
 declares no `include`, so the default `**/*.{test,spec}.?(c|m)[jt]s?(x)` applies. Measured:
 `npx vitest list` collects `unit/probe.test.ts` and does not collect `unit/probe.ts`. The source
-record `260815-1935` stated this correctly; the fix's comment restated it wrongly. It matters
+record `260815-1935_*_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md` stated this correctly; the fix's comment restated it wrongly. It matters
 because that comment is where the next reader will look for the criterion that settles whether
 `fixtures/` belongs in the walk — the one question the source record asked to be answered
 deliberately, and which the resolution note acknowledges was decided by the filter instead.
@@ -106,7 +106,7 @@ reviewers during incremental review*; `:953` defines `issues_resolved` as issues
 execution, unrestricted. Same unit, different population. A Turn where the coder files five defects
 itself and resolves one reads `0 > 1`, false — the mirror of the bias the fix removed. And `:960`
 names both counters among the four the prompt declares untrusted, which makes this the only control
-decision in the file running entirely on the distrusted pair. All of it is `260815-2328`.
+decision in the file running entirely on the distrusted pair. All of it is `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`.
 
 Coverage of the "any third statement" check was re-run independently and is sound: `issues_created`
 appears in `agents/`, `skills/`, `rules/`, `docs/` and the READMEs only at `:619`, `:635`, `:952`
@@ -137,7 +137,7 @@ and `:960`.
   — `bin/monitor:1263-1266` states that macOS parks a **non-loopback** listener of a process without
   Local Network permission in `CLOSED`, never `LISTEN`, and the default bind is non-loopback. That
   case is inference, not reproduction (this machine's wildcard listener shows `LISTEN`), and it is
-  filed with the label attached as `260815-2326`.
+  filed with the label attached as `260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`.
 - **Line buffering.** Verified: 297 bytes in a redirected log 2.5 s after start, matching the
   record's measurement, with the guard against `AttributeError`/`OSError` correct.
 
@@ -157,11 +157,11 @@ literal address. `:874` is the only mention of `localhost` and it is a string co
 handed to the browser launcher, not a request. So the whole `WILDCARD_BINDS` branch is executed by
 no test.
 
-Filed as `260815-2327`. The filing reason is not that the executor failed to notice — it noticed
+Filed as `260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md`. The filing reason is not that the executor failed to notice — it noticed
 precisely — but that the observation was written into the final paragraph of a record it then closed
-(`260812-0253_c_…`), where no scan for open work will return it. The record also names the
+(`260812-0253_*_…`), where no scan for open work will return it. The record also names the
 constraint that makes the missing test hard: `bin/monitor:1263-1266`'s macOS claim, which is the
-same claim `260815-2326` asks to be confirmed or deleted. Those two should be worked in that order.
+same claim `260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md` asks to be confirmed or deleted. Those two should be worked in that order.
 
 ## Cross-cutting observations
 
@@ -187,49 +187,49 @@ concurrent edits in the shared tree, and all three said what they had not establ
 what happens to a named residual: two of the three wrote it into a record they then marked `_c_`.
 A residual in a closed record is invisible to the next queue build. Worth a convention rather than
 three more findings — this review turned one of them back into an open record, and the other
-(`260815-1935`'s two latent surface readers, `agents/` non-recursive and `skills/` SKILL.md-only) is
-carried forward in `260815-2329`'s closing section rather than filed, since neither is exploitable
+(`260815-1935_*_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md`'s two latent surface readers, `agents/` non-recursive and `skills/` SKILL.md-only) is
+carried forward in `260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`'s closing section rather than filed, since neither is exploitable
 at HEAD.
 
 **No growth bound is threatened by any of these fixes.** `bin/monitor` is on no bounded surface.
-`hooks/lib/__tests__/surface-growth-bound.test.ts` is, and `260815-2329`'s fix is a comment
-correction that can be written line-neutral. `agents/orchestrator.md` is, and `260815-2328`'s three
+`hooks/lib/__tests__/surface-growth-bound.test.ts` is, and `260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`'s fix is a comment
+correction that can be written line-neutral. `agents/orchestrator.md` is, and `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`'s three
 parts total well under 200 bytes against 18 000 B of head-room measured at `d33cd22`.
 
 ## Recommended sequencing
 
 Nothing here blocks a release. Ordered by what unblocks what:
 
-1. **`260815-2326`** — first, because it is a question, not a fix, and its answer constrains the
+1. **`260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`** — first, because it is a question, not a fix, and its answer constrains the
    next item. One measurement on a macOS host without Local Network permission, or the deletion of
    an unfounded comment.
 2. **`260815-2325`** — the fallback's silent regression. Independent of everything else; the fix is
    local except for the one real design choice about who owns the launched URL.
-3. **`260815-2327`** — the missing test. Write it after 1 is answered, or the case may be unwritable
+3. **`260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md`** — the missing test. Write it after 1 is answered, or the case may be unwritable
    or flaky on the machines it matters on.
-4. **`260815-2328`** — the breaker. Cleanup, but do all three parts in one pass; the counter
+4. **`260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md`** — the breaker. Cleanup, but do all three parts in one pass; the counter
    definitions and the worked example are the same twenty lines.
-5. **`260815-2329`** — the comment correction. Cheapest, and the one most likely to be skipped;
+5. **`260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`** — the comment correction. Cheapest, and the one most likely to be skipped;
    it costs nothing and it prevents the next reader inheriting a wrong criterion.
 
 `4f7508d` is uncovered and outside this range. It should be carried into the next review's scope.
 
 ---
 
-**Reconciliation annotation, 260816-0713 (reconciler, HEAD `f77633f`). Findings are not rewritten;
+**Reconciliation annotation, 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`). Findings are not rewritten;
 this records only the disposition of the five records at HEAD.**
 
 | Record | Marker at HEAD | Evidence |
 |---|---|---|
 | `260815-2325` | closed | `a19c867` |
-| `260815-2326` | closed | `a19c867` |
-| `260815-2327` | closed | `a19c867` |
-| `260815-2328` | closed | `3c0e7da`, corrected by `e18dcb1` after the Turn-2 review found the first landing partial (`260816-0134`) |
-| `260815-2329` | closed | `3d26164` |
+| `260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md` | closed | `a19c867` |
+| `260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md` | closed | `a19c867` |
+| `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md` | closed | `3c0e7da`, corrected by `e18dcb1` after the Turn-2 review found the first landing partial (`260816-0134_*_the-breakers-two-counters-still-differ-by-whether-the-user-counts-and-the-fix-claimed-they-do-not.md`) |
+| `260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md` | closed | `3d26164` |
 
-The recommended sequencing was followed. `260816-0110` carries the unmeasured macOS Local-Network
+The recommended sequencing was followed. `260816-0110_*_the-macos-local-network-listener-claim-is-unverified-at-head-and-still-justifies-a-harness-constraint.md` carries the unmeasured macOS Local-Network
 premise forward and is open.
 
 **The carry-forward was honoured.** This review's closing line asked that `4f7508d` be carried into
-the next review's scope; `shared/reviews/260816-0145-coderev-turn-2-range-f4f01b0-3a0408a.md` opens
+the next review's scope; `260816-0145-coderev-turn-2-range-f4f01b0-3a0408a.md` opens
 at `f4f01b0` and states that all eighteen closure footers in `4f7508d` were read.

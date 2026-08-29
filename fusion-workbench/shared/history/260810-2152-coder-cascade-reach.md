@@ -2,12 +2,12 @@
 
 **Status:** Complete
 **Agent:** coder
-**Session:** `260810-1646`, Turn 3
+**Session:** `260810-1646-orchestrator-session.md`, Turn 3
 **Task:** close the three cascade-reach holes if closing them is right, and make the gate's reach
 claim a measurement rather than a sentence
-**Records worked:** `shared/issues/260810-2110_*_the-cascade-reach-gate-only-sees-a-domain-name-…`,
-`shared/issues/260810-2110_*_the-cascade-reach-gate-is-line-scoped-…`,
-`shared/issues/260810-2110_*_the-cascade-gates-file-set-is-justified-…` (all three `_p_` → `_c_`)
+**Records worked:** `260810-2110_*_the-cascade-reach-gate-only-sees-a-domain-name-…`,
+`260810-2110_*_the-cascade-reach-gate-is-line-scoped-…`,
+`260810-2110_*_the-cascade-gates-file-set-is-justified-…` (all three `_p_` → `_c_`)
 
 ---
 
@@ -92,7 +92,7 @@ is. The reason the old comment gave — "the file set is the consumer set: the f
 the widened matcher and the continuation window both active. The scanned set went 32 → 45 files and
 still selects exactly `agents/orchestrator.md:168,170,172`.
 
-Demonstrated end to end on an in-memory copy (decision `260810-1820` — nothing in the working tree is
+Demonstrated end to end on an in-memory copy (decision `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md` — nothing in the working tree is
 mutated to run a gate): a cascade statement spliced into `rules/agent-setup.md` is selected at its
 line, where the previous file set could not read the file at all.
 
@@ -104,7 +104,7 @@ an **uncovered** file rather than a justified exclusion.
 ## What is still open, stated as such
 
 - **Bare-word domain names.** The plainest second copy still walks past. Cost measured and recorded;
-  the standing alternative is the baseline-pin in `260810-2032` rather than a wider regex.
+  the standing alternative is the baseline-pin in `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` rather than a wider regex.
 - **Inputs named in words `INPUT_PROSE` does not carry.**
 - **A paraphrase across a table's rows or three-plus wrapped lines.**
 - **A paraphrase naming no input.**

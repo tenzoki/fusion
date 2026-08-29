@@ -1,4 +1,4 @@
-# Coder — realise decision 260813-0027 (orchestrator may dispatch shaper portfolio-activation)
+# Coder — realise decision 260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md (orchestrator may dispatch shaper portfolio-activation)
 
 **Date:** 2026-08-14
 **Agent:** coder

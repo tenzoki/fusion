@@ -1,6 +1,6 @@
 # Circle-marker glob `circles/*/[t]-circle.md` matches nothing — Circle count silently reports zero
 
-**Filed:** 260716-1956
+**Filed:** 260716-1956_*_circle-marker-glob-matches-nothing.md
 **Severity:** High
 **Domain:** code
 **Filed by:** coderev
@@ -68,7 +68,7 @@ Circles will copy whatever the conventions document shows.
 
 - `rules/fusion-workbench-conventions.md` `## State Markers — circles`
 - `skills/setup/SKILL.md` Step 3 (Circle-count snapshot and hint)
-- Governing plan: `fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md` (P-8 lint gate)
+- Governing plan: `260716-1910[p]-plan-workbench-umbau-circle-container.md` (P-8 lint gate)
 
 ---
 Resolved: commit 6228391 (task T2-A). Verified by the orchestrator against the running system, not by reading.

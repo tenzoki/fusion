@@ -6,7 +6,7 @@ The curator is not in the orchestrator's dispatch allowlist, so two of its three
 "dispatched by another agent" shape in `agents/curator.md` `## Tool Discipline` has no possible
 caller, and the spec's C7 acceptance criterion — "The agent is dispatchable directly, without the
 skill, for a user **or an orchestrator** that wants it mid-session"
-(`circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md:245`) — is not met.
+(`260814-0738_*_spec-curator.md:245`) — is not met.
 
 ---
 **What is verified.** `agents/orchestrator.md:4` reads
@@ -23,7 +23,7 @@ to the user" — in a column whose preamble states that every cell was read agai
 every skill body.
 
 **The plan did not ask for the registration and the spec did.** Plan step 2's file list
-(`circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md`) does not name
+(`260814-0845_*_plan-curator.md`) does not name
 `agents/orchestrator.md`, so the implementation followed the plan exactly. The unmet criterion is
 the spec's, and the gap entered at planning time rather than at execution time.
 

@@ -1,7 +1,7 @@
 # coder — three low-priority corrections in three test files
 
 **Status:** Complete
-**Session:** `260811-1315`
+**Session:** `260811-1315-coder-three-test-file-corrections.md`
 **Agent:** coder
 **Tasks:** 24 (`I:260810-1632-pty-case`), 32 (`I:260810-2110-licence-counts`),
 37 (`I:260802-1255-header-window`) — disjoint file sets, three independent fixes.
@@ -36,7 +36,7 @@ status immediately rather than after the deadline.
 browser-launch gate; fusion has no CI; and under vitest 2.1 a programmatic `ctx.skip()` carries no
 reason into the summary (the note argument arrives in vitest 3.1). A skip there would be a green
 run claiming coverage that did not happen — the failure mode
-`shared/issues/260810-2149_o_a-coverage-floor-cannot-see-coverage-leave-…` is open about. The cost
+`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-…` is open about. The cost
 is a red case in a pty-less container, with the cause on the first line. The branch is narrow by
 construction (python3 unrunnable, killed, or `os.openpty()` raising), so a machine whose pty works
 cannot take it, and the case cannot vanish quietly there. The reasoning sits in the probe's
@@ -54,7 +54,7 @@ this defect is what that cost. The enumeration stays, the control "rejects every
 licence on a phrasing of its own" already witnesses every entry one at a time, and the docstring now
 records what the three numbers were (eight table rows, eleven phrasings, twelve entries) so the
 confusion is not re-derived. The resolution note of
-`shared/issues/260810-1918_c_the-skip-licence-blacklist-…` carries a correction; the commit subject
+`260810-1918_*_the-skip-licence-blacklist-…` carries a correction; the commit subject
 of `45d76f0` is immutable and the correction names it.
 
 ## Task 37 — the interpolated message assertions
@@ -69,11 +69,11 @@ citing the record — the one place someone editing the window will look.
 
 ## Bookkeeping
 
-- `shared/issues/260810-1632_c_the-pty-case-…` — `Resolved:` appended, `_o_` → `_c_`.
-- `shared/issues/260810-2110_c_the-skip-licence-commit-…` — `Resolved:` appended, `_o_` → `_c_`.
-- `circles/260801-1244-rule-provenance-header/issues/260802-1255_c_five-message-assertions-…` —
+- `260810-1632_*_the-pty-case-…` — `Resolved:` appended, `_o_` → `_c_`.
+- `260810-2110_*_the-skip-licence-commit-…` — `Resolved:` appended, `_o_` → `_c_`.
+- `260802-1255_*_five-message-assertions-…` —
   `Resolved:` appended, `_o_` → `_c_`, closed in place inside its closed Circle.
-- `shared/issues/260810-1918_c_the-skip-licence-blacklist-…` — correction appended to its
+- `260810-1918_*_the-skip-licence-blacklist-…` — correction appended to its
   resolution note (task 32's second file).
 - `tasklist.md` — tasks 24, 32 and 37 ticked. Header counters untouched; they belong to taskplanner.
 

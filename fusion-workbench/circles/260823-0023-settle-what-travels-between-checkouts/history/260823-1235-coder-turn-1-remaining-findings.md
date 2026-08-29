@@ -67,7 +67,7 @@ touch always-on rules. Only item 5 does, and it frees 33 bytes.
 
 `reference-resolution-lint` `BASELINE`: `paths 1293 -> 1294`, anchors and records unmoved, accounted
 inline. One further repair was needed after the closures: the reviewer's `Also seen:` line in
-`shared/issues/260818-1637_o_...` cited a record with a hard `_o_` marker that this pass renamed, so
+`260818-1637_*_...` cited a record with a hard `_o_` marker that this pass renamed, so
 the workbench citation gate went red on a file nobody had opened. It now carries the `_*_` wildcard
 form.
 

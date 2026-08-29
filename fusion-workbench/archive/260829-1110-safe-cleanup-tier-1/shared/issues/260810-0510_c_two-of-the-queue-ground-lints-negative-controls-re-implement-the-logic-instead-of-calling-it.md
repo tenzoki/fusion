@@ -4,9 +4,9 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `hooks/lib/__tests__/queue-ground-lint.test.ts:222-256`; `hooks/lib/__tests__/executor-verification-report-lint.test.ts:180-193`
-**Cross-references:** commits `ff70d3a`, `1f2faaf`; sibling records `260810-0502` (state-drift lint) and `260810-0503` (domain-cascade lint)
+**Cross-references:** commits `ff70d3a`, `1f2faaf`; sibling records `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md` (state-drift lint) and `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` (domain-cascade lint)
 
 ---
 
@@ -65,7 +65,7 @@ verification happened. Four lints landed tonight and each carries a "the gate ca
 exists for" block. Measured across the cohort: `circle-stash-git-exclusion` and `fusion-count-sources`
 are genuine executable gates; `executor-verification-report-lint` is a real gate with an overstated
 fixture claim; `queue-ground-lint` is two-thirds decorative; `domain-cascade-order-lint` is half a gate
-(`260810-0503`); `state-drift-detection-lint` is the weakest (`260810-0502`).
+(`260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`); `state-drift-detection-lint` is the weakest (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`).
 
 The pattern is worth naming rather than fixing six times: a negative-control block is only a negative
 control when it calls the **same** function the real test calls. Anything else is a second copy of the
@@ -81,7 +81,7 @@ assertion under test.
 
 ---
 
-## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+## Reconciliation — `260810-0819`, session `260810-0241-orchestrator-session.md` Phase 3
 
 **Still accurate.** Neither `queue-ground-lint.test.ts` (introduced by `ff70d3a`) nor
 `executor-verification-report-lint.test.ts` (introduced by `1f2faaf`) has been touched since; every
@@ -127,14 +127,14 @@ present at HEAD, and the record's defect — a negative control that re-implemen
 supposed to exercise instead of calling it — still holds there. Marker unchanged.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Half of this is moot and half is untouched. `queue-ground-lint.test.ts` no longer exists: it went in `dd312eb` with the persisted task list, in Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, so its negative control cannot be repaired and does not need to be. The second instance stands unchanged — `hooks/lib/__tests__/executor-verification-report-lint.test.ts:180-193` still carries a hand-written `preFixCoderProcess` fixture that omits step 2 and prepends a heading the real pre-fix text never had (checked against `git show 1f2faaf^:agents/coder.md`). Marker stays open on that one.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). Half of this is moot and half is untouched. `queue-ground-lint.test.ts` no longer exists: it went in `dd312eb` with the persisted task list, in Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`, so its negative control cannot be repaired and does not need to be. The second instance stands unchanged — `hooks/lib/__tests__/executor-verification-report-lint.test.ts:180-193` still carries a hand-written `preFixCoderProcess` fixture that omits step 2 and prepends a heading the real pre-fix text never had (checked against `git show 1f2faaf^:agents/coder.md`). Marker stays open on that one.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Part 1's subject, `hooks/lib/__tests__/queue-ground-lint.test.ts`,
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). Part 1's subject, `hooks/lib/__tests__/queue-ground-lint.test.ts`,
 was deleted in `dd312eb` with the persisted task list, so that half cannot be acted on, verified or
 closed by a diff. This record is narrowed to part 2, the `executor-verification-report-lint.test.ts`
 fixture, which stands. The `**Affects:**` line is left as the reviewer saw it. Filed as
-`shared/issues/260822-1154_*_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`.
+`260822-1154_*_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`.
 
 ---
 Resolved: fixed — part 1 is moot since `dd312eb` deleted `queue-ground-lint.test.ts`; part 2 is fixed, the fixture comment in `hooks/lib/__tests__/executor-verification-report-lint.test.ts` now says the `### Report shape` heading is supplied so the parser reaches `assertReportShape`, and no longer claims the text is the pre-fix prompt verbatim; `cd hooks && npx vitest run lib/__tests__/executor-verification-report-lint.test.ts`

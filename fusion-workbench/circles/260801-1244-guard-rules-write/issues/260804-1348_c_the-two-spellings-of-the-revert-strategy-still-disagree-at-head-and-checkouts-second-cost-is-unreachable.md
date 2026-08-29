@@ -5,11 +5,11 @@
 **Severity:** Medium
 **Domain:** code (security control, and the claim made for it)
 **Filed by:** coderev, review of `613d6fd`
-**Affects:** `hooks/lib/bash-mutation-guard.ts:741-743` (`isGitRestoreSourceFlag`), `:947-951` (the `restore` row), `:887` / `:914-936` (`GIT_CHECKOUT_INERT_TREEISH`, `gitCheckoutWrites`); `rules/protected-path-discipline.md:86-104`; `decisions/260804-1323_i_…` `## The second question`
+**Affects:** `hooks/lib/bash-mutation-guard.ts:741-743` (`isGitRestoreSourceFlag`), `:947-951` (the `restore` row), `:887` / `:914-936` (`GIT_CHECKOUT_INERT_TREEISH`, `gitCheckoutWrites`); `rules/protected-path-discipline.md:86-104`; `260804-1323_*_…` `## The second question`
 **Kind:** The `restore --source=HEAD` deny is PRE-EXISTING. What is NEW in `613d6fd` is the claim that the two spellings now agree, which the `HEAD` spelling falsifies — and that is the one spelling the whole argument is about.
 **Cross-references:**
-`issues/260804-1026_c_…` (the finding, whose complaint was "the same operation in two spellings disagreeing"),
-`decisions/260804-1323_i_…` (`## The second question`, where the claim is made and the costs are stated).
+`260804-1026_*_…` (the finding, whose complaint was "the same operation in two spellings disagreeing"),
+`260804-1323_*_…` (`## The second question`, where the claim is made and the costs are stated).
 
 ---
 
@@ -36,7 +36,7 @@ block   git restore --source=HEAD~1 rules/x.md
 
 `git checkout HEAD -- <path>` and `git restore --source=HEAD <path>` are the **same
 operation**: restore the file to its committed state. One allows, the other denies. That is
-the disagreement `260804-1026` was filed about, surviving at exactly the spelling the
+the disagreement `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md` was filed about, surviving at exactly the spelling the
 promise protects.
 
 `git restore <path>` is *not* the equivalent — it restores from the index, not from `HEAD` —
@@ -94,7 +94,7 @@ Two documentation edits and one optional code edit.
    `positionalModel`-style hook that can see the flag's value in both spellings. That closes
    the disagreement properly instead of documenting it. It NEWLY ALLOWS
    `git restore --source=HEAD <protected>`, which is a first for this Circle, so it needs the
-   same measured argument `260804-1323` gave the union — the operation really is inert, but
+   same measured argument `260804-1323_*_should-the-guard-model-gits-own-working-directory-or-give-up-on-it.md` gave the union — the operation really is inert, but
    "inert" has to be argued for `--source=HEAD` the way it was for `checkout HEAD`.
 
 ## Test coverage this needs
@@ -104,14 +104,14 @@ Two documentation edits and one optional code edit.
   the suite rather than only in prose;
 - `git checkout rules/a.md rules/b.md` pinned as a **branch-policy** block (assert the reason
   names the branch policy), so the two policies cannot start reporting each other's
-  permission unnoticed — the same guarantee `decisions/260804-1323` already asks for in the
+  permission unnoticed — the same guarantee `260804-1323` already asks for in the
   other direction.
 
 ## Anti-vacuity
 
 Every row above already returns a verdict, so verdict-only assertions prove nothing. The
 assertions have to be on the reason string and on the pair, exactly as
-`decisions/260804-1323` says the `checkout` test does.
+`260804-1323` says the `checkout` test does.
 
 ---
 
@@ -120,7 +120,7 @@ Step 3 as a code pass, and Step 3 cannot close it.** What Step 3 could take, it 
 what it could not, it routed. Stated in full so the routing is not read as an oversight.
 
 **Taken — the test coverage this record asks for, both items.**
-`MEASURES: checkout and restore still disagree at HEAD (260804-1348, open)` pins the
+`MEASURES: checkout and restore still disagree at HEAD (260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md, open)` pins the
 whole pair with the current verdicts and a comment naming this record, so the asymmetry
 is visible in the suite rather than only in prose. And
 `leaves \`git checkout <file> <file>\` to the branch policy, which answers first` pins
@@ -139,7 +139,7 @@ Circle has held that no command newly allows. Making them agree the other way de
 `git checkout HEAD -- <path>`, which is fusion's own revert strategy and is promised to
 every agent in every consuming project. So the code half is a Human-Gate question, filed
 as
-`circles/260801-1244-guard-rules-write/decisions/260804-1815_o_should-git-restore-source-head-become-inert-the-way-git-checkout-head-already-is.md`,
+`260804-1815_*_should-git-restore-source-head-become-inert-the-way-git-checkout-head-already-is.md`,
 with the architectural cause (`mutatesOnlyWhen` never sees a separated flag's value)
 written down rather than papered over.
 
@@ -149,7 +149,7 @@ written down rather than papered over.
 row still states a second cost that the branch policy reaches first.
 
 **What has to happen for this record to close, and where the plan is short.** Step 7's
-`Closes` line does not name `260804-1348`, so as the plan stands nothing owns the two
+`Closes` line does not name `260804-1348_*_the-two-spellings-of-the-revert-strategy-still-disagree-at-head-and-checkouts-second-cost-is-unreachable.md`, so as the plan stands nothing owns the two
 documentation edits. Either Step 7 adopts them — the natural home, since they are two
 sentences in a file it is already rewriting — or a ninth step does. Flagged rather than
 silently absorbed.
@@ -159,7 +159,7 @@ silently absorbed.
 **Recommendations 1 and 2 taken: 2026-08-04, `coder`, out-of-band from plan Step 7, at the
 user's explicit request.** The ownership gap flagged above is closed at the plan as well —
 Step 7's `Closes` line now names this record, annotated as already discharged. Recommendation
-3 remains not taken and is not this record's to take: it is `decisions/260804-1815`, answered
+3 remains not taken and is not this record's to take: it is `260804-1815`, answered
 option 1 by the user on 2026-08-04. The record is complete on both documentation edits as far
 as this coder can tell; the orchestrator owns the marker move.
 

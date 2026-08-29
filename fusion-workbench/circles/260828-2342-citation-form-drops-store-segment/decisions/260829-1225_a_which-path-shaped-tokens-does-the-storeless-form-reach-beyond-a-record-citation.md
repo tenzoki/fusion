@@ -32,4 +32,4 @@ The user decided that a record is cited by its storeless basename, `YYMMDD-HHMM_
 Option 1. The plan proceeds on it; if the user picks option 2 instead, plan steps 2 and 4 shrink to a three-clause exemption in the grammar and the prompt edits in step 4 are dropped, and nothing else in the plan moves.
 
 ---
-Answered: circles/260828-2342-citation-form-drops-store-segment/decisions/260829-1225_a_which-path-shaped-tokens-does-the-storeless-form-reach-beyond-a-record-citation.md — option 1, user 2026-08-29 at the plan gate: one form everywhere; a Circle is cited by its bare directory name, the two head fields carry the storeless basename, consumers resolve by a workbench-wide index.
+Answered: 260829-1225_*_which-path-shaped-tokens-does-the-storeless-form-reach-beyond-a-record-citation.md — option 1, user 2026-08-29 at the plan gate: one form everywhere; a Circle is cited by its bare directory name, the two head fields carry the storeless basename, consumers resolve by a workbench-wide index.

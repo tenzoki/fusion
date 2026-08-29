@@ -33,10 +33,10 @@ citation or a miscount.
 the record is closed-by-append in this workbench's style). Nothing in the shipped tree changes.
 
 **Cross-references.**
-`shared/issues/260810-2029_o_seven-citations-left-the-reference-lints-existence-check-when-they-gained-a-second-root-variable.md`;
+`260810-2029_*_seven-citations-left-the-reference-lints-existence-check-when-they-gained-a-second-root-variable.md`;
 `hooks/lib/__tests__/reference-resolution-lint.test.ts:207-213`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 Resolved: the count is corrected in `260810-2029` and the measurement was re-taken independently

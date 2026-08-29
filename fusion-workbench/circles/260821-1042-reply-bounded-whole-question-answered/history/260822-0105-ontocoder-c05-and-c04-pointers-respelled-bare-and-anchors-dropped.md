@@ -1,7 +1,7 @@
 # ontocoder — C05 and C04 pointers respelled bare, heading anchors dropped
 
 **Status:** Complete
-**Stamp:** 260822-0105
+**Stamp:** 260822-0105-ontocoder-c05-and-c04-pointers-respelled-bare-and-anchors-dropped.md
 **Circle:** 260821-1042-reply-bounded-whole-question-answered
 **Domain:** data
 **Task source:** issue `260821-2204` (now `_c_`)
@@ -12,7 +12,7 @@
 Fix the defect the record names: C05's instruction depends on two citations no gate resolves,
 a file path and a heading anchor, and the path spelling is plugin-relative so it resolves to
 nothing in a consuming project. Route 2 (extending `surface()` in the hook tests) was ruled out
-by the dispatch, on this Circle's decision `260821-1108_a_which-surfaces-may-this-circle-change`
+by the dispatch, on this Circle's decision `260821-1108_*_which-surfaces-may-this-circle-change`
 and on the hook suite's remaining growth head-room.
 
 ## What was done

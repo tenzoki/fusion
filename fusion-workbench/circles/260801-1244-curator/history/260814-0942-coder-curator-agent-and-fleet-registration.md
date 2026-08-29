@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Circle:** 260801-1244-curator
-**Plan:** `circles/260801-1244-curator/planning/260814-0845_*_plan-curator.md`, steps 1 and 2 (one task — the suite is red between them by construction)
+**Plan:** `260814-0845_*_plan-curator.md`, steps 1 and 2 (one task — the suite is red between them by construction)
 **Verification:** `cd hooks && npm test` — exit 0, 49 files, 1023 tests
 
 ---
@@ -31,7 +31,7 @@ No agent gained or lost a rule file. `RULE_BASELINE` was deliberately not touche
 
 ## The thirty-two agent-count claims
 
-Handled per `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, answered option 2.
+Handled per `260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`, answered option 2.
 
 **The five the enumeration lint re-derives were corrected to seventeen:** "specialized agents" in `CLAUDE.md` and `README.md`, "The 17 agent prompts" and "the other 16 inherit" in `CLAUDE.md`, "of the 17 prompts" in `README-agents.md`.
 

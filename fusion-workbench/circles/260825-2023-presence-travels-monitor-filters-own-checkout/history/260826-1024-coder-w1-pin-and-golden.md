@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** circles/260825-2023-presence-travels-monitor-filters-own-checkout, Turn 3
+**Circle:** 260825-2023-presence-travels-monitor-filters-own-checkout, Turn 3
 
 Three sibling tasks (R-7, R-10, R-12/R-14) landed disjoint edits to `CLAUDE.md`,
 `README-hooks.md`, `agents/orchestrator.md`, `agents/reconciler.md`,

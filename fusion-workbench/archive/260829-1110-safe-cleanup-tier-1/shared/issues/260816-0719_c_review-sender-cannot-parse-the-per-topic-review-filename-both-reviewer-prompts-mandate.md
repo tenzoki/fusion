@@ -6,10 +6,10 @@ per-topic session files a review pass writes first, so every one of those files 
 ---
 **Severity:** Medium — a per-topic review file reaches the report as an unclassifiable row ("the filename
 carries no `<sender>` segment") and, through `hooks/tracker.ts`, fires the whole measurement over a file
-the scan will then refuse to measure. That is the same trigger-wider-than-scan shape as `260811-1145`,
+the scan will then refuse to measure. That is the same trigger-wider-than-scan shape as `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`,
 and the permanent-noise shape `hooks/lib/review-coverage.ts`'s own header says it refuses.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `hooks/lib/review-coverage.ts` (`reviewSender`), `hooks/tracker.ts`, `agents/coderev.md:112`,
 `agents/ontorev.md:102`, `rules/fusion-workbench-conventions.md:288`
@@ -54,7 +54,7 @@ the two filename patterns one — three surfaces state it and one is a `\d{4}` r
 - `shared/issues/260811-1145_*` — the population defect this filter was written for
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/review-coverage.ts:193` still requires a four-digit stamp, while `agents/coderev.md:112` and `agents/ontorev.md:102` both mandate a two-digit counter for per-topic files, which parse to a null sender. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/review-coverage.ts:193` still requires a four-digit stamp, while `agents/coderev.md:112` and `agents/ontorev.md:102` both mandate a two-digit counter for per-topic files, which parse to a null sender. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — the per-topic working file takes the one review pattern YYMMDD-HHMM-<sender>-<topic>.md that the parser reads, and the rule says a two-digit counter parses as no sender; the two reviewer prompts already cite the contract; rules/review-contract.md:58

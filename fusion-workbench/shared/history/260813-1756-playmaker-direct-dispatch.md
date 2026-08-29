@@ -1,4 +1,4 @@
-# Playmaker run 260813-1756
+# Playmaker run 260813-1756-playmaker-direct-dispatch.md
 
 **Trigger:** direct-dispatch
 **Domain bias:** `code` (parsed from the dispatch prompt's `**Domain:**` line)
@@ -41,7 +41,7 @@ measurements that the heuristic cannot see.
 | Fragments excluded as not ideas | 2 |
 | Handed to `## Warnings` as defect-shaped or decision-shaped | 1 |
 
-**Top-ranked entry:** `shared/backlog/260811-0826_*_observations.md`, recommended for splitting
+**Top-ranked entry:** `260811-0826_*_observations.md`, recommended for splitting
 first rather than shaping, because `/fusion:direct` promotes an entry whole and would make one
 Circle of all 13 ideas. Its top idea is `bounded-dispatches-and-re-injected-context`, ranked first
 because both records it rests on are already on disk.
@@ -57,7 +57,7 @@ given.
 - `installed-copy-predates-the-backlog-mandate` — installed prompt 27 597 bytes, working-tree
   prompt 39 155 bytes, both plugin manifests reading 8.1.0.
 - `backlog-acceptance-run-still-not-performed` — third run to have the opportunity and not take it.
-- `write-key-defect-record-open-after-its-circle-closed` — `shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
+- `write-key-defect-record-open-after-its-circle-closed` — `260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
   still open with its four acceptance conditions reading as met.
 - `curator-grounding-measurements-falsified` — 54 401 bytes / 32 headings claimed, 51 920 bytes /
   24 headings measured. Fifth consecutive run.
@@ -65,7 +65,7 @@ given.
 - `one-sided-dependency-is-now-frozen` — the closed Circle's placeholder can no longer be filled.
 - `claude-md-always-on-figure-is-stale` — `CLAUDE.md:64` claims 88 023 bytes, measured 93 819.
 - `fusion-direct-cannot-run-the-flow-it-documents` — the backlog-to-Circle path runs through
-  `shared/issues/260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`.
+  `260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`.
 - `backlog-idea-only-partly-filed` — "every operation takes unbearably long" exists only as a
   witness line inside a Setup-scoped record.
 
@@ -81,8 +81,8 @@ None. No Circle record carries the `_b_` marker, so the propagation scan had no 
 
 ## Writes performed
 
-- `fusion-workbench/circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md` —
-  appended `## Activation proposal (playmaker run 260813-1756)`, confirming the 260813-1623
+- `260813-0910-documentation-matches-shipped-plugin` —
+  appended `## Activation proposal (playmaker run 260813-1756-playmaker-direct-dispatch.md)`, confirming the 260813-1623-playmaker-direct-dispatch.md
   proposal and recording what was re-verified.
 - `fusion-workbench/portfolio.md` — regenerated in full.
 - This history file.

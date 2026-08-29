@@ -50,8 +50,8 @@ field carries one today, and a builder that begins emitting `why` would need tha
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review `260818-0748` (range `1dc062d..33645a2`)
-**Cross-references:** `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 5 and `## Residual: what still gets through`
+**Filed by:** coderev, review `260818-0748-coderev-turn-1-range-1dc062d-33645a2.md` (range `1dc062d..33645a2`)
+**Cross-references:** `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 5 and `## Residual: what still gets through`
 
 ---
 Resolved: the sentence was corrected, the relation was not touched. The header now states what the
@@ -67,4 +67,4 @@ survive. The `WHAT IT DOES NOT COVER` list carries the same residual in one clau
 
 `hooks/lib/staging-drift.ts` and `hooks/lib/review-coverage.ts` were read and not edited. No
 assertion changed; the file's 19 cases are the 12 that stood plus the 7 this Turn added for
-`260818-0745`, and none of them was affected by this correction.
+`260818-0745_*_the-registry-completeness-parse-misses-an-aliased-and-a-namespace-import-so-a-named-builder-still-escapes.md`, and none of them was affected by this correction.

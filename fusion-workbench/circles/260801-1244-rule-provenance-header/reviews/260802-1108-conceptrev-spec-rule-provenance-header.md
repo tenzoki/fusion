@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-02 11:08
 **Sender:** conceptrev
-**Target:** `circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md`
+**Target:** `260802-1103_*_spec-rule-provenance-header.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 1  |  **Validation:** by-reading (no `mmdc` on this machine, and `npx @mermaid-js/mermaid-cli` refused to install without network consent)
 

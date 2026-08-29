@@ -1,4 +1,4 @@
-# Orchestrator Session — 260823-0721
+# Orchestrator Session — 260823-0721-orchestrator-session.md
 
 **Directive:** (not yet stated — session started via /fusion:setup, awaiting the user's scope)
 **Mode:** (unresolved — Phase 0 not yet run)
@@ -11,10 +11,10 @@
 - Plugin version: 10.6.0 (installed copy at /Users/k1/.fusion)
 - Turn budget: max_turns=12 (resolved via bin/fusion-turn-budget; no loader diagnostics on stderr)
 - Git HEAD at start: 3ee8eaf
-- Active Circle: circles/260823-0023-settle-what-travels-between-checkouts (record `_t_circle.md`)
+- Active Circle: 260823-0023-settle-what-travels-between-checkouts (record `_t_circle.md`)
 - Detected workbench domain: **code** (code_files=103, data_files=10, counted_by=git-ls-files)
 - Open defect records: 0 in the Circle store, 123 in shared/issues
-- Open plans: 1 (shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md)
+- Open plans: 1 (260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md)
 - Open decision records: 0 in the Circle store, 4 in shared/decisions
 - Circle counts by marker: 1 active, 12 closed-coherent, 2 bounded, 1 superseded, 0 anticipated
 - Portfolio hint: not printed (no anticipated Circles; one active Circle)
@@ -45,7 +45,7 @@
   project root", so the shipped text contradicts the Grounding at HEAD. Filed as `issues/260823-0800_o_*`,
   open. 7 open records in the Circle (6 defects, 1 decision), plus 1 decision this session filed to
   `shared/`. `bin/fusion-review-coverage` reports `uncovered=2`; `1544224` is workbench-only and `7cd79f1`
-  touches four shipped files, and under `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+  touches four shipped files, and under `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
   coverage is advisory, so it does **not** flag — it is a residual for the closure note.
 
 - **Artifact↔Directive: not flagged.** The 19 commits of `3ee8eaf..7cd79f1` move **toward** the Directive
@@ -61,7 +61,7 @@
 
 - **Grounding↔Directive: not flagged.** 25 active decision records in scope — 19 answered and 5 open in
   `shared/`, 1 open in the Circle. **0 conflicting.** The multi-user cluster is mutually consistent:
-  `260822-1610_a_` carries the measurement it asked for; `260822-1136_i_` and `260822-2219_i_` are the two
+  `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` carries the measurement it asked for; `260822-1136_i_` and `260822-2219_i_` are the two
   this Circle realised; `260822-1136_o_` (identity) and `260822-1556_o_` (filename convention) are both
   placed before C3 by the spec and by this Circle's Grounding, so being open is their intended state;
   `260823-0800_o_` (shipped check) binds C3 and C4 and the plan proceeds on the reading it names.
@@ -77,7 +77,7 @@
 here and the mapping cannot express it: the claim that disagrees with disk sits **inside** the Grounding,
 so the correction is a Grounding edit, while the Artifact — the work — is sound at every one of the nine
 steps. Filed as
-`shared/issues/260823-1446_o_the-rebalance-recommendation-maps-from-the-flagged-edge-and-has-no-case-for-a-grounding-that-states-a-false-fact.md`.
+`260823-1446_*_the-rebalance-recommendation-maps-from-the-flagged-edge-and-has-no-case-for-a-grounding-that-states-a-false-fact.md`.
 
 **What the gate is actually for, in one line each.**
 
@@ -86,14 +86,14 @@ steps. Filed as
    `## Closure note` is the review's own recommendation and is worth doing, but it does not discharge
    either record: it adds a true sentence without unwriting the false one, which stands in emphatic form
    where a reader meets it first. `260823-0800_o_` is filed on the claim being false *when written*, and
-   `260823-1405_o_` on the deferral naming no deadline. Both stay open after a closure note. Correcting
+   `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md` on the deferral naming no deadline. Both stay open after a closure note. Correcting
    the sentence in place is available for as long as the marker reads `_t_` and never again.
 2. **Closure strands seven records.** Six defects and one decision leave every `SCAN_*` the resolver
    emits, joining 75 open defect records across 10 non-active Circles, re-counted this pass (the review's
    19 open decisions is the open-plus-answered figure over four Circles; open alone is 12). Two of the
    seven are C4's own inputs — the second event-log reader and the monitor's session attribution — so a C4
    planner reading only `shared/` will not find them. This is a fusion-wide gap rather than this Circle's
-   defect, it is filed as `260823-1403_o_`, and it changes no edge. It is here because the review asked
+   defect, it is filed as `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`, and it changes no edge. It is here because the review asked
    for it to be *reported to the user at closure*, and a gate is that report.
 
 **"By intent" judged per record, since the dispatch asked.** Honest for three: the C4 event-log reader
@@ -101,23 +101,23 @@ steps. Filed as
 monitor attribution (`260823-1302_o_`, excluded from C2 by plan step 9 by name and needing a user fork
 between two mechanisms), and the shipped-check decision (`260823-0800_o_`, which binds C3 and C4 and
 blocks nothing here). Half-honest for the Grounding claim: open is right, but the deferral names no
-deadline while one exists, which is the whole of `260823-1405_o_`. And three records the dispatch did not
-list are open with no stated intent at all — `260823-1403_o_`, `260823-1405_o_` and `260823-1406_o_`, filed
+deadline while one exists, which is the whole of `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`. And three records the dispatch did not
+list are open with no stated intent at all — `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md`, `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md` and `260823-1406_*_step-0is-pointer-present-branch-reads-a-count-as-an-identity-and-a-stale-pointer-passes-both-checks.md`, filed
 by the closing review and two of them sequenced by it as due *before* the rename.
 
 **One thing outside the three edges, recorded because Phase 4 can still act on it.** Four session
 bookkeeping surfaces are frozen — `agentstate.yaml` at Turn 1, `orchestrator-live.md` at Turn 2, the Circle
 record's `## Turn log` empty after three Turns, and this file's own head fields — while
 `orchestrator-events.jsonl` is current through Turn 3's `turn_end`. Sixth instance of
-`shared/issues/260822-2236_o_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
+`260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
 where the measurement is appended. The Turn-log entries are the ones no later session can reconstruct once
 the state file is deleted.
 
-**Reconciliation detail:** `circles/260823-0023-settle-what-travels-between-checkouts/history/260823-1446-reconciliation.md`.
+**Reconciliation detail:** `260823-1446-reconciliation.md`.
 
 ---
 
-## Coherence — second pass (260823-2130, after the Revise-Grounding Rebalance)
+## Coherence — second pass (260823-2130-reconciliation.md, after the Revise-Grounding Rebalance)
 
 <!-- RECONCILER-OWNED -->
 
@@ -139,10 +139,10 @@ about it.
 
 ### Errata to the first pass, all three confirmed at HEAD
 
-Filed as `260823-1638_*`, verified independently rather than accepted:
+Filed as `260823-1638_*_three-figures-in-the-reconcilers-coherence-section-are-wrong-and-one-contradicts-its-own-detail-file.md_*`, verified independently rather than accepted:
 
 - **"75 open defect records across 10 non-active Circles" → across 9.** The 75 is exact and stable.
-  Ten Circles appear in `260823-1403_*`'s table because
+  Ten Circles appear in `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md_*`'s table because
   `260821-1042-reply-bounded-whole-question-answered` holds five open decisions and no open issues.
 - **"22 defect closures" → 23.** Measured by set comparison of the issue stores at `3ee8eaf` and
   `7cd79f1`: 2 records that were `_o_` at the session start are `_c_` at the end, and 21 more were
@@ -169,7 +169,7 @@ coverage advisory (`shared/decisions/260815-2109_*`) is unaffected by the count.
   `./.gitattributes`, which is this Circle's own. Both steps predate the record — Step 0f `92db96a`
   (2026-08-16), Step 0g `1e29572` (2026-08-15), against a record created 2026-08-23. Dropping the
   ordinal rather than fixing it is the right repair: by files it is the fourth, by steps the third,
-  and the number carried no information while having been wrong in both directions. `260823-1635_*`
+  and the number carried no information while having been wrong in both directions. `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*`
   closed against this.
 
   **What still flags is one clause in the same paragraph, and I checked it at the source.** The
@@ -181,7 +181,7 @@ coverage advisory (`shared/decisions/260815-2109_*`) is unaffected by the count.
   replaced, not merged". So the Grounding states unscoped what the shipped text goes out of its way to
   bound. It is the same kind of statement as the original flag — a Grounding sentence about Setup's
   project-root behaviour that disk does not support as written — in the same three lines, under the
-  same deadline. `260823-1642_*`, open, together with that paragraph's "two costs" scaffolding, which
+  same deadline. `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md_*`, open, together with that paragraph's "two costs" scaffolding, which
   announces two costs and now delivers one cost plus a fact.
 
   **Everything else on this edge is sound.** `npm test` at HEAD: 41 files, 724 tests, exit 0. The Turn
@@ -190,7 +190,7 @@ coverage advisory (`shared/decisions/260815-2109_*`) is unaffected by the count.
   (`orchestrator-events.jsonl:2023-2101`, whose four `turn_start` events carry precisely those heads;
   the whole-file grep the dispatch warned about returns six Turns across every session this project
   has run). No `coherence_review` and no Coherence `gate_hit` exists between `turn_start turn=3` and
-  `turn_end turn=3`, so entry 3's corrected clause is right. `260823-1636_*` and `260823-1637_*`
+  `turn_end turn=3`, so entry 3's corrected clause is right. `260823-1636_*_all-three-turn-log-ranges-drop-their-own-first-commit-the-fault-this-circle-already-fixed-once.md_*` and `260823-1637_*_turn-log-entry-3-books-a-per-circle-reconciler-verdict-against-a-turn-that-had-no-coherence-gate.md_*`
   closed. Review coverage at HEAD: `commits=23 reviews=4 unusable=0 uncovered=2` — the gap the first
   pass reported is closed and has moved to Turn 4's own two workbench commits, still advisory.
 
@@ -221,7 +221,7 @@ Grounding, so the repair is a Grounding edit.
 **Accepting it is a legitimate answer and this pass is not asking for a ratchet.** The remaining
 defect is one over-broad clause of six, describing a step this Circle never modified, in a paragraph
 whose subject — Step 0h's `.gitattributes` write — is pure append and therefore misdirected by none of
-it. If the user accepts it, the thing that must not happen is accepting it silently: `260823-1642_*`
+it. If the user accepts it, the thing that must not happen is accepting it silently: `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md_*`
 is stranded by the closure it survives, so the acceptance belongs in the `## Closure note`, which is
 the only text that still speaks after the rename.
 
@@ -230,21 +230,21 @@ the only text that still speaks after the rename.
 Answering the dispatch directly. **One moves an edge; the rest are ordinary open work or were already
 resolved on disk and still carried `_o_`.**
 
-- **Moves the edge:** `260823-1642_*`, above. Deadline-bound.
-- **Already resolved, markers stale, closed by this pass:** `260823-1635_*` (`a40b330`),
-  `260823-1636_*` and `260823-1637_*` (both `71f47c1`). Six records in all were closed this pass,
-  including `260823-1405_*` — the correction landed inside the window it named, by the first of the
+- **Moves the edge:** `260823-1642_*_the-hand-written-grounding-correction-breaks-the-paragraphs-own-two-costs-scaffolding-and-its-markup.md_*`, above. Deadline-bound.
+- **Already resolved, markers stale, closed by this pass:** `260823-1635_*_the-corrected-grounding-undercounts-setups-project-root-writes-and-omits-step-0f.md_*` (`a40b330`),
+  `260823-1636_*_all-three-turn-log-ranges-drop-their-own-first-commit-the-fault-this-circle-already-fixed-once.md_*` and `260823-1637_*_turn-log-entry-3-books-a-per-circle-reconciler-verdict-against-a-turn-that-had-no-coherence-gate.md_*` (both `71f47c1`). Six records in all were closed this pass,
+  including `260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md_*` — the correction landed inside the window it named, by the first of the
   two shapes it offered.
-- **Was mine, and is fixed:** `260823-1639_*`. My Turn 3 review annotation wrote two hard-marker
+- **Was mine, and is fixed:** `260823-1639_*_the-reconcilers-review-annotation-wrote-two-hard-marker-citations-and-one-died-one-commit-later.md_*`. My Turn 3 review annotation wrote two hard-marker
   record citations and `2ec2bc2` killed one of them a single commit later. Both now carry the
   wildcard, and a fresh scan of every review file in the only non-terminal Circle returns **zero**
   hard-marker record tokens — which restores to zero the measured repair debt that option 3 of
   `shared/decisions/260823-1414_*` is costed on. The reconciler committed the exact defect class this
   Circle spent three Turns repairing, inside the Circle, and no gate saw it because review files sit
   outside `inCorpus` — which is the subject of the decision whose cost it moved.
-- **Ordinary open work, no edge:** `260823-1640_*` (the corpus decision's `## Measured` anchor names
+- **Ordinary open work, no edge:** `260823-1640_*_the-corpus-decisions-measured-block-declares-an-anchor-whose-tree-gives-different-file-counts.md_*` (the corpus decision's `## Measured` anchor names
   `a2a18f9` while its file counts are the tree at `1544224`; every other figure in it reproduces
-  exactly, so the cost is to credibility rather than to the options) and `260823-1641_*` (a closed
+  exactly, so the cost is to credibility rather than to the options) and `260823-1641_*_the-wildcard-records-claim-that-every-other-circle-record-spells-a-hard-marker-is-false-six-already-star-it.md_*` (a closed
   record's supporting fact is false — seven records spell a hard marker, six already star it — while
   the rule it produced is right and shipped).
 
@@ -253,7 +253,7 @@ resolved on disk and still carried `_o_`.**
 **It is a fusion-wide gap and the verdict should not absorb it. Fifteen does not change that, and
 after this pass it is nine.** The judgement holds for the same reason as last time, now with the
 count re-measured: 75 open defect records and 12 open decisions already sit outside every `SCAN_*`
-key across 9 and 4 non-active Circles respectively, filed as `260823-1403_*` and unrepaired. A Circle
+key across 9 and 4 non-active Circles respectively, filed as `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md_*` and unrepaired. A Circle
 that leaves nine behind is conforming to fusion's behaviour, not deviating from it, and a Coherence
 verdict that flagged on it would be flagging the framework through whichever Circle happened to close
 next.
@@ -267,11 +267,11 @@ found later, and closure is precisely what makes that false. The `## Closure not
 
 ### The scope override, judged as the dispatch asked
 
-**The `Also seen:` line on `260823-1455_*` is honest and complete, and it does not discharge the
+**The `Also seen:` line on `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md_*` is honest and complete, and it does not discharge the
 obligation. It needs to be in the Closure note as well.** The reason is mechanical rather than a
-matter of degree: `260823-1455_*` is a Circle-scoped issue record, so at the rename it leaves the read
+matter of degree: `260823-1455_*_the-shapers-mode-3-has-no-scope-value-for-a-grounding-only-correction-and-halts-on-the-only-case-that-needs-one.md_*` is a Circle-scoped issue record, so at the rename it leaves the read
 set of every agent — taskplanner, reconciler, playmaker, curator and the orchestrator alike — which is
-exactly the finding of `260823-1403_*` two records away. The `## Closure note` sits on the Circle
+exactly the finding of `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md_*` two records away. The `## Closure note` sits on the Circle
 record, which stays reachable through `SCAN_CIRCLES`. Recording a permission override only in the
 artifact that closure strands is recording it where nothing will read it.
 
@@ -286,7 +286,7 @@ the observation that both prompts partition permission by what happens to the Di
 one gap seen twice. Carry that into the Closure note; it needs no rewriting.
 
 **Reconciliation detail:**
-`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-2130-reconciliation.md`.
+`260823-2130-reconciliation.md`.
 
 
 ## Budget
@@ -304,7 +304,7 @@ one gap seen twice. Carry that into the Closure note; it needs no rewriting.
 | Agent errors | 0 |
 | Human gates hit | 7 |
 
-The record counts are derived off the stores rather than tallied, and the derivation had to be run twice. The first run used the `SCAN_*` values `bin/fusion-paths` emits, which after the closure rename resolve to `shared/` alone: it returned 1 filed issue where 37 were filed. The gap is the one this Circle filed as `260823-1403_*`, met by the session's own closing measurement one step after the rename that caused it. The figures above come from an explicit scan of both stores.
+The record counts are derived off the stores rather than tallied, and the derivation had to be run twice. The first run used the `SCAN_*` values `bin/fusion-paths` emits, which after the closure rename resolve to `shared/` alone: it returned 1 filed issue where 37 were filed. The gap is the one this Circle filed as `260823-1403_*_closing-a-circle-removes-its-open-records-from-every-agents-scan-set-and-no-closure-step-says-so.md_*`, met by the session's own closing measurement one step after the rename that caused it. The figures above come from an explicit scan of both stores.
 
 ## Review coverage
 
@@ -317,8 +317,8 @@ Each of the four uncovered commits was measured for shipped source: `git show --
 
 ## Coherence
 
-(Appended by the reconciler at Phase 3, twice. First pass 260823-1446, verdict review-needed. Second pass 260823-2130, taken again after the Revise-Grounding branch.)
+(Appended by the reconciler at Phase 3, twice. First pass 260823-1446, verdict review-needed. Second pass 260823-2130-reconciliation.md, taken again after the Revise-Grounding branch.)
 
 ## Portfolio update
 
-`portfolio.md` regenerated by playmaker at 260823-2153; history at `shared/history/260823-2153-playmaker-orchestrator-phase4.md`. Sixteen Circle directories, all terminal, nothing to rank. C3 and C4 of the specification remain and exist as no Circle.
+`portfolio.md` regenerated by playmaker at 260823-2153-playmaker-orchestrator-phase4.md; history at `260823-2153-playmaker-orchestrator-phase4.md`. Sixteen Circle directories, all terminal, nothing to rank. C3 and C4 of the specification remain and exist as no Circle.

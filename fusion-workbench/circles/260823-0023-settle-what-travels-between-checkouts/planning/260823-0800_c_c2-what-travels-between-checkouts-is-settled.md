@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-23
 **Status:** Complete
-**Spec:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, capability `### C2`
+**Spec:** `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, capability `### C2`
 **Decidability:** The load-bearing question is *"does this project already declare a union merge driver for `fusion-workbench/orchestrator-events.jsonl`"*, and `/fusion:setup` asks it on every run. It is decidable from an input Setup can obtain. `git check-attr merge -- fusion-workbench/orchestrator-events.jsonl` returns git's own resolved attribute value rather than a guess about one, and it was verified in a scratch repository against five configurations: no `.gitattributes` at all, the exact rule line, a broader glob (`*.jsonl merge=union`), a different driver on the same path, and unrelated rules only. Each returned the correct answer. The undecidable form of the same question is the one a text search asks, *"does `.gitattributes` contain this line"*, which cannot see a broader pattern, a nested attributes file, a macro, or an `info/attributes` entry, and which therefore writes a duplicate rule whenever the driver arrived by any route but the literal one. The mechanism this plan uses is the decided question, not the predicted one. The second question the plan turns on, *"should the setup marker be written on this run"*, is decidable from two inputs Setup already holds: whether the file exists, and whether its `plugin_version` equals the version the plugin ships.
 
 ## Directive
@@ -30,7 +30,7 @@ The hook-test line budget has 287 lines left. This plan adds no test file, so it
 
 `rules/workbench-tracking.md:11` places `portfolio.md` in the records group on the ground that it is *"authored text, not machine-refreshed"*. `rules/workbench-tracking.md:12` lists the live-state group. Neither ranges over the layout tree as a partition; the file classifies root entries by one criterion (does a past version answer anything) and does not name the multi-checkout arrangement at all.
 
-`.gitignore:69` reads `# KEPT: orchestrator-events.jsonl, portfolio.md, .fusion-setup.` Three entries against four tracked ones. The omitted entry is `.asset-provenance`, which is what defect `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md` reports.
+`.gitignore:69` reads `# KEPT: orchestrator-events.jsonl, portfolio.md, .fusion-setup.` Three entries against four tracked ones. The omitted entry is `.asset-provenance`, which is what defect `260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md` reports.
 
 No `.gitattributes` exists at the repository root, re-checked at HEAD.
 
@@ -40,11 +40,11 @@ No `.gitattributes` exists at the repository root, re-checked at HEAD.
 
 ### Three findings that change what the plan has to do
 
-**The Grounding's claim that this is Setup's first write outside the workbench does not hold.** `skills/setup/SKILL.md` Step 0g already writes two files at the project root: `.claude/settings.local.json`, and an appended line in `.gitignore` when neither `.claude/` nor that path is already ignored. The property the Grounding treats as intact was already gone before this Circle opened. The decision itself is unaffected, because the user chose the behaviour rather than the reasoning, but the consequence for this plan is the opposite of a complication. Step 0g is a worked convention for exactly this kind of write, and the merge-driver step reuses it rather than inventing a second shape: read first, add only, never overwrite, never remove an existing entry, write only in the directory Setup ran in, and report the outcome in the Done report either way. The inaccurate claim is filed as `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`.
+**The Grounding's claim that this is Setup's first write outside the workbench does not hold.** `skills/setup/SKILL.md` Step 0g already writes two files at the project root: `.claude/settings.local.json`, and an appended line in `.gitignore` when neither `.claude/` nor that path is already ignored. The property the Grounding treats as intact was already gone before this Circle opened. The decision itself is unaffected, because the user chose the behaviour rather than the reasoning, but the consequence for this plan is the opposite of a complication. Step 0g is a worked convention for exactly this kind of write, and the merge-driver step reuses it rather than inventing a second shape: read first, add only, never overwrite, never remove an existing entry, write only in the directory Setup ran in, and report the outcome in the Done report either way. The inaccurate claim is filed as `260823-0800_*_the-groundings-first-write-outside-the-workbench-claim-was-already-false-when-it-was-written.md`.
 
 **The pointer condition already has a name, and the plan reuses it.** `agents/playmaker.md:95` defines `MISSING-POINTER` as *"`.active-circle` is absent but at least one `_t_` Circle exists"*, which is precisely the state a second checkout is in when it clones a Circle record marked active. `skills/next/SKILL.md:124` already renders that warning to the user. Setup's new report therefore uses the existing vocabulary and adds no second name for one condition. The single-checkout case where somebody deleted the pointer produces the same state, the same report and the same offer, so no case split is added either.
 
-**The defect this Circle closes carries a fix direction that the Circle overrules.** `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md` recommends keeping `portfolio.md` in the records group with a corrected ground. The user's answer 6 in the specification moves it to class L instead. The executor of step S1 must close that defect against the classification the Circle chose and not against the fix direction the record proposes. The step says so in its own text, because an executor that reads the record and follows it would undo the Circle's own answer.
+**The defect this Circle closes carries a fix direction that the Circle overrules.** `260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md` recommends keeping `portfolio.md` in the records group with a corrected ground. The user's answer 6 in the specification moves it to class L instead. The executor of step S1 must close that defect against the classification the Circle chose and not against the fix direction the record proposes. The step says so in its own text, because an executor that reads the record and follows it would undo the Circle's own answer.
 
 ## Approach
 
@@ -121,7 +121,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
 
 1. [DONE] **The four-class partition is written into `rules/workbench-tracking.md`**
    - Executor: `coder`
-   - Files: `rules/workbench-tracking.md`, `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`
+   - Files: `rules/workbench-tracking.md`, `260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`
    - Changes: replace the two-bullet records-versus-live-state split with the four-class partition from the specification's `## The state partition` (R1 travels with one writer per file; R2 travels and is appended by many; R3 travels and is written once or per item; L stays in the checkout). Range it over **every** entry of the layout tree in `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, including the two frozen stores a workbench may still hold, and state the tiling property: every entry falls in exactly one class, and a new root-anchored surface joins one of them in the commit that creates it. Move `portfolio.md` to class L and delete the clause calling it authored text rather than machine-refreshed. Keep the `.guard-state/` per-file split and the archive-roll paragraph, which the partition inherits rather than replaces. Add three statements this file becomes the home for: that a multi-checkout arrangement requires the project to track its workbench, and why; that `fusion-workbench/orchestrator-events.jsonl` carries a union merge driver, what the line is, why `git check-attr` is the question a mechanism asks about it, and what `/fusion:setup` does in each of the three branches; and that `.fusion-setup` is written when it is missing or when the plugin version changes rather than on every run. Close the defect with a `Resolved:` note and rename it to `_c_`.
    - **The defect's own fix direction is overruled and the note must say so.** It recommends keeping `portfolio.md` in the records group. The user's answer 6 moves it to class L. Write the `Resolved:` note against the Circle's answer and name the record's recommendation as superseded, so a later reader does not read the closure as agreement.
    - Acceptance: a reader can name the class of any entry in the layout tree from this file alone; the string "not machine-refreshed" no longer appears; the multi-checkout requirement, the merge rule and the marker write condition each appear once; the defect is `_c_` with a note that names its overruled recommendation; `npm test` is green, which includes the two citation gates over the new text.
@@ -129,7 +129,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
 
 2. [DONE] **`portfolio.md` leaves git tracking and the `KEPT:` comment names what is left**
    - Executor: `coder`
-   - Files: `.gitignore`, `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
+   - Files: `.gitignore`, `260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
    - Changes: `git rm --cached fusion-workbench/portfolio.md`, which removes it from the index and leaves the working-tree file untouched. Add `fusion-workbench/portfolio.md` to the ignored list in the `fusion-workbench` block, beside the entry for `monitor`, with the one-clause reason that it is regenerated in full on every playmaker run. Rewrite the `KEPT:` line to name the three tracked root entries exactly: `orchestrator-events.jsonl`, `.fusion-setup`, `.asset-provenance`. Leave the paragraph explaining why `.guard-state/events.jsonl` is deliberately absent from that list as it stands. Close the defect and rename it to `_c_`.
    - Acceptance: `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns exactly those three paths; `fusion-workbench/portfolio.md` still exists on disk; `git status --porcelain fusion-workbench/portfolio.md` prints nothing; the `KEPT:` line and `rules/workbench-tracking.md` name the same three entries; the defect is `_c_`.
    - Dependencies: step 1, because the comment cites the rule and the two must agree
@@ -169,13 +169,13 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
    - Executor: `coder`
    - Files: `agents/orchestrator.md`
    - Changes: two sites, and both are needed because one is the instruction and the other is the format contract. At `agents/orchestrator.md:876`, the Phase-4 step gains the instruction to sort the events by their `ts` field before building the diagram. In the Observability section's `### 3. Post-Session Sequence Diagram`, the rules list gains the same requirement with its one-clause reason: after a union merge the log is no longer in chronological order, so a positional read produces a diagram that is wrong rather than untidy.
-   - **The Turn count is out of scope and the step must not touch it.** `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` is assigned to C4. The `grep -c` at `agents/orchestrator.md:91` is order-independent in any case, so nothing here forces its repair.
+   - **The Turn count is out of scope and the step must not touch it.** `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` is assigned to C4. The `grep -c` at `agents/orchestrator.md:91` is order-independent in any case, so nothing here forces its repair.
    - Acceptance: both sites require a `ts` sort and the Observability site carries the reason; no line concerning the Turn count is modified; the `agents/` bound is measured after the edit and reported.
    - Dependencies: step 3, so that the repair lands with the mechanism that causes the disorder
 
 8. [DONE] **The two answered decision records close as implemented**
    - Executor: `coder`
-   - Files: `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`, `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
+   - Files: `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`, `260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`
    - Changes: append an `Implemented:` line to each, naming the commit and the file the answer landed in, then rename `_a_` to `_i_`. The event-log record cites the commit from step 3 and `rules/workbench-tracking.md`; the activation record cites the commit from step 5. Both cite this Circle's record for the answer, which is where the user gave it.
    - Acceptance: both files carry the `_i_` marker and an `Implemented:` line whose commit hash resolves; no other annotation is added and no existing line is edited; `npm test` is green, which includes the citation gates over the renamed paths.
    - Dependencies: steps 2, 4, 5, 6, 7
@@ -183,7 +183,7 @@ S1 points at five later steps, and the fan-out is the design rather than a sympt
 9. [DONE] **Two checkouts, a session in each, and both logs whole afterwards**
    - Executor: `analyst`
    - Files: writes to `$OUT_ANALYSIS`; files defects to `$OUT_ISSUE` if it finds any
-   - Changes: no source change. Build the harness the way C1 built its own, under a scratch directory outside this repository, with a local bare remote and two clones, and destroy it at the end. Reuse the C1 method rather than inventing one; `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope` is the worked description. Run `/fusion:setup`'s new Step 0h in each clone so the driver is declared by the mechanism under test rather than by hand. Produce session activity in each clone (appended event lines plus a record under a store), push both, pull each into the other, and account for every line.
+   - Changes: no source change. Build the harness the way C1 built its own, under a scratch directory outside this repository, with a local bare remote and two clones, and destroy it at the end. Reuse the C1 method rather than inventing one; `260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope` is the worked description. Run `/fusion:setup`'s new Step 0h in each clone so the driver is declared by the mechanism under test rather than by hand. Produce session activity in each clone (appended event lines plus a record under a store), push both, pull each into the other, and account for every line.
    - **Two questions, one harness.** The first is the last acceptance criterion: every line from both sessions present in both trees, no line lost, no hand editing. The second is the specification's open question about `bin/monitor`, which reads the same log for the dashboard and whose ETA computation walks events in file order (`computeETA` in `bin/monitor`, which pairs `task_start` with `task_done` per id and rejects orphans against the most recent `session_start` it has seen). Feed the merged out-of-order log to the monitor and report whether the dependence is real and what it costs. File a defect if it is; change no code here, because repairing `bin/monitor` is not among C2's criteria.
    - **Say what was simulated.** C1 ran no live fusion session in a second tree and said so. If this pass simulates session output rather than running an orchestrator in each clone, the report names that bound in its own `## Scope`, the way C1's did.
    - Acceptance: a report exists under `$OUT_ANALYSIS` stating, with the commands that produced it, that both trees hold every event line from both sessions; the report answers the `bin/monitor` question with evidence rather than inference; any failure is filed as a defect rather than repaired in place; the scratch tree is removed.
@@ -247,9 +247,9 @@ None. No helper signature, no exit code and no emitted key changes. `/fusion:set
 
 ## Open Questions
 
-- [ ] Does the two-checkout transport verification become a shipped check, or stay a one-off measurement per Circle? Filed as `circles/260823-0023-settle-what-travels-between-checkouts/decisions/260823-0800_*_does-the-two-checkout-transport-verification-become-a-shipped-check.md`. It binds C3 and C4, which need the same verification, and it costs hook-test lines that are scarce. This plan proceeds on the one-off reading and is not blocked on the answer.
-- [ ] Two further surfaces still classify `portfolio.md` as an authored record: `hooks/lib/staging-drift.ts` `ROOT_RECORDS`, whose comment repeats the retired ground and whose classification makes the file a staging fault, and the class table at `agents/orchestrator.md:1138`, which names it as an example of the same class. Both are out of this plan by the dispatch's own scope bound and are filed as `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`. Widening this Circle to cover them is the user's call.
-- [ ] `shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` stands open. C0 proceeded on option 1, no re-baseline, which is why the head-room figures in `## Current State` are what they are. An answer of option 3 would change the arithmetic this plan's `skills/` risk rests on, though not any step's substance.
+- [ ] Does the two-checkout transport verification become a shipped check, or stay a one-off measurement per Circle? Filed as `260823-0800_*_does-the-two-checkout-transport-verification-become-a-shipped-check.md`. It binds C3 and C4, which need the same verification, and it costs hook-test lines that are scarce. This plan proceeds on the one-off reading and is not blocked on the answer.
+- [ ] Two further surfaces still classify `portfolio.md` as an authored record: `hooks/lib/staging-drift.ts` `ROOT_RECORDS`, whose comment repeats the retired ground and whose classification makes the file a staging fault, and the class table at `agents/orchestrator.md:1138`, which names it as an example of the same class. Both are out of this plan by the dispatch's own scope bound and are filed as `260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`. Widening this Circle to cover them is the user's call.
+- [ ] `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md` stands open. C0 proceeded on option 1, no re-baseline, which is why the head-room figures in `## Current State` are what they are. An answer of option 3 would change the arithmetic this plan's `skills/` risk rests on, though not any step's substance.
 - [ ] The Grounding's claim about Setup's first write outside the workbench is inaccurate, filed as a defect. Whether the Circle record itself is corrected is the record's owner's call, not this plan's.
 
 ## Reconciliation Log
@@ -277,24 +277,24 @@ step marker changed. `_c_` and `**Status:** Complete` are both correct.**
 remaining are answered by run records in scratch trees rather than by tree state, which is correct — this
 repository cannot hold a two-checkout merge, and it still has no `.gitattributes` because Setup has not
 been re-run here since the change landed. That is a bound on the evidence, not a gap in the work, and
-`circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1410-coderev-c2-turn-3.md`
+`260823-1410-coderev-c2-turn-3.md`
 already states it.
 
 *One divergence between plan and tree, and it is in the plan's own `## Open Questions` rather than in a
 step.* The fourth bullet defers the correction of the Grounding's false first-write claim to "the record's
 owner's call" and names no deadline. The deadline exists and is the `_t_ → _c_` rename, after which
 `## Grounding snapshot` has no sanctioned writer. Filed as
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`
+`260823-1405_*_the-window-to-correct-the-groundings-false-claim-closes-with-the-circle-and-nothing-says-so.md`
 and carried into this session's `## Coherence` verdict as the flagged edge.
 
 *Review coverage, measured rather than accepted.* `bin/fusion-review-coverage` at HEAD reports
 `commits=19 reviews=3 unusable=0 uncovered=2 verdict=uncovered`. The three reviews tile `3ee8eaf..a2a18f9`;
 `1544224` and `7cd79f1` are outside every declared range. Applying the shipped-file filter of
-`shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` by
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` by
 hand, since the helper still does not carry it: `1544224` touches only `fusion-workbench/` and drops out;
 `7cd79f1` touches `rules/circle-records.md`, `hooks/lib/__tests__/workbench-citation-lint.test.ts`,
 `hooks/lib/__tests__/reference-resolution-lint.test.ts` and two goldens, and stands. That record settles
 coverage as advisory, so it does not flag a Coherence edge — it is a residual for the closure note to name.
 
 *Nothing here is a repair.* Two tracking files were corrected in this pass and both are named in
-`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-1446-reconciliation.md`.
+`260823-1446-reconciliation.md`.

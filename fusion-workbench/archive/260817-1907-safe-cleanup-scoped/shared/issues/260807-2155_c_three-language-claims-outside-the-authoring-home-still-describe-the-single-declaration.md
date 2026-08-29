@@ -6,7 +6,7 @@ Three language claims outside the authoring home still describe the single decla
 **Domain:** code
 **Filed by:** coderev, review of `b246996..HEAD` (the two-language declaration split)
 **Affects:** `README.md:117`, `hooks/session-start.ts:61-63` (mirrored in `hooks/dist/session-start.d.ts:61`), `rules/fusion-workbench-conventions.md:215`
-**Cross-references:** `fusion-workbench/shared/planning/260807-2024_c_two-language-declarations.md`; the drift already caught and removed from `CLAUDE.md` during this work (the claim that the two families shared one fallback)
+**Cross-references:** `260807-2024_*_two-language-declarations.md`; the drift already caught and removed from `CLAUDE.md` during this work (the claim that the two families shared one fallback)
 
 ---
 
@@ -92,7 +92,7 @@ statement is a judgement, not a defect — but the count is the reason the same 
 finding keeps appearing.
 
 ---
-Resolved: All three fixed in Turn 2 of session 260807-2020. `README.md:117` no longer opens with a
+Resolved: All three fixed in Turn 2 of session 260807-2020-orchestrator-session.md. `README.md:117` no longer opens with a
 clause that is true only under a condition the rest of the sentence introduces; a reader stopping at
 the semicolon now gets the post-split rule. `hooks/session-start.ts` stops claiming what the
 declaration governs and instead classifies its own subject as one of the exempt surfaces, which ends

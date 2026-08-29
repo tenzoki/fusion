@@ -9,7 +9,7 @@ next field access. The throw escapes to `hooks/tracker.ts:532`, which calls
 `respond()` with no argument, discarding the protected-path halt message the
 same tool call had already produced.
 
-This is the identical defect that `260802-2334_c` closed for `escalation.json`.
+This is the identical defect that `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md_c` closed for `escalation.json`.
 The fix was applied to one of the three state modules.
 
 ---
@@ -61,7 +61,7 @@ Two amplifiers. The state file is never repaired, because `saveChurn` at
 `hooks/tracker.ts:480` sits after the throw, so every subsequent tool call in
 the project takes the same path until a human deletes the file. And the one
 event that is emitted, `guard_error` at `hooks/tracker.ts:534`, is not rendered
-by the dashboard (`260804-1607_c`), so the condition is invisible there too.
+by the dashboard (`260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md_c`), so the condition is invisible there too.
 
 ---
 
@@ -71,23 +71,23 @@ from a single malformed file that no code path repairs.
 Fix direction: give both modules a `coerceState` equivalent modelled on
 `hooks/lib/escalation.ts:109-127` — require an object, default `files` to `{}`,
 default the scalar fields. The analysis
-`shared/analyses/260809-1101-guard-support-layer.md` recommends landing this
+`260809-1101-guard-support-layer.md` recommends landing this
 together with target C2 (one shared state-file helper carrying the coercion
 seam), so the third copy of the pattern cannot drift again.
 
 Cross-references:
-`shared/analyses/260809-1101-guard-support-layer.md` (findings 1 and 5);
-`circles/260801-1244-guard-rules-write/issues/260802-2334_c_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`;
-`circles/260801-1244-guard-rules-write/issues/260804-1607_c_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`;
+`260809-1101-guard-support-layer.md` (findings 1 and 5);
+`260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`;
+`260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`;
 `rules/protected-path-discipline.md`.
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Untouched by the defect round.**
 The six commits `451a07e..fb262d8` touch `hooks/tracker.ts`, `hooks/lib/protected-snapshot.ts`, `hooks/lib/git-branch-guard.ts` and the new `hooks/lib/reverted-copy.ts`. `hooks/lib/config.ts`, `hooks/lib/churn.ts`, `hooks/lib/cross-file.ts` and `hooks/lib/escalation.ts` are not in the diff, so every line this record cites still reads as filed and its acceptance criteria are unmet.
 
 ---
-Resolved (260809-1811, coder — marker left at `_p_` for the orchestrator to close after its own validation):
+Resolved (260809-1811-coerce-guard-state-files.md, coder — marker left at `_p_` for the orchestrator to close after its own validation):
 
 Both loaders now coerce. The fix took the shared route the record and analysis C2 asked for rather than a second and third private copy: `hooks/lib/guard-state-file.ts` holds the resolve-read-coerce-write seam plus three coercion primitives, and the coercion is a PARAMETER of the load, so absence, unparseable text and a shape-valid value of the wrong type are one answer and neither state module has anywhere left to put an `as` cast. `hooks/lib/churn.ts` supplies `coerceChurnState`, `hooks/lib/cross-file.ts` supplies `coerceCrossFileState`; both round-trip a well-formed file unchanged.
 
@@ -95,4 +95,4 @@ Both loaders now coerce. The fix took the shared route the record and analysis C
 
 Verification: `hooks/lib/__tests__/guard-state-shape.test.ts` drives both hooks through the harness against a project seeded with a malformed state file, and asserts the halt sentence still reaches stdout. Checked against the pre-fix sources first — 8 of its 16 cases fail there with `[tracker] Error: TypeError: Cannot read properties of undefined`, which is the defect as filed. `npm test` in `hooks/` is green at 1113 tests, and the new file also passes with `FUSION_GUARD_ENTRY=dist`, against the compiled `dist/tracker.js`.
 
-The monotonic-latch defect in the same two modules (`260809-1101_o_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`) was deliberately not touched: it is queued separately and blocked on a human decision.
+The monotonic-latch defect in the same two modules (`260809-1101_*_churn-and-cross-file-criticals-latch-permanently-and-never-reset.md`) was deliberately not touched: it is queued separately and blocked on a human decision.

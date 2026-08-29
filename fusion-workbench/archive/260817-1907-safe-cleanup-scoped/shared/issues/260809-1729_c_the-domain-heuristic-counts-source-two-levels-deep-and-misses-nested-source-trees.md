@@ -32,7 +32,7 @@ levels down; the heuristic saw 13 files where the tree holds roughly 17 500. The
 overrode the verdict to `code` by hand and recorded the correction in its session log, which
 is the right handling of a bad number and not a substitute for fixing it.
 
-**Reproduced in fusion's own repository**, this session (`260809-1725`, workbench domain
+**Reproduced in fusion's own repository**, this session (`260809-1725-orchestrator-session.md`, workbench domain
 detection): a `find` bounded at `-maxdepth 2` returned `code_files = 4`. The TypeScript hook
 sources under `hooks/lib/` and their tests under `hooks/lib/__tests__/` are at depths three
 and four and were not counted. Here the misreading did not change the outcome — no branch
@@ -63,15 +63,15 @@ Depth and breadth are independent defects with one shared consequence, and a fix
 addresses either alone still misreports.
 
 **The counting mechanism is a decision, not an implementation detail:**
-`shared/decisions/260809-1731_o_how-should-the-domain-heuristic-count-a-projects-source-files.md`.
+`260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`.
 Settle it before writing the fix.
 
 ---
 Resolved: duplicate. The depth defect was already filed on 260807 as
-`shared/issues/260807-1951_o_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md`,
+`260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md`,
 with better evidence (a measured Cargo workspace, 0 counted against 90 present) and the same
 affected line. This record was filed without checking the store first, which is the failure
-`circles/260801-1244-guard-rules-write/issues/260805-1548_o_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
+`260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
 describes. The two points that were genuinely new here, the breadth gap in the extension list
 and the mirror-image defect in `data_files`, were carried across to that record under
 `## Nachtrag 260809`, together with the `git ls-files` measurement. Nothing is lost by closing

@@ -7,8 +7,8 @@
 **Filed by:** analyst, independent assessment A1 of C5b
 **Affects:** `hooks/lib/config.ts:240` (`return { raw: parsed as RawConfig, ... }` — a cast, not a check), `:286-292` (the floor, which calls `.includes` and spreads the value), `hooks/lib/paths.ts:89-91` (`foldCase` calls `.toLowerCase` on each pattern)
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md` `### What a consuming project can now do to itself`,
-`circles/260801-1244-guard-rules-write/issues/260802-2334_c_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` — **the same finding, on the same code path, closed in this Circle, not carried across to the new file**
+`260804-1600-c5b-independent-assessment.md` `### What a consuming project can now do to itself`,
+`260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` — **the same finding, on the same code path, closed in this Circle, not carried across to the new file**
 
 ---
 
@@ -19,7 +19,7 @@
 consumed by `declaredPaths.includes(...)`, by `[...declaredPaths]`, and then by
 `matchesAnyFolded`, which maps `foldCase` over every element.
 
-Issue `260802-2334_c_` found exactly this class for `escalation.json` and closed it. Its own
+Issue `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` found exactly this class for `escalation.json` and closed it. Its own
 summary line reads: *"Every row that fails open is well-formed JSON."* C5b then created a
 second file on the same code path — larger, project-writable, git-tracked, and actively
 seeded into every project by `/fusion:setup` — with no validation at all.
@@ -55,14 +55,14 @@ typo of the four and it is the one with no signal.
 
 `guard_error` at least reaches `events.jsonl`. It is not in `bin/monitor`'s
 `WARNING_EVENT_TYPES`, so a permanently fail-open guard shows nothing on the dashboard —
-filed separately as `260804-1607_o_`.
+filed separately as `260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md`.
 
 ## For completeness, the values that behave
 
 Checked and harmless, recorded so the fix is not scoped wider than it needs to be:
 `protectedPaths: null` (nullish, falls back to `DEFAULTS`), `enabled: "false"` (truthy, so the
 guard stays on — though the surrounding `guard` object still empties the list, which is
-`260804-1601_o_`), `blocksBeforeHalt: "3"` (JS coerces in the `>=` comparison, halt fires at
+`260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`), `blocksBeforeHalt: "3"` (JS coerces in the `>=` comparison, halt fires at
 three), and `decisions: "nope"` (iterated as characters, no category matches).
 
 ## Suggested direction
@@ -80,4 +80,4 @@ The fix is a validation function and a handful of unit cases in `config.test.ts`
 integration case per row above.
 
 The plugin layer should get the same treatment. It is protected, so it is a smaller risk, but
-`260802-2334_c_` is the standing proof that "this file is protected" has not been enough.
+`260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` is the standing proof that "this file is protected" has not been enough.

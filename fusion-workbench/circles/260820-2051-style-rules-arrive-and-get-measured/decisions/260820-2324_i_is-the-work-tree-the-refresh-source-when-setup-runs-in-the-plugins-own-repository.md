@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner
-**Cross-references:** `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` (part (c), unanswered and never filed), `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md` (correction 5 of the appended binding section), `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md` (finding F5)
+**Cross-references:** `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` (part (c), unanswered and never filed), `260820-2249_*_spec-style-rules-arrive-and-get-measured.md` (correction 5 of the appended binding section), `260820-2308-assessment-of-the-style-rules-spec.md` (finding F5)
 
 ---
 
@@ -18,7 +18,7 @@ never the work tree.
 It also states something the project has deliberately not decided. `CLAUDE.md` says of
 `bin/fusion-source-root` that it roots reads of shipped **text** only, and that an asset a skill copies
 is still taken from `$FUSION_PLUGIN_ROOT`, with the wider question recorded as part (c) of decision
-`260810-1544`. That part has been unanswered since 2026-08-10, has never been filed as its own record
+`260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`. That part has been unanswered since 2026-08-10, has never been filed as its own record
 as its parent instructs, and four shipped surfaces tell their reader not to assume it.
 
 Two questions therefore sit together and should be separated. Does the C1 comparison read the work tree
@@ -52,7 +52,7 @@ in this repository? And does answering that answer part (c)?
   overrule the correction rather than the planner to ignore it.
 - Whatever is decided, `CLAUDE.md`'s `bin/fusion-source-root` row and its "an asset a skill copies"
   clause are read by a later author as the statement of record and must match what ships.
-- A call to `bin/fusion-source-root` is guarded with `[ -x ]`, per part (b) of `260810-1544`, which is
+- A call to `bin/fusion-source-root` is guarded with `[ -x ]`, per part (b) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`, which is
   answered and realised.
 
 ## Recommendation
@@ -70,7 +70,7 @@ Superseded by:
 
 ---
 
-**Reconciliation 260825-1241 (reconciler, domain `code`, HEAD `cfab17e`).** Option 1 is on disk and
+**Reconciliation 260825-1241-reconciliation.md (reconciler, domain `code`, HEAD `cfab17e`).** Option 1 is on disk and
 the record never recorded it. `skills/setup/SKILL.md` Step 0e resolves its comparison root through
 `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-source-root" ] && SRC="$(...)"` in all three of its bash blocks
 — the classification block, the replace block and the stamp block — with the `source-root-unresolved`

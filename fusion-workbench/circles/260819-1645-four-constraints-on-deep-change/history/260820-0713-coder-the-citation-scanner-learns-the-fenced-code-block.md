@@ -2,9 +2,9 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260819-1645-four-constraints-on-deep-change`
+**Circle:** `260819-1645-four-constraints-on-deep-change`
 **Step:** 9a — not in the plan; follows from the user's answer at the foot of
-`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`
+`260820-0530_*_twenty-six-citations-in-the-corpus-are-statements-rather-than-pointers-and-no-exemption-expresses-that.md`
 **HEAD at start:** `46133dc`
 
 ---
@@ -166,7 +166,7 @@ is rewritten. Measured, not estimated.** Both are in one record:
 
 | record | line | what stands there |
 |---|---|---|
-| `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` | 17 | a `grep -rl` command inside a fenced block |
+| `260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` | 17 | a `grep -rl` command inside a fenced block |
 | the same record | 77 | a `grep -ro` command inside a fenced block |
 
 Both were already in the shape the answer prescribes — a verbatim transcript already living in a

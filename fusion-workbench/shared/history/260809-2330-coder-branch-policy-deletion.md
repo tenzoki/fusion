@@ -6,7 +6,7 @@
 **Task:** user-direct — delete the branch policy outright (Part A) and remove `skills/**` from
 `guard.protectedPaths` (Part B). Not committed: left in the working tree by instruction.
 
-**Governing decision:** `shared/decisions/260809-2310_a_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md`
+**Governing decision:** `260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md`
 — answered by the user with a fifth option that none of the four on the record carried: delete,
 do not re-engineer.
 
@@ -105,19 +105,19 @@ two env variables no longer do anything.
 
 ## Records
 
-- `shared/decisions/260809-2310` `_o_`→`_a_`. The answer is recorded as a fifth option, with the
+- `260809-2310` `_o_`→`_a_`. The answer is recorded as a fifth option, with the
   record's own recommendation (option 1, measure HEAD) left standing unedited above it.
-- `shared/issues/260809-2300` `_o_`→`_c_`, by deletion rather than by a fix — the seventh
+- `260809-2300` `_o_`→`_c_`, by deletion rather than by a fix — the seventh
   entrance, which stayed open on purpose waiting for exactly this decision.
-- `shared/issues/260809-1942` `_o_`→`_c_`. Its substance is closed: the rule's enumeration now
+- `260809-1942` `_o_`→`_c_`. Its substance is closed: the rule's enumeration now
   matches the shipped list on both counts, the `.claude/rules/**` it was filed about and the
   `skills/**` this change removed.
 
 ## Left open, deliberately
 
-`shared/issues/260809-2255` — the live `.guard-state/escalation.json` in this repository still
+`260809-2255` — the live `.guard-state/escalation.json` in this repository still
 reads `haltActive: true, consecutiveBlocks: 24`, left by the deleted policy denying the agents'
 own verification commands. The cause can no longer recur, and the halt is inert here (the write
 guard stands down before the halt check is reached), but clearing it is a state change nobody
-asked for and it is entangled with `260809-2049`, an open defect in `clear-halt` itself. The
+asked for and it is entangled with `260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md`, an open defect in `clear-halt` itself. The
 user's call.

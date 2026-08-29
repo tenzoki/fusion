@@ -6,7 +6,7 @@
 **Domain:** code
 **Filed by:** coderev, review of `b246996..HEAD` (the two-language declaration split)
 **Affects:** `bin/fusion-rules:278-285` (`declared_lang`), and the three places that describe it wrongly: `rules/fusion-workbench-conventions.md:193`, `bin/fusion-rules:129-133` (header block), `bin/fusion-rules:264-266` (function docblock). One test case, `hooks/lib/__tests__/rules-voice-profile.test.ts:245-252`, asserts the wrong generalisation and passes for a narrower reason than its title claims.
-**Cross-references:** `fusion-workbench/shared/planning/260807-2024_c_two-language-declarations.md`; `fusion-workbench/shared/decisions/260807-1515_i_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+**Cross-references:** `260807-2024_*_two-language-declarations.md`; `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
 
 ---
 
@@ -106,7 +106,7 @@ so nothing is broken. The docblock at `:259` invites reuse ("e.g. `Language` or
 to metacharacter-free literals costs nothing and closes it.
 
 ---
-Resolved: Fixed in Turn 2 of session 260807-2020. The extraction in `declared_lang` no longer
+Resolved: Fixed in Turn 2 of session 260807-2020-orchestrator-session.md. The extraction in `declared_lang` no longer
 decides which values are supported: the `sed` now strips the label and trailing whitespace and
 nothing else, so the `case "$extracted" in en|de)` that was already there sees the whole value and
 becomes the single place the supported set lives. The reviewer's option (a) was considered and not

@@ -2,8 +2,8 @@
 
 **Agent:** coder
 **Date:** 2026-08-17
-**Circle:** `circles/260816-1741-guard-becomes-observation-only`
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` step 14
+**Circle:** `260816-1741-guard-becomes-observation-only`
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 14
 **Status:** Complete
 **Base:** `e489133`
 
@@ -69,10 +69,10 @@ configuration — git-tracked, so commit it)". Setup seeds `fusion.json`
 guard configuration left to seed. The line sits 37 lines above `README.md:104`, which states the
 current shape correctly, and 44 above `:111`, which tells the reader the old file is retired and to
 delete it. It is invisible to `reference-resolution-lint`, because a bare filename with no
-directory is not a path — the same limit issue `260816-2321` records in two other places.
+directory is not a path — the same limit issue `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md` records in two other places.
 
 Filed as
-`circles/260816-1741-guard-becomes-observation-only/issues/260817-1105_o_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md`
+`260817-1105_*_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md`
 rather than fixed in passing: it is outside this step's task, even though the file is in this step's
 Files list.
 
@@ -80,5 +80,5 @@ Files list.
 
 No tag, no push, no marketplace edit. The plan's `## Where this Circle stops` puts all three behind
 a user gate after step 15 and after the review pass, on this project's own precedent
-(`shared/issues/260810-1618_o_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`).
+(`260810-1618_*_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`).
 Nothing was committed; the orchestrator commits.

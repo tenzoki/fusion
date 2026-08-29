@@ -35,11 +35,11 @@
 #   - Every agent reads fusion-workbench-conventions.md (shipped by plugin).
 #   - The decision-transition agents (orchestrator, shaper, playmaker,
 #     planner, reconciler) additionally read decision-record-examples.md —
-#     the worked marker transitions; audience decided at 260827-0830, when
+#     the worked marker transitions; audience decided at 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md, when
 #     the always-on floor could no longer carry the tutorial.
 #   - The user-read agents (orchestrator, consultant, playmaker, shaper,
 #     editor, curator) additionally read user-facing-output.md — the full
-#     user-facing style contract (gate 260827-0910); everyone else carries
+#     user-facing style contract (gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md); everyone else carries
 #     the chat profile's anti-patterns via agent-setup.md.
 #   - Every agent also reads critical-stance.md (shipped by plugin) —
 #     the epistemic norms governing reasoning substance (not formatting):
@@ -70,7 +70,7 @@
 #       ontocoder, ontorev        → *ontology*.md, *normative*.md, *verb*.md
 #       planner                   → *coding*.md, *ontology*.md
 #   - The editor additionally reads project-language.md and the playmaker
-#     backlog-entries.md (decision 260827-1056); agents matching none of the
+#     backlog-entries.md (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md); agents matching none of the
 #     conditions above get the always-on core alone.
 #
 # Optional topic-scoped loading (the context manifest):
@@ -174,7 +174,7 @@ case "$AGENT" in
   planner)                        PATTERNS="coding ontology" ;;
   # `analyst` carries its own pattern so a SMALL project-local rule reaches it by
   # filename, the way ./rules/investigator-*.md reached the investigator before
-  # step 8 of Circle 260815-0007 folded that agent in here. Deliberately the one
+  # step 8 of Circle 260815-0007-remove-eight-mechanisms-and-cap-growth folded that agent in here. Deliberately the one
   # bare token `analyst` and not also `analysis`: `*analysis*.md` would sweep up a
   # project's own gap-analysis or impact-analysis documents, which are subject
   # matter rather than agent configuration. The context manifest stays the
@@ -183,7 +183,7 @@ case "$AGENT" in
   # ./rules/investigator-capture-layout.md does NOT match this pattern and is not
   # meant to: docs/upgrading-to-v9.md §4 tells such a project to rename it or
   # register it in the manifest. Decision
-  # circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md,
+  # 260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md,
   # option 3 (both), answered by the user 2026-08-20.
   analyst)                        PATTERNS="analyst" ;;
   orchestrator|shaper|taskplanner|reconciler|consultant|playmaker|editor|curator)
@@ -245,7 +245,7 @@ esac
 
 # Decision-transition-agent flag — the agents that perform or plan decision
 # marker transitions and therefore read the worked examples (audience decided
-# at the 260827-0830 user gate; the vocabulary itself stays always-on).
+# at the 260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md user gate; the vocabulary itself stays always-on).
 case "$AGENT" in
   orchestrator|shaper|playmaker|planner|reconciler) IS_DECISION_TRANSITION_AGENT=1 ;;
   *)                                                IS_DECISION_TRANSITION_AGENT=0 ;;
@@ -256,7 +256,7 @@ esac
 # (briefings), shaper (clarification rounds), editor (deliverable chat) and
 # curator (the gate ledger reports). They carry the full user-facing style
 # contract. The nine that report to the orchestrator do not: measured before
-# the 260827-0910 user gate, they took ~95 % of all dispatches and carried
+# the 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md user gate, they took ~95 % of all dispatches and carried
 # 20 KB of gate-prompt and chat-format doctrine per dispatch without ever
 # holding a gate or a chat. Their replacement is two sentences in
 # agent-setup.md: the chat profile's anti-patterns still bind every line a
@@ -373,7 +373,7 @@ emit_voice_profile() {
   # resolved directly, asserting stderr is empty. The emission golden
   # (`rules-emission-golden.test.ts`) cannot observe this function at all: it
   # runs from an empty working directory, where both `[ -f ]` guards fail and
-  # nothing is emitted on either stream (issue 260821-0142). That contract is
+  # nothing is emitted on either stream (issue 260821-0142_*_the-voice-profile-fallback-commit-cites-a-golden-that-cannot-observe-the-code-it-changed.md). That contract is
   # why the signal goes to the other stream rather than into a new line format.
   # English, per `rules/fusion-workbench-conventions.md` `## Project language`:
   # CLI operator strings are an exempt surface.
@@ -469,7 +469,7 @@ emit_if_exists "$PLUGIN_RULES_DIR/fusion-workbench-conventions.md"
 emit_if_exists "$PLUGIN_RULES_DIR/critical-stance.md"
 
 # 1b3. The full user-facing style contract goes to the agents the user reads
-#      directly (the IS_USER_FACING_AGENT case above; gate 260827-0910). For
+#      directly (the IS_USER_FACING_AGENT case above; gate 260827-0910_*_does-every-dispatch-carry-the-full-user-facing-style-contract.md). For
 #      everyone else, agent-setup.md `## Voice profiles` carries the two
 #      sentences that still bind them.
 if [ "$IS_USER_FACING_AGENT" -eq 1 ]; then
@@ -482,8 +482,8 @@ fi
 #      Every agent still files records and still carries the marker VOCABULARY
 #      (fusion-workbench-conventions.md, always-on); what leaves the always-on
 #      floor is the tutorial. Audience change decided at the user gate,
-#      `shared/decisions/260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md`,
-#      when critical-stance §5 (decision 260826-1252) had to land on a floor
+#      `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md`,
+#      when critical-stance §5 (decision 260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md) had to land on a floor
 #      872 bytes past its hard budget. The pointer at the template site in
 #      fusion-workbench-conventions.md is how every other agent reaches it.
 if [ "$IS_DECISION_TRANSITION_AGENT" -eq 1 ]; then
@@ -552,7 +552,7 @@ if [ "$AGENT" = "orchestrator" ]; then
 fi
 
 # 1e2. Two partitioned conventions topics go to the one agent each whose act
-#      they govern (decision 260827-1056): the language cascade's full text to
+#      they govern (decision 260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md): the language cascade's full text to
 #      the editor, whose deliverable-language halt lives in it, and the backlog
 #      maintenance mandate to the playmaker, the store's one maintainer. The
 #      operative cores stay always-on in fusion-workbench-conventions.md.

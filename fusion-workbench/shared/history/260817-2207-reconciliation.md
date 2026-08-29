@@ -1,4 +1,4 @@
-# Reconciliation — session 260817-2037, final pass
+# Reconciliation — session 260817-2037-orchestrator-session.md, final pass
 
 **Status:** Complete
 **Date:** 2026-08-17
@@ -23,7 +23,7 @@ annotated in place.
 | | Reviewed | Updated |
 |---|---|---|
 | Plans (`shared/planning/`) | 3 | 0 |
-| Defects touched by this session | 6 | 1 (evidence appended to `260817-2131`) |
+| Defects touched by this session | 6 | 1 (evidence appended to `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`) |
 | Decisions (`shared/decisions/` + `circles/*/decisions/`) | 28 active (`_o_`/`_a_`) | 0 |
 | Reviews | 2 | 2 (annotated) |
 | New defects filed | — | 1 |
@@ -52,9 +52,9 @@ is f38f37d, where a `git add -u` over a directory of renamed records staged thre
 added nothing". The generalisation over every loosening is gone; the commit hash stays, which is
 correct for a `bin/` header that reaches no consuming session.
 
-**The source comments kept their identifiers, as `260817-2110` said they would.**
+**The source comments kept their identifiers, as `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` said they would.**
 `hooks/lib/review-coverage.ts:2,670` still cite `260810-1205`; `hooks/lib/staging-drift.ts:2,29,81,251,366,616`
-still cite `260811-0114`, `260811-1141` and `f38f37d`. The split the user's gate chose — instruction
+still cite `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`, `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` and `f38f37d`. The split the user's gate chose — instruction
 emitted, provenance kept in source — holds at HEAD.
 
 **The suite is green and the build is current.** `npm test` in `hooks/`: 35 files, 653 tests, exit 0.
@@ -78,7 +78,7 @@ third review pass"). **No review file claims a range it did not open**: both dec
 `**Reviewed-range:**` that tiles exactly the commit it names, both declare `**Not-opened:** none`,
 and `unusable=0` says neither declaration failed to parse.
 
-**One standing obligation follows from it.** `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+**One standing obligation follows from it.** `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 was answered "options 3 then 1: keep coverage advisory with the gap named in the closure note". The
 answer is recorded and not realised (option 3, filtering the uncovered set to commits touching
 shipped files, is absent from `hooks/lib/review-coverage.ts`), but option 1 is the standing
@@ -90,19 +90,19 @@ discharges that.
 
 ### 1. A closed record states a judgement the next Turn reversed, and every citation points backward
 
-Filed as `shared/issues/260817-2207_o_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
+Filed as `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`.
 
 `260817-2130_c_`'s `Resolved:` note ends "The quoted git pathspec glob is not named separately: it
 behaves as the directory argument does and is already routed there". `307a696` reversed that on the
 reviewer's counter-argument, and the record carries no pointer to the reversal.
-`shared/history/260817-2138-coder-staging-sentence-per-shape-justification.md` §1 carries the same
+`260817-2138-coder-staging-sentence-per-shape-justification.md` §1 carries the same
 withdrawn paragraph, likewise unlinked.
 
-`shared/history/260817-2155-coder-quoted-glob-clause-and-wrapper-header.md` states the supersession
+`260817-2155-coder-quoted-glob-clause-and-wrapper-header.md` states the supersession
 and explains the non-edit: the disagreement is "carried by `260817-2147`'s cross-reference to them,
 which is where a reader meets it". A `grep -rn "260817-2130"` over the repository at HEAD shows why
 that does not hold — every one of the eight citing sites points **at** `260817-2130`, and the record
-points nowhere. The two most likely entrances make it worse: `260817-2132_c_` and the wrapper-header
+points nowhere. The two most likely entrances make it worse: `260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md` and the wrapper-header
 record both cross-reference `260817-2130` without naming `260817-2147`.
 
 The structural cause is that the issues vocabulary has no supersession. Decisions have
@@ -110,7 +110,7 @@ The structural cause is that the issues vocabulary has no supersession. Decision
 carries the fork (annotate, or say in the conventions that a `Resolved:` note is not maintained) and
 the instruction not to hand-fix before it is answered.
 
-### 2. `260817-2131` is genuinely open, and now says why
+### 2. `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` is genuinely open, and now says why
 
 Verified rather than assumed: no test in `hooks/lib/__tests__/` drives either sentence builder and
 asserts on the returned string's identifiers, and `reference-resolution-lint.test.ts` still registers
@@ -135,9 +135,9 @@ in flight at Phase 3:
 
 - `fusion-workbench/agentstate.yaml` (`# Updated: 260817-2142`) stops at Turn 2. `control.turn_start_head`
   reads `6b6436d`, `current_task` is `T2`, and `work_queue` holds `T1` and `T2` only. Turn 3 ran
-  after it (`shared/history/260817-2155-…`) and is absent. An interrupted-session resume would have
+  after it (`260817-2155-…`) and is absent. An interrupted-session resume would have
   replayed from a stale anchor.
-- `shared/history/260817-2037-orchestrator-session.md` still says
+- `260817-2037-orchestrator-session.md` still says
   `**Directive:** (not yet stated — session started with /fusion:setup; awaiting the user's task)`,
   `**Status:** In progress`, and its `## Session log` holds one line, "Setup complete." None of the
   three Turns is logged there.
@@ -160,21 +160,21 @@ Two classes surfaced during the scan that a reconciliation pass could have "fixe
 - **Six of the 24 active decision records in `shared/decisions/` carry a `**Status:**` header that
   disagrees with their filename marker** (all six read `open` under an `_a_` marker, and all six
   carry a filled `Answered:` line, so the marker is right and the field is stale).
-  `shared/issues/260811-2146_o_…` owns this class and says in terms: do not hand-correct, the
+  `260811-2146_*_…` owns this class and says in terms: do not hand-correct, the
   disagreements are the measurement for the open question of whether the field should exist. Left
   alone. Nothing this session did changed the population.
-- **`shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`
+- **`260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`
   is answered against a mechanism that no longer exists.** `f45f76a` deleted
   `hooks/lib/__tests__/state-drift-detection-lint.test.ts` along with the rest of the state-drift
   machinery, so the pin can never be written and `_a_`→`_i_` is unreachable. This is already tracked:
-  `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+  `260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
   names this record as one of its two instances. No new record filed, no marker moved.
 
 ## Files updated by this pass
 
-- `shared/issues/260817-2207_o_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md` — new
-- `shared/issues/260817-2131_o_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` — reconciliation section appended, marker unchanged
-- `shared/reviews/260817-2130-coderev-turn-1-range-82a860d-bd2db5c.md` — annotation appended
-- `shared/reviews/260817-2147-coderev-turn-2-range-bd2db5c-6b6436d.md` — annotation appended
-- `shared/history/260817-2037-orchestrator-session.md` — `## Coherence` section appended
-- `shared/history/260817-2207-reconciliation.md` — this file
+- `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md` — new
+- `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` — reconciliation section appended, marker unchanged
+- `260817-2130-coderev-turn-1-range-82a860d-bd2db5c.md` — annotation appended
+- `260817-2147-coderev-turn-2-range-bd2db5c-6b6436d.md` — annotation appended
+- `260817-2037-orchestrator-session.md` — `## Coherence` section appended
+- `260817-2207-reconciliation.md` — this file

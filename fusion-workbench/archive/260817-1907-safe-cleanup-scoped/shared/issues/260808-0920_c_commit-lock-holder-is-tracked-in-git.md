@@ -20,7 +20,7 @@ It became tracked because this repository is the one place where
 the exclusion commented out). A `git add` of the workbench that runs while a
 commit is in flight sweeps the holder file in with the artifacts. That is the
 same shape as the already-filed stash hazard in
-`shared/issues/260717-0030_o_git-stash-include-untracked-can-sweep-the-stash-directory.md`:
+`260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`:
 a transient root-anchored surface caught by a broad stage in a tracked
 workbench.
 
@@ -37,7 +37,7 @@ held, and `bin/fusion-commit-lock check` reports `not held`.
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Neither part of the fix has been applied.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Neither part of the fix has been applied.**
 `git ls-files fusion-workbench/.commit-lock/` still returns `fusion-workbench/.commit-lock/holder`, so part 1 (`git rm --cached`) has not run; the path shows as ` D` in the working tree only, which is the deletion this record already describes and not its removal from the index. `.gitignore` carries no `fusion-workbench/.commit-lock/` entry, so part 2 has not run either. The broader question the record raises — whether `.session-marker`, `.active-circle` and `.guard-state/` belong in the same pass — is answerable now with one observation: `.session-marker` and `agentstate.yaml` are both untracked and show as `??`, while `.guard-state/` is tracked and its four files are modified on every session. So the same sweep hazard applies to `.guard-state/` today, with the difference that its churn is continuous rather than transient.
 
 ---
@@ -53,8 +53,8 @@ Six paths were untracked in the commit below: `.commit-lock/holder`, the three `
 
 Two mechanical points that were measured rather than assumed. Every pattern is anchored at the repository root (`fusion-workbench/...`) so the copies inside `stashes/<id>/` stay tracked — an unanchored `agentstate.yaml` would have taken the stash copies with it. And directories are written `dir/*` rather than `dir/`, verified in a throwaway repository: with `d/*` a later `!d/keep` works, with `d/` it does not, which is the pattern rule `CLAUDE.md` records.
 
-**The second half, which two other tasks were waiting on.** The answer is stated in `rules/fusion-workbench-conventions.md` § "Which of them a tracked workbench tracks", directly under the enumeration of root-anchored surfaces, with the two consequences that hang on it: nothing in the ignored group survives a fresh clone, so no skill may promise that git holds the bytes (`260801-1020` archive durability); and an ignored path is skipped by `git stash --include-untracked` but not by `git stash --all` or `git clean -xdf` (`260717-0030` stash sweep). It was placed in the conventions rather than in `rules/workbench-stash-and-lock.md` because the latter is emitted to the orchestrator only, while both dependent tasks route to `coder`, which receives the conventions.
+**The second half, which two other tasks were waiting on.** The answer is stated in `rules/fusion-workbench-conventions.md` § "Which of them a tracked workbench tracks", directly under the enumeration of root-anchored surfaces, with the two consequences that hang on it: nothing in the ignored group survives a fresh clone, so no skill may promise that git holds the bytes (`260801-1020` archive durability); and an ignored path is skipped by `git stash --include-untracked` but not by `git stash --all` or `git clean -xdf` (`260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md` stash sweep). It was placed in the conventions rather than in `rules/workbench-stash-and-lock.md` because the latter is emitted to the orchestrator only, while both dependent tasks route to `coder`, which receives the conventions.
 
 Cost stated: 2151 bytes in a file every agent loads on every dispatch.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (task T15).
+Session: `260810-0241-orchestrator-session.md` (task T15).

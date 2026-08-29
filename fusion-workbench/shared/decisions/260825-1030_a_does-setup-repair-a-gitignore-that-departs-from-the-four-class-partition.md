@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** user, Kai Stalmann <ks@qantr.com>
-**Cross-references:** shared/issues/260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md; rules/workbench-tracking.md `## The four classes`; shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md
+**Cross-references:** 260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md; rules/workbench-tracking.md `## The four classes`; 260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md
 
 ---
 
@@ -69,4 +69,4 @@ a project that had a reason. That question needs its own record before the repai
 built, because the shape of the repair depends on it.
 
 ---
-Answered: this record `## Answer` — Setup repairs the mismatch rather than reporting it, and the check lives in Setup rather than in the archive step. Stated by the user 2026-08-25 in session `shared/history/260825-0858-orchestrator-session.md`.
+Answered: this record `## Answer` — Setup repairs the mismatch rather than reporting it, and the check lives in Setup rather than in the archive step. Stated by the user 2026-08-25 in session `260825-0858-orchestrator-session.md`.

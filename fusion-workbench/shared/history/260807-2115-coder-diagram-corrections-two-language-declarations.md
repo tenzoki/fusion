@@ -4,8 +4,8 @@
 **Agent:** coder
 **Status:** Complete
 **Task:** T0 — documentation-only edit to one plan file
-**Source:** `fusion-workbench/shared/reviews/260807-2035-conceptrev-plan-two-language-declarations.md`
-**Target:** `fusion-workbench/shared/planning/260807-2024_o_two-language-declarations.md`
+**Source:** `260807-2035-conceptrev-plan-two-language-declarations.md`
+**Target:** `260807-2024_*_two-language-declarations.md`
 
 ## What changed
 

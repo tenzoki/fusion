@@ -4,9 +4,9 @@
 **Domain:** code
 **Filed by:** planner
 **Cross-references:**
-`circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` (the plan this question was surfaced by, step 4 and step 6);
-`shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` (the identity answer this question sits under);
-`circles/260824-0530-record-attribution-and-circle-claim/_t_circle.md` `## Grounding snapshot` (the user's instruction, "with no git configuration the run halts rather than guessing");
+`260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` (the plan this question was surfaced by, step 4 and step 6);
+`260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` (the identity answer this question sits under);
+`260824-0530-record-attribution-and-circle-claim` `## Grounding snapshot` (the user's instruction, "with no git configuration the run halts rather than guessing");
 `skills/setup/SKILL.md` Step 0h and `bin/fusion-count-sources` (the two shipped precedents for a tree that is not a git work tree)
 
 ---
@@ -117,12 +117,12 @@ say anything about the tree a record was written in.
 is evaluated in one place.
 
 ---
-Answered: circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md `## Answer (user, 260824)` — option 2, halt only inside a git work tree; outside one the person field is absent rather than empty.
+Answered: 260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md `## Answer (user, 260824)` — option 2, halt only inside a git work tree; outside one the person field is absent rather than empty.
 
 ---
 Implemented: 3ba7a46, 2b055a0 — option 2 is realised in both halves. `bin/fusion-identity` splits the two states into two codes: exit 1 inside a git work tree with `user.name` or `user.email` unset, halting and naming which; exit 4 outside a work tree, non-halting, `PERSON=` absent rather than empty (`3ba7a46`, header `## Why 1 and 4 are different codes`). `rules/fusion-workbench-conventions.md` `### Who filed it` states the two as opposite instructions to every filing agent, in the one place the rule is authored (`2b055a0`). `hooks/lib/__tests__/fusion-identity.test.ts:148` pins exit 4 as "prints CHECKOUT alone outside a git work tree, and does not halt" (`b7f8326`).
 
 ---
-**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`). Moved `_a_` → `_i_` on live probes rather than on the commits alone. Inside a git work tree with both identity values unset the helper printed nothing on stdout, named both missing values on stderr and exited 1. Outside a work tree it exited 5, which is exit 4's person-half branch combined with an unresolved checkout half, and did not halt. `npm test` green at HEAD `cf7a5b0`, 42 files and 732 tests.
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`; log `260824-1637-reconciliation.md`). Moved `_a_` → `_i_` on live probes rather than on the commits alone. Inside a git work tree with both identity values unset the helper printed nothing on stdout, named both missing values on stderr and exited 1. Outside a work tree it exited 5, which is exit 4's person-half branch combined with an unresolved checkout half, and did not halt. `npm test` green at HEAD `cf7a5b0`, 42 files and 732 tests.
 
-One residual the answer does not reach, filed separately and not blocking this move: `bin/fusion-identity`'s exit-4 message names "not a git work tree" as the cause without having established it. Reproduced here inside this repository with `git` removed from `PATH`, where the helper reported that message and exited without halting, so a record would be filed unattributed in a tree where an identity is owed. Record: `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_the-identity-helpers-exit-4-message-names-a-cause-it-never-established.md`.
+One residual the answer does not reach, filed separately and not blocking this move: `bin/fusion-identity`'s exit-4 message names "not a git work tree" as the cause without having established it. Reproduced here inside this repository with `git` removed from `PATH`, where the helper reported that message and exited without halting, so a record would be filed unattributed in a tree where an identity is owed. Record: `260824-1538_*_the-identity-helpers-exit-4-message-names-a-cause-it-never-established.md`.

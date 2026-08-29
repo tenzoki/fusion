@@ -1,4 +1,4 @@
-# Orchestrator Session — 260818-2301
+# Orchestrator Session — 260818-2301-orchestrator-session.md
 
 **Directive:** Answer the open decision records, then realise the answers.
 **Mode:** custom
@@ -36,9 +36,9 @@ record's own recommendation, appended an `Answered:` line citing this history fi
 
 | Record | Answer |
 |---|---|
-| `260816-1707_a_to-whom-is-the-new-workbench-tracking-rule-emitted…` | Option 1 — `rules/workbench-tracking.md` is emitted to no agent; the conventions file points at it and `/fusion:cleanup`'s archive step cites it in its own body. Unblocks the move approved in `260816-0711`. |
-| `260817-1613_a_does-a-plan-stated-precondition-get-any-mechanism…` | Option 2 with option 1's honesty — the orchestrator reads `## Where this Circle stops` aloud at Phase 4 and asks; `agents/planner.md` states that the human at that gate is the whole of the enforcement. |
-| `260818-2212_a_should-the-decision-records-status-field-exist-at-all…` | Option 1 — the `**Status:**` field leaves the decision-record template in two rule files; the filename marker is the only source. The 94 existing records stay as they stand. |
+| `260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted…` | Option 1 — `rules/workbench-tracking.md` is emitted to no agent; the conventions file points at it and `/fusion:cleanup`'s archive step cites it in its own body. Unblocks the move approved in `260816-0711`. |
+| `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism…` | Option 2 with option 1's honesty — the orchestrator reads `## Where this Circle stops` aloud at Phase 4 and asks; `agents/planner.md` states that the human at that gate is the whole of the enforcement. |
+| `260818-2212_*_should-the-decision-records-status-field-exist-at-all…` | Option 1 — the `**Status:**` field leaves the decision-record template in two rule files; the filename marker is the only source. The 94 existing records stay as they stand. |
 
 ### Head-room measured before proposing realisation work
 
@@ -59,11 +59,11 @@ always-on rule set. Both growth-bound tests pass at HEAD.
 | Task | What landed |
 |---|---|
 | T1 | `rules/workbench-tracking.md` created, section moved verbatim, pointer left, fifth header-table row, cited by `skills/archive/SKILL.md`, `CLAUDE.md` Layout row. Realises `260816-1707` and unblocks `260816-0711`. |
-| T3 | `## Where this Circle stops` added to the plan output format with the honesty paragraph; `agents/orchestrator.md` Phase 4 step 2b reads it aloud before the closure rename. Realises `260817-1613`, closes `260818-2343`. |
+| T3 | `## Where this Circle stops` added to the plan output format with the honesty paragraph; `agents/orchestrator.md` Phase 4 step 2b reads it aloud before the closure rename. Realises `260817-1613`, closes `260818-2343_*_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md`. |
 | T4 | The missing re-approval note above the `reference-resolution-lint` BASELINE, with a per-file measurement taken in a detached worktree at `52b1d95` with `agents/*.md` held at HEAD. |
-| T2 | `**Status:**` out of the decision-record template and the worked example, with the position on existing records stated. Realises `260818-2212`, closes `260811-2146` and `260812-1232`. |
+| T2 | `**Status:**` out of the decision-record template and the worked example, with the position on existing records stated. Realises `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`, closes `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md` and `260812-1232`. |
 
-**Decisions realised this Turn:** `260816-1707`, `260816-0711`, `260817-1613`, `260818-2212` — all `_a_` → `_i_`.
+**Decisions realised this Turn:** `260816-1707`, `260816-0711`, `260817-1613`, `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md` — all `_a_` → `_i_`.
 
 ### Three orchestrator errors, recorded because they cost time
 
@@ -76,7 +76,7 @@ A fourth belongs to the executors and is filed: T3 used `git stash`/`pop` while 
 ### Review
 
 `coderev`, range `52b1d95..b54ace5`, both commits now covered. Eleven findings, ten filed as records
-(`260819-0038` … `260819-0042`) plus an `Also seen:` line on `260819-0028`.
+(`260819-0038` … `260819-0042`) plus an `Also seen:` line on `260819-0028_*_the-project-language-rule-names-a-record-status-pairing-that-no-record-kind-still-has.md`.
 
 The High finding is that `skills/archive/SKILL.md:11` asserts "This skill reads
 `rules/workbench-tracking.md`" and no step in its process does. That sentence is the *positive
@@ -131,7 +131,7 @@ rename). No baseline moved; both goldens regenerated after all four tasks landed
 <!-- RECONCILER-OWNED -->
 
 Reconciler, domain `code`, HEAD `83488e9`, range `52b1d95..83488e9`. Full pass:
-`shared/history/260819-0840-reconciliation.md`.
+`260819-0840-reconciliation.md`.
 
 **Verdict:** coherent
 
@@ -145,7 +145,7 @@ Reconciler, domain `code`, HEAD `83488e9`, range `52b1d95..83488e9`. Full pass:
   empty, the suite is green at 36 files / 672 tests, and `bin/fusion-review-coverage --since 52b1d95`
   returns `uncovered=0 verdict=covered carried=none`. The drift is in prose, not state: four of the
   thirteen `Resolved:` notes claim a guarantee wider than their edit delivered. The Turn-2 review
-  found three (`260819-0821`, `260819-0824`, `260819-0827`); this pass re-did the check on the other
+  found three (`260819-0821_*_the-status-qualifier-closure-names-one-remaining-site-and-a-shipped-agent-prompt-still-carries-it.md`, `260819-0824_*_the-stub-guard-holds-only-for-a-section-that-is-nothing-but-the-stub-and-the-closure-claims-otherwise.md`, `260819-0827_*_the-fold-note-credits-the-header-table-with-carrying-verbatim-what-the-rule-files-own-lede-carries.md`); this pass re-did the check on the other
   ten and found a fourth, `260811-2146_c_*`, closed on the first of its two stated defects with the
   second — the unfilled footer stub the decision-record template still prescribes — untouched
   (`260819-0836_o_*`, and a `Revised by:` line on the closed record). The `260816-0711` footer's word
@@ -153,7 +153,7 @@ Reconciler, domain `code`, HEAD `83488e9`, range `52b1d95..83488e9`. Full pass:
 
 - **Artifact↔Directive.** All five commits move toward the Directive; none is orthogonal and none
   moves away. `b200902` realises `260816-1707`, `260816-0711` and `260817-1613`; `b54ace5` realises
-  `260818-2212`, the third answer; `06ab15b` closes ten of the eleven findings the review of those
+  `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`, the third answer; `06ab15b` closes ten of the eleven findings the review of those
   two commits raised, which is the Directive's own work being finished rather than new work; `5ec26b2`
   and `83488e9` are the workbench records of the two Turns. The Directive named three answers and
   three realisations, and the session delivered four realisations — `260816-0711` had been
@@ -163,7 +163,7 @@ Reconciler, domain `code`, HEAD `83488e9`, range `52b1d95..83488e9`. Full pass:
   consistent with the Directive, 0 conflicting. `shared/decisions/` holds **no** open record at HEAD:
   the three it opened with are the three the session answered and realised. The three remaining open
   decisions workbench-wide sit in closed Circles
-  (`260814-1915`, `260815-1845`, `260815-2056`) and are outside this Directive's reach. Of the 21
+  (`260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`, `260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md`, `260815-2056`) and are outside this Directive's reach. Of the 21
   answered records in `shared/`, none is realised by any commit in the range; the one that looks like
   a gap, `260810-2145_a_*`, carries a written-out reason for staying `_a_` and is correct as it stands.
 
@@ -320,11 +320,11 @@ sequenceDiagram
 ```
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The Turn 2 paragraph on U3 justifies leaving the migration gap open
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The Turn 2 paragraph on U3 justifies leaving the migration gap open
 with "the removal is in no released version". The tag half is true: `v10.2.0` is on an ancestor. The
 conclusion drawn from it is not, because `install.sh` defaults to `heads/main` and `fusion --update`
 re-fetches the same ref, so a user who installed or updated after `b54ace5` carries the removal while
 their `plugin.json` still reads `10.2.0`. The reasoning that holds is that the version string does not
 distinguish who has the change from who does not, which is a stronger argument for the release-time
 check the open record carries and a different one from the one recorded. Filed as
-`shared/issues/260819-0823_*_the-installed-base-premise-behind-leaving-the-migration-gap-open-is-contradicted-by-install-shs-default-ref.md`.
+`260819-0823_*_the-installed-base-premise-behind-leaving-the-migration-gap-open-is-contradicted-by-install-shs-default-ref.md`.

@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, reviewing Turn 2 range `270c566..1d5eed6` (commit `7749845`, task 28)
 **Affects:** `agents/orchestrator.md:621` — the `git cat-file -e` probe in `### The record counts are computed, not tallied`
-**Cross-references:** `shared/issues/260810-1205_c_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md` (the record this block closes); `bin/fusion-paths:266-270` (`scan_value`); `shared/history/260811-1247-three-orchestrator-prompt-corrections.md`
+**Cross-references:** `260810-1205_*_the-session-closure-and-filing-counts-are-hand-maintained-and-both-drifted-by-two-against-the-disk.md` (the record this block closes); `bin/fusion-paths:266-270` (`scan_value`); `260811-1247-three-orchestrator-prompt-corrections.md`
 
 ---
 

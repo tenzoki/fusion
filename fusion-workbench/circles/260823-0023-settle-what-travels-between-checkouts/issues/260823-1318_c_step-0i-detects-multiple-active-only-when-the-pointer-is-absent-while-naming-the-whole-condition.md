@@ -6,7 +6,7 @@ Step 0i detects MULTIPLE-ACTIVE only when the pointer is absent, and the likelie
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 2
 **Affects:** `skills/setup/SKILL.md:354`, `skills/setup/SKILL.md:360`
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_step-0i-collapses-multiple-active-to-head-1-and-names-one-circle-arbitrarily.md`, the Turn 1 finding this narrowing closed; `agents/playmaker.md:94`, which defines the condition; `rules/workbench-tracking.md` `## The four classes`, which is why the shape below arises
+**Cross-references:** `260823-1110_*_step-0i-collapses-multiple-active-to-head-1-and-names-one-circle-arbitrarily.md`, the Turn 1 finding this narrowing closed; `agents/playmaker.md:94`, which defines the condition; `rules/workbench-tracking.md` `## The four classes`, which is why the shape below arises
 
 ---
 

@@ -3,7 +3,7 @@
 **Date:** 2026-08-16
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 4
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 4
 **Predecessor commits:** `05d848b` (step 1), `2f624ca` (step 2), `9c79202` (steps 3 and 6)
 
 ## What the step asked for
@@ -21,7 +21,7 @@ and the pairing claim in four `bin/` headers. No behaviour change anywhere.
 surface is `isFusionPluginRoot(dir)` alone, unchanged byte for byte in its body.
 
 The header is rewritten around the state decision
-`shared/decisions/260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+`260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
 records as option 3. It says in the present tense that nothing under `hooks/` calls the
 module, that both mechanisms it served are gone (the write-tool stand-down with the
 protected paths on 2026-08-12 and then with the guard's last verdict on 2026-08-16, the
@@ -67,7 +67,7 @@ hook alone would leave it diverging from the file that quotes it, and `rules/` i
 scope for this Circle. Both files agree with each other and both disagree with the tree,
 which is a better state to hand on than one surface fixed and its authoring home stale.
 Filed as
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2115_o_the-why-the-message-is-english-argument-names-two-removed-mechanisms-as-its-examples.md`,
+`260816-2115_*_the-why-the-message-is-english-argument-names-two-removed-mechanisms-as-its-examples.md`,
 severity low: the argument holds either way, only its illustrations are dead, and nothing
 derives from them.
 
@@ -148,7 +148,7 @@ against a pin of 1122 that steps 9 and 10 re-approve.
 
 ## What this step did not do
 
-**The decision record is not annotated.** `260812-1232_a_does-the-write-guards-…` is still
+**The decision record is not annotated.** `260812-1232_*_does-the-write-guards-…` is still
 `_a_`. The plan routes every decision transition in this Circle to step 13, held by
 `ontocoder`, explicitly so the nine-record walk does not land partial; the step's own note
 says so. Annotating it here would be the partial landing that note exists to prevent.

@@ -1,7 +1,7 @@
 # Step 8 — `/fusion:setup` seeds `fusion-guard.json`
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write` — plan Step 8
+**Circle:** `260801-1244-guard-rules-write` — plan Step 8
 **Date:** 260804, 15:02–15:15
 **Status:** Complete
 **Outcome:** One new step (`Step 0f`) in `skills/setup/SKILL.md`. The twice-run acceptance test passes with a real edit between the runs. `npx vitest run` green at **1344 passed, 25 files** — unchanged from Step 7's baseline, since nothing this step touched is executed by a test.

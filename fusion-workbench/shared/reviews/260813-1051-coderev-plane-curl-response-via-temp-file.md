@@ -2,7 +2,7 @@
 
 **Sender:** coderev
 **Reviewed-range:** `1c2d555..7342fdd`
-**Not-opened:** `fusion-workbench/circles/260813-0858-playmaker-maintains-backlog-store/_t_circle.md`, `fusion-workbench/circles/260813-0858-playmaker-maintains-backlog-store/history/260813-1031-bugfix-circle-stash-test-locale.md`, `fusion-workbench/circles/260813-0858-playmaker-maintains-backlog-store/history/260813-1036-bugfix-plane-curl-interactive-shell-noise.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `fusion-workbench/shared/history/260813-0806-orchestrator-session.md`, `fusion-workbench/shared/history/260813-0926-playmaker-direct-dispatch.md`
+**Not-opened:** `260813-0858-playmaker-maintains-backlog-store`, `260813-1031-bugfix-circle-stash-test-locale.md`, `260813-1036-bugfix-plane-curl-interactive-shell-noise.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `260813-0806-orchestrator-session.md`, `260813-0926-playmaker-direct-dispatch.md`
 
 **Scope note.** The dispatch narrowed `bin/fusion-plane` to `plane_curl` and its header comment;
 the rest of that 2000-line file is unchanged in the range and was read only where the review
@@ -59,7 +59,7 @@ pattern from, one on coverage — and none of them is a reason to hold `7342fdd`
 
 ### Quoting and injection at the shell boundary — Medium
 
-`shared/issues/260813-1051_o_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md`
+`260813-1051_*_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md`
 
 `bin/fusion-plane:361` interpolates `${tmpresp}` unquoted into a string that a second shell
 parses as source. The path is `$TMPDIR` plus a fixed suffix. Measured: a `TMPDIR` containing a
@@ -72,7 +72,7 @@ at `:365` predates it and has the identical shape. It is safe today only by the 
 
 ### Unguarded failure that becomes a wrong answer — Medium
 
-`shared/issues/260813-1051_o_an-unguarded-mktemp-in-plane-curl-degrades-into-a-wrong-answer-because-every-call-site-suspends-set-e.md`
+`260813-1051_*_an-unguarded-mktemp-in-plane-curl-degrades-into-a-wrong-answer-because-every-call-site-suspends-set-e.md`
 
 `bin/fusion-plane:360` does not check `mktemp`. Because `set -e` is suspended at every call site,
 the function runs on with an empty `$tmpresp` instead of aborting. Measured on curl 8.7.1: `-o`
@@ -88,7 +88,7 @@ touch disk at all).
 
 ### A stated absolute that does not hold — Medium
 
-`shared/issues/260813-1051_o_the-http-code-is-still-read-from-the-noisy-channel-and-a-zshexit-hook-writes-after-curl.md`
+`260813-1051_*_the-http-code-is-still-read-from-the-noisy-channel-and-a-zshexit-hook-writes-after-curl.md`
 
 The new header comment (`:349-350`) and the new inline comment (`:375-376`) claim noise "can only
 ever precede" the code, "never follow it". True for startup noise, false for exit-time output:
@@ -100,7 +100,7 @@ it reads only the exit status, and a `zshexit` returning non-zero does not chang
 
 ### The fix has no test that reproduces its trigger — Medium
 
-`shared/issues/260813-1051_o_the-plane-curl-regression-guard-only-fires-on-a-machine-whose-interactive-rc-prints.md`
+`260813-1051_*_the-plane-curl-regression-guard-only-fires-on-a-machine-whose-interactive-rc-prints.md`
 
 The two live-rebuild cases are real end-to-end coverage of `plane_curl`, which is why they caught
 this at all — but they caught it because *this* Terminal prints a session-restore line. The
@@ -111,7 +111,7 @@ any machine.
 
 ### The locale fix is at the leaf, not at the shared helper — Low
 
-`shared/issues/260813-1051_o_lc-all-c-sits-on-the-leaf-git-invocation-not-on-the-test-files-shared-git-helper.md`
+`260813-1051_*_lc-all-c-sits-on-the-leaf-git-invocation-not-on-the-test-files-shared-git-helper.md`
 
 `circle-stash-git-exclusion.test.ts:52`'s shared `git()` helper is still locale-dependent.
 Harmless today — every assertion through it reads machine-shaped output — and harmless only for
@@ -139,7 +139,7 @@ as long as that stays true, in the file where this just broke.
 ## The related record — nothing to add
 
 I swept the repository for further instances of the `zsh -ic … | jq` shape that
-`260813-1036_o_the-manual-fetch-command-…` records. There are none beyond the one it already
+`260813-1036_*_the-manual-fetch-command-…` records. There are none beyond the one it already
 names. What the sweep found instead: `plane_key_present` (`bin/fusion-plane:388`) reads only the
 exit status and discards both channels, so it is safe; `docs/plane-setup.md:41-45`,
 `templates/plane.config.yaml:28` and `skills/seed-from-plane/SKILL.md:13` describe the wrapper in
@@ -169,11 +169,11 @@ themselves are not rewritten.
 
 | Finding | Record | State |
 |---|---|---|
-| Quoting and injection at the shell boundary | `shared/issues/260813-1051_c_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md` | **closed** by `d6dd193` — the command string `zsh` parses is now a constant |
-| Unguarded failure that becomes a wrong answer | `shared/issues/260813-1051_o_an-unguarded-mktemp-in-plane-curl-degrades-into-a-wrong-answer-because-every-call-site-suspends-set-e.md` | **open, re-scoped.** `plane_curl`'s three `mktemp`s are guarded at `:395`, `:400`, `:409`. Six unguarded ones remain elsewhere in the file and the EXIT trap still covers only `map_view` — see that record's `## Reconciliation 260813-1545` |
-| A stated absolute that does not hold | `shared/issues/260813-1051_c_the-http-code-is-still-read-from-the-noisy-channel-and-a-zshexit-hook-writes-after-curl.md` | **closed** by `d6dd193` — the status code left the noisy channel |
-| The fix has no test that reproduces its trigger | `shared/issues/260813-1051_o_the-plane-curl-regression-guard-only-fires-on-a-machine-whose-interactive-rc-prints.md` | **open**, unchanged. Medium; the regression guard still depends on the developer's own rc printing |
-| The locale fix is at the leaf, not at the shared helper | `shared/issues/260813-1051_o_lc-all-c-sits-on-the-leaf-git-invocation-not-on-the-test-files-shared-git-helper.md` | **open**, unchanged. Low; `circle-stash-git-exclusion.test.ts:52` is still locale-dependent |
+| Quoting and injection at the shell boundary | `260813-1051_*_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md` | **closed** by `d6dd193` — the command string `zsh` parses is now a constant |
+| Unguarded failure that becomes a wrong answer | `260813-1051_*_an-unguarded-mktemp-in-plane-curl-degrades-into-a-wrong-answer-because-every-call-site-suspends-set-e.md` | **open, re-scoped.** `plane_curl`'s three `mktemp`s are guarded at `:395`, `:400`, `:409`. Six unguarded ones remain elsewhere in the file and the EXIT trap still covers only `map_view` — see that record's `## Reconciliation 260813-1545` |
+| A stated absolute that does not hold | `260813-1051_*_the-http-code-is-still-read-from-the-noisy-channel-and-a-zshexit-hook-writes-after-curl.md` | **closed** by `d6dd193` — the status code left the noisy channel |
+| The fix has no test that reproduces its trigger | `260813-1051_*_the-plane-curl-regression-guard-only-fires-on-a-machine-whose-interactive-rc-prints.md` | **open**, unchanged. Medium; the regression guard still depends on the developer's own rc printing |
+| The locale fix is at the leaf, not at the shared helper | `260813-1051_*_lc-all-c-sits-on-the-leaf-git-invocation-not-on-the-test-files-shared-git-helper.md` | **open**, unchanged. Low; `circle-stash-git-exclusion.test.ts:52` is still locale-dependent |
 
 Two of five closed, three open, none blocking. `bin/fusion-plane`'s own suite is green.
 
@@ -185,7 +185,7 @@ only review covering the session range, `covers=2` of 8 commits.
 
 **Reconciliation annotation — 260817-1836, reconciler, domain `code`.** The subject of this review
 no longer exists. The Plane mirror was removed on 2026-08-15 in Circle
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
+`260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
 `bin/` (`ls bin/` at HEAD `2552586` lists twelve helpers and none of them is it), the
 `plane.config.yaml` template left `templates/`, and the only surviving mention of the bridge in
 shipped text is the migration note `docs/upgrading-to-v9.md`. The findings below are preserved as

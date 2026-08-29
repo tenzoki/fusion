@@ -31,7 +31,7 @@ is open and evaluate it at Turn boundaries only. Which of these is right depends
 meant to catch, namely a session that stops writing Turn-log entries while it keeps running, and
 all three preserve that.
 
-**Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`, Circle
+**Filed by:** orchestrator, session `260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store because the observation arose from running
 this Circle's first Turn, per the Origin Rule; the defect it describes is in the plugin, not in the
 Circle.
@@ -39,4 +39,4 @@ Circle.
 ---
 Resolved: The row's owner bin/fusion-state-drift, with hooks/lib/state-drift.ts and hooks/state-drift.ts, was deleted in f45f76a; no drift check emits that row any more.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

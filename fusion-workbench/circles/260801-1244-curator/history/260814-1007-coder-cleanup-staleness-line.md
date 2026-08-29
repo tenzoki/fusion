@@ -3,7 +3,7 @@
 **Date:** 2026-08-14 10:07
 **Status:** Complete
 **Circle:** `260801-1244-curator`
-**Plan:** `circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md` step 4
+**Plan:** `260814-0845_*_plan-curator.md` step 4
 **HEAD at start:** `44b9967`
 **Agent:** coder
 

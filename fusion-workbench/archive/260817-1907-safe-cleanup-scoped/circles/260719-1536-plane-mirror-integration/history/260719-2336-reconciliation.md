@@ -33,8 +33,8 @@ All work claimed in the plan is real and verified against ground truth. Every de
 
 The two open items are **the pre-live-Plane gap, not implementation debt** — deliberately left `_o_`:
 
-1. **Issue `260719-2304_o_verify-plane-create-patch-body-against-live-instance.md`** — the create/PATCH body field names (incl. `description_html`, on which the map-rebuild key embedding rests), the `states/` response envelope, and the `parent` sub-issue field are unverified against a live instance. The plan scoped acceptance as offline dry-run by design (Testing §). No live Plane was reachable this session. The DR-1 links fallback keeps the mirror safe even if `parent` fails.
-2. **Decision `260719-2313_o_round-trip-write-overwrites-origin-story-description.md`** — how a seeded issue's push-back treats the human's original story description (recommended Option 1: state-only writes for seeded issues). User's to settle before the first real round-trip push.
+1. **Issue `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md`** — the create/PATCH body field names (incl. `description_html`, on which the map-rebuild key embedding rests), the `states/` response envelope, and the `parent` sub-issue field are unverified against a live instance. The plan scoped acceptance as offline dry-run by design (Testing §). No live Plane was reachable this session. The DR-1 links fallback keeps the mirror safe even if `parent` fails.
+2. **Decision `260719-2313_*_round-trip-write-overwrites-origin-story-description.md`** — how a seeded issue's push-back treats the human's original story description (recommended Option 1: state-only writes for seeded issues). User's to settle before the first real round-trip push.
 
 ## Decision transitions
 
@@ -43,4 +43,4 @@ The two open items are **the pre-live-Plane gap, not implementation debt** — d
 
 ## Coherence verdict
 
-Computed and appended to `shared/history/260719-1632-orchestrator-session.md` `## Coherence` (scoped to this Circle). Aggregate: **coherent**. Rebalance recommendation: **none**. Session-start anchor `74cc11b`; commit walk `74cc11b..HEAD` = 6 feature commits + the gitignore commit.
+Computed and appended to `260719-1632-orchestrator-session.md` `## Coherence` (scoped to this Circle). Aggregate: **coherent**. Rebalance recommendation: **none**. Session-start anchor `74cc11b`; commit walk `74cc11b..HEAD` = 6 feature commits + the gitignore commit.

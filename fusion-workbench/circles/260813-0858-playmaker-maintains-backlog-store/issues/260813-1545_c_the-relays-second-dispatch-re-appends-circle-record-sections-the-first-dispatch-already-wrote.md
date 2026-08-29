@@ -18,7 +18,7 @@ Regenerating `$PORTFOLIO` is not a local act. `agents/playmaker.md:58` defines i
 
 One `/fusion:next` invocation in which the user approves any backlog operation leaves the top-ranked anticipated Circle's record carrying **two** `## Activation proposal` blocks, stamped a minute or two apart with two different run identifiers — and then Step 6 activates that same record. On a workbench with a dependency cycle or a bounded-closure parent, the duplication reaches those sections too.
 
-The record in this Circle already shows the shape a single such block takes (`.../_t_circle.md`, `## Activation proposal (playmaker run 260813-0926)`); two of them on one record is noise a reader has to reconcile, and the next playmaker run reads the record it is appending to.
+The record in this Circle already shows the shape a single such block takes (`.../_t_circle.md`, `## Activation proposal (playmaker run 260813-0926-playmaker-direct-dispatch.md)`); two of them on one record is noise a reader has to reconcile, and the next playmaker run reads the record it is appending to.
 
 ## Why the existing wording does not stop it
 

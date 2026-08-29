@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`, step 12
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`, step 12
 **Started from:** HEAD `f45f76a`, suite green at 39 files / 741 tests
 
 ## What the step did
@@ -15,7 +15,7 @@ replaced by the curator's gated pass at cleanup Step 5.
 
 ## The two decisions this realises
 
-**`260815-0007_i_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`, option 1.**
+**`260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`, option 1.**
 Cleanup Step 5 now reads `skills/curate/SKILL.md` and runs its procedure inline: survey dispatch, run
 file, blast-radius confirmation, gate, apply dispatch, report. `Agent(fusion:curator)` was added to the
 skill's `allowed-tools`; `AskUserQuestion` was already there. Under `--dry-run` the step dispatches the
@@ -32,7 +32,7 @@ gates*, which the answer made false. It was replaced rather than softened. The n
 > the activity log is not regenerated and the housekeeping commits are not made. Either sit with the run,
 > or reach for `--skip claude-md`, which runs the rest end to end and leaves `CLAUDE.md` for a later pass.
 
-**`260815-0029_i_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`, part (a)
+**`260815-0029_*_what-permission-grant-does-setup-seed-when-unlock-becomes-a-setup-step.md`, part (a)
 option 2 and part (b) option 1.** Setup Step 0g asks once, defaulting to yes, naming
 `.claude/settings.local.json` and what `bypassPermissions` does in plain words. It carries the deleted
 `unlock` body's merge and gitignore steps verbatim — one implementation, relocated, not a second one —
@@ -62,7 +62,7 @@ later reader does not have to rediscover it.
 
 ## The permission defect's acceptance, checked rather than assumed
 
-`shared/issues/260810-0326` was closed to `_c_`, but only after its three acceptance criteria were read
+`260810-0326` was closed to `_c_`, but only after its three acceptance criteria were read
 against what the fold actually does. Two are met outright. The first — *a fresh project that has only run
 `/fusion:setup` completes an orchestrator Turn without a per-tool approval dialog* — is met **from the
 next session onward and not in the session that ran Setup**, because Claude Code reads permission settings
@@ -71,7 +71,7 @@ mechanism that writes the file during the run. The `Resolved:` footer states tha
 and Step 0g's report says the same thing to the user instead of claiming the session is unlocked.
 
 One residual was filed rather than buried in the closure:
-`issues/260815-1617_o_re-measure-whether-a-fresh-project-still-raises-approval-dialogs-before-setup-keeps-asking.md`.
+`260815-1617_*_re-measure-whether-a-fresh-project-still-raises-approval-dialogs-before-setup-keeps-asking.md`.
 The 260810 measurement found a `fusion:playmaker` dispatch **permitted** with no `.claude/` present, which
 is the symptom the whole record was filed about, and could not separate "Claude Code changed" from
 "interactive mode differs from print mode". If the dialogs are gone, Step 0g asks every user of every new
@@ -114,7 +114,7 @@ Four gates were load-bearing here and all four were exercised rather than reason
   phantom citations. They are now written as bare names, with a line in the file saying why.
 - `reference-resolution-lint` — `settings.json` is in its own path grammar, so deleting the file dangled
   four bare tokens in `CLAUDE.md:106` and one in `install.sh:77`. The same class-(c) scan would have failed
-  on `CLAUDE.md`'s exact-marker citation of `260810-0326_o_…` the moment the issue was renamed; that
+  on `CLAUDE.md`'s exact-marker citation of `260810-0326_*_…` the moment the issue was renamed; that
   citation now carries the `_*_` wildcard.
 - `path-literal-lint` and `fusion-paths.test.ts` — no store literal was introduced, and the resolver still
   answers for every surviving skill name.

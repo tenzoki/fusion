@@ -3,9 +3,9 @@
 **Date:** 2026-08-05
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 3
-**Predecessor:** `history/260805-0717-coder-step2-drei-schichten.md` (the three-layer cut this step writes into)
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 3
+**Predecessor:** `260805-0717-coder-step2-drei-schichten.md` (the three-layer cut this step writes into)
 **Baseline:** `b67a386` (steps 1 and 2 committed). Not committed — the orchestrator commits.
 
 **Voice profiles:** `bin/fusion-rules coder` emitted `./fusion-workbench/stilwerk/chat-voice-en.yaml`.
@@ -61,17 +61,17 @@ in a file the step owns. Those three axes come apart, and that is the whole of w
 | C, move to shared | **0** | — |
 
 **Branch C is empty and its criterion is false for all three of its own examples.** The plan sends
-`260803-1352`, `260804-1605` and `260804-1606` to the shared store "because they do not belong to
+`260803-1352`, `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md` and `260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md` to the shared store "because they do not belong to
 this Circle's Directive". All three do. The Directive says each exempted write "emits a
 `guard_advisory` event … so the user reads the exempted writes in `.guard-state/events.jsonl` and
 on the monitor dashboard" — which is `260803-1352`'s subject; it says "`/fusion:setup` seeds a
-template that declares inheritance and lists no paths" — `260804-1605`; and C5b is what made
-`escalation.blocksBeforeHalt` settable from a project file at all — `260804-1606`. The Origin Rule
+template that declares inheritance and lists no paths" — `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`; and C5b is what made
+`escalation.blocksBeforeHalt` settable from a project file at all — `260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md`. The Origin Rule
 is origin, not durability, and it warns in so many words that a rule built on a prognosis produces
 a different answer from every agent that applies it. None of the three was moved.
 
 **The two-branch cases are the first falsification, taken at its word.** `260804-2100` and
-`260804-1427` are each a delivered sentence that is false *because* the guard has a reach nothing
+`260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md` are each a delivered sentence that is false *because* the guard has a reach nothing
 recorded. Correcting the sentence and writing the residual are one act, and the markers the two
 branches prescribe contradict each other. Both stay `_o_`, because in both the behavioural half is
 a decision nobody has taken.
@@ -83,29 +83,29 @@ a decision nobody has taken.
 | Finding | Sev | Branch | Target | The sentence that was false |
 |---|---|---|---|---|
 | `260803-1402` | Low | **A** → `_c_` | core + `README-hooks.md` | "**There is no override for a protected-path shell write.** That is deliberate." — and the same in `README-hooks.md`. `FUSION_ALLOW_RULES_WRITE` is exactly such an override, and the same file had named it 370 lines earlier. |
-| `260804-1025` | High | **A** → `_c_` | core | question 3: "Yes → **the model stays exact** and this rule denies nothing." |
-| `260804-1223` | High (inh.) | **A** → `_c_` | core | the evidence for the row above; closed with it, as the record asks |
-| `260804-1220` | Low | **A** → `_c_` | forensics + core | "if you can answer **the three questions**" in a procedure that has four; and question 2's parenthetical restating a safe-list as the closed pair "`||` or `|`" |
+| `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` | High | **A** → `_c_` | core | question 3: "Yes → **the model stays exact** and this rule denies nothing." |
+| `260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md` | High (inh.) | **A** → `_c_` | core | the evidence for the row above; closed with it, as the record asks |
+| `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md` | Low | **A** → `_c_` | forensics + core | "if you can answer **the three questions**" in a procedure that has four; and question 2's parenthetical restating a safe-list as the closed pair "`||` or `|`" |
 | `260804-1349` | Med | **A** → `_c_` | core | question 1: "**Does it contain a directory builtin at all?** No → this rule cannot touch it" — falsified by `git -C $D` and `--work-tree=$W` |
-| `260804-1332` | **High** | **B** → `_o_` | reference + forensics | (branch B, but the hunt it triggered found one: "against **every** directory the guard can attribute to the invocation") |
-| `260804-0839` | Med | **B** → `_o_` | forensics + core | — |
+| `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` | **High** | **B** → `_o_` | reference + forensics | (branch B, but the hunt it triggered found one: "against **every** directory the guard can attribute to the invocation") |
+| `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` | Med | **B** → `_o_` | forensics + core | — |
 | `260804-2100` | Low | **A+B** → `_o_` | core + forensics | "The patterns are **project-relative**: in a consuming project `rules/**` means that project's own `rules/` directory" |
-| `260804-1427` | Med | **A+B** → `_o_` | core + forensics | "It lives in the plugin's own `hooks/config.json` … so **every project on this plugin gets the same list**" |
-| `260804-1027` | Low | A-foreign → `_o_` | `bash-mutation-guard.ts` docstring | (real, unreachable from here) |
-| `260804-1221` | Med | A-foreign → `_o_` | `shell-parse.ts` + source test | ditto |
-| `260804-1222` | Low | A-foreign → `_o_` | `shell-parse.ts` docstring | ditto |
-| `260804-1350` | Low | A-foreign → `_o_` | `DirStack` docstring | ditto |
-| `260804-1351` | Low | A-foreign → `_o_` | `DIR_BUILTINS` comment | ditto |
-| `260804-1605` | Med | A-foreign → `_o_` | `templates/fusion-guard.json` | **three** sentences, not the two filed — see below |
+| `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md` | Med | **A+B** → `_o_` | core + forensics | "It lives in the plugin's own `hooks/config.json` … so **every project on this plugin gets the same list**" |
+| `260804-1027_*_the-replacement-audit-recipe-went-stale-in-the-turn-after-it-was-written-and-omits-moved.md` | Low | A-foreign → `_o_` | `bash-mutation-guard.ts` docstring | (real, unreachable from here) |
+| `260804-1221_*_the-one-fact-about-a-joiner-guarantee-is-asserted-over-one-file-and-a-second-file-already-holds-the-same-fact.md` | Med | A-foreign → `_o_` | `shell-parse.ts` + source test | ditto |
+| `260804-1222_*_the-segmentjoiner-docstring-says-both-shapes-are-open-and-cites-the-decision-by-a-filename-that-no-longer-exists.md` | Low | A-foreign → `_o_` | `shell-parse.ts` docstring | ditto |
+| `260804-1350_*_the-dirstack-docstring-claims-the-compiler-enforces-a-depth-invariant-it-does-not-enforce.md` | Low | A-foreign → `_o_` | `DirStack` docstring | ditto |
+| `260804-1351_*_dir-builtins-carries-a-shell-dependent-fact-about-chdir-justified-by-the-wrong-reason.md` | Low | A-foreign → `_o_` | `DIR_BUILTINS` comment | ditto |
+| `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md` | Med | A-foreign → `_o_` | `templates/fusion-guard.json` | **three** sentences, not the two filed — see below |
 | `260803-1352` | Low | neither → `_o_` | `hooks/guard.ts` | — |
-| `260804-0842` | Low | neither → `_o_` | git gold fixture | — |
-| `260804-1606` | Low | neither → `_o_` | `hooks/lib/config.ts` | — |
+| `260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md` | Low | neither → `_o_` | git gold fixture | — |
+| `260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md` | Low | neither → `_o_` | `hooks/lib/config.ts` | — |
 
 Every one carries a `**Step 3 disposition**` block naming its branch, its target and, where it
 stays open, what closes it. Five renamed `_o_` → `_c_`; thirteen still open, which is 18 − 5.
 
-**`260804-0839` is counted once.** It stays in this Circle's issue store and cites
-`circles/260804-1205-shell-reachability-model`, where `decisions/260804-0947_i_…` already located
+**`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` is counted once.** It stays in this Circle's issue store and cites
+`260804-1205-shell-reachability-model`, where `260804-0947_*_…` already located
 its fix. Reach is cited, never placed.
 
 ---
@@ -118,25 +118,25 @@ Six edits, five of them a correction a finding demanded and one a count.
 
 - **The protected list** now says the plugin's list is the default and not the answer: a project's
   `fusion-guard.json` overrides it, a declared empty list really is empty, and the guard's own
-  state directory goes with the rest. (`260804-1427`)
+  state directory goes with the rest. (`260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`)
 - **The coordinate space** now says the patterns are matched against the session's working
   directory, with the measured pair and the sentence that discharges the agent-facing half — an
   allow there is not a permission. (`260804-2100`)
 - **`### The overrides waive only what they name`** names the one override, scopes it, and adds
   the two things that still deny with the flag set: case is not folded, and a hard-linked rule
   file is refused. (`260803-1402`)
-- **Questions 1, 2 and 3** of the decision procedure. (`260804-1349`, `260804-1220`,
-  `260804-1025`/`260804-1223`)
+- **Questions 1, 2 and 3** of the decision procedure. (`260804-1349`, `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md`,
+  `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`/`260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md`)
 - **`## What to do instead` step 1** no longer says flatly that "a differently-worded command is
   the same command"; it says every rephrasing *of that kind* is, and that reaching for one that
-  does escape is the act the rule forbids. (`260804-1332`, indirectly — it was the one remaining
+  does escape is the act the rule forbids. (`260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`, indirectly — it was the one remaining
   coverage claim in the core.)
 - **The residual pointer** was "Twenty residuals"; the catalogue holds 19 and now 21. Corrected
   to 21, and it names the two an agent can meet on ordinary work.
 
 ### `rules/protected-path-internals.md` — the reference, 20 754 → 21 897
 
-One correction and one new paragraph, both `260804-1332`. The "every directory the guard can
+One correction and one new paragraph, both `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`. The "every directory the guard can
 attribute" claim is narrowed to the command line, and the paragraph after it states the
 environment boundary with the control that separates the two spellings:
 
@@ -146,7 +146,7 @@ cd build && env GIT_WORK_TREE=../rules git clean -fdx    allow
 cd build && git --work-tree=../rules clean -fdx          DENY    → rules
 ```
 
-The wrapper-hopped row was argued from the mechanism when `260804-1332` was filed and is now
+The wrapper-hopped row was argued from the mechanism when `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` was filed and is now
 measured. The paragraph also says the one thing a reader would otherwise get wrong: a plain
 `GIT_WORK_TREE=rules git clean -fdx` **does** deny at the project root, on the root's own
 write-through rule and not because the variable was read.
@@ -156,7 +156,7 @@ write-through rule and not because the variable was read.
 Two new residuals, which are the first two in the catalogue and are a **third shape** the framing
 paragraph did not have: writes the classifier sees in full and allows because the *list* it
 matches them against is not the list the reader assumed. Plus the "three questions" correction,
-the routing line on the `260804-0839` edge, and the wrapper-hopped `GIT_WORK_TREE` row.
+the routing line on the `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` edge, and the wrapper-hopped `GIT_WORK_TREE` row.
 
 ### `README-hooks.md` — 42 709 → 45 498
 
@@ -224,7 +224,7 @@ is not housekeeping: it is the difference between shipping the rule text correct
 shipping a hook that does not implement it.
 
 **2. `templates/fusion-guard.json` is now wrong in a third way, and it is the worst of the
-three.** `260804-1605` filed two false sentences and asked for a missing clause on `_override`.
+three.** `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md` filed two false sentences and asked for a missing clause on `_override`.
 Measured against `hooks/lib/config.ts:628-631` —
 `project.raw.guard?.[key] ?? plugin.raw.guard?.[key] ?? DEFAULTS.guard[key]` — the whole
 `_override` key is now backwards:
@@ -236,8 +236,8 @@ Measured against `hooks/lib/config.ts:628-631` —
 | "any field you leave out … falls back to fusion's built-in default, not to the plugin's file" | an omitted leaf falls back to **the plugin's file** |
 
 All three were true when Step 7 wrote them and were falsified by Step 2 of the C5b remediation
-plan, which changed the merge to close `260804-1601`. The template is copied verbatim into every
-consuming project. Recorded on `260804-1605`, which stays `_o_` for `ontocoder`.
+plan, which changed the merge to close `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`. The template is copied verbatim into every
+consuming project. Recorded on `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`, which stays `_o_` for `ontocoder`.
 
 **This one also caught an error of my own.** My first draft of the core's protected-list paragraph
 repeated the Directive's wording, "overrides per top-level key". That is what the Circle record
@@ -249,15 +249,15 @@ before the measurement above was taken.
 ## Out of scope, reported rather than fixed
 
 - **`CLAUDE.md`** carries the third copy of the "no env override" sentence, at the line the
-  260804-1021 reconciliation named. The correction of `260803-1402` is therefore complete in two
+  260804-1021-reconciliation.md reconciliation named. The correction of `260803-1402` is therefore complete in two
   files of three. Named on the issue.
 - **Two source comments** in `hooks/lib/bash-mutation-guard.ts` cite `rules/protected-path-discipline.md`
   for residuals that moved to the forensics analysis (the symlink residual and the ambient-`CDPATH`
   bound). Reported by step 2; still true; not this step's files.
-- **`260804-1601`, `260804-1602` and `260804-1603` carry `_c_` with no closure note in their
+- **`260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`, `260804-1602_*_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md` and `260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` carry `_c_` with no closure note in their
   bodies.** They were genuinely closed —
-  `history/260804-1725-coder-step2-project-layer-boundary.md` is the work — but a reader checking
-  `260804-1605`'s sequencing condition has to reconstruct that from a history file. A reconciler
+  `260804-1725-coder-step2-project-layer-boundary.md` is the work — but a reader checking
+  `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`'s sequencing condition has to reconstruct that from a history file. A reconciler
   question, recorded because this step depended on the answer.
 
 ---

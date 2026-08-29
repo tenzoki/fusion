@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Circle:** `260718-1924-v5x-overhaul`
-**Plan:** `planning/260718-2150_p_plan-circle-d-agent-prompt-revision.md` (Bundle 4)
+**Plan:** `260718-2150_*_plan-circle-d-agent-prompt-revision.md` (Bundle 4)
 
 ## What was done
 

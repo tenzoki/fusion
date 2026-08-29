@@ -1,7 +1,7 @@
 # coder — German literals out of the skill bodies, plus the demoted-name residual in setup
 
 **Status:** Complete
-**Source record:** `shared/issues/260814-1001_o_three-skill-bodies-embed-german-while-skill-bodies-are-an-english-surface.md`
+**Source record:** `260814-1001_*_three-skill-bodies-embed-german-while-skill-bodies-are-an-english-surface.md`
 **Files changed:** `skills/archive/SKILL.md`, `skills/direct/SKILL.md`, `skills/migrate/SKILL.md`, `skills/next/SKILL.md`, `skills/setup/SKILL.md`
 
 ## What the survey found, against what the record claimed

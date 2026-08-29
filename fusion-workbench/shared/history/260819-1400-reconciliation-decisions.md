@@ -27,7 +27,7 @@ One stale citation inside the store was rewritten to the wildcard form.
 
 **No `**Status:**` head field was touched, on any record.** All 21 carry one, and 7 of them
 contradict their own filename marker. That is not drift to be tidied: it is the population
-`260818-2212_i_should-the-decision-records-status-field-exist-at-all-…` measured, and that record's
+`260818-2212_*_should-the-decision-records-status-field-exist-at-all-…` measured, and that record's
 answer is explicit that a record written before the field left the template keeps it, *because
 hand-correcting one destroys the evidence the removal was decided on*. The two records this pass
 renamed to `_i_` therefore now read `**Status:** open` above an `_i_` filename, and each carries a
@@ -37,7 +37,7 @@ sentence saying why.
 
 ## Bucket 1 — realised, and transitioned by this pass (2)
 
-### `260812-0254_i_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`
+### `260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`
 
 **The Circle comes first.** Answered by the user 260812-1620, option 1. Realised in full and never
 transitioned — nineteen plugin versions ago.
@@ -58,14 +58,14 @@ design, neither implementable alone" — were not moved. The backlog half was pi
 a reconciler at 260813-1545. This half was not.
 
 **Side effect worth relaying to the sibling holding `shared/issues/`.** The open defect
-`shared/issues/260812-1720_o_the-migration-premise-in-the-circle-placement-decision-does-not-match-the-workbench.md`
+`260812-1720_*_the-migration-premise-in-the-circle-placement-decision-does-not-match-the-workbench.md`
 asks for exactly one thing: *"the decision record's own body should carry the corrected premise once
 the gate is answered, so the two do not disagree in the archive."* The `Implemented:` block written
 in this pass carries that corrected premise — one moving candidate rather than twelve migrated
 Circles, with the measurement and the gate answer. That defect is now substantively addressed and is
 that sibling's to close.
 
-### `260818-1512_i_does-the-shapers-third-mode-keep-the-name-portfolio-activation-….md`
+### `260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-….md`
 
 **Keep the wire value, widen the prose.** Answered by the user at a gate on 2026-08-18, option 1,
 and realised the same day by `95bebe1`.
@@ -89,11 +89,11 @@ earlier reconcilers rather than renamed, because renaming would pre-empt an open
 
 | Record | Answer | What removed the ground |
 |---|---|---|
-| `260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md` | keep both manifest fields, no schema change | `5d29b6d` deleted `skills/circle-stash/` and `skills/circle-pop/`; `rules/workbench-stash-and-lock.md` became `rules/commit-lock.md` with its `## Stashes` half removed. All three cross-references dangle. Nothing writes a stash manifest. |
-| `260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-….md` | pin the four sentences to an approved baseline, sequenced after a prompt task | `f45f76a` deleted `hooks/lib/state-drift.ts`, `hooks/state-drift.ts`, `hooks/lib/__tests__/state-drift-detection-lint.test.ts` and `bin/fusion-state-drift`. There is no drift check, no four sentences and no lint to pin. |
+| `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md` | keep both manifest fields, no schema change | `5d29b6d` deleted `skills/circle-stash/` and `skills/circle-pop/`; `rules/workbench-stash-and-lock.md` became `rules/commit-lock.md` with its `## Stashes` half removed. All three cross-references dangle. Nothing writes a stash manifest. |
+| `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-….md` | pin the four sentences to an approved baseline, sequenced after a prompt task | `f45f76a` deleted `hooks/lib/state-drift.ts`, `hooks/state-drift.ts`, `hooks/lib/__tests__/state-drift-detection-lint.test.ts` and `bin/fusion-state-drift`. There is no drift check, no four sentences and no lint to pin. |
 
 **The decision that owns their marker is still open.**
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+`260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
 was filed on 2026-08-15 and is still `_o_` at HEAD. Its recommendation is option 2 (a new
 `Realisation-removed:` annotation, no rename) at low-to-moderate confidence, and its own
 `speculation:` paragraph says that if no third instance appears, option 4 — close it and leave the
@@ -113,9 +113,9 @@ resolve.
 Two further records can never reach `_i_` either, for a different reason: **their answer was to build
 nothing.**
 
-- `260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md` — option 3, "fusion does not
-  support concurrency". Flagged as a user judgement call by the reconciler at 260731-2324.
-- `260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-….md` — option 1, "nothing new;
+- `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` — option 3, "fusion does not
+  support concurrency". Flagged as a user judgement call by the reconciler at 260731-2324-reconciliation.md.
+- `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-….md` — option 1, "nothing new;
   the reference lint remains the whole mechanism".
 
 `rules/fusion-workbench-conventions.md` `### Decision files` defines `Implemented:` as a citation of
@@ -145,7 +145,7 @@ One clause each: what a deep change to fusion would have to respect, or would vi
 
 **Gates and tests**
 
-3. `260815-2322` — **at most one commit of a multi-file Turn can stand green alone**, because the
+3. `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md` — **at most one commit of a multi-file Turn can stand green alone**, because the
    growth golden is a per-file inventory. A deep change is exactly that shape; anyone bisecting it
    meets a failure that means nothing and is documented nowhere. Regenerate once at Turn end, never
    per commit.
@@ -153,7 +153,7 @@ One clause each: what a deep change to fusion would have to respect, or would vi
    appears in no file. The record's own constraint is overdue: a fourth gate must not land before the
    answer is written, or it inherits its shape by copying — and the copy most likely to hand is the
    count pin, which is the fallback rather than the convention.
-5. `260810-1010` — until `bin/fusion-count-sources` emits its own extension set, **every extension
+5. `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md` — until `bin/fusion-count-sources` emits its own extension set, **every extension
    declaration in it must keep the variable name as the first token on the line.** `export`,
    `declare`, `printf -v`, a leading separator, an indented or `+=` form each leave bash computing one
    value while the test covers a smaller one, silently.
@@ -164,14 +164,14 @@ One clause each: what a deep change to fusion would have to respect, or would vi
 
 **Documentation surfaces**
 
-7. `260810-1635` — **a claim is stated once and cited from every other site.** In force in practice,
+7. `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` — **a claim is stated once and cited from every other site.** In force in practice,
    unrealised as a programme, and already cited as settled by later records. A deep change touching
    many surfaces at once is the precise shape this record predicts will leave false explanations
    standing next to correct code.
 8. `260811-1522` — every row of the `README-hooks.md` lib table is a hand-written claim no gate reads.
    Redefining what a `hooks/lib/*.ts` module does means editing its row by hand or shipping a
    description of the old behaviour. The row *set* is checked; the row *text* is not.
-9. `260813-0826` — `/fusion:help` is still a 131-line router into shipped prose. A change that alters
+9. `260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md` — `/fusion:help` is still a 131-line router into shipped prose. A change that alters
    the roster, the skill surface, the store layout or the resolver keys leaves the in-session help
    surface wrong until a human rewrites it. **Read the `Answered:` line, not the record**: the
    analysis re-cut the seam and parted company with the record's own motivation.
@@ -189,11 +189,11 @@ One clause each: what a deep change to fusion would have to respect, or would vi
 
 **Structure and process**
 
-13. `260810-1544` — **the one record whose transition is blocked by a missing file, not missing work.**
+13. `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` — **the one record whose transition is blocked by a missing file, not missing work.**
     Part (b) is realised in prose at nine sites, `CLAUDE.md:37` among them. Part (c) is unanswered and
     was never filed as its own record, while four shipped surfaces point at it by this record's name.
     One user action clears it: file part (c), then this moves to `_i_` on part (b) alone.
-14. `260810-2145` — the source-root half is settled and load-bearing (`bin/fusion-source-root`; no
+14. `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` — the source-root half is settled and load-bearing (`bin/fusion-source-root`; no
     `fusion-plugin-cwd` call survives in `agents/`, `skills/` or `rules/`). The domain-capture half is
     open, and this pass re-measured it: **three copies, not four** (`next`, `direct`, `cleanup`), and
     `cleanup`'s already diverges by a line. Its `tasklist.md` citation dangles — that store went on
@@ -232,7 +232,7 @@ source, and every release path in that window would have shipped a fix that was 
 repository and absent from the tarball. It was caught by a reconciliation pass and a review, both
 after the fact and both, in the record's own words, *by accident of what they happened to grep*.
 
-Runner-up, and the one that will cost more hours if less blast radius: `260810-1635`. A deep change
+Runner-up, and the one that will cost more hours if less blast radius: `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`. A deep change
 touching many shipped surfaces at once is the exact shape that record predicts will leave
 authoritative-sounding false explanations standing beside correct code, and the answer that would
 prevent it — one authoring home, citations everywhere else — is in force by habit and by nothing else.
@@ -245,13 +245,13 @@ All 28 records that carried `_i_` before this pass were checked for an implement
 in their `Implemented:` blocks against the tree. Six cite a path that no longer exists, and all six
 are correct as they stand:
 
-- `260716-1847_i_offline-verhalten-bei-plane-ausfall.md`, `260716-1847_i_plane-rolle-source-of-truth.md`
-  (`bin/fusion-plane`) and `260801-1020_i_may-any-fusion-writer-touch-rules.md` already carry
+- `260716-1847_*_offline-verhalten-bei-plane-ausfall.md`, `260716-1847_*_plane-rolle-source-of-truth.md`
+  (`bin/fusion-plane`) and `260801-1020_*_may-any-fusion-writer-touch-rules.md` already carry
   `Retired:` lines naming the commit that removed them.
-- `260812-1232_i_does-the-escalation-counter-…` and `260812-1232_i_does-the-write-guards-fusion-repo-stand-down-…`
+- `260812-1232_*_does-the-escalation-counter-…` and `260812-1232_*_does-the-write-guards-fusion-repo-stand-down-…`
   cite `hooks/lib/escalation.ts`, `hooks/clear-halt.ts` and `hooks/lib/self-detect.js` because **the
   implementation was the deletion**. Nothing to retire.
-- `260801-1020_i_provenance-header-on-rule-files.md` mentions `rules/protected-path-discipline.md` in
+- `260801-1020_*_provenance-header-on-rule-files.md` mentions `rules/protected-path-discipline.md` in
   narrative only; its operative `Implemented:` line cites `929dbf5`, `c2c2a04`, `de9d5aa`, and
   `rules/rule-file-provenance.md` and `hooks/lib/__tests__/provenance-header-lint.test.ts` are both
   present.
@@ -263,15 +263,15 @@ are correct as they stand:
 ## Housekeeping
 
 - One stale-marker citation inside the store was rewritten to the wildcard form:
-  `260812-0254_i_does-fusion-need-a-backlog-store-…:76` cited the placement record by its `_a_`
+  `260812-0254_*_does-fusion-need-a-backlog-store-…:76` cited the placement record by its `_a_`
   marker.
 - **No shipped-surface citation of either renamed record exists**, so neither rename reddens
   `hooks/lib/__tests__/reference-resolution-lint.test.ts`. Verified by grep over `rules/`, `agents/`,
   `skills/`, `docs/`, `bin/`, `hooks/` and the READMEs.
 - Three files outside this pass's scope still cite the old `_a_` markers and are left for their
-  owners: `shared/issues/260812-1720_o_the-migration-premise-…`,
-  `shared/issues/260819-0836_o_the-status-field-closure-…`, and
-  `shared/history/260819-0840-reconciliation.md` (an earlier pass's log, correctly frozen).
+  owners: `260812-1720_*_the-migration-premise-…`,
+  `260819-0836_*_the-status-field-closure-…`, and
+  `260819-0840-reconciliation.md` (an earlier pass's log, correctly frozen).
 - No issue was filed by this pass. Everything found is either an annotation on a record in scope or a
   question the two open decisions named above already own.
 - The test suite was not run, per the dispatch. Every finding rests on targeted greps and file reads.
@@ -290,13 +290,13 @@ verdict for this store, stated for the record and nowhere else:
   absent, which is normal after a clean exit.
 - **Grounding↔Directive** — **flagged.** Four records in active Grounding can never reach `_i_` under
   the vocabulary as it stands: two whose subject the Artifact removed
-  (`260806-1152`, `260810-2032`) and two whose answer was to build nothing (`260719-2141`,
+  (`260806-1152`, `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`) and two whose answer was to build nothing (`260719-2141`,
   `260816-0119`). One open decision covers the first pair and has been open four days; nothing covers
-  the second pair. A third, `260810-1544`, is blocked only on a record nobody has filed.
+  the second pair. A third, `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`, is blocked only on a record nobody has filed.
 
 **Rebalance recommendation:** revise Grounding — answer
-`circles/260815-0007-…/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+`circles/260815-0007-…/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
 (the measurement it asked for is in this log: no third instance), decide the no-op class beside it,
-and file part (c) of `260810-1544`. Those three acts take the unresolvable `_a_` count from four to
+and file part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`. Those three acts take the unresolvable `_a_` count from four to
 zero and unblock a fifth, leaving a backlog in which every remaining `_a_` is work someone could
 actually do.

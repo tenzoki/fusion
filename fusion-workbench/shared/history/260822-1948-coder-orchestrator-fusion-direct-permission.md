@@ -3,7 +3,7 @@
 **Status:** Complete
 **Dispatched by:** orchestrator
 **Circle:** none active (shared store)
-**Source:** `shared/decisions/260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md`
+**Source:** `260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md`
 (Form A, chosen by the user at a gate after a successful trial run)
 
 ## What landed
@@ -57,7 +57,7 @@ performs.
 - Section size: **1438 bytes**. `agents/orchestrator.md` 150 311 -> 151 749.
 - `agents/` surface: 401 242 -> 402 680 against a budget of 417 843. Head-room **16 601 -> 15 163**.
 - Reference-resolution pin: `records` 115 -> 116, `paths` and `anchors` unmoved. The one new token
-  is the section's citation of decision `260822-1635`. Re-approved with **one** attribution block
+  is the section's citation of decision `260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md`. Re-approved with **one** attribution block
   above `const BASELINE`, costing **6 lines**; the hook-test surface goes 20 073 -> 20 079 lines
   against 20 375, so head-room there is **302 -> 296**.
 - `hooks/lib/__tests__/fixtures/surface-growth.golden` regenerated twice (once per surface that

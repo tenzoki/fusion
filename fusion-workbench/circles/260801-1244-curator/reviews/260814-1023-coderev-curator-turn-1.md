@@ -4,7 +4,7 @@
 **Sender:** coderev
 **Circle:** `260801-1244-curator`
 **Reviewed-range:** `d7786eb..5b81f5a`
-**Not-opened:** `fusion-workbench/circles/260801-1244-curator/_t_circle.md`, `fusion-workbench/circles/260801-1244-curator/_a_circle.md`, `fusion-workbench/circles/260801-1244-curator/decisions/260814-0738_a_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`, `fusion-workbench/circles/260801-1244-curator/history/260814-0738-shaper-curator.md`, `fusion-workbench/circles/260801-1244-curator/history/260814-0845-planner-curator.md`, `fusion-workbench/circles/260801-1244-curator/reviews/260814-0857-conceptrev-plan-curator.md`, `fusion-workbench/circles/260801-1244-curator/issues/260814-0813_o_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`, `fusion-workbench/circles/260801-1244-curator/issues/260814-0828_o_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`, `fusion-workbench/circles/260801-1244-curator/issues/260814-0920_o_the-turn-log-drift-row-reports-drift-for-the-whole-duration-of-every-turn.md`, `fusion-workbench/circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `fusion-workbench/shared/history/260813-2345-orchestrator-session.md`, `fusion-workbench/shared/history/260813-2346-playmaker-direct-dispatch.md`, `fusion-workbench/shared/history/260814-0823-playmaker-direct-dispatch.md`, `fusion-workbench/shared/issues/260814-1001_o_the-skills-array-in-fusion-paths-test-is-hand-written-and-omits-two-skills.md`, `fusion-workbench/shared/issues/260814-1001_o_three-skill-bodies-embed-german-while-skill-bodies-are-an-english-surface.md`
+**Not-opened:** `260801-1244-curator`, `260801-1244-curator`, `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`, `260814-0738-shaper-curator.md`, `260814-0845-planner-curator.md`, `260814-0857-conceptrev-plan-curator.md`, `260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`, `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`, `260814-0920_*_the-turn-log-drift-row-reports-drift-for-the-whole-duration-of-every-turn.md`, `260814-0738_*_spec-curator.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/portfolio.md`, `260813-2345-orchestrator-session.md`, `260813-2346-playmaker-direct-dispatch.md`, `260814-0823-playmaker-direct-dispatch.md`, `260814-1001_*_the-skills-array-in-fusion-paths-test-is-hand-written-and-omits-two-skills.md`, `260814-1001_*_three-skill-bodies-embed-german-while-skill-bodies-are-an-english-surface.md`
 
 **On that list:** every shipped source and documentation file in the range was opened, in full or as its complete diff. The unopened set is workbench records only. `_a_circle.md` is the deleted half of the activation rename; the growth-bound decision was context-only per the dispatch; the three Circle issues and the two shared issues were read as titles, since the dispatch named them as already filed; the spec was searched rather than read end to end.
 
@@ -48,19 +48,19 @@ All seven are filed under `circles/260801-1244-curator/issues/` with the stamp `
 ### Registration and reachability
 
 **1. The curator is not in the orchestrator's dispatch allowlist, so two of its three invocation shapes cannot be reached. (High)**
-`agents/orchestrator.md:4` names thirteen sub-agents and not `fusion:curator`, while `agents/curator.md` `## Tool Discipline` describes a "dispatched by another agent" shape in full and `README-agents.md` `## Dispatch parameters` names "an agent that proxied the gate question" as a passer. The spec's C7 criterion (`planning/260814-0738_o_spec-curator.md:245`) requires dispatchability "for a user **or an orchestrator** that wants it mid-session". Plan step 2's file list does not name `agents/orchestrator.md`, so the omission entered at planning time and the implementation followed the plan.
+`agents/orchestrator.md:4` names thirteen sub-agents and not `fusion:curator`, while `agents/curator.md` `## Tool Discipline` describes a "dispatched by another agent" shape in full and `README-agents.md` `## Dispatch parameters` names "an agent that proxied the gate question" as a passer. The spec's C7 criterion (`260814-0738_*_spec-curator.md:245`) requires dispatchability "for a user **or an orchestrator** that wants it mid-session". Plan step 2's file list does not name `agents/orchestrator.md`, so the omission entered at planning time and the implementation followed the plan.
 A second consequence is `inference:` and worth settling before release: the `fusion` launcher starts the session as the orchestrator agent, and `/fusion:curate` is the first agent-dispatching skill in the tree whose target is not in that allowlist (verified by grep: `/fusion:cleanup` → reconciler, `/fusion:direct` and `/fusion:seed-from-plane` → shaper, `/fusion:next` → playmaker, all allowlisted). Whether a skill's own `allowed-tools` grant overrides the agent allowlist is exactly what `CLAUDE.md`'s release step 0 says to test end to end rather than infer.
-Issue: `260814-1023_o_the-curator-is-not-in-the-orchestrators-dispatch-allowlist-…`
+Issue: `260814-1023_*_the-curator-is-not-in-the-orchestrators-dispatch-allowlist-…`
 
 **2. Setup step 5 cites the provenance rule by a path that resolves only in this repo. (Medium)**
 `agents/curator.md` Setup step 5 says "Read `rules/rule-file-provenance.md`". In a consuming project that is the project's own `./rules/`, where the file does not exist; the plugin's copy is at `$FUSION_PLUGIN_ROOT/rules/`. Two rule files now assert that this citation is the mechanism by which the one agent that needs the file gets it (`rules/fusion-workbench-conventions.md` `## Rule-file provenance`, `rules/rule-file-provenance.md`). The reference-resolution lint resolves the token against this repo's tree, so it passes while the runtime read fails. Precedent for the fix is in the tree at `agents/investigator.md:17`.
-Issue: `260814-1023_o_the-curators-setup-cites-the-provenance-rule-…`
+Issue: `260814-1023_*_the-curators-setup-cites-the-provenance-rule-…`
 
 ### Two-file agreement between the agent and its skill
 
 **3. The survey pass's return contract is written only for the agent-dispatched shape. (Medium)**
 `skills/curate/SKILL.md` Step 3 requires the run file's path, the per-group counts, the candidate count and the blast-radius verdict back from the survey dispatch. `agents/curator.md` `## Tool Discipline` obliges exactly that in bullet 3 ("dispatched by another agent") and says nothing of it in bullet 2, the one that governs the skill path. The section's own opening claims the three shapes differ in one thing only, which this contradicts, and the candidate count is asked for on the skill's side alone.
-Issue: `260814-1023_o_the-surveys-return-contract-is-written-only-for-the-agent-dispatched-shape-…`
+Issue: `260814-1023_*_the-surveys-return-contract-is-written-only-for-the-agent-dispatched-shape-…`
 
 Everything else in that pairing checks out. The three dispatch parameters agree in name, order, values and absent-behaviour across `agents/curator.md` `## Dispatch parameters`, `skills/curate/SKILL.md` Step 6 and the three new `README-agents.md` rows. The two apply-mode refusals the skill attributes to the agent ("a ledger path that does not resolve is a halt, and an id the ledger does not carry is a halt naming that id") are both present in the agent prompt. The `$OUT_HISTORY` guard in Step 3 works because both consumers resolve the key off the same active Circle. The preserve-list categories the prompt inlines match `skills/revise-claude-md/SKILL.md` `## Pass guard — what to PRESERVE` exactly.
 
@@ -68,20 +68,20 @@ Everything else in that pairing checks out. The three dispatch parameters agree 
 
 **4. The gate rule and the ungated-write list overlap on the decision store. (Medium)**
 Surface 1 is "everything under `$SCAN_DECISIONS`" and the gate rule is absolute; `## Scope` then permits an ungated open record at `$OUT_DECISION`, which resolves inside `$SCAN_DECISIONS`. The intended split — create ungated, edit gated — is never written. `rules/critical-stance.md` §4 calls an overlapping case split a defect of the same kind as a wrong result, and this is the one place the agent's single safety property is stated and then contradicted.
-Issue: `260814-1023_o_the-gate-rule-and-the-ungated-write-list-overlap-on-the-decision-store.md`
+Issue: `260814-1023_*_the-gate-rule-and-the-ungated-write-list-overlap-on-the-decision-store.md`
 
 **5. The run file's head schema omits the status line the same section requires be updated. (Low)**
-Issue: `260814-1023_o_the-run-files-head-schema-omits-the-status-line-…`
+Issue: `260814-1023_*_the-run-files-head-schema-omits-the-status-line-…`
 
 ### Consequences of running the curator in this repository
 
 **6. An applied rule-file edit here leaves the golden fixture stale, and nothing names the owner of the regeneration. (Low)**
 The spec deliberately puts the plugin's shipped `rules/` inside the curator's remit when it runs here, which is where C11's validation run happens. Those files' byte sizes are pinned by the golden fixture, and regenerating it is `hooks/` work exclusion 6 forbids. `## Reporting work you may not do` covers a derivation needing code and a change to a file outside the remit; a fixture that goes stale as a side effect of an in-remit edit is neither.
-Issue: `260814-1023_o_an-approved-rule-file-edit-in-this-repo-leaves-the-golden-fixture-stale-…`
+Issue: `260814-1023_*_an-approved-rule-file-edit-in-this-repo-leaves-the-golden-fixture-stale-…`
 
 **7. One comment line left unwrapped at 130 characters. (Low)**
 `hooks/lib/__tests__/rules-emission-golden.test.ts:173`, from the count removal joining two wrapped lines.
-Issue: `260814-1023_o_one-comment-line-in-the-golden-test-was-left-unwrapped-…`
+Issue: `260814-1023_*_one-comment-line-in-the-golden-test-was-left-unwrapped-…`
 
 ## Cross-cutting observations
 

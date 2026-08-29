@@ -1,4 +1,4 @@
-# Playmaker Session — 260813-0926
+# Playmaker Session — 260813-0926-playmaker-direct-dispatch.md
 
 **Trigger:** direct-dispatch (no skill; the dispatch prompt carried only the domain line)
 **Domain bias:** `code`, parsed from `**Domain:** code` on the first content line
@@ -18,10 +18,10 @@ Fourteen Circle directories, each carrying exactly one record.
 | `_s_` | superseded | 1 |
 | `_d_` | deferred | 0 |
 
-Two anticipated Circles are new since the previous run on 260813-0007, both created in session
-`shared/history/260813-0806-orchestrator-session.md`:
-`circles/260813-0858-playmaker-maintains-backlog-store/` and
-`circles/260813-0910-documentation-matches-shipped-plugin/`. The anticipated count went from one
+Two anticipated Circles are new since the previous run on 260813-0007-playmaker-direct-dispatch.md, both created in session
+`260813-0806-orchestrator-session.md`:
+`260813-0858-playmaker-maintains-backlog-store` and
+`260813-0910-documentation-matches-shipped-plugin`. The anticipated count went from one
 to three, which is the substantive change in this portfolio.
 
 `.active-circle` is absent and no record carries the active marker. The two agree, so no pointer
@@ -55,7 +55,7 @@ Circle can run in parallel, and the portfolio says so.
 
 | Measure | Value |
 |---|---|
-| Entries read | 1, `shared/backlog/260811-0826_*_observations.md` (`_o_`; no `_p_` entries exist) |
+| Entries read | 1, `260811-0826_*_observations.md` (`_o_`; no `_p_` entries exist) |
 | Distinct ideas named inside it | 13 |
 | Non-idea fragments excluded from the count | 2 (a bare file path, a churn-ranking note) |
 | Evidence transcripts excluded from the count | 5 (the quoted agent replies) |
@@ -65,10 +65,10 @@ Circle can run in parallel, and the portfolio says so.
 | Live and shapeable ideas remaining | 3 |
 
 **Top-ranked backlog idea:** `bounded-dispatches-and-re-injected-context`, inside
-`shared/backlog/260811-0826_*_observations.md`. It rests entirely on records already on disk, so it
-can be shaped today: `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`
+`260811-0826_*_observations.md`. It rests entirely on records already on disk, so it
+can be shaped today: `260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`
 names the competing remedies, and
-`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures that the handoff
+`260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures that the handoff
 between dispatches costs nothing and that shorter dispatches would cut cost roughly fourfold.
 
 **The entry was recommended for splitting first, not for shaping.** It carries thirteen ideas, and
@@ -79,9 +79,9 @@ Duplicate groups named: the bounded-dispatch remedy is stated twice, fullest in 
 line; `self-repair-crowds-out-project-work` and `radical-simplification-of-fusion` are one idea,
 fullest in the entry's three closing questions; `unverified-claims-relayed-upward` duplicates the
 filed record
-`shared/issues/260812-0253_*_the-orchestrators-instructions-to-sub-agents-are-often-wrong.md`.
+`260812-0253_*_the-orchestrators-instructions-to-sub-agents-are-often-wrong.md`.
 
-**Difference from the previous run, stated rather than left to be noticed.** The run on 260813-0007
+**Difference from the previous run, stated rather than left to be noticed.** The run on 260813-0007-playmaker-direct-dispatch.md
 reported two duplicate groups where this run reports three. The added group is the bounded-dispatch
 remedy stated twice inside the entry. Nothing in the entry changed between the runs; this is a
 difference in reading, and the finer reading is the one this run stands behind. The count of live
@@ -89,28 +89,28 @@ and shapeable ideas is unchanged at three, so the recommendation is unaffected.
 
 Nothing was written into the backlog store. No entry was created, renamed or edited. The decision
 that would give the playmaker that write,
-`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`, was
+`260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`, was
 answered by the user on 260813 but is not implemented, and the Circle that implements it is this
 run's top-ranked one.
 
 ## Warnings emitted to the portfolio
 
-- `curator-grounding-measurements-falsified` — `circles/260801-1244-curator/_*_circle.md` states
+- `curator-grounding-measurements-falsified` — `260801-1244-curator` states
   that `rules/fusion-workbench-conventions.md` holds 54 401 bytes across 32 second-level headings.
   Measured this run against the working tree: 49 992 bytes, 24 second-level headings. Third
   consecutive run reporting it.
 - `curator-circle-missing-artifact-subdirectories` — that Circle directory holds only its record;
   all six artifact subdirectories are absent. Both Circles created on 260813 have all six.
 - `one-sided-dependency-between-the-two-new-circles` — the Dependencies section of
-  `circles/260813-0858-playmaker-maintains-backlog-store/_*_circle.md` still asks for the
+  `260813-0858-playmaker-maintains-backlog-store` still asks for the
   documentation Circle's directory name to be added, and that Circle now exists. Already filed as
-  `shared/issues/260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`.
+  `260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`.
   The playmaker cannot perform the write either: `## Dependencies` is not among its three
   appendable sections.
 - `three-tests-fail-at-head` — three tests fail at `1c2d555` in
   `hooks/lib/__tests__/circle-stash-git-exclusion.test.ts` and
   `hooks/lib/__tests__/fusion-plane.test.ts`. Filed as
-  `shared/issues/260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`.
+  `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`.
   Surfaced because a red baseline degrades the acceptance evidence of whichever Circle activates
   next.
 - `claude-md-always-on-figure-is-stale` — `CLAUDE.md:64` states 88 023 bytes of always-on rules per
@@ -144,10 +144,10 @@ anticipated Circle and were reported as an ordinary warning, not as this event.
 | Path | Write |
 |---|---|
 | `fusion-workbench/portfolio.md` | full regeneration (overwrite) |
-| `circles/260813-0858-playmaker-maintains-backlog-store/_a_circle.md` | appended `## Activation proposal (playmaker run 260813-0926)` |
-| `shared/history/260813-0926-playmaker-direct-dispatch.md` | this file |
+| `260813-0858-playmaker-maintains-backlog-store` | appended `## Activation proposal (playmaker run 260813-0926-playmaker-direct-dispatch.md)` |
+| `260813-0926-playmaker-direct-dispatch.md` | this file |
 
 No marker was renamed, `.active-circle` was not touched, and no plan, queue, decision, issue,
 backlog entry, code or data file was modified. No `## Activation proposal` was appended to
-`circles/260801-1244-curator/_a_circle.md` this run; the two proposals already on that record, from
-runs 260807-1646 and 260813-0007, stand and were not rewritten.
+`260801-1244-curator` this run; the two proposals already on that record, from
+runs 260807-1646-playmaker-direct-dispatch.md and 260813-0007-playmaker-direct-dispatch.md, stand and were not rewritten.

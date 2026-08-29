@@ -1,7 +1,7 @@
 # Concept Evaluation: Plane bounded bridge plan
 
 **Date:** 2026-07-19 22:29
-**Target:** `circles/260719-1536-plane-mirror-integration/planning/260719-2223_o_plan-plane-bounded-bridge.md`
+**Target:** `260719-2223_*_plan-plane-bounded-bridge.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 3  |  **Validation:** by-tool (mmdc, all three exit 0)
 

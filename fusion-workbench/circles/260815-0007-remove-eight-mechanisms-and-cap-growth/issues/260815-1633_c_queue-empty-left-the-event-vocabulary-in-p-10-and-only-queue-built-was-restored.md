@@ -38,7 +38,7 @@ event gone, that session's log holds a `session_start`, no `queue_built`, no `tu
 log the sole durable record of a session's shape; this is the one shape it can no longer record.
 
 **The plan did not ask for either removal.** Neither event appears in step 10's Files or Changes
-lists (`planning/260815-0029_o_…` lines 284-298). Both went out with the queue-ground apparatus that
+lists (`260815-0029_*_…` lines 284-298). Both went out with the queue-ground apparatus that
 sat near them.
 
 ## Suggested direction

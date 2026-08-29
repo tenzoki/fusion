@@ -1,10 +1,10 @@
 # Coder — the `bin/` roster joins the derivable-enumerations lint
 
 **Status:** Complete
-**Date:** 260813-1920
+**Date:** 260813-1920-coder-step3-bin-roster-enumeration-lint.md
 **Agent:** coder
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `planning/260813-1820_o_documentation-matches-shipped-plugin.md`, step 3 (now `[DONE]`)
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, step 3 (now `[DONE]`)
 **Files changed:** `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` only, one appended `describe` block plus one derived-ground-truth helper.
 
 ## What was added

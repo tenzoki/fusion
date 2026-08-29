@@ -2,14 +2,14 @@
 
 ---
 **Domain:** code
-**Filed by:** orchestrator, at the Rebalance gate of session 260822-1009, on the user's choice to revise the Grounding
+**Filed by:** orchestrator, at the Rebalance gate of session 260822-1009-orchestrator-session.md, on the user's choice to revise the Grounding
 **Cross-references:**
-`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` (the record this
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` (the record this
 supersedes, and the answer that stood for a month);
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the specification that answers
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the specification that answers
 this, approved by the user at a gate on 260822);
-`shared/history/260822-1009-orchestrator-session.md` (the eight gate answers the specification rests on);
-`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`
+`260822-1009-orchestrator-session.md` (the eight gate answers the specification rests on);
+`260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`
 (the reason the Circle sequence this answer prescribes is not yet in the portfolio)
 
 ---
@@ -59,9 +59,9 @@ was choosing between, and because option 2 is what was chosen.
 None needed. The answer below is the user's, given across eight gate answers in three shaping rounds.
 
 ---
-Answered: shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md — **option 2, in the
+Answered: 260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md — **option 2, in the
 narrow form that specification defines**, approved by the user at a gate on 260822 and resting on eight
-answers recorded in `shared/history/260822-1009-orchestrator-session.md`.
+answers recorded in `260822-1009-orchestrator-session.md`.
 
 fusion supports several people on one project **through several checkouts, with git as the transport**.
 Parallelism comes from several sessions and from nowhere else: one session still holds at most one
@@ -85,8 +85,8 @@ answer is chosen but not proven.
 
 **Addendum 260822-2230 — it is proven, and the paragraph above is superseded by measurement rather
 than deleted.** The measurement ran the same day, as the single task of Circle
-`circles/260822-1921-measure-what-two-checkouts-share/`, and its report is
-`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`.
+`260822-1921-measure-what-two-checkouts-share`, and its report is
+`260822-2219-what-two-checkouts-of-one-project-actually-share.md`.
 
 **The premise holds for both arrangements this answer relies on**, a second full clone and a
 `git worktree` of the same repository, on one precondition: each tree carries its own
@@ -108,11 +108,11 @@ rather than as a defect against it.
 **Two findings the measurement produced that bear on this answer without changing it.** A second
 checkout has no active Circle while holding a record whose marker says one is active, and nothing
 states what an orchestrator should do in that tree — open as
-`circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`.
+`260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`.
 And the specification's class R3 does not survive measurement for `.fusion-setup`: every Setup
 rewrites it, so every checkout dirties a tracked file and two would conflict on a one-line diff —
 open as
-`circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
+`260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
 Its sibling `.asset-provenance` behaves as the class claims.
 
 **What this addendum does not do.** It does not promote this record to implemented. The answer's

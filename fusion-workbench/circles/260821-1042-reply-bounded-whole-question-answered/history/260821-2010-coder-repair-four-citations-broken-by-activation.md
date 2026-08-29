@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
 **Dispatched by:** the orchestrator, with the four files named and the scope closed around them
 **HEAD at time of work:** `e764637`
 
@@ -13,7 +13,7 @@ Four decision records under this Circle's `decisions/` each carried, on line 6, 
 anticipated marker spelled out. Activation renamed that record and the four pointers went dangling.
 Each line 6 now cites the marker position as `_*_`, which is the form
 `rules/fusion-workbench-conventions.md` `## Marker globs` requires and
-`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`
+`260806-0015_*_zitierform-fuer-workbench-records.md`
 ratified. The dangling token is not reproduced here: the citation gate reads this file too.
 
 ## Pointer or statement, per file
@@ -49,7 +49,7 @@ of head-room standing at `e764637` are untouched.
 
 ## The defect record stays open
 
-`shared/issues/260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`
+`260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`
 was read before the repair and holds the analysis. It is a repair rather than a fix and the record
 says so itself: the loop reproduces at the next anticipated Circle that has scoping decisions filed
 against it, because the writers still reach for the exact filename. Closing the record was out of

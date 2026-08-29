@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** curator
-**Cross-references:** `circles/260801-1244-curator/history/260814-1332-curator-run.md` §3 (the corpus measurement this record is filed from); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` (position A); `agents/curator.md` `## Remit` and `circles/260801-1244-curator/_t_circle.md` `## Directive` (position B); `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md` and `shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` (the two instances inside `$SCAN_DECISIONS`); `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (the retirement that produced them)
+**Cross-references:** `260814-1332-curator-run.md` §3 (the corpus measurement this record is filed from); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` (position A); `agents/curator.md` `## Remit` and `260801-1244-curator` `## Directive` (position B); `260801-1020_*_may-any-fusion-writer-touch-rules.md` and `260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` (the two instances inside `$SCAN_DECISIONS`); `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (the retirement that produced them)
 
 ---
 
@@ -12,12 +12,12 @@
 
 This workbench holds 84 decision records spanning 40 days, and **none carries the superseded marker**. The curator's first validation run was dispatched to find out whether that is because the supersessions were never recorded or because there are none. Measured against HEAD `ae21c87` on 2026-08-14: across the 19 citation-linked pairs the run's selection rule reached inside `$SCAN_DECISIONS`, no live record overturns another, and four of those pairs say in their own text that they refine rather than supersede.
 
-What the corpus *does* hold is a different relation, and the marker vocabulary has no state for it: **an implemented decision whose implementation was later deleted, where the deletion was authorised at a user gate and a plan rather than by a decision record.** Three retirements produced this shape — the branch policy on 2026-08-09, the write classifier on 2026-08-07, and the protected-path half on 2026-08-12. The last is the largest: it removed the write-tool deny, the before-and-after fingerprint, the write-back, the `FUSION_ALLOW_RULES_WRITE` exemption and the `guard.protectedPaths` configuration leaf. It was decided by the user directly at 260812-1230, planned in `shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, and no decision record authorised it. Two records were filed as successor *questions* and both are still open.
+What the corpus *does* hold is a different relation, and the marker vocabulary has no state for it: **an implemented decision whose implementation was later deleted, where the deletion was authorised at a user gate and a plan rather than by a decision record.** Three retirements produced this shape — the branch policy on 2026-08-09, the write classifier on 2026-08-07, and the protected-path half on 2026-08-12. The last is the largest: it removed the write-tool deny, the before-and-after fingerprint, the write-back, the `FUSION_ALLOW_RULES_WRITE` exemption and the `guard.protectedPaths` configuration leaf. It was decided by the user directly at 260812-1230, planned in `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, and no decision record authorised it. Two records were filed as successor *questions* and both are still open.
 
 At least two records inside the curator's editable surface are left in that state, and roughly eleven more sit in closed Circles:
 
-- `shared/decisions/260801-1020_*_may-any-fusion-writer-touch-rules.md` — marker `_i_`. Its whole answer was the environment-gated exemption plus the project-level `protectedPaths` leaf. Neither exists. Its `Implemented:` line still cites the release that shipped them.
-- `shared/decisions/260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` — marker `_i_`. Its subject, the revert, is gone.
+- `260801-1020_*_may-any-fusion-writer-touch-rules.md` — marker `_i_`. Its whole answer was the environment-gated exemption plus the project-level `protectedPaths` leaf. Neither exists. Its `Implemented:` line still cites the release that shipped them.
+- `260809-1527_*_should-the-revert-narrow-to-the-payload-path-for-the-four-write-tools.md` — marker `_i_`. Its subject, the revert, is gone.
 
 The question must be answered now because it decides what the curator does on every future run against any project, and because the answer changes which of the two positions below an agent obeys when they disagree.
 
@@ -61,7 +61,7 @@ Option 4 is right about where the knowledge is cheapest and wrong about whether 
 `speculation:` the reason this shape has no marker is that fusion's decision vocabulary was designed around decisions superseding each other, and this project has instead retired decisions by deleting code at user gates. If that is a durable habit rather than an artefact of one guard-heavy quarter, option 3's annotation will be used more often than `Superseded by:` ever has been — which, across 84 records, is zero times.
 
 ---
-Answered: shared/history/260814-2306-orchestrator-session.md:318 — Option 3: a `Retired:` annotation citing the plan, commit or gate that removed the implementation, with the marker left at `_i_`. Nothing renames, so no glob, filter or count changes behaviour, and `_s_` keeps its single meaning. Answered by the user at the Rebalance gate of Circle 260815-0007, where the population had grown from two records to about twenty-four.
+Answered: 260814-2306-orchestrator-session.md:318 — Option 3: a `Retired:` annotation citing the plan, commit or gate that removed the implementation, with the marker left at `_i_`. Nothing renames, so no glob, filter or count changes behaviour, and `_s_` keeps its single meaning. Answered by the user at the Rebalance gate of Circle 260815-0007, where the population had grown from two records to about twenty-four.
 Implemented: c8eac96 — the `Retired:` annotation is defined in `rules/fusion-workbench-conventions.md` at its three named places (the `_i_` marker row, the decision-files subsection of `## Inline State Tracking`, and the record template's footer) and applied to the 25 records a full enumeration of all 63 implemented records found to cite an artifact the tree no longer holds. No marker was renamed, which is the option's substance.
 Deferred:
 Superseded by:
@@ -76,7 +76,7 @@ Both halves of option 3 are on disk. The definition landed in
 annotation form and its no-rename clause in `## Inline State Tracking` (:431-436), and the
 `Retired:` line in `## Decision Record Template` (:520) — written by a parallel dispatch, not by this
 pass. The annotation itself is on **twenty-five** records, listed in
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-2056-reconciliation.md`.
+`260815-2056-reconciliation.md`.
 No marker moved anywhere, so the property the option was chosen for holds: no glob, filter or count
 in fusion changes behaviour.
 
@@ -89,6 +89,6 @@ twenty-five `_i_` records, and the two `_a_` records are not instances of this q
 
 **The `_a_` case is a different question and was filed rather than absorbed.** `Retired:` as landed
 cites what removed *the implementation*, and an `_a_` record has none. See
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_o_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
+`260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`.
 The `speculation:` block above guessed the annotation would be used more often than `Superseded by:`
 ever has been; on the first day it was used twenty-five times against that record's zero.

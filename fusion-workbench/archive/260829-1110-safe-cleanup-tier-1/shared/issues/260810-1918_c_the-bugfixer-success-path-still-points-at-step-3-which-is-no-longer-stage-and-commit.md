@@ -23,12 +23,12 @@ message file written, then has nothing to pass to `git commit -F`; or jumps to s
 message, and treats the label "(stage + commit)" as meaning that step 3 also stages — which is the
 `-m`/heredoc habit the whole change exists to remove. Either way the branch that reaches step 3b
 *through a bugfix* is the one branch reading a stale map, and it is also the branch where a leaked
-commit lock is most likely (see `260810-1918_o_step-3b-drops-the-lock-form…`).
+commit lock is most likely (see `260810-1918_*_step-3b-drops-the-lock-form…`).
 
 **Fix.** `agents/orchestrator.md:402` → "proceed to step 3 (write the message, then stage and commit
 at step 4)". One line.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 

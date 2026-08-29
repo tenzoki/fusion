@@ -6,7 +6,7 @@ The new empty-pointer message in `bin/fusion-paths` runs its placeholder as a co
 
 Reproduced on 260824 in a scratch workbench with an empty `.active-circle`: `fusion-paths coder` prints the two syntax-error lines and the truncated message, exit 3.
 
-Fix direction: escape the backticks (`\``) or drop them and write the placeholder bare; and give the empty-pointer test one `expect(r.stderr).toContain("<YYMMDD-HHMM>-<slug>")` so the message is pinned. The `Resolved:` note the step wrote for row 72 (`shared/issues/260818-0715_*_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`) says only that the pointer message shows the placeholder; it does not, and that record is still open for steps 10 and 13, so this is filed beside it rather than appended.
+Fix direction: escape the backticks (`\``) or drop them and write the placeholder bare; and give the empty-pointer test one `expect(r.stderr).toContain("<YYMMDD-HHMM>-<slug>")` so the message is pinned. The `Resolved:` note the step wrote for row 72 (`260818-0715_*_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`) says only that the pointer message shows the placeholder; it does not, and that record is still open for steps 10 and 13, so this is filed beside it rather than appended.
 
 Severity: High. A shipped helper's only stderr for a user-fixable fault now leads with a bash syntax error.
 ---

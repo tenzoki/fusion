@@ -4,7 +4,7 @@
 **Date:** 2026-08-21 02:05
 **Status:** Complete
 **Dispatched by:** user, to fix the two High findings of the Turn 1 review
-**Records closed:** `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0140_*_setup-step-0e-reads-fusion-src…`, `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent…`
+**Records closed:** `260821-0140_*_setup-step-0e-reads-fusion-src…`, `260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent…`
 
 ## The two defects, and what each became
 

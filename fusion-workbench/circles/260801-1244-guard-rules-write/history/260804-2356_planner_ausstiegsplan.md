@@ -2,7 +2,7 @@
 
 **Datum:** 2026-08-04 23:56
 **Agent:** planner (dispatch vom Orchestrator)
-**Ausgabe:** `circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`
+**Ausgabe:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`
 
 ## Auftrag
 
@@ -21,7 +21,7 @@ Schritt ohne Falsifikat, und für jeden Schritt die Wirkung im konsumierenden Pr
   hat also `hooks/dist` mitgebaut.
 - Issue-Zählung und Schwere-Extraktion im Issue-Store des Circles.
 - Zitatflächen beider Dateien per grep über `agents/ skills/ bin/ hooks/ docs/ rules/`.
-- Spec `shared/planning/260801-1122_o_spec-normative-consolidation.md`, C9 und Constraints.
+- Spec `260801-1122_*_spec-normative-consolidation.md`, C9 und Constraints.
 
 ## Befunde, die den Auftrag korrigieren
 
@@ -30,7 +30,7 @@ Schritt ohne Falsifikat, und für jeden Schritt die Wirkung im konsumierenden Pr
    Plugin-Datei. Die Spec sagt dasselbe seit 2026-08-01 (C9 Schritt 4, Zeilen 509-514).
    Der wirksame Hebel ist die `case "$AGENT"`-Mustertabelle.
 2. **18 offene Issues, nicht 19 plus einen.** `260804-2100` ist bereits enthalten.
-3. **Zwei echte High, dazu ein geerbtes.** `260804-1025`, `260804-1332`, `260804-1223`.
+3. **Zwei echte High, dazu ein geerbtes.** `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`, `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md`, `260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md`.
    Die Annahme "keines High" trägt nicht.
 4. **`hooks/dist` war im Index veraltet**, um 3 874 Einfügungen und 325 Löschungen über
    17 Dateien plus zwei nie kompilierte Module. Der Rebuild ist als Nebenwirkung von

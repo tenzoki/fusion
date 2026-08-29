@@ -2,7 +2,7 @@ The `**Status:**` closure answers one of the defect's two halves, and the templa
 
 ---
 
-`shared/issues/260811-2146_c_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`
+`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`
 was closed in `b54ace5` on the removal of the `**Status:**` head field. That record states two
 defects, and its own body gives the second one a heading: `## The second half: the template stub is
 left standing beside its own answer`. The `Resolved:` note addresses only the first.
@@ -42,9 +42,9 @@ Three live records still carry that block verbatim, measured across `shared/deci
 
 | Marker | Record |
 |---|---|
-| `_i_` | `shared/decisions/260818-0814_i_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md` |
-| `_a_` | `shared/decisions/260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md` |
-| `_i_` | `shared/decisions/260818-2212_i_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md` |
+| `_i_` | `260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md` |
+| `_a_` | `260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md` |
+| `_i_` | `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md` |
 
 Twelve became three because the population moved, not because the mechanism did. The third entry is
 the decision record that authorised the closure, and it carries the stub at lines 146-150 while its
@@ -52,7 +52,7 @@ real `Answered:` and `Implemented:` annotations sit at 167 and 170.
 
 ## Why this is filed rather than reopened
 
-The marker stays `_c_` on `260811-2146`: the first half is genuinely settled, and the conventions
+The marker stays `_c_` on `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`: the first half is genuinely settled, and the conventions
 rule for a closure whose reasoning is later found narrower than stated is a `Revised by:` line and no
 rename. This record carries the unresolved half forward so it is not lost with the closed one.
 
@@ -76,7 +76,7 @@ here rather than prescribing one:
 
 Whichever is taken, the always-on rule set moves, so both goldens regenerate.
 
-**Found by:** reconciler, final reconciliation of session `260818-2301`, verified at HEAD `83488e9`.
+**Found by:** reconciler, final reconciliation of session `260818-2301-orchestrator-session.md`, verified at HEAD `83488e9`.
 No Circle is active, so it is filed in the shared store under the Origin Rule.
 
 ---

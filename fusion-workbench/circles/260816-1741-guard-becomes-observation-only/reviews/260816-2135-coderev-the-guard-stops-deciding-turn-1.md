@@ -5,7 +5,7 @@
 **Reviewed-range:** `3d41d4a..3c2e1c6`
 **Not-opened:** none
 **Circle:** `260816-1741-guard-becomes-observation-only`
-**Plan under review:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, steps 1 to 6
+**Plan under review:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, steps 1 to 6
 
 ## Summary
 
@@ -87,7 +87,7 @@ that one (finding A).
 
 **A. High — step 9's harness reduction deletes four fixtures `guard-bash-integration.test.ts`
 imports, and its "five surviving files" count is off by four.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2122_o_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md`
+`260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md`
 
 This is the **third defect of the shape the dispatch asked me to look for**. Step 9 removes
 `GOVERNED_*`, `withGovernedProject`, `governedFiles`, `readEscalation` and `EscalationSnapshot`
@@ -103,7 +103,7 @@ re-pointed cases would run on are removed by the same step.
 
 **B. Medium — `bin/fusion-turn-budget`'s header documents the configuration file step 7a renames,
 and no step opens the file.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2124_o_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`
+`260816-2124_*_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`
 
 `:39` carries the worked example `fusion-guard.json {"orchestrator": {"maxTurns": 12}}` and `:40-41`
 describes the three-layer merge "the same walk every guard setting takes". `CLAUDE.md`'s Layout row
@@ -116,7 +116,7 @@ all step 11, which runs after 7b). This one file is not.
 
 **C. High — `CLAUDE.md`'s two dangling citations keep `reference-resolution-lint` red, and no step
 in this plan may fix them.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2123_o_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`
+`260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md`
 
 `CLAUDE.md:29` and `:129` name `hooks/lib/project-relative.ts`, deleted at `3c2e1c6`. The lint
 scans `CLAUDE.md`, so the Circle record's accepted residual — "`CLAUDE.md` keeps a false statement
@@ -138,7 +138,7 @@ be re-measured at the end, and no step's Changes text currently says who re-appr
 
 **D. Medium — `hooks/lib/guard-state-file.ts` names the deleted `escalation.ts` as one of its three
 live callers, and rests a design choice on it.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2125_o_guard-state-file-names-the-deleted-escalation-module-as-one-of-its-three-live-callers.md`
+`260816-2125_*_guard-state-file-names-the-deleted-escalation-module-as-one-of-its-three-live-callers.md`
 
 Three present-tense claims at `:34`, `:79` and `:103`. The third is the load-bearing one: it is the
 stated reason the `root` parameter is optional, and its only cited subject is the deleted module,
@@ -151,7 +151,7 @@ are accurate; the one it did not touch is not.
 
 **E. Medium — `docs/upgrading-to-v9.md` tells a consuming project that a halt still blocks and
 still clears, under the heading `## What needs no action`.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2126_o_the-v9-upgrade-note-tells-a-project-a-halt-still-blocks-and-still-clears-and-no-step-owns-it.md`
+`260816-2126_*_the-v9-upgrade-note-tells-a-project-a-halt-still-blocks-and-still-clears-and-no-step-owns-it.md`
 
 `:133-135`. All three clauses are false at HEAD: nothing blocks, `clear-halt.js` is deleted, and
 there is no block message to name the command. The file is shipped, pointed at from `README.md`
@@ -165,7 +165,7 @@ but at a line it does not name.
 
 **F. Low — the Setup deletion offer attributes the legacy halt flag to the protected-path check
 alone, where `hooks/guard.ts` says either mechanism.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2127_o_the-setup-deletion-offer-names-one-of-the-two-mechanisms-that-could-have-raised-the-flag.md`
+`260816-2127_*_the-setup-deletion-offer-names-one-of-the-two-mechanisms-that-could-have-raised-the-flag.md`
 
 `skills/setup/SKILL.md:308-310` names one cause and one date; `hooks/guard.ts:44-47`, written one
 step later, says "by either mechanism". CHECK 3 raised the same halt through the same counter
@@ -241,7 +241,7 @@ Findings not rewritten. Their disposition at HEAD, each verified against the tre
 against the step that claimed it:
 
 **All six defects this pass filed are closed.** `260816-2021`, `260816-2032`, `260816-2108`,
-`260816-2115`, `260816-2122` and `260816-2123` each carry a `Resolved:` footer and a `_c_` marker.
+`260816-2115_*_the-why-the-message-is-english-argument-names-two-removed-mechanisms-as-its-examples.md`, `260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md` and `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md` each carry a `Resolved:` footer and a `_c_` marker.
 The last of them, the one this review called a release blocker, closed on the remedy this review
 recommended: `/fusion:curate` ran inside the Circle as step 16 (`5763550`) rather than step 11
 being given an exception, so the curator boundary held.
@@ -250,6 +250,6 @@ being given an exception, so the curator boundary held.
 HEAD is green whole — 35 files, 653 tests — and the citation lint is green on its own (34 cases),
 which is the gate this review measured as red at `3c2e1c6`.
 
-**Theme 1's dominant pattern was confirmed twice more after this pass**, in `260816-2315` and
-`260816-2316`, both since closed. Both were the same shape this review named: a step reasoned about
+**Theme 1's dominant pattern was confirmed twice more after this pass**, in `260816-2315_*_hooks-wiring-test-was-in-step-9s-list-was-not-edited-and-justifies-bash-by-a-mechanism-removed-on-260812.md` and
+`260816-2316_*_step-13s-retired-line-list-is-wrong-in-three-of-its-four-entries-and-its-marker-scope-misses-a-fifth-record.md`, both since closed. Both were the same shape this review named: a step reasoned about
 a symbol's or a record's last consumer and the consumer was somewhere the step never grepped.

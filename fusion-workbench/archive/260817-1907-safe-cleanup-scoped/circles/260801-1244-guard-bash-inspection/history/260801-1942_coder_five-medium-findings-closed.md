@@ -1,14 +1,14 @@
 # coder — the five Medium review findings closed: three false positives, two coverage gaps
 
 **Date:** 2026-08-01 19:42
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Review:** `reviews/260801-1905-coderev-guard-bash-inspection.md`
+**Circle:** `260801-1244-guard-bash-inspection`
+**Review:** `260801-1905-coderev-guard-bash-inspection.md`
 **Issues:**
-`issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`,
-`issues/260801-1900_c_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md`,
-`issues/260801-1901_c_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`,
-`issues/260801-1902_c_git-clean-restore-and-stash-mutate-protected-paths-and-are-in-neither-the-table-nor-the-residual-list.md`,
-`issues/260801-1903_c_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`,
+`260801-1900_*_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md`,
+`260801-1901_*_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`,
+`260801-1902_*_git-clean-restore-and-stash-mutate-protected-paths-and-are-in-neither-the-table-nor-the-residual-list.md`,
+`260801-1903_*_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`
 **Status:** Complete
 
 Three of the five are the classifier denying legitimate work; one is the test coverage
@@ -144,7 +144,7 @@ No new `hooks/dist/` files — the four rebuilt outputs (`bash-mutation-guard.{j
 
 ## Left for whoever picks the review up next
 
-The Low finding `260801-1904_o_four-classifier-behaviours-are-deletable-with-a-green-suite.md`
+The Low finding `260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md`
 is untouched — it is the mutation-testing finding, not one of the five. Two of its four
 survivors are adjacent to work done here (`isSkippedRedirectTarget`, `--` end-of-flags)
 and would be cheap now.

@@ -27,7 +27,7 @@ way — the number is prose, not a threshold, and no assertion reads it.
 It is filed because this project treats a stated cost as load-bearing: the number is there so the next
 reader can weigh the exclusion instead of re-deriving it, and a figure that cannot be reproduced from
 the pattern beside it defeats that purpose. It is the same class as
-`shared/issues/260816-1330_o_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce…`.
+`260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce…`.
 
 ## Suggested fix
 
@@ -36,7 +36,7 @@ length", or state it as `0.375^7`. One line at `:32`.
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review `260818-0748` (range `1dc062d..33645a2`)
+**Filed by:** coderev, review `260818-0748-coderev-turn-1-range-1dc062d-33645a2.md` (range `1dc062d..33645a2`)
 
 ---
 Resolved: the header now reads "0.375^7, about 1 in 960 for the seven-character short hash

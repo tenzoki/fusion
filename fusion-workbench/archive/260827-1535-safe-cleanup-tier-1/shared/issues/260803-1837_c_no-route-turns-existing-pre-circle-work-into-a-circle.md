@@ -1,6 +1,6 @@
 # fusion cannot turn existing pre-Circle work into a Circle
 
-**Filed:** 260803-1837
+**Filed:** 260803-1837_*_no-route-turns-existing-pre-circle-work-into-a-circle.md
 **Severity:** Medium-High
 **Domain:** code
 **Filed by:** consultant (at Kai's request)
@@ -155,7 +155,7 @@ was found, and the claims resting on them stand unchecked here.
 
 ## Cross-references
 
-- `archive/260817-1907-safe-cleanup-scoped/shared/issues/260716-1958_*_migration-leaves-circle-record-fields-dangling.md` — the
+- `archive/260817-1907-safe-cleanup-scoped/260716-1958_*_migration-leaves-circle-record-fields-dangling.md` — the
   closed issue that established path-not-filename semantics for this same field, and the
   reason the cross-store case is documented at all.
 - `rules/fusion-workbench-conventions.md` `## Circle record template`, `## Origin Rule
@@ -164,7 +164,7 @@ was found, and the claims resting on them stand unchecked here.
   activation. Not caused by that work.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md:82` still fills anticipated-circle frontmatter with `(none yet)` and `:28` still bars touching an existing Circle in that mode. One of the two routes the record named, `skills/seed-from-plane/`, no longer exists; the primary route `/fusion:direct` reproduces the defect unchanged. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/shaper.md:82` still fills anticipated-circle frontmatter with `(none yet)` and `:28` still bars touching an existing Circle in that mode. One of the two routes the record named, `skills/seed-from-plane/`, no longer exists; the primary route `/fusion:direct` reproduces the defect unchanged. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: referred (backlog) — a route that adopts existing pre-Circle work (spec, plan, issues, decisions) into an `_a_` Circle, with the move-or-cite question decided first, is Circle-sized; backlog entry to be filed by the user

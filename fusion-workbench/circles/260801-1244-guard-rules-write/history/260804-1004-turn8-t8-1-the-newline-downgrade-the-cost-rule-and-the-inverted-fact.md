@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-04 10:04
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 5 of this session (the Circle's eighth)
-**Task:** T8-1 — three fixes from `reviews/260804-0845-coderev-turn7-…` plus one decision draft
+**Circle:** `260801-1244-guard-rules-write`, Turn 5 of this session (the Circle's eighth)
+**Task:** T8-1 — three fixes from `260804-0845-coderev-turn7-…` plus one decision draft
 **Suite:** `npm test` — 1241 passed, 24 files, green (was 1235)
 **Status:** Complete
 
@@ -24,7 +24,7 @@ the record now says the decision stands on the measured defect alone.
 
 ---
 
-## Fix 1 — `&&` followed by a newline (`260804-0838`, High, regression)
+## Fix 1 — `&&` followed by a newline (`260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md`, High, regression)
 
 ### The change
 
@@ -87,7 +87,7 @@ a following newline, and the shell-parse suite pins the pair
 
 ---
 
-## Fix 2 — the cost statement (`260804-0840`, Medium, highest reach)
+## Fix 2 — the cost statement (`260804-0840_*_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md`, Medium, highest reach)
 
 The shipped sentence was *"The cost is these five shapes, and nothing else measured
 moved"*, in the file loaded into every agent's context in every consuming project. Ten of
@@ -109,7 +109,7 @@ answer the three questions should re-read the rule rather than look for their co
 
 Every illustration row was measured through the real classifier before it was written down.
 The three missing families are all in it: the redirection-to-a-literal-relative-target rows
-(`cd hooks; npm test > out.log`), the `260804-0839` over-denies, and the bare newline.
+(`cd hooks; npm test > out.log`), the `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` over-denies, and the bare newline.
 
 The same rule replaces the same enumeration in `README-hooks.md` and in the module
 docstring, and the test formerly titled *"costs exactly these five ordinary shapes"* is now
@@ -124,14 +124,14 @@ cross-product (heads × joiners × directory builtins × joiners × writes, plus
 and compound shapes a flat product cannot reach). It is about forty lines and it found all
 three missing families in one run.
 
-I also added the two live leaks (`260804-0836`, `260804-0837`) to the residual list as an
+I also added the two live leaks (`260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md`, `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`) to the residual list as an
 entry that errs toward ALLOW, with both commands and the real-shell effect, and a sentence
 saying the "the model is exact" claim is **not** true yet and nothing in the file should be
 read as making it.
 
 ---
 
-## Fix 3 — the inverted fact (`260804-0841`, High)
+## Fix 3 — the inverted fact (`260804-0841_*_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md`, High)
 
 ### Verified before repeating
 
@@ -157,11 +157,11 @@ Six occurrences, all corrected:
 2. `bash-mutation-guard.ts` pass-3 comment — which now says explicitly that an earlier
    comment asserted the opposite seven lines from its own correction;
 3. `README-hooks.md`, the fail-closed redirection paragraph;
-4. `decisions/260804-0106` — the Pro under option 2 and constraint 3, **struck** with the
+4. `260804-0106` — the Pro under option 2 and constraint 3, **struck** with the
    strike dated rather than edited away;
-5. `circles/260801-1244-guard-bash-inspection/issues/260801-1859_c_…` — the supersession
+5. `260801-1859_*_…` — the supersession
    note I wrote last Turn;
-6. `history/260804-0140-turn7-…` — my own history, struck in place with a dated correction
+6. `260804-0140-turn7-…` — my own history, struck in place with a dated correction
    block, so a reader inherits the correction with the claim.
 
 ### The argument, rebuilt rather than restated
@@ -180,7 +180,7 @@ operand; the only thing missing is a working directory it has itself admitted it
 Declining to model a program you never recognised is a bound on a mechanism. Recognising a
 write and then allowing it because your own model failed is that mechanism failing open.
 
-A new `## The argument, corrected` section on `260804-0106` carries the measurement, the
+A new `## The argument, corrected` section on `260804-0106_*_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md` carries the measurement, the
 strike, the rebuilt argument and a method note. One new test —
 *"is LOOSER on the visible curl case than on the invisible redirect one"* — asserts both
 sides of the pair in one place, so the next reader inherits a measurement instead of a
@@ -190,9 +190,9 @@ recollection.
 
 ## Draft 4 — the decision for the two leaks (not implemented)
 
-`decisions/260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
+`260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`.
 
-One record for `260804-0836` and `260804-0837`, because they are one fact: **the joiner is
+One record for `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` and `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`, because they are one fact: **the joiner is
 consulted for the segment that writes and never for the segment that moves.**
 
 **Reproduced first**, one throwaway project per row, `rules/x.md` seeded and watched:
@@ -217,10 +217,10 @@ directions**, in a materialised copy of `hooks/lib`:
 
 All eleven measured leak rows close. Of the 940 cost rows, **940 carry a `||` or a `|`
 immediately before the directory builtin** — checked by predicate — so the cost is exactly
-the shape the option targets and does not spill. It does **not** address `260804-0839`:
+the shape the option targets and does not spill. It does **not** address `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`:
 measured identically before and after.
 
-**Option 2 (model the and-or list)** is the only one that also closes `260804-0839`.
+**Option 2 (model the and-or list)** is the only one that also closes `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`.
 Measured relief: **84 of 84** generated `if` / `while` / brace-group / pipeline rows deny
 today and should allow. Its cost beyond those two ends **is not stated**, because it cannot
 be measured without implementing it — and inventing a number there is precisely the failure
@@ -264,18 +264,18 @@ rather than merely convenient.
 
 ## Workbench
 
-- `issues/260804-0838` → `_c_`, with the both-directions measurement and the shell rows.
-- `issues/260804-0840` → `_c_`, listing every surface the enumeration was removed from and
+- `260804-0838` → `_c_`, with the both-directions measurement and the shell rows.
+- `260804-0840` → `_c_`, listing every surface the enumeration was removed from and
   the method change that replaces it.
-- `issues/260804-0841` → `_c_`, listing all six occurrences and the rebuilt argument.
-- `issues/260804-0836`, `260804-0837`, `260804-0839` stay `_o_`, each with a pointer to the
+- `260804-0841` → `_c_`, listing all six occurrences and the rebuilt argument.
+- `260804-0836`, `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`, `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` stay `_o_`, each with a pointer to the
   new decision record and what it costs their option.
-- `decisions/260804-0947` filed `_o_`.
-- `decisions/260804-0106` — Pro and constraint 3 struck and dated, `## The argument,
+- `260804-0947` filed `_o_`.
+- `260804-0106` — Pro and constraint 3 struck and dated, `## The argument,
   corrected` appended, the 119-command-corpus claim annotated.
-- `circles/260801-1244-guard-bash-inspection/issues/260801-1859_c_…` — supersession note
+- `260801-1859_*_…` — supersession note
   corrected.
-- `history/260804-0140-turn7-…` — the false sentence struck in place with a dated block.
+- `260804-0140-turn7-…` — the false sentence struck in place with a dated block.
 
 ---
 
@@ -290,7 +290,7 @@ Step 10. Nothing was committed; the orchestrator commits after validation.
 
 ## What the next session inherits, in the order I would take it
 
-1. **`decisions/260804-0947` — answer it.** It is the release blocker for any claim about
+1. **`260804-0947` — answer it.** It is the release blocker for any claim about
    the boundary. Two no-flag writes to `rules/**`, `agents/**` and `skills/**` are live in
    bash right now, both pre-existing, both reproduced this Turn in both shells. The record
    costs three options by measurement and recommends option 4 (the ten-line give-up now,
@@ -303,12 +303,12 @@ Step 10. Nothing was committed; the orchestrator commits after validation.
    Turns 5–8, and `plugin.json` is still 5.8.0. Everything else here is moot until this
    happens.
 
-3. **`260804-0839` — the over-deny.** 84 of 84 generated rows. An agent meets it on
+3. **`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` — the over-deny.** 84 of 84 generated rows. An agent meets it on
    ordinary work (`if cd hooks; then rm -rf dist; fi`, `cd hooks && npx tsc | tee log`).
    It is a cost, not a hazard, and only option 2 of the new decision closes it — which is
    the argument for planning that model properly rather than bolting it on.
 
-4. **`260804-0842` — the git gold fixture.** Low. It carries no `||`, `|` or `&` joiner and
+4. **`260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md` — the git gold fixture.** Low. It carries no `||`, `|` or `&` joiner and
    no allow-only row, so it cannot catch a drift in the families this Circle has been
    widening. Do it whenever the fixture is next touched; the source check
    (`expect(src).not.toMatch(/\bparseCommand\b/)`) is what actually carries the weight and
@@ -316,7 +316,7 @@ Step 10. Nothing was committed; the orchestrator commits after validation.
 
 5. **The three older open decisions** in this Circle — `260803-1314` (may a project protect
    a path inside its own rule directory against the flag), `260803-1402` (should the
-   classifier inspect a read operand to close the planted alias), `260802-1912` (the
+   classifier inspect a read operand to close the planted alias), `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (the
    self-protection floor before the config file exists). None is blocking; all three are
    older than the Turn-5-to-8 sequence and have been queued behind it.
 

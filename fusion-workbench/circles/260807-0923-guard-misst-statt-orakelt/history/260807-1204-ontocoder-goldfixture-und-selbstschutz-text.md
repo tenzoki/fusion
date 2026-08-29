@@ -1,11 +1,11 @@
 # Goldfixture nachgezogen, Selbstschutz-Text auf die Messung umgestellt
 
 **Agent:** ontocoder
-**Datum:** 260807-1204
+**Datum:** 260807-1204-ontocoder-goldfixture-und-selbstschutz-text.md
 **Status:** Complete
-**Circle:** `circles/260807-0923-guard-misst-statt-orakelt`
-**Plan:** `planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Schritt 7
-**Befund:** `issues/260807-1155_c_fusion-guard-json-behauptet-weiter-eine-shell-verweigerung.md`
+**Circle:** `260807-0923-guard-misst-statt-orakelt`
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 7
+**Befund:** `260807-1155_*_fusion-guard-json-behauptet-weiter-eine-shell-verweigerung.md`
 
 ## Teil 1 — die Emissions-Goldfixture
 
@@ -113,6 +113,6 @@ Der Befund ist mit `Resolved:` geschlossen und auf `_c_` umbenannt.
 - `fusion-guard.json`
 - `templates/fusion-guard.json`
 - `fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1155_c_*.md` (geschlossen)
-- `fusion-workbench/circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md` (Schritt 7 auf DONE)
+- `260807-0931_*_plan-guard-misst-statt-orakelt.md` (Schritt 7 auf DONE)
 
 Nicht committet, wie beauftragt.

@@ -4,9 +4,9 @@
 
 **Severity:** Medium — the suite is the cheapest gate this project has, and a red baseline makes every "green" claim in a session report unreadable
 **Domain:** code
-**Filed by:** analyst, during the documentation-staleness survey (`shared/analyses/260813-0828-documentation-staleness-survey.md`)
+**Filed by:** analyst, during the documentation-staleness survey (`260813-0828-documentation-staleness-survey.md`)
 **Affects:** `hooks/lib/__tests__/circle-stash-git-exclusion.test.ts`, `hooks/lib/__tests__/fusion-plane.test.ts`
-**Cross-references:** `shared/issues/260810-0918_*_the-suite-total-moves-between-runs-and-the-variance-is-entirely-in-one-file.md` (a different defect in the same file); `shared/issues/260810-1032_*_push-rebuild-map-swallows-a-failed-rebuild-and-reconciles-against-the-stale-map.md` and `shared/issues/260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md` (both closed; the two failing plane cases are the ones those closures installed)
+**Cross-references:** `260810-0918_*_the-suite-total-moves-between-runs-and-the-variance-is-entirely-in-one-file.md` (a different defect in the same file); `260810-1032_*_push-rebuild-map-swallows-a-failed-rebuild-and-reconciles-against-the-stale-map.md` and `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md` (both closed; the two failing plane cases are the ones those closures installed)
 
 ---
 
@@ -73,4 +73,4 @@ Resolved: two causes, one test defect and one product defect, both fixed. Suite 
 2. *Which commit made them red?* None. `git log -S 'the issues response was empty' -- bin/fusion-plane` names only `dd50efd`, which added the string, and it is present at HEAD. An environment condition broke these two — a session file Apple Terminal writes and restores — which also explains the intermittency this record noticed.
 3. *Do the cases share a cause?* No, as the record assumed. Cases 2 and 3 share one with each other; case 1 is unrelated.
 
-**Follow-on filed, deliberately not fixed here:** `circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1036_*_the-manual-fetch-command-fusion-plane-prints-breaks-the-same-way-plane-curl-just-stopped-breaking.md` — `seed_defer_manual` (`bin/fusion-plane:2263`) prints a manual fetch command with the same `zsh -ic … | jq` shape, which will fail for the same reason when a stranded operator copies it. Printed, never executed, so outside a minimal fix.
+**Follow-on filed, deliberately not fixed here:** `260813-1036_*_the-manual-fetch-command-fusion-plane-prints-breaks-the-same-way-plane-curl-just-stopped-breaking.md` — `seed_defer_manual` (`bin/fusion-plane:2263`) prints a manual fetch command with the same `zsh -ic … | jq` shape, which will fail for the same reason when a stranded operator copies it. Printed, never executed, so outside a minimal fix.

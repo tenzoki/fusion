@@ -4,7 +4,7 @@
 **Status:** Complete
 **Date:** 2026-08-10
 **Scope:** `hooks/clear-halt.ts`, `hooks/lib/__tests__/clear-halt-concurrent-halt.test.ts` (new), rebuilt `hooks/dist/`
-**Record addressed:** `shared/issues/260809-2049_o_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md`
+**Record addressed:** `260809-2049_*_clear-halt-discards-a-halt-raised-between-its-load-and-its-save-and-tells-the-human-it-cleared.md`
 **Not touched, on purpose:** `hooks/lib/escalation.ts` — the merge rule is the right default and stays as it is
 
 ---

@@ -1,6 +1,6 @@
-# Orchestrator Session — 260818-2124
+# Orchestrator Session — 260818-2124-orchestrator-session.md
 
-**Directive:** Two items the user filed rather than negotiated in chat: the decision-record `**Status:**`/marker contradiction (44 of 94 per the curator run), and the cleanup report-step typo filed as 260818-2104.
+**Directive:** Two items the user filed rather than negotiated in chat: the decision-record `**Status:**`/marker contradiction (44 of 94 per the curator run), and the cleanup report-step typo filed as 260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md.
 **Mode:** custom — user-chosen scope: fix the typo, file the question as a decision record, touch no existing decision record while the question is open
 **Status:** Complete
 
@@ -27,8 +27,8 @@
 
 ## Open decision records
 
-- 260816-1707_o_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md
-- 260817-1613_o_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md
+- 260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md
+- 260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md
 
 ## Coherence
 
@@ -51,8 +51,8 @@
   includes one header that agrees with its marker in marker form, and it says "four measurements"
   before listing five and "thirteen files" where its own grep scope yields 14 (filed
   `shared/issues/260818-2228_o_*.md`, Low); and
-  `shared/history/260818-2110_coder_regenerate-rules-emission-golden.md:77` now cites the
-  pre-rename `260818-2104_o_` path, which is an instance of the open decision
+  `260818-2110_coder_regenerate-rules-emission-golden.md:77` now cites the
+  pre-rename `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` path, which is an instance of the open decision
   `260816-0119_a_*.md` rather than a new class and is not filed. 39 of the 153 open defect records
   across all stores were filed by `coderev` or `ontorev`; none of them bears on this session's
   range, which `bin/fusion-review-coverage --since 53b6862` reports as `uncovered` (2 commits, 0
@@ -68,7 +68,7 @@
 
 - Grounding↔Directive: **consistent.** 29 active decision records (`_a_` and `_o_` across all live
   stores) were listed and the ones bearing on this Directive read.
-  `260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+  `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   argues against a hard gate that fails on a corpus nobody will edit; the new record meets that
   argument in its option 2 rather than contradicting it. `shared/issues/260811-2146_o_*.md`
   instructs that the 34 not be hand-corrected before the question is answered, and the session
@@ -80,8 +80,8 @@
 The Directive and the Grounding both hold. What does not hold is inside three artifacts this session
 produced: two sentences in two records and one commit message. Both defects are filed with the
 correction wording; neither changes a finding, an option or a recommendation, and the closure of
-`260818-2104` as not reproducible stands. The correction to `260818-2227` is one appended line; the
-correction to `260818-2228` is four figures inside one record.
+`260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` as not reproducible stands. The correction to `260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md` is one appended line; the
+correction to `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` is four figures inside one record.
 
 ## Budget
 
@@ -105,7 +105,7 @@ is the correct outcome for a session scoped to file a question rather than settl
 ## Per-Turn Log
 
 ### Turn 1
-- Tasks: close `260818-2104` as not reproducible; file the fabricated-evidence defect; file the Status-field decision record
+- Tasks: close `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md` as not reproducible; file the fabricated-evidence defect; file the Status-field decision record
 - Commits: `b3de0ba`, `8fa3286`
 - Review findings: none — no shipped file changed, so no reviewer was routed
 - Circuit breaker status: OK
@@ -113,7 +113,7 @@ is the correct outcome for a session scoped to file a question rather than settl
 
 ### Turn 2 — entered by Rebalance, "Revise Artifact"
 - Trigger: Phase 3 verdict `review-needed`. The reconciler filed two defects against this session's own Turn-1 output.
-- Tasks: correct the false universal in `260818-2104`'s resolution note; correct three miscounts in the decision record
+- Tasks: correct the false universal in `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`'s resolution note; correct three miscounts in the decision record
 - Commits: `b46756e`
 - Circuit breaker status: OK
 
@@ -143,17 +143,17 @@ a dispatched reconciler rather than by self-review:
 
 | Filed | Severity | What |
 |---|---|---|
-| `260818-2227` | Medium | A narrow measurement (the broken `awk` form occurs once) restated as a universal (the string `--only` occurs once), asserted as checked, inside the remedy for that exact class |
-| `260818-2228` | Low | One criterion in the prose, another in the arithmetic, putting a correct header among the contradicting ones |
-| `260818-2248` | Low | Changing the criterion left three derived figures behind, the three furthest from where the criterion is defined |
-| `260818-2249` | Low | Two counts stated in the present tense about a tree the stating moved |
+| `260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md` | Medium | A narrow measurement (the broken `awk` form occurs once) restated as a universal (the string `--only` occurs once), asserted as checked, inside the remedy for that exact class |
+| `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` | Low | One criterion in the prose, another in the arithmetic, putting a correct header among the contradicting ones |
+| `260818-2248_*_the-status-field-record-still-carries-three-figures-on-the-criterion-it-replaced.md` | Low | Changing the criterion left three derived figures behind, the three furthest from where the criterion is defined |
+| `260818-2249_*_the-only-correction-block-quotes-two-measurements-without-the-head-they-were-taken-at-and-both-are-false-at-the-commit-that-carries-them.md` | Low | Two counts stated in the present tense about a tree the stating moved |
 
 The last is the one worth carrying forward. A record that measures the tree it lives in falsifies its
 own figures by being committed: the `--only` counts went from 35 files and 3 positions at `8fa3286`
 to 37 and 9 at `b46756e`, moved by the writing of the correction itself. Chasing them is a fixpoint
 problem with no fixpoint. Pinning each figure to the HEAD it was taken at ends it in one edit, and
 that is an instance of the open convention question in
-`shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`.
+`260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`.
 Two of the four defects above would not exist under that convention.
 
 **Turn 3's corrections are self-verified only.** No third reconciler pass was run. Given that this
@@ -165,7 +165,7 @@ glossed: a later session or a `/fusion:cleanup` reconcile is where it gets indep
 - `shared/decisions/260818-2212_o_*` — open, awaiting the user's answer. Three options, option 1 recommended, nothing implemented.
 - `shared/issues/260812-1232_o_*` — stays open. Filing the question does not fix the drift; this record is what any sweep or lint closes.
 - `shared/issues/260818-2210_o_*` — stays open. It names a class no mechanism catches, and proposes none.
-- The second half of `260818-2104`'s original fix direction, whether Step 8's branch should distinguish a measurement that returned nothing from one that could not be taken, is not filed. It is not that defect and needs its own evidence.
+- The second half of `260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md`'s original fix direction, whether Step 8's branch should distinguish a measurement that returned nothing from one that could not be taken, is not filed. It is not that defect and needs its own evidence.
 
 ## Commits
 

@@ -1,12 +1,12 @@
 # coder — provenance prose fixes (Turn 2, task T2-B)
 
 **Status:** Complete
-**Circle:** `circles/260801-1244-rule-provenance-header`
+**Circle:** `260801-1244-rule-provenance-header`
 **Scope:** prose half of two review findings; the test-file half landed in `cc004fc` (T2-A).
 
 ## What I changed
 
-**`rules/fusion-workbench-conventions.md:5`** (issue `260802-1251_p_conventions-lede-scope-...`).
+**`rules/fusion-workbench-conventions.md:5`** (issue `260802-1251_*_conventions-lede-scope-...`).
 The lede scoped the whole file to agents operating on `fusion-workbench/` and enumerated
 eight subjects, neither of which covered `## Provenance headers on rule files` — the one
 section that governs files outside the workbench. Extended the scope clause to "and for the
@@ -19,7 +19,7 @@ enumeration. Added the provenance-header subject and the parenthetical naming it
 subject the file governs outside `fusion-workbench/`, so the row states the exception rather
 than leaving a reader to rediscover it.
 
-**`rules/fusion-workbench-conventions.md:572`** (issue `260802-1253_p_the-line-8-blockquote-...`).
+**`rules/fusion-workbench-conventions.md:572`** (issue `260802-1253_*_the-line-8-blockquote-...`).
 The ten-line window's rationale said the longest opening blockquote "runs to line 8 in
 `context-manifest.md`, with one line to spare" — false in the commit that wrote it, because
 Turn 1's own two-line header insertion pushed that blockquote down. Rewrote it as the past

@@ -1,7 +1,7 @@
 # Concept Evaluation: Plan — Umbau der workbench zum Circle-Container (Circle 1)
 
 **Date:** 2026-07-16 19:14
-**Target:** `fusion-workbench/planning/260716-1910[o]-plan-workbench-umbau-circle-container.md`
+**Target:** `260716-1910[o]-plan-workbench-umbau-circle-container.md`
 **Verdict:** clean
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mmdc 11.4.2, both blocks exit 0)
 

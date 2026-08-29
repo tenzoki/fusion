@@ -1,10 +1,10 @@
-# Reconciliation — 260813-2258
+# Reconciliation — 260813-2258-reconciliation.md
 
 **Agent:** reconciler
 **Domain:** `code`
 **Circle:** `260813-0910-documentation-matches-shipped-plugin`
 **Range:** `267a65c..HEAD` (`c0e4219`), 15 commits
-**Session reconciled:** `history/260813-1815-orchestrator-session.md`, five Turns
+**Session reconciled:** `260813-1815-orchestrator-session.md`, five Turns
 
 ## Method
 
@@ -70,7 +70,7 @@ step 6 and still open.
 ### 4. Every open record is open for a reason
 
 Nine records carry `_o_`, and each was re-verified as still present at HEAD — the defect line was
-opened, not grepped for a count. Each now carries a `Reconciled: 260813-2258` line naming what was
+opened, not grepped for a count. Each now carries a `Reconciled: 260813-2258-reconciliation.md` line naming what was
 read. Two of the nine sit outside this Circle's plan scope by construction (`README-hooks.md`, and
 `agents/orchestrator.md` as the fifth carrier of the planner/domain claim); the rest are one-clause
 edits in files this Circle already edited.
@@ -79,18 +79,18 @@ edits in files this Circle already edited.
 
 Confirmed independently rather than accepted from the reviewer: comparing each `| `<agent>` |` row
 of `README-agents.md` at `22f892e` against `8d87192`, **fifteen rows differ and `bugfixer` alone is
-byte-identical**. The plan's step-6 note and `history/260813-2043-coder-…` both say "twelve
+byte-identical**. The plan's step-6 note and `260813-2043-coder-…` both say "twelve
 corrected, four left standing", naming `shaper`, `planner`, `bugfixer`, `editor` — three of those
 four are in the changed set. Twelve and four are the *input* split (rows unread versus
 survey-confirmed), reused as an output split.
 
-Open issue `issues/260813-2052_o_the-step-6-completion-note-says-twelve-rows-corrected-and-names-three-that-changed.md`
+Open issue `260813-2052_*_the-step-6-completion-note-says-twelve-rows-corrected-and-names-three-that-changed.md`
 already holds this and is assigned to `coder`. The note is left as written; rewriting a step's
 evidence is not a reconciliation act.
 
 ### 6. Both conceptrev recommendations are unapplied, and one now matters more
 
-`reviews/260813-1831-conceptrev-…` asked for an `S3 -.-> S4` edge in the plan's second diagram, and
+`260813-1831-conceptrev-…` asked for an `S3 -.-> S4` edge in the plan's second diagram, and
 for a correction to the risk row justifying step 10 as the deferral candidate. Neither landed. The
 risk row still reads "the only step with no dependency in either direction"; counted from the plan's
 own `Dependencies:` lines, **steps 1, 5, 8, 9 and 10 each have no dependency and no dependent —
@@ -102,14 +102,14 @@ deferring it blocked nothing); its uniqueness claim is wrong. The review is advi
 
 The plan was renamed `_o_` → `_p_` in Turn 1. Three records still cite the old path:
 
-- `_t_circle.md` head field `**Active spec/plan:**` → `…/planning/260813-1820_o_…`
+- `_t_circle.md` head field `**Active spec/plan:**` → `…/260813-1820_*_…`
 - both decision records' `Cross-references:` fields
 
 The Circle record's head fields are the orchestrator's to write (its own Scope names exactly three
 parts of the record it may touch, the head fields among them), so the pointer is reported, not
 fixed. The two decision records now carry a note naming the current path. The general shape is worth
 naming: **a citation that includes a state marker goes stale on every transition of the thing it
-cites**, and `shared/decisions/260812-0254_o_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md`
+cites**, and `260812-0254_*_should-a-cited-artifact-path-be-absolute-so-an-editor-can-open-it.md`
 is the open record adjacent to it.
 
 ### 8. Turn 5's commit is unreviewed, and it is the only substantive uncovered commit
@@ -130,10 +130,10 @@ file.
 
 ## Files updated
 
-- `planning/260813-1820_p_documentation-matches-shipped-plugin.md` — status, step-10 `[DEFERRED]`
+- `260813-1820_*_documentation-matches-shipped-plugin.md` — status, step-10 `[DEFERRED]`
   marker and deferral note, `## Reconciliation Log`
 - 9 open issue records — `Reconciled:` evidence line each
 - 2 decision records — reconciliation note each, markers unchanged (both still open and unanswered)
 - 5 review records — reconciliation annotation each
-- `history/260813-1815-orchestrator-session.md` — `## Coherence` section appended (this pass's only
+- `260813-1815-orchestrator-session.md` — `## Coherence` section appended (this pass's only
   cross-agent write)

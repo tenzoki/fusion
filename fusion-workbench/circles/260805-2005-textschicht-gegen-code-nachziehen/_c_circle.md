@@ -4,10 +4,10 @@
 **Domain:** code
 **Status:** closed (coherent)
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** planning/260805-2353_*_plan-textschicht-gegen-code.md (the record's own `## Directive` and `## Grounding snapshot` are the spec; no separate spec file exists)
-**Active session history:** history/260805-2350-orchestrator-session.md (sole orchestrator session; 5 Turns)
+**Active spec/plan:** 260805-2353_*_plan-textschicht-gegen-code.md (the record's own `## Directive` and `## Grounding snapshot` are the spec; no separate spec file exists)
+**Active session history:** 260805-2350-orchestrator-session.md (sole orchestrator session; 5 Turns)
 
-*Status, plan and history fields corrected by the reconciler on 260806-1057 at the final reconciliation before closure — the body still said "anticipated" under the `_t_` marker (the known record-lag pattern, shared issue `archive/260817-1907-safe-cleanup-scoped/shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`). The Turn log below is reconstructed from `orchestrator-events.jsonl` and the history files rather than appended live.*
+*Status, plan and history fields corrected by the reconciler on 260806-1057-reconciliation.md at the final reconciliation before closure — the body still said "anticipated" under the `_t_` marker (the known record-lag pattern, shared issue `archive/260817-1907-safe-cleanup-scoped/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`). The Turn log below is reconstructed from `orchestrator-events.jsonl` and the history files rather than appended live.*
 
 ---
 
@@ -23,9 +23,9 @@ Am 5. August 2026 haben drei unabhängige Durchgänge das gesamte Plugin auf dem
 
 | Durchgang | Bericht | Befunde |
 |---|---|---|
-| Zweck und tatsächlicher Einsatz | `circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md` | 5 |
-| Doku gegen Code, 530 Aussagen geprüft, 46 falsch | `circles/260801-1244-guard-rules-write/analyses/260805-1840-doku-gesamtpruefung-gegen-code.md` | 40 |
-| Gesamtreview des Plugins | `circles/260801-1244-guard-rules-write/reviews/260805-1905-coderev-gesamtreview-plugin-v5-9-1.md` | 21 |
+| Zweck und tatsächlicher Einsatz | `260805-1830-zweck-nutzung-und-stand-des-plugins.md` | 5 |
+| Doku gegen Code, 530 Aussagen geprüft, 46 falsch | `260805-1840-doku-gesamtpruefung-gegen-code.md` | 40 |
+| Gesamtreview des Plugins | `260805-1905-coderev-gesamtreview-plugin-v5-9-1.md` | 21 |
 
 Die drei widersprechen sich nicht, sie gewichten unterschiedlich. Der Doku-Durchgang zählt die Fehlerdichte; der Review ordnet nach Schadensfolge; der Zweck-Durchgang misst, was ein Benutzer davon merkt. Wo die Reihenfolgen auseinandergehen, hat der Review Vorrang, weil er als einziger die stillen Ausfälle gewichtet hat.
 
@@ -33,7 +33,7 @@ Die drei widersprechen sich nicht, sie gewichten unterschiedlich. Der Doku-Durch
 
 ### Die Korrektur am High-Befund, und was von ihm bleibt
 
-Der einzige High-Befund des Reviews (`circles/260801-1244-guard-rules-write/issues/260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`) sagt, `FUSION_PLUGIN_ROOT` zeige im Plugin-Repo auf `~/.fusion` statt auf die Quelle, und nennt das einen Defekt.
+Der einzige High-Befund des Reviews (`260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`) sagt, `FUSION_PLUGIN_ROOT` zeige im Plugin-Repo auf `~/.fusion` statt auf die Quelle, und nennt das einen Defekt.
 
 **Es ist keiner.** Die Ursache ist inzwischen geklärt: die Variable wird beim Session-Start aus dem installierten Plugin gesetzt. Die prüfende Sitzung lief vier Tage ohne Neustart, also stand sie auf dem Stand, der bei ihrem Start installiert war (v5.8.0). Ein `fusion --update` plus Neustart der Sitzung löst es vollständig. **Der Issue-Record braucht eine Korrektur seines Befundtexts** — die gehört zur Arbeit dieses Circles und ist hier vermerkt, nicht ausgeführt.
 
@@ -93,25 +93,25 @@ Der Vollständigkeit halber, damit der Zuschnitt nicht wie ein Scherbenhaufen au
 ### Zitiert, nicht kopiert (nach der Herkunftsregel)
 
 - Die drei Berichte: siehe Tabelle oben.
-- Der zu korrigierende Befund: `circles/260801-1244-guard-rules-write/issues/260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`
+- Der zu korrigierende Befund: `260805-1859_*_im-eigenen-repo-laden-alle-agenten-die-regeln-der-installierten-vorversion-nicht-die-quelle.md`
 - Alle 66 Issue-Records: `circles/260801-1244-guard-rules-write/issues/`, Zeitstempel `260805-18*` und `260805-19*`.
-- Die Spec, aus der die Konsolidierungs-Kapazitäten stammen: `shared/planning/260801-1122_*_spec-normative-consolidation.md`
+- Die Spec, aus der die Konsolidierungs-Kapazitäten stammen: `260801-1122_*_spec-normative-consolidation.md`
 
 ## Dependencies
 
 **`260801-1244-guard-rules-write` — muss schließen, bevor dieser Circle aktiviert wird.** Er trägt aktuell den `_t_`-Marker, und fusion führt einen aktiven Circle zur Zeit. Alle 66 Befunde liegen in seinem Issue-Store und bleiben dort; dieser Circle arbeitet sie ab, ohne sie zu verschieben. Sein eigener Circle-Datensatz ist außerdem einer der Befunde (`260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`) und gehört zu seiner Schließung, nicht hierher.
 
-**`260804-1205-shell-reachability-model` — trägt die Fortsetzung am Shell-Klassifizierer, und ein Befund gehört als Grounding dorthin statt hierher.** Der Klassifizierer ist in diesem Circle ausdrücklich außen vor. Die zugehörige Empirie aus dem Zweck-Durchgang gehört aber in die Grounding jenes Circles, weil sie seine Beweislast verschiebt: **in krk gab es in vier Tagen 17 Bash-Blockierungen und null echte Treffer.** Alle 17 tragen als Operand eine Variable, eine Tilde oder einen Glob; kein einziger Block nennt einen tatsächlich geschützten Pfad. Es sind durchweg Fail-closed-Fehlalarme auf harmlosen Zielen. Der häufigste Fall ist fusions eigene Marker-Umbenennung in Schleifenform (`mv "260803-1536_o_$f.md" "260803-1536_c_$f.md"`) — der Guard verweigert die eigene Konvention des Rahmens, wenn ein Agent sie idiomatisch ausführt. Einordnend: kein Block führte zu einem Halt, und die Deny-Botschaft hat funktioniert (Grund genannt, Ausweg genannt, kein Herumrouten). Die Reibung ist begrenzt, ihr Nutzen war im Beobachtungszeitraum null. Der Reachability-Circle adressiert die Joiner-Fälle, aber nicht diese Klasse: `mv "$f"` bleibt auch unter einem Reachability-Modell unauflösbar. Quelle: `circles/260801-1244-guard-rules-write/analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md` §3, Befund `circles/260801-1244-guard-rules-write/issues/260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`. **Wer den Reachability-Circle aktiviert, nimmt diese Bilanz in seine Grounding auf.**
+**`260804-1205-shell-reachability-model` — trägt die Fortsetzung am Shell-Klassifizierer, und ein Befund gehört als Grounding dorthin statt hierher.** Der Klassifizierer ist in diesem Circle ausdrücklich außen vor. Die zugehörige Empirie aus dem Zweck-Durchgang gehört aber in die Grounding jenes Circles, weil sie seine Beweislast verschiebt: **in krk gab es in vier Tagen 17 Bash-Blockierungen und null echte Treffer.** Alle 17 tragen als Operand eine Variable, eine Tilde oder einen Glob; kein einziger Block nennt einen tatsächlich geschützten Pfad. Es sind durchweg Fail-closed-Fehlalarme auf harmlosen Zielen. Der häufigste Fall ist fusions eigene Marker-Umbenennung in Schleifenform (`mv "260803-1536_o_$f.md" "260803-1536_c_$f.md"`) — der Guard verweigert die eigene Konvention des Rahmens, wenn ein Agent sie idiomatisch ausführt. Einordnend: kein Block führte zu einem Halt, und die Deny-Botschaft hat funktioniert (Grund genannt, Ausweg genannt, kein Herumrouten). Die Reibung ist begrenzt, ihr Nutzen war im Beobachtungszeitraum null. Der Reachability-Circle adressiert die Joiner-Fälle, aber nicht diese Klasse: `mv "$f"` bleibt auch unter einem Reachability-Modell unauflösbar. Quelle: `260805-1830-zweck-nutzung-und-stand-des-plugins.md` §3, Befund `260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`. **Wer den Reachability-Circle aktiviert, nimmt diese Bilanz in seine Grounding auf.**
 
 **`260801-1244-curator` — braucht vor Aktivierung einen neuen Zuschnitt, und der wird hier nicht gemacht.** Der Zweck-Durchgang hält fest: C9 Schritt 3 und 4 (Partition und Zuschnitt der Konventionsdatei) wurden von Hand durch coder erledigt, nicht durch den Curator. Damit fehlt dem Curator-Circle sowohl sein erster echter Auftrag als auch sein Validierungsfall; D-g der Spec ist hinfällig. C1 bis C3, C6 und C7 bleiben als zusammenhängender Rest sinnvoll, und der Bedarf ist real (cocreator: 65 offene Issues, rund 25 offene Entscheidungen, drei Monate Drift). Die Neuformung ist eine eigene Shaper-Arbeit vor der Aktivierung jenes Circles. Berührungspunkt zu diesem Circle: die Doku-Korrekturen hier fassen Dateien an, die der Curator später als Beispielmaterial bräuchte — das ist ein Argument, diesen Circle zuerst laufen zu lassen, nicht dagegen.
 
 ## Turn log
 
-*Reconstructed by the reconciler on 260806-1057 from `orchestrator-events.jsonl` (session_start 2026-08-05T21:50Z, head `66e4a69`) and the 15 history files under `history/`. One orchestrator session, 5 Turns, 12 commits, suite 1551 → 1611.*
+*Reconstructed by the reconciler on 260806-1057-reconciliation.md from `orchestrator-events.jsonl` (session_start 2026-08-05T21:50Z, head `66e4a69`) and the 15 history files under `history/`. One orchestrator session, 5 Turns, 12 commits, suite 1551 → 1611.*
 
 | Turn | Commits | Outcome |
 |---|---|---|
-| 1 | `7ef2715`, `d3222a5` | Plan written and gated (`planning/260805-2353_*_plan-textschicht-gegen-code.md`); Track 1 code fixes S4–S7; decisions D1–D3 filed and all three answered at one user gate (D1 wildcard citation form, D2 real writer set + lock retrofit, D3 helpers prefer repo rules); 1 issue filed (`issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`) |
+| 1 | `7ef2715`, `d3222a5` | Plan written and gated (`260805-2353_*_plan-textschicht-gegen-code.md`); Track 1 code fixes S4–S7; decisions D1–D3 filed and all three answered at one user gate (D1 wildcard citation form, D2 real writer set + lock retrofit, D3 helpers prefer repo rules); 1 issue filed (`260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`) |
 | 2 | `c45fb44`, `b90d1c8`, `81d4154` | S8 internals scoping + S16/D3 repo-preference (`bin/fusion-plugin-cwd`); mid-Turn bugfix of the inherited monitor bind regression (`MONITOR_BIND`, 9 red tests → green); S9/D2 writer-set + lock realisation; coderev filed 4 issues (1 medium, 3 low) |
 | 3 | `36d9a30`, `9a96466`, `fae818b`, `a1b7872`, `843239c` | Turn-2 review findings closed; Batches B+C then A (+S13 content corrections); the two lints S14+S15 landed (39 new tests, suite 1599); S17 bookkeeping: 51 findings closed in the neighbour Circle, plan Complete |
 | 4 | `b37f13e` | The six residuals S17's partition surfaced (holderless-lock aging + 9 lock tests, remaining hooks/lib citations in wildcard form, migrate half-fixes); coderev final pass filed 4 low issues |
@@ -119,9 +119,9 @@ Der Vollständigkeit halber, damit der Zuschnitt nicht wie ein Scherbenhaufen au
 
 ## Activation proposal
 
-**Recommended as the next Circle — playmaker run 260805-2128 (trigger: direct-dispatch, domain bias `code`).**
+**Recommended as the next Circle — playmaker run 260805-2128-playmaker-direct-dispatch.md (trigger: direct-dispatch, domain bias `code`).**
 
-All three anticipated Circles wait on the closure of the active Circle `260801-1244-guard-rules-write`, so none passes the dependencies-closed check yet; this proposal names the first activation after that closure. Under the code-domain heuristic this Circle and `260804-1205-shell-reachability-model` tie at zero open decision records cited in their Grounding snapshots (the workbench holds zero open decision records anywhere, per the orchestrator session `circles/260801-1244-guard-rules-write/history/260805-2117-orchestrator-session.md`). The tie breaks three ways in this Circle's favour. First, its evidence is complete and on disk: three review reports and all 66 finding records are filed under the active Circle, so the work starts with no analysis phase. Second, it carries the only finding with silent-data-loss character (the archive skill's `shared_of` losing every shared store under zsh, inherited ungated by `/fusion:cleanup` step 4). Third, both rival Circles benefit from this one running first: `260801-1244-curator` needs re-shaping before activation because its closing work C9 was already done by hand (recorded in this Circle's `## Dependencies`), and `260804-1205-shell-reachability-model` must absorb the 17-false-alarm balance this Circle's source reports measured. Proposed activation: after `260801-1244-guard-rules-write` reaches closure, via `/fusion:next`.
+All three anticipated Circles wait on the closure of the active Circle `260801-1244-guard-rules-write`, so none passes the dependencies-closed check yet; this proposal names the first activation after that closure. Under the code-domain heuristic this Circle and `260804-1205-shell-reachability-model` tie at zero open decision records cited in their Grounding snapshots (the workbench holds zero open decision records anywhere, per the orchestrator session `260805-2117-orchestrator-session.md`). The tie breaks three ways in this Circle's favour. First, its evidence is complete and on disk: three review reports and all 66 finding records are filed under the active Circle, so the work starts with no analysis phase. Second, it carries the only finding with silent-data-loss character (the archive skill's `shared_of` losing every shared store under zsh, inherited ungated by `/fusion:cleanup` step 4). Third, both rival Circles benefit from this one running first: `260801-1244-curator` needs re-shaping before activation because its closing work C9 was already done by hand (recorded in this Circle's `## Dependencies`), and `260804-1205-shell-reachability-model` must absorb the 17-false-alarm balance this Circle's source reports measured. Proposed activation: after `260801-1244-guard-rules-write` reaches closure, via `/fusion:next`.
 
 ## Closure note
 
@@ -132,6 +132,6 @@ measured at 0 emissions from a consuming cwd (`c45fb44`), activation ownership d
 D2 across five files (`81d4154`). 60 of 66 corpus findings closed with commit-citing footers; the
 6 open ones each carry a route outside this Circle. Suite 1611 tests / 30 files green.
 
-Session history: `history/260805-2350-orchestrator-session.md` (Turns 1–5, 13 commits
-`7ef2715..9ee21c0`). Reconciliation: `history/260806-1057-reconciliation.md`.
-Open residual in this Circle: `issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (unowned, candidate for a follow-up batch).
+Session history: `260805-2350-orchestrator-session.md` (Turns 1–5, 13 commits
+`7ef2715..9ee21c0`). Reconciliation: `260806-1057-reconciliation.md`.
+Open residual in this Circle: `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (unowned, candidate for a follow-up batch).

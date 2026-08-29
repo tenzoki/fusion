@@ -4,8 +4,8 @@
 **Severity:** Medium
 **Domain:** code
 **Filed by:** coder, executing plan step 7 (`conceptrev` removal)
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 7; `hooks/lib/review-coverage.ts`; `bin/fusion-paths`
-**Cross-references:** `shared/issues/260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`; plan step 8; plan `## Open questions`
+**Affects:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 7; `hooks/lib/review-coverage.ts`; `bin/fusion-paths`
+**Cross-references:** `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`; plan step 8; plan `## Open questions`
 
 ---
 
@@ -23,17 +23,17 @@ Both halves are false at HEAD `6350854`, and they are false in different ways.
 **There is no sender set to edit.** `grep -n conceptrev hooks/lib/review-coverage.ts` returns
 nothing, and `review-coverage-mandate.test.ts:68` already fixes `REVIEWER_PROMPTS` to
 `["coderev.md", "ontorev.md"]`. `reviewFiles()` takes every `*.md` under every reviews store
-with **no** sender filter at all — which is precisely what `260811-1145` was filed about. The
+with **no** sender filter at all — which is precisely what `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` was filed about. The
 bullet asks for the removal of a discriminator whose absence is the defect.
 
-**The removal does not retire `260811-1145`.** The defect is that the scan has no sender
+**The removal does not retire `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`.** The defect is that the scan has no sender
 filter, not that a `conceptrev` agent exists. Deleting the agent stops new `conceptrev`
 assessments from being written; it does nothing about the ones already on disk. This Circle's
 own plan review is one of them —
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`
+`260815-0044-conceptrev-plan-remove-eight-mechanisms-and-cap-growth.md`
 — it sits in the active Circle's reviews store, `reviewFiles()` reads it, and it will report
 `UNUSABLE (no **Reviewed-range:** line)` on every coverage run for the rest of this Circle.
-The `_o_` → `_c_` transition was therefore **not** performed: `260811-1145` stays open, and
+The `_o_` → `_c_` transition was therefore **not** performed: `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` stays open, and
 its fix direction (make the sender segment the discriminator on both sides, in one exported
 constant) is unchanged by the agent's removal. Only its *incidence* narrows.
 
@@ -61,7 +61,7 @@ measurement above rather than from the archive skill.
 
 1. Correct step 7's fifth bullet in the plan, or mark it as executed-with-deviation, so the
    next reader does not go looking for a sender set.
-2. Leave `260811-1145` open and let it be fixed on its own terms — one exported sender
+2. Leave `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md` open and let it be fixed on its own terms — one exported sender
    constant, asserted by `review-coverage-mandate.test.ts`, applied in both `reviewFiles()`
    and `measureReviewCoverageForModel`. That fix is still needed and is now the only thing
    that stops the permanent `UNUSABLE` row on this Circle's own review file.
@@ -83,9 +83,9 @@ The "an unnamed key costs nothing at run time" reasoning that kept the arm at st
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Narrowed to fix direction 1; directions 2 and 3 are discharged.**
 
-**Discharged.** `hooks/lib/review-coverage.ts:183` now exports `REVIEW_SENDERS = ["coderev", "ontorev"]`, so the sender set is a declared constant with `conceptrev` absent, and `shared/issues/260811-1145` carries `_c_`. Direction 3 was settled by step 8.
+**Discharged.** `hooks/lib/review-coverage.ts:183` now exports `REVIEW_SENDERS = ["coderev", "ontorev"]`, so the sender set is a declared constant with `conceptrev` absent, and `260811-1145` carries `_c_`. Direction 3 was settled by step 8.
 
-**Standing.** The plan's step-7 bullet at `planning/260815-0029_c_…:250` still instructs *"remove `conceptrev` from the recognised sender set"* — a set that never contained it as a recognised member — and still cites the closing issue under its `_o_` name. The plan is `_c_`, so this is a reader-facing defect in a closed instruction rather than work waiting: someone reconstructing why `REVIEW_SENDERS` looks the way it does is told a removal happened that did not.
+**Standing.** The plan's step-7 bullet at `260815-0029_*_…:250` still instructs *"remove `conceptrev` from the recognised sender set"* — a set that never contained it as a recognised member — and still cites the closing issue under its `_o_` name. The plan is `_c_`, so this is a reader-facing defect in a closed instruction rather than work waiting: someone reconstructing why `REVIEW_SENDERS` looks the way it does is told a removal happened that did not.
 
 ---
 Resolved: moot — the plan is closed and its step-7 bullet is not edited; the sender set is a declared constant at HEAD, `REVIEW_SENDERS` in `hooks/lib/review-coverage.ts`.

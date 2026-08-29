@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** shaper
-**Cross-references:** planning/260716-1847[o]-spec-plane-integration-und-workbench-struktur.md
+**Cross-references:** 260716-1847[o]-spec-plane-integration-und-workbench-struktur.md
 
 ---
 
@@ -42,7 +42,7 @@ Wir empfehlen Option 2. Der Circle ist der Begriff, der die verstreuten Dateien 
 Option 3 empfehlen wir nicht. Ein gepflegter Index gegen verstreute Dateien ist eine zweite Quelle für dieselbe Information und veraltet erfahrungsgemäß in dem Moment, in dem ein Agent ihn nicht mitschreibt.
 
 ---
-Answered: history/260716-1800-orchestrator-session.md — Option 2 (Circle-Verzeichnis plus gemeinsame Ablage). Der Nutzer hat am Spec-Gate 2026-07-16 gewählt: jeder Circle wird ein Verzeichnis mit allem Zugehörigen darin, plus eine Ablage außerhalb der Circles für alles ohne Circle-Bezug (projektweite Issues, Memos, freistehende Analysen). Die konkrete Form der gemeinsamen Ablage und die Regel, wann etwas dorthin gehört, gehören in die Planung. Diese Entscheidung trägt Circle 1 (Umbau) und blockiert ihn nicht länger.
-Implemented: 6d4a88d (conventions redefine layout as Circle-container + shared store) + 138cd46 (setup creates the Circle-container layout) — shipped in v4.0.0 (cb5fa80). Verifiziert durch reconciler 260717: der Baum trägt `circles/260716-1847-workbench-umbau/` mit `[t]-circle.md` + eigenen Unterordnern, daneben `shared/`.
+Answered: 260716-1800-orchestrator-session.md — Option 2 (Circle-Verzeichnis plus gemeinsame Ablage). Der Nutzer hat am Spec-Gate 2026-07-16 gewählt: jeder Circle wird ein Verzeichnis mit allem Zugehörigen darin, plus eine Ablage außerhalb der Circles für alles ohne Circle-Bezug (projektweite Issues, Memos, freistehende Analysen). Die konkrete Form der gemeinsamen Ablage und die Regel, wann etwas dorthin gehört, gehören in die Planung. Diese Entscheidung trägt Circle 1 (Umbau) und blockiert ihn nicht länger.
+Implemented: 6d4a88d (conventions redefine layout as Circle-container + shared store) + 138cd46 (setup creates the Circle-container layout) — shipped in v4.0.0 (cb5fa80). Verifiziert durch reconciler 260717: der Baum trägt `260716-1847-workbench-umbau` mit `[t]-circle.md` + eigenen Unterordnern, daneben `shared/`.
 Deferred:
 Superseded by:

@@ -4,7 +4,7 @@
 **Reviewed-range:** `5d29b6d..518926d`
 **Not-opened:** none
 **Date:** 2026-08-15 15:01
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
 
 ---
 
@@ -36,9 +36,9 @@ This is the third dispatch in a row to name a wrong commit count. The cause is t
 
 All three are filed as defect records under this Circle's issue store:
 
-- `260815-1501_o_the-reach-gate-is-blind-to-a-copy-written-only-in-the-retired-domain-names-and-reach-holes-does-not-say-so.md`
-- `260815-1501_o_four-cardinal-words-still-count-items-the-removals-deleted-and-no-gate-reads-a-cardinal-word.md`
-- `260815-1501_o_setup-step-5s-worked-example-says-this-repository-counts-88-source-files-and-the-helper-beside-it-returns-118.md`
+- `260815-1501_*_the-reach-gate-is-blind-to-a-copy-written-only-in-the-retired-domain-names-and-reach-holes-does-not-say-so.md`
+- `260815-1501_*_four-cardinal-words-still-count-items-the-removals-deleted-and-no-gate-reads-a-cardinal-word.md`
+- `260815-1501_*_setup-step-5s-worked-example-says-this-repository-counts-88-source-files-and-the-helper-beside-it-returns-118.md`
 
 Nothing found here blocks the Circle. The suite is green (45 files, 831 tests), `hooks/dist/` rebuilds byte-identical, and `claude plugin validate .` passes with the one pre-existing CLAUDE.md warning.
 
@@ -70,7 +70,7 @@ The four historical defeats are all re-expressed in the surviving vocabulary and
 
 The reach detector **does** still fire on the fixture kept from the earlier defect. `CLEANUP_COPY` in `hooks/lib/__tests__/domain-cascade.test.ts:602` is `skills/cleanup/SKILL.md:114` verbatim as it shipped through v7.2.0, and it selects on its two surviving domain names plus `decisions_count` and `analyses_count` — inputs only the retired branches ever read. So it is firing *because* `RETIRED_COUNT_NAMES` was kept, not because the selector still happens to match something. That is the thing the dispatch asked to distinguish, and it distinguishes correctly.
 
-What is missing is the mirror image, and it is filed. `domainLiteralsIn` builds from `DOMAINS` alone, so a stale statement written **only** in the two retired outcome names names zero recognised domains and is dropped before its inputs are read. Measured against the shipped build, two such probes miss. `REACH.holes` — the list that exists so every uncovered shape is written down with a probe — has no entry for it. Record: `260815-1501_o_the-reach-gate-is-blind…`.
+What is missing is the mirror image, and it is filed. `domainLiteralsIn` builds from `DOMAINS` alone, so a stale statement written **only** in the two retired outcome names names zero recognised domains and is dropped before its inputs are read. Measured against the shipped build, two such probes miss. `REACH.holes` — the list that exists so every uncovered shape is written down with a probe — has no entry for it. Record: `260815-1501_*_the-reach-gate-is-blind…`.
 
 ### 3. The fold into `analyst` — enough carried, and the omissions are defensible
 
@@ -130,7 +130,7 @@ The `skills/help` one is the worst of the four because it is read aloud to a use
 
 What makes it a class rather than four typos is that `derivable-enumerations-lint.test.ts` has a `describe` block for exactly this failure, and its five `CLAIMS` regexes match **Arabic numerals in agent-count phrasings only**. All five moved correctly this Turn — the gate worked on everything inside it. A cardinal word, or a count of anything but agents, is outside it by construction, and three of the four sit in files the gate already opens. Three removal steps remain, each deleting list items.
 
-Record: `260815-1501_o_four-cardinal-words-still-count-items-the-removals-deleted-and-no-gate-reads-a-cardinal-word.md`.
+Record: `260815-1501_*_four-cardinal-words-still-count-items-the-removals-deleted-and-no-gate-reads-a-cardinal-word.md`.
 
 ### Theme B — a symmetric widening applied on one axis and not the other
 
@@ -140,7 +140,7 @@ Record: `260815-1501_o_four-cardinal-words-still-count-items-the-removals-delete
 
 `agents/orchestrator.md:178` says this repository counts 88 source files. `./bin/fusion-count-sources` returns 118, and the paragraph names that helper in its own first clause. Low: no verdict depends on it, but the paragraph's entire job is calibration by worked example, and the one example a reader can check is the wrong one.
 
-Record: `260815-1501_o_setup-step-5s-worked-example…`.
+Record: `260815-1501_*_setup-step-5s-worked-example…`.
 
 ---
 
@@ -171,8 +171,8 @@ Record: `260815-1501_o_setup-step-5s-worked-example…`.
 
 ## Not duplicated
 
-Already filed by this Circle and confirmed still open at HEAD, cross-referenced rather than refiled: `260815-0803_o_two-claude-md-inventory-rows-went-stale…` (the `templates/` row now naming two phantom files — the executor appended the current count), `260815-1447_o_claude-mds-dispatch-parameter-bullet-asserts-orchestrator-behaviour-step-9-inverted…`, `260815-1339_o_step-7-named-a-review-coverage-sender-set-that-does-not-exist…`, `260815-0803_o_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane`.
+Already filed by this Circle and confirmed still open at HEAD, cross-referenced rather than refiled: `260815-0803_*_two-claude-md-inventory-rows-went-stale…` (the `templates/` row now naming two phantom files — the executor appended the current count), `260815-1447_*_claude-mds-dispatch-parameter-bullet-asserts-orchestrator-behaviour-step-9-inverted…`, `260815-1339_*_step-7-named-a-review-coverage-sender-set-that-does-not-exist…`, `260815-0803_*_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane`.
 
-One addendum to `260815-1447`, offered here rather than as a new record: its *"What it would take"* names `CLAUDE.md:16`'s value list and `:59`'s derivation clause, and `CLAUDE.md:59` **also** carries a stale value list of its own (`**Domain:** <code|data|strategic|knowledge>`) in the same sentence. Whoever works that record should cut both halves of `:59`, not only the behaviour clause.
+One addendum to `260815-1447_*_claude-mds-dispatch-parameter-bullet-asserts-orchestrator-behaviour-step-9-inverted-not-just-a-value-list.md`, offered here rather than as a new record: its *"What it would take"* names `CLAUDE.md:16`'s value list and `:59`'s derivation clause, and `CLAUDE.md:59` **also** carries a stale value list of its own (`**Domain:** <code|data|strategic|knowledge>`) in the same sentence. Whoever works that record should cut both halves of `:59`, not only the behaviour clause.
 
 `ontorev` ran in parallel on the structured-data half. Files I opened that its pass may also reach: `.claude-plugin/plugin.json`, `hooks/lib/__tests__/fixtures/rules-emission.golden`, and this Circle's issue and history records. None of my three findings is in those files.

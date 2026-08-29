@@ -15,31 +15,45 @@
 //     boolean gate has nowhere to put that — one match and five matches are
 //     both "ok" to a gate and are not the same fact about a corpus.
 //
-// THE GRAMMAR:
-//   `260806-0015_*_<slug>.md` and its store-, Circle- and `shared/`-prefixed
-//   forms, plus bare Circle-directory citations `circles/<stamp>-<slug>`, plus
-//   a Circle's own record `circles/<stamp>-<slug>/_x_circle.md`. The wildcard
-//   `_*_` at the marker position matches any state marker; a citation carrying
-//   an exact marker resolves exactly, and one whose record exists only under a
-//   DIFFERENT marker is the stale-marker class. An ellipsis, `…` or ASCII
-//   `...`, is a deliberate truncation and matches any infix. A citation not
-//   ending in `.md` is a prefix.
+// THE GRAMMAR, storeless since 2026-08-29 (Circle
+// `260828-2342-citation-form-drops-store-segment`, decision
+// `260829-1225_*_which-path-shaped-tokens-does-the-storeless-form-reach-beyond-a-record-citation.md`
+// option 1: one form everywhere):
+//   A record is cited by its basename alone, `260806-0015_*_<slug>.md`
+//   (`bare-record`); a markerless artifact by `<stamp>-<slug>.md` and a Circle
+//   by its bare directory name `<stamp>-<slug>` (both `stamp-name`). Every
+//   citation resolves by ONE basename lookup over the whole workbench index,
+//   `archive/` included, with no path arithmetic: no two stamped artifacts share
+//   a marker-normalised basename (the uniqueness test in
+//   `workbench-citation-lint.test.ts` re-takes that measurement on every run).
+//   The wildcard `_*_` at the marker position matches any state marker; a
+//   citation carrying an exact marker resolves exactly, and one whose record
+//   exists only under a DIFFERENT marker is the stale-marker class. An
+//   ellipsis, `…` or ASCII `...`, is a deliberate truncation and matches any
+//   infix. A citation not ending in `.md` is a prefix.
+//
+//   THE THREE STORE-PREFIXED SHAPES ARE DETECTED AND NEVER RESOLVED. A record
+//   behind a store segment (`shared/<store>/…`, `circles/<dir>/<store>/…`,
+//   `record`), a Circle's own record `circles/<dir>/_x_circle.md`
+//   (`circle-record`) and a Circle directory `circles/<dir>` (`circle-dir`)
+//   each get the status `store-prefixed`, a violation whose `fix` spells the
+//   storeless form. The segment is what an archive sweep moves, so a citation
+//   carrying it dies at the sweep; the storeless form survives it. Keeping the
+//   three as detectors is what lets the gates report the old spelling instead
+//   of silently resolving it through `archive/`, which is what they did until
+//   the 2026-08-19 archive tolerance was deleted with this rewrite.
 //
 //   NOT READ, ON PURPOSE: the pre-v4 bracket marker (`260717-1918[o]_slug`).
 //   It is retired syntax that `/fusion:migrate` rewrites; a grammar that
-//   accepted it would remove the only pressure to rewrite it. With a store
-//   prefix it tokenises up to the `[` and prefix-matches the file, so a stale
-//   bracket marker is never found (issue 260812-2136, the second half).
+//   accepted it would remove the only pressure to rewrite it (issue
+//   260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md, the second half).
 //
-//   The Circle-record form arrived last, on 2026-08-19; until it tokenised the
-//   gate was silent over every citation in that form (issue 260819-2321).
-//
-// A fourth token class, the **bare timestamp**. `260722-1943` in running prose
-// carries no store, kind or slug, so the gate cannot judge it (`BARE_RE`
-// requires a marker). A measurement must still count them, because "how many
-// citations cannot be resolved by any mechanism" is a different question from
-// "how many are wrong". Bare timestamps are never violations and never counted
-// as resolved.
+// The residual token class, the **bare timestamp** (`stamp-bare`).
+// `260722-1943` in running prose carries no store, kind or slug, so the gate
+// cannot judge it (`BARE_RE` requires a marker). A measurement must still count
+// them, because "how many citations cannot be resolved by any mechanism" is a
+// different question from "how many are wrong". Bare timestamps are never
+// violations and never counted as resolved.
 //
 // WHY THIS FILE IS UNDER `hooks/lib/` AND NOT IN THE TEST TREE. It lived at
 // `hooks/lib/__tests__/helpers/citation-scan.ts` until 2026-08-29, excluded
@@ -70,6 +84,7 @@ export function isPlaceholder(token) {
 // --- the citation grammar ---------------------------------------------------
 const STORES = "planning|issues|decisions|history|reviews|analyses|investigations|consult|memos|backlog";
 // Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
+// A DETECTOR since 2026-08-29: every match is reported `store-prefixed`.
 const REC_RE = new RegExp("(?:fusion-workbench\\/)?" +
     "(?:(circles\\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/|(shared)\\/)?" +
     `(${STORES})\\/` +
@@ -99,8 +114,9 @@ const CIRCLE_RE = /circles\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)(?:\/(?![A-Za-z0-9_.*<
 // A record stamp carrying no store prefix. Scanned last, and only where no
 // citation token above already covers the position. Two shapes, and they are
 // not the same question: `260812-2116-coder-<slug>` carries a name and is
-// decidable by prefix, while `260812-2116` alone is the residual.
-const STAMP_RE = /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:-[a-z0-9]+)*)(?![0-9])/g;
+// decidable by prefix (exactly, when it ends in `.md` — that is the storeless
+// citation of a markerless artifact), while `260812-2116` alone is the residual.
+const STAMP_RE = /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:-[a-z0-9]+)*)(\.md)?(?![0-9])/g;
 /** Files exempt from class (c) wholesale, with the reason. */
 export const RECORD_EXAMPLE_FILES = {
     "rules/decision-record-examples.md": "the worked-example corpus — every record it walks is fabricated by design",
@@ -123,7 +139,7 @@ function inFooterTemplateSpan(before) {
  * end (`. ` after the `e.g.`) between the `e.g.` and the token closes the
  * announcement — without that bound, ANY earlier `e.g.` on the line exempted
  * every later citation, and a dead citation four words behind an unrelated
- * `(e.g. \`en\`)` passed silently (issue 260806-1031, the swallow-a-real-defect
+ * `(e.g. \`en\`)` passed silently (issue 260806-1031_*_referenz-lint-die-eg-ausnahme-ist-breiter-als-ihr-eigener-kommentar-behauptet.md, the swallow-a-real-defect
  * shape the gate's exemption-design note warns against).
  */
 function inAnnouncedIllustration(before) {
@@ -242,85 +258,22 @@ function basenameMatcher(cited) {
     return new RegExp("^" + segs.join(".*") + tail);
 }
 /**
- * One archive sweep directory, and the bound is the whole point of writing the
- * pattern out. `/fusion:archive` creates exactly one level — `mkdir -p
- * "$WORKBENCH/archive/<YYMMDD-HHMM>-<slug>/"` (`skills/archive/SKILL.md`) — and
- * moves whole subtrees beneath it with the store layout preserved. So a record
- * that has been archived once sits at `archive/<sweep>/shared/<store>/…`, at a
- * depth of exactly one sweep, never two. A looser pattern (`archive/.*\/`, or
- * any leading-prefix tolerance) would let an anchored citation match a file
- * ANYWHERE under the workbench, which does not make the resolver lenient about
- * archiving — it makes it a resolver that cannot fail, and turns the gate built
- * on it into one that cannot go red.
+ * An archive sweep's directory name: `/fusion:archive` creates exactly one
+ * level, `archive/<YYMMDD-HHMM>-<slug>/`, and moves whole subtrees beneath it.
+ * Read by `circleDirs()` alone, to find the swept `circles/` containers; no
+ * resolver reads a path prefix any more.
  */
-const ARCHIVE_SWEEP_RE = /^archive\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+\//;
-/**
- * Does `relDir` sit at `prefix`, either at the workbench root or under one
- * archive sweep?
- *
- * THE COST, stated here because it is paid here. Resolution of the two anchored
- * branches becomes prefix-TOLERANT rather than exact: a citation whose line
- * spells the full `archive/<sweep>/shared/issues/…` path and a citation that
- * spells only `shared/issues/…` produce the same token (`REC_RE` begins its
- * match at the store prefix either way) and now reach the same record. The
- * scanner therefore cannot distinguish a citation OF an archived copy from a
- * citation of a live record that happens to share its basename, and it will
- * report the archived copy as the resolution of both.
- *
- * The alternative that was available and not taken is fix shape 2: teach
- * `REC_RE` an optional leading `archive/<sweep>/` segment, so the archive
- * prefix becomes part of the token and the resolution stays exact. That shape
- * can tell the two apart; it also invalidates every citation already written in
- * the archive-tolerant form. The user chose shape 1 at a gate on 2026-08-19,
- * with the loss of exactness stated rather than discovered later — see
- * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md`,
- * `## Where the fix belongs` and the answer appended at its foot.
- *
- * What this choice does NOT answer, and the record says so too: whether an
- * archived record should be a citation target at all. Tolerating the prefix
- * settles "can the grammar express it", not "should archiving end a record's
- * life as a target" — `skills/archive/SKILL.md` still neither says nor checks.
- *
- * THE SAME COST, ON THE CIRCLE-RECORD FORM (`anchoredAt`, added 2026-08-19).
- * `circles/<dir>/_c_circle.md` and `archive/<sweep>/circles/<dir>/_c_circle.md`
- * produce the identical token, so the scanner cannot say which of the two a
- * line meant, and a Circle present both live and archived under one directory
- * name resolves `ambiguous` rather than to either copy. That collision is
- * hypothetical today and not by luck: a sweep MOVES the directory, so the two
- * copies cannot coexist unless a Circle is later re-created under an archived
- * name — which the stable-directory-name convention exists to prevent.
- *
- * THE ASYMMETRY THIS CARRIED IS CLOSED. Until 2026-08-20 the Circle-record form
- * resolved under a sweep while a citation of the archived Circle DIRECTORY
- * still read `dangling`, because `circleDirs()` had not learned the prefix —
- * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`.
- * `circleDirs()` now applies this same choice, with this same cost, and states
- * both at its own definition.
- */
-function anchoredUnder(relDir, prefix) {
-    return relDir.startsWith(prefix) || unsweep(relDir).startsWith(prefix);
-}
-/** `relDir` with one archive sweep taken off the front, if it carries one. */
-function unsweep(relDir) {
-    const sweep = ARCHIVE_SWEEP_RE.exec(relDir);
-    return sweep === null ? relDir : relDir.slice(sweep[0].length);
-}
-/**
- * The same one-sweep bound, asked as an EQUALITY rather than a prefix. A Circle
- * record sits directly in the Circle directory and in no store below it, so
- * `circles/<dir>` is the whole of its `relDir` — asking `startsWith` here would
- * also accept every record in every store inside that Circle, and would accept
- * a sibling Circle whose directory name merely begins with this one's.
- */
-function anchoredAt(relDir, dir) {
-    return relDir === dir || unsweep(relDir) === dir;
+const SWEEP_DIR_RE = /^[0-9]{6}-[0-9]{4}-[a-z0-9-]+$/;
+/** The storeless spelling of a store-prefixed record token's basename. */
+function storelessBase(stamp, rest) {
+    return stamp + rest.replace(/^_[a-z]_/, "_*_");
 }
 /**
  * The kinds the gate judges. Everything else is measurement-only, and since
  * 2026-08-20 "everything else" is one kind: `stamp-bare`.
  *
  * `stamp-name` joined the list under decision
- * `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
+ * `260819-2016_*_does-the-citation-gate-judge-the-stamp-name-class-which-scanrecordcitations-does-not-read.md`
  * (option 2), so that the repair scope and the gate scope coincide instead of
  * diverging by 33 tokens. A `stamp-name` token is a stamp plus a dashed name
  * (`260812-2116-coder-<slug>`), which this parser's own header calls decidable
@@ -377,29 +330,8 @@ export function createScanner(workbenchRoot) {
      * moved it. The map is the paths rather than a bare name set so that what a
      * citation RESOLVED TO is reported truthfully — an archived Circle that
      * reported `circles/<dir>` would be naming a path that is not on disk, in a
-     * file whose header calls itself a measuring instrument.
-     *
-     * THE ARCHIVE HALF IS NOT A NEW ANSWER. It is the shape the user chose for
-     * `findRecord()` on 2026-08-19 (fix shape 1: one sweep, prefix-tolerant, the
-     * loss of exactness stated rather than discovered), applied to the sibling
-     * function that was left out of it — see `anchoredUnder` above, which states
-     * the choice and the alternative in full, and
-     * `circles/260819-1645-four-constraints-on-deep-change/issues/260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`,
-     * which is the record of the asymmetry this closes.
-     *
-     * THE COST IS THE SAME COST, paid here. Resolution becomes prefix-tolerant: a
-     * line citing `circles/<dir>` and a line citing `archive/<sweep>/circles/<dir>`
-     * produce the same token (`CIRCLE_RE` begins its match at `circles/`), so the
-     * scanner cannot say which of the two was meant. Where both copies exist the
-     * verdict is `ambiguous` and both paths are reported, exactly as the Circle-
-     * RECORD form already does — one shape, not two. As there, that collision needs
-     * a Circle re-created under an archived name, which the stable-directory-name
-     * convention exists to prevent.
-     *
-     * The bound is `ARCHIVE_SWEEP_RE`'s: exactly one sweep level, never a general
-     * prefix tolerance. The reason is written out at that pattern and holds here
-     * unchanged — a resolver that cannot fail turns the gate built on it into one
-     * that cannot go red.
+     * file whose header calls itself a measuring instrument. Archive sweeps are
+     * indexed because a bare directory name resolves wherever the directory is.
      */
     let circleDirIndex = null;
     function circleDirs() {
@@ -424,10 +356,7 @@ export function createScanner(workbenchRoot) {
         const archive = join(workbenchRoot, "archive");
         if (existsSync(archive)) {
             for (const sweep of readdirSync(archive, { withFileTypes: true })) {
-                // `ARCHIVE_SWEEP_RE` is the same bound `anchoredUnder` holds, asked of a
-                // directory name instead of a `relDir`: a sweep is `<YYMMDD-HHMM>-<slug>`
-                // and anything else under `archive/` is not one.
-                if (sweep.isDirectory() && ARCHIVE_SWEEP_RE.test(`archive/${sweep.name}/`)) {
+                if (sweep.isDirectory() && SWEEP_DIR_RE.test(sweep.name)) {
                     add(`archive/${sweep.name}/circles`);
                 }
             }
@@ -435,24 +364,10 @@ export function createScanner(workbenchRoot) {
         circleDirIndex = dirs;
         return dirs;
     }
-    function findRecord(opts) {
-        const re = basenameMatcher(opts.citedBase);
-        return workbenchIndex().filter((e) => {
-            if (!re.test(e.base))
-                return false;
-            // A Circle citation with a store is a record inside the Circle; without
-            // one it is the Circle's own record, which lives at the directory itself.
-            if (opts.circleDir) {
-                return opts.store
-                    ? anchoredUnder(e.relDir, `circles/${opts.circleDir}/${opts.store}`)
-                    : anchoredAt(e.relDir, `circles/${opts.circleDir}`);
-            }
-            if (opts.shared)
-                return anchoredUnder(e.relDir, `shared/${opts.store}`);
-            if (opts.store)
-                return e.relDir.split("/").includes(opts.store);
-            return true;
-        });
+    /** Every file whose basename the citation matches, wherever it sits. */
+    function findRecord(citedBase) {
+        const re = basenameMatcher(citedBase);
+        return workbenchIndex().filter((e) => re.test(e.base));
     }
     /**
      * Every citation token on the given lines, with what it resolves to. The
@@ -495,18 +410,24 @@ export function createScanner(workbenchRoot) {
                                                         ? "glob"
                                                         : null;
                 if (reason) {
-                    hits.push({ file: rel, line, token, kind, status: "exempt", matches: [], reason });
+                    hits.push({ file: rel, line, col: idx, token, kind, status: "exempt", matches: [], reason });
                     return;
                 }
                 if (!present) {
-                    hits.push({ file: rel, line, token, kind, status: "unresolved-no-workbench", matches: [] });
+                    hits.push({ file: rel, line, col: idx, token, kind, status: "unresolved-no-workbench", matches: [] });
                     return;
                 }
-                hits.push({ file: rel, line, token, kind, ...check() });
+                hits.push({ file: rel, line, col: idx, token, kind, ...check() });
             };
             const found = (m) => ({
                 status: m.length === 1 ? "resolved" : "ambiguous",
                 matches: m.map(pathOf),
+            });
+            const storePrefixed = (segment, storeless) => ({
+                status: "store-prefixed",
+                matches: [],
+                problem: `the citation carries the store segment '${segment}', which an archive sweep moves`,
+                fix: `cite the storeless form '${storeless}' (decision 260828-0904, the form)`,
             });
             REC_RE.lastIndex = 0;
             let m;
@@ -514,100 +435,26 @@ export function createScanner(workbenchRoot) {
                 const [full, circleDir, shared, store, stamp, restRaw] = m;
                 const rest = restRaw ?? "";
                 const idx = m.index;
-                const citedBase = stamp + rest;
-                const circle = circleDir?.replace(/^circles\//, "");
-                consider(idx, full, "record", () => {
-                    const hit = findRecord({ circleDir: circle, shared: shared === "shared", store, citedBase });
-                    if (hit.length > 0)
-                        return found(hit);
-                    // exact marker that resolves only under another marker = stale marker
-                    const markerM = rest.match(/^_([a-z])_/);
-                    if (markerM) {
-                        const wild = findRecord({
-                            circleDir: circle,
-                            shared: shared === "shared",
-                            store,
-                            citedBase: stamp + rest.replace(/^_[a-z]_/, "_*_"),
-                        });
-                        if (wild.length > 0) {
-                            return {
-                                status: "stale-marker",
-                                matches: wild.map(pathOf),
-                                problem: `stale marker '_${markerM[1]}_': the record now exists as ` +
-                                    `${wild[0].relDir}/${wild[0].base}`,
-                                fix: "cite the marker position as '_*_' (decision 260806-0015, wildcard form)",
-                            };
-                        }
-                    }
-                    const anywhere = findRecord({ citedBase });
-                    if (anywhere.length > 0) {
-                        return {
-                            status: "wrong-store",
-                            matches: anywhere.map(pathOf),
-                            problem: `wrong store path: the record lives at ${anywhere[0].relDir}/${anywhere[0].base}`,
-                            fix: "correct the cited path to where the record actually is",
-                        };
-                    }
-                    return {
-                        status: "dangling",
-                        matches: [],
-                        problem: "no record in the workbench matches this citation",
-                        fix: "pull the citation's substance into the text and drop the dead path " +
-                            "(decision 260805-0709), or fix the citation",
-                    };
-                });
+                const segment = `${circleDir ?? shared ?? ""}${circleDir || shared ? "/" : ""}${store}/`;
+                consider(idx, full, "record", () => storePrefixed(segment, storelessBase(stamp, rest)));
             }
-            // A Circle's own record. Three statuses, not four: there is no
-            // `wrong-store` retry, because `_x_circle.md` carries no stamp and no slug,
-            // so an unanchored lookup matches EVERY Circle's record and would report a
-            // dozen "the record lives at" candidates for a directory name that is
-            // simply wrong. "Which store is it in" is not a question this form can ask
-            // — a Circle record is in no store — so the split is the anchored hit, the
-            // stale marker, and nothing found.
             CIRCLE_REC_RE.lastIndex = 0;
             while ((m = CIRCLE_REC_RE.exec(text)) !== null) {
-                const [full, dir, citedBase] = m;
+                const [full, dir] = m;
                 const idx = m.index;
-                consider(idx, full, "circle-record", () => {
-                    const hit = findRecord({ circleDir: dir, citedBase });
-                    if (hit.length > 0)
-                        return found(hit);
-                    const markerM = citedBase.match(/^_([a-z])_/);
-                    if (markerM) {
-                        const wild = findRecord({
-                            circleDir: dir,
-                            citedBase: citedBase.replace(/^_[a-z]_/, "_*_"),
-                        });
-                        if (wild.length > 0) {
-                            return {
-                                status: "stale-marker",
-                                matches: wild.map(pathOf),
-                                problem: `stale marker '_${markerM[1]}_': the record now exists as ` +
-                                    `${wild[0].relDir}/${wild[0].base}`,
-                                fix: "cite the marker position as '_*_' (decision 260806-0015, wildcard form)",
-                            };
-                        }
-                    }
-                    return {
-                        status: "dangling",
-                        matches: [],
-                        problem: "no Circle record in the workbench matches this citation",
-                        fix: "fix the Circle-directory name (it is stable for a Circle's whole life), " +
-                            "or cite the record at its archive path if the Circle was swept",
-                    };
-                });
+                consider(idx, full, "circle-record", () => storePrefixed("circles/", dir));
             }
             BARE_RE.lastIndex = 0;
             while ((m = BARE_RE.exec(text)) !== null) {
                 const [full, stamp, rest] = m;
                 const idx = m.index;
                 consider(idx, full, "bare-record", () => {
-                    const hit = findRecord({ citedBase: stamp + rest });
+                    const hit = findRecord(stamp + rest);
                     if (hit.length > 0)
                         return found(hit);
                     const markerM = rest.match(/^_([a-z])_/);
                     if (markerM) {
-                        const wild = findRecord({ citedBase: stamp + rest.replace(/^_[a-z]_/, "_*_") });
+                        const wild = findRecord(storelessBase(stamp, rest));
                         if (wild.length > 0) {
                             return {
                                 status: "stale-marker",
@@ -631,32 +478,30 @@ export function createScanner(workbenchRoot) {
             while ((m = CIRCLE_RE.exec(text)) !== null) {
                 const [full, dir] = m;
                 const idx = m.index;
-                consider(idx, full, "circle-dir", () => {
-                    const at = circleDirs().get(dir);
-                    if (at)
-                        return { status: at.length === 1 ? "resolved" : "ambiguous", matches: at };
-                    return {
-                        status: "dangling",
-                        matches: [],
-                        problem: "no such Circle directory under fusion-workbench/circles/, " +
-                            "nor under an archive sweep",
-                        fix: "fix the Circle-directory name (the directory name is stable for a Circle's whole life)",
-                    };
-                });
+                consider(idx, full, "circle-dir", () => storePrefixed("circles/", dir));
             }
             // Store-prefixless stamps, last: whatever no citation token above claimed.
-            // Both shapes resolve by prefix against the whole index, which is all the
-            // token supports — and the match COUNT is the answer, because a stamp that
-            // names five artifacts names none of them.
+            // A `stamp-name` ending in `.md` is the storeless citation of a markerless
+            // artifact and matches its basename exactly; every other shape resolves by
+            // prefix against the whole index, files and Circle directories alike, which
+            // is all the token supports — and the match COUNT is the answer, because a
+            // stamp that names five artifacts names none of them.
             STAMP_RE.lastIndex = 0;
             while ((m = STAMP_RE.exec(text)) !== null) {
-                const [full, stamp, dashed] = m;
+                const [full, stamp, dashed, md] = m;
                 const idx = m.index;
                 consider(idx, full, dashed ? "stamp-name" : "stamp-bare", () => {
-                    const at = dashed ? circleDirs().get(full) : undefined;
+                    const at = dashed && !md ? circleDirs().get(full) : undefined;
                     if (at)
                         return { status: at.length === 1 ? "resolved" : "ambiguous", matches: at };
-                    const named = workbenchIndex().filter((e) => e.base.startsWith(full));
+                    const named = md
+                        ? workbenchIndex().filter((e) => e.base === full).map(pathOf)
+                        : [
+                            ...workbenchIndex().filter((e) => e.base.startsWith(full)).map(pathOf),
+                            ...(dashed
+                                ? []
+                                : [...circleDirs().entries()].filter(([d]) => d.startsWith(full)).flatMap(([, p]) => p)),
+                        ];
                     if (named.length === 0) {
                         return {
                             status: "dangling",
@@ -664,16 +509,16 @@ export function createScanner(workbenchRoot) {
                             problem: dashed
                                 ? "no artifact and no Circle directory carries this name"
                                 : "no artifact in the workbench carries this timestamp",
-                            fix: "cite the record's full path, or drop the token",
+                            fix: "cite the record's storeless basename, or drop the token",
                         };
                     }
                     return {
                         status: named.length === 1 ? "resolved" : "ambiguous",
-                        matches: named.map(pathOf),
+                        matches: named,
                         problem: named.length === 1
                             ? undefined
                             : `${named.length} artifacts share this stamp; the token names none of them`,
-                        fix: named.length === 1 ? undefined : "cite the record's full path",
+                        fix: named.length === 1 ? undefined : "cite the record's storeless basename",
                     };
                 });
             }
@@ -696,7 +541,7 @@ export function createScanner(workbenchRoot) {
                 continue;
             if (h.status === "resolved" || h.status === "ambiguous")
                 resolved++;
-            else if (h.status === "stale-marker" || h.status === "wrong-store" || h.status === "dangling") {
+            else if (h.status === "stale-marker" || h.status === "store-prefixed" || h.status === "dangling") {
                 violations.push({
                     file: h.file,
                     line: h.line,
@@ -788,9 +633,12 @@ export function partition(hits) {
     const undecidable = (h) => !unjudged(h) && (h.kind === "stamp-bare" || h.status === "ambiguous");
     return {
         resolved: hits.filter((h) => !unjudged(h) && !undecidable(h) && h.status === "resolved"),
+        // `store-prefixed` lands here: it is a violation the gate reports, and the
+        // baseline's three lists have no fourth. A caller that wants it apart
+        // filters on the status.
         dangling: hits.filter((h) => !unjudged(h) &&
             !undecidable(h) &&
-            (h.status === "stale-marker" || h.status === "wrong-store" || h.status === "dangling")),
+            (h.status === "stale-marker" || h.status === "store-prefixed" || h.status === "dangling")),
         undecidable: hits.filter(undecidable),
         exempt: hits.filter(unjudged),
     };

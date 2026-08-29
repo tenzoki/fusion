@@ -8,7 +8,7 @@ classes counts citations that resolve **against the workbench**, and the workben
 is unbudgeted is that a *housekeeping* step, not a text edit, can produce it, and the failure text tells the
 reader to re-approve the baseline, which is the correct response for a text edit and the wrong one here.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `hooks/lib/__tests__/reference-resolution-lint.test.ts` (`BASELINE`, `BASELINE_MESSAGE`),
 `hooks/lib/__tests__/helpers/citation-scan.ts` (`findRecord`), `skills/archive/SKILL.md`
@@ -22,7 +22,7 @@ reader to re-approve the baseline, which is the correct response for a text edit
   `e.relDir.startsWith("shared/" + store)` — an exact store-path prefix, not a search.
 - `workbenchIndex()` walks the whole workbench recursively, `archive/` included.
 - Shipped text carries `shared/`-prefixed citations: `CLAUDE.md` names
-  `fusion-workbench/shared/issues/260810-0326_*_…` and `fusion-workbench/shared/issues/260717-0030_*_…`,
+  `260810-0326_*_…` and `260717-0030_*_…`,
   both to records eligible for archiving.
 
 ## What is inferred, and not measured
@@ -44,15 +44,15 @@ Either way `BASELINE_MESSAGE` should name this third cause beside its two.
 
 ## Related
 
-- `shared/decisions/260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`
-- `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+- `260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`
+- `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/helpers/citation-scan.ts:148-158` still walks the whole workbench with no archive exclusion and still requires an exact shared-store prefix. The baseline at `reference-resolution-lint.test.ts:536` moved from 1122/139/95 to 1120/139/94, so the pin was re-approved rather than decoupled. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `hooks/lib/__tests__/helpers/citation-scan.ts:148-158` still walks the whole workbench with no archive exclusion and still requires an exact shared-store prefix. The baseline at `reference-resolution-lint.test.ts:536` moved from 1122/139/95 to 1120/139/94, so the pin was re-approved rather than decoupled. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 **Reconciliation 260819-1400** (reconciler, domain `code`, HEAD `e435f03`; log
-`shared/history/260819-1400-reconciliation-shared-issues.md`). Reproduces, and the event it predicted
+`260819-1400-reconciliation-shared-issues.md`). Reproduces, and the event it predicted
 has now happened once without tripping the gate. The mechanism is unchanged:
 `hooks/lib/__tests__/helpers/citation-scan.ts` still carries no `archive` exclusion (`grep -n archive`
 empty) and `findRecord` still requires `e.relDir.startsWith("shared/" + store)`, so a record moved into

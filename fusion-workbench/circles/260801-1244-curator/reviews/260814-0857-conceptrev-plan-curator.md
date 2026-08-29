@@ -1,7 +1,7 @@
 # Concept Evaluation: Implementation Plan — the curator, and a hard growth bound on the always-on rule set
 
 **Date:** 2026-08-14 08:57
-**Target:** `circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md`
+**Target:** `260814-0845_*_plan-curator.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 3  |  **Validation:** by-tool (`@mermaid-js/mermaid-cli@11.16.0`, with a negative control)
 

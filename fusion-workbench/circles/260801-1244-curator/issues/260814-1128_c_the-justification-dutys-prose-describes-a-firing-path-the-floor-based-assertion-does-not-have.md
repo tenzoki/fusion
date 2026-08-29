@@ -41,7 +41,7 @@ is "a core-file edit".
 
 The same claim is repeated in the commit message of `5c843e6` ("the cap is one core-file edit
 away from firing") and in
-`circles/260801-1244-curator/history/260814-1116-coder-arm-the-growth-bound.md`
+`260814-1116-coder-arm-the-growth-bound.md`
 ("one core-file edit away from the justification duty firing").
 
 **Instance 2 — the duty's stated meaning, false as of this Turn.**
@@ -80,7 +80,7 @@ is most likely to act on.
 **Scope.** One file, `hooks/lib/__tests__/rules-emission-golden.test.ts`. Prose and, for the second
 candidate fix only, one assertion. Executor: `coder`.
 
-**Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1128-coderev-curator-turn-2.md`.
+**Filed by:** coderev, review `260814-1128-coderev-curator-turn-2.md`.
 
 ---
 Resolved: Fixed the prose, not the mechanism — the floor-based assertion is the arming decision `260814-0738`'s and was not touched, nor were `RULE_BASELINE`, `RELEASE_CAP` or `DRIFT_CEILING`. I re-read the trigger before editing and confirm the finding: `floorOf` (`:689`) delegates to `growth()` (`:636`), whose floor is `RULE_BASELINE[f.rel]` summed over the role's files, so no edit to a rule file can move it and the mechanism is right as it stands. Instance 1, the orchestrator role's entry in `ROLES`: "one core-file edit away from firing" is replaced by what actually moves a floor — a re-baseline at one of the two events in `## Re-baselining`, or an audience change in `bin/fusion-rules` handing the role another already-baselined file — and by the statement that editing a rule file moves what the role emits and not what it stands on, that a newly added always-on file contributes 0 to the floor and counts as growth in full instead, and that what the next core-file edit meets is the hard bound at +GROWTH_BUDGET rather than this cap. Instance 2, the `RELEASE_CAP` docblock: the duty is now stated as measuring the FLOOR, with a new paragraph (`READ THAT AS THE FLOOR AND NOT AS THE BILL`) saying that what a role emits is the floor plus everything its files have grown since the baseline was last set, that a role can therefore stand under the cap on its floor and over it on what it ships, and that the duty stays silent through that because the gap belongs to the budget report and the hard bound. The false half — "costs a consuming project nothing it was not already paying" — is gone. Per decision `260814-0845` the correction carries no present-tense byte figures of its own, so it cannot go stale the way the sentence it replaces did. `cd hooks && npm test` exit 0, 49 files, 1030 tests; no `RULE-TEXT BUDGET` report printed.

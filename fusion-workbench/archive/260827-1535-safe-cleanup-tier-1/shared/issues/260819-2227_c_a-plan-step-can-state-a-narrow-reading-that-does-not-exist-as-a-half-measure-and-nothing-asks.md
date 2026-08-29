@@ -73,7 +73,7 @@ decision, not a defect, and it is not filed here.
 
 ---
 
-**Filed by** the orchestrator of session `260819-2006`, from a user-relayed consumer report. No Circle
+**Filed by** the orchestrator of session `260819-2006-orchestrator-session.md`, from a user-relayed consumer report. No Circle
 caused it — the active Circle's Directive is about unobserved failure in fusion's own mechanisms, not about
 the planner contract — so it goes to the shared store under the Origin Rule.
 

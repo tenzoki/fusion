@@ -57,7 +57,7 @@ project has now adopted, arrived at independently.
 **2. The prompts locate fusion's own Grounding in the consuming project's stores.** Shipped agent
 prompts cite records as being "in `$SCAN_DECISIONS`" or "under `$SCAN_ISSUES`". Those keys resolve
 through `bin/fusion-paths` to the **consuming project's** stores. Checked in this project:
-`260827-1120`, `260827-1310`, `260827-1330`, `260822-1635` and `260815-2109` are each cited that
+`260827-1120_*_how-often-does-the-review-pass-run.md`, `260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md`, `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`, `260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md` and `260815-2109` are each cited that
 way and each returns zero matches here. They exist in fusion's own workbench, which the plugin
 does not ship — the installed tree holds `agents`, `bin`, `docs`, `hooks`, `rules`, `skills`,
 `stilwerk`, `templates` and no workbench at all.
@@ -118,4 +118,4 @@ The names below are records of the consumer project that wrote this report. They
 ```
 
 ---
-Reconciled 260828-0907 (session 260828-0846, HEAD ffc6ae88): taken in, not closed. The `_o_` marker and the fenced consumer-record list (lines 112-118) landed in `19b58eef`; the measurement against this corpus is `shared/analyses/260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md` (`ffc6ae88`); its confirmed instances are issues `260828-0900_*` and `260828-0901_*`, its open questions the five decisions `260828-0904_*`. Closes when those are answered and the two issues are fixed.
+Reconciled 260828-0907 (session 260828-0846-orchestrator-session.md, HEAD ffc6ae88): taken in, not closed. The `_o_` marker and the fenced consumer-record list (lines 112-118) landed in `19b58eef`; the measurement against this corpus is `260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md` (`ffc6ae88`); its confirmed instances are issues `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*` and `260828-0901_*_the-archive-safety-filter-greps-the-literal-basename-and-cannot-match-the-wildcard-citation-form-the-rule-mandates.md_*`, its open questions the five decisions `260828-0904_*`. Closes when those are answered and the two issues are fixed.

@@ -11,7 +11,7 @@ and each of them carries exactly the gap the lead just shed.
 
 ## Where
 
-Surfaced by the coder closing the review findings at 260813-1612, reported rather than fixed
+Surfaced by the coder closing the review findings at 260813-1612-coder-five-review-findings-before-closure.md, reported rather than fixed
 because the dispatch had bounded the scope to five named findings.
 
 `agents/playmaker.md` says "originates" four times:

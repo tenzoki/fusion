@@ -4,11 +4,11 @@
 `CLAUDE.md:30` states that "the root copy here is byte-identical to the template (pinned by `config.test.ts`)". Commit `f0d9d60`, Turn 6 of this Circle, falsified both clauses in one change: the root `fusion-guard.json` now carries `"orchestrator": { "maxTurns": 12 }` that the template does not, and `config.test.ts` no longer pins byte identity — it pins identity outside `PROJECT_SET_KEYS`. The commit repaired the test and the configuration and left the sentence that describes them.
 
 ---
-**Found by:** coderev, Turn-6 incremental review of `41c224c..d270666`, review file `circles/260801-1244-curator/reviews/260814-2128-coderev-curator-turn-6.md`.
+**Found by:** coderev, Turn-6 incremental review of `41c224c..d270666`, review file `260814-2128-coderev-curator-turn-6.md`.
 **Owner:** `coder`.
 **Severity:** High — a false statement on the one normative surface every session loads, created inside the Circle whose Directive is that those surfaces match the recorded history, and the Circle is closing.
 **Affects:** `CLAUDE.md:30` (the `fusion-guard.json` + `templates/fusion-guard.json` layout row).
-**Cross-references:** `shared/issues/260814-2022_c_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md` (the record `f0d9d60` closes); `circles/260801-1244-curator/history/260814-2115-coder-turn-6-drift-check-admits-the-turn-budget.md`.
+**Cross-references:** `260814-2022_*_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md` (the record `f0d9d60` closes); `260814-2115-coder-turn-6-drift-check-admits-the-turn-budget.md`.
 
 **Verified 2026-08-14 at HEAD `d270666`.**
 

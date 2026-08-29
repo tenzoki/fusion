@@ -7,9 +7,9 @@
 **Filed by:** analyst, independent assessment A1 of C5b
 **Affects:** `hooks/guard.ts:652` (the `if (!config.guard.enabled)` short-circuit, which sits above the Bash dispatch and above every check); `hooks/lib/config.ts` (the project layer that can now reach it); `templates/fusion-guard.json` `_protectsItself` and `_inFusionsOwnSourceTree`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md` `### What a consuming project can now do to itself`,
-`circles/260801-1244-guard-rules-write/issues/260804-1427_o_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md` (whose stated halt bound this falsifies for one key),
-`circles/260801-1244-guard-rules-write/decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md`,
+`260804-1600-c5b-independent-assessment.md` `### What a consuming project can now do to itself`,
+`260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md` (whose stated halt bound this falsifies for one key),
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`,
 `rules/git-branch-discipline.md`, `CLAUDE.md:1` (both of which state the branch policy is unconditional)
 
 ---
@@ -66,7 +66,7 @@ Against an already active halt (`haltActive: true`, `consecutiveBlocks: 3` seede
 
 ## The bound, measured too
 
-Issue `260804-1427_o_` bounds the accepted floor residual with "an agent cannot narrow its
+Issue `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md` bounds the accepted floor residual with "an agent cannot narrow its
 way out of a halt it is already in". That holds for `protectedPaths` and it holds here for
 *creation*: while halted, `Write fusion-guard.json` and `echo x > fusion-guard.json` both
 deny, so a halted agent cannot write the off-switch.
@@ -102,4 +102,4 @@ Two candidate answers, and picking between them is a decision rather than a line
    guard", more surface to get wrong.
 
 Either way the template's `_protectsItself` and `_inFusionsOwnSourceTree` sentences need
-correcting — filed separately as `260804-1605_o_`.
+correcting — filed separately as `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`.

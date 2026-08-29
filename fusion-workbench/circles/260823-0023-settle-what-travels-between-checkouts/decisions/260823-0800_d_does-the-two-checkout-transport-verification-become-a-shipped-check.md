@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md` `## Testing Strategy` (the reading this plan proceeds on); `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` `## Open for planner` (the same question asked once already, for C1); `circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope` (the harness a shipped check would have to reproduce); `hooks/lib/__tests__/surface-growth-bound.test.ts` (the line budget it would spend)
+**Cross-references:** `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md` `## Testing Strategy` (the reading this plan proceeds on); `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C1` `## Open for planner` (the same question asked once already, for C1); `260822-2219-what-two-checkouts-of-one-project-actually-share.md` `## Scope` (the harness a shipped check would have to reproduce); `hooks/lib/__tests__/surface-growth-bound.test.ts` (the line budget it would spend)
 
 ---
 

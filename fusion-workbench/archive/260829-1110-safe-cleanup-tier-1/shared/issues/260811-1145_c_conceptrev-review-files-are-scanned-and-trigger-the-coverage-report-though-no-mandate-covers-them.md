@@ -64,9 +64,9 @@ inferred from the agent's removal.**
 `agents/conceptrev.md` was deleted in `a17cc8c` (Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`,
 step 7). The plan's step 7 asserted that this record "is retired by this step and should be
 transitioned `_o_` → `_c_`". **That assertion is false and the executor was right not to act on it**,
-which it recorded at `circles/260815-0007-.../history/260815-1339-coder-remove-conceptrev.md`
+which it recorded at `circles/260815-0007-.../260815-1339-coder-remove-conceptrev.md`
 § *Two findings filed rather than executed* and filed as
-`circles/260815-0007-.../issues/260815-1339_o_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`.
+`circles/260815-0007-.../260815-1339_*_step-7-named-a-review-coverage-sender-set-that-does-not-exist-and-orphaned-scan-investigations.md`.
 
 Both halves of the defect survive the agent. Neither `reviewFiles()` nor
 `measureReviewCoverageForModel` gained a sender filter — `grep -rn conceptrev hooks/lib/review-coverage.ts`

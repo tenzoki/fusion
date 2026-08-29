@@ -14,14 +14,14 @@ named in the immediately preceding sentence of the same paragraph, so the deriva
 Turn 1, which added `agents/curator.md`.
 
 **Why Turn 1's count pass did not catch it.** Decision
-`circles/260801-1244-curator/decisions/260814-0845_i_are-the-sixteen-agent-claims-corrected-or-derived-away.md`
+`260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`
 surveyed the thirty-two claims by grepping for `sixteen`, `seventeen`, `16` and `17`. This sentence
 states a *derived* figure, spelled out, in a word none of those patterns match, so it never entered
 the survey and is not among the twenty-seven the decision disposed of. It is the same failure class
 the decision was written about, arriving through the one hole in the search that found the others.
 
 **Why it is filed rather than fixed.** It is outside the seven findings of
-`reviews/260814-1023-coderev-curator-turn-1.md`, which is what the fixing task was dispatched for.
+`260814-1023-coderev-curator-turn-1.md`, which is what the fixing task was dispatched for.
 It also has a consequence that task was told to keep clear of: `rules/circle-records.md` is emitted
 to three agents and its byte size is pinned by `hooks/lib/__tests__/fixtures/rules-emission.golden`,
 so correcting it turns the suite red until the fixture is regenerated, immediately next to the
@@ -42,4 +42,4 @@ fixture under `hooks/`.
 **Filed by:** coder, while resolving the seven findings of the Turn 1 review.
 
 ---
-Resolved: `rules/circle-records.md` now reads "The other agents work inside a Circle without ever transitioning one" — the figure is removed rather than refreshed to fourteen, per the binding answer to `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md` (option 2: correct what a parser asserts, retire what nothing checks). The sentence needed nothing beyond the number: "the other" already means the complement of the three agents named in the sentence before it, and no reader has to hold a count to follow the paragraph. Nothing else in the file states a fleet count, verified by grep for `thirteen|fourteen|sixteen|seventeen`. The file went 11 958 -> 11 949 bytes, so `hooks/lib/__tests__/fixtures/rules-emission.golden` was regenerated in the same change: the diff holds exactly the three Circle-key agents (`orchestrator`, `playmaker`, `shaper`) at -9 bytes each and no other movement. Done first in the same session as the growth-bound arming, so the fixture was regenerated once and the arming baseline describes the corpus as it will actually ship.
+Resolved: `rules/circle-records.md` now reads "The other agents work inside a Circle without ever transitioning one" — the figure is removed rather than refreshed to fourteen, per the binding answer to `260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md` (option 2: correct what a parser asserts, retire what nothing checks). The sentence needed nothing beyond the number: "the other" already means the complement of the three agents named in the sentence before it, and no reader has to hold a count to follow the paragraph. Nothing else in the file states a fleet count, verified by grep for `thirteen|fourteen|sixteen|seventeen`. The file went 11 958 -> 11 949 bytes, so `hooks/lib/__tests__/fixtures/rules-emission.golden` was regenerated in the same change: the diff holds exactly the three Circle-key agents (`orchestrator`, `playmaker`, `shaper`) at -9 bytes each and no other movement. Done first in the same session as the growth-bound arming, so the fixture was regenerated once and the arming baseline describes the corpus as it will actually ship.

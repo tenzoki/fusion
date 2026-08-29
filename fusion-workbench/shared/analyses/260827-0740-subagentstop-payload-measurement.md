@@ -1,13 +1,13 @@
 # Can SubagentStop carry the backgrounded dispatch's task_done? — the payload, measured
 
 ---
-**Filed by:** claude-code (direct session, follow-up to `shared/issues/260827-0716_*_task-done-fires-at-dispatch-launch-when-the-sub-agent-runs-in-the-background.md`), Kai Stalmann <ks@qantr.com>
+**Filed by:** claude-code (direct session, follow-up to `260827-0716_*_task-done-fires-at-dispatch-launch-when-the-sub-agent-runs-in-the-background.md`), Kai Stalmann <ks@qantr.com>
 
 ---
 
 ## Method
 
-A throwaway project outside every git tree, with project-level `.claude/settings.json` hooks that append each event's raw stdin payload to a probe log: `SubagentStop` (no matcher), and `PreToolUse`/`PostToolUse` matched on `Task|Agent`. Two headless `claude -p` runs against Claude Code 2.1.x on 2026-08-27: one synchronous dispatch ("reply PONG"), one explicitly backgrounded dispatch (`sleep 8`, then PONG). Findings read from the probe log, not from the model's testimony — the same discipline as the session-id measurement (`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`).
+A throwaway project outside every git tree, with project-level `.claude/settings.json` hooks that append each event's raw stdin payload to a probe log: `SubagentStop` (no matcher), and `PreToolUse`/`PostToolUse` matched on `Task|Agent`. Two headless `claude -p` runs against Claude Code 2.1.x on 2026-08-27: one synchronous dispatch ("reply PONG"), one explicitly backgrounded dispatch (`sleep 8`, then PONG). Findings read from the probe log, not from the model's testimony — the same discipline as the session-id measurement (`260825-2214-can-a-hook-obtain-the-session-identifier.md`).
 
 ## Findings
 

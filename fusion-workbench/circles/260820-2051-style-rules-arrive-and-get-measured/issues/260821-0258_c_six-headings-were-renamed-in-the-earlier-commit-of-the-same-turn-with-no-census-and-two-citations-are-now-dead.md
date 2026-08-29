@@ -20,12 +20,12 @@ files and its record does not mention headings at all.
 
 **Two citations point at nothing as a result**, both to `## 4.`:
 
-- `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md:288`
+- `260807-0931_*_plan-guard-misst-statt-orakelt.md:288`
   spells the heading in full, in the backticked `` `## …` `` citation form.
-- `circles/260807-0923-guard-misst-statt-orakelt/history/260807-0955-coder-s8-mece-prinzip.md:11`
+- `260807-0955-coder-s8-mece-prinzip.md:11`
   quotes it in prose.
 
-A third, `circles/260801-1244-guard-rules-write/issues/260805-1840_c_decision-examples-ueberschrift-a-s-koerper-i-s.md:1`,
+A third, `260805-1840_*_decision-examples-ueberschrift-a-s-koerper-i-s.md:1`,
 cites `"Example 2 — Supersession: _a_ → _s_"`, which was already stale on its marker half. No shipped
 file cites any of the six, so `reference-resolution-lint` reports nothing and its `anchors` baseline
 correctly did not move.
@@ -37,7 +37,7 @@ the `bin/` scripts and the `hooks/**/*.ts` **comment** lines. `fusion-workbench/
 roots, so a heading citation originating in a workbench record is out of scope by construction. The
 sibling gate, `hooks/lib/__tests__/workbench-citation-lint.test.ts`, does read the workbench but
 resolves paths, not heading anchors. That is the general exposure already filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0250_*_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md`;
+`260821-0250_*_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md`;
 this record is the instance that shows it firing.
 
 **One correction to the `c226949` record while the subject is open.** Its table says of
@@ -47,8 +47,8 @@ cites `` `## Issue and Decision Filing` ``, a prefix of it. The conclusion is un
 and the prefix survives any change to the suffix, but the statement as written is false.
 
 ---
-**Found by:** coderev, review gate R1 of `circles/260820-2051-style-rules-arrive-and-get-measured`,
-review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
+**Found by:** coderev, review gate R1 of `260820-2051-style-rules-arrive-and-get-measured`,
+review file `260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
 **Owner:** `coder`. Either restore the two heading spellings the workbench cites, or append a
 correction to the two citing records. Both are one-line edits; which one is right is a judgement
 about whether a rule file's heading or an archived record's pointer moves.
@@ -57,9 +57,9 @@ project's own history, filed under a class the project already tracks, created b
 was measuring itself against exactly this risk in its other commit.
 **Filed in the Circle store** per the Origin Rule.
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0250_*_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md`
+`260821-0250_*_three-of-four-section-headings-carry-58-citations-and-no-gate-notices-when-one-is-renamed.md`
 (the general exposure);
-`shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`.
 
 **Verified at HEAD `c226949`** by `grep -rn` over the whole tree for each of the six old spellings,
 and by reading `surface()` at `reference-resolution-lint.test.ts:143-190` and `scanHeadingAnchors`
@@ -71,4 +71,4 @@ back-applied to the first. A discipline discovered mid-Turn is not automatically
 nothing in this Turn's process made it so.
 
 ---
-Resolved: fixed — the two heading citations take the current spelling, each with a dated note; circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_*_plan-guard-misst-statt-orakelt.md:288 and circles/260807-0923-guard-misst-statt-orakelt/history/260807-0955-coder-s8-mece-prinzip.md:12
+Resolved: fixed — the two heading citations take the current spelling, each with a dated note; 260807-0931_*_plan-guard-misst-statt-orakelt.md:288 and 260807-0955-coder-s8-mece-prinzip.md:12

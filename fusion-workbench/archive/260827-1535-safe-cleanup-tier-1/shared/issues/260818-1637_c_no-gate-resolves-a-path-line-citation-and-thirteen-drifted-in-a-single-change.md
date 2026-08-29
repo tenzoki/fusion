@@ -6,7 +6,7 @@ No gate resolves a `path:N` citation, and thirteen drifted in a single change
 **Domain:** code
 **Filed by:** orchestrator, re-filing a residual the closing change named and strengthened
 **Affects:** every shipped surface carrying `path:N` citations — `agents/*.md`, `skills/*/SKILL.md`, `README-agents.md`, `rules/*.md`
-**Cross-references:** `shared/issues/260818-1512_c_the-dispatch-parameter-tables-prompt-line-citations-are-resolved-by-no-gate-and-two-are-already-ten-lines-off.md` — the record this residual outlived, closed by plan `260818-1512` step 5
+**Cross-references:** `260818-1512_*_the-dispatch-parameter-tables-prompt-line-citations-are-resolved-by-no-gate-and-two-are-already-ten-lines-off.md` — the record this residual outlived, closed by plan `260818-1512` step 5
 
 ---
 
@@ -38,7 +38,7 @@ for it. The counter-argument it also carried is real: every prompt edit that shi
 becomes a lint failure somewhere else, and this project has removed mechanisms whose false-alarm
 rate exceeded their catch rate. Whoever takes this weighs that.
 
-Also seen: 260823-1110 by coderev — a cut in `skills/setup/SKILL.md` sent `rules/fusion-workbench-conventions.md:66` at a blank line, and five `skills/next/SKILL.md` citations in `README-agents.md` drifted two further; the instances are `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-cut-shifted-two-line-citations-in-an-always-on-rule-and-one-now-points-at-a-blank-line.md`.
+Also seen: 260823-1110 by coderev — a cut in `skills/setup/SKILL.md` sent `rules/fusion-workbench-conventions.md:66` at a blank line, and five `skills/next/SKILL.md` citations in `README-agents.md` drifted two further; the instances are `260823-1110_*_the-cut-shifted-two-line-citations-in-an-always-on-rule-and-one-now-points-at-a-blank-line.md`.
 
 Also seen: 2026-08-23 by coder, clearing that record. Eleven line citations were repaired by hand across `rules/fusion-workbench-conventions.md` and `README-agents.md`, and the suite was green over every one of them both before and after. The citation named above now carries the `_*_` wildcard form, which is the second time in one range that a marker move rather than a line move broke a pointer — a different fault from the one this record measures, and noted only because both were found by a human reading rather than by a gate.
 

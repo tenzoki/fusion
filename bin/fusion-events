@@ -57,7 +57,7 @@
 # key behaves exactly as it did before the key existed. A caller that must not
 # accept a widened count reads the key and treats `all-checkouts` as
 # unavailable. Record:
-# `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md`.
+# `260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md`.
 #
 # `scope=` is printed **last**, so the two lines a caller was written against
 # stay where they were, and it is printed on the exit-4 branch too, where the
@@ -179,10 +179,10 @@
 # happened: exit 4 was read as though it said the identity could not be read,
 # when what it says is that none is owed, and the two sentences the program then
 # printed contradicted each other. Record:
-# `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`.
+# `260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md`.
 #
 # The call is `[ -x ]`-guarded per
-# `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
+# `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
 # an installed copy need not carry a helper added between releases, and a bare
 # call would be exit 127 in the middle of this script. The missing case is
 # passed through as the sentinel 127 and reported, never silently treated as an
@@ -195,7 +195,7 @@
 # `merge=union`, so after a pull it holds two checkouts' lines with no ordering
 # between the blocks — and every reader treated it as one session's chronology.
 # Sorting it moves that reading from vague to wrong rather than repairing it
-# (`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`).
+# (`260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`).
 # So membership is read off the line instead of inferred from its neighbours,
 # and this is the two readings that follow.
 #

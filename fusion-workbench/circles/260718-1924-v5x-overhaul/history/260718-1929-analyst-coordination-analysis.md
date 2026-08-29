@@ -15,7 +15,7 @@ All 15 `agents/*.md` in full (3,374 lines); `bin/fusion-rules`, `bin/fusion-path
 
 ## What was produced
 
-- `analyses/260718-1929-agent-coordination-analysis.md` — the coordination analysis report. Two Mermaid diagrams (dispatch flowchart, subagent-proxy sequence). Eight ranked findings (F1-F8), each tagged analysis-only vs re-wiring-for-D. §6 = Circle D rubric (R1-R5, each with a concrete per-prompt test). §7 = Circle C editor-fit criteria (7 criteria).
+- `260718-1929-agent-coordination-analysis.md` — the coordination analysis report. Two Mermaid diagrams (dispatch flowchart, subagent-proxy sequence). Eight ranked findings (F1-F8), each tagged analysis-only vs re-wiring-for-D. §6 = Circle D rubric (R1-R5, each with a concrete per-prompt test). §7 = Circle C editor-fit criteria (7 criteria).
 - This history entry.
 
 Nothing else was written; read-only on all source (code, prompts, helpers, docs).

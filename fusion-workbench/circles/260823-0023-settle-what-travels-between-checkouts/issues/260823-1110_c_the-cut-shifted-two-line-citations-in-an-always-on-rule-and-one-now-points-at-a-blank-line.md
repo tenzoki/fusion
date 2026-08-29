@@ -6,7 +6,7 @@ The cut shifted two line citations in an always-on rule, and one now points at a
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `rules/fusion-workbench-conventions.md:66`
-**Cross-references:** `shared/issues/260818-1637_o_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`, the open design record for the missing gate
+**Cross-references:** `260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`, the open design record for the missing gate
 
 ---
 
@@ -77,7 +77,7 @@ whole -33 is `rules/fusion-workbench-conventions.md`, confirmed by the regenerat
 `rules-emission.golden`. `README-agents.md` is on no bounded surface. No baseline moved.
 
 Whether a gate should resolve a `:N` suffix at all stays open at
-`shared/issues/260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`.
+`260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`.
 Nothing here closes it, and this pass is fresh evidence for it: eleven line citations were repaired
 by hand across two files and the suite was green over every one of them.
 

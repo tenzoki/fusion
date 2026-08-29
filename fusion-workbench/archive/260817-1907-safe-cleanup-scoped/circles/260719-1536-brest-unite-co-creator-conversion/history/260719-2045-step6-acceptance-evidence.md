@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-19 20:45
 **Agent:** coder
-**Plan:** `circles/260719-1536-brest-unite-co-creator-conversion/planning/260719-1917_o_unite-context-loading-conversion.md` (Step 6)
+**Plan:** `260719-1917_*_unite-context-loading-conversion.md` (Step 6)
 **Verdict:** PROVEN — all 9 acceptance checks pass.
 
 This is verification-only. No unite file was edited; nothing was committed. The single write is this evidence log.

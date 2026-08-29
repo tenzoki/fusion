@@ -8,7 +8,7 @@ that exist are not in it — both of which must **not** run the sequence.
 that reads the whole file behaves right. The sentence is the one a reader is meant to reason from, though,
 and reasoning from it as an enumeration produces a double `turn_start`.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `agents/orchestrator.md:470`
 
@@ -35,7 +35,7 @@ Keep the predicate: either say "four routes create a Turn" and name the two that
 creating one, or drop the enumeration and rely on the criterion, which is the part that is actually true.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:470` still says four routes; the interrupted-session resume at `:111` and the Revise Grounding resume at `:929` are both real Phase 2 entries and neither is named. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:470` still says four routes; the interrupted-session resume at `:111` and the Revise Grounding resume at `:929` are both real Phase 2 entries and neither is named. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — the sentence keeps its predicate ("four routes create a Turn") and names the two entries that create none; agents/orchestrator.md:550

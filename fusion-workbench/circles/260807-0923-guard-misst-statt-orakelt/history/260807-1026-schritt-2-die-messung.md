@@ -3,7 +3,7 @@
 **Datum:** 2026-08-07
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Schritt 2
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 2
 **Nicht committet** — der Auftrag schließt das Committen aus.
 
 ## Was entstanden ist
@@ -58,17 +58,17 @@ den Entscheidungssatz. Zwei Testfälle halten beide Hälften fest: eine ungesch�
 Shell-Mutation läuft unter Halt durch, ein Schreibwerkzeug bleibt blockiert.
 
 Entscheidungssatz:
-`circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-1026_a_verlust-des-bash-halts-auf-der-shell.md`
+`260807-1026_*_verlust-des-bash-halts-auf-der-shell.md`
 
 `bin/fusion-paths coder` gibt kein `OUT_DECISION` aus — der bekannte Resolver-Befund, der
-als `.../issues/260807-0952_o_ontocoder-kann-keinen-entscheidungssatz-ablegen.md` schon
+als `.../260807-0952_*_ontocoder-kann-keinen-entscheidungssatz-ablegen.md` schon
 offen liegt. Der Ort ist deshalb aus der Circle-Hälfte von `SCAN_DECISIONS` und der
 Herkunftsregel abgeleitet: die Frage entstand aus dieser Directive, also gehört sie in
 diesen Circle und nicht nach `shared/`.
 
 ## Ein Befund, der beim Prüfen des Rückrollens auffiel
 
-`circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1026_o_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`
+`260807-1026_*_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`
 
 Die Messung kennt den Zustand **vor dem Aufruf**, zurückgerollt wird aber auf **HEAD**.
 Hatte ein Mensch an derselben geschützten Datei bereits gearbeitet und der Agent
@@ -126,7 +126,7 @@ drei Ursachen:
   `guardStateWritten(root) === false`, also die Zusicherung, dass ein harmloser Bash-Aufruf
   gar nichts in den Guard-Zustand schreibt. Der Vorher-Fingerabdruck muss irgendwo liegen,
   und `.guard-state/` ist der Ort — genau deshalb ist das Verzeichnis in Schritt 1 von der
-  Schutzliste gefallen. Die Zusicherung dahinter (Befundsätze `260707-0750` / `260707-0751`)
+  Schutzliste gefallen. Die Zusicherung dahinter (Befundsätze `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md` / `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md`)
   ist **nicht** verletzt: der Zähler wird nicht zurückgesetzt und `events.jsonl` wächst
   nicht. Sie ist zu schärfen, nicht aufzugeben — die richtige Formulierung lautet "setzt
   den Zähler nicht zurück und schreibt kein Ereignis", nicht "legt `.guard-state/` nicht

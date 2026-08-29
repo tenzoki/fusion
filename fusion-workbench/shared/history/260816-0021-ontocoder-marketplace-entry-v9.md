@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** ontocoder
 **Domain:** data
-**Source record:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_c_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md`
+**Source record:** `260815-1913_*_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md`
 **Repository written:** `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins` (a different repository from this one)
 **Commit:** `2f1b4e8` — "chore: fusion 9.0.0", pushed to `origin main` (`259d58d..2f1b4e8`)
 
@@ -86,7 +86,7 @@ this fix.
 
 ## Files changed in this repository
 
-- `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_c_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md`
+- `260815-1913_*_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md`
   — resolution note appended, marker renamed open to closed. Deliberately left uncommitted
   and unstaged; the orchestrator commits it.
 - this history entry.

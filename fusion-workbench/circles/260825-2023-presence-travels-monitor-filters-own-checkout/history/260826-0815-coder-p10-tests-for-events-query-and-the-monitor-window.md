@@ -4,7 +4,7 @@
 **Agent:** coder
 **Circle:** 260825-2023-presence-travels-monitor-filters-own-checkout
 **Task:** Turn 2, P-10 — plan step 10
-**Plan:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_o_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+**Plan:** `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
 
 ## What was done
 

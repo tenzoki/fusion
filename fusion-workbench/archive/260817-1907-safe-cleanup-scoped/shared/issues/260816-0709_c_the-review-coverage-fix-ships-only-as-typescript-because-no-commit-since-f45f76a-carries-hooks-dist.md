@@ -42,7 +42,7 @@ copies `hooks/` from the GitHub tarball, which carries committed bytes and nothi
 - the defect the fix closed (`shared/issues/260811-1145_c_*`) is closed in this repository's working
   tree and open in every consuming project.
 
-The three defect records the commit closed — `260811-1145`, `260811-1147`, `260811-1148` — are
+The three defect records the commit closed — `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`, `260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md`, `260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md` — are
 correctly closed against the **source**. This record is about the shipping half, not about them.
 
 ## Why nothing caught it
@@ -67,10 +67,10 @@ standing gap rather than one this session opened — but this session is the one
    the compiler, which is a different kind of test from the four that exist. File a decision record
    rather than growing a bound if this is taken up.
 
-**Filed by:** reconciler, session `shared/history/260815-2147-orchestrator-session.md`. Filed in
+**Filed by:** reconciler, session `260815-2147-orchestrator-session.md`. Filed in
 `shared/` per the Origin Rule: no Circle is active, and the gap predates this session's Directive.
 
-Also seen: 260816-0713 by coderev — confirmed for the whole of `736e276`: `git show HEAD:hooks/dist/lib/review-coverage.js` and `HEAD:hooks/dist/tracker.js` contain neither `reviewSender` nor `isMeasuredReview`, so the `##` header bound, the sender filter, the `parseNotOpened` rewrite and the narrowed tracker trigger all ship as TypeScript only. Last commit to touch `hooks/dist` is `f45f76a`.
+Also seen: 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md by coderev — confirmed for the whole of `736e276`: `git show HEAD:hooks/dist/lib/review-coverage.js` and `HEAD:hooks/dist/tracker.js` contain neither `reviewSender` nor `isMeasuredReview`, so the `##` header bound, the sender filter, the `parseNotOpened` rewrite and the narrowed tracker trigger all ship as TypeScript only. Last commit to touch `hooks/dist` is `f45f76a`.
 
 ---
 Resolved: `71e97f4 fix(dist): the compiled hooks carry the review-coverage fix that shipped without
@@ -91,9 +91,9 @@ committed source**, so a build that runs and is never staged leaves the reposito
 state and no gate objects. The other two reasons in that section stand as written.
 
 Found independently by `coderev` in the same window, reviewing `3a0408a..f77633f`, which cited this
-record rather than refiling it (`shared/reviews/260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md:48`).
+record rather than refiling it (`260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md:48`).
 
 **Fix-direction item 2 is not done and now has its own record**, so that it does not close inside
-this one: `shared/decisions/260816-0719_o_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`.
+this one: `260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`.
 
-Reconciled 260816-0720 (reconciler, HEAD `787010f`).
+Reconciled 260816-0720_*_phase-2-step-1-states-the-check-in-absolutely-while-step-3d-exempts-turn-1.md (reconciler, HEAD `787010f`).

@@ -1,7 +1,7 @@
-# Coder — 260813-1423 — step 4: carry the confirmation into `/fusion:next` and back to the agent
+# Coder — 260813-1423-coder-confirmation-relay-fusion-next.md — step 4: carry the confirmation into `/fusion:next` and back to the agent
 
 **Status:** Complete
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store`
+**Circle:** `260813-0858-playmaker-maintains-backlog-store`
 **Plan:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md`, step 4
 **Dispatch:** orchestrator, step 4 only. Steps 1–3 were already in the working tree; step 5 ran in parallel on `skills/memo/SKILL.md` and `skills/direct/SKILL.md`, neither of which this run touched.
 

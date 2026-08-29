@@ -11,12 +11,12 @@ The citation rooting reached two of three skills, and the paragraph announcing t
 > Detect the workbench domain the same way the orchestrator does (Setup Step 5 in
 > `agents/orchestrator.md`) …
 
-That is the same defect issue `260810-0501` closed for the other two skills: in a consuming project
+That is the same defect issue `260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md` closed for the other two skills: in a consuming project
 there is no `./agents/`, so the path resolves to nothing and the reader either invents the procedure
 or skips it. `/fusion:cleanup` also carries no equivalent of the blanket paragraph the other two
 gained (`skills/setup/SKILL.md:12`, `skills/next/SKILL.md:13`), so nothing in the file tells a reader
 which root to use. (What that citation points *at* is a separate and larger defect —
-`260810-1918_o_the-cleanup-skill-carries-a-second-domain-cascade…`.)
+`260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade…`.)
 
 **2. The paragraph that states the rule breaks it in its last sentence.** Both copies end:
 
@@ -40,11 +40,11 @@ of `/fusion:setup` who wants to check what the rooting rule actually says follow
 `skills/cleanup/SKILL.md` alongside its existing line 11; write the self-citation in both copies as
 `$FUSION_PLUGIN_ROOT/skills/cleanup/SKILL.md:11`.
 
-**Cross-references.** `shared/issues/260810-0501_c_two-skills-cite-a-prompt-section-they-have-no-
-documented-route-to-read.md`; `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-
+**Cross-references.** `260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-
+documented-route-to-read.md`; `260808-0030_*_line-number-citations-into-rule-files-go-
 stale-and-no-gate-reads-them.md` (the `:11` and `:114` anchors here are exactly that class).
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 Partially resolved — half 1 done, half 2 blocked on file ownership, record stays `_p_`.
@@ -56,7 +56,7 @@ an agent prompt as much as a skill body, and rule files are named-not-opened bec
 `/fusion:next` both cite `skills/cleanup/SKILL.md:11`, and inserting a paragraph above it would have
 moved the anchor those two cite. Every plugin-file citation in the file is now rooted; the one at
 `:114` went away entirely with the cascade paraphrase (see
-`260810-1918_c_the-cleanup-skill-carries-a-second-domain-cascade…`), and the reconcile step's new
+`260810-1918_*_the-cleanup-skill-carries-a-second-domain-cascade…`), and the reconcile step's new
 citation of Setup Step 5 is written `$FUSION_PLUGIN_ROOT/agents/orchestrator.md`.
 
 ---
@@ -83,7 +83,7 @@ The reference lint is unaffected either way: `ROOT_VAR_RE` only knows the `FUSIO
 `CLAUDE_PLUGIN_ROOT` spellings and checks existence, not rooting, so both forms pass — which is
 `260810-2029`, still open.
 
-**Resolved by:** coder, session `260810-1646`, Turn 3.
+**Resolved by:** coder, session `260810-1646-orchestrator-session.md`, Turn 3.
 
 **Half 2 (not done).** The self-citation in the announcing paragraph is still bare in both copies —
 `skills/setup/SKILL.md:12` and `skills/next/SKILL.md:13` each end with `skills/cleanup/SKILL.md:11`,
@@ -94,7 +94,7 @@ held by other executors this Turn (Turn-2 dispatch: stay out of `skills/setup/SK
 correct after half 1.
 
 ---
-**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`. The closure holds; the record's
+**Reconciliation note — reconciler, 260811-0108-reconciliation.md, at HEAD `e2a34f0`. The closure holds; the record's
 own last paragraph contradicts it.**
 
 The closure is correct, verified against the tree rather than against the notes. Half 1:

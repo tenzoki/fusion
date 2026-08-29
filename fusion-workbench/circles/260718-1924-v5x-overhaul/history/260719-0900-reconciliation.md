@@ -1,6 +1,6 @@
-# Reconciliation — 260719-0900 (Circle D close, code domain)
+# Reconciliation — 260719-0900-reconciliation.md (Circle D close, code domain)
 
-**Scope:** final reconciliation for session 260718-2110, which executed **Circle D — agent-prompt revision** of the fusion v5.x overhaul (active Circle `260718-1924-v5x-overhaul`). Umbrella Circle stays active (B-rest, E remain); this pass scopes to Circle D's Directive.
+**Scope:** final reconciliation for session 260718-2110-orchestrator-session.md, which executed **Circle D — agent-prompt revision** of the fusion v5.x overhaul (active Circle `260718-1924-v5x-overhaul`). Umbrella Circle stays active (B-rest, E remain); this pass scopes to Circle D's Directive.
 
 ## Counts
 
@@ -20,7 +20,7 @@
    - orchestrator Setup factored, bespoke expansions retained, `tools:` allowlist intact.
    - npm test 261-green (path-lint + updated context-manifest baseline); `claude plugin validate .` passed (one benign pre-existing warning).
 2. **Decision `260718-2150` was `_a_` but implemented.** The reviewer edits realising the "document the exception" ruling landed in commits `ee65560` (coderev/ontorev) and `f55eb7a` (conceptrev). Transitioned `_a_`→`_i_`, file renamed, Implemented note appended with commit + line citations. Also corrected the stale `_o_` plan-path reference in its Answered note to `_c_`.
-3. **Both D-scoped issues (`260718-2238`, `260718-2353`) are `_c_` on disk** with substantive Resolved notes matching the code (`eecbd21` and the `planner.md:55` reword in `6bdf5ff`). No action.
+3. **Both D-scoped issues (`260718-2238_*_agent-setup-voice-profile-assumes-history-file.md`, `260718-2353_*_planner-residual-unconditional-ask-line55.md`) are `_c_` on disk** with substantive Resolved notes matching the code (`eecbd21` and the `planner.md:55` reword in `6bdf5ff`). No action.
 
 ## Nothing marked-done-but-missing; nothing done-but-unmarked
 
@@ -33,4 +33,4 @@ The one gap between claim and disk was the decision marker (answered vs implemen
 
 ## Coherence verdict
 
-Written to the orchestrator history file `circles/260718-1924-v5x-overhaul/history/260718-2110-orchestrator-session.md` `## Coherence`. **coherent** — all three edges OK; Rebalance recommendation **none**.
+Written to the orchestrator history file `260718-2110-orchestrator-session.md` `## Coherence`. **coherent** — all three edges OK; Rebalance recommendation **none**.

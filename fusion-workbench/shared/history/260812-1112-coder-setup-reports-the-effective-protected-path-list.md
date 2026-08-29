@@ -3,7 +3,7 @@
 **Agent:** coder
 **Status:** Complete
 **Started:** 260812 ~10:55
-**Source:** `shared/issues/260812-0843_*_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md`, one acceptance criterion of it ("Setup reports the effective list it is running under")
+**Source:** `260812-0843_*_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md`, one acceptance criterion of it ("Setup reports the effective list it is running under")
 
 ## What was built
 

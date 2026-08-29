@@ -4,7 +4,7 @@
 **Date:** 2026-08-23
 **Circle:** 260823-0023-settle-what-travels-between-checkouts
 **Status:** Complete
-**Task:** Fix the high-severity Turn 1 review finding `260823-1110_c_the-conditional-marker-write-has-no-plugin-root-guard-so-an-empty-version-wipes-the-record.md`
+**Task:** Fix the high-severity Turn 1 review finding `260823-1110_*_the-conditional-marker-write-has-no-plugin-root-guard-so-an-empty-version-wipes-the-record.md`
 
 ## What changed
 

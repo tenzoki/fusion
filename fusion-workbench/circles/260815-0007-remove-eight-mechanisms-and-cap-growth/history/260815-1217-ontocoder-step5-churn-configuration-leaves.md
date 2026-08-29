@@ -3,7 +3,7 @@
 **Date:** 2026-08-15
 **Agent:** ontocoder
 **Status:** Complete
-**Plan:** `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 5
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 5
 **Verification:** `cd hooks && npm test` — exit 0, 46 test files, 842 tests, 74.85 s
 **Follows:** step 4, `a69d56e`
 
@@ -17,7 +17,7 @@ The two leaves that configured the heatmap step 4 deleted:
 | File | Edit |
 |---|---|
 | `hooks/config.json` | the `"churn"` block deleted; its `_comment` said the file defines "the escalation and churn thresholds" and now says "the escalation threshold" |
-| `hooks/config.example.json` | the `"churn"` block deleted, including its own `_comment` recording decision `260809-2004` (why there was no lifetime threshold) |
+| `hooks/config.example.json` | the `"churn"` block deleted, including its own `_comment` recording decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (why there was no lifetime threshold) |
 | `fusion-guard.json` | the `_gitTracked` note's clause "how loud the churn warning is and" removed from the list of what the file decides |
 | `templates/fusion-guard.json` | the identical clause, removed identically |
 | `skills/help/SKILL.md` | "churn thresholds" struck from the compliance-guard configuration pointer — a judgement, see below |
@@ -51,7 +51,7 @@ the orchestrator may run", a two-item list with no "and". The conjunction was ke
 `skills/help/SKILL.md:106` pointed a user at `hooks/config.example.json` for "Decision categories
 and their sensitivities, churn thresholds, escalation behavior". It is named in neither step 4's
 file list nor step 5's, and it is item 3 of
-`issues/260815-1206_o_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`.
+`260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`.
 
 It was edited here, deliberately and not routinely. The line is not a stale mention of a mechanism
 that happens to be gone — it is a claim about the *contents of the file this step empties*, and it

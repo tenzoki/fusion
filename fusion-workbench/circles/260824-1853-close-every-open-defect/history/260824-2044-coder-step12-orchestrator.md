@@ -1,7 +1,7 @@
 # coder — plan step 12: `agents/orchestrator.md`
 
 **Status:** Complete
-**Plan:** `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`, step 12
+**Plan:** `260824-1905_*_plan-close-every-open-defect.md`, step 12
 **Files changed:** `agents/orchestrator.md`, `hooks/lib/__tests__/reference-resolution-lint.test.ts` (BASELINE re-approval, no net line), `hooks/lib/__tests__/fixtures/surface-growth.golden` (regenerated)
 
 ## What changed in the prompt

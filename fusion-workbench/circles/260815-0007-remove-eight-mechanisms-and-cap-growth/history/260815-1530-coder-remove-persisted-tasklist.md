@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
-**Plan:** `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 10
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 10
 **HEAD at start:** `9955e8f`
 **Verification:** `cd hooks && npm test` — exit 0, 41 files, 790 tests (from 45 / 831)
 
@@ -52,14 +52,14 @@ survive this step. Nothing was relocated, and that is a finding rather than an o
    `hooks/lib/review-coverage.ts` leans on it and now cites §4 directly instead of the dead section.
 3. **The 260807 worked case** — the superseded Circle, the queue that stayed, eleven pointless
    entries over seven hours — is the issue record
-   `shared/issues/260807-1515_c_die-warteschlange-veraltet-wieder-…`, which is where a worked case
+   `260807-1515_*_die-warteschlange-veraltet-wieder-…`, which is where a worked case
    belongs. It is also summarised in `agents/taskplanner.md`'s new *Why a report and not a file*,
    which is the one place a reader now needs it.
 
 ## What happened to this project's own queue
 
 **Moved, not deleted, with `git mv`** —
-`fusion-workbench/tasklist.md` → `fusion-workbench/shared/planning/260815-1524_c_retired-tasklist.md`,
+`fusion-workbench/tasklist.md` → `260815-1524_*_retired-tasklist.md`,
 with a seven-line HTML comment prepended naming what retired it and stating that the file is
 history and not a live queue. 162 038 bytes, 1 041 lines, 79 entries.
 
@@ -105,7 +105,7 @@ Four, each because the change made a standing statement false and no gate could 
   to.
 - **The plan removed the Phase-1 commit obligation entirely, and one file still comes out of that
   dispatch.** Taskplanner's history entry is written outside the Turn loop, which is exactly the
-  gap `260811-0114` fell through — its queue half is moot, its history-entry half is not. No fourth
+  gap `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md` fell through — its queue half is moot, its history-entry half is not. No fourth
   copy of the Step 3b commit recipe was added. Phase 1 step 2 now names the path and requires it in
   Turn 1's first staging list, with the Cleanup staging check named as the backstop rather than the
   plan.

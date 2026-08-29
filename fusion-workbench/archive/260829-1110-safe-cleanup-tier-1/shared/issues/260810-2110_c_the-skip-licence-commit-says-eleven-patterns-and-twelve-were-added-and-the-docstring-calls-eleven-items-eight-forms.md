@@ -5,7 +5,7 @@ The skip-licence commit says eleven patterns, twelve were added, and the docstri
 Two count claims around `45d76f0` do not survive being counted.
 
 1. The commit subject says *"eleven more licences are closed with witnesses"*, and the resolution
-   note appended to `260810-1918_c_the-skip-licence-blacklist-…` says *"Eleven patterns added"* and
+   note appended to `260810-1918_*_the-skip-licence-blacklist-…` says *"Eleven patterns added"* and
    *"Each of the eleven was spliced one at a time"*. **Twelve** new entries were added.
 2. `hooks/lib/__tests__/state-drift-detection-lint.test.ts:202-206` reads: *"The eight forms from
    issue 260810-1918 are the contraction families, `not required`, `no longer`, `except when`,
@@ -46,13 +46,13 @@ thing in the repository to verify and the most expensive to disbelieve later.
 changes.
 
 **Cross-references.** `hooks/lib/__tests__/state-drift-detection-lint.test.ts:190-245, 676-707`;
-`shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`.
+`260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 Resolved — `hooks/lib/__tests__/state-drift-detection-lint.test.ts` (the `SKIP_LICENCES`
-docstring) and this record's cross-referenced `260810-1918_c_…` note, session `260811-1315`.
+docstring) and this record's cross-referenced `260810-1918_*_…` note, session `260811-1315-coder-three-test-file-corrections.md`.
 
 **Counted first.** `SKIP_LICENCES` holds **26** entries, and **12** of them came from issue
 260810-1918 — the enumeration in the docstring, with the contraction family occupying two entries
@@ -68,7 +68,7 @@ paragraph now says what the three numbers were (eight rows of the issue's table,
 those rows name, twelve entries here) so the next reader does not re-derive the confusion, and
 cites this record.
 
-The record at `shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`
+The record at `260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`
 carries a correction line appended to its resolution note. The commit subject of `45d76f0` is
 immutable and stays wrong; the correction names it.
 

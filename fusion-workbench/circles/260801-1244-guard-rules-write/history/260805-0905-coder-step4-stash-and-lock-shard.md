@@ -3,9 +3,9 @@
 **Date:** 2026-08-05
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 4
-**Predecessor:** `history/260805-0821-coder-step3-eighteen-findings-one-rule.md` (which left the suite red)
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 4
+**Predecessor:** `260805-0821-coder-step3-eighteen-findings-one-rule.md` (which left the suite red)
 **Baseline:** `c9bf59e`. Not committed — the orchestrator commits.
 
 **Voice profiles:** `bin/fusion-rules coder` emitted `./fusion-workbench/stilwerk/chat-voice-en.yaml`.
@@ -184,16 +184,16 @@ repeats the wrong count (`# nine-field index`). The paragraph that follows expla
 *from* ten fields *to* nine when `has_spec_plan` was dropped — the drop happened, but `git_stash_sha`
 was added later and nobody re-counted.
 
-This is already filed: `shared/issues/260717-0032_o_stash-manifest-field-count-says-nine-lists-ten.md`,
+This is already filed: `260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md`,
 open since 2026-07-17. It travelled into the new file unchanged, and its issue now cites a path that
 no longer holds the text. Left alone deliberately: retargeting it is an issue edit, not part of this
 step, and correcting the count is exactly the in-passing fix the dispatch forbids.
 
 Two smaller observations, neither wrong, both now stale in their pointer:
 
-- `shared/issues/260717-0030_o_git-stash-include-untracked-can-sweep-the-stash-directory.md` cites
+- `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md` cites
   `rules/fusion-workbench-conventions.md` `## Stashes` in its Related line.
-- `shared/issues/260716-2002_c_layout-tree-omits-two-root-anchored-surfaces.md` (closed) cites
+- `260716-2002_*_layout-tree-omits-two-root-anchored-surfaces.md` (closed) cites
   `## Commit lock` → Mechanism twice.
 
 Workbench issue files are outside the falsifikat's grep surface (`agents/ skills/ bin/ docs/

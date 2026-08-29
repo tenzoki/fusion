@@ -50,8 +50,8 @@ earlier, so any queue present is a shared backlog.
 ## Verification
 
 Measured, not reasoned about. The check was run against both real queues — the historically
-stale one (`ac1399e:fusion-workbench/tasklist.md`, 44 tasks, 260807-0002) and the live one
-(34 tasks, 260810-0249) — across four pointer states:
+stale one (`ac1399e:fusion-workbench/tasklist.md`, 44 tasks, 260807-0002-conceptrev-plan-shell-reachability-model.md) and the live one
+(34 tasks, 260810-0249-tasklist-update.md) — across four pointer states:
 
 | Queue | Pointer | Verdict |
 |---|---|---|
@@ -82,7 +82,7 @@ introduced and passes now; all other tests were green before and after.
 - `skills/next/SKILL.md` — Step 5 renders the verdict; step 6.3 states the ground change.
 - `hooks/lib/__tests__/queue-ground-lint.test.ts` — new, 9 tests including three
   counter-fixtures built from the pre-change text.
-- `260810-0431_o_the-work-queue-does-not-record-the-ground-it-was-built-on.md` in
+- `260810-0431_*_the-work-queue-does-not-record-the-ground-it-was-built-on.md` in
   `$OUT_ISSUE` — the producer-side residual.
 - The source record closed `_o_`→`_c_` with a closure note; T7 marked done in `$TASKLIST`.
 

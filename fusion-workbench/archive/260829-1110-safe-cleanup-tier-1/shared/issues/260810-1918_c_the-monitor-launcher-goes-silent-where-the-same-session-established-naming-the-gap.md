@@ -35,10 +35,10 @@ retries — or worse, starts a second one on another port. Nothing anywhere name
 `command -v` fails, and the same with "…could not open a browser" replacing `|| true`'s silence.
 Keep both non-fatal.
 
-**Cross-references.** `260810-1918_o_sleep-0-5-is-the-remaining-command…` (same block, different
+**Cross-references.** `260810-1918_*_sleep-0-5-is-the-remaining-command…` (same block, different
 defect). `HYG-NO-SILENT-FAIL`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 Resolved: `bin/monitor` records the reason in `BROWSER_GAP` on both paths — `no <launcher> on PATH`
@@ -63,7 +63,7 @@ printing `Linux` selects the absent `xdg-open`, and an `open` shim exiting 1 giv
 `npm test` from `hooks/` — exit 0; the three `bin/monitor — the browser launch` cases still pass.
 
 The new line has no executable gate; that is filed as
-`260810-2027_o_the-monitors-browser-gap-line-has-no-executable-gate.md` rather than fixed here,
+`260810-2027_*_the-monitors-browser-gap-line-has-no-executable-gate.md` rather than fixed here,
 because the test file belongs to queued task `I:260810-1632-pty-case` this session.
 
-History: `fusion-workbench/shared/history/260810-2026-coder-monitor-sleep-and-launcher-gap.md`.
+History: `260810-2026-coder-monitor-sleep-and-launcher-gap.md`.

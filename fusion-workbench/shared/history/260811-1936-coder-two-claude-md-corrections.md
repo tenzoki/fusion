@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete — edits landed; **result reported `blocked`**, because the project's test command exited non-zero (unrelated flakes, evidenced below).
-**Started:** 260811-1936
+**Started:** 260811-1936-coder-two-claude-md-corrections.md
 **Finished:** 260811-2008
 **Git HEAD at start:** `9f84254`
 **Verification:** `cd hooks && npm test` — exit 1, twice, on flakes that differ per run and never read `CLAUDE.md` (detail below). The seven test files that do read `CLAUDE.md` — `npx vitest run` over them, 100 tests — exit 0.
@@ -20,8 +20,8 @@ running concurrently on `agents/orchestrator.md`, `hooks/lib/rules-write-exempti
 
 ### Task 7 — `I:260811-1734a`, the churn-rank output contract
 
-Source: `shared/issues/260811-1612_o_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md`,
-under the parent `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`.
+Source: `260811-1612_*_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md`,
+under the parent `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`.
 
 Verified against `bin/fusion-churn-rank`'s own header before writing: five `KEY=value` lines
 (`anchor=`, `entries=`, `absent=`, `noise=`, `ranked=`) and two read-path exclusions, not the
@@ -39,9 +39,9 @@ Measured after the edit, over `CLAUDE.md`, `README*.md`, `bin/`, `hooks/`, `agen
 header) and `hooks/churn-rank.ts` (the producer's doc comment and the code emitting them), plus
 `agents/orchestrator.md:126`, which is on the five-key contract already. One contract, not two.
 
-### Task 28 — `I:260811-1345`, which root a stand-down asks
+### Task 28 — `I:260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`, which root a stand-down asks
 
-Source: `shared/issues/260811-1345_o_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`.
+Source: `260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`.
 
 All three gates read at HEAD before writing the sentence, as the record insisted:
 
@@ -92,7 +92,7 @@ No marker was renamed and no `tasklist.md` status was flipped. The executor repo
 exactly what the contract forbids. So the transitions below are recommended, not performed, and the
 orchestrator should make them after one full run on a quiet tree:
 
-- `shared/issues/260811-1612_o_...` → `_c_`, with a `Resolved:` note (task 7, `I:260811-1734a`).
-- `shared/issues/260811-1345_o_...` → `_c_`, with a `Resolved:` note (task 28, `I:260811-1345`).
+- `260811-1612_*_...` → `_c_`, with a `Resolved:` note (task 7, `I:260811-1734a`).
+- `260811-1345_*_...` → `_c_`, with a `Resolved:` note (task 28, `I:260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`).
 - The parent `260811-1734` stays open either way: it closes per instance, and these are two of its
   instances.

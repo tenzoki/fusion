@@ -86,9 +86,9 @@ appended sections once, in the paragraph after the template, and only to bind th
 form to the `_*_` wildcard. So the block's content is wholly at the model's discretion on the
 one surface the prompt forbids itself to rewrite.
 
-The 260826-1705 block ran to five paragraphs under four bold leads. The false clause is in
+The 260826-1705-playmaker-direct-dispatch.md block ran to five paragraphs under four bold leads. The false clause is in
 the third, at
-`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_t_circle.md:125-126`.
+`260826-1613-cardinality-answered-cut-once-nineteen-cleared:125-126`.
 
 **Fix direction.** Bound the block at `:177`: name what it may contain, and state that a
 clause asserting a mechanism, or asserting what a named file says, is written as a quotation
@@ -130,7 +130,7 @@ statement of fact. And `:52`'s never-rewriting rule means a later playmaker run 
 its predecessor's append even having noticed it.
 
 The filed defect
-`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/issues/260826-1815_o_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`
+`260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`
 makes this argument in its section "Why the sentence is worse than a wrong portfolio line".
 The prompt makes it nowhere.
 
@@ -143,11 +143,11 @@ to spend its checking budget on the record and the history log rather than sprea
 The dispatch and the filed defect locate the sentence in the Circle record. It is in four
 places written by the same run:
 
-- `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_t_circle.md:125-126`
+- `260826-1613-cardinality-answered-cut-once-nineteen-cleared:125-126`
 - `fusion-workbench/portfolio.md:30-31`, the `Recommended next` rationale
 - `fusion-workbench/portfolio.md:43`, "It buys scope over nineteen stranded records"
 - `fusion-workbench/portfolio.md:138-139` and the identical warning bullet in
-  `shared/history/260826-1705-playmaker-direct-dispatch.md`, both under the warning name
+  `260826-1705-playmaker-direct-dispatch.md`, both under the warning name
   `stranded-records-in-terminal-circles`
 
 The portfolio copies go at the next regeneration. The record and the history log do not.
@@ -298,4 +298,4 @@ report and less than a broken mechanism.
    portfolio, which regenerates, and the Circle record and history log, which do not (B1, B2).
 
 ---
-Reconciled 260827-2034: the two records this review filed (`issues/260826-1901_*`, `issues/260826-1902_*`) closed in `3cb2cba` (Theme A read cap and rationale binding, Theme B content contract on `## Activation proposal`); the stale-Grounding criterion of Theme C landed in `e7c0440` (`shared/issues/260826-1445_*` closed). Findings left as written.
+Reconciled 260827-2034-reconciliation.md: the two records this review filed (`issues/260826-1901_*`, `issues/260826-1902_*`) closed in `3cb2cba` (Theme A read cap and rationale binding, Theme B content contract on `## Activation proposal`); the stale-Grounding criterion of Theme C landed in `e7c0440` (`shared/issues/260826-1445_*` closed). Findings left as written.

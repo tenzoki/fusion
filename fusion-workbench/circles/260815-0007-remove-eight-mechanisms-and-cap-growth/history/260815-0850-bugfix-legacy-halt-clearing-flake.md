@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-15 08:50
 **Status:** Failed — diagnosed, not fixed. No honest minimal repair exists inside the file; the cause is under an open decision.
-**Trigger:** User report, citing `coderev` finding in `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-0804-coderev-plane-mirror-removal.md:223-229` and issue `shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`.
+**Trigger:** User report, citing `coderev` finding in `260815-0804-coderev-plane-mirror-removal.md:223-229` and issue `260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`.
 
 ## Error
 
@@ -38,7 +38,7 @@ parallel batches whose *file sets* are disjoint, and each executor runs the proj
 verification command (`agents/coder.md:114`). Disjoint sources do not make the runs disjoint,
 because `hooks/dist/` is shared build output every run destroys. That is stated, with its own
 measurement, in the open decision
-`shared/decisions/260811-2009_o_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
+`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
 (case 2 of its Question section). The harness already carries the observation in a comment:
 `helpers/guard-harness.ts:127-129`, "a second session running the suite in the same checkout
 has been observed wiping it mid-run".
@@ -86,12 +86,12 @@ where the fix is chosen, and it is open.
 None filed. Two findings were recorded onto the records that already own them rather than
 opened as new ones:
 
-- `shared/issues/260814-2118_o_…` — a measurement section separating the three causes now
+- `260814-2118_*_…` — a measurement section separating the three causes now
   conflated in it. Marker unchanged.
-- `shared/decisions/260811-2009_o_…` — an evidence section, following the precedent of the
+- `260811-2009_*_…` — an evidence section, following the precedent of the
   reconciler's addition of 260811-2330. No option chosen, marker unchanged.
 
 `fusion-commit-lock.test.ts`'s failure is a **different** cause — genuine wall-clock assumptions
 in the harness, reproduced here 4 of 4 under CPU saturation. It is already recorded as
-`shared/issues/260810-1135_o_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
+`260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
 and was not touched.

@@ -1,4 +1,4 @@
-# Coder session — branch-guard false-positive fix (facet 2 of 260717-1938)
+# Coder session — branch-guard false-positive fix (facet 2 of 260717-1938_*_branch-switch-guard-not-invoked-live-harness-pretooluse-bash.md)
 
 **Status:** Complete
 
@@ -7,7 +7,7 @@ Fix the verified false positive where the git branch-switch guard blocks
 `git checkout <file>` (a legitimate file restore) because the classifier could
 not distinguish a branch target from a file target in the `--`-less form.
 Facet 2 only. Facets 1 (harness) and 3 (heredoc/prose string matching, issue
-260716-2005) explicitly out of scope.
+260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md) explicitly out of scope.
 
 ## Design chosen
 Recommended filesystem + git-ref-aware allow for the ambiguous bare

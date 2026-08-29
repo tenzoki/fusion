@@ -11,7 +11,7 @@ commit's own change.
 ---
 
 **The stated reason.** From the commit message, and repeated in the closure note of
-`shared/issues/260822-1421_c_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`:
+`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`:
 
 > Each surviving paragraph in setup and next opens by naming a call site inside its own body and then
 > describes that body's own three-branch block. A helper header cannot author that: it is caller code,
@@ -61,15 +61,15 @@ and the header repair itself is correct: it states all three claims the removed 
 ---
 
 **Found by:** coderev, reviewing `c2ad89c..6781814`, review file
-`shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
+`260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Medium.
 **Affects:** `skills/setup/SKILL.md:32`, `skills/next/SKILL.md:33`, `bin/fusion-source-root:46-56`.
 **Filed in the shared store:** no Circle is active.
 **Cross-references:**
-`shared/issues/260822-1421_c_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
 (the repaired record, whose `Resolved:` note carries the same reasoning);
-`shared/reviews/260822-1421-coderev-c0-cut-only-circle.md` (the High finding, which proposed exactly
+`260822-1421-coderev-c0-cut-only-circle.md` (the High finding, which proposed exactly
 this second-order cut).
 
 **The fix, and the decision inside it.** Two paths, and the difference is what the opening clause is
@@ -117,6 +117,6 @@ none. The byte movement is incidental and is reported rather than claimed as the
 `next/SKILL.md` -543, `setup/SKILL.md` -258.
 
 The closure note of
-`shared/issues/260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+`260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
 carries the same false reasoning and has been annotated with `Revised by:` rather than edited,
 per `rules/fusion-workbench-conventions.md` `### Issue files`.

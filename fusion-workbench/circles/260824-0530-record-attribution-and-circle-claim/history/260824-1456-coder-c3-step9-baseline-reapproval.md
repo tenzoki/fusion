@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Circle:** circles/260824-0530-record-attribution-and-circle-claim
+**Circle:** 260824-0530-record-attribution-and-circle-claim
 
 ## Task
 

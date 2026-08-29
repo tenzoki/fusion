@@ -2,11 +2,11 @@
 
 **Status:** Complete
 **Agent:** coder
-**Session:** `260810-1646`, Turn 3
+**Session:** `260810-1646-orchestrator-session.md`, Turn 3
 **Task:** make the reference lint stop skipping citations rooted in an unrecognised variable, and
 correct the citation count in `260810-2029`
-**Records worked:** `shared/issues/260810-2029_*_seven-citations-…`,
-`shared/issues/260810-2110_*_the-citation-rooting-commit-and-its-own-record-…`
+**Records worked:** `260810-2029_*_seven-citations-…`,
+`260810-2110_*_the-citation-rooting-commit-and-its-own-record-…`
 
 ---
 
@@ -61,7 +61,7 @@ residual — a path no plugin directory could hold is not a plugin citation.
 
 ## Demonstration
 
-Per decision `260810-1820` (option 1, scratch copy), every mutation ran on a copy of the tree and the
+Per decision `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md` (option 1, scratch copy), every mutation ran on a copy of the tree and the
 live working tree was never written by a verification step. Two dangling citations were planted in the
 copy's `skills/next/SKILL.md`: `$FUSION_HOME/agents/no-such-agent.md` and
 `$FUSION_SRC/bin/no-such-helper`.
@@ -94,7 +94,7 @@ says so in its opening lines.
 Run 2's failure belongs to a parallel executor: that test does not exist at HEAD, its file was written
 at 21:39:53, and `README-hooks.md` was written at 21:40:47 — during the run, which started at 21:40:43.
 By run 3 it passes. Run 3's failure is the known load-sensitive case already recorded as
-`260810-1135_o_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation`,
+`260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation`,
 which would be its fourth observation; not appended here, because the record belongs to no task of
 mine and three executors are writing this workbench.
 

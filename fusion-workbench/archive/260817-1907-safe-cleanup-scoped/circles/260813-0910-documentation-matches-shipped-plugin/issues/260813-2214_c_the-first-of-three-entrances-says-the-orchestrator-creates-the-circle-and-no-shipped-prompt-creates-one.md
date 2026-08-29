@@ -64,7 +64,7 @@ run a single Circle **implicitly** — you don't have to think about Circles at 
 is exactly the no-directory case. `docs/philosophy.md:35` says the same: "Most sessions run one
 Circle implicitly."
 
-The step's own history record, `history/260813-2150-coder-working-model-circle-first-flow-and-backlog.md:44-45`,
+The step's own history record, `260813-2150-coder-working-model-circle-first-flow-and-backlog.md:44-45`,
 describes what was intended: "three entrances — **implicit from a request**, captured by
 `/fusion:direct`, promoted from a backlog entry". The prose that shipped promoted *implicit* to
 *created*. That record also opens by promising that "what follows names, for every claim written,
@@ -97,7 +97,7 @@ worth saying rather than burying. Do not resolve this by adding a creation step 
 `agents/orchestrator.md` — that is a prompt change and a design question, outside this Circle's
 Directive.
 
-Related: the entrance count itself is short by one (`260813-2214_o_the-entrance-count-is-three-…`).
+Related: the entrance count itself is short by one (`260813-2214_*_the-entrance-count-is-three-…`).
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `a489966`).
 

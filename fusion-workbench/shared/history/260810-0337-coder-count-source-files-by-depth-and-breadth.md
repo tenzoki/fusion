@@ -3,11 +3,11 @@
 **Agent:** coder
 **Date:** 2026-08-10
 **Status:** Complete
-**Task:** T2 of session 260810-0241 — replace the depth-bounded, extension-narrow file counting
+**Task:** T2 of session 260810-0241-orchestrator-session.md — replace the depth-bounded, extension-narrow file counting
 in the workbench-domain heuristic. Not committed: left in the working tree by instruction.
 
-**Source issue:** `shared/issues/260807-1951_o_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md`
-**Governing decision:** `shared/decisions/260809-1731_a_how-should-the-domain-heuristic-count-a-projects-source-files.md`
+**Source issue:** `260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md`
+**Governing decision:** `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
 — option 2, `git ls-files`, chosen by the user; the `Answered:` block narrows it further to
 option 2 plain (no `find` fallback, no `CLAUDE.md` domain declaration).
 
@@ -177,7 +177,7 @@ The dispatch named `agents/orchestrator.md` and a new `bin/` helper. Two files b
 - **`CLAUDE.md`'s `bin/` layout table** has no row for `fusion-count-sources`. Out of scope
   here; `/fusion:revise-claude-md` owns it.
 - **Marker walks not performed**, per the dispatch's explicit file allowlist: the issue
-  `260807-1951_o_...` is not renamed to `_c_`, the decision `260809-1731_a_...` is not renamed
+  `260807-1951_*_...` is not renamed to `_c_`, the decision `260809-1731_*_...` is not renamed
   to `_i_`, and `tasklist.md` T2 is still `[ ] open`. The decision's `Implemented:` line wants
   a commit hash that does not exist yet, and four other tasks are editing shared files this
   Turn.

@@ -4,7 +4,7 @@
 
 **Severity:** High
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `bin/fusion-plane:1106-1114` (`JQ_REBUILD_MAP`), `:1140` (`rebuild_map`); contrast `:606-614` (`JQ_MIGRATE_MAP`) and `:644-646`
 **Cross-references:** commit `f320db2`; `bin/fusion-plane:99-104` (the header claim)
 
@@ -76,8 +76,8 @@ Resolved: the collision has one total ordering instead of a race, and every drop
 
 Every dropped UUID is **named** rather than counted. That string is the only handle a human has on the stray Plane issue the drop orphans, and a count gives them nothing to search for. Each orphan is printed with the `seed --record-origin` line that restores it.
 
-**One half was deliberately not taken, and this record is where that is written down.** `--rebuild-map` still replaces the map rather than merging, so a seed-origin binding is still dropped. This record scopes that as pre-existing and offers "say plainly what a rebuild discards" as the alternative; the executor took that branch, on the ground that quietly broadening a recovery path's contract inside a task about not destroying UUIDs is the wrong place for it. Whether rebuild should merge is queued as its own decision: `shared/decisions/260810-0718_o_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md`.
+**One half was deliberately not taken, and this record is where that is written down.** `--rebuild-map` still replaces the map rather than merging, so a seed-origin binding is still dropped. This record scopes that as pre-existing and offers "say plainly what a rebuild discards" as the alternative; the executor took that branch, on the ground that quietly broadening a recovery path's contract inside a task about not destroying UUIDs is the wrong place for it. Whether rebuild should merge is queued as its own decision: `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md`.
 
 The header comment at `bin/fusion-plane:99-104` claimed rebuild "normalises the same way", which was false at exactly the place a maintainer would check before trusting it. It now describes what the code does.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (Turn 2, task R1). Executor log: `shared/history/260810-0715-coder-plane-map-read-write-split.md`.
+Session: `260810-0241-orchestrator-session.md` (Turn 2, task R1). Executor log: `260810-0715-coder-plane-map-read-write-split.md`.

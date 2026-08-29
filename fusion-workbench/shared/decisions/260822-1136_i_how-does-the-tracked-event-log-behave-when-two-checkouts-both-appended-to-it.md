@@ -4,9 +4,9 @@
 **Domain:** code
 **Filed by:** shaper
 **Cross-references:**
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the spec that raised it, class R2 of its state partition and acceptance criterion 6 of C2);
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (the spec that raised it, class R2 of its state partition and acceptance criterion 6 of C2);
 `rules/workbench-tracking.md` (which classifies the log as a record and says why it is tracked);
-`shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` (the sibling log, whose ceiling question was answered by the archive roll)
+`260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` (the sibling log, whose ceiling question was answered by the archive roll)
 
 ---
 
@@ -43,12 +43,12 @@ Option 1, with the reading order made explicit at every consumer. The union driv
 ---
 Answered:
 ---
-Answered: circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md `## Grounding snapshot`
+Answered: 260823-0023-settle-what-travels-between-checkouts `## Grounding snapshot`
 — user decision at the shaping gate of `/fusion:direct`, 260823: **the union merge driver**, one line in
 `.gitattributes`, which `/fusion:setup` creates or extends so a consuming project gets it too.
 
 The choice rests on measurement rather than on reasoning. The driver was exercised end to end in
-`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`
+`260822-2219-what-two-checkouts-of-one-project-actually-share.md`
 section 7: the merge resolves cleanly and no line is lost from either side.
 
 **The cost was stated at the gate and accepted:** the merged log is no longer chronological, so every
@@ -74,14 +74,14 @@ one. `.gitattributes` does not exist at the repository root, so no merge driver 
 Correctly open; it blocks the close of C2 and C2 has not started.
 
 ---
-**Reconciliation 260822-2236 (reconciler, domain `code`, range `f90de0c..b938f68`), marker unchanged
+**Reconciliation 260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md (reconciler, domain `code`, range `f90de0c..b938f68`), marker unchanged
 at `_o_`. Still no answer on disk, and option 1 now has the measurement it lacked.**
 
 `.gitattributes` still does not exist at the repository root, re-checked at HEAD `b938f68`, so nothing
 here is decided or configured. The marker is right.
 
 What changed is the evidence base. The C1 isolation pass measured option 1 end to end, in
-`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`
+`260822-2219-what-two-checkouts-of-one-project-actually-share.md`
 `## Findings` section 7. Two checkouts each appended one line and pushed: without a driver, `KONFLIKT
 (Inhalt)` and `UU` with conflict markers inside a machine-written log, which is what this record
 predicts. With one line in a root `.gitattributes` reading
@@ -94,7 +94,7 @@ have to derive: `union` is one of git's built-in drivers, so it needs no `.git/c
 `.gitattributes` is a tracked file that arrives with the clone. Nothing per machine.
 
 **This note answers nothing.** The choice between the three options is the user's and belongs at C2's
-planning gate, exactly as `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
+planning gate, exactly as `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`
 `## User decisions pending` states. The report's own recommendation 2 says the measurement was
 deliberately not appended to this record by the analyst pass; it is appended here as reconciliation
 evidence so that whoever answers finds it from the record rather than by knowing the report exists.
@@ -113,10 +113,10 @@ because a bare `set` is git's default text merge and is precisely the state Step
 while the step had been reporting it as a driver already in place.
 
 The answer itself is the user's, given at the shaping gate of `/fusion:direct` and recorded in
-`circles/260823-0023-settle-what-travels-between-checkouts/_*_circle.md` `## Grounding snapshot`. It is
+`260823-0023-settle-what-travels-between-checkouts` `## Grounding snapshot`. It is
 cited where it lives rather than copied here.
 
 The accepted cost stands as the gate stated it. The merged log is no longer chronological, and the
 second unsorted reader, the Turn count, stays with C4 where its own defect already lies. A third
 consequence surfaced during the work and is filed rather than absorbed:
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`.
+`260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`.

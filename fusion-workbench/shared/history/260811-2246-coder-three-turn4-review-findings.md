@@ -1,15 +1,15 @@
 # coder — content-named citations, a two-input gate split four ways, and one missing Layout row
 
 **Status:** Complete
-**Date:** 260811-2246
+**Date:** 260811-2246-coder-three-turn4-review-findings.md
 **Agent:** coder
-**Records:** `shared/issues/260811-2145_c_…`, `shared/issues/260811-2149_c_…`, `shared/issues/260811-2151_c_…`
-**Filed:** `shared/issues/260811-2239_o_…`, `shared/issues/260811-2245_o_…`
+**Records:** `260811-2145_*_…`, `260811-2149_*_…`, `260811-2151_*_…`
+**Filed:** `260811-2239_*_…`, `260811-2245_*_…`
 **Verification:** `cd hooks && npm test` — 52 files, 1349 tests, exit 0
 
 Three Turn-4 review findings, worked in the order dispatched.
 
-## 1 — The deliverable-language citations (`260811-2145`)
+## 1 — The deliverable-language citations (`260811-2145_*_the-deliverable-language-case-is-the-third-bullet-and-two-citing-surfaces-send-the-reader-to-the-fourth.md`)
 
 Both citing surfaces pointed at the fourth bullet of `## Project language`, and the
 deliverable case is the third. The record was right on every fact, checked against the
@@ -36,9 +36,9 @@ under the list it indexes is verifiable at a glance; one in another file is not.
 gone anyway.
 
 Criterion 2 (a lint case) is not met — the test is outside the dispatched file set — and
-is on `260811-2245`.
+is on `260811-2245_*_no-test-pins-that-the-project-language-cases-are-cited-by-content-so-the-next-ordinal-ships-unnoticed.md`.
 
-## 2 — The record-counts gate (`260811-2149`)
+## 2 — The record-counts gate (`260811-2149_*_the-record-counts-block-still-gates-both-halves-together-when-session-started-is-missing-and-a-test-pins-it.md`)
 
 The block had two inputs and one and a half gates. `29d62e2` split the anchor's failure
 off correctly; the start stamp's failure still took both halves down, and the `now_` half
@@ -69,7 +69,7 @@ One new case per shell covers the leg that was untested: anchor present and usab
 `start` shape on the fixture, mirroring `anchor`, and a `noFiledCounts` helper mirroring
 `noNowCounts`.
 
-## 3 — The Layout row (`260811-2151`)
+## 3 — The Layout row (`260811-2151_*_bin-fusion-turn-budget-ships-with-no-claude-md-layout-row-while-its-sibling-added-in-the-same-turn-got-one.md`)
 
 `bin/fusion-turn-budget` has a row, placed beside `bin/fusion-churn-rank` and in that
 row's register: it cites the helper's own header as the authoritative usage block instead
@@ -82,8 +82,8 @@ does instead of inventing a number.
 absent: `fusion-commit-lock`, `fusion-count-sources`, `fusion-review-coverage`,
 `fusion-staging-drift`, `fusion-state-drift` — exactly the five the record predicted.
 Not "few and obvious": each is a real mechanism with a contract and a call site, and a
-row apiece is five paragraphs of new text. Filed as `260811-2239`, which also carries the
-inventory-or-selection question and points at `260810-0410` on the neighbouring table.
+row apiece is five paragraphs of new text. Filed as `260811-2239_*_five-shipped-bin-helpers-have-no-claude-md-layout-row-and-the-table-says-nothing-about-being-a-selection.md`, which also carries the
+inventory-or-selection question and points at `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` on the neighbouring table.
 
 The one-line "this table is a selection" was **not** written, deliberately. The table makes
 no exhaustiveness claim, so nothing in it is false today; writing that line would answer
@@ -93,7 +93,7 @@ the open question in passing and take away the reason to write the five rows.
 
 Two of the three corrected text written earlier today. Each finding was checked against
 the file before working it and each was right on its facts. The one place I went past a
-record was `260811-2145`, where the record called two ordinals correct and I changed them
+record was `260811-2145_*_the-deliverable-language-case-is-the-third-bullet-and-two-citing-surfaces-send-the-reader-to-the-fourth.md`, where the record called two ordinals correct and I changed them
 anyway — not because the record was wrong about them, but because they are the same form
 and the change costs nothing.
 

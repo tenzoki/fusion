@@ -6,7 +6,7 @@ A marker rename is claimed by two prompts, and one executor moved seven other ex
 on files under `$SCAN_ISSUES` and `$SCAN_PLANS` (`_o_` to `_p_`, `_p_` to `_c_`)"*. `agents/coder.md:46`
 instructs the executor to do the same thing at the end of its task: *"Issue → append `Resolved:` note
 + rename marker `_o_` (or `_p_`) → `_c_`"*. Both are read as permission by the agent holding them, and
-in session `260810-1646` both acted on it — the orchestrator renamed `_o_` → `_p_` at dispatch, several
+in session `260810-1646-orchestrator-session.md` both acted on it — the orchestrator renamed `_o_` → `_p_` at dispatch, several
 executors renamed `_p_` → `_c_` at completion, and the orchestrator renamed others itself when the
 executor had not.
 
@@ -51,11 +51,11 @@ which is why it survived this long.
 Options 2 and 3 compose; option 1 excludes them. Whoever takes this should read `260810-0819` first,
 since a single change may settle both.
 
-**Filed by:** orchestrator, session `260810-1646`, on the Turn-2 commit-procedure executor's own
+**Filed by:** orchestrator, session `260810-1646-orchestrator-session.md`, on the Turn-2 commit-procedure executor's own
 report of the incident.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:234` and `agents/coder.md:45` both still claim the rename, and no name-your-files-explicitly rule was added. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:234` and `agents/coder.md:45` both still claim the rename, and no name-your-files-explicitly rule was added. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Resolved: referred (decision) — which party performs a marker rename, and whether a glob may stand in for named paths, is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md
+Resolved: referred (decision) — which party performs a marker rename, and whether a glob may stand in for named paths, is the decision's question; 260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md

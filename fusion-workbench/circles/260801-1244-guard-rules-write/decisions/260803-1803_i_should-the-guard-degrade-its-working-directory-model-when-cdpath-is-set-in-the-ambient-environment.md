@@ -2,14 +2,14 @@
 
 ---
 **Domain:** code
-**Status:** implemented (corrected from `open` by reconciliation 260804-1021; the filename marker `_i_` was already right)
-**Filed by:** analyst, task T4-1 of `circles/260801-1244-guard-rules-write`
+**Status:** implemented (corrected from `open` by reconciliation 260804-1021-reconciliation.md; the filename marker `_i_` was already right)
+**Filed by:** analyst, task T4-1 of `260801-1244-guard-rules-write`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md`
+`260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md`
 (the measurement that raised this),
-`circles/260801-1244-guard-rules-write/analyses/260803-1803-guard-path-model-root-cause.md`
+`260803-1803-guard-path-model-root-cause.md`
 (the analysis recommending the in-command half),
-`circles/260801-1244-guard-rules-write/issues/260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`,
+`260803-1431_*_gate-0-misses-the-dotdot-in-a-cd-p-operand-so-a-planted-link-still-spends-the-grant.md`,
 `hooks/lib/bash-mutation-guard.ts` (`applyDirEffect`, `resolveDir`, `firstDirArg`),
 `rules/protected-path-discipline.md`
 
@@ -123,11 +123,11 @@ those the degrade does not fire for a `CDPATH` that really is in force. Option 1
 right answer; it reaches less than the `## Answer` above implies, and it reaches nothing
 option 2 would have covered without paying option 2's cost. Stated at `ambientCdpathIsSet`,
 in `rules/protected-path-discipline.md` and in `README-hooks.md`
-(`issues/260803-2040_c_the-ambient-cdpath-check-reads-the-hooks-environment…`).
+(`260803-2040_*_the-ambient-cdpath-check-reads-the-hooks-environment…`).
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — `_i_` confirmed by measurement.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — `_i_` confirmed by measurement.**
 
 `b85f6a0` is correctly cited. Verified at HEAD `cc012fc` rather than read off the commit: a bare-word `cd` under `CDPATH=..` denies, while the anchored operands the record promises stay exactly modelled (`./x`, `../x`, `.`, `..`, `/abs/x` all allow), and `CDPATH=` and whitespace-only leave every verdict unchanged. `hooks/guard.ts:393` passes `env: process.env`, which is the reach bound the trailing `Bound recorded` note states.
 
@@ -135,9 +135,9 @@ in `rules/protected-path-discipline.md` and in `README-hooks.md`
 
 **Header field corrected.** `**Status:**` read `open` while the marker read `_i_` and both transition lines were filled. Set to `implemented`.
 
-**One cross-reference does not resolve.** `decisions/260803-2338_i_…` cites this record as `260803-1803_a_…`; the marker moved to `_i_` when `b85f6a0` landed. Fourth instance of `shared/issues/260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle. Not repaired by hand, for the same reason as the others.
+**One cross-reference does not resolve.** `260803-2338_*_…` cites this record as `260803-1803_*_…`; the marker moved to `_i_` when `b85f6a0` landed. Fourth instance of `260802-1740_*_a-citation-path-carrying-a-state-marker-dies-on-ordinary-progress.md` inside this Circle. Not repaired by hand, for the same reason as the others.
 
-**One more leftover, same shape as `260803-2338_i_`'s.** This record carries **two** `## Answer` headings. The first, at `:82-89`, still reads "Not yet answered. This needs the user" with a `## Realisation — Not implemented` beneath it; the real answer follows at `:91`. A reader scanning by heading meets the stale one first. Both records that reached `_i_` inside a single Turn carry this, and neither carries it by accident: the answer was appended at the closing gate and the pre-gate text was left in place. Worth a convention note more than a hand-fix — recorded in `history/260804-1021-reconciliation.md`.
+**One more leftover, same shape as `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`'s.** This record carries **two** `## Answer` headings. The first, at `:82-89`, still reads "Not yet answered. This needs the user" with a `## Realisation — Not implemented` beneath it; the real answer follows at `:91`. A reader scanning by heading meets the stale one first. Both records that reached `_i_` inside a single Turn carry this, and neither carries it by accident: the answer was appended at the closing gate and the pre-gate text was left in place. Worth a convention note more than a hand-fix — recorded in `260804-1021-reconciliation.md`.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the guard has no working-directory model to degrade. `ambientCdpathIsSet`, the flag this record's answer added, lived in `hooks/lib/bash-mutation-guard.ts`, which the classifier removal deleted; the bound the `Bound recorded` note wrote into `rules/protected-path-discipline.md` and `README-hooks.md` went with the rule file at `fa2f00b`.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md) — the guard has no working-directory model to degrade. `ambientCdpathIsSet`, the flag this record's answer added, lived in `hooks/lib/bash-mutation-guard.ts`, which the classifier removal deleted; the bound the `Bound recorded` note wrote into `rules/protected-path-discipline.md` and `README-hooks.md` went with the rule file at `fa2f00b`.

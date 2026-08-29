@@ -2,14 +2,14 @@
 
 **Status:** Complete
 **Agent:** analyst (domain `code`)
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
-**Dispatched by:** orchestrator, against `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
+**Dispatched by:** orchestrator, against `260822-0010-measurement-briefing-does-the-rule-change-shorten-a-reply.md`
 **HEAD at time of work:** `084c626`
 
 ## What this run produced
 
 One analysis report,
-`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`,
+`260822-0035-three-before-figures-and-the-after-measurement-defined.md`,
 and two defect records.
 
 Nothing under `rules/`, `agents/`, `skills/`, `hooks/`, `stilwerk/` or `bin/` was touched, so none
@@ -55,10 +55,10 @@ change underneath the measurement. The report states what twenty sessions does n
 
 ## Records filed
 
-- `shared/issues/260822-0035_o_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
+- `260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
   — filed shared rather than in the Circle, per the Origin Rule: it was found nearby, not caused by
   this Circle's Directive.
-- `circles/260821-1042-reply-bounded-whole-question-answered/issues/260822-0035_*_the-briefings-contamination-grep-marks-49-of-72-transcripts-primed-because-the-setup-skill-body-names-the-files-it-greps-for.md`
+- `260822-0035_*_the-briefings-contamination-grep-marks-49-of-72-transcripts-primed-because-the-setup-skill-body-names-the-files-it-greps-for.md`
   — filed in the Circle, because the briefing is this Circle's own artifact.
 
 ## Checks run on the output

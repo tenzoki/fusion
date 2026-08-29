@@ -60,13 +60,13 @@ decision, not an implementation detail, and it should be recorded before either 
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** planner, while planning `shared/planning/260818-1512_o_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`
-**Cross-references:** `skills/next/SKILL.md:264`, `agents/orchestrator.md:207`, `:360`, `:601`, `shared/decisions/260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (the plan this was found under; its pointer form makes the wrong read worse, because a pointer read as prose yields a sentence instead of a Directive)
+**Filed by:** planner, while planning `260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`
+**Cross-references:** `skills/next/SKILL.md:264`, `agents/orchestrator.md:207`, `:360`, `:601`, `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (the plan this was found under; its pointer form makes the wrong read worse, because a pointer read as prose yields a sentence instead of a Directive)
 
 ---
 Resolved: 2026-08-18, **direction 2, partially** — closed on the user's instruction at the plan
 gate, which named this record as step 4 of
-`shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`.
+`260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`.
 What that step changed: the Step 6.5 handoff message no longer tells the orchestrator to take the
 record's `## Directive` at face value. It now names both cases — prose while the section holds it,
 and the spec or plan that `**Active spec/plan:**` cites once the section holds the pointer — which

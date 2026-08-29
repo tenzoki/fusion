@@ -3,7 +3,7 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Plan:** `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 4
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 4
 **Verification:** `cd hooks && npm test` — exit 0, 46 test files, 842 tests, 31 s
 
 ---
@@ -58,7 +58,7 @@ the root-anchored form for itself will get it wrong.
 
 **`answer` became a plain `respond`.** Nothing runs after the tracker's reply any more. The
 ordering rule that put the reply first is kept in the header as a rule rather than as a
-description, because it is what issue `260809-2045` was paid for and the next thing added after
+description, because it is what issue `260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md` was paid for and the next thing added after
 `respond` would reintroduce it.
 
 ## The behaviour change one test caught
@@ -149,7 +149,7 @@ rewritten to say where the primitive went.
 Three churn references survive in files step 4's list does not name, none of them gate-forced:
 `.gitignore:39` (`!bin/fusion-churn-rank`), `.claude-plugin/plugin.json:4` (the shipped description
 still advertises churn detection) and `skills/help/SKILL.md:106` ("churn thresholds"). Filed as
-`issues/260815-1206_o_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`
+`260815-1206_*_three-churn-references-survive-step-4-in-files-the-step-does-not-name.md`
 rather than fixed, per the step's scope instruction. This is the ninth instance of the class the
 correction pass found in eight of eleven steps.
 

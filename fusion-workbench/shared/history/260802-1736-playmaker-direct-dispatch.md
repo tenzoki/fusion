@@ -1,4 +1,4 @@
-# Playmaker run 260802-1736 — portfolio regeneration after a Circle closure
+# Playmaker run 260802-1736-playmaker-direct-dispatch.md — portfolio regeneration after a Circle closure
 
 **Trigger:** direct-dispatch (user, portfolio refresh after `260801-1244-rule-provenance-header`
 closed coherent at commit `060859b`)
@@ -32,7 +32,7 @@ ranked it second behind `260801-1244-rule-provenance-header`.
 Both remaining Circles pass the code-domain criteria without a tie-breaker. Each has every hard
 dependency closed, and neither `## Grounding snapshot` cites an open decision record. Verified
 this run: the shared decision store holds zero open (`_o_`) records, two answered (`_a_`) and
-seven implemented (`_i_`). `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`
+seven implemented (`_i_`). `260801-1020_*_provenance-header-on-rule-files.md`
 moved to `_i_` at the closure.
 
 The ranking therefore turned on unblock value, and the position reversed because of what closed
@@ -73,7 +73,7 @@ Three findings this run bear on it.
 - **All three `Binding decision:` citations in `rules/fusion-workbench-conventions.md` are dead,
   and the newest broke inside the Circle that just closed.** Lines 328, 592 and 688. Line 592 was
   written last session as the worked instance of the newly formalised mechanism at line 588, and
-  cites `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`, which stopped
+  cites `260801-1020_*_provenance-header-on-rule-files.md`, which stopped
   resolving when that record moved to `_i_` at closure. The mechanism is the finding: a citation
   path carrying a state marker dies on ordinary progress. The ten file-scoped `Provenance:`
   headers are immune, citing markerless Circle directories or commits.
@@ -88,18 +88,18 @@ Three findings this run bear on it.
   checked" is not read as more than it is.
 - **The workbench is tracked in git and the curator record still says otherwise.** Reported at the
   previous run, uncorrected. `git ls-files fusion-workbench/` returns 273, up from 237.
-- **`shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md` is
+- **`260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md` is
   still partly overtaken** and needs re-verifying rather than closing.
 - **`fusion-workbench/tasklist.md` is still the closed queue from 260716-1920.**
 - **Nineteen open issues in the shared store,** one more than the previous run
-  (`260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`), and five
+  (`260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`), and five
   open inside Circles, three more than the previous run, all three left open in the closed Circle
   by explicit user decision.
 
 ## Records written
 
 - `## Activation proposal` appended to
-  `circles/260801-1244-guard-rules-write/_a_circle.md`. First proposal on that record.
+  `260801-1244-guard-rules-write`. First proposal on that record.
 - No `## Dependency warning` appended. No cycle exists; the graph over the two anticipated Circles
   is a chain.
 - No `## Parent grounding stale` appended. No Circle carries `_b_`, so the propagation check does

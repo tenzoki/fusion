@@ -50,7 +50,7 @@ argument, no glob.* That form is checkable by the executor before it runs the co
 **Cross-references.** `f38f37d` (the repair), the three restored records
 `shared/issues/260810-050{1,2,3}_c_*`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 

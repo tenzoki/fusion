@@ -1,8 +1,8 @@
 # coder: T3-code, close the five findings of the Turn 2 code review
 
 **Date:** 2026-08-24 21:50
-**Circle:** circles/260824-1853-close-every-open-defect
-**Source:** `reviews/260824-2145-coderev-turn-2-review-closure-range.md`, the four `260824-2145_*` records under this Circle's `issues/` and the one under `shared/issues/`
+**Circle:** 260824-1853-close-every-open-defect
+**Source:** `260824-2145-coderev-turn-2-review-closure-range.md`, the four `260824-2145_*` records under this Circle's `issues/` and the one under `shared/issues/`
 **Status:** Complete
 
 ## What changed

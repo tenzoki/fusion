@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-02 19:09
 **Sender:** conceptrev
-**Target:** `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md`
+**Target:** `260802-1856_*_plan-guard-rules-write.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 3  |  **Validation:** by-reading (no `mmdc` on this machine, and `npx @mermaid-js/mermaid-cli` refused to install without network consent; metrics computed by transcribing the parsed edge lists into a graph script)
 
@@ -96,6 +96,6 @@ The step annotations inside diagram 2's subgraph titles and node labels ("Config
 
 ## Notes on scope of this evaluation
 
-Two earlier documents in this body of work were evaluated today, the spec and the plan for `260801-1244-rule-provenance-header`, both acceptable. Neither is re-litigated here; these three graphs are new work in a different Circle. The prior `conceptrev` verdict inside this Circle's predecessor, `circles/260801-1244-guard-bash-inspection/reviews/260801-1301-conceptrev-plan-guard-bash-inspection.md`, covers the plan that left the `MutationOptions.exempt` seam this plan consumes, and is not disturbed.
+Two earlier documents in this body of work were evaluated today, the spec and the plan for `260801-1244-rule-provenance-header`, both acceptable. Neither is re-litigated here; these three graphs are new work in a different Circle. The prior `conceptrev` verdict inside this Circle's predecessor, `260801-1301-conceptrev-plan-guard-bash-inspection.md`, covers the plan that left the `MutationOptions.exempt` seam this plan consumes, and is not disturbed.
 
 This evaluation judges the three diagrams against `rules/design-diagrams.md`. It does not verify the plan's factual claims about the codebase, with two exceptions checked because a finding rests on them: `rules/protected-path-discipline.md` is the shell-write half of the policy and carries the sentence "There is no override for a protected-path shell write" (finding 2), and the plan places the version bump and the `dist` rebuild in Step 10 (finding 4). The line numbers the plan cites in `hooks/`, its four verified claims table, and its account of the existing test harness were not re-checked.

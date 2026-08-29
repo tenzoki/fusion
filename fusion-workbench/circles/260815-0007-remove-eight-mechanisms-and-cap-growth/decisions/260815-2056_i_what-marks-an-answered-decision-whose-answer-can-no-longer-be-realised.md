@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** reconciler, while applying `260814-1332`'s answer to the `_i_` population
-**Cross-references:** `circles/260801-1244-curator/decisions/260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` (the answered sibling this record is the residual of); `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md` and `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the two instances); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` and `## Decision Record Template` (where `Retired:` now sits); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1913-reconciliation.md` §5 (where both instances were first measured)
+**Cross-references:** `260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md` (the answered sibling this record is the residual of); `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md` and `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (the two instances); `rules/fusion-workbench-conventions.md` `## State Markers — decisions` and `## Decision Record Template` (where `Retired:` now sits); `260815-1913-reconciliation.md` §5 (where both instances were first measured)
 
 ---
 
@@ -18,11 +18,11 @@ Two records in the same sweep are not implemented and were left untouched. Both 
 answered by the user, and in both cases the thing the answer would have been written against was
 deleted before anyone wrote it:
 
-- `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md` — the
+- `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md` — the
   answer was "keep both manifest fields, no schema change, record the reason in the manifest schema
   documentation". `5d29b6d` deleted `skills/circle-stash/` and `skills/circle-pop/` and cut the
   `## Stashes` half out of the rule file. There is no manifest and no schema documentation.
-- `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` —
+- `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` —
   the record's own closing sentence says `_a_` → `_i_` is unavailable until the pin is written
   against the drift lint. `f45f76a` deleted `hooks/lib/__tests__/state-drift-detection-lint.test.ts`,
   `hooks/lib/state-drift.ts`, `hooks/state-drift.ts` and `bin/fusion-state-drift`. There is no lint
@@ -145,7 +145,7 @@ Answered: option 1 — a `Retired:` annotation on `_a_` as well, with the citati
 
 The reason for staying inside the existing family rather than minting a second vocabulary: `_i_` already has exactly this annotation for exactly this shape of event, an implementation that was later deleted. An answer whose subject was deleted before anyone wrote the implementation is the same event one step earlier, and giving it its own word would put two names on one fact — which is the defect class this project has removed repeatedly.
 
-The measurement that made the question answerable came from the Circle-store reconciliation of 2026-08-19 (`shared/history/260819-1400-reconciliation-circles.md`): **there is no third instance.** Two records, one rule, no population to migrate.
+The measurement that made the question answerable came from the Circle-store reconciliation of 2026-08-19 (`260819-1400-reconciliation-circles.md`): **there is no third instance.** Two records, one rule, no population to migrate.
 
 ---
 Implemented: 30d6f0a — `rules/fusion-workbench-conventions.md` `### Decision files` — the `Retired:` annotation now covers `_a_` as well as `_i_`, at three sites in one family rather than as a second block, with the citation naming what removed the subject of the answer. Applied to both records the decision names: `shared/decisions/260806-1152_a_*` and `shared/decisions/260810-2032_a_*`, each citing the commit that deleted its subject. Both hashes were verified against the tree by listing each commit's deletion set rather than carried from the reconciliation report. +502 bytes on the always-on rule set.

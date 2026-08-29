@@ -17,7 +17,7 @@ already measured and must not be commissioned again.
 
 ## What already exists — do not redo it
 
-`analyses/260821-2020-reply-length-baseline.md` in this Circle holds the frozen before-state,
+`260821-2020-reply-length-baseline.md` in this Circle holds the frozen before-state,
 with the command that produced every figure. It carries:
 
 - The definition of a user-facing reply: an `assistant` record, not a sidechain, carrying a `text`
@@ -36,7 +36,7 @@ with the command that produced every figure. It carries:
 ## The contamination rule, stated once
 
 The measurement protocol at
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`
+`260820-2354-prose-register-measurement-protocol.md`
 excludes any session primed on the subject being measured. Every session in the Circle above was
 primed, including the one that wrote this briefing.
 
@@ -54,7 +54,7 @@ over a whole transcript file reads the injected `/fusion:setup` skill body too, 
 same files, so 49 of 72 transcripts flag themselves for having run Setup. The rule above stands;
 only its mechanical test was wrong. The working test, which narrows the surface to human prompts
 and agent replies first and marks 19 of 72, is written out runnable in section 4 of
-`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`.
+`260822-0035-three-before-figures-and-the-after-measurement-defined.md`.
 Use that one. It is deliberately not copied here, so that one command does not become two that
 drift.
 
@@ -125,7 +125,7 @@ running, but do not substitute a proxy and call it the answer.
 
 ## Constraints
 
-- **Build no gate and add no test.** `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- **Build no gate and add no test.** `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   authorises none until its own measurement runs. This briefing commissions measurement, not
   enforcement.
 - **Add nothing to `bin/`.** Commands go in the report, as the baseline did.

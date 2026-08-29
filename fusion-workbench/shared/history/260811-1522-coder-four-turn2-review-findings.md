@@ -5,8 +5,8 @@
 **Domain:** code
 **Git HEAD at start:** `41d8e2b`
 **Verification:** `cd hooks && npm test` — exit 0, 1271 tests, 49 files
-**Records closed:** `shared/issues/260811-1408`, `-1410`, `-1411`, `-1413` (all `_o_` → `_c_`)
-**Record filed:** `shared/decisions/260811-1522_o_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
+**Records closed:** `260811-1408`, `-1410`, `-1411`, `-1413` (all `_o_` → `_c_`)
+**Record filed:** `260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
 
 ---
 
@@ -19,7 +19,7 @@ borrows from.
 
 ## The three stale claims
 
-**`260811-1408` — the ontocoder prompt still claimed every `.toml`.** Commit `619dfb7` settled
+**`260811-1408_*_the-ontocoder-prompt-still-claims-every-toml-three-times-after-cargo-toml-was-given-to-the-coder.md` — the ontocoder prompt still claimed every `.toml`.** Commit `619dfb7` settled
 `Cargo.toml` on the coder in `agents/coder.md` and `README-agents.md`; `agents/ontocoder.md` was
 outside that task's file set and kept claiming the extension in three places, one of them the
 frontmatter `description` a dispatcher reads to route. All three now state the rule the record
@@ -33,7 +33,7 @@ block fail to parse and the agent load with empty metadata. Checked after the ed
 all 16 agent prompts returns `["name","description"]` for `ontocoder.md`, and `claude plugin
 validate .` passes with the one pre-existing CLAUDE.md warning.
 
-**`260811-1411` — the coder's scope sentence carved `.toml` out and left `.json` standing.** The
+**`260811-1411_*_the-coder-scope-sentence-carves-toml-out-of-its-own-exclusion-list-and-leaves-json-standing.md` — the coder's scope sentence carved `.toml` out and left `.json` standing.** The
 sentence excluded `.json` while the ownership list two lines above claimed `package.json` and the
 same sentence cited `tsconfig.json` as precedent. Rewritten to state the rule rather than an
 exception, taking its formulation from the orchestrator's routing table instead of inventing a
@@ -41,14 +41,14 @@ third one. `tsconfig.json` joined the ownership list, since the sentence had bee
 precedent for a rule the file itself did not apply. The frontmatter `description` carried the
 identical asymmetry and was corrected with it.
 
-**`260811-1413` — `README-hooks.md` still described the `commit-message` class as it was before the
+**`260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` — `README-hooks.md` still described the `commit-message` class as it was before the
 store scoping.** Corrected from `hooks/lib/staging-drift.ts`, per the dispatch, not from the
 record: the class is a commit-message-shaped **name** that no artifact store owns. The row now also
 carries why the scoping *is* the class, so a future editor cannot drop the clause as noise.
 
 ## The gate that narrowed with its classifier
 
-`260811-1410`. `commit-message-path.test.ts` reached the `COMMIT_MESSAGE` pattern through
+`260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md`. `commit-message-path.test.ts` reached the `COMMIT_MESSAGE` pattern through
 `classify()` — the right instinct, since transcribing it would have put two spellings of one
 concept in the tree — but the two callers ask different questions of the same string:
 
@@ -86,7 +86,7 @@ reach would have been the workaround, not the fix.
 "commit message" is flagged again. Across `agents/*.md` and `skills/*/SKILL.md` there are exactly
 two such lines today, both carrying a defect word, so the `finds none` assertion passes unchanged.
 The load shifts onto that line-level keyword exemption, whose breadth is already filed as
-`260811-1149`; the positive control now asserts that dependency explicitly instead of leaving it
+`260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`; the positive control now asserts that dependency explicitly instead of leaving it
 latent. `classify()` was deliberately not widened: a false positive there told the model to delete
 three authored records, and a false positive in the gate costs a developer one exemption entry.
 
@@ -103,11 +103,11 @@ Fixed with the dispatch rather than filed:
   such as `Cargo.toml`") was replaced by one statement of the rule below the table, so neither row
   restates it and a new manifest needs no edit to either.
 - `README-hooks.md:180` — the `hasCommitMessageName` export and the two questions it serves, since
-  `260811-1410` closed in the same pass and added a second caller to a module the table describes.
+  `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` closed in the same pass and added a second caller to a module the table describes.
 
 Left alone, with reasons:
 
-- `agents/orchestrator.md:346` — the coder row omits `Cargo.toml`. Already filed as `260811-1301`,
+- `agents/orchestrator.md:346` — the coder row omits `Cargo.toml`. Already filed as `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`,
   which correctly calls it a gap rather than a contradiction (the tiebreaker below the table yields
   the right answer today). Not mine to close in this dispatch.
 - `agents/bugfixer.md:20`, `agents/consultant.md:47`, `agents/orchestrator.md:223`,
@@ -116,9 +116,9 @@ Left alone, with reasons:
 
 Filed rather than fixed:
 
-- `shared/decisions/260811-1522_o_…` — whether the `README-hooks.md` lib table should pin its prose
+- `260811-1522_*_…` — whether the `README-hooks.md` lib table should pin its prose
   to the modules it describes, the way `describeReach()` pins the domain-cascade paragraph. Raised
-  by `260811-1413` and deliberately not decided here: it is a question about ~25 rows, and a
+  by `260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md` and deliberately not decided here: it is a question about ~25 rows, and a
   generated block built for `staging-drift.ts` alone would leave the rest carrying the same risk
   while looking like coverage.
 
@@ -135,13 +135,13 @@ itself rather than drifting.
 
 | File | Why |
 |---|---|
-| `agents/ontocoder.md` | `260811-1408` — three claims plus the build-files line |
-| `agents/coder.md` | `260811-1411` — scope sentence, ownership list, frontmatter description |
+| `agents/ontocoder.md` | `260811-1408_*_the-ontocoder-prompt-still-claims-every-toml-three-times-after-cargo-toml-was-given-to-the-coder.md` — three claims plus the build-files line |
+| `agents/coder.md` | `260811-1411_*_the-coder-scope-sentence-carves-toml-out-of-its-own-exclusion-list-and-leaves-json-standing.md` — scope sentence, ownership list, frontmatter description |
 | `agents/planner.md` | sibling of `1408`/`1411` — executor table and tiebreaker |
 | `README-agents.md` | sibling — both rows plus one statement of the rule below the table |
-| `README-hooks.md` | `260811-1413`, the `hasCommitMessageName` clause, the regenerated reach count |
-| `hooks/lib/staging-drift.ts` | `260811-1410` — the `hasCommitMessageName` export, `classify()` calls it |
-| `hooks/lib/__tests__/commit-message-path.test.ts` | `260811-1410` — the gate, its header, and both controls |
+| `README-hooks.md` | `260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`, the `hasCommitMessageName` clause, the regenerated reach count |
+| `hooks/lib/staging-drift.ts` | `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` — the `hasCommitMessageName` export, `classify()` calls it |
+| `hooks/lib/__tests__/commit-message-path.test.ts` | `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` — the gate, its header, and both controls |
 | `hooks/lib/domain-cascade.ts` | the re-measured hole cost |
 | `hooks/dist/**` | rebuilt by `npm test` (the compiled hooks are committed) |
 

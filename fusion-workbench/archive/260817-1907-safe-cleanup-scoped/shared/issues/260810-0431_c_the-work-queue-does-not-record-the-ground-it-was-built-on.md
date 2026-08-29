@@ -6,7 +6,7 @@
 **Filed by:** coder, while implementing T7 (`260807-1515_*_die-warteschlange-veraltet-wieder-weil-nur-die-neuerzeugung-gebaut-wurde-nicht-die-vorbeugung.md`)
 **Scope:** `agents/taskplanner.md` Step 4 (the tasklist header format)
 **Cross-references:**
-`shared/issues/260807-1515_*_die-warteschlange-veraltet-wieder-weil-nur-die-neuerzeugung-gebaut-wurde-nicht-die-vorbeugung.md` (the parent finding — this is the half of it that lives in the producer and could not be built from T7's file list),
+`260807-1515_*_die-warteschlange-veraltet-wieder-weil-nur-die-neuerzeugung-gebaut-wurde-nicht-die-vorbeugung.md` (the parent finding — this is the half of it that lives in the producer and could not be built from T7's file list),
 `agents/orchestrator.md` `### The queue's ground` (the consumer-side half that landed, and which names this gap in its own closing paragraph)
 
 ---
@@ -30,8 +30,8 @@ Two real queues, measured:
 
 | Queue | Header carries `**Active Circle:**` |
 |---|---|
-| `ac1399e:fusion-workbench/tasklist.md` (260807-0002, 44 tasks) | yes — `` `circles/260804-1205-shell-reachability-model` (`_t_`) `` |
-| `8960e1a:fusion-workbench/tasklist.md` (260810-0249, 34 tasks) | no |
+| `ac1399e:fusion-workbench/tasklist.md` (260807-0002-conceptrev-plan-shell-reachability-model.md, 44 tasks) | yes — `` `260804-1205-shell-reachability-model` (`_t_`) `` |
+| `8960e1a:fusion-workbench/tasklist.md` (260810-0249-tasklist-update.md, 34 tasks) | no |
 
 Both runs were correct against the prompt. The first added the line on its own initiative,
 the second did not, and nothing in Step 4 makes either of them wrong.

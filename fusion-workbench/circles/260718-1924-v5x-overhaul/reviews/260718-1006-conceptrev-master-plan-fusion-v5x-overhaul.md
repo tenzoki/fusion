@@ -1,7 +1,7 @@
 # Concept Evaluation: Master Implementation Plan — fusion v5.x overhaul
 
 **Date:** 2026-07-18 10:06
-**Target:** `fusion-workbench/shared/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md`
+**Target:** `260718-1001_*_master-plan-fusion-v5x-overhaul.md`
 **Verdict:** clean
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mmdc)
 

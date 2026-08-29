@@ -6,7 +6,7 @@ Two definitions of the Turn count disagree, and the resume snippet counts every 
 **Domain:** code
 **Filed by:** shaper, while shaping the multi-user rebuild
 **Affects:** `agents/orchestrator.md:91`, `agents/orchestrator.md:496`, `agents/orchestrator.md:1060`
-**Cross-references:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` capability C4, which fixes it
+**Cross-references:** `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` capability C4, which fixes it
 
 ---
 
@@ -39,7 +39,7 @@ The multi-user rebuild makes the gap wider and harder to see. Under several chec
 Both call sites should read the same window, and the window that is documented twice is the session-scoped one. Deriving it means finding the last `session_start` line and counting `turn_start` after it, which is one `awk` or one `sed` range and no new mechanism.
 
 ---
-Resolved: referred (C4) — C4's acceptance criteria name the session-scoped Turn count, and per 260823-1110 the derivation sorts by `ts` rather than reading the file positionally; shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md `### C4`
+Resolved: referred (C4) — C4's acceptance criteria name the session-scoped Turn count, and per 260823-1110 the derivation sorts by `ts` rather than reading the file positionally; 260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md `### C4`
 
 ---
-Resolved: landed (C4 step 5). The referral above says where the work went; this note says where it landed, and the two stand together rather than one replacing the other. All three sites this record named, plus a fourth it did not (`skills/setup/SKILL.md` Step 1 sub-step 2, filed as `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`), now read `bin/fusion-events turns`. The direction this record proposed — find the last `session_start` and count after it — was **not** taken and could not be: per 260823-1110 a positional read does not survive the union merge. The helper scopes the log to this checkout by the `checkout` field each line now carries, sorts by `ts`, and opens its window at the **first** `session_start` naming `session.history_file`, so a resume spans its interruption. Where the checkout cannot be resolved the helper says so on stdout as `scope=all-checkouts` and both call sites report `unavailable` rather than the whole-file number. Measured over this repository's log: the replaced block returned 154, the helper returns 2.
+Resolved: landed (C4 step 5). The referral above says where the work went; this note says where it landed, and the two stand together rather than one replacing the other. All three sites this record named, plus a fourth it did not (`skills/setup/SKILL.md` Step 1 sub-step 2, filed as `260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`), now read `bin/fusion-events turns`. The direction this record proposed — find the last `session_start` and count after it — was **not** taken and could not be: per 260823-1110 a positional read does not survive the union merge. The helper scopes the log to this checkout by the `checkout` field each line now carries, sorts by `ts`, and opens its window at the **first** `session_start` naming `session.history_file`, so a resume spans its interruption. Where the checkout cannot be resolved the helper says so on stdout as `scope=all-checkouts` and both call sites report `unavailable` rather than the whole-file number. Measured over this repository's log: the replaced block returned 154, the helper returns 2.

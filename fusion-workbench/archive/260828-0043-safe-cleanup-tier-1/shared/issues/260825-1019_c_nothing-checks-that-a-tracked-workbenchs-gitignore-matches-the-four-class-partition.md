@@ -7,7 +7,7 @@ A consuming project was measured ignoring `fusion-workbench/orchestrator-events.
 caught it and none of them asks the question.
 ---
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** rules/workbench-tracking.md `## The four classes`; hooks/lib/staging-drift.ts `LIVE_STATE`; skills/setup/SKILL.md Step 0g item 4; shared/decisions/260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md (answers two of the three questions below); shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md (the third)
+**Cross-references:** rules/workbench-tracking.md `## The four classes`; hooks/lib/staging-drift.ts `LIVE_STATE`; skills/setup/SKILL.md Step 0g item 4; 260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md (answers two of the three questions below); 260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md (the third)
 
 ## What was measured
 
@@ -73,30 +73,30 @@ driver`, and that section's argument transfers unchanged.
 Two of the three questions this record raised are now answered, and the third has its own
 record. Setup repairs the mismatch rather than reporting it, and the check lives in Setup
 rather than in the archive step, both per
-`shared/decisions/260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`.
+`260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`.
 Whether a project may depart deliberately and say so once is open at
-`shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`,
+`260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`,
 and the repair cannot be built before it is settled: the opt-out's existence decides the
 repair's shape.
 
 ---
 
-**Reconciliation 260825-1241 (reconciler, domain `code`, HEAD `cfab17e`) — marker unchanged at `_o_`.
+**Reconciliation 260825-1241-reconciliation.md (reconciler, domain `code`, HEAD `cfab17e`) — marker unchanged at `_o_`.
 Two findings, and the second decides where the work goes.**
 
 **The stated blocker has cleared.** The closing paragraph above says the repair "cannot be built
 before it is settled" and calls
-`shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`
+`260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`
 open. At HEAD that record carries `_a_` and an `Answered:` line: option 1, direction A repaired for
 classes R2 and R3 only, direction B reported except for `.checkout-id`, and no opt-out mechanism
-built. Its sibling `shared/decisions/260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`
+built. Its sibling `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`
 carries `_a_` likewise. Both were answered in the same commit that filed this record, so the
 paragraph was true when written and is not now. The record stays `_o_` because the repair is not
 built; nothing blocks building it.
 
 **No capability of the multi-user spec covers this, and the nearest text is a constraint that does
 not forbid it.** Read against
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`: C0 is head-room, C1 is the
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`: C0 is head-room, C1 is the
 isolation measurement, C3 is attribution, C4 is presence. C2 is the only candidate and its subject is
 **this repository's** `.gitignore` — its criteria name `git rm --cached fusion-workbench/portfolio.md`
 and the `KEPT:` comment in fusion's own file, both verified against this tree by the `260823-1446`
@@ -117,4 +117,4 @@ no dependency on C4. Adding it here reopens an agreed document to carry work tha
 it but a rule file. That is a judgement about where the work goes, not a finding — the user decides.
 
 ---
-Resolved: 260827-2020 by coder (plan `260827-1756` step 5). `skills/setup/SKILL.md` gained Step 0j: in a git work tree that tracks `fusion-workbench/`, `git check-ignore -q` per R2/R3 root entry (`orchestrator-events.jsonl`, `.fusion-setup`, `.asset-provenance`) and a negation line appended to the root `.gitignore` for an excluded one; `git ls-files --error-unmatch` per class L entry, reported in the Done report, except `.checkout-id`, which is `git rm --cached` and excluded per `shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`; an R1 exclusion is never touched and the step asks nothing. The rule is cited, not restated.
+Resolved: 260827-2020-coder-setup-skill-steps-5-18b-c4.md by coder (plan `260827-1756` step 5). `skills/setup/SKILL.md` gained Step 0j: in a git work tree that tracks `fusion-workbench/`, `git check-ignore -q` per R2/R3 root entry (`orchestrator-events.jsonl`, `.fusion-setup`, `.asset-provenance`) and a negation line appended to the root `.gitignore` for an excluded one; `git ls-files --error-unmatch` per class L entry, reported in the Done report, except `.checkout-id`, which is `git rm --cached` and excluded per `260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`; an R1 exclusion is never touched and the step asks nothing. The rule is cited, not restated.

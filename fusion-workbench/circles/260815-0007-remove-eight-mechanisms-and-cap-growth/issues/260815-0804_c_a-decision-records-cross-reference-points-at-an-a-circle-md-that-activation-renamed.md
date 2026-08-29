@@ -10,9 +10,9 @@ same range and the record is now `_t_circle.md`, so the citation resolves to not
 
 **Severity:** Low — one dangling citation in one record; the target is unambiguous.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`reviews/260815-0804-coderev-plane-mirror-removal.md`)
+**Filed by:** `coderev`, reviewing `9a7da8e..7c12d6a` (`260815-0804-coderev-plane-mirror-removal.md`)
 **Owner:** `coder`
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md:7`
+**Affects:** `260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md:7`
 
 **Verified 2026-08-15 at HEAD `7c12d6a`.** The Circle directory holds `_t_circle.md` and no
 `_a_circle.md`.
@@ -27,7 +27,7 @@ name, and the orchestrator's `_a_`→`_t_` activation renamed the file underneat
 
 ## Not the same as the shaper's history entry
 
-`history/260815-0007-shaper-remove-eight-mechanisms-and-cap-growth.md:83` also names `_a_circle.md`,
+`260815-0007-shaper-remove-eight-mechanisms-and-cap-growth.md:83` also names `_a_circle.md`,
 in its `## Files written` list. That one is correct and must not be edited: it is a statement about
 what that run wrote, at the name it wrote it under, and it stays true. The distinction is the one
 step 2 drew for the two test comments that keep the word "Plane" — a historical statement survives
@@ -53,7 +53,7 @@ so belongs in `rules/circle-records.md` and is a decision, not this fix.
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). Worse than filed: the citation is now two renames stale, not one.**
 
-`decisions/260815-0007_i_does-fusion-cleanup-block-…:7` still cites `circles/260815-0007-…/_a_circle.md`. The Circle record is `_c_circle.md` at HEAD, so the citation names a marker two transitions behind (`_a_` → `_t_` → `_c_`), and the citing record itself moved `_a_` → `_i_` since filing.
+`260815-0007_*_does-fusion-cleanup-block-…:7` still cites `circles/260815-0007-…/_a_circle.md`. The Circle record is `_c_circle.md` at HEAD, so the citation names a marker two transitions behind (`_a_` → `_t_` → `_c_`), and the citing record itself moved `_a_` → `_i_` since filing.
 
 This is the decision-store half of a class with three live carriers in this store (with `260815-1247_*_the-implemented-decision-records-two-cross-references-…` and, until this pass closed it as moot, the backlog `**Related:**` line). **The correct form is the wildcard**, `_*_circle.md` — `rules/circle-records.md` states both correct globs and `rules/fusion-workbench-conventions.md` `## Marker globs` explains why the underscore makes it safe. No gate reads workbench-to-workbench citations, which is why every instance of this class is found by hand.
 

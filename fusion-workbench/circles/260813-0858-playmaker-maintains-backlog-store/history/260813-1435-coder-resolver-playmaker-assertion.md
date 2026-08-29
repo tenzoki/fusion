@@ -1,8 +1,8 @@
 # Coder — step 6: the resolver's playmaker assertion, inverted
 
 **Status:** Complete
-**Circle:** `circles/260813-0858-playmaker-maintains-backlog-store`
-**Plan:** `planning/260813-1306_p_the-playmaker-maintains-the-backlog-store.md`, step 6
+**Circle:** `260813-0858-playmaker-maintains-backlog-store`
+**Plan:** `260813-1306_*_the-playmaker-maintains-the-backlog-store.md`, step 6
 **Executor:** `fusion:coder`
 
 ## What changed

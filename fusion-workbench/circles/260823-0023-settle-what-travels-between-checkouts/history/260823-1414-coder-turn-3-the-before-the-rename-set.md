@@ -8,7 +8,7 @@
 ## Task
 
 The Turn 3 review at
-`circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1410-coderev-c2-turn-3.md`
+`260823-1410-coderev-c2-turn-3.md`
 sequenced its seven findings around the rename. This pass took the two the review put **before** it
 and the two cheapest of the four it put after: findings 2, 4, 6 and 7. Findings 1 (stranded records),
 3 (the Grounding correction) and 5 (the `pointer-present` identity) were out of scope by the dispatch
@@ -17,7 +17,7 @@ and are untouched.
 ## What was done
 
 **1. The corpus question is filed as an open decision** at
-`shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`.
+`260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`.
 `shared/` per the Origin Rule: the corpus is a framework-wide surface and the question outlives the
 Circle. Four options, each with its cost, and no answer. What it adds to the closure note it rescues
 is a measurement, because the two options that matter were asserted rather than counted. Over
@@ -57,7 +57,7 @@ Two gates moved and both were handled by their own documented path rather than b
   surface baselines was touched.
 - `reference-resolution-lint.test.ts` `BASELINE.records` was **re-approved 117 -> 118**, with a
   six-line accounting entry above the constant naming the one token that moved it: the new rules
-  section's citation of defect `260823-1408`. `paths` and `anchors` are unmoved. That pin has its own
+  section's citation of defect `260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md`. `paths` and `anchors` are unmoved. That pin has its own
   re-approval protocol, exercised six times already in this range; it is not one of the four growth
   budgets the dispatch reserved.
 
@@ -82,8 +82,8 @@ added words alone, and it stands over the ceiling either way, as it did before.
 ## Records closed
 
 Four, each with a `Resolved:` note and `_o_` -> `_c_`, all under
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/`: `260823-1402_*`, `260823-1404_*`,
-`260823-1407_*`, `260823-1408_*`.
+`circles/260823-0023-settle-what-travels-between-checkouts/issues/`: `260823-1402_*_four-hard-marker-citations-of-the-c1-circle-record-dangle-in-the-same-files-this-turn-repaired.md_*`, `260823-1404_*_a-question-the-closing-pass-left-to-the-user-has-no-open-record-anywhere-only-a-closed-defects-prose.md_*`,
+`260823-1407_*_the-live-plan-clauses-own-comment-still-says-the-tree-has-no-live-plan-and-two-stand-in-it.md_*`, `260823-1408_*_the-plan-field-now-carries-a-wildcard-and-no-rule-authorises-one-in-a-circle-record-head-field.md_*`.
 
 **The renames were checked for what they break**, that being the fault three of the four items descend
 from. A tree-wide search for `260823-14NN_<letter>_` outside the wildcard form returns nothing: the

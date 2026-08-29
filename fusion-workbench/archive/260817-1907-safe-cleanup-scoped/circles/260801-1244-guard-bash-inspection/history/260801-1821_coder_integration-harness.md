@@ -1,8 +1,8 @@
 # coder — integration harness against a real project directory (plan step 6)
 
 **Date:** 2026-08-01 18:21
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 6
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 6
 **Status:** Complete
 
 ## What was built
@@ -22,7 +22,7 @@ guard does not stand down and every denial assertion can actually fail.
   override-specific cases stay where they are; only the duplicated plumbing was removed.
 
 Consolidation was the point: two prior coders built throwaway-project harnesses ad hoc
-(`260801-1530_coder_wire-classifier-into-guard.md`,
+(`260801-1530_coder_wire-classifier-into-guard.md_coder_wire-classifier-into-guard.md`,
 `260801-1745_coder_override-waives-only-what-it-names.md`). There is now one shape with two
 callers.
 
@@ -77,8 +77,8 @@ There is deliberately **no skip condition**. `tsx` and `vitest` come from the sa
 - **Ordinary work**: a fresh project running `ls -la` never creates `.guard-state` at all,
   and after one block, nine innocuous calls (including `mv`/`rm`/`sed -i` on unprotected
   targets, `cp rules/x.md /tmp/y`, `git checkout HEAD -- rules/x.md` and `echo hi 2>&1`)
-  leave `consecutiveBlocks` at 1 and `events.jsonl` at one line. That is issues 260707-0750
-  and 260707-0751 asserted on the files, which is the only place they are visible.
+  leave `consecutiveBlocks` at 1 and `events.jsonl` at one line. That is issues 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md
+  and 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md asserted on the files, which is the only place they are visible.
 - **Halt escalation**: three consecutive Bash denials → `consecutiveBlocks: 3`,
   `haltActive: true`, events `guard_block, guard_block, guard_halt`, and `recentEvents`
   ending in `consecutive_blocks`.
@@ -142,7 +142,7 @@ through `tsx` (the default; the 25 green cases use it), `dist` runs `hooks/dist/
 The dispatch explicitly permitted either entry point. Flipping the suite to the shipped
 artifact is an env var, not a test edit.
 
-Filed as `issues/260801-1821_o_npm-test-does-not-build-so-the-committed-dist-can-ship-stale.md`
+Filed as `260801-1821_*_npm-test-does-not-build-so-the-committed-dist-can-ship-stale.md`
 so step 8 picks it up.
 
 ## What the harness revealed that the unit tests could not

@@ -7,8 +7,8 @@
 **Filed by:** analyst, during the guard-enforced-policies analysis
 **Affects:** `hooks/lib/shell-parse.ts` (`stripData` heredoc branch at `:234-309`, newline segmentation at `:410-414`)
 **Cross-references:**
-`fusion-workbench/shared/issues/260716-2005_c_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` (closed; the quoted-delimiter half of the same family, and the resolution that deliberately left this half standing),
-`fusion-workbench/shared/analyses/260809-1103-guard-enforced-policies.md` §Findings 2a-1
+`260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` (closed; the quoted-delimiter half of the same family, and the resolution that deliberately left this half standing),
+`260809-1103-guard-enforced-policies.md` §Findings 2a-1
 
 ---
 
@@ -48,7 +48,7 @@ Newline segmentation erases the distinction by turning every body line into a ca
 
 ## Impact
 
-The same impact `260716-2005` recorded for its half, on a case that record's fix did not cover: an agent writing or updating documentation that quotes git commands is denied by the policy it is documenting. `rules/git-branch-discipline.md` contains the strings this denies. Any consuming project writing a runbook, a README section, or a migration note by heredoc meets it.
+The same impact `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` recorded for its half, on a case that record's fix did not cover: an agent writing or updating documentation that quotes git commands is denied by the policy it is documenting. `rules/git-branch-discipline.md` contains the strings this denies. Any consuming project writing a runbook, a README section, or a migration note by heredoc meets it.
 
 The direction is safe. The cost is precision, and it falls on a recurring authoring case rather than an exotic one.
 
@@ -58,19 +58,19 @@ Treat an unquoted heredoc body as data **with its substitutions lifted out**, ra
 
 That is one mechanism reused, not a heredoc special case, and it keeps the fail-closed property where it was earned: a substitution in the body still classifies.
 
-Explicitly not recommended, for the reasons `260716-2005` already gave: an allow-list for command-looking prose, or a rule about which lines "look like documentation".
+Explicitly not recommended, for the reasons `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` already gave: an allow-list for command-looking prose, or a rule about which lines "look like documentation".
 
 ## Acceptance criteria
 
 - [x] `cat <<EOF` with a body line `git switch main` allows.
 - [x] `cat <<EOF` with a body containing `$(git switch main)` still denies.
 - [x] `cat <<EOF` with a body containing a backticked `` `git switch main` `` still denies (bash substitutes there).
-- [x] The quoted-delimiter cases from `260716-2005` stay green.
+- [x] The quoted-delimiter cases from `260716-2005_*_branch-guard-false-positive-on-markdown-backticks-in-heredoc.md` stay green.
 - [x] A real branch switch outside any heredoc still denies.
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Untouched by this session.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Untouched by this session.**
 `hooks/lib/shell-parse.ts` is not in the diff `451a07e..fb262d8`. The heredoc branch and the newline segmentation are unchanged, and all five acceptance criteria remain unmet.
 
 ---

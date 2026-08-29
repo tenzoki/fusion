@@ -31,9 +31,9 @@ makes the next author's decision, on the surface where the decision is most expe
 **Domain:** code
 **Filed by:** `coderev`, reviewing `b91c01c..bbfc912`
 **Owner:** `coder`
-**Affects:** `circles/260819-1645-four-constraints-on-deep-change/history/260820-0742-coder-arm-the-blocking-workbench-citation-gate.md`
+**Affects:** `260820-0742-coder-arm-the-blocking-workbench-citation-gate.md`
 `## The convention line` and `## Head-room`;
-`circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`
+`260819-2016_*_four-constraints-on-deep-change.md`
 `## Current State`, the head-room paragraph
 **Cross-references:** `hooks/lib/__tests__/rules-emission-golden.test.ts` `RULE_BASELINE` and
 `GROWTH_BUDGET`; `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining`
@@ -44,7 +44,7 @@ Add the figure to the step's `## Head-room` section, which already reports the h
 and qualify the plan's sentence to the file it was measured against.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open;
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open;
 the reporting gap is what reproduces, not a red bound.** `rules-emission-golden.test.ts` and
 `surface-growth-bound.test.ts` were both re-run by this pass and are green (15 and 12 cases). The
 always-on set measures **99 720 bytes** at HEAD, by `bin/fusion-rules coder | xargs wc -c` — the one

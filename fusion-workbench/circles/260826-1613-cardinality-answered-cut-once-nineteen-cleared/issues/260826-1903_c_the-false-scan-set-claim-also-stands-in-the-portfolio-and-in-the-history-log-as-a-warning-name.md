@@ -1,7 +1,7 @@
 The false scan-set claim also stands in the portfolio and in the history log, as a warning name
 
 ---
-`260826-1815_*` locates the playmaker's false statement in the Circle record and states its
+`260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md_*` locates the playmaker's false statement in the Circle record and states its
 scope as "One Circle record". The same run wrote it into `portfolio.md` three times and into
 its own history log once, where it is encoded as a warning category name. The portfolio copies
 self-heal on the next regeneration; the record and the history log do not.
@@ -13,17 +13,17 @@ self-heal on the next regeneration; the record and the history log do not.
 currently going to correct.
 
 **Cross-references:**
-`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/issues/260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`;
-`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/reviews/260826-1858-coderev-playmaker-prompt-and-the-two-fabricated-claims.md`
+`260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md`;
+`260826-1858-coderev-playmaker-prompt-and-the-two-fabricated-claims.md`
 finding B2;
 `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Two invariants*
 
 ## Where it stands
 
-All four written by the playmaker run of 260826-1705.
+All four written by the playmaker run of 260826-1705-playmaker-direct-dispatch.md.
 
-`circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/_t_circle.md:125-126`. The
-instance `260826-1815_*` names.
+`260826-1613-cardinality-answered-cut-once-nineteen-cleared:125-126`. The
+instance `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md_*` names.
 
 `fusion-workbench/portfolio.md:30-31`, in the `Recommended next` rationale:
 
@@ -32,7 +32,7 @@ instance `260826-1815_*` names.
 `fusion-workbench/portfolio.md:43`: "It buys scope over nineteen stranded records".
 
 `fusion-workbench/portfolio.md:138-139` and the identical bullet in
-`shared/history/260826-1705-playmaker-direct-dispatch.md`, both under the warning name
+`260826-1705-playmaker-direct-dispatch.md`, both under the warning name
 `stranded-records-in-terminal-circles`: "open records sit inside five terminal Circles,
 outside every agent's scan set".
 
@@ -53,13 +53,13 @@ the name standing in two files.
 `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Two invariants*, item 2: every
 `SCAN_*` carries the Circle in scope and the shared store, and nothing else. Records inside a
 non-active Circle were never in another Circle's scan set, so closing removed nothing. This is
-not restated further; `260826-1815_*` argues it in full.
+not restated further; `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md_*` argues it in full.
 
 ## Fix direction
 
 Three parts, none of them the orchestrator's alone.
 
-**The record.** As `260826-1815_*` says: a playmaker dispatch or a user edit, because
+**The record.** As `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md_*` says: a playmaker dispatch or a user edit, because
 `## Activation proposal` is a playmaker-appended section.
 
 **The portfolio.** Nothing to do, provided the next run does not regenerate the same warning.
@@ -72,10 +72,10 @@ so the log keeps saying what happened and stops asserting the mechanism.
 ## Scope
 
 Three workbench files. No shipped file. The prompt-side causes are filed separately as
-`260826-1901_*` and `260826-1902_*`.
+`260826-1901_*_the-playmakers-rationale-contract-requires-a-citation-and-caps-the-read-that-would-check-it.md_*` and `260826-1902_*_the-activation-proposal-section-has-no-content-contract-on-the-one-surface-that-is-never-regenerated.md_*`.
 
 ---
-Reconciliation 260827-1528: still open. The claim stands at `portfolio.md:30`, `:43` and `:138` (no playmaker run has regenerated the file since 260826-1705), and the warning name `stranded-records-in-terminal-circles` stands at `shared/history/260826-1705-playmaker-direct-dispatch.md:46`.
+Reconciliation 260827-1528-reconciliation.md: still open. The claim stands at `portfolio.md:30`, `:43` and `:138` (no playmaker run has regenerated the file since 260826-1705-playmaker-direct-dispatch.md), and the warning name `stranded-records-in-terminal-circles` stands at `260826-1705-playmaker-direct-dispatch.md:46`.
 
 ---
-Resolved: `shared/history/260826-1705-playmaker-direct-dispatch.md` gained an appended, dated correction line after its warnings, stating that `stranded-records-in-terminal-circles` encoded a mechanism `bin/fusion-paths` does not have and that the 260827-1637 run retired the name under `records-reachable-only-under-their-terminal-circle`; its original lines stand as written. The portfolio needed nothing: `fusion-workbench/portfolio.md` (`**Generated:** 260827-1637`) carries no copy of the claim, and names the old warning only once, as the name it retires. The record instance closed under `260826-1815_*`. Plan `260827-1756_*`, step 4.
+Resolved: `260826-1705-playmaker-direct-dispatch.md` gained an appended, dated correction line after its warnings, stating that `stranded-records-in-terminal-circles` encoded a mechanism `bin/fusion-paths` does not have and that the 260827-1637-playmaker-direct-dispatch.md run retired the name under `records-reachable-only-under-their-terminal-circle`; its original lines stand as written. The portfolio needed nothing: `fusion-workbench/portfolio.md` (`**Generated:** 260827-1637-playmaker-direct-dispatch.md`) carries no copy of the claim, and names the old warning only once, as the name it retires. The record instance closed under `260826-1815_*_a-ranking-rationale-asserts-a-resolver-behaviour-that-does-not-exist-and-it-stands-in-the-active-record.md_*`. Plan `260827-1756_*`, step 4.

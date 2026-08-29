@@ -8,9 +8,9 @@ Verified at 260801-2038, at HEAD `9ab5a2a`:
 
 | Surface | Says | Reality |
 |---|---|---|
-| `fusion-workbench/agentstate.yaml` | `# Updated: 260801-1535`, `progress.turn: 1`, `tasks_done: 4`, `commits: 4`, `current_task: S3 running`, five tasks still `queued` | 16 commits, all eight plan steps done, S3 committed at `50d7f00` |
-| `circles/260801-1244-guard-bash-inspection/_t_circle.md` | `**Status:** anticipated`, `**Active session history:** (none yet)`, `## Turn log` empty | Circle has been `_t_` since 12:47; fifteen history files in its own `history/` |
-| `shared/history/260801-0936-orchestrator-session.md` | `**Directive:** (not yet set — awaiting the user's task)`, `**Status:** Setup complete, awaiting scope`, `## Per-Turn Log` → `(no Turns yet)` | Directive was set, three Turns ran; the file's own body documents twelve design decisions and a full spec discussion |
+| `fusion-workbench/agentstate.yaml` | `# Updated: 260801-1535_coder_backslash-continuation-splice.md`, `progress.turn: 1`, `tasks_done: 4`, `commits: 4`, `current_task: S3 running`, five tasks still `queued` | 16 commits, all eight plan steps done, S3 committed at `50d7f00` |
+| `260801-1244-guard-bash-inspection` | `**Status:** anticipated`, `**Active session history:** (none yet)`, `## Turn log` empty | Circle has been `_t_` since 12:47; fifteen history files in its own `history/` |
+| `260801-0936-orchestrator-session.md` | `**Directive:** (not yet set — awaiting the user's task)`, `**Status:** Setup complete, awaiting scope`, `## Per-Turn Log` → `(no Turns yet)` | Directive was set, three Turns ran; the file's own body documents twelve design decisions and a full spec discussion |
 | `fusion-workbench/orchestrator-events.jsonl` | current — 74 kB, last write 20:29 | the one surface that kept up |
 
 The event log staying current while the other three froze is the diagnostic: event emission is a per-action call that cannot be forgotten without the action failing, whereas the other three are end-of-Turn writes that a session can skip without anything breaking.
@@ -39,24 +39,24 @@ Option 2 is the one that generalises; option 1 is the one that prevents.
 
 ## Provenance
 
-Found by the reconciler during the closing pass of `circles/260801-1244-guard-bash-inspection`, 260801-2038. Filed to the shared store rather than into that Circle per the Origin Rule: the drift is a property of how the orchestrator runs a session, not of the guard work that session happened to be doing.
+Found by the reconciler during the closing pass of `260801-1244-guard-bash-inspection`, 260801-2038. Filed to the shared store rather than into that Circle per the Origin Rule: the drift is a property of how the orchestrator runs a session, not of the guard work that session happened to be doing.
 
 ---
 
 **Reconciliation 260803-1516 (reconciler, domain `code`) — stays `_o_`. Second instance, one Circle later, and this time the divergence check this issue proposes was actually computed.**
 
-Session `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-session.md`, one Turn, seven commits `c9bf59e..fa81589`. Three of the four surfaces froze again, in the same pattern:
+Session `260803-1038-orchestrator-session.md`, one Turn, seven commits `c9bf59e..fa81589`. Three of the four surfaces froze again, in the same pattern:
 
 | Surface | Says | Reality |
 |---|---|---|
-| `fusion-workbench/agentstate.yaml` | `# Updated: 260803-1038`, `progress.turn: 0`, `commits: 0`, all eight tasks `queued`, `current_task: queue-confirmation` (a gate) | eight tasks resolved, seven commits, ten issues closed, one review filed |
-| `circles/260801-1244-guard-rules-write/_t_circle.md` | `**Status:** anticipated`, `**Active spec/plan:** shared/planning/260801-1122_o_spec-normative-consolidation.md`, `**Active session history:** (none yet)`, `## Turn log` empty | active since 260802, its own plan at `planning/260802-1856_o_plan-guard-rules-write.md`, fifteen files in its own `history/`, three Turns run |
+| `fusion-workbench/agentstate.yaml` | `# Updated: 260803-1038-orchestrator-session.md`, `progress.turn: 0`, `commits: 0`, all eight tasks `queued`, `current_task: queue-confirmation` (a gate) | eight tasks resolved, seven commits, ten issues closed, one review filed |
+| `260801-1244-guard-rules-write` | `**Status:** anticipated`, `**Active spec/plan:** 260801-1122_*_spec-normative-consolidation.md`, `**Active session history:** (none yet)`, `## Turn log` empty | active since 260802, its own plan at `260802-1856_*_plan-guard-rules-write.md`, fifteen files in its own `history/`, three Turns run |
 | the session history file above | `## Per-Turn Log` → "(No Turn started yet in this session.)" | written once at `3b0f9e7` (36 lines, the first commit of the Turn) and never touched again |
 | `fusion-workbench/orchestrator-events.jsonl` | current | the one surface that kept up, again |
 
 **Candidate resolution 2, computed.** This issue proposes comparing `agentstate.yaml`'s `progress.commits` against `git rev-list --count <git_head_at_start>..HEAD`. Run here: the file says `0`, `git rev-list --count c9bf59e..HEAD` says `7`. Divergence 7, against a stated threshold of "more than one". The check works, costs one command, and nothing in the toolchain runs it. That is now demonstrated on two sessions rather than argued from one.
 
-**The Circle-record half is the expensive one.** `## Turn log` is where a Circle's history lives after its session state is deleted, and this Circle is one gate away from closure with three Turns and twenty-three commits behind it and an empty log. `shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` records what that costs a Circle that has already closed.
+**The Circle-record half is the expensive one.** `## Turn log` is where a Circle's history lives after its session state is deleted, and this Circle is one gate away from closure with three Turns and twenty-three commits behind it and an empty log. `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md` records what that costs a Circle that has already closed.
 
 **Not repaired here, for the reason this issue's own candidate 3 gives.** The reconciler's scope excludes `agentstate.yaml` and Circle records, and widening it would put two writers on the session-state surfaces. Reported, not papered over.
 
@@ -64,18 +64,18 @@ Session `circles/260801-1244-guard-rules-write/history/260803-1038-orchestrator-
 
 **Reconciliation 260807-1515 (reconciler, domain `code`) — stays `_o_`. Third instance, and the first one where the session shipped a release past the frozen bookkeeping.**
 
-Session `shared/history/260806-2158-orchestrator-session.md`, active Circle `circles/260807-0923-guard-misst-statt-orakelt`, HEAD at start `bf48802`, HEAD now `e684eae`. The same three surfaces froze, in the same pattern:
+Session `260806-2158-orchestrator-session.md`, active Circle `260807-0923-guard-misst-statt-orakelt`, HEAD at start `bf48802`, HEAD now `e684eae`. The same three surfaces froze, in the same pattern:
 
 | Surface | Says | Reality |
 |---|---|---|
 | `fusion-workbench/agentstate.yaml` | `# Updated: 260807-0945`, `progress.turn: 1`, `tasks_done: 0`, `commits: 0`, `current_task: S1 running`, nine of eleven tasks `queued` | eleven plan steps `[DONE]`, eight commits, v6.0.0 released and tagged |
-| `circles/260807-0923-guard-misst-statt-orakelt/_t_circle.md` | `**Active spec/plan:** (noch keiner)`, `## Turn log` empty, `## Closure note` empty, `**Status:** active` | the plan has existed since 260807-0931 and is complete; the Circle's own `history/` holds eleven files |
-| `shared/history/260806-2158-orchestrator-session.md` | `**Directive:**` is the *superseded* Circle's; `**Status:** Stopped by the user mid-Turn-1 … its record still carries the active marker and `.active-circle` still points at it` | the superseded Circle carries `_s_` since 260807-0923, `.active-circle` points at the successor, and the session went on to ship a major release |
+| `260807-0923-guard-misst-statt-orakelt` | `**Active spec/plan:** (noch keiner)`, `## Turn log` empty, `## Closure note` empty, `**Status:** active` | the plan has existed since 260807-0931 and is complete; the Circle's own `history/` holds eleven files |
+| `260806-2158-orchestrator-session.md` | `**Directive:**` is the *superseded* Circle's; `**Status:** Stopped by the user mid-Turn-1 … its record still carries the active marker and `.active-circle` still points at it` | the superseded Circle carries `_s_` since 260807-0923-guard-misst-statt-orakelt, `.active-circle` points at the successor, and the session went on to ship a major release |
 | `fusion-workbench/orchestrator-events.jsonl` | current | the one surface that kept up, for the third time |
 
 **Candidate resolution 2, computed for the third time.** `agentstate.yaml` says `commits: 0`; `git rev-list --count bf48802..HEAD` says `8`. Divergence 8, against the stated threshold of "more than one". The check now has three data points across three Circles and is still run by nothing in the toolchain.
 
-**One new observation this instance adds.** `agentstate.yaml`'s `session.history_file` names `circles/260807-0923-guard-misst-statt-orakelt/history/260807-0945-orchestrator-session.md`. That file does not exist — the Circle's `history/` holds eleven sub-agent logs and no orchestrator session log, and the session's actual log stayed at `shared/history/260806-2158-orchestrator-session.md` under the superseded Circle. So the resume anchor points at nothing, which is a stronger failure than a stale value: a resuming orchestrator would find neither the Turn state nor the log it names.
+**One new observation this instance adds.** `agentstate.yaml`'s `session.history_file` names `260807-0945-orchestrator-session.md`. That file does not exist — the Circle's `history/` holds eleven sub-agent logs and no orchestrator session log, and the session's actual log stayed at `260806-2158-orchestrator-session.md` under the superseded Circle. So the resume anchor points at nothing, which is a stronger failure than a stale value: a resuming orchestrator would find neither the Turn state nor the log it names.
 
 **Why that happened here and would happen again.** The session began under one Circle and continued under its successor. Nothing in the process moves the session's history file, or forks a second one, when a Circle is superseded mid-session — so the anchor was written for a file the session never created. That is a gap in the supersession path specifically, not only in the end-of-Turn write, and it is worth naming separately when candidate 1 is taken up.
 
@@ -83,34 +83,34 @@ Session `shared/history/260806-2158-orchestrator-session.md`, active Circle `cir
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Fourth instance, and the first in which the `**Directive:**` fallback this record warns about was actually exercised.**
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Fourth instance, and the first in which the `**Directive:**` fallback this record warns about was actually exercised.**
 
-Session `shared/history/260808-0920-orchestrator-session.md`, HEAD at start `451a07e`, HEAD now `fb262d8`. Three of the four surfaces froze again, in the same pattern. There is no active Circle this time, so the Circle-record row of the earlier instances is replaced by the plan:
+Session `260808-0920-orchestrator-session.md`, HEAD at start `451a07e`, HEAD now `fb262d8`. Three of the four surfaces froze again, in the same pattern. There is no active Circle this time, so the Circle-record row of the earlier instances is replaced by the plan:
 
 | Surface | Says | Reality |
 |---|---|---|
 | `fusion-workbench/agentstate.yaml` | `# Updated: 260809-1056`, `progress.turn: 1`, `tasks_done: 1`, `commits: 0`, `current_task: A-1/A-2 running` (`agent: analyst`), `plan_context.plan_file: null` | two analyses delivered, a seven-step plan written and approved, six commits, six defects closed, two decision records filed |
-| `shared/history/260808-0920-orchestrator-session.md` | `**Directive:** (not yet stated — user ran /fusion:setup without a task)`, `**Status:** In progress`, `## Session log` ends at 09:20 with "Awaiting the user's Directive" | the Directive was stated and is in `agentstate.yaml`; eight hours and six commits of work followed |
-| `shared/planning/260809-1229_c_plan-five-severe-guard-defects.md` | current — steps marked `[DONE]` as they landed, status and closure summary written | the one artifact surface that kept up |
+| `260808-0920-orchestrator-session.md` | `**Directive:** (not yet stated — user ran /fusion:setup without a task)`, `**Status:** In progress`, `## Session log` ends at 09:20 with "Awaiting the user's Directive" | the Directive was stated and is in `agentstate.yaml`; eight hours and six commits of work followed |
+| `260809-1229_*_plan-five-severe-guard-defects.md` | current — steps marked `[DONE]` as they landed, status and closure summary written | the one artifact surface that kept up |
 | `fusion-workbench/orchestrator-events.jsonl` | current | the one session surface that kept up, for the fourth time |
 
 **Candidate resolution 2, computed for the fourth time.** `agentstate.yaml` says `commits: 0`; `git rev-list --count 451a07e..HEAD` says `6`. Divergence 6, against the stated threshold of "more than one". Four data points across four sessions, and nothing in the toolchain runs the check.
 
 **What this instance adds.** In the three earlier instances `agentstate.yaml` carried the Directive and the reconciliation survived on it. Here the history file's `**Directive:**` line reads "(not yet stated)" while `agentstate.yaml` carries the real one, so the two surfaces now contradict each other on the field the reconciler's Step 2.5 names as canonical. `agentstate.yaml` was still present, so this reconciliation again survived — but the orchestrator deletes that file on a clean exit, and after this session's clean exit the only surviving statement of the Directive would be "(not yet stated)". The failure this record calls a fallback risk is one clean exit away from being a data loss.
 
-**One surface improved.** `session.history_file` names `shared/history/260808-0920-orchestrator-session.md`, which exists. The dangling resume anchor recorded in the third instance did not recur; that instance's cause was a mid-session Circle supersession, which did not happen here.
+**One surface improved.** `session.history_file` names `260808-0920-orchestrator-session.md`, which exists. The dangling resume anchor recorded in the third instance did not recur; that instance's cause was a mid-session Circle supersession, which did not happen here.
 
 **Not repaired here**, same reason as the three instances above: this record's own candidate 3.
 
 ---
 
-**Partially addressed 260810-0410 (coder, task T6) — stays `_o_`. Candidate 2 built, on the orchestrator side only. Candidate 1 not built.**
+**Partially addressed 260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md (coder, task T6) — stays `_o_`. Candidate 2 built, on the orchestrator side only. Candidate 1 not built.**
 
 `agents/orchestrator.md` now carries a **Drift check** (under `## Persistent State File`) and calls it at four points. It reads the two records this issue identifies as un-freezable — `orchestrator-events.jsonl` and git — and prints each bookkeeping surface beside the record that can contradict it: `progress.commits` against `git rev-list --count <git_head_at_start>..HEAD`, `progress.turn` against the count of `turn_start` events since the last `session_start`, `session.history_file` against the disk, the history file's `**Directive:**` line against the state file's, and the Circle record's `## Turn log` entry count against the Turns run. Each row has its own drift condition, so a value that legitimately differs is not reported as a fault. On drift the orchestrator emits a new `state_drift` event **before** `agentstate.yaml` is deleted at Cleanup, tells the user in one line naming what diverged and from what, then performs the writes Write Points already required.
 
 **The call points ride event emissions rather than standing beside them.** `turn_start` (Phase 2), `turn_end` (Step 3e), `session_end` (Cleanup), plus the resume path at Setup Step 1. That is this record's own diagnostic turned into the mechanism: a separate end-of-Turn obligation is the shape that was skipped four times, so the check was attached to the one call that empirically never was. `session_end` matters on its own — two of the four instances were single-Turn sessions, which reach no second `turn_start` and, on convergence, no `turn_end` either.
 
-**A fifth instance, measured live while this was being written.** Session `shared/history/260810-0241-orchestrator-session.md`, HEAD at start `8960e1a`. `agentstate.yaml` read `# Updated: 260810-0243`, `progress.turn: 0`, `commits: 0` while `git rev-list --count 8960e1a..HEAD` returned 12 and the event log carried one `turn_start` and three `commit` events. Divergence 12, against the stated threshold of "more than one". The snippet was run against this workbench and printed exactly those rows, so the check is demonstrated on live drift rather than only argued.
+**A fifth instance, measured live while this was being written.** Session `260810-0241-orchestrator-session.md`, HEAD at start `8960e1a`. `agentstate.yaml` read `# Updated: 260810-0243`, `progress.turn: 0`, `commits: 0` while `git rev-list --count 8960e1a..HEAD` returned 12 and the event log carried one `turn_start` and three `commit` events. Divergence 12, against the stated threshold of "more than one". The snippet was run against this workbench and printed exactly those rows, so the check is demonstrated on live drift rather than only argued.
 
 **What it honestly is: a convention.** Nothing executes it. It is prompt text, and prompt text is overridable under task pressure — the section says so in its own closing paragraph, and `hooks/lib/__tests__/state-drift-detection-lint.test.ts` pins that admission along with the surfaces, the drift conditions, the `state_drift` event row, and the attachment to all four emissions. That gate keeps the contract in the prompt; it cannot make a session run it. An enforcement would have to sit where something runs unasked — a PostToolUse hook, or a `bin/` helper that `/fusion:setup`, the monitor and the reconciler all call — and none of that was in this task's scope.
 
@@ -123,7 +123,7 @@ Session `shared/history/260808-0920-orchestrator-session.md`, HEAD at start `451
 
 ---
 
-## Reconciliation — `260810-0819`, session `260810-0241` Phase 3
+## Reconciliation — `260810-0819`, session `260810-0241-orchestrator-session.md` Phase 3
 
 The note above is accurate on every claim I checked. Two things it does not carry, both measured at
 HEAD `dd50efd`.
@@ -134,7 +134,7 @@ HEAD `dd50efd`.
 |---|---|---|
 | `agentstate.yaml` | `turn: 1`, `tasks_done: 9`, `commits: 12`, `# Updated: 260810-0415` | 3 Turns, 22 commits |
 | `orchestrator-live.md` | Turn 2, `17/32`, `Commits: 21`, coderev shown `[RUNNING]` | Turn 3 ran and closed |
-| `shared/history/260810-0241-orchestrator-session.md` | `## Per-Turn Log` reads `(Turn 1 starting)`; `**Status:** In progress` | 3 Turns completed; **file is untracked in git** |
+| `260810-0241-orchestrator-session.md` | `## Per-Turn Log` reads `(Turn 1 starting)`; `**Status:** In progress` | 3 Turns completed; **file is untracked in git** |
 | `tasklist.md` | 3 of 31 tasks marked `[x] done` | 11 tasks resolved; **never committed — git's copy is the 260809 queue from `c353196`** |
 
 `grep -c state_drift fusion-workbench/orchestrator-events.jsonl` → **0**. The check never fired.
@@ -150,7 +150,7 @@ from task pressure, it is not overridable, and it is what produced this instance
 **3. Three defects are already filed against what `9bad4d6` shipped**, none cross-referenced from
 here: `260810-0710_o_` (the check's last line makes the whole block exit non-zero when no Circle is
 active — and `.active-circle` is absent right now, so that is this workbench's ordinary state),
-`260810-0509_o_` (the prompt text `9bad4d6` wrote contradicts Phase 2), and `260810-0502_o_` (the
+`260810-0509_*_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md` (the prompt text `9bad4d6` wrote contradicts Phase 2), and `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md` (the
 lint that guards it is defeatable at all four call points — see the reconciliation note on that
 record).
 
@@ -241,19 +241,19 @@ this record was closed on, no longer runs on either path**. The note's own resid
 "makes a skipped write impossible not to notice"; nothing notices any more.
 
 **A fifth instance stands live at the moment of this reconciliation**, session
-`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md`, one
+`260822-2204-orchestrator-session.md`, one
 Turn, two tasks, two commits `f90de0c..b938f68`. The same four-surface split, in the same direction:
 
 | Surface | Says | Reality |
 |---|---|---|
 | `fusion-workbench/agentstate.yaml` | `# Updated: 260822-2210`, `current_task: T-1 status running`, `work_queue` T-1 `running` and T-2 `queued` | both tasks carry `task_done` at 20:28:48, two commits landed |
 | `fusion-workbench/orchestrator-live.md` | `Tasks: 0/2`, `Commits: 0`, T-1 `[RUNNING]`, T-2 `[QUEUED]` | 2 of 2 done, 2 commits |
-| `circles/260822-1921-measure-what-two-checkouts-share/_t_circle.md` | `## Turn log` empty | one Turn ran and ended |
+| `260822-1921-measure-what-two-checkouts-share` | `## Turn log` empty | one Turn ran and ended |
 | the session history file above | `**Mode:** (not yet resolved — Phase 0 pending)`, `**Status:** In progress`, `## Session log` → "(Turn entries appended as the session runs.)" | `scope_resolved` names `mode=custom` at 20:10:01; the Turn loop converged at 20:28:48 |
 | `fusion-workbench/orchestrator-events.jsonl` | current through `turn_end` | the one surface that kept up, for the fifth time |
 
 The marker stays `_c_` and the `Resolved:` note above is left unedited: it records what was true when it
 was written, and the mechanism it describes really did exist. What moved is the tree underneath it. The
 live defect is re-filed as
-`shared/issues/260822-2236_o_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
+`260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
 because a `_c_` record tracks no open work.

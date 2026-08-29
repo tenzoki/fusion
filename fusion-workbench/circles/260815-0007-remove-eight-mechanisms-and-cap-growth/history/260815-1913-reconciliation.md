@@ -4,7 +4,7 @@
 **Agent:** reconciler
 **Domain:** `code`
 **Verified against:** the working tree at HEAD `9306f0a`
-**Session:** `shared/history/260814-2306-orchestrator-session.md`, range `9a7da8e..9306f0a`, **32 commits**, 4 Turns, 16 steps plus gate G1
+**Session:** `260814-2306-orchestrator-session.md`, range `9a7da8e..9306f0a`, **32 commits**, 4 Turns, 16 steps plus gate G1
 **Coherence verdict:** `review-needed`, written to that session file's `## Coherence` section
 **Status:** Complete
 
@@ -45,7 +45,7 @@ all.** The reason for the second is in `## The Grounding the removals retired` b
 
 ## 1. The plan is complete, and three of its claims are not
 
-`planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md`. Sixteen numbered steps
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`. Sixteen numbered steps
 (1–15 plus the inserted 3b) carry `[DONE]`; gate G1 is recorded taken with all twelve ledger entries
 approved. Status set to `Complete`, marker renamed, full reconciliation log appended to the file
 itself.
@@ -61,13 +61,13 @@ summarised here so they are not lost behind a `_c_`:
    `install.sh:27` and `README.md:26` read `9.0.0`; the marketplace clone reads `8.2.0`, and no
    `v9.0.0` tag exists. The executor named this deliberately and left a numbered hand-off, so the
    marker is a scope judgement rather than an error — but the step's own file list names that path.
-3. **Step 7's claim that `shared/issues/260811-1145` is retired by the conceptrev removal is false**,
+3. **Step 7's claim that `260811-1145` is retired by the conceptrev removal is false**,
    which the executor established at the time and this pass re-measured. See §3.
 
 The second entry of `## Open Questions` is still unanswered: whether the Circle record's
 `## Dependencies` bullet is corrected or left as a historical statement. At HEAD `_t_circle.md:210`
-cites `shared/issues/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`.
-The record is a **decision**, at `shared/decisions/260812-0254_s_…`, correctly transitioned by step 8.
+cites `260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`.
+The record is a **decision**, at `260812-0254_*_…`, correctly transitioned by step 8.
 So the bullet names a path that does not exist, in the store it does not exist in, and asks for a
 transition the decision vocabulary does not have. Closing the plan does not answer it.
 
@@ -82,7 +82,7 @@ transition the decision vocabulary does not have. Closing the plan does not answ
 | The administrative surface is three names | **met on the presentation the Directive names, and only there** | `CLAUDE.md`, `README.md`, `README-agents.md`, `skills/help/SKILL.md` and the three skill descriptions all present three. Seven other shipped surfaces still tell the user to type a demoted name, one of them (`agents/orchestrator.md:1292`) in direct contradiction to a surface the step did edit. See §4 |
 | The cap fails the suite on an add-back | **met, and demonstrated live** | `hooks/lib/__tests__/surface-growth-bound.test.ts` and `fixtures/surface-growth.golden` exist; `9306f0a` is the proof — an 897-byte edit to `skills/help/SKILL.md` pushed that surface past its recorded size, the suite went red, and the fixture was regenerated with no baseline moved |
 | `npm test` passes | **met** | Run by this pass: **40 test files, 751 tests, all passed**, 64.00 s |
-| The Closure note carries a before-and-after measurement | **met in substance, pending in form** | `history/260815-1832-coder-after-measurement.md` carries all three comparisons in a seventeen-row delta table, re-derives the before column out of git rather than trusting it, and names four of the Circle's own claims it does not support. The Circle record has no `## Closure` section yet; that is the orchestrator's Phase-4 write. Two rows have since gone stale — filed, see §5 |
+| The Closure note carries a before-and-after measurement | **met in substance, pending in form** | `260815-1832-coder-after-measurement.md` carries all three comparisons in a seventeen-row delta table, re-derives the before column out of git rather than trusting it, and names four of the Circle's own claims it does not support. The Circle record has no `## Closure` section yet; that is the orchestrator's Phase-4 write. Two rows have since gone stale — filed, see §5 |
 
 **On the measurement clause, which is the one worth arguing.** The clause asks for a measurement, not
 for a saving. Step 14 delivered one that partly disappoints its own Circle: the always-on rule floor
@@ -128,12 +128,12 @@ unusable=1 uncovered=6 verdict=uncovered`. The six are `c1e207d`, `5f2171e`, `e8
 is the feature commit that arms a failing test gate over three shipped surfaces, and `e8052e7` is the
 curator's twelve approved corrections to two normative documents. Neither was opened by a reviewer.
 This is the fourth Turn running in which the review range and the commit range have disagreed
-(`issues/260815-1455_o_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`
+(`260815-1455_*_turn-3s-reviewers-were-dispatched-on-four-of-the-seven-uncovered-commits-for-the-third-turn-running.md`
 records the first three).
 
 **The `unusable=1` is this Circle's own conceptrev plan evaluation**, and the record about it stays
 open, verified rather than assumed. The plan's step 7 asserted that
-`shared/issues/260811-1145_o_conceptrev-review-files-are-scanned-…` is retired by the conceptrev
+`260811-1145_*_conceptrev-review-files-are-scanned-…` is retired by the conceptrev
 removal. It is not: the defect was the *absence* of a sender filter in `reviewFiles()` and
 `measureReviewCoverageForModel`, and no filter was added, so an existing conceptrev file still
 produces the permanent `UNUSABLE` row. The executor established this at the time and left the record
@@ -162,7 +162,7 @@ and the three descriptions. Two of the eight names genuinely left the tree with 
 
 **What makes it only partly met is that the presentation was not swept to the corpus.** Re-grepped
 row by row at HEAD, seven of the nine surfaces in
-`issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
+`260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
 still present a demoted name as the user's route, and one more (`skills/cadence/SKILL.md:126`) was
 not in the record's table. Two rows are discharged, both in
 `rules/fusion-workbench-conventions.md`, by `e8052e7` — the curator's pass reached that file because
@@ -182,36 +182,36 @@ grew with them. Every one was opened, its named subject checked against the tree
 
 | Deleting commit | Step | Records closed |
 |---|---|---|
-| `d0ddabb` | 2 · Plane | `260810-0918` push-fixture, `260810-0918` suite-total variance, `260810-1158` third derivation site, `260813-1051` unguarded mktemp, `260813-1051` plane-curl regression guard |
+| `d0ddabb` | 2 · Plane | `260810-0918` push-fixture, `260810-0918` suite-total variance, `260810-1158_*_a-third-derivation-site-reads-the-key-back-out-of-a-plane-issue-body-which-carries-no-format.md` third derivation site, `260813-1051` unguarded mktemp, `260813-1051` plane-curl regression guard |
 | `a69d56e` | 4 · churn | `260810-1632` the churn stand-down |
-| `5d29b6d` | 6 · stash/pop | `260813-1051` LC_ALL on the shared git helper, `260811-2150` circle-stash's absent max-turns |
-| `dd312eb` | 10 · the queue | `260811-1144` staging-shape lint, `260811-1915` queue-ground backticked word, `260811-2330` eighty-one marker citations, `260814-2205` queue-ground parse |
-| `f45f76a` | 11 · the counters | `260811-1614` the drift Turn row, `260811-2307` unchecked drift row, `260811-2307` minute-resolution history filename |
+| `5d29b6d` | 6 · stash/pop | `260813-1051` LC_ALL on the shared git helper, `260811-2150_*_circle-stash-does-not-handle-an-absent-max-turns-it-renders-an-empty-right-hand-side-and-the-prompt-says-otherwise.md` circle-stash's absent max-turns |
+| `dd312eb` | 10 · the queue | `260811-1144_*_the-staging-shape-lint-misses-a-directory-argument-that-has-no-trailing-slash.md` staging-shape lint, `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md` queue-ground backticked word, `260811-2330` eighty-one marker citations, `260814-2205_*_the-queue-ground-parse-reads-a-backticked-token-out-of-the-prose-that-follows-the-word-none.md` queue-ground parse |
+| `f45f76a` | 11 · the counters | `260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md` the drift Turn row, `260811-2307` unchecked drift row, `260811-2307` minute-resolution history filename |
 
-Each footer says **moot, not fixed**. One more (`260810-0510`) is half moot and was annotated rather
+Each footer says **moot, not fixed**. One more (`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`) is half moot and was annotated rather
 than closed: one of its two named files was deleted and the other is present.
 
 **Three of the original seven are unreachable from here.** They sit in
-`circles/260719-1536-plane-mirror-integration/`, `circles/260813-0858-playmaker-maintains-backlog-store/`
-and `circles/260813-0910-documentation-matches-shipped-plugin/`. `bin/fusion-paths` resolves
+`260719-1536-plane-mirror-integration`, `260813-0858-playmaker-maintains-backlog-store`
+and `260813-0910-documentation-matches-shipped-plugin`. `bin/fusion-paths` resolves
 `$SCAN_ISSUES` to the Circle in scope plus `shared/` and nothing else, so no pass run from this
 Circle can touch them. Each was read; each is moot on the same evidence; closing them needs a run
-with that Circle in scope. `issues/260815-0803_o_seven-open-defect-records-name-…` therefore stays
+with that Circle in scope. `260815-0803_*_seven-open-defect-records-name-…` therefore stays
 open, annotated with what was discharged and what was not.
 
 **Two answered decisions now have no subject, and their markers were deliberately left alone.**
 
-- `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md` — its
+- `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md` — its
   answer was "keep both manifest fields, record the reason in the schema documentation". Both stash
   skills and the manifest went in `5d29b6d`, and all three of its `**Cross-references:**` dangle.
-- `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline…` —
+- `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline…` —
   its own closing sentence says `_a_` → `_i_` is unavailable until the pin is written against the
   drift lint. `f45f76a` deleted the lint, the check and the four sentences.
 
 Both are **Grounding-Stand** — active best-of-knowledge under
 `rules/fusion-workbench-conventions.md` `## State Markers — decisions` — and neither answer can now
 be realised. No marker was moved because
-`circles/260801-1244-curator/decisions/260814-1332_o_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
+`260814-1332_*_what-marks-an-implemented-decision-whose-implementation-was-later-deleted.md`
 owns exactly that question and is unanswered. Two of its four candidate answers would apply here, and
 renaming on the weakest evidence tier would pre-empt the decision the curator declined to pre-empt at
 gate G1. Both records are annotated with the evidence instead.
@@ -221,9 +221,9 @@ doubled inside the Circle.** It was filed when two records inside the curator's 
 about eleven in closed Circles were affected — thirteen, which is the figure the G1 gate reported. At
 HEAD the corpus is **91 decision records, 63 of them `_i_`**, and a filename-and-subject sweep finds
 at least nine more `_i_` records whose whole subject this Circle deleted: seven Plane
-(`260716-1847` ×2, `260719-2141`, `260722-2230`, and the three inside
-`circles/260719-1536-plane-mirror-integration/`), two churn (`260809-2004`, `260810-0920`), plus
-`260810-1822` on the queue ground. Add the two `_a_` records above and the class stands near
+(`260716-1847` ×2, `260719-2141`, `260722-2230_*_thin-mirror-vs-comment-borne-full-spec.md`, and the three inside
+`260719-1536-plane-mirror-integration`), two churn (`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`, `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`), plus
+`260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md` on the queue ground. Add the two `_a_` records above and the class stands near
 twenty-four. Nothing on any of them says the mechanism is gone.
 
 ---
@@ -235,11 +235,11 @@ Directive.
 
 | Record | What it is |
 |---|---|
-| `260815-1913_o_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` | 34 workbench files cite the plan by its `_o_` name; the class question of whether a citation spells `_*_` or the marker it saw is undecided |
-| `260815-1913_o_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md` | Step 15 found it and wrote it into a history entry, which the filing rule forbids as the only home |
-| `260815-1913_o_the-work-queue-misstates-p-15-again-one-turn-after-the-same-class-was-closed.md` | The class recurred four commits after being closed, in the Turn that deleted the check for it |
-| `260815-1913_o_the-session-history-file-carries-an-empty-duplicate-per-turn-log-stub-above-the-real-one.md` | Two `## Per-Turn Log` headings, the first holding `(none yet)` |
-| `260815-1913_o_the-closure-measurements-two-prose-rows-went-stale-in-the-two-commits-that-followed-it.md` | `docs/` + `README*.md` moved 129 567 → 137 699 and `skills/` 220 439 → 221 336 after step 14 read them; the docs reduction is 15 402 bytes, not 23 534 |
+| `260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md` | 34 workbench files cite the plan by its `_o_` name; the class question of whether a citation spells `_*_` or the marker it saw is undecided |
+| `260815-1913_*_the-marketplace-entry-advertises-five-removed-mechanisms-and-was-recorded-only-in-a-history-entry.md` | Step 15 found it and wrote it into a history entry, which the filing rule forbids as the only home |
+| `260815-1913_*_the-work-queue-misstates-p-15-again-one-turn-after-the-same-class-was-closed.md` | The class recurred four commits after being closed, in the Turn that deleted the check for it |
+| `260815-1913_*_the-session-history-file-carries-an-empty-duplicate-per-turn-log-stub-above-the-real-one.md` | Two `## Per-Turn Log` headings, the first holding `(none yet)` |
+| `260815-1913_*_the-closure-measurements-two-prose-rows-went-stale-in-the-two-commits-that-followed-it.md` | `docs/` + `README*.md` moved 129 567 → 137 699 and `skills/` 220 439 → 221 336 after step 14 read them; the docs reduction is 15 402 bytes, not 23 534 |
 
 ---
 
@@ -252,12 +252,12 @@ Directive.
   its `**Active spec/plan:**` field at `:7` now names the plan's old `_o_` path, which this pass's
   rename dangles, and Phase 4 is where that is corrected.
 - **`agentstate.yaml`.** Live session state, the orchestrator's. A defect was filed instead.
-- **`shared/history/260814-2306-orchestrator-session.md`, apart from `## Coherence`.** The
+- **`260814-2306-orchestrator-session.md`, apart from `## Coherence`.** The
   append-only authorization covers that section and nothing else, so the missing Turn-4 section, the
   `**Status:** In progress` line and the duplicate stub were all left as found. Two are the
   orchestrator's Phase-3 and Phase-4 writes; the third is filed.
 - **The 39-of-91 header-versus-marker mismatch.** Standing, with its own open record
-  (`shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`).
+  (`260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`).
   Its title records 34 of 74 at filing; the figure carried into this session was 39 of 90, and the
   corpus is 91 records at HEAD. The marker is the authority, and the pass did not spend itself here.
   All three of this Circle's `_i_` decisions are instances: each header reads `answered` while the

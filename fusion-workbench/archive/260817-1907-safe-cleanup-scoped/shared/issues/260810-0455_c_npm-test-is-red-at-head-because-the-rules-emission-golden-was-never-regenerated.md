@@ -4,7 +4,7 @@
 
 **Severity:** High — release blocker for this range
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `hooks/lib/__tests__/rules-emission-golden.test.ts:704`; caused by `rules/fusion-workbench-conventions.md`
 **Cross-references:** commits `65f7c3b`, `e99f0ef`
 
@@ -61,7 +61,7 @@ new totals are the intended cost. If the cost is judged too high, the alternativ
 conventions file already documents for itself: partition the new material into its own authoring home
 with a derived audience, the way `circle-records.md` and `workbench-stash-and-lock.md` were
 partitioned out. See the separate finding
-`260810-0455_o_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`,
+`260810-0455_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`,
 which argues one of the two new sections does not earn an all-sixteen-agent audience.
 
 ---
@@ -72,10 +72,10 @@ The golden moved `fusion-workbench-conventions.md` from 39 529 to 41 680 bytes, 
 Two sections account for it, both landed tonight, both stating their own cost in the commit that added them:
 
 - `e99f0ef`, 670 bytes — the consumer-side end of the resolver's exit-4 refusal: a consumer receiving an empty or unset key stops and names it. Written once here rather than re-typed into eight skill bodies.
-- `65f7c3b`, 1481 bytes — § "Which of them a tracked workbench tracks", which two dependent tasks (`260717-0030` stash sweep, `260801-1020` archive durability) needed in order to stop re-deriving the same answer.
+- `65f7c3b`, 1481 bytes — § "Which of them a tracked workbench tracks", which two dependent tasks (`260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md` stash sweep, `260801-1020` archive durability) needed in order to stop re-deriving the same answer.
 
 **Approved deliberately, by the orchestrator, which is the party the gate is built to stop.** The gate exists so that growth in the always-on rule set is re-approved rather than absorbed, and both additions were argued for and trimmed before landing (the first was 896 bytes in draft). The reviewer's observation that neither authoring commit carried the regeneration is correct and is the actual lesson: the deferral was reasoned — two more rules edits were expected this session, and three fixture diffs where one suffices is real churn — but a deferral with no owner leaves `npm test` red across a session boundary, where the next reader cannot tell a deliberate red from a broken one.
 
-**A residual this exposes, filed separately as `260810-0703`:** the executor report contract that landed tonight in `1f2faaf` derives `Result` from the suite's exit code, so a known-red baseline blocks every task that runs the suite. The R2 executor reported `blocked` for a failure in a file it never touched. That is the contract behaving as written; whether it should have a way to name a known-failing baseline is the open question.
+**A residual this exposes, filed separately as `260810-0703_*_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`:** the executor report contract that landed tonight in `1f2faaf` derives `Result` from the suite's exit code, so a known-red baseline blocks every task that runs the suite. The R2 executor reported `blocked` for a failure in a file it never touched. That is the contract behaving as written; whether it should have a way to name a known-failing baseline is the open question.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (Turn 2).
+Session: `260810-0241-orchestrator-session.md` (Turn 2).

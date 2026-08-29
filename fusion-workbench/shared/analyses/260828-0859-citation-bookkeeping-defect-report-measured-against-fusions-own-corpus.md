@@ -3,7 +3,7 @@
 **Date:** 2026-08-28 08:59
 **Type:** Document Study (with measurement)
 **Status:** Complete
-**Requested by:** orchestrator (session 260828-0846, task T1)
+**Requested by:** orchestrator (session 260828-0846-orchestrator-session.md, task T1)
 **Filed by:** analyst, Kai Stalmann <ks@qantr.com>
 
 ## Thesis
@@ -13,7 +13,7 @@ Two of the report's four instances hold here, one is refuted for this corpus, an
 ## Scope
 
 - Repository: `/Users/k1/Projects/productive/fusion`, branch `main`, HEAD `19b58eef` (2026-08-28 08:54 +0200), `## main...origin/main` in sync, two uncommitted modifications unrelated to this analysis (`.gitignore`, `fusion-workbench/.asset-provenance`).
-- Report studied: `shared/issues/260828-0828_*_fusion-citation-bookkeeping-defect-report.md` (verbatim; its consumer-side figures are quoted, not re-derived).
+- Report studied: `260828-0828_*_fusion-citation-bookkeeping-defect-report.md` (verbatim; its consumer-side figures are quoted, not re-derived).
 - Shipped text measured: `rules/*.md`, `agents/*.md`, `skills/*/SKILL.md` (45 files, the report's set) plus `CLAUDE.md`, `README.md`, `README-agents.md`, `README-hooks.md` (49 files).
 - Workbench measured: `fusion-workbench/` at HEAD, live stores (`shared/`, `circles/*/`) and `archive/` (three sweeps).
 - Gates read: `hooks/lib/__tests__/workbench-citation-lint.test.ts`, `reference-resolution-lint.test.ts`, `portfolio-citation-form-lint.test.ts`, and their shared parser `hooks/lib/__tests__/helpers/citation-scan.ts`.
@@ -34,7 +34,7 @@ Classifier: a regex over `YYMMDD-HHMM` tokens, taking a leading `.../` path as f
 
 Verdict: **confirmed**. Four forms are in use; B and D match exactly, A and C differ by matcher (mine counts `circles/<stamp>-<slug>` directory citations as C and stops a stamp at any following digit). Two qualifications the report does not make:
 
-- Of the 44 form-B tokens, 10 are the fictional worked example in `rules/decision-record-examples.md` (`260501-1430_o_vector-store-pick.md`, walked through four states) and 2 are `260510-0930_*_token-format.md` in `agents/playmaker.md`, a fabricated portfolio example. The gates exempt both files by name. So the shipped text carries four forms in *exhibits* as well as in citations, and the report's count does not separate them.
+- Of the 44 form-B tokens, 10 are the fictional worked example in `rules/decision-record-examples.md` (`260501-1430_*_vector-store-pick.md`, walked through four states) and 2 are `260510-0930_*_token-format.md` in `agents/playmaker.md`, a fabricated portfolio example. The gates exempt both files by name. So the shipped text carries four forms in *exhibits* as well as in citations, and the report's count does not separate them.
 - The convention's stated form (`rules/fusion-workbench-conventions.md` `## Filename Patterns`: "cite a record by its full filename with the state marker wildcarded, `YYMMDD-HHMM_*_<topic>.md`") is satisfied by B and by C alike; C is B with a store in front. The forms that violate it are A (55) and D (5). The report reads the rule as "one form" and counts C against it; the rule's own text does not say whether a store prefix is part of the form, which is question Q3 below.
 
 Per file, the density is in `agents/orchestrator.md` (41 tokens: 25 A, 15 B, 1 C) and `rules/circle-records.md` (15: 5 A, 10 C). Command: `python3 classify.py rules/*.md agents/*.md skills/*/SKILL.md`.
@@ -45,17 +45,17 @@ Grep: `grep -nE '\$SCAN_[A-Z]+' rules/*.md agents/*.md skills/*/SKILL.md README*
 
 | File | Lines | Records cited that way |
 |---|---|---|
-| `agents/orchestrator.md` | 92, 171, 532, 574, 815 | `260827-1330`, `260809-1731`, `260827-1120`, `260827-1310`, `260817-1613` |
-| `skills/archive/SKILL.md` | 142, 290 | `260811-1534` (twice) |
-| `agents/curator.md` | 115 | `260827-0745` |
+| `agents/orchestrator.md` | 92, 171, 532, 574, 815 | `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md`, `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`, `260827-1120_*_how-often-does-the-review-pass-run.md`, `260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md`, `260817-1613` |
+| `skills/archive/SKILL.md` | 142, 290 | `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` (twice) |
+| `agents/curator.md` | 115 | `260827-0745_*_may-the-curators-evidence-pass-be-bounded-by-its-own-previous-run.md` |
 | `agents/planner.md` | 160 | `260817-1613` |
 | `skills/next/SKILL.md` | 167 | `260813-0858` |
-| `rules/fusion-workbench-conventions.md` | 218 | `260827-1056` |
+| `rules/fusion-workbench-conventions.md` | 218 | `260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md` |
 | `rules/review-contract.md` | 45 | `260810-1205` |
 
 Twelve lines, seven files, ten distinct records. All ten exist in fusion's own workbench (nine under `shared/decisions/` or `shared/issues/`, one under `circles/260813-0858-playmaker-maintains-backlog-store/decisions/`; `find fusion-workbench -name '<stamp>_*'`). The plugin ships no workbench: `install.sh:82-83` copies `.claude-plugin agents skills rules hooks bin stilwerk templates docs README.md README-agents.md README-hooks.md LICENSE` and nothing else. `bin/fusion-paths` resolves `$SCAN_DECISIONS` against the consuming project's `fusion-workbench/`, so in every consuming project each of the twelve lines names a location that holds nothing.
 
-Verdict: **confirmed**, and larger than the report's five stamps (it names `260822-1635` too, which at `agents/orchestrator.md:318` is cited without a `$SCAN_` key and is a plain provenance citation). The prior analysis `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` already concluded that the shipped text's record stamps are provenance by design and that no static gate can separate a legitimate provenance citation from a harmful one; it did not examine the `$SCAN_*` phrasing, which is not a stamp reaching a consumer but an *instruction* that points a consumer's agent at its own empty store. Filed as an issue (below).
+Verdict: **confirmed**, and larger than the report's five stamps (it names `260822-1635_*_may-the-orchestrator-have-a-directive-captured-and-by-which-route.md` too, which at `agents/orchestrator.md:318` is cited without a `$SCAN_` key and is a plain provenance citation). The prior analysis `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` already concluded that the shipped text's record stamps are provenance by design and that no static gate can separate a legitimate provenance citation from a harmful one; it did not examine the `$SCAN_*` phrasing, which is not a stamp reaching a consumer but an *instruction* that points a consumer's agent at its own empty store. Filed as an issue (below).
 
 ### Instance 3: uniqueness of (stamp, slug)
 
@@ -130,7 +130,7 @@ So across the whole live tree 3186 of 8148 path-form citations (39 %) do not res
 
 ### The archive safety filter cannot see the mandated citation form
 
-`skills/archive/SKILL.md:193-201` (filter 3) keeps a candidate out of a sweep when `grep -r -l -F -e "$bn" -e "$rel"` finds its basename or its workbench-relative path in the shipped text and the project's `CLAUDE.md`/`rules/`. `$bn` is the literal basename, marker included (`260811-1534_i_does-...`). A citation in the mandated form spells `260811-1534_*_does-...`, and `grep -F` matches no wildcard. Simulation over the 863 live marked records against the same corpus (`grep`-equivalent string search over `rules/ agents/ skills/ README*.md CLAUDE.md hooks/lib/*.ts hooks/*.ts bin/* docs/`): **1 record is found by its literal basename or path; 75 are cited only in wildcard form and would not be kept.** No archived record is currently cited from the shipped text in wildcard form, so the miss has not yet been realised; the tier-1 sweeps so far took records the shipped text does not cite. Verified by simulation, not by running the skill. Filed as an issue (below).
+`skills/archive/SKILL.md:193-201` (filter 3) keeps a candidate out of a sweep when `grep -r -l -F -e "$bn" -e "$rel"` finds its basename or its workbench-relative path in the shipped text and the project's `CLAUDE.md`/`rules/`. `$bn` is the literal basename, marker included (`260811-1534_*_does-...`). A citation in the mandated form spells `260811-1534_*_does-...`, and `grep -F` matches no wildcard. Simulation over the 863 live marked records against the same corpus (`grep`-equivalent string search over `rules/ agents/ skills/ README*.md CLAUDE.md hooks/lib/*.ts hooks/*.ts bin/* docs/`): **1 record is found by its literal basename or path; 75 are cited only in wildcard form and would not be kept.** No archived record is currently cited from the shipped text in wildcard form, so the miss has not yet been realised; the tier-1 sweeps so far took records the shipped text does not cite. Verified by simulation, not by running the skill. Filed as an issue (below).
 
 ## Implications
 
@@ -148,12 +148,12 @@ So across the whole live tree 3186 of 8148 path-form citations (39 %) do not res
 
 ## Filed Issues
 
-- `shared/issues/260828-0900_o_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md`
-- `shared/issues/260828-0901_o_the-archive-safety-filter-greps-the-literal-basename-and-cannot-match-the-wildcard-citation-form-the-rule-mandates.md`
+- `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md`
+- `260828-0901_*_the-archive-safety-filter-greps-the-literal-basename-and-cannot-match-the-wildcard-citation-form-the-rule-mandates.md`
 
 ## Sources
 
-- `fusion-workbench/shared/issues/260828-0828_*_fusion-citation-bookkeeping-defect-report.md`
+- `260828-0828_*_fusion-citation-bookkeeping-defect-report.md`
 - `rules/fusion-workbench-conventions.md` `## Filename Patterns`
 - `hooks/lib/__tests__/helpers/citation-scan.ts:85-128` (grammar), `:354-360` (`basenameMatcher`), `:419-427` (`anchoredUnder`, `unsweep`), `:440-462` (`findRecord`), `:596-808` (per-token walk, `scanRecordCitations`)
 - `hooks/lib/__tests__/workbench-citation-lint.test.ts:1-170` (corpus predicate and its stated hole)
@@ -161,9 +161,9 @@ So across the whole live tree 3186 of 8148 path-form citations (39 %) do not res
 - `hooks/lib/__tests__/portfolio-citation-form-lint.test.ts:1-60`
 - `skills/archive/SKILL.md:193-201` (filter 3)
 - `install.sh:82-85` (copy loop)
-- `fusion-workbench/shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` (prior verdict on shipped stamps)
-- `fusion-workbench/circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, `.../issues/260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md` (shape 1)
-- `fusion-workbench/shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`, `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md` (open neighbours)
+- `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` (prior verdict on shipped stamps)
+- `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, `.../260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md` (shape 1)
+- `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`, `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md` (open neighbours)
 - `git log -S'876 records' -- rules/fusion-workbench-conventions.md` → `2b055a0f`; `git ls-tree -r --name-only 2b055a0f fusion-workbench`
 
 ## Open Questions

@@ -4,15 +4,15 @@
 
 **Severity:** High
 **Domain:** code (security control)
-**Filed by:** coderev, Turn 4 incremental review of `circles/260801-1244-guard-rules-write`
+**Filed by:** coderev, Turn 4 incremental review of `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only)
 **Cross-references:**
 `hooks/lib/bash-mutation-guard.ts:1746` (the unconditional push), `:1759-1772` (the `none`
 and `opaque` arms), `:1425-1446` (`unmodelled`, and the reasoning this issue extends),
 `:1656-1682` (the `applyDirEffect` invariant and its audit recipe),
-`issues/260803-1803_c_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate…`
+`260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate…`
 (same mechanism, flag form, closed by `a79ff1a`),
-`history/260803-1835-turn4-t4-2-working-directory-allow-list.md`
+`260803-1835-turn4-t4-2-working-directory-allow-list.md`
 (`## Three entrances I found while implementing`)
 
 ---

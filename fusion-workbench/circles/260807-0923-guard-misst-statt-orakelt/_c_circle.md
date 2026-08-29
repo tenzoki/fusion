@@ -3,9 +3,9 @@
 ---
 **Domain:** code
 **Status:** closed (kohärent geschlossen 260807-1650, ausgeliefert als v6.0.0 und v6.0.1)
-**Filed by:** orchestrator (Directive vom Nutzer im Chat, 260807-0923)
-**Active spec/plan:** circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md
-**Active session history:** shared/history/260806-2158-orchestrator-session.md
+**Filed by:** orchestrator (Directive vom Nutzer im Chat, 260807-0923-guard-misst-statt-orakelt)
+**Active spec/plan:** 260807-0931_*_plan-guard-misst-statt-orakelt.md
+**Active session history:** 260806-2158-orchestrator-session.md
 
 ---
 
@@ -29,7 +29,7 @@ hat, künftig vor dem Bauen auffällt statt nach 12.923 Zeilen.
 
 ## Grounding snapshot
 
-**Die Zahlen, auf denen die Entscheidung ruht**, alle in der Sitzung 260806-2158 gemessen:
+**Die Zahlen, auf denen die Entscheidung ruht**, alle in der Sitzung 260806-2158-orchestrator-session.md gemessen:
 
 | Größe | Wert |
 |---|---|
@@ -88,14 +88,14 @@ außerdem `CLAUDE.md`, `README-hooks.md` und die Symptomtabelle, die drei Guard-
 die es dann nicht mehr gibt.
 
 **Der Vorgänger-Circle, abgelöst statt abgeschlossen.**
-`circles/260804-1205-shell-reachability-model/_s_circle.md`. Seine Closure note führt auf, was
+`260804-1205-shell-reachability-model`. Seine Closure note führt auf, was
 Bestand hat. Zwei Commits von ihm liegen verhaltensneutral auf `main` (`3dc5014` Messinstrument,
 `9a24c9b` Erreichbarkeits-Schicht) und werden von diesem Circle mit abgeräumt. Seine beiden
 offenen Befunde erlöschen mit dem Code, den sie beschreiben, und werden hier geschlossen statt
 separat abgearbeitet.
 
 **Die bindende Entscheidung:**
-`circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`,
+`260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`,
 Option 3, erweitert um den vollständigen Rückbau.
 
 **Eine Beobachtung aus der Sitzung selbst, als Beleg für die Dringlichkeit.** Während der
@@ -103,7 +103,7 @@ Buchführung zu diesem Circle hat der Guard einen Befehl des Orchestrators block
 Heredoc, dessen Zeilenumbrüche als Segmenttrenner gelesen wurden. Fehlalarm Nummer 18, in der
 Sitzung, die den Mechanismus abschafft.
 
-**Nachtrag 260807-1601 (coder): die „vollständige Aussage" ist jetzt gemessen, und sie war es
+**Nachtrag 260807-1601-coder-messwurzel-aus-dem-unterverzeichnis.md (coder): die „vollständige Aussage" ist jetzt gemessen, und sie war es
 vorher nicht.** Die Directive setzt der 21-Löcher-Näherung eine vollständige Aussage entgegen.
 Diese Gegenüberstellung meint die *Route* — welchen Weg eine Schreiboperation zur Datei nimmt —
 und für Routen gilt sie. Sie schwieg über eine zweite Achse: das Koordinatensystem, in dem die
@@ -138,12 +138,12 @@ erst eine Neu-Schärfung durch den shaper.
 
 ## Turn log
 
-- **Turn 1 (Sitzung 260806-2158) — vollständig, alle elf Plan-Schritte erledigt.** Commits
+- **Turn 1 (Sitzung 260806-2158-orchestrator-session.md) — vollständig, alle elf Plan-Schritte erledigt.** Commits
   `2d55c66`..`a94f142`, ausgeliefert als **v6.0.0** und, nach zwei gemessenen Korrekturen,
   **v6.0.1**. Kohärenzurteil der Abschluss-Reconciliation: zunächst `review-needed` wegen der
   unbelegten Messwurzel, nach der Nachmessung und ihrer Behebung `coherent`. Sitzungsprotokoll:
-  `shared/history/260806-2158-orchestrator-session.md`, Reconciliation:
-  `history/260807-1526-reconciliation.md`.
+  `260806-2158-orchestrator-session.md`, Reconciliation:
+  `260807-1526-reconciliation.md`.
 
   | Schritt | Commit | Was |
   |---|---|---|
@@ -182,7 +182,7 @@ nicht geben muss. Beide sind behoben, beide sind mit dem Beleg dokumentiert.
 
 **Was offen bleibt und bewusst nicht hier gelöst wurde:**
 
-- `decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md` — ein Agent kann seinen
+- `260807-0945_*_integritaet-des-eskalationsspeichers.md` — ein Agent kann seinen
   eigenen Halt löschen, seit das Zustandsverzeichnis nicht mehr geschützt ist. Braucht ein
   Bedrohungsmodell, das dieser Circle nicht geklärt hat.
 - `issues/260807-1427_o_*` — die Reichweite der Regel-Ausnahme ist nach dem Mechanismuswechsel

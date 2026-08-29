@@ -33,13 +33,13 @@ an embedded box, a minimal CI runner) with `xdg-open` present. `sleep 0.5` print
 `sleep: invalid number '0.5'` and exits 1. `set -e` takes the wrapper down at that line: `wait
 $SERVER_PID` at `:1248` is never reached, the forked python server keeps the port, and the INT/TERM
 trap installed at `:1194` dies with the shell that installed it. That is the same symptom, on the
-same line count, as issue `260810-1558` — one command further down.
+same line count, as issue `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md` — one command further down.
 
 **Fix.** `sleep 0.5 || true`, or move the sleep in front of the `if` where it is equally harmless, or
 drop the fractional argument. The first is the smallest and matches the treatment the line below it
 already has.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 Resolved: `bin/monitor` now runs `sleep 0.5 2>/dev/null || sleep 1 || true`. The fast path keeps
@@ -62,4 +62,4 @@ block runs. Before: `WRAPPER-EXIT=1`, `wait` never reached, python still serving
 **ppid 1**. After: wrapper alive in `wait`, server's parent is the wrapper, no error line, tab still
 opened. `npm test` from `hooks/` — exit 0, 1113 tests.
 
-History: `fusion-workbench/shared/history/260810-2026-coder-monitor-sleep-and-launcher-gap.md`.
+History: `260810-2026-coder-monitor-sleep-and-launcher-gap.md`.

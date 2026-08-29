@@ -2,8 +2,8 @@
 
 **Agent:** ontocoder
 **Date:** 2026-08-16 22:17
-**Circle:** circles/260816-1741-guard-becomes-observation-only
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 7b
+**Circle:** 260816-1741-guard-becomes-observation-only
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 7b
 **Status:** Complete
 
 ## What changed
@@ -18,7 +18,7 @@
 | `hooks/config.example.json` | deleted |
 
 Both plugin-layer files went, because the loader question
-(`circles/260816-1741-guard-becomes-observation-only/decisions/260816-1915_a_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`)
+(`260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`)
 was answered as option 1: two merge layers, the project's file and the in-code `DEFAULTS`,
 with nothing between them.
 
@@ -93,7 +93,7 @@ Nothing here is a dangling reference this step may fix; each is named in the pla
 
 - `bin/fusion-turn-budget`'s header still documents `fusion-guard.json` and the three-layer
   merge over `hooks/config.json`. Filed as
-  `circles/260816-1741-guard-becomes-observation-only/issues/260816-2124_o_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`,
+  `260816-2124_*_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`,
   step 11.
 - `skills/setup/SKILL.md` still seeds the old filename — step 8. `skills/help/SKILL.md:111`
   still points a user at `hooks/config.example.json`, which no longer exists — step 11.

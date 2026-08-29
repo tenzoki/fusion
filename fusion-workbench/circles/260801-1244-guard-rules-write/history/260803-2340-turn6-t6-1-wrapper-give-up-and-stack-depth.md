@@ -2,10 +2,10 @@
 
 **Date:** 2026-08-03 23:40
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 3 of this session (the Circle's sixth)
-**Task:** T6-1 — close `260803-2236` (High, regression), `260803-2237` (High, pre-existing);
-file `260803-2238` (High) as a decision rather than a patch
-**Source review:** `reviews/260803-2240-coderev-turn5-wrapper-walk-and-pushd-rotation.md`
+**Circle:** `260801-1244-guard-rules-write`, Turn 3 of this session (the Circle's sixth)
+**Task:** T6-1 — close `260803-2236_*_runsbuiltins-is-asserted-about-a-name-so-the-model-now-moves-the-shell-where-the-shell-did-not-move.md` (High, regression), `260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md` (High, pre-existing);
+file `260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md` (High) as a decision rather than a patch
+**Source review:** `260803-2240-coderev-turn5-wrapper-walk-and-pushd-rotation.md`
 **Suite:** `npm test` — 1197 passed, 24 files, green (was 1182)
 **Status:** Complete
 
@@ -47,7 +47,7 @@ maintainer reads "we mark the wrappers that run builtins" and adds a row. After 
 surface than one correct claim plus a warning not to add a second.
 
 **Why not a revert.** The task invited it and it is the wrong answer. Reverting the wrapper
-walk restores `command cd rules && rm x.md` → allow, which is `260803-2038`, a measured High.
+walk restores `command cd rules && rm x.md` → allow, which is `260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md`, a measured High.
 Direction 2 is not a revert: the walk stays, so the model still *sees* the directory builtin
 behind the wrapper — it just declines to say where the shell went. That closes `2038` in the
 fail-closed direction and `2236` in the same motion.
@@ -126,7 +126,7 @@ Its wrapper-free siblings behave identically —
 ```
 
 — which is what shows the cause is 1835 and not the wrapper walk. I did not close 1835:
-the issue itself says doing so reverses a documented decision (`260801-1859`) with a pinned
+the issue itself says doing so reverses a documented decision (`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`) with a pinned
 test and an agent-facing doc line, and that "taking it silently inside another task is what
 the Circle has been correcting for four Turns". I costed it instead, below.
 
@@ -167,7 +167,7 @@ reason to raise its priority rather than a reason not to give up.
 
 I applied its direction 1 (reach a redirect target that is unresolvable **via the working
 directory**; keep allowing one unresolvable via the **token**, which is the `> "$LOG"` idiom
-`260801-1859` protected) and ran the suite. Exactly **two** assertions move, and **zero** rows
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` protected) and ran the suite. Exactly **two** assertions move, and **zero** rows
 of the 119-command ordinary-agent corpus:
 
 ```
@@ -175,7 +175,7 @@ of the 119-command ordinary-agent corpus:
   cd $D && echo x > out.log     allow -> DENY
 ```
 
-Both are the pinned statement of the `260801-1859` decision. So the cost is not a
+Both are the pinned statement of the `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` decision. So the cost is not a
 false-positive budget — it is the decision itself. Reverted; recorded on the issue.
 
 ---
@@ -245,7 +245,7 @@ property is a property of a field's shape, which is exactly what a type expresse
 
 ## Finding 3 — deliberately not implemented
 
-`decisions/260803-2338_o_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`.
+`260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`.
 Four options, each costed by measurement. The three results that change the question:
 
 1. **The shape the review worried about is not at risk.** Both occurrences of
@@ -363,7 +363,7 @@ backwards in the places the review named. Now:
 
 Adding that last one is the only place I went past the letter of the task, which said not to
 *implement* finding 3. Leaving a live, trivially constructible bypass off a residual list I was
-editing anyway would have repeated `260802-2335`. Documenting it presupposes no option — it is
+editing anyway would have repeated `260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md`. Documenting it presupposes no option — it is
 also exactly what option 2 asks for, and it is one edit to remove if another option wins.
 
 ---
@@ -373,8 +373,8 @@ also exactly what option 2 asks for, and it is one edit to remove if another opt
 1. **`command cd build && echo pwned > rules/x.md` still allows.** `260803-1835`, measured,
    with its closure cost measured too (two pinned assertions, zero corpus rows). Six more
    entrances into it were opened by this change; its reach was not.
-2. **A `cd` that fails.** `260803-2238`, live, no flag, now on both residual lists and awaiting
-   `decisions/260803-2338_o_…`.
+2. **A `cd` that fails.** `260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md`, live, no flag, now on both residual lists and awaiting
+   `260803-2338_*_…`.
 3. **`builtin cd` is no longer modelled**, which is a small faithfulness loss: it really does
    run the builtin in both measured shells. Traded for carrying no per-shell assertion at all.
    If a future Turn wants it back, the argument it has to beat is in this file and on the

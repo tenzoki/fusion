@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, reviewing Turn 2 range `270c566..1d5eed6` (commit `337c01b`)
 **Affects:** `README-hooks.md:180` — the `lib/staging-drift.ts` row
-**Cross-references:** `shared/issues/260811-1141_c_any-workbench-file-whose-name-contains-commit-message-…` (the fix); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that reads this table and checks only that rows exist)
+**Cross-references:** `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-…` (the fix); `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:347` (the lint that reads this table and checks only that rows exist)
 
 ---
 
@@ -43,15 +43,15 @@ written from the module rather than from this record: a commit-message-shaped **
 artifact store owns, which is where the improvised `.commit-msg-tmp` lands. The row also says why
 the scoping is the class and not a detail of it — unscoped, the same name test claimed every
 authored record whose topic slug says "commit message" and the model was told to delete it (issue
-`260811-1141`) — so a future editor cannot drop the clause as noise.
+`260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`) — so a future editor cannot drop the clause as noise.
 
 The row additionally names the module's new `hasCommitMessageName` export and the two questions it
-serves, since issue `260811-1410` was closed in the same pass and added a second caller.
+serves, since issue `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` was closed in the same pass and added a second caller.
 
 On the record's second half — whether the row's prose should be pinned to the module the way
 `describeReach()` pins the domain-cascade paragraph — I did not decide it here. It is a question
 about the whole lib table, not this row: a generated block built for `staging-drift.ts` alone would
 leave the other two dozen rows carrying the same risk while looking like coverage, which is the
 point-solution `rules/critical-stance.md` §2 rules out. Filed as
-`shared/decisions/260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
+`260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
 with four options and the retrofit cost named as unmeasured.

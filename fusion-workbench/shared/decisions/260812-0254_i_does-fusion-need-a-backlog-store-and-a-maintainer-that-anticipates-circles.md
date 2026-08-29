@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (on the user's request)
-**Cross-references:** the Circle-placement decision filed alongside this one; `agents/playmaker.md` and `$PORTFOLIO`, which rank Circles that already exist; `agents/taskplanner.md` and `tasklist.md`, named as removal candidate 4 in `shared/analyses/260812-0022-...md`
+**Cross-references:** the Circle-placement decision filed alongside this one; `agents/playmaker.md` and `$PORTFOLIO`, which rank Circles that already exist; `agents/taskplanner.md` and `tasklist.md`, named as removal candidate 4 in `260812-0022-...md`
 
 ---
 

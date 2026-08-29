@@ -4,15 +4,15 @@ The three marker renames landed add-only, so HEAD carries each of the three reco
 
 **Severity:** Medium (no data loss on disk; the git-tracked workbench is internally contradictory, and a marker glob at HEAD returns the wrong open set)
 **Domain:** code
-**Filed by:** reconciler, Phase 3 pass of orchestrator session `260807-1917`
+**Filed by:** reconciler, Phase 3 pass of orchestrator session `260807-1917-orchestrator-session.md`
 **Affects:** commit `1d6c8b3`; `fusion-workbench/shared/decisions/`, `fusion-workbench/shared/issues/`; any consumer that reads the workbench out of git rather than off disk
-**Cross-references:** `shared/history/260807-1917-orchestrator-session.md` (the session that produced it); `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` and `shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` and `shared/issues/260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the three records affected)
+**Cross-references:** `260807-1917-orchestrator-session.md` (the session that produced it); `260807-0158_*_how-is-a-unique-record-filename-obtained.md` and `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` and `260807-0158_*_record-filenames-collide-on-the-minute-and-nothing-prevents-it.md` (the three records affected)
 
 ---
 
 ## The defect
 
-Session `260807-1917` performed three state transitions, each of which is a filename rename per
+Session `260807-1917-orchestrator-session.md` performed three state transitions, each of which is a filename rename per
 `rules/fusion-workbench-conventions.md` `## State Markers`:
 
 | Record | Transition |
@@ -101,7 +101,7 @@ git ls-tree -r --name-only HEAD -- fusion-workbench/shared/decisions | grep 2608
 ```
 
 ---
-Resolved: Fixed in commit `1a37563` (Turn 2 of session 260807-1917), which restaged the three
+Resolved: Fixed in commit `1a37563` (Turn 2 of session 260807-1917-orchestrator-session.md), which restaged the three
 directories with `git add -A` so the deletions of the old marker names landed alongside the
 additions. Verified at HEAD: `git ls-tree -r --name-only HEAD` over `shared/decisions` and
 `shared/issues` now returns each of the three records exactly once, under its current marker only.

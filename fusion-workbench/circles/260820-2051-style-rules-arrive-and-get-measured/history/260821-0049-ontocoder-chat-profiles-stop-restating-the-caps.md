@@ -3,7 +3,7 @@
 **Agent:** ontocoder
 **Date:** 2026-08-21 00:49
 **Circle:** `260820-2051-style-rules-arrive-and-get-measured`
-**Plan step:** 5 of `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
+**Plan step:** 5 of `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
 **Status:** Complete
 
 ---
@@ -79,7 +79,7 @@ bundled parser instead. It is a parse, not an assumption.
 
 ## The record this step closes, and what closing it does not claim
 
-`shared/issues/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`
+`260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`
 named three parts and all three are repaired at the surface the record measured. Its own verification
 grep read `rules/` and `stilwerk/`, which is the shipped text this step edited. Part 1 is the number,
 now absent and replaced by the citation. Part 2 is the German file's divergence beyond translation,
@@ -90,11 +90,11 @@ What closing it does not claim: the workbench copies every agent in this project
 carry the old text. That is deliberate. They are refreshed by the mechanism built in step 3 rather
 than by hand, at step 8, which is what makes step 3 the thing that carries this change. The
 divergence is the separate defect
-`shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
+`260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
 and it stays open.
 
 **One record whose premise this change moves without closing it.**
-`shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
+`260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 is about the shipped cap disagreeing with the loaded copy. The shipped files now name no cap at all,
 so its first term no longer exists in the form the record states. Its subject is still the
 workbench-copy divergence, so it is left untouched here rather than half-edited by a step whose file
@@ -104,19 +104,19 @@ list does not include it.
 
 Renaming the record turned `hooks/lib/__tests__/workbench-citation-lint.test.ts` red on four
 citations that spelled the old marker literally. Under
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 (option 1, and its `Implemented:` note) that is the gate working, and the remedy is the citation. All
 four were starred to `_*_`:
 
-- `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md:507`
-- `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md:43`
-- `shared/issues/260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md:15`
-- `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md:15`
+- `260820-2249_*_spec-style-rules-arrive-and-get-measured.md:507`
+- `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md:43`
+- `260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md:15`
+- `260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md:15`
 
 Two further files cite the record with the old marker and are outside the gate's corpus, so they were
 left as written: the review that filed it,
-`circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md:89`, and the curator run
-log `shared/history/260816-1251-curator-run.md:97`. Both are records of what was true when they were
+`260814-1419-coderev-curator-turn-3.md:89`, and the curator run
+log `260816-1251-curator-run.md:97`. Both are records of what was true when they were
 written, and rewriting a history log to match a later rename would erase the sequence rather than
 document it.
 
@@ -126,6 +126,6 @@ document it.
 
 - `/Users/k1/Projects/productive/fusion/stilwerk/chat-voice-de.yaml`
 - `/Users/k1/Projects/productive/fusion/stilwerk/chat-voice-en.yaml`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260814-1419_c_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` (renamed from `_o_`, `Resolved:` note appended)
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md` (step 5 marked `[DONE]`)
+- `/Users/k1/Projects/productive/fusion/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md` (renamed from `_o_`, `Resolved:` note appended)
+- `/Users/k1/Projects/productive/fusion/260820-2324_*_plan-style-rules-arrive-and-get-measured.md` (step 5 marked `[DONE]`)
 - the four citation repairs listed above

@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Datum:** 2026-08-07 09:55
-**Plan:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 8
-**Bindende Entscheidung:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 8
+**Bindende Entscheidung:** `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`
 **Nicht committet** — der Orchestrator committet.
 
 ## Was geändert wurde
@@ -57,7 +57,7 @@ entsteht in diesem Projekt trotzdem wörtlich, weil die Sprachregel in beiden Da
 **Zwei Zitate wurden umformuliert, damit sie im Konsumprojekt nicht ins Leere zeigen.** Der
 erste Entwurf zitierte `CLAUDE.md` "Problem 11" und die Circle-Verzeichnisse ohne Vorbehalt.
 `rules/critical-stance.md` wird in Konsumprojekte ausgeliefert, `fusion-workbench/` aber nie —
-das ist derselbe Fehler, den Befund 260805-1145 schon einmal für fünf Sätze aufgeschrieben hat.
+das ist derselbe Fehler, den Befund 260805-1145_*_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md schon einmal für fünf Sätze aufgeschrieben hat.
 Der Beleg nennt jetzt ausdrücklich, dass die Messungen in fusions eigener Workbench liegen; der
 Problem-11-Verweis nennt den Fall statt der Datei.
 
@@ -94,7 +94,7 @@ Die drei Tore, die dieser Schritt hätte reißen können, sind grün:
   bleibt bestehen und ist absichtlich nicht behoben — er ist als Beobachtung gemeldet.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The citation of `rules/critical-stance.md` section 4 in this file
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The citation of `rules/critical-stance.md` section 4 in this file
 spelled the heading with the em-dash it carried at `327d0b6`; `b393a45` (260821) repunctuated the
 heading to a comma and the citation went dead. It now carries the current spelling. Filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md`.
+`260821-0258_*_six-headings-were-renamed-in-the-earlier-commit-of-the-same-turn-with-no-census-and-two-citations-are-now-dead.md`.

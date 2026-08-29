@@ -6,7 +6,7 @@ Step 0i's `pointer-present` branch reads a count as an identity, and a stale poi
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 3
 **Affects:** `skills/setup/SKILL.md:359` (the first branch of the widened table)
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_step-0i-detects-multiple-active-only-when-the-pointer-is-absent-while-naming-the-whole-condition.md`, the widening this text arrived with; `agents/playmaker.md:95`, which defines `MISSING-POINTER`
+**Cross-references:** `260823-1318_*_step-0i-detects-multiple-active-only-when-the-pointer-is-absent-while-naming-the-whole-condition.md`, the widening this text arrived with; `agents/playmaker.md:95`, which defines `MISSING-POINTER`
 
 ---
 

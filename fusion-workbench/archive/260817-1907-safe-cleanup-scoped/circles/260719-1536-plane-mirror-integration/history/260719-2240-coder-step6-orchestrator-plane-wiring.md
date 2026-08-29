@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-19
 **Status:** Complete
-**Plan:** `circles/260719-1536-plane-mirror-integration/planning/260719-2223_p_plan-plane-bounded-bridge.md` (Step 6)
+**Plan:** `260719-2223_*_plan-plane-bounded-bridge.md` (Step 6)
 **File changed:** `agents/orchestrator.md` (body-only; frontmatter untouched)
 
 ## What was implemented

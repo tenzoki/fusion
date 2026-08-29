@@ -4,7 +4,7 @@ The drift check's cut helper is exercised by one input shape, and its last-entry
 `f0d9d60` replaced a byte-identity assertion with a JSON-aware text cut — four new functions, about 90 lines, in `hooks/lib/__tests__/config.test.ts`. Nothing tests them. Their only exercise is the one comparison they serve, against the one file shape that exists today: `orchestrator` as the first entry, alone on its line, terminated by a comma. `cutTopLevelEntry`'s second branch, the one that removes a last entry and the comma before it, is never reached by the suite at all.
 
 ---
-**Found by:** coderev, Turn-6 incremental review of `41c224c..d270666`, review file `circles/260801-1244-curator/reviews/260814-2128-coderev-curator-turn-6.md`.
+**Found by:** coderev, Turn-6 incremental review of `41c224c..d270666`, review file `260814-2128-coderev-curator-turn-6.md`.
 **Owner:** `coder`.
 **Severity:** Low — no live defect. The helper was transcribed and exercised against thirteen input shapes during this review and answered correctly on every one that can occur. This is about what happens when the file shape changes, not about today.
 **Affects:** `hooks/lib/__tests__/config.test.ts:1266-1373` (`PROJECT_SET_KEYS`, `endOfString`, `nextNonSpace`, `findTopLevelKey`, `endOfEntryValue`, `cutTopLevelEntry`, `withoutProjectSetKeys`).

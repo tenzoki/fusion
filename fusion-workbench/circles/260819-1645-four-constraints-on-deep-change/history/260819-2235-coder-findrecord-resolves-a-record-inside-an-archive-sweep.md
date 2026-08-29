@@ -5,7 +5,7 @@
 **Agent:** coder
 **Task:** Not a plan step. Opened by step 6's measurement, put to the user at the gate step 6's
 report opened, and answered there: fix shape 1 of
-`circles/260819-1645-four-constraints-on-deep-change/issues/260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md`.
+`260819-2213_*_the-citation-grammar-cannot-express-a-record-inside-archive-so-a-corrected-archive-path-still-scans-as-wrong-store.md`.
 **HEAD at start:** `ad7ffed`, with step 6's workbench repairs uncommitted in the tree.
 
 ## What changed
@@ -49,7 +49,7 @@ archiving end a record's life as a target". `skills/archive/SKILL.md` still neit
 
 Re-measured rather than taken from step 6's report, in both directions, on the **same tree** —
 the first before-run and the after-run straddled a record being filed into `shared/issues/`
-(`260819-2227_o_a-plan-step-can-state-a-narrow-reading-…`), so the before-run was repeated against
+(`260819-2227_*_a-plan-step-can-state-a-narrow-reading-…`), so the before-run was repeated against
 HEAD's copy of the helper with that record present. Both figures below are the identical corpus.
 
 Corpus: step 5's and step 6's wider reading, assembled from the tree and never from a written list
@@ -75,9 +75,9 @@ transitions occurred and nothing else moved:**
 
 **All 40 resolve.** Step 6 named 40 archive-class citations and 3 hits handed to step 7. The 42 that
 flipped are those 40 plus 2 of the 3 step-7 hits, so **every one of the 40 resolves, and none is
-left**. The 2 extra are the `shared/planning/260801-1122` pair
-(`circles/260801-1244-curator/issues/260814-1419_*_…:39` and
-`shared/issues/260812-1720_*_…:31`), which step 6 left because the token matched two candidates. The
+left**. The 2 extra are the `260801-1122` pair
+(`260814-1419_*_…:39` and
+`260812-1720_*_…:31`), which step 6 left because the token matched two candidates. The
 anchored branch now picks the archived planning record and drops the `shared/history/` one, because
 that one is in a different store. They resolve as a side effect of the tolerance rather than by any
 judgement this step made — the ambiguity step 6 declined to settle is now settled by the resolver,
@@ -95,7 +95,7 @@ circles/260801-1244-curator/issues/260814-2153_o_the-commit-that-closes-the-last
 ```
 
 This is the third of step 6's three, and it is correct that it stays: the wrong path **is** the
-statement. The line reads "Decision `260815-2109` cites this record as `shared/issues/260814-2153_o_…`.
+statement. The line reads "Decision `260815-2109` cites this record as `260814-2153_*_…`.
 No such path exists", and correcting the quoted path deletes what the sentence reports. Its target
 is a live Circle record, not an archived one, so nothing in this change could have touched it.
 
@@ -103,8 +103,8 @@ is a live Circle record, not an archived one, so nothing in this change could ha
 
 Not predicted by the dispatch or by step 6, and it is a real class rather than noise. 21 citations
 across 13 files cite an archived record with a literal marker that the archived copy does not carry
-— `shared/planning/260801-1122_o_spec-normative-consolidation.md` against
-`archive/260817-1907-safe-cleanup-scoped/shared/planning/260801-1122_c_…`, and 20 like it. Before
+— `260801-1122_*_spec-normative-consolidation.md` against
+`archive/260817-1907-safe-cleanup-scoped/260801-1122_*_…`, and 20 like it. Before
 this change the anchored branch missed the record, the wildcard retry missed it, and the
 "anywhere" fallback missed it too (that fallback keeps the literal marker in the basename matcher),
 so the hit came out `dangling` — the scanner said the record does not exist, when it exists under

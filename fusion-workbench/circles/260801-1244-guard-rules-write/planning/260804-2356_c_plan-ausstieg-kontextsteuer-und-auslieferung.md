@@ -2,15 +2,15 @@
 
 **Datum:** 2026-08-04
 **Status:** Complete — alle sechs Schritte (plus 4a) ausgeführt; Release v5.9.0 (`2eaee31`), v5.9.1 (`ec0561a`), v5.9.2 (`8586ba3`, Tag gepusht). Abschluss-Reconciliation 260805-2323, siehe `## Reconciliation Log`.
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`, C9 Schritt 3 und 4
+**Circle:** `260801-1244-guard-rules-write`
+**Spec:** `260801-1122_*_spec-normative-consolidation.md`, C9 Schritt 3 und 4
 **Executors:** coder, ontocoder (Default; `analyst` nicht gesetzt)
 
 ---
 
 ## Directive
 
-Der Circle liefert aus, was er gebaut hat, gibt die Kontextsteuer zurück, die er dabei aufgenommen hat, und schließt seine offenen Befunde nach einer Regel statt nach einer Liste. Der Shell-Klassifizierer wird nicht fortgesetzt; er hat mit `circles/260804-1205-shell-reachability-model` eine eigene Heimat.
+Der Circle liefert aus, was er gebaut hat, gibt die Kontextsteuer zurück, die er dabei aufgenommen hat, und schließt seine offenen Befunde nach einer Regel statt nach einer Liste. Der Shell-Klassifizierer wird nicht fortgesetzt; er hat mit `260804-1205-shell-reachability-model` eine eigene Heimat.
 
 Zwei Zahlen tragen den Plan. Jeder Agent lädt heute bei jedem Dispatch **145 144 Byte** Regeltext, gemessen an HEAD. Vor diesem Circle waren es **87 387 Byte**, gemessen am Commit `8c1c9f8` vom 2026-07-31. Der Circle, dessen Elternziel die Senkung dieser Steuer ist, hat sie um zwei Drittel erhöht.
 
@@ -99,7 +99,7 @@ Nicht neunzehn, und nicht ohne High. Die Zählung im Issue-Store des Circles erg
 | Medium | 5 |
 | Low | 10 |
 
-Die beiden echten High: `260804-1025` (die Entscheidungsprozedur sagt dem Agenten, das Modell bleibe exakt für genau die zwei Kommandos, die eine Regeldatei löschen) und `260804-1332` (`GIT_WORK_TREE` in der Umgebung verlagert den Schreibvorgang, der Klassifizierer liest keine Variable). `260804-1223` trägt die Schwere von `260804-1025` geerbt und ist dessen Beleg.
+Die beiden echten High: `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` (die Entscheidungsprozedur sagt dem Agenten, das Modell bleibe exakt für genau die zwei Kommandos, die eine Regeldatei löschen) und `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` (`GIT_WORK_TREE` in der Umgebung verlagert den Schreibvorgang, der Klassifizierer liest keine Variable). `260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md` trägt die Schwere von `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` geerbt und ist dessen Beleg.
 
 ---
 
@@ -243,13 +243,13 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 > heute stehenden Deckel. Suite: 1 541 von 1 543 grün, nur die zwei Deckel-Zusicherungen rot.
 
 - **Executor:** coder
-- **Dateien:** `rules/protected-path-discipline.md`, `rules/protected-path-internals.md` (der Plan schrieb `-coding`; Schritt 2 hat sie ohne Musterwort benannt), die Forensik-Analyse `analyses/260805-0717-protected-path-forensics.md` (dritte Ablage, die der Plan nicht kannte), `README-hooks.md`, die 18 Issue-Dateien unter `$OUT_ISSUE`
+- **Dateien:** `rules/protected-path-discipline.md`, `rules/protected-path-internals.md` (der Plan schrieb `-coding`; Schritt 2 hat sie ohne Musterwort benannt), die Forensik-Analyse `260805-0717-protected-path-forensics.md` (dritte Ablage, die der Plan nicht kannte), `README-hooks.md`, die 18 Issue-Dateien unter `$OUT_ISSUE`
 - **Änderung:** Jeder Befund wird genau einem Zweig zugeordnet.
-  - **Zweig A, Text korrigieren.** Der Befund macht einen ausgelieferten Satz falsch. Die Korrektur landet in der Hälfte, in die der Satz nach Schritt 2 gehört. Der Issue-Marker geht auf `_c_`. Erwartet trifft das die Dokumentationsbefunde, darunter `260804-1025` und sein Beleg `260804-1223`, `260804-1220`, `260804-1222`, `260804-1027`, `260804-1349`, `260804-1350`, `260804-1351`, `260803-1402` (**Schluss:** die Zuordnung folgt den Titeln und ist bis zur Ausführung eine Ableitung, keine Prüfung).
-  - **Zweig B, Lücke schreiben.** Der Befund verlangt, dass der Klassifizierer mehr kann. Er wird nicht behoben. Der Residuenabschnitt der Referenzdatei bekommt einen Eintrag, der die Lücke benennt, und der Issue-Marker bleibt `_o_` mit einer Zeile, die den Zielort nennt. `260804-1332` (`GIT_WORK_TREE`) gehört hierher, obwohl er High ist: er ist eine echte Umgehung, und die ehrliche Behandlung ist, sie zu dokumentieren, statt den Klassifizierer erneut zu öffnen. `260804-0839` wandert per Zitat zu `circles/260804-1205-shell-reachability-model`, wo die Entscheidung `260804-0947` ihn bereits verortet hat.
-  - Befunde, die weder einen Satz falsch machen noch den Klassifizierer betreffen, etwa `260803-1352` (Monitor-Zeilenhöhe) und `260804-1605`/`260804-1606` (Template und Untergrenze der Blockzahl), bleiben `_o_` und wandern in den Shared-Issue-Store, weil sie nicht zur Directive dieses Circles gehören.
+  - **Zweig A, Text korrigieren.** Der Befund macht einen ausgelieferten Satz falsch. Die Korrektur landet in der Hälfte, in die der Satz nach Schritt 2 gehört. Der Issue-Marker geht auf `_c_`. Erwartet trifft das die Dokumentationsbefunde, darunter `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` und sein Beleg `260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md`, `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md`, `260804-1222_*_the-segmentjoiner-docstring-says-both-shapes-are-open-and-cites-the-decision-by-a-filename-that-no-longer-exists.md`, `260804-1027_*_the-replacement-audit-recipe-went-stale-in-the-turn-after-it-was-written-and-omits-moved.md`, `260804-1349`, `260804-1350_*_the-dirstack-docstring-claims-the-compiler-enforces-a-depth-invariant-it-does-not-enforce.md`, `260804-1351_*_dir-builtins-carries-a-shell-dependent-fact-about-chdir-justified-by-the-wrong-reason.md`, `260803-1402` (**Schluss:** die Zuordnung folgt den Titeln und ist bis zur Ausführung eine Ableitung, keine Prüfung).
+  - **Zweig B, Lücke schreiben.** Der Befund verlangt, dass der Klassifizierer mehr kann. Er wird nicht behoben. Der Residuenabschnitt der Referenzdatei bekommt einen Eintrag, der die Lücke benennt, und der Issue-Marker bleibt `_o_` mit einer Zeile, die den Zielort nennt. `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` (`GIT_WORK_TREE`) gehört hierher, obwohl er High ist: er ist eine echte Umgehung, und die ehrliche Behandlung ist, sie zu dokumentieren, statt den Klassifizierer erneut zu öffnen. `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` wandert per Zitat zu `260804-1205-shell-reachability-model`, wo die Entscheidung `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md` ihn bereits verortet hat.
+  - Befunde, die weder einen Satz falsch machen noch den Klassifizierer betreffen, etwa `260803-1352` (Monitor-Zeilenhöhe) und `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`/`260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md` (Template und Untergrenze der Blockzahl), bleiben `_o_` und wandern in den Shared-Issue-Store, weil sie nicht zur Directive dieses Circles gehören.
 - **Abhängigkeiten:** Schritt 2
-- **Falsifikat:** Ein Befund passt in keinen der drei Zweige. Dann ist die Regel unvollständig, und der Schnitt wäre willkürlich statt begründet. Zweites Falsifikat: nach Schritt 3 behauptet ein Satz in einer der beiden Dateien eine Deckung, die `260804-1332` widerlegt. Dann ist Zweig B nicht ausgeführt, sondern nur behauptet.
+- **Falsifikat:** Ein Befund passt in keinen der drei Zweige. Dann ist die Regel unvollständig, und der Schnitt wäre willkürlich statt begründet. Zweites Falsifikat: nach Schritt 3 behauptet ein Satz in einer der beiden Dateien eine Deckung, die `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` widerlegt. Dann ist Zweig B nicht ausgeführt, sondern nur behauptet.
 - **Wirkung in unite cocreator:** Die dortigen Agenten lesen nach dem Release einen Regeltext, dessen Aussagen zum Verhalten des Hooks stimmen. Ohne Zweig B lesen sie eine Zusage, die `GIT_WORK_TREE` bricht, und die Folge ist genau die, gegen die die Datei geschrieben wurde: ein Agent, der dem Guard vertraut, wo er nicht trägt, oder einer, der ein Deny umgeht, weil der Text es nicht erklärt.
 
 ### 4. `## Stashes` und `## Commit lock` aus der Konventionsdatei lösen [DONE]
@@ -431,7 +431,7 @@ Abgeleitete Erwartung, nicht geschätzt: nach Schritt 2 stehen 104 600 Byte, nac
 
 ## Was der Plan nicht anfasst
 
-- **Den Shell-Klassifizierer.** `hooks/lib/shell-parse.ts` und `hooks/lib/bash-mutation-guard.ts` bleiben unverändert. `circles/260804-1205-shell-reachability-model` trägt die Fortsetzung und hat ihre eigene Grounding-Messung.
+- **Den Shell-Klassifizierer.** `hooks/lib/shell-parse.ts` und `hooks/lib/bash-mutation-guard.ts` bleiben unverändert. `260804-1205-shell-reachability-model` trägt die Fortsetzung und hat ihre eigene Grounding-Messung.
 - ~~**Die Konventionsdatei jenseits der zwei Abschnitte.**~~ **Überholt am 2026-08-05:** der Nutzer hat die Partitionierung angeordnet, nachdem Schritt 4 gemeldet hatte, dass kein Agent unter dem Release-Deckel liegt. Ausgeführt als **Schritt 4a**, dort dokumentiert. Der ursprüngliche Text lautete: „Ihre Partitionierung ist C9 Schritt 3 mit dem Nullentfernungsstandard, den die Spec in den Zeilen 485 bis 502 setzt. 59 303 Byte, 18 Dokumentabschnitte hinter 32 Überschriften, drei Templates, die ein Schnitt an `^## ` zerreißen würde, und 131 zitierende Zeilen in 42 Dateien." Die Sorge um die Templates war begründet und wurde durch Blockextraktion nach Zeilenbereichen statt durch einen Schnitt an `^## ` umgangen — die drei `##`-Überschriften innerhalb der Template-Codeblöcke sind unversehrt mitgewandert.
 - **Die Regeln, die klein sind.** `user-facing-output.md`, `git-branch-discipline.md`, `critical-stance.md`, `decision-record-examples.md` und `agent-setup.md` summieren sich auf 35 282 Byte und bleiben bei allen 16 Agenten. Sie zu zerlegen brächte pro Datei weniger, als der Zuschnitt an Zitatpflege kostet.
 
@@ -466,27 +466,27 @@ Was bleibt, ist ein zusammenhängender Rest: C1, C2, C3, C6 und C7 bilden den Ag
 | Der Zuschnitt nimmt einem Agenten still eine Regel, die er brauchte | Das Emissions-Golden macht jeden Verlust zu einer Diff-Zeile; die Zeigerzeile hält die Referenz auffindbar; die Zielgruppe wird nur dort begrenzt, wo ein Mechanismus sie begrenzt, nicht dort, wo eine Vermutung sie begrenzt |
 | Das Release geht raus und die Steuer sinkt trotzdem nicht, weil der Installationspfad nicht getroffen wurde | Falsifikat von Schritt 6 misst gegen `$FUSION_PLUGIN_ROOT` nach `fusion --update`, nicht gegen das Repo. Der heutige Stand belegt das Risiko: die installierte Kopie unter `~/.fusion` meldet `5.8.0` wie HEAD und trägt den Regelstand von `origin/main` |
 | Die 57 Commits enthalten Sicherheitsbehebungen, die durch das Warten auf den Zuschnitt länger unausgeliefert bleiben | Die Reihenfolge ist eine Entscheidung mit Preis, keine kostenlose. Der Preis ist benannt: Fallfaltung, das Fail-Open bei formgültigem Eskalations-JSON und `guard.enabled: false` bleiben bis Schritt 6 draußen. Der Gegenwert ist, dass kein konsumierendes Projekt 38 Prozent mehr Kontext lädt und ein zweites Release die Erhöhung zurücknehmen muss |
-| Zweig B verschiebt einen High-Befund in die Dokumentation, und er wird nie behoben | `260804-1332` bleibt `_o_` mit benanntem Zielort. Ein Residuum, das in der Referenzdatei steht, ist auffindbar; ein geschlossenes Issue wäre es nicht |
+| Zweig B verschiebt einen High-Befund in die Dokumentation, und er wird nie behoben | `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` bleibt `_o_` mit benanntem Zielort. Ein Residuum, das in der Referenzdatei steht, ist auffindbar; ein geschlossenes Issue wäre es nicht |
 
 ---
 
 ## Offene Fragen
 
 - [x] Trägt die Referenzdatei den Mustertreffer über ihren Namen (`protected-path-internals-coding.md`) oder über ein neues Musterwort in der `case`-Tabelle? Der Name ist eine Zeile weniger Code, das Musterwort ist ehrlicher benannt. Der Executor entscheidet und begründet.
-  **Beantwortet durch Ausführung** (Reconciler 260805-2323): die Datei heißt `rules/protected-path-internals.md` ohne Musterwort im Namen; die Zuordnung an `coder`/`coderev`/`bugfixer` läuft über die Emissionstabelle in `bin/fusion-rules`. Begründung und Belege: `history/260805-0717-coder-step2-drei-schichten.md`.
-- [x] Bekommt `260804-1332` (`GIT_WORK_TREE`) außer dem Residuen-Eintrag auch einen eigenen anticipated Circle, oder gehört er in `260804-1205-shell-reachability-model`? Er ist kein Reachability-Problem, sondern ein Problem der Umgebungsvariablen, also vermutlich ein eigener.
-  **Beantwortet auf der Platte** (Reconciler 260805-2323): der Nachfolgeplan routet ihn nach `circles/260804-1205-shell-reachability-model` — `planning/260804-1633_p_plan-c5b-remediation-and-ship.md` `## What this plan does not close`, erste Zeile, mit Kostenbegründung. Das Issue bleibt `_o_` mit benanntem Zielort, wie Zweig B es verlangt.
+  **Beantwortet durch Ausführung** (Reconciler 260805-2323): die Datei heißt `rules/protected-path-internals.md` ohne Musterwort im Namen; die Zuordnung an `coder`/`coderev`/`bugfixer` läuft über die Emissionstabelle in `bin/fusion-rules`. Begründung und Belege: `260805-0717-coder-step2-drei-schichten.md`.
+- [x] Bekommt `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` (`GIT_WORK_TREE`) außer dem Residuen-Eintrag auch einen eigenen anticipated Circle, oder gehört er in `260804-1205-shell-reachability-model`? Er ist kein Reachability-Problem, sondern ein Problem der Umgebungsvariablen, also vermutlich ein eigener.
+  **Beantwortet auf der Platte** (Reconciler 260805-2323): der Nachfolgeplan routet ihn nach `260804-1205-shell-reachability-model` — `260804-1633_*_plan-c5b-remediation-and-ship.md` `## What this plan does not close`, erste Zeile, mit Kostenbegründung. Das Issue bleibt `_o_` mit benanntem Zielort, wie Zweig B es verlangt.
 - [x] Bleibt die Versionsnummer bei `5.9.0`, oder rechtfertigt die Projektkonfiguration `fusion-guard.json` als neue Nutzerfläche einen Sprung auf `6.0.0`?
   **Beantwortet durch Ausführung** (Reconciler 260805-2323): die Nummer blieb in der 5.9.x-Linie — v5.9.0 (`2eaee31`), v5.9.1 (`ec0561a`), v5.9.2 (`8586ba3` + Tag). Kein 6.0.0-Sprung.
 - [ ] Wer misst die Zahl auf der unite-cocreator-Seite nach? Von dieser Maschine aus ist `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator` nicht erreichbar, das Falsifikat von Schritt 6 braucht also einen Lauf dort.
-  **Bleibt offen — Nutzer-Aktion, jetzt als Issue getrackt** (Reconciler 260805-2323): `issues/260805-2323_o_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md`. Die plugin-seitige Hälfte (simulierter Installationspfad, alle 16 Agenten auf den Golden-Zahlen) ist grün, Beleg `history/260805-1200-coder-step6-release-vorbereitet.md`.
+  **Bleibt offen — Nutzer-Aktion, jetzt als Issue getrackt** (Reconciler 260805-2323): `260805-2323_*_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md`. Die plugin-seitige Hälfte (simulierter Installationspfad, alle 16 Agenten auf den Golden-Zahlen) ist grün, Beleg `260805-1200-coder-step6-release-vorbereitet.md`.
 
 ---
 
 ## Reconciliation Log
 
-### 260805-2323 — Reconciler, Domäne `code`, Abschluss-Reconciliation, Session `history/260805-2117-orchestrator-session.md`
+### 260805-2323 — Reconciler, Domäne `code`, Abschluss-Reconciliation, Session `260805-2117-orchestrator-session.md`
 
 **Plan geschlossen.** Die Schritte 2, 3, 4 und 4a trugen ihre `[DONE]`-Blöcke bereits; die Schritte 1, 5 und 6 waren faktisch ausgeführt, aber unmarkiert — nachgetragen mit Commit-Belegen (`658653a`/`3163281`, `199ef22`, `f41c1f6`/`2eaee31`/`ec0561a`/`8586ba3`+`4a8fea0`). Drei der vier offenen Fragen sind auf der Platte beantwortet und abgehakt; die vierte (unite-cocreator-Messung) bleibt offen und ist als eigenes Issue getrackt, damit sie die Schließung überlebt. Nichts Ausführbares verbleibt. Header auf Complete, Marker `_o_` → `_c_`.
 
-**Ein Befund aus der Verifikation:** `npx vitest run` an HEAD `def351e` ist um **einen** Test rot — das Emissions-Golden aus Schritt 1 pinnt `protected-path-discipline.md` auf 19 943 Byte, der Step-7-Doku-Commit `373f5ed` des Nachfolgeplans hat sie auf 20 925 wachsen lassen, ohne das Golden absichtlich zu regenerieren. Budget- und Deckel-Zusicherungen bestehen weiter; der Test tut also genau, wofür Schritt 1 ihn gebaut hat. Gefiled als `issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md` (coder, mechanisch).
+**Ein Befund aus der Verifikation:** `npx vitest run` an HEAD `def351e` ist um **einen** Test rot — das Emissions-Golden aus Schritt 1 pinnt `protected-path-discipline.md` auf 19 943 Byte, der Step-7-Doku-Commit `373f5ed` des Nachfolgeplans hat sie auf 20 925 wachsen lassen, ohne das Golden absichtlich zu regenerieren. Budget- und Deckel-Zusicherungen bestehen weiter; der Test tut also genau, wofür Schritt 1 ihn gebaut hat. Gefiled als `260805-2323_*_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md` (coder, mechanisch).

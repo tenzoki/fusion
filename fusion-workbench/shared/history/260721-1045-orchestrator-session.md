@@ -1,4 +1,4 @@
-# Orchestrator Session — 260721-1045
+# Orchestrator Session — 260721-1045-orchestrator-session.md
 
 **Directive:** Adopt the deferred Plane "Step 6" hook into `bin/fusion-plane`: natively upsert the full Circle spec as an idempotent Plane comment (opt-in, default off), fired on every non-deferred push. Generic capability only; the consumer-side `/new-fe-feature` fusion-key awareness stays project-side. (Trigger: Martin's feedback verifying the comments-endpoint body shape — the sole blocker that had kept the hook deferred.)
 **Mode:** custom → shaped → planned → plan-execution (single Turn)
@@ -83,7 +83,7 @@ defect against the heuristic if it shows up a second time.
 ## Pipeline
 
 - **Phase 0** — feedback from Martin → user chose "Adopt into fusion (opt-in)".
-- **Phase 0b** — shaper wrote spec `shared/planning/260722-1943_o_spec-plane-spec-comment.md` (5 forks put to user, all accepted); conceptrev diagram verdict clean; spec gate approved. Planner wrote plan `260722-2021` (5 steps, all coder); conceptrev clean; plan gate approved (noop-refresh reading of fork 1 confirmed).
+- **Phase 0b** — shaper wrote spec `260722-1943_*_spec-plane-spec-comment.md` (5 forks put to user, all accepted); conceptrev diagram verdict clean; spec gate approved. Planner wrote plan `260722-2021` (5 steps, all coder); conceptrev clean; plan gate approved (noop-refresh reading of fork 1 confirmed).
 - **Phase 2 (Turn 1)** — 5 tasks, all committed except S5 (decision record). coderev verdict clean, 0 new issues. Coherence gate → Continue.
 - **Phase 3** — reconciler verdict coherent, no rebalance; fixed cosmetic marker drift.
 
@@ -99,7 +99,7 @@ defect against the heuristic if it shows up a second time.
 
 ## Remaining Work
 
-- Open issue `shared/issues/260722-2227_o_jq-results-fallback-throws-on-bare-array-in-three-helpers.md` — latent/low, pre-existing, not caused by this feature. Recommended one-line fix `(.results? // .)` across `comment_id_for_marker` / `state_uuid` / `label_uuid` in a separate focused pass.
+- Open issue `260722-2227_*_jq-results-fallback-throws-on-bare-array-in-three-helpers.md` — latent/low, pre-existing, not caused by this feature. Recommended one-line fix `(.results? // .)` across `comment_id_for_marker` / `state_uuid` / `label_uuid` in a separate focused pass.
 - The feature is code-complete and validated offline (315 tests, `claude plugin validate .` passes). Live verification against a real Plane instance (enabling `spec_comment: true` and confirming the comment upsert round-trip) is the natural next real-world check — this repo has no live instance wired.
 - Not committed to git: the fusion-workbench artifacts (untracked in this repo) — plan/decision/issue/history/dashboard/events. The 4 code commits + version bump are on `main`, unpushed.
 
@@ -115,14 +115,14 @@ defect against the heuristic if it shows up a second time.
 ## Coherence
 <!-- RECONCILER-OWNED -->
 
-*Appended by reconciler 260723-0712 (domain: code). Per-Circle three-edge verdict at session end.*
+*Appended by reconciler 260723-0712-reconciliation.md (domain: code). Per-Circle three-edge verdict at session end.*
 
 **Verdict:** coherent
 
 **Edges:**
-- Artifact↔Grounding: 4/4 claimed commits verified on disk touching exactly the claimed files; plugin.json at 5.6.0 as claimed; 315/315 tests pass as claimed; spec + plan + decision + parent decision all exist. 1 open reviewer issue (260722-2227_o_, latent/low, pre-existing, correctly deferred; coderev 0 new issues). Drift was tracking-marker only (plan S4/S5 inline [DONE] missing → fixed; decision's stale `_p_` plan cross-ref → fixed), no code drift.
+- Artifact↔Grounding: 4/4 claimed commits verified on disk touching exactly the claimed files; plugin.json at 5.6.0 as claimed; 315/315 tests pass as claimed; spec + plan + decision + parent decision all exist. 1 open reviewer issue (260722-2227_*_jq-results-fallback-throws-on-bare-array-in-three-helpers.md, latent/low, pre-existing, correctly deferred; coderev 0 new issues). Drift was tracking-marker only (plan S4/S5 inline [DONE] missing → fixed; decision's stale `_p_` plan cross-ref → fixed), no code drift.
 - Artifact↔Directive: commits 4d95a91, bf5dc5e, d75afed, dd6b092 (the whole 1525585..HEAD walk) map 1:1 to the 5 plan steps and move directly toward the Directive (opt-in idempotent Plane spec-comment, generic-only, default off). No orthogonal or away commits.
-- Grounding↔Directive: 6 shared decisions (4 `_a_`, 2 `_i_`), 0 open/conflicting. The new `260722-2230_i_` records and realises the chosen architecture consistent with the Directive; parent `260719-2313_i_` preserved, not reopened. The 4 `_a_` Plane-architecture decisions do not touch this Directive's surface.
+- Grounding↔Directive: 6 shared decisions (4 `_a_`, 2 `_i_`), 0 open/conflicting. The new `260722-2230_*_thin-mirror-vs-comment-borne-full-spec.md` records and realises the chosen architecture consistent with the Directive; parent `260719-2313_*_round-trip-write-overwrites-origin-story-description.md` preserved, not reopened. The 4 `_a_` Plane-architecture decisions do not touch this Directive's surface.
 
 **Rebalance recommendation:** none
 

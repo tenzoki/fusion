@@ -3,10 +3,10 @@
 ---
 **Severity:** Medium — it is the description a user reads before installing, and it is wrong in five clauses
 **Domain:** data
-**Filed by:** reconciler, Phase-3 pass `history/260815-1913-reconciliation.md`, HEAD `9306f0a`
+**Filed by:** reconciler, Phase-3 pass `260815-1913-reconciliation.md`, HEAD `9306f0a`
 **Owner:** the user — the file is in another repository and no plan step can reach it
 **Affects:** `/Users/k1/Projects/productive/F03-CLAUDE-plugin-marketplace/claude-plugins/.claude-plugin/marketplace.json`, the fusion entry's `description` and `keywords`
-**Cross-references:** `history/260815-1855-coder-step15-release-preparation.md` (where it was found and recorded); `planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md` step 15; `CLAUDE.md` `## Release process` steps 2–4
+**Cross-references:** `260815-1855-coder-step15-release-preparation.md` (where it was found and recorded); `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 15; `CLAUDE.md` `## Release process` steps 2–4
 
 ---
 
@@ -32,7 +32,7 @@ get lost. This record is that file; the history entry keeps the measurement.
 
 ## What closes it
 
-The steps are already written out at `history/260815-1855-coder-step15-release-preparation.md:205`
+The steps are already written out at `260815-1855-coder-step15-release-preparation.md:205`
 as a numbered hand-off: pull the clone, set the fusion `version` to `9.0.0`, rewrite the
 `description` and drop `churn-detection` from `keywords`, commit and push both repositories, and tag
 `v9.0.0` in this one. The tag does not exist yet either — `git tag --list` stops at `v8.2.0` — which

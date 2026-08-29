@@ -1,4 +1,4 @@
-# Orchestrator Session — 260706-1851
+# Orchestrator Session — 260706-1851-orchestrator-session.md
 
 **Directive:** Investigate why user-communicating agents (esp. the consultant) produce convoluted "Sprachmüll" in direct chat; user suspected the recent Kauderwelsch fix only touched written/long-form output.
 **Mode:** custom (root-cause analysis → single-agent fix)
@@ -15,9 +15,9 @@
 
 ## Artifacts
 
-- Report: `analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`
-- Issue (closed): `issues/260706-1902[c]-consultant-chat-misrouted-to-longform-voice.md`
-- Decision (implemented, Option 1): `decisions/260706-1902[i]-consultant-chat-longform-boundary.md`
+- Report: `260706-1902-user-facing-agents-garbled-language-rootcause.md`
+- Issue (closed): `260706-1902[c]-consultant-chat-misrouted-to-longform-voice.md`
+- Decision (implemented, Option 1): `260706-1902[i]-consultant-chat-longform-boundary.md`
 
 ## Follow-up for the user
 
@@ -38,14 +38,14 @@
 - Corrected an earlier imprecision in my own diagnosis (I initially half-attributed the guard-off to FUSION_PLUGIN_ROOT; the actual cause is the matcher gap).
 - Rejected the user's `~/.zshrc` idea (global, hardcoded path, breaks with multiple installs). Chose launcher-export instead.
 - **Fix (coder, commit `dbf98f6`):** matcher widened to include Bash; `install.sh` generated launcher now `export FUSION_PLUGIN_ROOT="$FUSION_DIR"` before exec; new `hooks/lib/__tests__/hooks-wiring.test.ts` regression test; version 3.24.1 → 3.25.0. 91 hooks tests pass; `claude plugin validate` passed. guard.ts/dist needed no change (Bash dispatch already compiled since `c04bcec`).
-- **Coderev:** ship-with-notes. Core fix correct + safe. Two non-blocking side-effects filed (running guard on every Bash): halt-escalation counter reset (`260707-0750[o]`, medium) and events.jsonl flooding (`260707-0751[o]`, low).
+- **Coderev:** ship-with-notes. Core fix correct + safe. Two non-blocking side-effects filed (running guard on every Bash): halt-escalation counter reset (`260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md`, medium) and events.jsonl flooding (`260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md`, low).
 - Closed both original issues (`260707-0616[c]` ×2).
 
 ### Artifacts (second topic)
 
 - Commit: `dbf98f6`
-- Closed: `issues/260707-0616[c]-guard-hook-not-wired-to-bash-matcher.md`, `issues/260707-0616[c]-fusion-plugin-root-unset-in-agent-bash.md`
-- Open (coderev side-effects, awaiting user decision): `issues/260707-0750[o]-bash-allow-resets-block-counter-defeats-halt-escalation.md`, `issues/260707-0751[o]-guard-allow-bash-events-flood-events-jsonl.md`
+- Closed: `260707-0616[c]-guard-hook-not-wired-to-bash-matcher.md`, `260707-0616[c]-fusion-plugin-root-unset-in-agent-bash.md`
+- Open (coderev side-effects, awaiting user decision): `260707-0750[o]-bash-allow-resets-block-counter-defeats-halt-escalation.md`, `260707-0751[o]-guard-allow-bash-events-flood-events-jsonl.md`
 
 ### Follow-up for the user (second topic)
 

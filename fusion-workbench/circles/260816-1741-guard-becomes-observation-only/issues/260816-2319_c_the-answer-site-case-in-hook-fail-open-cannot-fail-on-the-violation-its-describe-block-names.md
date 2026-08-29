@@ -62,7 +62,7 @@ there, because the next person to reorder `guard.ts:202` will see it green.
 **Cross-references:**
 - `hooks/lib/fail-open.ts:127-135`, `:150-157`, `:171-192`
 - `hooks/guard.ts:172-176`, `:202-208`, `:211-223`
-- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 9, "the integration cases that need a deny are re-pointed onto the surviving `answer` call on the allow path"
+- `260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 9, "the integration cases that need a deny are re-pointed onto the surviving `answer` call on the allow path"
 
 ---
 Reconciliation 2026-08-17, Phase 3. **Left OPEN. Nothing was changed, not even the comment.**
@@ -90,7 +90,7 @@ Reconciliation 2026-08-17, second Phase-3 pass. **Left OPEN, re-measured rather 
 unchanged since the first pass.** `hooks/lib/__tests__/hook-fail-open.test.ts:300-321` still carries
 the four original assertions on the `answer` site and no bound in its comment. The suite is green
 whole at HEAD `d0f13fa` (35 files, 653 tests), which is this record's point: green is what it
-reports either way. Left open by the same user decision that left `260816-2320` open on 2026-08-17.
+reports either way. Left open by the same user decision that left `260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md` open on 2026-08-17.
 
 ---
 

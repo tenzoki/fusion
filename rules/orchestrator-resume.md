@@ -1,6 +1,6 @@
 # Orchestrator — the interrupted-session resume procedure
 
-**Provenance:** Partitioned out of `agents/orchestrator.md` Setup STEP 1 per decision `shared/decisions/260827-1210_*_do-the-rare-orchestrator-flows-stay-in-every-sessions-context.md`.
+**Provenance:** Partitioned out of `agents/orchestrator.md` Setup STEP 1 per decision `260827-1210_*_do-the-rare-orchestrator-flows-stay-in-every-sessions-context.md`.
 
 Read when Setup STEP 1 finds `fusion-workbench/agentstate.yaml`. The invariants (what a resumed session inherits, the no-second-`turn_start` rule) stay in the prompt; this is the procedure.
 
@@ -31,7 +31,7 @@ Read when Setup STEP 1 finds `fusion-workbench/agentstate.yaml`. The invariants 
      - How far the session got — the Turn count and commit count derived in step 3, and tasks completed vs total from `work_queue`
      - Which task was active when the session stopped
      - Which tasks remain (with their status)
-     - The plan file and user directive, if any
+     - The plan file and user directive, if any (the Circle record's `**Active spec/plan:**` is a storeless basename; resolve it with `find "$WORKBENCH" -name '<basename>'`)
   5. Ask the user what to do, in chat — do NOT skip this:
      Lead the presentation with one line of the state — "Interrupted <when>: Turn <N>, <X> of <Y> tasks done, last commit <subject>" — and put the derived detail under a trailing Details block, after the question, not before it.
 

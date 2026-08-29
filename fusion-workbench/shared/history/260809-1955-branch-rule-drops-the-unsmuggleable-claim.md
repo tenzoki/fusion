@@ -7,7 +7,7 @@
 ## What was asked
 
 Task 10 of `fusion-workbench/tasklist.md` (`I:260809-1226-overclaim`), from
-`shared/issues/260809-1226_p_the-rule-still-promises-a-branch-switch-cannot-be-smuggled-into-a-compound-command.md`.
+`260809-1226_*_the-rule-still-promises-a-branch-switch-cannot-be-smuggled-into-a-compound-command.md`.
 Last in its queue on purpose: it is rule text written against a classifier that changed
 four times in the two hours before it (`15eacb0`, `69a2d00`, `378b80a`, `b2e3d12`), and
 writing it earlier would have described a guard that was about to move.
@@ -40,7 +40,7 @@ correctly conclude that every line of a heredoc body became a candidate command.
 false, and the file carried no heredoc text to correct. It gets a sentence rather than
 silence for two reasons: the newline claim is wrong without it, and the allow it describes
 is one an agent meets in practice — writing a runbook that documents this very policy is the
-case `260809-1111` was filed from. The text says data regions are blanked ahead of the
+case `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` was filed from. The text says data regions are blanked ahead of the
 split, that an unquoted delimiter is the one carve-out keeping `$(…)` and backtick regions,
 and gives the pair that shows the line: a body line reading `git switch main` is written to
 the file and allowed, `$(git switch main)` in the same body is denied.
@@ -61,7 +61,7 @@ falsified, and `15eacb0` closed it. Two additions rather than a correction:
 
 ### 4. `## Why` counts the defects as they now stand
 
-It named `260809-1110` as a measured defect standing open, which `15eacb0` made false. All
+It named `260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md` as a measured defect standing open, which `15eacb0` made false. All
 three of that kind (`1105`, `1106`, `1110`) are now closed and are listed as closed, with
 the "the classifier can err inside the form it classifies" conclusion kept — it is still
 true, and it is what the section exists to concede.

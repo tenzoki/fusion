@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** `shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the answered decision that ordered the migration); `circles/260716-1847-workbench-umbau/_c_circle.md` line 49 (the recorded promotion); `shared/planning/260717-1918_*_skill-glob-nomatch-zsh-hardening.md` (the file); `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)`, final paragraph
+**Cross-references:** `260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md` (the answered decision that ordered the migration); `260716-1847-workbench-umbau` line 49 (the recorded promotion); `260717-1918_*_skill-glob-nomatch-zsh-hardening.md` (the file); `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)`, final paragraph
 
 ---
 
@@ -14,10 +14,10 @@ The user chose migration over leaving the existing Circles alone. Measurement sa
 has exactly one candidate, and that candidate was moved out of its Circle **on purpose**, with a
 reason recorded at the time.
 
-`shared/planning/260717-1918_*_skill-glob-nomatch-zsh-hardening.md` was written on 2026-07-17
+`260717-1918_*_skill-glob-nomatch-zsh-hardening.md` was written on 2026-07-17
 while Circle `260716-1847-workbench-umbau` was active. The evidence is unambiguous and mechanical:
 its sibling session-history file, written by the same planner run under the same `fusion-paths`
-call, sits at `circles/260716-1847-workbench-umbau/history/260717-1918-planner-session.md`. The
+call, sits at `260717-1918-planner-session.md`. The
 other six files in `shared/planning/` each have their sibling in `shared/history/`, which is what
 "no Circle was active" looks like on disk.
 
@@ -119,7 +119,7 @@ record.
 ---
 Answered: this record `## Answer, 260812-1745` — the file stays, the promotion is recorded as the
 Origin Rule's own tolerated exception, and the migration moves nothing.
-Implemented: `shared/planning/260717-1918_*_skill-glob-nomatch-zsh-hardening.md`, header `**Origin
+Implemented: `260717-1918_*_skill-glob-nomatch-zsh-hardening.md`, header `**Origin
 — why this plan sits in shared/planning/ …**` — the file stays, and the promotion is now recorded
 on the artifact a reader opens, not only in this record and the closed Circle's `## Closure note`.
 Nothing was moved and no citation was rewritten, so the answer's "the migration moves nothing" is

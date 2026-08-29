@@ -3,7 +3,7 @@
 **Date:** 2026-08-25 22:14
 **Type:** Feasibility
 **Status:** Complete
-**Requested by:** orchestrator, as step 1 of `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_o_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+**Requested by:** orchestrator, as step 1 of `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
 **Filed by:** analyst, Kai Stalmann <ks@qantr.com>
 
 ## Question
@@ -183,7 +183,7 @@ Read in this repository, for the two cited claims only:
 - `hooks/guard.ts:83-88` and `hooks/tracker.ts:131-137`, the two `interface HookInput` declarations of `session_id`
 - `hooks/session-start.ts:88-92`, the `## Channel` note
 - `hooks/hooks.json`, the three SessionStart commands and the PreToolUse/PostToolUse matcher
-- `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_o_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, steps 1 and 11
+- `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, steps 1 and 11
 
 ## Open Questions
 

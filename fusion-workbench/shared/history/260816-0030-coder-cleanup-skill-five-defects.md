@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 2026-08-16
-**Sources:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1631_c_cleanup-dry-run-promises-no-writes-and-no-dispatch-and-step-5-does-both.md`, `…/260815-1631_c_cleanups-notes-still-tell-the-assistant-to-run-it-end-to-end-after-the-gate-landed.md`, `…/260815-1633_c_cleanup-step-8-tells-the-user-to-run-fusion-curate-for-a-pass-step-5-of-the-same-run-performs.md`, `…/260815-1635_c_cleanups-step-8-report-carries-two-different-bullets-under-one-label.md`
+**Sources:** `260815-1631_*_cleanup-dry-run-promises-no-writes-and-no-dispatch-and-step-5-does-both.md`, `…/260815-1631_c_cleanups-notes-still-tell-the-assistant-to-run-it-end-to-end-after-the-gate-landed.md`, `…/260815-1633_c_cleanup-step-8-tells-the-user-to-run-fusion-curate-for-a-pass-step-5-of-the-same-run-performs.md`, `…/260815-1635_c_cleanups-step-8-report-carries-two-different-bullets-under-one-label.md`
 
 ---
 

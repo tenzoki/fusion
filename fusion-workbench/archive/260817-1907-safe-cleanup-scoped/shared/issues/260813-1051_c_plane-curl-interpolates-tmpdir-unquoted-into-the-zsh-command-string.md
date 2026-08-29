@@ -4,9 +4,9 @@
 
 **Severity:** Medium — a space in `TMPDIR` kills every request silently; a metacharacter in it executes arbitrary commands. Both need control of the environment, which bounds the reach.
 **Domain:** code
-**Filed by:** coderev, reviewing `7342fdd` (`shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md`)
+**Filed by:** coderev, reviewing `7342fdd` (`260813-1051-coderev-plane-curl-response-via-temp-file.md`)
 **Affects:** `bin/fusion-plane:361` (new in `7342fdd`), `bin/fusion-plane:365` (pre-existing, same shape)
-**Cross-references:** `shared/issues/260813-0828_c_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md` (the fix this reviews)
+**Cross-references:** `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md` (the fix this reviews)
 
 ---
 

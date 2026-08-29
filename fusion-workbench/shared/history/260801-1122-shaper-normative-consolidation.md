@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-01 11:22
 **Agent:** shaper (user-direct mode)
-**Output:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`
+**Output:** `260801-1122_*_spec-normative-consolidation.md`
 
 ## Request
 
@@ -10,9 +10,9 @@ Specify a new fusion capability that consolidates the three normative surfaces t
 
 ## What was read
 
-- `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` in full
-- `shared/decisions/260801-1020_a_where-does-normative-consistency-live.md`, `..._a_may-any-fusion-writer-touch-rules.md`, `..._o_provenance-header-on-rule-files.md`
-- `shared/history/260801-0936-orchestrator-session.md` `## Design decisions (session, 260801)`
+- `260801-1020-normative-surface-drift-gap-analysis.md` in full
+- `260801-1020_*_where-does-normative-consistency-live.md`, `..._a_may-any-fusion-writer-touch-rules.md`, `..._o_provenance-header-on-rule-files.md`
+- `260801-0936-orchestrator-session.md` `## Design decisions (session, 260801)`
 - `skills/revise-claude-md/SKILL.md`, `skills/cleanup/SKILL.md` (steps 3-7), `agents/reconciler.md`
 - `rules/context-manifest.md`, `rules/context-lean-claude-md.md`, `rules/fusion-workbench-conventions.md:220-399`
 - `hooks/guard.ts:60-340`, `hooks/lib/config.ts`, `hooks/config.json`, `bin/fusion-rules:145-305`

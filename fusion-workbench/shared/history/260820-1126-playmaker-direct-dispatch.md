@@ -1,4 +1,4 @@
-# Playmaker run 260820-1126 — portfolio refresh after the four-constraints Circle closed
+# Playmaker run 260820-1126-playmaker-direct-dispatch.md — portfolio refresh after the four-constraints Circle closed
 
 **Status:** Complete
 **Agent:** playmaker
@@ -37,7 +37,7 @@ filename:
 `.active-circle` absent, no record at `_t_`. Pointer state clean.
 
 **The store has no non-terminal Circle.** `260819-1645-four-constraints-on-deep-change`, recommended
-by the previous run at 260819-1732, was activated, ran two Turns and closed coherent this morning.
+by the previous run at 260819-1732-playmaker-direct-dispatch.md, was activated, ran two Turns and closed coherent this morning.
 
 ## Ranking — anticipated Circles
 
@@ -67,9 +67,9 @@ and retired on 260814-1733), one `_p_` (`260814-1733_*_bounded-executor-dispatch
 - **Handed to `## Warnings` as defect- or decision-shaped: 0.** Nothing in the live entries reads as
   a defect or an open question misfiled as an idea.
 
-**Top-ranked: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`** — the only live idea
+**Top-ranked: `260814-1733_*_bounded-executor-dispatches.md`** — the only live idea
 that can be shaped today without a user act first; its evidence is on disk and already sized by
-`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`.
+`260812-0303-simplify-speed-and-why-rules-do-not-hold.md`.
 
 ### Backlog writes performed
 
@@ -87,10 +87,10 @@ user two later acts where leaving it open costs one.
 ### The ranking question that did move
 
 The second entry's obstruction changed for the first time in five refreshes.
-`shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
-is deferred until three lint records are settled. Two now are: `260810-0502` closed and archived,
-`260810-0503` closed. Only
-`shared/issues/260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+is deferred until three lint records are settled. Two now are: `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md` closed and archived,
+`260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` closed. Only
+`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 remains open, at Low severity. The entry stays at `_o_` because reviving a deferred decision is the
 user's own act and this run holds no confirmation, but the distance to that act is now one small
 defect rather than three open records. It is carried in the portfolio as the run's most actionable
@@ -107,13 +107,13 @@ finding.
   defect.
 - The next archive pass can redden a blocking gate. `hooks/lib/__tests__/workbench-citation-lint.test.ts`
   was armed by the Circle that just closed, its corpus excludes `archive/`, and
-  `shared/issues/260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md`
+  `260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md`
   is open. A second gate is exposed the same way through
-  `shared/issues/260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`.
+  `260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`.
 - Four dangling citations in the backlog store, all in the closed observations entry, two of them
   written by a previous playmaker run's split note.
 - The backlog store sits outside the citation gate's corpus on an open question.
-- `circles/260819-1645-four-constraints-on-deep-change/_*_circle.md` carries two `## Turn log`
+- `260819-1645-four-constraints-on-deep-change` carries two `## Turn log`
   headings with this agent's appends between them.
 - Three open decisions in terminal Circle stores, none with a carrier.
 - Open defect volume 153, against 152 at the previous refresh.

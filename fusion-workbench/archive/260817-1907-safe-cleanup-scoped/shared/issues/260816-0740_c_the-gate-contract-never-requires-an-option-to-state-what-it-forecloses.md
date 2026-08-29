@@ -18,10 +18,10 @@ rule-file gate.
 of the register defect filed alongside it: a prompt with every em-dash removed is exactly as
 undecidable as before.
 **Filed in the shared store** per the Origin Rule: no Circle is active.
-**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`
+**Cross-references:** `260816-0740-rhetorical-register-of-agent-output.md`
 finding 13 (the rhetorical diagnosis, the two latent decisions in the reported sample, and a
 worked replacement prompt);
-`shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+`260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
 (the independent register defect in the same output).
 
 **The mechanism to carry it already exists and is unused.** The `AskUserQuestion` option schema
@@ -59,7 +59,7 @@ different fixes.
 ---
 Resolved: `rules/user-facing-output.md` `## Questions and gates` gained two bullets, applied by
 `curator` at the user's approval on 2026-08-16 and recorded in
-`shared/history/260816-1251-curator-run.md`. The section now carries five required properties
+`260816-1251-curator-run.md`. The section now carries five required properties
 where it carried three.
 
 **The proposed clause landed in modified form, and the modifications are the interesting part.**
@@ -113,5 +113,5 @@ Verification: `cd hooks && npm test`, exit 0, 40 files, 764 tests, run by the or
 independently of the executors.
 
 Not closed by this record: the register defect
-`260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
+`260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
 which is independent and stays open.

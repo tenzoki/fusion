@@ -50,7 +50,7 @@ optional. The derivation that replaced it is wrong in two of its own edge cases,
 to a *Continue / Restart* decision the user makes about a session's state.
 
 **Cross-cutting.** The block exists twice, in two files, with no shared owner. That is the
-duplication class decision `260810-2145` created `bin/fusion-source-root` to end after a correction
+duplication class decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` created `bin/fusion-source-root` to end after a correction
 to one of four copies reached two and left two standing. A fix applied to one copy here will drift
 from the other in exactly the same way.
 

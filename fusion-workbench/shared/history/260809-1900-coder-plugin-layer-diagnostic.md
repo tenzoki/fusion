@@ -1,7 +1,7 @@
 # coder — an absent plugin config layer now produces a diagnostic
 
 **Task:** `I:260809-1101-plugin-layer` (tasklist entry 5)
-**Source:** `shared/issues/260809-1101_p_an-absent-plugin-config-layer-yields-an-empty-protected-list-with-no-diagnostic.md`
+**Source:** `260809-1101_*_an-absent-plugin-config-layer-yields-an-empty-protected-list-with-no-diagnostic.md`
 **Status:** Complete
 
 ## What changed

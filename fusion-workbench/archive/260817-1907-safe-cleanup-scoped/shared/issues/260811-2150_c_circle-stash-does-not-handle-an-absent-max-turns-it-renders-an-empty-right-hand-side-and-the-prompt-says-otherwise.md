@@ -7,7 +7,7 @@
 **Filed by:** coderev (Turn 4 review, range `b261d83..951c809`)
 **Affects:** `agents/orchestrator.md:125`, `agents/orchestrator.md:1013`, `hooks/lib/__tests__/turn-budget-lint.test.ts:193-199`, `skills/circle-stash/SKILL.md:126-133`, `skills/circle-stash/SKILL.md:172`
 **Cross-references:**
-`shared/issues/260811-1712_c_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
+`260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
 
 ---
 

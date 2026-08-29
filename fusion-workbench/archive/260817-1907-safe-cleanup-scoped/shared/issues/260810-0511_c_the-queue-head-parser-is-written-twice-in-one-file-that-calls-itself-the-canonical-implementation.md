@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `agents/orchestrator.md` — Phase 4 step 4 (the retirement snippet) and `### The queue's ground` → `#### Reading a queue`
 **Cross-references:** commit `ff70d3a`; `hooks/lib/__tests__/queue-ground-lint.test.ts:187-199`
 
@@ -57,7 +57,7 @@ State the derivation once, in `#### Reading a queue`, and have Phase 4 step 4 ci
 treatment the two skills were given. The retirement then needs only the comparison, not the extraction.
 
 If the check is factored out to a rule file instead (proposed in
-`260810-0501_o_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`), this
+`260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`), this
 duplicate should go in the same change rather than be carried across.
 
 Extend the lint's "one canonical implementation" assertion to count occurrences of the parser inside
@@ -76,18 +76,18 @@ still carries the two-alternative `grep -oE`. Run against this repository's own 
 canonical copy returns `none` and the retirement copy returns `.active-circle`.
 
 Nine hours later a review record was filed against "the check" on the strength of the wrong copy —
-`shared/issues/260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`,
+`260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`,
 whose first witness reports a `STALE` verdict the canonical snippet could not have produced. That
 record is annotated with the measurement.
 
 So the cost of the duplication is no longer hypothetical: it is one false verdict recorded as
 measured fact, in the same file set the queue is built from. Queue entry 29 asks for the
-derivation to be stated once and cited from Phase 4. Doing that closes `260811-1915` in the same
+derivation to be stated once and cited from Phase 4. Doing that closes `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md` in the same
 edit; patching the Phase 4 copy in place does not.
 
-Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+Reconciled by `reconciler`, `260811-2330-reconciliation.md`.
 
 ---
 Resolved: Both copies are gone: agents/orchestrator.md no longer carries the Active Circle extraction at either site, removed with the persisted tasklist and the queue-ground lint in dd312eb.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

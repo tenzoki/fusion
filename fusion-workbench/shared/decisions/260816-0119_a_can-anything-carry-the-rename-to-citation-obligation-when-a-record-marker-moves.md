@@ -4,13 +4,13 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** coder, session `260816-0119`
-**Cross-references:** `shared/issues/260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` (item 2, the part this record carries out of a closed defect); `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the wildcard form this class is supposed to be closed by); `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that catches the breakage after the fact)
+**Cross-references:** `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` (item 2, the part this record carries out of a closed defect); `260806-0015_*_zitierform-fuer-workbench-records.md` (the wildcard form this class is supposed to be closed by); `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that catches the breakage after the fact)
 
 ---
 
 ## Question
 
-Issue `260811-1755` closed on its mechanical half — the reference lint now reads `hooks/*.ts` as
+Issue `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` closed on its mechanical half — the reference lint now reads `hooks/*.ts` as
 well as `hooks/lib/*.ts`, so a stale marker citation in an entrypoint reddens the suite. Its second
 item was explicitly not a fix and was left for a decision record: **should anything carry the
 obligation to follow a marker rename into the text that cites the renamed record, and if so what?**
@@ -18,7 +18,7 @@ obligation to follow a marker rename into the text that cites the renamed record
 The asymmetry the record names is the whole reason it is a question. The renaming party is the only
 party that ever holds both the old and the new name; the citing files are found by one `grep`. Yet
 today nothing connects the two, so the coupling is discovered by a red suite in some later session
-rather than by the session that caused it. Twice in one session in `260811-1755`, and a live third
+rather than by the session that caused it. Twice in one session in `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md`, and a live third
 instance stands at `hooks/guard.ts:307`, which resolves only because the record it cites has not
 moved yet.
 
@@ -32,13 +32,13 @@ NOT answering: more surface is now watched, so the same rename breaks the suite 
    - Pros: no new mechanism, no new surface; the failure is already loud and already actionable.
    - Cons: the cost lands on a session that did not cause it; a one-character mismatch reddens a
      750-test suite, and behind `agents/coder.md`'s report shape every executor dispatched in that
-     state reports `blocked` regardless of what it achieved (`shared/issues/260810-0703_*_…`).
+     state reports `blocked` regardless of what it achieved (`260810-0703_*_…`).
 2. **A step in the marker-transition convention.** `rules/fusion-workbench-conventions.md` gains a
    line: after renaming a record's marker, grep the shipped surface for the old name and rewrite
    each hit to the wildcard form.
    - Pros: puts the obligation on the only party holding both names; costs one `grep`; no code.
    - Cons: a written obligation nobody executes is how this class recurred in the first place — the
-     wildcard form was already ratified when both `260811-1755` failures were written.
+     wildcard form was already ratified when both `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` failures were written.
 3. **A helper the renaming party runs.** A `bin/` script that takes the old and new names, finds the
    citing files and rewrites the marker position to `_*_`.
    - Pros: mechanical, so it does not depend on the rename being careful; would have prevented every
@@ -63,7 +63,7 @@ about how fusion wants to spend surface, not a technical question. Recorded here
 inside a closed defect.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: nothing new; the reference lint remains the whole mechanism. No fusion mechanism rewrites shipped text. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: nothing new; the reference lint remains the whole mechanism. No fusion mechanism rewrites shipped text. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:
@@ -86,8 +86,8 @@ realised". `rules/fusion-workbench-conventions.md` `### Decision files` defines 
 citation of a commit or a path, and a decision to build nothing has neither.
 
 *The class.* This is the same shape as
-`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`, whose
-reconciliation note of 260731-2324 left the identical judgement to the user: promote on
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`, whose
+reconciliation note of 260731-2324-reconciliation.md left the identical judgement to the user: promote on
 pre-existing surfaces, or accept that a no-op answer never reaches implementation. Two records in
 `shared/decisions/` stood in it when this was written.
 
@@ -97,7 +97,7 @@ implementation no longer needs an answer: a superseded record is not waiting to 
 does not settle the class, because the reason it left is unrelated to what made it hard. It does
 mean this record is now the only member, and that a class of one is a thinner basis for deciding
 the general question than a class of two. It is **not** the class that
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
+`260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md`
 asks about — there the ground was removed after the answer; here the answer was never a thing to
 build — and conflating the two would widen that record's question while it is still open.
 
@@ -107,8 +107,8 @@ the grep for the old name itself; a change that removes or narrows the lint remo
 standing behind this answer.
 
 ---
-**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **A worked instance landed in Circle `260824-0530-record-attribution-and-circle-claim`, and it was carried by hand.**
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, HEAD `cf7a5b0`; log `260824-1637-reconciliation.md`) — marker unchanged at `_a_`. **A worked instance landed in Circle `260824-0530-record-attribution-and-circle-claim`, and it was carried by hand.**
 
-That Circle made the wildcarded citation form normative (`rules/fusion-workbench-conventions.md` `## Filename Patterns`, commit `2b055a0`) and then, at `0f5889e`, moved `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` from `_a_` to `_i_`. Two citations of that record in `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` named the old marker literally, and they were rewritten to the `_*_` form at `6d439ba` — one commit *before* the rename that would have staled them, by a writer who saw it coming rather than by any mechanism.
+That Circle made the wildcarded citation form normative (`rules/fusion-workbench-conventions.md` `## Filename Patterns`, commit `2b055a0`) and then, at `0f5889e`, moved `260807-0158_*_how-is-a-unique-record-filename-obtained.md` from `_a_` to `_i_`. Two citations of that record in `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` named the old marker literally, and they were rewritten to the `_*_` form at `6d439ba` — one commit *before* the rename that would have staled them, by a writer who saw it coming rather than by any mechanism.
 
 So the obligation was met, and it was met by a person reading ahead. Nothing carried it. The new rule text makes the correct form normative and still names no carrier, which is precisely this record's question.

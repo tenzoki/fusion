@@ -53,7 +53,7 @@ The other two rows were re-verified at the same pair and are exact: `agents/`
 289 958 -> 460 292 and hook test lines 19 838 -> 25 897.
 
 **Residual, deliberately not fixed.** The second site is
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1818-coder-extend-failing-growth-cap.md`,
+`260815-1818-coder-extend-failing-growth-cap.md`,
 a history log. It records what was reported at the time, and history logs are
 not rewritten after the fact; the correction lives here and in the test file
 instead. Closing on that basis — reopen if the Circle wants the step report

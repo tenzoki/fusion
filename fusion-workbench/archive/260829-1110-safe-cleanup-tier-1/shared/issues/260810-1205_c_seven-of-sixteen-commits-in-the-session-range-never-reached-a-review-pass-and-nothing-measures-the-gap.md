@@ -4,12 +4,12 @@
 
 **Severity:** Medium — the two review passes that ran were thorough and both found real defects, including a release blocker; the problem is that their coverage of the range was never checked against the range, and the session's own reporting understated the hole by a factor of seven
 **Domain:** code
-**Filed by:** reconciler (final reconciliation of session `260810-0844`, range `18b6094..ed87d87`)
+**Filed by:** reconciler (final reconciliation of session `260810-0844-orchestrator-session.md`, range `18b6094..ed87d87`)
 **Affects:** `agents/orchestrator.md` (the Turn loop's review dispatch), `fusion-workbench/orchestrator-live.md` (`## Notes`), `fusion-workbench/agentstate.yaml` (carries no review-coverage field)
 **Cross-references:**
-`shared/reviews/260810-0939-coderev-turn-3-range-18b6094-to-a7c2b03.md`;
-`shared/reviews/260810-1032-coderev-turn-4-range-7f617b1-to-7ddacbc.md`;
-`shared/issues/260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md` (the same accountability gap, from the other side — a pass that ran and left no file)
+`260810-0939-coderev-turn-3-range-18b6094-to-a7c2b03.md`;
+`260810-1032-coderev-turn-4-range-7f617b1-to-7ddacbc.md`;
+`260808-0030_*_the-coderev-pass-filed-four-issues-and-left-no-review-file.md` (the same accountability gap, from the other side — a pass that ran and left no file)
 
 ---
 
@@ -29,7 +29,7 @@ Seven code-bearing commits — `ac68437`, `72b798e`, `df75004`, `8796ade`, `49e5
 
 **Turn 2's omission is the one worth naming, because it was declared rather than overlooked.** The `0939` pass states in its own header: *"the concurrent edits in `agents/orchestrator.md`, `skills/next/SKILL.md` and `skills/circle-stash/SKILL.md` were not opened."* Those are exactly the files `ac68437` and `72b798e` changed. The reviewer correctly reported the boundary of its scope; nothing downstream read that sentence and re-queued the files once the concurrent tasks finished. The scope note went into a file and stopped there.
 
-That `72b798e` needed a second look is not hypothetical: `260810-0947_c_...` — a real defect in the same change — was filed not by a reviewer but by the T6 executor reporting outside its own scope, and fixed three commits later in `8796ade`, which itself was never reviewed either.
+That `72b798e` needed a second look is not hypothetical: `260810-0947_*_...` — a real defect in the same change — was filed not by a reviewer but by the T6 executor reporting outside its own scope, and fixed three commits later in `8796ade`, which itself was never reviewed either.
 
 **The reporting understated it.** `orchestrator-live.md` `## Notes` reads *"Turn 5's own commit has had no review pass"* — one commit, when the true figure is seven across three Turns. The session did not hide the gap; it measured it against the last Turn instead of against the range.
 
@@ -43,7 +43,7 @@ The release process in `CLAUDE.md` has a validate gate, a smoke test and a guard
 
 1. **Report the gap correctly.** Whatever the session summary says about review coverage should be derived from the review files' own ranges against `git rev-list <session-start>..HEAD`, not from which Turn ran last.
 2. **Re-queue a declared out-of-scope file.** When a reviewer names files it did not open because a concurrent task held them, that list is an obligation for the next pass, not a footnote. The next dispatch's scope should be the union of its own Turn and the previous pass's declared exclusions.
-3. **Decide whether a release may go out over an unreviewed range at all.** This is a decision, not a defect, and is not filed here — it belongs beside `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, which asks the same shape of question about lints.
+3. **Decide whether a release may go out over an unreviewed range at all.** This is a decision, not a defect, and is not filed here — it belongs beside `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, which asks the same shape of question about lints.
 
 ## Acceptance criteria
 
@@ -52,12 +52,12 @@ The release process in `CLAUDE.md` has a validate gate, a smoke test and a guard
 
 ---
 
-**Resolved:** task `I:260810-1205-review-coverage`, coder, 260811-1058. History:
-`shared/history/260811-1058-review-coverage-measured-against-the-range.md`.
+**Resolved:** task `I:260810-1205-review-coverage`, coder, 260811-1058-review-coverage-measured-against-the-range.md. History:
+`260811-1058-review-coverage-measured-against-the-range.md`.
 
 Both in-scope pieces landed. Piece 3 — whether a release may go out over an uncovered range
 — was **not built**, as the record and the queue entry both required; it remains an unfiled
-decision belonging beside `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+decision belonging beside `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
 
 **One finding the fix had to close before it could start.** This record says the data needed
 to tile the range is on disk "in the filenames", and it is — but not in a form a program can

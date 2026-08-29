@@ -1,9 +1,9 @@
 # Coder — plan step 1: extract the shell parser, add quoted-word capture
 
-**Date:** 260801-1355
+**Date:** 260801-1355_coder_shell-parse-extraction.md
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 1 only
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 1 only
 **Status:** Complete
 
 ## What was implemented
@@ -78,7 +78,7 @@ heredoc body is still classified as code.
 - `hooks/lib/shell-parse.ts` — new
 - `hooks/lib/git-branch-guard.ts` — 304 lines removed, imports + re-exports added
 - `hooks/lib/__tests__/shell-parse.test.ts` — new, 30 cases
-- `fusion-workbench/circles/260801-1244-guard-bash-inspection/planning/260801-1253_o_plan-guard-bash-inspection.md` — step 1 marked `[DONE]`
+- `260801-1253_*_plan-guard-bash-inspection.md` — step 1 marked `[DONE]`
 
 Not committed — the orchestrator commits.
 

@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** coder (step 15, release preparation)
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/reviews/260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md:155` (the finding, deliberately not filed by its reviewer); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 8 (the fold that caused it); `rules/context-manifest.md` (the route that exists today)
+**Cross-references:** `260815-1501-coderev-turn-3-conceptrev-investigator-domain-values.md:155` (the finding, deliberately not filed by its reviewer); `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 8 (the fold that caused it); `rules/context-manifest.md` (the route that exists today)
 
 ---
 
@@ -66,7 +66,7 @@ grep -n 'PATTERNS=' bin/fusion-rules
 
 **The one fact that would settle it is still missing, and the record says what to do about that.** Its recommendation ends: *"If the installed base is likewise zero, this question is moot and should be closed rather than answered."* Inside this repository the number is confirmed zero — `./rules/` has never carried an investigator capture layout. The reachable consuming projects are the same two this project has measured against before (`krk`, `unite-co-creator`), and a single `ls ./rules/investigator-*` on each answers the question outright. That measurement is cheaper than the decision and has not been taken.
 
-Note also that the sibling record `circles/260801-1244-guard-rules-write/issues/260805-2323_*_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md` is open on a measurement against one of those same machines. One visit discharges both.
+Note also that the sibling record `260805-2323_*_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md` is open on a measurement against one of those same machines. One visit discharges both.
 
 ---
 Answered: option 3 — both. `analyst` gets a `PATTERNS` arm so a small project-local rule loads by filename the way the investigator's did, and the context manifest stays the documented route for anything larger. Answered by the user 2026-08-20.

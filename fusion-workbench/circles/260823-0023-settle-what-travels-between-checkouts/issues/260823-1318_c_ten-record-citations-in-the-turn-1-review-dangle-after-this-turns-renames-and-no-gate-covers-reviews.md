@@ -5,8 +5,8 @@ Ten `Record:` citations in the Turn 1 review dangle after this Turn's renames, a
 **Severity:** High
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 2
-**Affects:** `fusion-workbench/circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1110-coderev-c2-turn-1.md:36`, `:41`, `:46`, `:49`, `:52`, `:57`, `:69`, `:74`, `:77`, `:80`
-**Cross-references:** `shared/issues/260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`, the record this Circle already appended a marker-move instance to; `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, which defines the corpus
+**Affects:** `260823-1110-coderev-c2-turn-1.md:36`, `:41`, `:46`, `:49`, `:52`, `:57`, `:69`, `:74`, `:77`, `:80`
+**Cross-references:** `260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`, the record this Circle already appended a marker-move instance to; `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, which defines the corpus
 
 ---
 
@@ -31,7 +31,7 @@ reviews/260823-1110-coderev-c2-turn-1.md:80  Record: `260823-1110_o_the-done-rep
 
 The workbench citation gate's corpus predicate selects Circle records, open issues, live decisions, live plans and the portfolio, and nothing else (`hooks/lib/__tests__/workbench-citation-lint.test.ts:163-172`). A file under a Circle's `reviews/` store matches none of the five, so the densest single concentration of record citations this Circle produced sits outside the gate entirely.
 
-`18974bc` met the same fault one file away and repaired it. Its `Also seen:` line sat in `shared/issues/260818-1637_o_…`, an open issue, so the gate went red and the pass corrected it to the `_*_` wildcard. The commit message calls that "the second instance of it in this range". Ten further instances stood in the file that same commit names as its own `Source:`, and the green suite said nothing, because the corpus does not reach it.
+`18974bc` met the same fault one file away and repaired it. Its `Also seen:` line sat in `260818-1637_*_…`, an open issue, so the gate went red and the pass corrected it to the `_*_` wildcard. The commit message calls that "the second instance of it in this range". Ten further instances stood in the file that same commit names as its own `Source:`, and the green suite said nothing, because the corpus does not reach it.
 
 ## Verified
 
@@ -49,7 +49,7 @@ Then decide whether a review file belongs in the citation gate's corpus. It is a
 ---
 
 Resolved: 2026-08-23 by coder. All fourteen hard-marker record citations in
-`circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1110-coderev-c2-turn-1.md`
+`260823-1110-coderev-c2-turn-1.md`
 were rewritten to the `_*_` wildcard form: the ten this record names, plus four it does not.
 
 **The four extra were resolving at filing and were repaired anyway**, because each is a pointer that
@@ -58,13 +58,13 @@ the plan by `_o_`, and the plan is renamed to `_c_` in this same pass, so leavin
 this record's own fault committed inside its repair. `:64` names the one Turn 1 record still open,
 `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`,
 which dangles the day it closes. `:57` carries a second citation beside its `Record:` line, of
-`shared/issues/260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`.
+`260818-1637_*_no-gate-resolves-a-path-line-citation-and-thirteen-drifted-in-a-single-change.md`.
 `:76` is the fourth, an elided form spelling `_c_` for
 `260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`, which a slug
 search does not find and the citation parser still reads as a pointer.
 
 **The Turn 2 review was repaired in the same pass**, seven citations,
-`circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1318-coderev-c2-turn-2.md`.
+`260823-1318-coderev-c2-turn-2.md`.
 Six of them are the `Record:` lines naming the six records this pass closes, so the pass would
 otherwise have broken the record of its own findings while repairing the record of the previous ones.
 That is the recurrence this finding warns about, one Turn later, and it was met before it landed
@@ -73,7 +73,7 @@ rather than after.
 **The corpus question this record raises second is deliberately left open.** No gate's corpus was
 widened, no predicate was touched, and no test file changed for this item. The corpus is a user's
 recorded answer under
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
 and the cost this record itself names (a review's citations go stale on every successful repair pass,
 so admitting reviews reddens the suite unless the closing pass corrects the review in the same commit)
 is a trade nobody has chosen. It stays a question for the user.

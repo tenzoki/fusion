@@ -6,7 +6,7 @@ session's first Turn. Both were written by `b00a7a4`.
 **Severity:** Medium — the difference is user-visible at the very start of a session: either an
 `AskUserQuestion` gate fires before any work has been done, or it does not.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `agents/orchestrator.md:465`, `:655`
 
@@ -32,7 +32,7 @@ the two sentences as written cannot both be executed.
 State the Turn-1 exemption at `:465`, where the step runs, in one clause. The reasoning stays at `:655`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:465` still states the check-in with only the budget qualifier while `:653` puts the first question at the start of Turn 2. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:465` still states the check-in with only the budget qualifier while `:653` puts the first question at the start of Turn 2. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — Phase 2 step 1 states the Turn-1 exemption in one clause; agents/orchestrator.md:545

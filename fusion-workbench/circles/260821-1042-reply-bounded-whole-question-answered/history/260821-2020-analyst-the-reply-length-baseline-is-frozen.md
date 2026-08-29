@@ -2,14 +2,14 @@
 
 **Status:** Complete
 **Agent:** analyst (domain `code`)
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
-**Dispatched by:** orchestrator, for step 1 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
+**Dispatched by:** orchestrator, for step 1 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **HEAD at time of work:** `da88e68`
 
 ## What this run produced
 
 One analysis report,
-`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md`.
+`260821-2020-reply-length-baseline.md`.
 It carries the counting command, the corpus and its window boundary, three readings of that corpus,
 the full frequency distribution of reply lengths, and a calibration section separating what was run
 from what was inferred.
@@ -61,5 +61,5 @@ names the three statements that are inference and the one that is speculation.
 
 ## Files written
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md`
+- `260821-2020-reply-length-baseline.md`
 - this history file

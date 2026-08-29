@@ -8,9 +8,9 @@
 **Affects:** `rules/protected-path-discipline.md:216` (the section heading, which promises predictiveness) and `:240-241` (question 1)
 **Kind:** Question 1 was TRUE when `cc012fc` wrote it. `613d6fd` added a second source of an unknown working directory that is not a directory builtin, and did not update the procedure.
 **Cross-references:**
-`issues/260804-1025_o_…` and `issues/260804-1223_o_…` (**the same section, question 3, the "model stays exact" clause — close all three in one edit, they are one paragraph**),
-`issues/260804-1220_o_…` (the same section, the stale question count),
-`issues/260804-1347_o_…` (the deny reason the reader meets when question 1 misleads them).
+`260804-1025_*_…` and `260804-1223_*_…` (**the same section, question 3, the "model stays exact" clause — close all three in one edit, they are one paragraph**),
+`260804-1220_*_…` (the same section, the stale question count),
+`260804-1347_*_…` (the deny reason the reader meets when question 1 misleads them).
 
 ---
 
@@ -56,12 +56,12 @@ ALLOW   git -C $D rm /tmp/junk           # absolute operand — nothing to place
 The section is loaded into every agent's context in every consuming project, and it is the
 part of the file an agent is told to reason **from** when its command is not in the table. A
 false negative in question 1 is the reassuring direction: the reader concludes the rule
-cannot touch their command, meets a deny anyway, and — per `issues/260804-1347_o_…` — is then
+cannot touch their command, meets a deny anyway, and — per `260804-1347_*_…` — is then
 handed a remedy naming a `cd` their command does not contain. Question 1 and the deny reason
 mislead in the same direction, one after the other.
 
 This is the third clause of the same four-question block to be falsified: question 3 by
-`260804-1025` / `260804-1223`, the question count by `260804-1220`, and now question 1. The
+`260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` / `260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md`, the question count by `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md`, and now question 1. The
 pattern is worth naming in the fix: the block is written as if the working directory can only
 be lost by a directory builtin, and the module has three other ways to lose it
 (a modifier flag, a wrapper hop, an ambient `CDPATH`) plus, now, a fourth (a git directory
@@ -81,8 +81,8 @@ question:
   declarations rather than by remembering to.
 - Add the two rows above to the illustration block as `DENY`, labelled as the non-builtin
   cause.
-- Take the `260804-1025` / `260804-1223` edit in the same pass. All three findings are in one
-  paragraph, and three separate edits to one paragraph is how the count in `260804-1220` went
+- Take the `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` / `260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md` edit in the same pass. All three findings are in one
+  paragraph, and three separate edits to one paragraph is how the count in `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md` went
   stale in the first place.
 
 ## Test coverage this needs
@@ -91,7 +91,7 @@ A documentation rule cannot be pinned by the guard's suite directly. What can be
 what would have caught this, is the **cause enumeration**: a test that asserts every
 constructor of `Cwd`'s `unknown` arm reachable from `classifyBashMutation` has a named cause
 and a distinct reason string. That test fails today for the git-directory route
-(`issues/260804-1347_o_…`) and would fail again for the next unnamed one.
+(`260804-1347_*_…`) and would fail again for the next unnamed one.
 
 ## Anti-vacuity
 
@@ -127,6 +127,6 @@ illustration block would put the correction where the misled reader is not: afte
 split that block is the forensics analysis, which no agent loads. The causes are named
 inside question 1 instead, in the core file every agent carries.
 
-**Taken in one pass with `260804-1025`, `260804-1223` and `260804-1220`**, as this issue
+**Taken in one pass with `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`, `260804-1223_*_260804-1025s-reproduction-is-stale-but-its-clause-still-overclaims-here-are-the-commands-that-replace-it.md` and `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md`**, as this issue
 asked. All four are one paragraph, and three separate edits to one paragraph is how the
-count in `260804-1220` went stale in the first place.
+count in `260804-1220_*_the-illustration-block-still-points-at-three-questions-in-a-procedure-that-now-has-four.md` went stale in the first place.

@@ -78,9 +78,9 @@ from a premise the file below it contradicts.
 
 ## Cross-references
 
-- `fusion-workbench/shared/issues/260809-2023_c_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`
-- `fusion-workbench/shared/decisions/260810-0920_i_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`
-- Filed by `coderev`, review `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md`
+- `260809-2023_*_the-churn-map-is-keyed-by-the-sessions-cwd-and-never-pruned-so-setups-thrashing-read-ranks-dead-paths.md`
+- `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`
+- Filed by `coderev`, review `260810-1632-coderev-turn-1-range-430d73a-to-head.md`
 
 ---
 Resolved: moot, not fixed. The churn stand-down and the comment that justified it went with the churn heatmap in `a69d56e` (Circle `260815-0007-...`, step 4). Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913: `hooks/tracker.ts:449` now reads "Nothing stands down here", and the surviving stand-down in `guard.ts` is a different mechanism asking cwd for its own reason.

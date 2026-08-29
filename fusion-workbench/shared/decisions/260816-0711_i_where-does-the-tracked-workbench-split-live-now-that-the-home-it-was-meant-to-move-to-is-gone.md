@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** reconciler
-**Cross-references:** `shared/issues/260810-0504_c_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md` (part 3, closed as moot-by-circumstance and untracked until this record); `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`; `shared/issues/260816-0136_p_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`
+**Cross-references:** `260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md` (part 3, closed as moot-by-circumstance and untracked until this record); `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`; `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`
 
 ---
 
@@ -15,7 +15,7 @@ tracks`, about 4 800 bytes — is on the always-on rule surface, loaded by every
 dispatch. Its content is consumed by whoever writes a project's `.gitignore` and by the archive step
 of `/fusion:cleanup`. No executor agent applies it.
 
-Defect `260810-0504` part 3 said so and named the remedy the file's own header table records four
+Defect `260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md` part 3 said so and named the remedy the file's own header table records four
 times over: partition the topic into its own authoring home and emit it to a derived audience. That
 remedy is unavailable as written. The proposed home, `rules/workbench-stash-and-lock.md`, no longer
 exists — the commit lock became `rules/commit-lock.md` and the stash half left with the two stash
@@ -23,7 +23,7 @@ skills on 2026-08-15. The defect was closed with parts 1 and 2 fixed and part 3 
 "unaddressed by design", and nothing has carried it since.
 
 It is worth answering now rather than later for two reasons. The subsection is still being edited —
-`0a514e6` and `f73dfe4` both rewrote it this session, and `260816-0136` is open against a third
+`0a514e6` and `f73dfe4` both rewrote it this session, and `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md` is open against a third
 sentence in it — so every edit pays the always-on multiplier. And the always-on rule set carries a
 growth bound with finite head-room, measured this session, which makes "where does this text live" a
 question with a price attached rather than a matter of taste.
@@ -66,21 +66,21 @@ question with a price attached rather than a matter of taste.
 
 None from the filing agent. The byte case for option 2 is real and the fifth-partition case against
 it is also real, and this project has stated both principles as binding without ever ranking them.
-Recorded here so that part 3 of `260810-0504` stops living inside a closed defect, which is the same
-filing gap the reconciler found on `260810-2149` in the same pass.
+Recorded here so that part 3 of `260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md` stops living inside a closed defect, which is the same
+filing gap the reconciler found on `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md` in the same pass.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 2: move to rules/workbench-tracking.md with a pointer left behind; the emission target is a prerequisite filed as its own decision. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 2: move to rules/workbench-tracking.md with a pointer left behind; the emission target is a prerequisite filed as its own decision. User answered inline 2026-08-16.
 Implemented:
 Deferred:
 Superseded by:
 Retired:
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `rules/workbench-tracking.md` does not exist and the subsection is still in `rules/fusion-workbench-conventions.md`. The move is blocked on its own prerequisite, the open record `260816-1707_o_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`, which is the pairing this pass records rather than treating either as independently stalled.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `rules/workbench-tracking.md` does not exist and the subsection is still in `rules/fusion-workbench-conventions.md`. The move is blocked on its own prerequisite, the open record `260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`, which is the pairing this pass records rather than treating either as independently stalled.
 
 ---
-Implemented: `rules/workbench-tracking.md` — the subsection moved out of `rules/fusion-workbench-conventions.md` verbatim, with a pointer left in its place, exactly as option 2 specifies. The prerequisite this record named, the emission target, was filed and answered as `shared/decisions/260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md` (option 1, emitted to no agent) and realised in the same change.
+Implemented: `rules/workbench-tracking.md` — the subsection moved out of `rules/fusion-workbench-conventions.md` verbatim, with a pointer left in its place, exactly as option 2 specifies. The prerequisite this record named, the emission target, was filed and answered as `260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md` (option 1, emitted to no agent) and realised in the same change.
 
 ---
-**Reconciliation 260819-0840** (reconciler, domain `code`, HEAD `83488e9`). The move landed and the pointer is in place, so the marker holds. One word of the `Implemented:` note above does not: **the subsection did not move verbatim.** Its lede was rewritten in the same change. `rules/fusion-workbench-conventions.md` before `b200902` read "the split below ranges over **every root entry outside the artifact and legacy stores** (`circles/`, `shared/`, `archive/`, `stilwerk/`, all simply tracked, and any `stashes/` or `.migration-v2-backup/` a workbench still carries, which follow `archive/`)"; `rules/workbench-tracking.md:9` now reads "(the layout tree names the artifact stores and the paragraph under it the two legacy ones; all of them are simply tracked)". The two record-versus-live-state bullets did move unchanged, and nothing normative was lost. The rewrite is already carried as a defect by `shared/issues/260819-0826_o_the-fold-replaced-a-four-name-exclusion-list-with-a-phrase-the-cited-tree-does-not-use.md`, filed by the Turn-2 review; this note records only that the footer's "verbatim" overstates it. Marker stays `_i_`. Log: `shared/history/260819-0840-reconciliation.md`.
+**Reconciliation 260819-0840-reconciliation.md** (reconciler, domain `code`, HEAD `83488e9`). The move landed and the pointer is in place, so the marker holds. One word of the `Implemented:` note above does not: **the subsection did not move verbatim.** Its lede was rewritten in the same change. `rules/fusion-workbench-conventions.md` before `b200902` read "the split below ranges over **every root entry outside the artifact and legacy stores** (`circles/`, `shared/`, `archive/`, `stilwerk/`, all simply tracked, and any `stashes/` or `.migration-v2-backup/` a workbench still carries, which follow `archive/`)"; `rules/workbench-tracking.md:9` now reads "(the layout tree names the artifact stores and the paragraph under it the two legacy ones; all of them are simply tracked)". The two record-versus-live-state bullets did move unchanged, and nothing normative was lost. The rewrite is already carried as a defect by `260819-0826_*_the-fold-replaced-a-four-name-exclusion-list-with-a-phrase-the-cited-tree-does-not-use.md`, filed by the Turn-2 review; this note records only that the footer's "verbatim" overstates it. Marker stays `_i_`. Log: `260819-0840-reconciliation.md`.

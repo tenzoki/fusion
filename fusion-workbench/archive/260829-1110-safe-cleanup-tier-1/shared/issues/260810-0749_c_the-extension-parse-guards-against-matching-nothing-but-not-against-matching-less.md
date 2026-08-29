@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** `hooks/lib/__tests__/fusion-count-sources.test.ts` — `extensions()` and the coverage test that calls it
 **Cross-references:** commit `ea492e6`
 

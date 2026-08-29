@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Filed by:** analyst
-**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
-**Cross-references:** `circles/260801-1244-guard-rules-write/issues/260805-1839_*_install-sh-will-eine-license-kopieren-die-das-repo-nicht-hat.md`; `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1631_*_the-installer-copy-list-names-a-license-file-the-tree-has-never-shipped.md`; plan `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 1 (D-license)
+**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+**Cross-references:** `260805-1839_*_install-sh-will-eine-license-kopieren-die-das-repo-nicht-hat.md`; `260815-1631_*_the-installer-copy-list-names-a-license-file-the-tree-has-never-shipped.md`; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-license)
 
 ---
 

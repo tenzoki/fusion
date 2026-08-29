@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator (on the executor of `I:260810-0501-citation-root`)
-**Cross-references:** `shared/issues/260810-0501_c_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`; `shared/issues/260810-0511_o_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`; `rules/fusion-workbench-conventions.md` header table (the four topics already partitioned out)
+**Cross-references:** `260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`; `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`; `rules/fusion-workbench-conventions.md` header table (the four topics already partitioned out)
 
 ---
 
@@ -35,14 +35,14 @@ that has to be decided, not the move itself.
    - Pros: no new mechanism; already verified; the presence check is stronger than any lint the
      project had on that section before.
    - Cons: a shared procedure lives inside one agent's prompt, which is the arrangement the
-     conventions file already rejected four times. Task `260810-0511` is the same smell in the same
+     conventions file already rejected four times. Task `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md` is the same smell in the same
      section — the queue-head parser is written twice inside the file that calls itself canonical.
 
 2. **Move it to `rules/queue-ground.md` and accept that skills cite it by rooted path.** The rule
    file becomes the authoring home; the orchestrator keeps only its own site-specific tables
    (`#### Where the ground moves`, the Phase 4 retirement), which are orchestrator behaviour.
    - Pros: one authoring home, matching the four existing partitions; the orchestrator picks it up
-     through `fusion-rules`; `260810-0511`'s duplicate is resolved in the same change.
+     through `fusion-rules`; `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`'s duplicate is resolved in the same change.
    - Cons: two of the three consumers still cite across files, so the citation is relocated rather
      than removed. Touches `bin/fusion-rules`, `queue-ground-lint.test.ts`,
      `rules-emission-golden.test.ts`, both skill bodies and `CLAUDE.md`.
@@ -64,7 +64,7 @@ that has to be decided, not the move itself.
 - The presence check shipped today must survive any option: a consuming project whose install lacks
   the section has to be told, not silently skipped.
 - `rules/rule-file-provenance.md` applies to any new file under `rules/`.
-- Whatever is chosen should settle `260810-0511` in the same change, since both concern the same
+- Whatever is chosen should settle `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md` in the same change, since both concern the same
   section.
 
 ## Recommendation
@@ -81,7 +81,7 @@ Deferred:
 Superseded by:
 
 ---
-Answered: user decision, session `260810-1646` (`shared/history/260810-1646-orchestrator-session.md`)
+Answered: user decision, session `260810-1646-orchestrator-session.md` (`260810-1646-orchestrator-session.md`)
 — **option 1, leave the procedure in the prompt.** The rooted citations plus the runtime presence
 check are the end state, not a stopgap. The section stays in `agents/orchestrator.md`, the two skills
 reach it through `$FUSION_PLUGIN_ROOT`, and a consuming project whose install lacks the section is
@@ -95,7 +95,7 @@ directory over; option 3 pays for its removal by contradicting that split. Neith
 over what already shipped.
 
 **One consequence, recorded so it is not discovered later as a surprise.** This record proposed that
-whichever option was chosen should settle `260810-0511` in the same change — the queue-head parser
+whichever option was chosen should settle `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md` in the same change — the queue-head parser
 written twice inside the section that calls itself the canonical implementation. Option 1 does not
 settle it. That defect stands on its own and stays queued as task 16; it is a duplication inside one
 file and does not depend on where that file lives.
@@ -104,7 +104,7 @@ Implemented: 89b13f1 — the rooted citations and the presence check are on disk
 further change, so the answer and its realisation are the same commit.
 
 ---
-**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`. `_i_` confirmed; one sentence of
+**Reconciliation note — reconciler, 260811-0108-reconciliation.md, at HEAD `e2a34f0`. `_i_` confirmed; one sentence of
 the Answered note was overtaken later in the same session.**
 
 The implementation cited is on disk. The section `#### Reading a queue` is at
@@ -117,13 +117,13 @@ Option 1 required no further change, so `Implemented: 89b13f1` is accurate and t
 `$FUSION_PLUGIN_ROOT`". They no longer do. `63deec1`, four commits later in this same session,
 re-rooted both through `$FUSION_SRC` — the work tree inside the plugin's own repository, the install
 elsewhere — closing
-`shared/issues/260810-1918_c_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`.
+`260810-1918_*_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md`.
 The decision the note records is unaffected: option 1 was "leave the procedure in the prompt", and it
 is still in the prompt. Only the root variable named in passing changed.
 
-**The consequence the note recorded still stands.** `260810-0511` (the queue-head parser written
+**The consequence the note recorded still stands.** `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md` (the queue-head parser written
 twice inside the section that calls itself canonical) is not settled by option 1 and is open on disk
 as queued task 16.
 
 ---
-Retired: `dd312eb` (step 10 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — option 1 was "leave the procedure in the prompt", and the prompt section it left it in, `agents/orchestrator.md` `### The queue's ground`, went with the persisted `tasklist.md`. The rooted citations and the presence check that `89b13f1` added to `skills/setup/SKILL.md` and `skills/next/SKILL.md` went with it. The commit states that the reasoning was deliberately not relocated, so the answer was retired rather than rehomed.
+Retired: `dd312eb` (step 10 of 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md) — option 1 was "leave the procedure in the prompt", and the prompt section it left it in, `agents/orchestrator.md` `### The queue's ground`, went with the persisted `tasklist.md`. The rooted citations and the presence check that `89b13f1` added to `skills/setup/SKILL.md` and `skills/next/SKILL.md` went with it. The commit states that the reasoning was deliberately not relocated, so the answer was retired rather than rehomed.

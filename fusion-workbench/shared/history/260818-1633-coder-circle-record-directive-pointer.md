@@ -3,9 +3,9 @@
 **Date:** 2026-08-18
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md` (all seven steps, one change)
-**Decision realised:** `shared/decisions/260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1), and `shared/decisions/260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` (step 6, taken at the gate)
-**Defect closed:** `shared/issues/260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md`
+**Plan:** `260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md` (all seven steps, one change)
+**Decision realised:** `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1), and `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` (step 6, taken at the gate)
+**Defect closed:** `260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md`
 
 ## What landed
 

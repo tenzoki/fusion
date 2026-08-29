@@ -8,11 +8,11 @@
 
 Per-Circle implementation plan for E-rest, the remaining docs-cleanup and v5.0 closing gate of the fusion v5.x overhaul. Master plan deferred E's file-level detail to this pass (A–D landed; philosophy.md + README.md + README-hooks guard-tuning already done).
 
-Plan file: `circles/260718-1924-v5x-overhaul/planning/260719-1416_o_plan-circle-e-rest-docs-cleanup-v5-close.md`
+Plan file: `260719-1416_*_plan-circle-e-rest-docs-cleanup-v5-close.md`
 
 ## Inputs read
 
-- Spec `260718-0437_o_spec-fusion-v5x-overhaul.md` §"Circle E" and master plan `260718-1001_o_master-plan-fusion-v5x-overhaul.md` §"Circle E" (Grounding).
+- Spec `260718-0437_*_spec-fusion-v5x-overhaul.md` §"Circle E" and master plan `260718-1001_*_master-plan-fusion-v5x-overhaul.md` §"Circle E" (Grounding).
 - Live docs audited for staleness: README-agents.md, README-hooks.md, skills/help/SKILL.md, CLAUDE.md; confirmed backbone docs philosophy.md, README.md.
 - plugin.json (already v5.3.0, "16 agents"); agents/ (16 files); skills/ (14 skills).
 
@@ -22,7 +22,7 @@ Plan file: `circles/260718-1924-v5x-overhaul/planning/260719-1416_o_plan-circle-
 - skills/help/SKILL.md: "three load-bearing ideas" now five pillars (23); entry list omits editor (34-42); "next → taskplanner" should add /fusion:next (39); Configure omits Circle B manifest (82-85).
 - CLAUDE.md: no mention of rules/agent-setup.md (Circle D); optional F2 contract bullet. Align only, no slim.
 - README-hooks.md: verified CLEAN (zero edits expected). README.md, philosophy.md: already done.
-- Supersedes item 3 of shared/issues/260717-1740_o (README drift); items 1-2 moot after README rewrite.
+- Supersedes item 3 of 260717-1740_o (README drift); items 1-2 moot after README rewrite.
 
 ## Structure
 

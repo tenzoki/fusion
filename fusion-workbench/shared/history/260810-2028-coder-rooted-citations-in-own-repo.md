@@ -1,9 +1,9 @@
 # coder — the skills' rooted citations follow the work-tree preference
 
 **Status:** Complete
-**Task:** `R:260810-1918-rooted-in-own-repo` (session `shared/history/260810-1646-orchestrator-session.md`, Turn 2, mode `issues`, domain `code`)
-**Record:** `shared/issues/260810-1918_c_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md` (`_p_` → `_c_`)
-**Review that filed it:** `shared/reviews/260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`, finding L3.
+**Task:** `R:260810-1918-rooted-in-own-repo` (session `260810-1646-orchestrator-session.md`, Turn 2, mode `issues`, domain `code`)
+**Record:** `260810-1918_*_the-rooted-citations-read-the-installed-copy-inside-the-plugins-own-repo-where-the-helpers-do-not.md` (`_p_` → `_c_`)
+**Review that filed it:** `260810-1918-coderev-turn-1-range-5ef92eb-940d522.md`, finding L3.
 
 ## What was wrong
 
@@ -75,7 +75,7 @@ F and F' are read-only greps against the two live copies; no file was written.
   by the rooted citations in other shipped files. Adding `FUSION_SRC` to `ROOT_VAR_RE` would restore
   per-site coverage; `hooks/**` was outside this task's file set.
 - **The self-citation in the header paragraph** still reads a bare `skills/cleanup/SKILL.md:11`, which
-  belongs to issue `260810-1918_p_the-citation-rooting-reached-two-of-three-skills-and-its-own-example-is-unrooted.md`,
+  belongs to issue `260810-1918_*_the-citation-rooting-reached-two-of-three-skills-and-its-own-example-is-unrooted.md`,
   in progress with another executor. Its surrounding words changed here ("takes the plugin-root route"
   where it read "takes that route"), so a string-match edit written against the old text will miss.
 - **A single home for the resolution** would be a `bin/` helper printing the source root, which every

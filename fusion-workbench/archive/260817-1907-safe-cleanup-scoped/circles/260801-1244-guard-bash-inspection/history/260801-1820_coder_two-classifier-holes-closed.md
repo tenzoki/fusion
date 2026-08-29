@@ -1,10 +1,10 @@
 # coder — two pre-existing classifier holes closed (paren subshell, cross-class override)
 
 **Date:** 2026-08-01 18:20
-**Circle:** `circles/260801-1244-guard-bash-inspection`
+**Circle:** `260801-1244-guard-bash-inspection`
 **Issues:**
-`issues/260801-1745_c_one-git-override-lifts-the-deny-for-the-other-git-class.md`,
-`issues/260801-1610_c_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`
+`260801-1745_*_one-git-override-lifts-the-deny-for-the-other-git-class.md`,
+`260801-1610_*_paren-subshell-glues-its-parentheses-to-the-command-word-and-the-last-operand.md`
 **Status:** Complete
 
 Neither hole was introduced by this Circle. Both were found while closing adjacent ones

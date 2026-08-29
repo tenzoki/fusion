@@ -1,7 +1,7 @@
 # Coder: step 13, `rules/` (the always-on core and the conditional files)
 
 **Status:** Complete
-**Plan:** `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 13
+**Plan:** `260824-1905_*_plan-close-every-open-defect.md` step 13
 **Dispatched by:** orchestrator
 
 ## What was done
@@ -23,8 +23,8 @@ Ten rule files edited, 24 defect records closed (`_o_` → `_c_`), one test pin 
 
 ## Citation sweep the renames forced
 
-Closing 24 records moved their markers, and `workbench-citation-lint` reads every live record. Every pointer to one of the 24 in a live record was starred to the wildcard form: `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md` (two), `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, and two pointer fields in reviewer records filed into this Circle during the step (the `**Affects:**` line of `260824-2059_*_two-step-histories…` and one citation in `260824-2056_*_readme-agents-still-cites…`). One statement-about-a-citation on line 3 of `260824-2059_*_two-step-histories…` was touched by the sweep and reverted by hand, since the spelling there is the reviewer's datum.
+Closing 24 records moved their markers, and `workbench-citation-lint` reads every live record. Every pointer to one of the 24 in a live record was starred to the wildcard form: `260820-2249_*_spec-style-rules-arrive-and-get-measured.md` (two), `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, and two pointer fields in reviewer records filed into this Circle during the step (the `**Affects:**` line of `260824-2059_*_two-step-histories…` and one citation in `260824-2056_*_readme-agents-still-cites…`). One statement-about-a-citation on line 3 of `260824-2059_*_two-step-histories…` was touched by the sweep and reverted by hand, since the spelling there is the reviewer's datum.
 
 ## Verification
 
-`cd hooks && npm test` exit 1: 748 of 749 pass. The one failure is `workbench-citation-lint` on line 3 of `circles/260824-1853-close-every-open-defect/issues/260824-2059_*_two-step-histories-cite-seven-records-by-the-open-marker-the-same-step-moved-and-history-is-outside-the-gate.md`, a reviewer's record filed during this step that lists seven records by their old open marker as prose addresses rather than as file:line or a fence. Six of the seven were dangling before this step's renames (seen in the first full run); the seventh, `260816-1330_*_two-of-the-twenty-nine…`, went dangling with this step's closure of it. The record is the reviewer's and the fix is theirs; not edited. Every gate the step names is green: `rules-emission-golden`, `provenance-header-lint`, `reference-resolution-lint`, `surface-growth-bound`.
+`cd hooks && npm test` exit 1: 748 of 749 pass. The one failure is `workbench-citation-lint` on line 3 of `260824-2059_*_two-step-histories-cite-seven-records-by-the-open-marker-the-same-step-moved-and-history-is-outside-the-gate.md`, a reviewer's record filed during this step that lists seven records by their old open marker as prose addresses rather than as file:line or a fence. Six of the seven were dangling before this step's renames (seen in the first full run); the seventh, `260816-1330_*_two-of-the-twenty-nine…`, went dangling with this step's closure of it. The record is the reviewer's and the fix is theirs; not edited. Every gate the step names is green: `rules-emission-golden`, `provenance-header-lint`, `reference-resolution-lint`, `surface-growth-bound`.

@@ -3,9 +3,9 @@
 **Date:** 2026-08-14 11:16
 **Status:** Complete
 **Circle:** `260801-1244-curator`
-**Plan:** `circles/260801-1244-curator/planning/260814-0845_*_plan-curator.md` step 5
-**Issue closed:** `circles/260801-1244-curator/issues/260814-1051_*_the-circle-records-other-thirteen-agents-count-went-stale-when-the-curator-was-added.md`
-**Binding decisions:** `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` (option 1); `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md` (option 2)
+**Plan:** `260814-0845_*_plan-curator.md` step 5
+**Issue closed:** `260814-1051_*_the-circle-records-other-thirteen-agents-count-went-stale-when-the-curator-was-added.md`
+**Binding decisions:** `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md` (option 1); `260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md` (option 2)
 **HEAD at start:** `00f4a0b`
 **Agent:** coder
 

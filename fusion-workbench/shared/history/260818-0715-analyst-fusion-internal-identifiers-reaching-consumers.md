@@ -18,8 +18,8 @@ recommendation and its residual. No source file to be edited.
 
 ## What was done
 
-1. Read the open record `260817-2131` including the reconciliation note of 260817-2207, and the
-   closed incident record `260817-2110`.
+1. Read the open record `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` including the reconciliation note of 260817-2207, and the
+   closed incident record `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md`.
 2. Enumerated ten channels by which text authored here reaches a consuming session or user, and
    measured each for fusion identifiers at HEAD.
 3. Verified the record's out-of-scope claim for `hooks/lib/domain-cascade.ts`: its only importers
@@ -36,9 +36,9 @@ recommendation and its residual. No source file to be edited.
 
 ## What was written
 
-- `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md`
-- `shared/issues/260818-0715_o_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md`
-- `shared/issues/260818-0715_o_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`
+- `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md`
+- `260818-0715_*_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md`
+- `260818-0715_*_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`
 - this file
 
 Nothing outside `fusion-workbench/` was touched.
@@ -54,7 +54,7 @@ agent so it costs no dispatch bytes and reaches the channels no test watches.
 
 ## What we corrected in the open record
 
-`260817-2131` recommends asserting that the output carries no short hash. That contradicts its own
+`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` recommends asserting that the output carries no short hash. That contradicts its own
 second requirement to drive every branch, because `coverageSentence`'s uncovered branch is full of
 the consuming project's own hashes by design. The reconciler found the contradiction; this analysis
 supplies the replacement formulation and shows it measured on both sides.

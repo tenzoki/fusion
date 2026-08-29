@@ -1,4 +1,4 @@
-# Orchestrator Session — 260813-0806
+# Orchestrator Session — 260813-0806-orchestrator-session.md
 
 **Directive:** File the three named gaps as records, plan two of them as Circles, and check whether `/fusion:help` should become a self-knowledge skill. Extended mid-session by the user at the activation gate: repair the red test baseline before starting the active Circle's own work.
 **Mode:** custom
@@ -44,7 +44,7 @@
 
 ## Decision answered — the playmaker maintains the backlog
 
-**Record:** `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`
+**Record:** `260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`
 **Answered by:** the user, in this session, at the Setup-to-scope gate.
 **Chosen:** option 2 — give the playmaker the write, and give it wider than the record framed it.
 
@@ -79,7 +79,7 @@ opened in this session; `_a_` to `_i_` follows that Circle's commits.
 
 ## Circle activated mid-session
 
-`/fusion:next` activated `circles/260813-0858-playmaker-maintains-backlog-store/` at 09:33. The
+`/fusion:next` activated `260813-0858-playmaker-maintains-backlog-store` at 09:33. The
 record moved `_a_` to `_t_`, its `**Status:**` head field to `active`, and `.active-circle` now
 holds the directory name. `$OUT_*` therefore re-resolved into that Circle from this point on.
 
@@ -96,7 +96,7 @@ Recorded in `.plane-outbox.jsonl`; the next reconcile with a key present rebuild
 
 The user chose repair over starting the Circle's Directive, at the activation gate. Three tests
 failed reproducibly at `1c2d555`: 3 failed, 1007 passed, 1010 total across 48 files. Filed as
-`shared/issues/260813-0828_p_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`,
+`260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`,
 which the analyst left with three questions unestablished.
 
 Two bugfixers were dispatched in parallel, on the analyst's own advice that the causes are almost
@@ -136,7 +136,7 @@ fact fusion's own sentence from `hooks/lib/staging-drift.ts:470`.
 task 2.
 
 Bugfixer log:
-`circles/260813-0858-playmaker-maintains-backlog-store/history/260813-1031-bugfix-circle-stash-test-locale.md`
+`260813-1031-bugfix-circle-stash-test-locale.md`
 
 ### Task 2 — the two Plane rebuild cases (running)
 
@@ -148,7 +148,7 @@ for its report before any commit.
 
 ## Decision answered — the Phase 4 mandate is marker renames, and it is written down
 
-**Record:** `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`
+**Record:** `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`
 **Chosen:** option 3 — the non-interactive Phase 4 run's mandate is ranking, portfolio regeneration and marker renames, and `agents/playmaker.md` says so as a deliberate rule rather than leaving it to be inferred.
 
 The shaper marked this record as planning-blocking, correctly: it decides whether a proposal-return path is built at all, which is a shape rather than a detail a plan could fill in later.
@@ -167,9 +167,9 @@ That is a weak basis for building machinery and a sufficient one for declining t
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: 8 of 9 plan steps verified landed against the working tree at `2a029eb` and the ninth verified correctly not done — no false `[DONE]` marker on the plan; suite re-run green at 49 files / 1019 tests, exactly the plan's prediction; `bin/fusion-review-coverage --since 1c2d555` reads `verdict=covered`, `uncovered=0`, `carried=none`, the range tiled by `circles/260813-0858-playmaker-maintains-backlog-store/reviews/260813-1545-coderev-playmaker-maintains-backlog-store.md` and `shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md`. **Flagged:** 13 open reviewer issues, 1 High — `260813-1545_o_the-choose-which-branch-of-step-5b-has-no-defined-behaviour-and-ask-once-forbids-the-follow-up-it-needs.md`; every High and Medium finding sits on the `/fusion:next` confirmation relay, which is the one part of the delivery with no test and no run behind it. 9 tracking-file discrepancies repaired, 6 reported to the orchestrator, 1 new record filed (`260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`).
-- Artifact↔Directive: commits move **partially toward** the Directive. Against the session Directive all eight commits land on it: the three gaps were filed (`799fded`), two anticipated Circles were created, `/fusion:help` was answered by analysis (`shared/decisions/260813-0826_a_*`), and the red baseline was repaired and hardened (`7342fdd`, `d6dd193`, suite 1010→1014). Against the active Circle's own Directive, `b995049` delivers the capability — the resolver key, the mandate on both stated surfaces, one named writer for the recommended-for-promotion marker — but two of its own acceptance conditions are unmet. The Directive says the five surfaces asserting the old no-write boundary come to agree with the new one; `skills/next/SKILL.md:291` still asserts it, in a paragraph `b995049` itself edited (coderev finding 7), and `skills/direct/SKILL.md:77` acquired a new overclaim in the same step (finding 8). And the capability has never been run: `shared/backlog/260811-0826_o_observations.md` is unchanged since `dec40bb`, and none of the eight acceptance-run checks in the plan's `## Testing Strategy` has been exercised. That absence is consistent with the plan, which schedules the run after step 9, and step 9 was deferred at the user's release gate (`2a029eb`) — so it is a gap in demonstration, not a departure from the plan.
-- Grounding↔Directive: 19 active decisions across `$SCAN_DECISIONS` (7 open, 12 answered; the Circle's own store is now empty of active records), **0 conflicting with the Directive**. Three moved to implemented in this pass against `b995049`: `shared/decisions/260812-2043_i_who-writes-the-recommended-marker-on-a-backlog-entry.md`, `shared/decisions/260812-0254_i_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`, and `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_i_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`. One Grounding premise will be falsified rather than conflicts today: `circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md` states under *What this Circle is not* that "the four version surfaces all read 8.1.0" is a lead that came back clean and that no step re-verifies it — true now, false the moment the deferred bump lands. Cited, filed, not repaired. `shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md` remains answered with no Circle carrying its implementation, which its own answered line already states.
+- Artifact↔Grounding: 8 of 9 plan steps verified landed against the working tree at `2a029eb` and the ninth verified correctly not done — no false `[DONE]` marker on the plan; suite re-run green at 49 files / 1019 tests, exactly the plan's prediction; `bin/fusion-review-coverage --since 1c2d555` reads `verdict=covered`, `uncovered=0`, `carried=none`, the range tiled by `260813-1545-coderev-playmaker-maintains-backlog-store.md` and `260813-1051-coderev-plane-curl-response-via-temp-file.md`. **Flagged:** 13 open reviewer issues, 1 High — `260813-1545_*_the-choose-which-branch-of-step-5b-has-no-defined-behaviour-and-ask-once-forbids-the-follow-up-it-needs.md`; every High and Medium finding sits on the `/fusion:next` confirmation relay, which is the one part of the delivery with no test and no run behind it. 9 tracking-file discrepancies repaired, 6 reported to the orchestrator, 1 new record filed (`260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`).
+- Artifact↔Directive: commits move **partially toward** the Directive. Against the session Directive all eight commits land on it: the three gaps were filed (`799fded`), two anticipated Circles were created, `/fusion:help` was answered by analysis (`shared/decisions/260813-0826_a_*`), and the red baseline was repaired and hardened (`7342fdd`, `d6dd193`, suite 1010→1014). Against the active Circle's own Directive, `b995049` delivers the capability — the resolver key, the mandate on both stated surfaces, one named writer for the recommended-for-promotion marker — but two of its own acceptance conditions are unmet. The Directive says the five surfaces asserting the old no-write boundary come to agree with the new one; `skills/next/SKILL.md:291` still asserts it, in a paragraph `b995049` itself edited (coderev finding 7), and `skills/direct/SKILL.md:77` acquired a new overclaim in the same step (finding 8). And the capability has never been run: `260811-0826_*_observations.md` is unchanged since `dec40bb`, and none of the eight acceptance-run checks in the plan's `## Testing Strategy` has been exercised. That absence is consistent with the plan, which schedules the run after step 9, and step 9 was deferred at the user's release gate (`2a029eb`) — so it is a gap in demonstration, not a departure from the plan.
+- Grounding↔Directive: 19 active decisions across `$SCAN_DECISIONS` (7 open, 12 answered; the Circle's own store is now empty of active records), **0 conflicting with the Directive**. Three moved to implemented in this pass against `b995049`: `260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`, `260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`, and `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`. One Grounding premise will be falsified rather than conflicts today: `260813-0910-documentation-matches-shipped-plugin` states under *What this Circle is not* that "the four version surfaces all read 8.1.0" is a lead that came back clean and that no step re-verifies it — true now, false the moment the deferred bump lands. Cited, filed, not repaired. `260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-that-answers-from-the-live-installation.md` remains answered with no Circle carrying its implementation, which its own answered line already states.
 
 **Rebalance recommendation:** revise Artifact
 

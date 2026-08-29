@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Dispatched by:** orchestrator
-**Plan:** `shared/planning/260812-1232_p_remove-the-protected-path-half-of-the-compliance-guard.md`, steps 1–3
+**Plan:** `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, steps 1–3
 
 ---
 
@@ -108,7 +108,7 @@ test file because a second suite needed it in the same step.
 `hook-fail-open.test.ts` carried two cases that differed only in which check produced the deny: CHECK
 2 with the state directory unwritable, and CHECK 3 with the state directory unwritable. Same failing
 writer, same verdict, same site. Re-pointing the first would have produced a verbatim duplicate of the
-second, so it was merged: the CHECK 3 case inherited the `260809-1825` citation and a comment saying
+second, so it was merged: the CHECK 3 case inherited the `260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md` citation and a comment saying
 what collapsed into it. Net one case fewer, no site left uncovered.
 
 ### `config.test.ts` needed a new fixture, not just a new path

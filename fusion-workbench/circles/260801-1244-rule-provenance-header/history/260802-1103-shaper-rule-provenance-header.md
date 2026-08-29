@@ -2,18 +2,18 @@
 
 **Date:** 2026-08-02
 **Mode:** in-Circle clarification, round 2 (cold start after the four answers were proxied)
-**Circle:** `circles/260801-1244-rule-provenance-header`
+**Circle:** `260801-1244-rule-provenance-header`
 **Status:** complete. Spec written, decision record closed, planner runs next.
 
 ## What was done
 
-The four answers from the proxied round were folded into a spec at `circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md`. Scope is C8 only.
+The four answers from the proxied round were folded into a spec at `260802-1103_*_spec-rule-provenance-header.md`. Scope is C8 only.
 
 The answers, as specified:
 
 - **Header form.** New keyword `Provenance:`, canonical form `**Provenance:** <citation>`, matched by one anchored case-sensitive regex tolerating up to three leading spaces, an optional blockquote marker, and optional bold pairs. The gate checks presence, not value, and a hollow value passes. Recorded as an accepted limitation rather than smoothed over.
 - **Position.** Anywhere in the first ten lines. Ten is stated as a chosen constant with its rationale, that it clears the corpus's longest opening blockquote (`context-manifest.md`, lines 3 to 8), and the spec notes the margin is one line held by a single file.
-- **Path validation.** Presence only, a pure text scan in the shape of `hooks/lib/__tests__/path-literal-lint.test.ts`. Dead citations go uncaught. The archive coupling is stated as untouched by this Circle rather than solved, citing `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` rather than refiling it.
+- **Path validation.** Presence only, a pure text scan in the shape of `hooks/lib/__tests__/path-literal-lint.test.ts`. Dead citations go uncaught. The archive coupling is stated as untouched by this Circle rather than solved, citing `260801-1020_*_scan-keys-never-reach-the-archive-store.md` rather than refiling it.
 - **Files with no record.** Admission plus introducing commit. The spec says plainly that a commit carries no state marker so the superseded check does not work on it, and that D3 rejected git as the *primary* mechanism while this answer admits it as a secondary, admission-scoped citation.
 
 ## The correction the answers forced
@@ -38,8 +38,8 @@ Zero backfilled files cite a decision record. Four cite a Circle directory, six 
 
 ## Artifacts
 
-- Written: `circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md`.
-- Closed: the round-1 decision record, `Answered:` line appended and renamed `_o_` to `_a_`, now at `circles/260801-1244-rule-provenance-header/decisions/260802-1018_a_what-a-rule-file-with-no-recoverable-record-cites.md`. Its `**Status:**` field moved from `open` to `answered`.
+- Written: `260802-1103_*_spec-rule-provenance-header.md`.
+- Closed: the round-1 decision record, `Answered:` line appended and renamed `_o_` to `_a_`, now at `260802-1018_*_what-a-rule-file-with-no-recoverable-record-cites.md`. Its `**Status:**` field moved from `open` to `answered`.
 - Not touched: `_t_circle.md`. In-Circle clarification mode gives shaper no licence to edit a Circle record, so the record's `**Active spec/plan:**` field still points at the parent spec. The orchestrator repoints it if it wants the field current.
 
 ## Next
@@ -54,7 +54,7 @@ The user approved the spec at the gate with two fixes attached. Both are applied
 
 ### Fix 1 — the diagram's missing edge
 
-`conceptrev` returned *acceptable* (`circles/260801-1244-rule-provenance-header/reviews/260802-1108-conceptrev-spec-rule-provenance-header.md`), one edge short of clean. Its Medium finding: `CONV` had fan-in 0 and no link to `RULES`, so `rules/fusion-workbench-conventions.md` sat in the graph twice, once anonymously inside "ten files" and once as a named node, with nothing tying the two together. That is the nine-versus-ten error the spec's own section at line 96 corrects, and it hid the self-demonstration property the Directive rests on.
+`conceptrev` returned *acceptable* (`260802-1108-conceptrev-spec-rule-provenance-header.md`), one edge short of clean. Its Medium finding: `CONV` had fan-in 0 and no link to `RULES`, so `rules/fusion-workbench-conventions.md` sat in the graph twice, once anonymously inside "ten files" and once as a named node, with nothing tying the two together. That is the nine-versus-ten error the spec's own section at line 96 corrects, and it hid the self-demonstration property the Directive rests on.
 
 Two edges added, per the assessment's first suggested correction. No redesign, no subgraphs:
 
@@ -75,7 +75,7 @@ Checked by reading, not by `mmdc`, which is unavailable on this machine for the 
 
 ### Fix 2 — the Circle record repointed
 
-`_t_circle.md`'s `**Active spec/plan:**` field named the parent spec, `shared/planning/260801-1122_o_spec-normative-consolidation.md`, which is what the previous section of this log flagged as not-touched. It now names this Circle's spec first, as a workbench-relative path, and keeps the parent as an adjacent pointer in the same field, since the parent still holds the other three Circles of this body of work. The field's own convention permits the cross-store path (`rules/fusion-workbench-conventions.md:392`).
+`_t_circle.md`'s `**Active spec/plan:**` field named the parent spec, `260801-1122_*_spec-normative-consolidation.md`, which is what the previous section of this log flagged as not-touched. It now names this Circle's spec first, as a workbench-relative path, and keeps the parent as an adjacent pointer in the same field, since the parent still holds the other three Circles of this body of work. The field's own convention permits the cross-store path (`rules/fusion-workbench-conventions.md:392`).
 
 No other section of the record was touched. The `## Grounding snapshot` is the version corrected at activation and stands.
 

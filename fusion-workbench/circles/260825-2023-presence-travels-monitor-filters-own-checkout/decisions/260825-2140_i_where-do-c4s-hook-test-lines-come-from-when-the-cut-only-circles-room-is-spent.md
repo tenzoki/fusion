@@ -4,13 +4,13 @@
 **Domain:** code
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
 **Cross-references:**
-`shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`
+`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`
 (answered: a cut-only Circle runs first, and the rebuild starts against the room it produces);
-`shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`
+`260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`
 (the adjacent open question about what the surface counts, which this one does not answer and does not need answered);
 `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` (the two events at which a baseline moves);
 `hooks/lib/__tests__/surface-growth-bound.test.ts` (the three surface budgets);
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
 step 10, the step this question blocks
 
 ---
@@ -89,7 +89,7 @@ touch no test line, so the presence report, the monitor filter and the single Tu
 built and read while this is open. What waits on the answer is whether they are gated.
 
 ---
-Answered: circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md `## Decision answered — the hook-test lines` — option 2, the user's own answer at the orchestrator's gate on 2026-08-26: cut an equal number of lines from the hook-test surface in the same Turn as the addition, name the cut, and move no baseline.
+Answered: 260825-2123-orchestrator-session.md `## Decision answered — the hook-test lines` — option 2, the user's own answer at the orchestrator's gate on 2026-08-26: cut an equal number of lines from the hook-test surface in the same Turn as the addition, name the cut, and move no baseline.
 
 ---
 Implemented: `c649556` and `46de871` — option 2 realised in the same Turn, exactly as answered. `c649556` cut 262 lines from `hooks/lib/__tests__/**` and named each cut (`guard-bash-integration.test.ts` 393→304, `guard-project-config-integration.test.ts` 423→250); `46de871` added the coverage (`fusion-events.test.ts` 166 lines new, `monitor-warnings-panel.test.ts` 1102→1136). Verified at HEAD `7774d56`: the hook-test surface stands at 20 349 lines against a 20 375 budget, so the addition was more than paid for; `git diff 73ca11c..HEAD` over `hooks/lib/__tests__/surface-growth-bound.test.ts`, `rules-emission-golden.test.ts` and `helpers/growth-bound.ts` is empty, so no baseline map moved; `cd hooks && npm test` exits 0, 44 files, 776 tests.

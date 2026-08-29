@@ -4,9 +4,9 @@
 
 **Severity:** Critical
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 2 of `circles/260801-1244-guard-rules-write` (`bf75941..HEAD`)
+**Filed by:** coderev, reviewing Turn 2 of `260801-1244-guard-rules-write` (`bf75941..HEAD`)
 **Affects:** both guarded write surfaces — `hooks/guard.ts` CHECK 2 and `guardBashCommand` STEP 2
-**Reopens:** `260802-2229_c_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md`,
+**Reopens:** `260802-2229_*_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md`,
 closed by `49bb4da`. The fix closed the spelling it was measured against and not the class.
 **Cross-references:** `hooks/lib/rules-write-exemption.ts:193-198` (`isProjectRulePath`, the
 collapse-then-resolve order), `hooks/lib/paths.ts:89-95` (`canonicalise`),
@@ -187,7 +187,7 @@ after.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while checking the implementer's stated
+Found in `260801-1244-guard-rules-write` while checking the implementer's stated
 residual 4. The residual is real; its stated consequence is not.
 
 ---
@@ -209,7 +209,7 @@ Every escape in both measured tables now denies, on both surfaces, with the flag
 `mv rules/x.md rules/retired/` allows). No advisory is written for a refused grant. Suite
 973 -> 1009; the 20 new cases were verified to FAIL with gate 0 disabled.
 
-Session: `history/260803-1251-turn3-t3-1-gate-0-dotdot-spelling-refusal.md`
-Residuals filed: `260803-1251_o_fs-locator-collapses-dotdot-lexically-…` (the direction-2
+Session: `260803-1251-turn3-t3-1-gate-0-dotdot-spelling-refusal.md`
+Residuals filed: `260803-1251_*_fs-locator-collapses-dotdot-lexically-…` (the direction-2
 prerequisite, audited and found to sit in `absolute()` rather than `resolveLocation`),
-`260803-1252_o_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-…`
+`260803-1252_*_a-gate-0-deny-reads-as-an-ordinary-protected-path-deny-…`

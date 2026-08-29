@@ -2,7 +2,7 @@ The answered precondition decision names a planner section that `agents/planner.
 
 ---
 
-`shared/decisions/260817-1613_a_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`
+`260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`
 was answered on 2026-08-18 with option 2. Two of its three options describe the change surface as an
 amendment to an existing section: option 1 says "Amend `agents/planner.md` so `## Where this Circle
 stops` says outright that its contents bind nobody mechanically", and option 2's recommendation says
@@ -17,7 +17,7 @@ Verified at HEAD `52b1d95` by `grep -in 'stops\|precondition\|boundary' agents/p
 returns nothing, and by reading the template block.
 
 The section exists in exactly one plan, which invented it:
-`circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_c_the-compliance-guard-becomes-observation-only.md:346`.
+`260816-1915_*_the-compliance-guard-becomes-observation-only.md:346`.
 Every other occurrence in the workbench is that plan's own Circle citing it back.
 
 ---
@@ -32,7 +32,7 @@ somebody has to choose rather than a wording fix:
    in the planner that a plan may add it. Adds nothing to the template and leaves the section
    optional, so a plan that states a precondition without using that exact heading is still unread.
 
-Found while resolving the three open decisions of session `260818-2301`, before any realisation work
+Found while resolving the three open decisions of session `260818-2301-orchestrator-session.md`, before any realisation work
 was dispatched. It has no Circle affiliation, so it is filed in the shared store under the Origin
 Rule.
 

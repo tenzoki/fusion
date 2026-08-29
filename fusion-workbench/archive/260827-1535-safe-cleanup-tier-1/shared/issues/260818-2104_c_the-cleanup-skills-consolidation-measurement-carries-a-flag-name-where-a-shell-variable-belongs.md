@@ -36,9 +36,9 @@ project whose measurement broke both report something, and neither reports the t
 ## Evidence
 
 Run today against this repository, which holds three curator run files
-(`260816-1251`, `260817-1925`, `260818-2050`). The block as written returns `0`. The same block
+(`260816-1251-curator-run.md`, `260817-1925-curator-run.md`, `260818-2050-curator-run.md`). The block as written returns `0`. The same block
 with `$0` in place of `--only` returns
-`fusion-workbench/shared/history/260818-2050-curator-run.md`, the correct answer.
+`260818-2050-curator-run.md`, the correct answer.
 
 ## Why it survived
 
@@ -60,20 +60,20 @@ of the file on this machine, and has never been in this repository's history of 
 measurement rather than on a fix, because there is nothing to fix.
 
 **Measured 2026-08-18 at HEAD `53b6862`, by the orchestrator session
-`shared/history/260818-2124-orchestrator-session.md`.**
+`260818-2124-orchestrator-session.md`.**
 
 - `git log -p --follow -- skills/cleanup/SKILL.md`, filtered to the `awk -F/` line, yields exactly
   one line across the whole history: a single `+` introducing `{ print $NF "\t" $0 }`, and no `-`
   line at all. The line entered already correct and was never edited. The pickaxe
   `git log -S'print $NF "\t" --only'` over the same path returns nothing.
 - The file's last commit is `381f6d8` (260816-0040), two days before this record was filed at
-  260818-2104. Nothing touched it between the filing and this measurement, so the state read here
+  260818-2104_*_the-cleanup-skills-consolidation-measurement-carries-a-flag-name-where-a-shell-variable-belongs.md. Nothing touched it between the filing and this measurement, so the state read here
   is the state the filing session read.
 - Every copy that could have been loaded carries `$0`: the work tree, the installed plugin at
   `~/.fusion` (both at version 10.2.0), and no other copy exists under `~/.claude` or `~/.fusion`.
   The marketplace cache clone is absent on this machine.
 - The block, executed as written against this workbench, returns
-  `fusion-workbench/shared/history/260818-2050-curator-run.md`. That is precisely the value this
+  `260818-2050-curator-run.md`. That is precisely the value this
   record names as "the correct answer" obtainable only after substituting `$0`. The block already
   is the substituted form.
 - The string `--only` occurs in this repository at exactly one position: line 18 of this record,
@@ -92,10 +92,10 @@ not be taken. It is not filed here, because it is not this defect. Whoever picks
 against `skills/cleanup/SKILL.md` `## Step 8` on its own evidence.
 
 The filing itself is the defect that remains, and it is filed separately as
-`shared/issues/260818-2210_o_a-defect-record-cites-a-verification-run-that-no-copy-of-the-code-it-names-can-produce.md`.
+`260818-2210_*_a-defect-record-cites-a-verification-run-that-no-copy-of-the-code-it-names-can-produce.md`.
 
 ---
-**Reconciliation 260818-2230** (reconciler, domain `code`). The closure is correct and is not
+**Reconciliation 260818-2230-reconciliation.md** (reconciler, domain `code`). The closure is correct and is not
 disputed: every measurement in the note above was re-derived at HEAD `8fa3286` and holds, and the
 reported token is in no copy of `skills/cleanup/SKILL.md` reachable from this machine nor anywhere
 in this repository's history of that file. Marker stays `_c_`.
@@ -104,7 +104,7 @@ One sentence of the note does not hold. "The string `--only` occurs in this repo
 one position" is false as written — the token occurs 112 times across 35 tracked files, five of them
 in `skills/cleanup/SKILL.md` itself, where it is the skill's own documented flag. The claim the
 measurement supports is the narrower one about the broken `awk` form. Filed as
-`shared/issues/260818-2227_o_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
+`260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`.
 
 ---
 **Correction to the resolution note above, 2026-08-18, same session.** The note's last bullet reads
@@ -121,7 +121,7 @@ who took the bullet at face value would conclude the flag does not exist.
 
 The narrow claim is also no longer exactly true of the broken form, and was not at the moment of
 writing: at `8fa3286` that form stood at three positions across the tree, twice in this record (the
-quoted evidence at line 18 and the pickaxe invocation in the note above) and once in `260818-2210`,
+quoted evidence at line 18 and the pickaxe invocation in the note above) and once in `260818-2210_*_a-defect-record-cites-a-verification-run-that-no-copy-of-the-code-it-names-can-produce.md`,
 which quoted it as evidence. All three are quotations inside records. No copy of
 `skills/cleanup/SKILL.md` carries it.
 
@@ -132,7 +132,7 @@ figure about `--only` stated in the present tense falsifies itself the moment it
 as `shared/issues/260818-2249_c_*`, which is what established that a fourth correction would have
 moved them again.
 
-Filed as `shared/issues/260818-2227_c_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`,
+Filed as `260818-2227_*_the-correction-note-that-closed-a-fabricated-measurement-carries-a-false-universal-of-its-own.md`,
 found by the reconciler at Phase 3 of the same session that wrote the error. Commit `b3de0ba`
 repeats the false sentence in its message body and cannot be corrected; this block is where a reader
 arriving from `git log` finds it put right. The closure of this record as not reproducible stands:

@@ -1,7 +1,7 @@
 # Concept Evaluation: Plan — split the language declaration into chat language and artifact language
 
 **Date:** 2026-08-07 20:35
-**Target:** `fusion-workbench/shared/planning/260807-2024_o_two-language-declarations.md`
+**Target:** `260807-2024_*_two-language-declarations.md`
 **Verdict:** acceptable
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mmdc 11.16.0, both blocks rendered to SVG and PNG)
 
@@ -60,7 +60,7 @@ Both diagram types fit their content per the type table in `rules/design-diagram
 
 **Reconciliation 260808-0030 (reconciler, domain `code`).** The corrections this pass asked for
 landed in commit `c1b72fc` and are present in the plan at `c54ead9`: both diagrams in
-`shared/planning/260807-2024_c_two-language-declarations.md` carry the corrected edge set, and the
+`260807-2024_*_two-language-declarations.md` carry the corrected edge set, and the
 prose at line 116 now states why the `shipped` subgraph has no edge into the rest of the graph
 rather than leaving the orphan unexplained. The step-dependency DAG at lines 195-226 is acyclic
 with one source (`S1`) and one sink (`S12`), as the plan's own closing paragraph claims; all twelve

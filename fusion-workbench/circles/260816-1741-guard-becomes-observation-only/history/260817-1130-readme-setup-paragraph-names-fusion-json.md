@@ -2,8 +2,8 @@
 
 **Agent:** coder
 **Date:** 2026-08-17
-**Circle:** `circles/260816-1741-guard-becomes-observation-only`
-**Issue:** `circles/260816-1741-guard-becomes-observation-only/issues/260817-1105_c_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md`
+**Circle:** `260816-1741-guard-becomes-observation-only`
+**Issue:** `260817-1105_*_readmes-setup-paragraph-still-says-setup-seeds-the-retired-fusion-guard-json.md`
 **Status:** Complete
 **Base:** `a7f70b9`
 

@@ -1,4 +1,4 @@
-# Playmaker run — 260719-1538 (trigger: orchestrator-phase4)
+# Playmaker run — 260719-1538-playmaker-orchestrator-phase4.md (trigger: orchestrator-phase4)
 
 **Status:** Complete
 **Domain bias:** code (parsed from `**Domain:** code` on the dispatch prompt)
@@ -33,4 +33,4 @@ Second: `260719-1536-brest-unite-co-creator-conversion` — clean dependencies a
 
 ## Activation proposal appended
 
-- `## Activation proposal` block appended to `circles/260719-1536-plane-mirror-integration/_a_circle.md` (marker NOT changed — activation is the orchestrator's / user's action via `/fusion:next`).
+- `## Activation proposal` block appended to `260719-1536-plane-mirror-integration` (marker NOT changed — activation is the orchestrator's / user's action via `/fusion:next`).

@@ -1,7 +1,7 @@
 # Turn 6 — ten stale citations repointed, five root-anchored rows brought onto the criterion
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-curator`
+**Circle:** `260801-1244-curator`
 **Task:** T12, Turn 6
 **Status:** Complete
 **Date:** 2026-08-14
@@ -11,8 +11,8 @@
 Two findings from the Turn-5 incremental review, one pass, one commit, sharing
 `rules/fusion-workbench-conventions.md` and a fixture regeneration:
 
-- `issues/260814-2022_c_ten-citations-that-bf9553f-staled-still-stand-…` (High)
-- `issues/260814-2022_c_five-of-the-eight-root-anchored-rows-still-under-name-…` (Medium)
+- `260814-2022_*_ten-citations-that-bf9553f-staled-still-stand-…` (High)
+- `260814-2022_*_five-of-the-eight-root-anchored-rows-still-under-name-…` (Medium)
 
 ## Finding 1 — ten stale line-number citations
 

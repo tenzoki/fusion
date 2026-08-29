@@ -1,4 +1,4 @@
-# Playmaker run 260817-1643 — orchestrator Phase 4
+# Playmaker run 260817-1643-playmaker-orchestrator-phase4.md — orchestrator Phase 4
 
 **Status:** Complete
 **Trigger:** `orchestrator-phase4` (non-interactive; no user in the loop, no confirmation held)
@@ -47,7 +47,7 @@ any Circle record.
 ## Step 5 — Bounded-Closure propagation
 
 **No `parent-grounding-stale` event, and the reason is an empty scan set rather than a clean scan.**
-The trigger is `circles/260816-1741-guard-becomes-observation-only`, which reached `_b_` at
+The trigger is `260816-1741-guard-becomes-observation-only`, which reached `_b_` at
 260817-1639. The scan looks for non-terminal Circles citing that directory name or the Artifact its
 Closure note names; there are no non-terminal Circles. `grep` across all Circle records confirms the
 only file citing the directory name is the bounded record itself.
@@ -65,20 +65,20 @@ empty set with the same result.
 
 - Distinct ideas found inside the two live entries: 2, one per entry. Neither is a multi-idea entry.
 - Duplicate groups found: 0. Both entries cite
-  `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`, but they state different
+  `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`, but they state different
   ideas — bounding dispatch length, and binding a rule to an executable check.
 - Items handed to `## Warnings` as defect- or decision-shaped: 0. Both live entries are ideas.
 
-**Top-ranked:** `shared/backlog/260814-1733_p_bounded-executor-dispatches.md`. Its cited evidence is on
+**Top-ranked:** `260814-1733_*_bounded-executor-dispatches.md`. Its cited evidence is on
 disk and already sized, the analysis has already split the filed proposal into an adopted half and a
 refuted half, and no user act stands between it and shaping. It is now the portfolio's only forward
 move, since the anticipated slot is empty.
 
-**Second:** `shared/backlog/260814-1733_o_attach-the-rule-to-the-act.md`. Better supported on the
+**Second:** `260814-1733_*_attach-the-rule-to-the-act.md`. Better supported on the
 evidence, unshapeable today. Re-verified on disk this run:
-`shared/decisions/260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
 still carries the deferred marker, and
-`shared/issues/260810-0510_o_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
+`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
 the last record its deferral waits on, is still open. Reviving a deferred decision is the user's act.
 
 ### Backlog writes performed
@@ -100,16 +100,16 @@ the user two later acts where leaving it open costs one.
 - Dependency-cycle check not evaluable on an empty non-terminal node set.
 - Bounded-Closure propagation had nothing to scan; the check must be re-run when the next Circle is
   shaped.
-- The bounded Circle's one unmet Directive clause, `260817-1505`, sits in a terminal Circle's issue
+- The bounded Circle's one unmet Directive clause, `260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`, sits in a terminal Circle's issue
   store with no unit of work carrying it. Two shipped surfaces state a false property of fusion.
 - The `_b_` marker on `260816-1741-guard-becomes-observation-only` overstates what happened: its
-  Directive was reachable and deliberately not reached. Filed as `shared/issues/260817-1613`.
+  Directive was reachable and deliberately not reached. Filed as `260817-1613`.
 - Eight defects are open in that Circle's issue store; its Closure note enumerates six.
-  `260817-1417` and `260817-1502` are the two it does not list among them.
-- The oldest standing warning is resolved: `260813-2305`, the unreached step 10 of
+  `260817-1417` and `260817-1502_*_a-sub-agent-left-renames-staged-and-the-orchestrators-next-commit-absorbed-them.md` are the two it does not list among them.
+- The oldest standing warning is resolved: `260813-2305_*_the-directive-promises-plane-setup-verification-and-step-10-was-deferred-with-no-record.md`, the unreached step 10 of
   `260813-0910-documentation-matches-shipped-plugin`, now carries the closed marker.
 - Seven decision records open workbench-wide, two in `shared/` and five in terminal Circles' stores.
-  `shared/decisions/260817-1613` is new from today's closure.
+  `260817-1613` is new from today's closure.
 - The deferral chain blocking the second backlog entry still rests on a record half of which describes
   a file removed on 2026-08-15.
 - Two records touching this agent's own surfaces remain open: `260815-1633` (the demoted skill names,
@@ -127,6 +127,6 @@ reached.
 ## Files written by this run
 
 - `fusion-workbench/portfolio.md` (full overwrite)
-- `fusion-workbench/shared/history/260817-1643-playmaker-orchestrator-phase4.md` (this file)
+- `260817-1643-playmaker-orchestrator-phase4.md` (this file)
 
 Nothing was staged and nothing was committed.

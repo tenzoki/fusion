@@ -4,11 +4,11 @@ The layout tree's consumer column now names only `bin/monitor` for three surface
 Ledger entry L24 of the curator run rewrote the consumer column of `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`. The old citations (`hooks/tracker.ts:33-36, bin/monitor:72-75`) were stale line numbers and removing them was right. What replaced them under-names the consumer set: `agentstate.yaml`, `orchestrator-live.md` and `orchestrator-events.jsonl` now cite `bin/monitor` alone, while four modules under `hooks/lib/` construct those same paths at fixed workbench-relative positions. The prose two lines below the tree promises the opposite: *"Each is read at a fixed root-relative path by the consumer named beside it in the tree, and none of those consumers has a fallback path — relocating one into a Circle or into `shared/` breaks it silently."*
 
 ---
-**Found by:** coderev, Turn-3 incremental review of `5c843e6..0301909`, review file `circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`.
+**Found by:** coderev, Turn-3 incremental review of `5c843e6..0301909`, review file `260814-1419-coderev-curator-turn-3.md`.
 **Owner:** `coder` — the fix is an edit to a shipped rule file.
 **Severity:** Medium.
 **Affects:** `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`, the tree's `agentstate.yaml`, `orchestrator-live.md` and `orchestrator-events.jsonl` rows.
-**Cross-references:** `circles/260801-1244-curator/history/260814-1332-curator-run.md:625` (the ledger entry and its evidence); commit `1a36fe4`.
+**Cross-references:** `260814-1332-curator-run.md:625` (the ledger entry and its evidence); commit `1a36fe4`.
 
 **Verified 2026-08-14 at HEAD `0301909`,** by running the search the ledger entry ran, widened one directory:
 

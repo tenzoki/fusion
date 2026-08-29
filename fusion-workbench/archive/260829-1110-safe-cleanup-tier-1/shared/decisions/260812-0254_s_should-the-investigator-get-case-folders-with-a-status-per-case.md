@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator (on the user's request)
-**Cross-references:** `agents/investigator.md`; `templates/investigator-capture-layout.md`; `shared/analyses/260812-0022-...md`, which listed the investigator as a removal candidate on zero measured dispatches
+**Cross-references:** `agents/investigator.md`; `templates/investigator-capture-layout.md`; `260812-0022-...md`, which listed the investigator as a removal candidate on zero measured dispatches
 
 ---
 
@@ -52,7 +52,7 @@ several real investigations the user ran would have been better as Circles. Read
 deciding. What is not in doubt is that the removal recommendation for the investigator is withdrawn.
 
 ---
-Superseded by: circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md § Grounding snapshot item 5 — the question was what the investigator needs; the Circle's answer is that it needs nothing, because the agent is folded into `analyst` and its case-folder question has no subject left. Both options 1 and 2 assumed an agent that writes into an investigation store, and neither survives that.
+Superseded by: 260815-0007-remove-eight-mechanisms-and-cap-growth § Grounding snapshot item 5 — the question was what the investigator needs; the Circle's answer is that it needs nothing, because the agent is folded into `analyst` and its case-folder question has no subject left. Both options 1 and 2 assumed an agent that writes into an investigation store, and neither survives that.
 
 **The record was not simply overtaken, and the disagreement it recorded was re-measured rather than ignored.** This record withdrew a removal recommendation on the user's own testimony that he had used the investigator several times, and reasoned that the earlier measurement had counted orchestrator dispatches while the agent is user-initiated by design. The Circle's Grounding snapshot re-took the measurement on the right population: four dispatches in the largest consuming project, all on two days, none in the eight weeks since, and the capture input surface the agent required was deleted in July. The user's recollection and the count agree once the count includes user-initiated runs — the runs happened, and they stopped. What settled it is where the heavy diagnostics went instead: to the `analyst`, in the same period, one of them typed *"Forensic investigation (4 sim runs)"*.
 

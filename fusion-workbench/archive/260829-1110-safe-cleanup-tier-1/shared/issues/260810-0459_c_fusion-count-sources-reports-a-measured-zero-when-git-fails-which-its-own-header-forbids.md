@@ -4,9 +4,9 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `bin/fusion-count-sources` — the `listing=` assignment and the two `grep -c` lines that follow it
-**Cross-references:** commit `2910cf6`; `agents/orchestrator.md` Setup Step 5; `shared/decisions/260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
+**Cross-references:** commit `2910cf6`; `agents/orchestrator.md` Setup Step 5; `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
 
 ---
 

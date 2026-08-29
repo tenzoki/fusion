@@ -1,8 +1,8 @@
 # Step 2 — the project layer's boundary: what it may say, what an absence means, what nonsense costs
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write` — C5b remediation plan, Step 2
-**Plan:** `planning/260804-1633_o_plan-c5b-remediation-and-ship.md` `### Step 2`
+**Circle:** `260801-1244-guard-rules-write` — C5b remediation plan, Step 2
+**Plan:** `260804-1633_*_plan-c5b-remediation-and-ship.md` `### Step 2`
 **Date:** 260804, 17:05–17:30
 **Status:** Complete
 **Outcome:** **Built and verified through the harness.** `npx vitest run` green at **1394 passed, 25 files** (+50 cases: 33 unit, 17 integration). Three mutations applied, run and reverted; each broke rows that only a real guard verdict can break. Not committed — the orchestrator commits after validation.
@@ -23,7 +23,7 @@
 
 ### `hooks/lib/config.ts`
 
-**The merge is one walk over three layers, per leaf.** The five whole-object `??` lines became four small pickers (`pickGuard`, `pickEscalation`, `pickChurn`, `pickCrossFile`) plus one line for `decisions`, which is a top-level array and therefore already a leaf. `??` and not `||`, because a leaf may legitimately be `false`, `0` or `[]`. The same walk closes the four latent instances in `260804-1633` — `escalation`, `churn`, `crossFile`, `decisions` — with no per-key rule, which is what the answer to `260804-1630` was chosen for.
+**The merge is one walk over three layers, per leaf.** The five whole-object `??` lines became four small pickers (`pickGuard`, `pickEscalation`, `pickChurn`, `pickCrossFile`) plus one line for `decisions`, which is a top-level array and therefore already a leaf. `??` and not `||`, because a leaf may legitimately be `false`, `0` or `[]`. The same walk closes the four latent instances in `260804-1633` — `escalation`, `churn`, `crossFile`, `decisions` — with no per-key rule, which is what the answer to `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` was chosen for.
 
 **`guard.enabled` is removed from the project layer inside the validator**, not skipped at the merge. That placement is a decision the plan left open and it is described under *What the plan did not anticipate* below. The merge line then reads `plugin.raw.guard?.enabled ?? DEFAULTS.guard.enabled` and cannot be handed a project value, because there is none to hand.
 
@@ -39,7 +39,7 @@ Three things it deliberately does not do, each because breaking one would break 
 
 ### `hooks/lib/paths.ts`
 
-The `matchesAny` docstring's "no per-project config loader exists yet" is gone, with `findRelevantDecisions` now stated as reachable and the open question pointed at `decisions/260804-1632`. The tracker's noise filter is separately restated as still unreachable, because it reads a hardcoded constant and the deleted sentence covered both callers at once. Item 1 of `260804-1432` closes; item 2 is `260804-1632` and stays open.
+The `matchesAny` docstring's "no per-project config loader exists yet" is gone, with `findRelevantDecisions` now stated as reachable and the open question pointed at `260804-1632`. The tracker's noise filter is separately restated as still unreachable, because it reads a hardcoded constant and the deleted sentence covered both callers at once. Item 1 of `260804-1432_*_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md` closes; item 2 is `260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md` and stays open.
 
 ---
 
@@ -76,11 +76,11 @@ The predecessor plan was wrong in three ways that only showed up during implemen
 
 **1. The provenance field cannot be an ordinary field of the returned configuration.** The plan frames the choice as "either the returned configuration carries the provenance of that one leaf, or Step 4 re-reads a file the loader already read", and both readings are available. What it does not say is that the predecessor plan's Step 6 left behind an assertion comparing `JSON.stringify` of everything except `diagnostics` against a frozen transcription — so a new top-level field fails that case, and a field nested under `guard` fails it too. Provenance had to be classed with `diagnostics` as a *load report* rather than a setting, which is honest (it describes the load, not the verdict) but is a shape the plan does not describe, and it forced the `GuardSettings` / `GuardConfig` split.
 
-**2. Two rules can claim the same key, and the plan does not say which wins.** A project writing `{"guard":{"enabled":"false"}}` has written both a forbidden key and a wrong type. Two diagnostics would be noise, and the type diagnostic is the actively harmful one of the pair: "must be a boolean" tells a project owner that fixing the type would make the key work, which is the opposite of true. Resolved by giving the `enabled` exception precedence inside the validator — the project layer's `enabled` is dropped whatever its type, with the "cannot be set by a project" reason, exactly once. That is the only reading consistent with `260804-1631`'s "a project that declares it gets **one** diagnostic naming the key", but the plan leaves it to the executor and a different executor could reasonably have emitted both.
+**2. Two rules can claim the same key, and the plan does not say which wins.** A project writing `{"guard":{"enabled":"false"}}` has written both a forbidden key and a wrong type. Two diagnostics would be noise, and the type diagnostic is the actively harmful one of the pair: "must be a boolean" tells a project owner that fixing the type would make the key work, which is the opposite of true. Resolved by giving the `enabled` exception precedence inside the validator — the project layer's `enabled` is dropped whatever its type, with the "cannot be set by a project" reason, exactly once. That is the only reading consistent with `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md`'s "a project that declares it gets **one** diagnostic naming the key", but the plan leaves it to the executor and a different executor could reasonably have emitted both.
 
-**3. "The five `??` lines at `:277-282` become a per-leaf walk over the same three sources" understates the shape of the change.** There were two stages, not one: the whole-object choice at `:277-282` and a per-leaf `?? DEFAULTS` normalisation at `:294-330` that was already a leaf walk against two of the three layers. The change collapses the two stages into one three-layer walk and deletes the first. It is not three lines (issue `260804-1601`'s estimate, carried into the plan), because the leaf key sets differ per container and each container needs its own typed picker.
+**3. "The five `??` lines at `:277-282` become a per-leaf walk over the same three sources" understates the shape of the change.** There were two stages, not one: the whole-object choice at `:277-282` and a per-leaf `?? DEFAULTS` normalisation at `:294-330` that was already a leaf walk against two of the three layers. The change collapses the two stages into one three-layer walk and deletes the first. It is not three lines (issue `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`'s estimate, carried into the plan), because the leaf key sets differ per container and each container needs its own typed picker.
 
-**4. `blocksBeforeHalt: "3"` changes class, and issue `260804-1603` lists it under "the values that behave".** The shipped code coerced it through the `>=` comparison and halted at three. Validated as a positive integer, it is now a dropped key with a diagnostic — which still ends at three, but only because `hooks/config.json` and `DEFAULTS` agree on that leaf, which is precisely the coincidence `260804-1633` says nothing is keeping true. The behaviour is unchanged today and the reason is now a rule rather than a coercion. Recorded here because a reader of `260804-1603` would not expect that row to move.
+**4. `blocksBeforeHalt: "3"` changes class, and issue `260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` lists it under "the values that behave".** The shipped code coerced it through the `>=` comparison and halted at three. Validated as a positive integer, it is now a dropped key with a diagnostic — which still ends at three, but only because `hooks/config.json` and `DEFAULTS` agree on that leaf, which is precisely the coincidence `260804-1633` says nothing is keeping true. The behaviour is unchanged today and the reason is now a rule rather than a coercion. Recorded here because a reader of `260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` would not expect that row to move.
 
 One thing the plan got exactly right and it is worth saying: **`hooks/guard.ts` genuinely did not need touching.** The short-circuit at `:652` reads `config.guard.enabled`, and under this answer no project value can reach it. Nothing above it moved.
 
@@ -90,8 +90,8 @@ One thing the plan got exactly right and it is worth saying: **`hooks/guard.ts` 
 
 **A project's file is read leaf by leaf, and a leaf it does not supply usably is a leaf it did not supply.** What that costs a project, in the direction that is not obvious:
 
-- A project that genuinely wants no protection must now write `"protectedPaths": []` rather than omit the key, and nothing announces that at the moment it matters. This is the cost `260804-1630` names in its own `## Options`, accepted with the answer.
-- A project that leaves `"enabled": false` in its file meets one `guard_advisory` on **every guarded tool call** until the line is removed. Pinned by its own case (`STATED COST:`) rather than left to be discovered. The advisory cannot be suppressed — it is what `260804-1631` calls the only thing standing between this answer and a silently inert key — and an advisory that repeats forever trains its reader to dismiss advisories, which is the failure Step 5 is separately about.
+- A project that genuinely wants no protection must now write `"protectedPaths": []` rather than omit the key, and nothing announces that at the moment it matters. This is the cost `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` names in its own `## Options`, accepted with the answer.
+- A project that leaves `"enabled": false` in its file meets one `guard_advisory` on **every guarded tool call** until the line is removed. Pinned by its own case (`STATED COST:`) rather than left to be discovered. The advisory cannot be suppressed — it is what `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` calls the only thing standing between this answer and a silently inert key — and an advisory that repeats forever trains its reader to dismiss advisories, which is the failure Step 5 is separately about.
 - A dropped key is named, so the file the project wrote and the configuration the guard runs can be reconciled from the dashboard. The diagnostic names the key path (`guard.protectedPaths`, `escalation.blocksBeforeHalt`) and the file, and says the key was ignored and inherits as if absent.
 
 The examples above are an open set. The rule is the sentence in bold; five enumerations have been falsified in this Circle and a sixth closed list would be a defect the day it shipped.
@@ -110,9 +110,9 @@ The examples above are an open set. The rule is the sentence in bold; five enume
 
 ## Records
 
-**Closed by this step, pending the orchestrator's commit:** `260804-1601`, `260804-1602`, `260804-1603`, `260804-1606`, `260804-1633`, and item 1 of `260804-1432`.
+**Closed by this step, pending the orchestrator's commit:** `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`, `260804-1602_*_guard-enabled-false-from-the-project-layer-turns-off-the-branch-policy-and-an-active-halt.md`, `260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md`, `260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md`, `260804-1633`, and item 1 of `260804-1432_*_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md`.
 
-**Decision records left as `_a_`.** `260804-1630` and `260804-1631` are realised in code but their `Implemented:` line cites a commit hash, and this step does not commit. The plan says the reconciler walks them at Phase 3 against the commits rather than against the plan, which is the correct owner.
+**Decision records left as `_a_`.** `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` and `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` are realised in code but their `Implemented:` line cites a commit hash, and this step does not commit. The plan says the reconciler walks them at Phase 3 against the commits rather than against the plan, which is the correct owner.
 
 **Filed:** nothing. No defect was found that this step does not close.
 

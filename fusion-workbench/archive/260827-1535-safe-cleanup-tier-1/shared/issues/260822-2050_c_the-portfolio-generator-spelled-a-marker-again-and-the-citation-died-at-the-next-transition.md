@@ -7,7 +7,7 @@ The portfolio generator spelled a marker again, and the citation died at the nex
 **Filed by:** orchestrator, on the activation that killed the citation
 **Affects:** `agents/playmaker.md`, its portfolio generation; `fusion-workbench/portfolio.md:46`
 **Cross-references:**
-`shared/issues/260810-1730_c_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`
+`260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md`
 (the same defect, closed);
 `rules/circle-records.md` `### Citation form in the portfolio` (the rule it breaks, and the rule the
 closed record produced)
@@ -16,7 +16,7 @@ closed record produced)
 
 ## What happened
 
-The playmaker regenerated `portfolio.md` at 260822-2040. Line 46 reads:
+The playmaker regenerated `portfolio.md` at 260822-2040-playmaker-direct-dispatch.md. Line 46 reads:
 
 > A proposal block was appended to `circles/260822-1921-measure-what-two-checkouts-share/_a_circle.md`.
 > The marker is unchanged; activation is the user's act.
@@ -39,7 +39,7 @@ almost everywhere and wrong once.
 
 ## Why this is a new record rather than a note on the old one
 
-`260810-1730` is closed. Its own measurement was five citations in one generated portfolio, two
+`260810-1730_*_die-erzeugung-von-portfolio-md-schreibt-den-zustandsmarker-aus-und-macht-jede-handkorrektur-zunichte.md` is closed. Its own measurement was five citations in one generated portfolio, two
 already dead on the day of filing and a third two hours later, and the rule now in
 `rules/circle-records.md` is what closed it. A recurrence after the rule exists is a different fact
 from the original: the first said the rule was missing, this one says the rule is present and was

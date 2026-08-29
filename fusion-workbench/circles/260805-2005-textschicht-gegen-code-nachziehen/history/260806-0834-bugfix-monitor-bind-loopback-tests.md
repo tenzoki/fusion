@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-06 08:34
 **Status:** Complete
-**Trigger:** User report (Issue `260806-0820_c_monitor-bind-0000-bricht-loopback-verbindungen-neun-tests-rot.md`)
+**Trigger:** User report (Issue `260806-0820_*_monitor-bind-0000-bricht-loopback-verbindungen-neun-tests-rot.md`)
 
 ## Error
 

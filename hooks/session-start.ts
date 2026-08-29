@@ -27,7 +27,7 @@
  * against from the working directory, and the guard's own stand-down asked cwd
  * whether it was fusion's repository; both went on 2026-08-16, when the guard
  * stopped deciding anything. The issue that tracked the first residual is
- * `circles/260801-1244-guard-rules-write/issues/260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
+ * `260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`,
  * still open at the time of writing and now moot — its subject is gone, and
  * closing it is a reconciler's act, not this file's.
  *
@@ -95,7 +95,7 @@
  * plain stdout reaches the model verbatim, `systemMessage` never reaches it at
  * all — read out of the transcript's `hook_success` attachments against Claude
  * Code 2.1.245, in
- * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`,
+ * `260825-2214-can-a-hook-obtain-the-session-identifier.md`,
  * finding (b). This file's choice is unchanged by it; what changed is that the
  * OTHER channel now has a user. `session-id.ts` is the sibling SessionStart
  * command that puts the Claude Code session identifier in front of the model,

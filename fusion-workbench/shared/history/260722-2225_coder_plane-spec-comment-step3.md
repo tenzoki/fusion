@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Date:** 2026-07-22
-**Plan:** `shared/planning/260722-2021_p_plan-plane-spec-comment.md` (Step 3)
+**Plan:** `260722-2021_*_plan-plane-spec-comment.md` (Step 3)
 **Files touched:**
 - `hooks/lib/__tests__/fusion-plane.test.ts` (new describe block appended)
 - `hooks/lib/__tests__/fixtures/plane/comments-with-marker.json` (new)

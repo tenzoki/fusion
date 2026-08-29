@@ -1,8 +1,8 @@
 # coder — end-of-Turn-2 bookkeeping (goldens, BASELINE, orchestrator citation)
 
-**Date:** 260827-2110
+**Date:** 260827-2110-coder-turn-2-bookkeeping.md
 **Agent:** coder
-**Circle:** circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared
+**Circle:** 260826-1613-cardinality-answered-cut-once-nineteen-cleared
 **Status:** Complete
 
 ## Implemented

@@ -68,7 +68,7 @@ export function setEventSession(id) {
  * `rules/fusion-workbench-conventions.md` `### Which of them a tracked
  * workbench tracks`; the reasoning and the three rejected alternatives are in
  * decision
- * `shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`.
+ * `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`.
  *
  * A roll may move the file out from under this function between calls. That is
  * safe by construction: it opens, appends and closes on every call rather than

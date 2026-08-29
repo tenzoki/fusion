@@ -2,7 +2,7 @@
 
 ---
 **Status:** open
-**Filed by:** orchestrator (follow-up to bf18fc0 closing 260707-0750 + 260707-0751)
+**Filed by:** orchestrator (follow-up to bf18fc0 closing 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md + 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md)
 ---
 
 ## Symptom
@@ -12,9 +12,9 @@ from the Bash allow-path of `guardBashCommand` (`hooks/guard.ts`). The behaviour
 correct and coderev-verified, but **no test pins the invariant**. Both closed issues explicitly
 asked for one:
 
-- 260707-0750: "add a test asserting that an allowed Bash call between two blocks does not
+- 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md: "add a test asserting that an allowed Bash call between two blocks does not
   reset `consecutiveBlocks` ... so the intent is pinned."
-- 260707-0751: "Run a handful of innocuous Bash calls through `dist/guard.js` and confirm no
+- 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md: "Run a handful of innocuous Bash calls through `dist/guard.js` and confirm no
   `guard_allow` Bash lines are appended to `events.jsonl`, while a denied `git switch` still
   emits `guard_block`."
 
@@ -51,11 +51,11 @@ fix cannot silently unwind. Non-blocking.
 - Full hooks suite still green.
 
 ---
-Resolved: Both acceptance bullets are met, by option 1 (the subprocess/tmpdir harness the issue preferred), as a side effect of Circle `circles/260801-1244-guard-bash-inspection` needing the same harness for its own wiring. Verified by the reconciler at HEAD `9ab5a2a` by reading the assertions, not the commit messages.
+Resolved: Both acceptance bullets are met, by option 1 (the subprocess/tmpdir harness the issue preferred), as a side effect of Circle `260801-1244-guard-bash-inspection` needing the same harness for its own wiring. Verified by the reconciler at HEAD `9ab5a2a` by reading the assertions, not the commit messages.
 
 The harness is `hooks/lib/__tests__/helpers/guard-harness.ts` (new, commit `85c043c`): `mkdtemp` project root carrying `fusion-workbench/.fusion-setup`, no `.claude-plugin/plugin.json` so the write guard is active there, one spawned `node hooks/dist/guard.js` per case with `cwd` set to it, PreToolUse JSON on stdin.
 
-- *"A test fails if the Bash allow-path is reverted to reset the counter or emit `guard_allow`."* — `guard-bash-integration.test.ts:301-343`, "innocuous Bash after a block neither resets the counter nor appends an event". One block sets `consecutiveBlocks` to 1; nine innocuous calls follow (`ls -la`, `git status`, `mv notes.txt /tmp/`, `rm -rf build`, `sed -i '' 's/a/b/' notes.txt`, `cp rules/x.md /tmp/y`, `git checkout HEAD -- rules/x.md`, `echo hi 2>&1`); the assertions are on the files — `readEscalation(root)?.consecutiveBlocks` still 1 and `readEvents(root)` still exactly `["guard_block"]`. Both named issues, 260707-0750 and 260707-0751, are cited in the test's own comment. A stronger sibling at `:286-299` asserts a fresh project running `ls -la` never creates `.guard-state` at all.
+- *"A test fails if the Bash allow-path is reverted to reset the counter or emit `guard_allow`."* — `guard-bash-integration.test.ts:301-343`, "innocuous Bash after a block neither resets the counter nor appends an event". One block sets `consecutiveBlocks` to 1; nine innocuous calls follow (`ls -la`, `git status`, `mv notes.txt /tmp/`, `rm -rf build`, `sed -i '' 's/a/b/' notes.txt`, `cp rules/x.md /tmp/y`, `git checkout HEAD -- rules/x.md`, `echo hi 2>&1`); the assertions are on the files — `readEscalation(root)?.consecutiveBlocks` still 1 and `readEvents(root)` still exactly `["guard_block"]`. Both named issues, 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md and 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md, are cited in the test's own comment. A stronger sibling at `:286-299` asserts a fresh project running `ls -la` never creates `.guard-state` at all.
 - *"A test confirms a denied `git switch` still records a block + emits `guard_block`."* — `guard-bash-integration.test.ts:412-427` asserts the block verdict, the reason text and `recentEvents` trigger `git_branch_switch`; `guard-bash-wiring.test.ts:281` and `:399` assert the `guard_block` line in `events.jsonl` for the denial paths.
 - *"Full hooks suite still green."* — `npm test` in `hooks/`: 753 passed, 16 files, exit 0. The script is now `tsc && vitest run`, so the suite runs against a freshly built `dist` rather than a possibly stale one.
 

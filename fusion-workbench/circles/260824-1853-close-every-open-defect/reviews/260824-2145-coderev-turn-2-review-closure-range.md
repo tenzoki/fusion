@@ -30,7 +30,7 @@ Critical 0 / High 0 / Medium 1 / Low 4. Four records in `$OUT_ISSUE`, one in `sh
 | 2058 ×2 (stilwerk) | not judged | ontorev's; the Circle-side notes cite line numbers I did not verify |
 | 2059 histories cite by open marker | yes | the `grep -c` in the note prints 0 for both files; `_t_circle.md:32` starred |
 | 2059 closure notes one line off | yes | `Corrected:` lines appended, originals untouched, as the note says |
-| 2100 history filename | yes | `history/260824-2042-coder-p-7b-session-domain-layout-row.md` exists in the pattern form |
+| 2100 history filename | yes | `260824-2042-coder-p-7b-session-domain-layout-row.md` exists in the pattern form |
 | 2100 backlog referrals | as claimed | `referred (backlog)`, seven paths listed for the user; no agent filed an entry, per `## Backlog entries` |
 | 2101 triage row 66 | yes | `moot`; `grep -c 'Those belong' rules/user-facing-output.md` = 0 |
 | 2136 citation-lint positive control | yes | `corpusFiles(root = workbenchRoot)` → `markdownFilesUnder(root)` → `inCorpus()` → `OPEN_ISSUE_RE` at `:174`: the scratch-workbench control at `:288-297` runs the production selector end to end and asserts the `_c_` sibling is excluded. It still controls the selector. |
@@ -54,7 +54,7 @@ Critical 0 / High 0 / Medium 1 / Low 4. Four records in `$OUT_ISSUE`, one in `sh
 
 The roll is faithful: the 92 lines deleted at `reference-resolution-lint.test.ts:456-547` (at `01964e4`) are the 15 entries in `shared/analyses/260824-2121-*` verbatim, the pointer line at `:285-286` names the file, the log's header names the decision and the first roll, and `BASELINE` moved 1353→1357 / 189→190 with the four tokens accounted on the constant's line. The line arithmetic in the histories reconciles: -90 (ref-lint) +16 (identity) +80 (session-domain) +2 (paths) +2 (citation) = +10, head-room 10 → 0.
 
-- **Low, pre-existing, filed in `shared/`.** The chain closes at paths 1294 in the rolled log and the next surviving entry opens at 1295 (`:459`, written by `5b88eb9` before this range). Record: `shared/issues/260824-2145_*_the-reference-resolution-pin-chain-has-an-unaccounted-plus-one...`.
+- **Low, pre-existing, filed in `shared/`.** The chain closes at paths 1294 in the rolled log and the next surviving entry opens at 1295 (`:459`, written by `5b88eb9` before this range). Record: `260824-2145_*_the-reference-resolution-pin-chain-has-an-unaccounted-plus-one...`.
 
 ### No finding
 
@@ -72,4 +72,4 @@ The roll is faithful: the 92 lines deleted at `reference-resolution-lint.test.ts
 3. The pin-chain accounting: whoever next re-approves the constant writes the retrospective line and pays for it.
 
 ---
-Reconciled: 260824-2159 (reconciler) — all five findings closed in `3b0dc93` (records `260824-2145_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.
+Reconciled: 260824-2159-reconciliation.md (reconciler) — all five findings closed in `3b0dc93` (records `260824-2145_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.

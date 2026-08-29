@@ -2,11 +2,11 @@
 
 **Date:** 2026-07-17
 **Status:** Complete
-**Spec:** none — planned from the Circle Directive (`circles/260717-1638-marker-format-ohne-glob-metazeichen/_t_circle.md`)
+**Spec:** none — planned from the Circle Directive (`260717-1638-marker-format-ohne-glob-metazeichen`)
 
 ## Directive
 
-State markers in filenames lose their brackets. `[o]` becomes `_o_`, `[t]-circle.md` becomes `_t_circle.md`, `260716-1847[o]-topic.md` becomes `260716-1847_o_topic.md`. The marker vocabulary (`o a t c i b s d p`), every marker's meaning, the state transitions, the sort order, and the `ls`-readability all stay exactly as they are. Only the delimiter changes, because `[` and `]` are shell-glob metacharacters: a marker written into a glob is silently a character class, and that class hit five sites in one session (Circle Grounding snapshot).
+State markers in filenames lose their brackets. `[o]` becomes `_o_`, `[t]-circle.md` becomes `_t_circle.md`, `260716-1847[o]-topic.md` becomes `260716-1847_*_topic.md`. The marker vocabulary (`o a t c i b s d p`), every marker's meaning, the state transitions, the sort order, and the `ls`-readability all stay exactly as they are. Only the delimiter changes, because `[` and `]` are shell-glob metacharacters: a marker written into a glob is silently a character class, and that class hit five sites in one session (Circle Grounding snapshot).
 
 ## Current State
 
@@ -41,13 +41,13 @@ The marker-parsing logic lives in exactly these places, all shell:
 | `CLAUDE.md` | 32 |
 | `docs/philosophy.md` | 16 |
 | `rules/decision-record-examples.md` (subset of the 556) | 39 |
-| **Workbench files carrying a marker in the name** | **37** (was 31 at Grounding time; more issues filed since) — includes both Circle records: `circles/260716-1847-workbench-umbau/[c]-circle.md` and this Circle's own `circles/260717-1638-.../[t]-circle.md` |
+| **Workbench files carrying a marker in the name** | **37** (was 31 at Grounding time; more issues filed since) — includes both Circle records: `260716-1847-workbench-umbau[c]-circle.md` and this Circle's own `circles/260717-1638-.../[t]-circle.md` |
 
 The edit itself is a mechanical string substitution (`[x]` → `_x_` for the nine marker letters). The work is in the count and in migrating live workbenches.
 
 ### The underscore form is verified safe (empirical, zsh 5.9 — this environment's shell)
 
-- `*_o_*.md` matches `260716-1847_o_topic.md`, does **not** match `_p_`/`_c_` files.
+- `*_o_*.md` matches `260716-1847_*_topic.md`, does **not** match `_p_`/`_c_` files.
 - `_t_circle.md` matches literally (underscore is neither a glob nor a regex metacharacter).
 - `sed -nE 's/^_([a-z])_.*/\1/p'` reads the leading marker; `sed -nE 's/^[0-9]{6}-[0-9]{4}_([a-z])_.*/\1/p'` reads the datestamped one; `sed -E 's/_[a-z]_/_/'` strips it.
 - Slugs are hyphen-separated and never contain `_`, so `_o_` appears only as the marker — no slug collision (already recorded in the Grounding verification table; re-confirmed here).
@@ -100,7 +100,7 @@ flowchart LR
   A4 --> B4
 ```
 
-## Sequencing vs the zsh-fix plan (`shared/planning/260717-1918[o]`)
+## Sequencing vs the zsh-fix plan (`260717-1918[o]`)
 
 That plan (open, planned, not yet executed) converts every glob loop to a `find … | while read` loop to remove the zsh *no-match-abort* class. It is a **different defect class** (empty-glob fatal under zsh) but it **edits the same lines** this Circle touches — most sharply `skills/cleanup/SKILL.md:67` and the eight marker-parse sites. Because they touch the same lines, they cannot land in parallel (merge collision); they must be sequenced.
 
@@ -116,7 +116,7 @@ That plan (open, planned, not yet executed) converts every glob loop to a `find 
 1. **[Phase 0] Rewrite the definition home**
    - Executor: coder
    - Files: `rules/fusion-workbench-conventions.md`, `rules/decision-record-examples.md`, `rules/user-facing-output.md`
-   - Changes: In `fusion-workbench-conventions.md`, convert every marker token to underscore form: the three "State Markers" vocabulary tables (issues/planning, decisions, circles), the "Filename Patterns" table (`[S]-circle.md` → `_S_circle.md`, `YYMMDD-HHMM[S]-<topic>.md` → `YYMMDD-HHMM_S_<topic>.md`), the Circle record template header (`[S]-circle.md`), the stash-layout examples, and all worked-transition prose. **Rewrite the "two correct glob forms" block** (currently the escaped-bracket `circles/*/\[t\]-circle.md` and the read-marker-from-name enumeration) to the underscore forms: `circles/*/_t_circle.md` (no escaping needed) and `circles/*/*-circle.md` → `sed -nE 's/^_([a-z])_.*/\1/p'`. Add a short paragraph stating *why* the delimiter is an underscore (bracket = glob metacharacter; the five-hit session) so the rationale lives at the definition, and note that the underscore is inert in both glob and regex. In `decision-record-examples.md` (39 mentions) and the marker mentions in `user-facing-output.md` (17), convert to underscore form. Update `**Status:**`-style prose unaffected. `decisions/260716-1910[i]-...circle-marker...md` is cited as the binding decision for marker-on-record — leave the citation path as-is (Phase 4 renames the file; the citation is updated there).
+   - Changes: In `fusion-workbench-conventions.md`, convert every marker token to underscore form: the three "State Markers" vocabulary tables (issues/planning, decisions, circles), the "Filename Patterns" table (`[S]-circle.md` → `_S_circle.md`, `YYMMDD-HHMM[S]-<topic>.md` → `YYMMDD-HHMM_S_<topic>.md`), the Circle record template header (`[S]-circle.md`), the stash-layout examples, and all worked-transition prose. **Rewrite the "two correct glob forms" block** (currently the escaped-bracket `circles/*/\[t\]-circle.md` and the read-marker-from-name enumeration) to the underscore forms: `circles/*/_t_circle.md` (no escaping needed) and `circles/*/*-circle.md` → `sed -nE 's/^_([a-z])_.*/\1/p'`. Add a short paragraph stating *why* the delimiter is an underscore (bracket = glob metacharacter; the five-hit session) so the rationale lives at the definition, and note that the underscore is inert in both glob and regex. In `decision-record-examples.md` (39 mentions) and the marker mentions in `user-facing-output.md` (17), convert to underscore form. Update `**Status:**`-style prose unaffected. `260716-1910[i]-...circle-marker...md` is cited as the binding decision for marker-on-record — leave the citation path as-is (Phase 4 renames the file; the citation is updated there).
    - Dependencies: none
 
 2. **[Phase 1] Convert the executable marker logic — agents and non-exempt skills**
@@ -146,7 +146,7 @@ That plan (open, planned, not yet executed) converts every glob loop to a `find 
 5. **[Phase 4] Dogfood: reformat fusion's own 37 workbench files**
    - Executor: coder
    - Files: the 37 marker-named files under `fusion-workbench/` (both stores + both Circle records), via the Step 4 migration path — not by hand.
-   - Changes: Run the extended `/fusion:migrate` reformat pass over this workbench (it is `MODE=plain` — fusion's workbench is gitignored, so plain `mv`, no diff, per migrate's own honesty note). This renames every `*[x]*.md` to `*_x_*.md`, including `circles/260716-1847-workbench-umbau/[c]-circle.md` → `_c_circle.md` and **this Circle's own** `circles/260717-1638-.../[t]-circle.md` → `_t_circle.md`. **Active-record hazard, resolved:** `.active-circle` holds the bare directory name `260717-1638-marker-format-ohne-glob-metazeichen` (markerless, stable), so renaming the active record does not break resolution; the orchestrator resume reads `**Active session history:**` (a markerless path in `shared/history/`), also unaffected. Rename this plan file (`260717-1959[o]-plan-...md` → `_o_`) in the same pass. Verify afterward that `bin/fusion-paths orchestrator` still resolves cleanly and that a marker-collect over `circles/*/_*_circle.md` returns the two records with correct markers.
+   - Changes: Run the extended `/fusion:migrate` reformat pass over this workbench (it is `MODE=plain` — fusion's workbench is gitignored, so plain `mv`, no diff, per migrate's own honesty note). This renames every `*[x]*.md` to `*_x_*.md`, including `260716-1847-workbench-umbau[c]-circle.md` → `_c_circle.md` and **this Circle's own** `circles/260717-1638-.../[t]-circle.md` → `_t_circle.md`. **Active-record hazard, resolved:** `.active-circle` holds the bare directory name `260717-1638-marker-format-ohne-glob-metazeichen` (markerless, stable), so renaming the active record does not break resolution; the orchestrator resume reads `**Active session history:**` (a markerless path in `shared/history/`), also unaffected. Rename this plan file (`260717-1959[o]-plan-...md` → `_o_`) in the same pass. Verify afterward that `bin/fusion-paths orchestrator` still resolves cleanly and that a marker-collect over `circles/*/_*_circle.md` returns the two records with correct markers.
    - Dependencies: Step 4
 
 6. **[Phase 5] Add the regression lint — reject bracket-marker forms in agents/skills**
@@ -179,7 +179,7 @@ Every check is written to run under **zsh 5.9** (this environment's shell), usin
   ```sh
   zsh -c 'D=$(mktemp -d); mkdir -p "$D/c/x" "$D/c/y"; : > "$D/c/x/_a_circle.md"; : > "$D/c/y/_t_circle.md"; for f in "$D"/c/*/*-circle.md; do basename "$f" | sed -nE "s/^_([a-z])_.*/\1/p"; done | sort | uniq -c'
   ```
-- **Step 2 (cleanup site):** against a plans dir holding `..._o_..md`, `..._p_..md`, `..._c_..md`, `..._d_..md`, run the converted listing and assert only `_o_`/`_p_` appear, and that a file with the letter `o` in its slug (`260101-0000_c_add-o-ring.md`) is **not** matched.
+- **Step 2 (cleanup site):** against a plans dir holding `..._o_..md`, `..._p_..md`, `..._c_..md`, `..._d_..md`, run the converted listing and assert only `_o_`/`_p_` appear, and that a file with the letter `o` in its slug (`260101-0000_*_add-o-ring.md`) is **not** matched.
 - **Step 4 (migrate):** stand up a scratch tree in *both* shapes — (a) a pre-v4 flat `circles/*.md` with bracket names, (b) a container-layout workbench with `circles/<dir>/[x]-circle.md` and bracket-marked store files — run the extended migrate under zsh and assert: pre-v4 files land as `circles/<dir>/_x_circle.md`; container bracket files are renamed to underscore; `rewrite_fields` re-points a record field that held a bracket-marked plan path; `.active-circle` (bare dir name) is untouched; collisions are refused loudly; the tail counters are correct. Re-run to confirm idempotence (second run finds nothing).
 - **Step 5 (dogfood):** after reformatting fusion's own workbench, assert `find fusion-workbench -name '*[[]*[]]*.md'` returns nothing, `bin/fusion-paths orchestrator` exits 0 with the active Circle resolved, and the two Circle records read `_c_` and `_t_`.
 - **Step 6 (lint):** `npm test` — the new gate passes on the clean tree; a fixture with `\[o\]` spliced into a copied prompt fails with a message naming the underscore replacement and the file/line.
@@ -201,7 +201,7 @@ Every check is written to run under **zsh 5.9** (this environment's shell), usin
 - [ ] **1 — Prose scope: underscore everywhere (A) or filenames/globs/parsers only (B)?** *Recommended: A.* Change every marker token — including vocabulary tables and inline prose ("rename `_o_` → `_p_`") — to underscore form. Rationale: the Directive says "only the brackets disappear" (unqualified); A is the single-source-of-truth answer with no special-case split; the copy-paste vector that caused two of the five session hits *is* prose (a bracket glob written in a doc, then copied); and A lets the Step 6 lint be a strict zero-exemption bracket-token reject. Cost: ~623 doc/prose mentions vs ~150 filename/glob/parser mentions under B, and prose reads slightly worse (`_o_` vs `[o]`). B keeps a fragile split rule, a shape-aware (not strict) lint, and a surviving copy-paste vector. **Blocks the exact edit set of Steps 1–3 and 6; decide at the gate.**
 - [ ] **2 — Migration approach for existing workbenches.** The moment the code switches to underscore globs, a bracket-marked workbench (37 files here; any consuming project's) is unreachable. Options: **M1 (recommended) — extend `/fusion:migrate`** to detect and reformat bracket-marker files, reframing it as "bring a workbench to the current format." Reuses migrate's git-mv/plain-mv, collision-refuse, counters, and idempotency model; one migration entry point; setup already routes users to it. Cost: migrate's purpose broadens (a semantic, but its detector already keys on artifacts, not version). **M2 — a separate reformat skill.** Keeps migrate's pre-v4 scope pure (single responsibility), but adds a second migration tool the user must know and sequence, and setup must route to both. **M3 — transitional dual-read** (code reads both forms for a window): **rejected** — every glob site would need both `*_o_*.md` and `*\[o\]*.md`, which *re-introduces the escaped-bracket glob this Circle exists to remove*, and dual-read is the special-case thicket critical-stance forbids. **Decide M1 vs M2 at the gate; M3 is not recommended.**
 - [ ] **3 — Path-lint regression gate (Step 6): add it?** *Recommended: yes.* A vitest gate rejecting `\[[oatcibspd]\]` in `agents/*.md` + non-exempt `skills/*/SKILL.md`, reusing the existing `{setup, migrate}` exemption. Cheap, precise, starts green with zero exemptions under scope A, and stops the bracket form creeping back — the same posture as the existing path-literal lint and the zsh-plan's proposed `.[!.]*` lint. It is strict-and-simple only under scope A; under B it must become shape-aware (a further argument for A).
-- [ ] **4 (informational, non-blocking) — zsh-fix sequencing.** Recorded above: this Circle lands first; the zsh-fix plan (`shared/planning/260717-1918[o]`) is re-grounded afterward (its site-12 bracket special-casing dissolves). Not a gate question — a coordination note for whoever schedules the two.
+- [ ] **4 (informational, non-blocking) — zsh-fix sequencing.** Recorded above: this Circle lands first; the zsh-fix plan (`260717-1918[o]`) is re-grounded afterward (its site-12 bracket special-casing dissolves). Not a gate question — a coordination note for whoever schedules the two.
 
 ## Reconciliation Log
 

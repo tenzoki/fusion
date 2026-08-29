@@ -1,4 +1,4 @@
-# Playmaker run 260801-2044 — portfolio regeneration
+# Playmaker run 260801-2044-playmaker-user-fusion-next.md — portfolio regeneration
 
 **Trigger:** user-fusion-next
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:** code` line)
@@ -28,8 +28,8 @@ Supporting measurement taken this run: ten files in the plugin's `rules/`, one o
 ## Warnings emitted to the portfolio
 
 - Grounding drift: `260801-1244-rule-provenance-header` states nine rule files; there are ten.
-- `fusion-workbench/tasklist.md` holds a fully closed queue from 260716-1920, filed as `shared/issues/260801-2038_o_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`.
-- Session bookkeeping froze at Turn 1 for the closed Circle, filed as `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`.
+- `fusion-workbench/tasklist.md` holds a fully closed queue from 260716-1920, filed as `260801-2038_*_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`.
+- Session bookkeeping froze at Turn 1 for the closed Circle, filed as `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`.
 - Seventeen open issues in the shared store; two more open inside Circles.
 
 ## Dependency cycles
@@ -42,7 +42,7 @@ No Circle carries `_b_`, so the parent-grounding-stale check did not fire. No `p
 
 ## Writes made this run
 
-- Appended `## Activation proposal` to `circles/260801-1244-rule-provenance-header/_a_circle.md`.
+- Appended `## Activation proposal` to `260801-1244-rule-provenance-header`.
 - Regenerated `fusion-workbench/portfolio.md` in full.
 - This log.
 

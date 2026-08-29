@@ -3,8 +3,8 @@
 **Date:** 2026-08-01 12:44
 **Agent:** shaper (anticipated-circle mode, dispatched by the orchestrator)
 **Output:** four Circle directories under `circles/`, each with an `_a_circle.md` record and the six artifact subdirectories
-**Source spec:** `shared/planning/260801-1122_o_spec-normative-consolidation.md`
-**Prior runs:** `shared/history/260801-1122-shaper-normative-consolidation.md`, `shared/history/260801-1154-shaper-normative-consolidation-revision.md`, `shared/history/260801-1215-shaper-normative-consolidation-final.md`
+**Source spec:** `260801-1122_*_spec-normative-consolidation.md`
+**Prior runs:** `260801-1122-shaper-normative-consolidation.md`, `260801-1154-shaper-normative-consolidation-revision.md`, `260801-1215-shaper-normative-consolidation-final.md`
 
 ## Request
 
@@ -15,7 +15,7 @@ File the four Circles the spec's `## Circle structure` section names, as anticip
 - The spec in full (742 lines), and the final shaper history from the third pass.
 - `rules/fusion-workbench-conventions.md` in full, for the Circle record template, the circles marker vocabulary, the filename-pattern table, and the Origin Rule.
 - `rules/agent-setup.md`, `rules/user-facing-output.md`, `rules/critical-stance.md`, `rules/design-diagrams.md`, and both stilwerk voice profiles.
-- The `circles/` directory listing (five closed Circles, no anticipated or active ones) and one existing record, `circles/260719-1536-plane-mirror-integration/_c_circle.md`, for the house style of a filled record.
+- The `circles/` directory listing (five closed Circles, no anticipated or active ones) and one existing record, `260719-1536-plane-mirror-integration`, for the house style of a filled record.
 - The decision and issue listings under `shared/`, so the records cite what exists rather than what was assumed to exist.
 
 ## No clarification round was run
@@ -26,10 +26,10 @@ The spec is final. Its header states that all twelve decisions are answered and 
 
 Four Circle directories, all stamped `260801-1244`, all with `Status: anticipated`, `Domain: code`, and the record `_a_circle.md`:
 
-1. `circles/260801-1244-guard-bash-inspection/` — C5c. No dependencies. Closes `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md`.
-2. `circles/260801-1244-guard-rules-write/` — C5a and C5b. Depends on Circle 1.
-3. `circles/260801-1244-rule-provenance-header/` — C8. No dependencies.
-4. `circles/260801-1244-curator/` — C1 through C4, C6, C7, with C9 as the closing work. Depends on Circle 3 hard, on Circle 2 softly.
+1. `260801-1244-guard-bash-inspection` — C5c. No dependencies. Closes `260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`.
+2. `260801-1244-guard-rules-write` — C5a and C5b. Depends on Circle 1.
+3. `260801-1244-rule-provenance-header` — C8. No dependencies.
+4. `260801-1244-curator` — C1 through C4, C6, C7, with C9 as the closing work. Depends on Circle 3 hard, on Circle 2 softly.
 
 Each record names the capabilities it carries and points at the spec for the acceptance criteria rather than restating them, so the spec stays the single source of detail and the four records do not drift from it.
 

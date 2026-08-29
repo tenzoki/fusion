@@ -3,7 +3,7 @@
 **Date:** 2026-08-06
 **Agent:** coder
 **Status:** Complete
-**Source:** review `reviews/260806-02-coderev-inkrementalreview-turn2-repo-gate-lock-retrofit.md`, issues `260806-0852` … `260806-0855`
+**Source:** review `reviews/260806-02-coderev-inkrementalreview-turn2-repo-gate-lock-retrofit.md`, issues `260806-0852_*_commit-skill-haelt-stage-und-commit-nicht-als-paar-unter-dem-lock.md` … `260806-0855_*_monitor-loopback-tupel-nennt-ipv6-loopback-das-der-server-nie-binden-kann.md`
 
 ## What was implemented
 

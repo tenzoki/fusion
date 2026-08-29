@@ -3,7 +3,7 @@
 **Date:** 2026-08-22
 **Status:** Complete
 **Agent:** coder
-**Dispatch:** step 7 of `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+**Dispatch:** step 7 of `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 **Circle:** none active; artifacts filed to `shared/`
 
 ## What was implemented
@@ -51,7 +51,7 @@ to that file's prose.
 ## Collateral repair, and one thing that was not mine
 
 Renaming the defect record `_o_` → `_c_` broke two citations of it by its old path, in
-`shared/issues/260822-0035_o_…` and `shared/issues/260822-0119_o_…`, and
+`260822-0035_*_…` and `260822-0119_*_…`, and
 `workbench-citation-lint.test.ts` went red on both. Each was rewritten to the wildcard
 marker form `260821-0144_*_…`, which is the fix the gate's own finding prescribes.
 
@@ -66,27 +66,27 @@ those two records.
 
 ## What was closed, and what was not
 
-Closed `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`
+Closed `260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md`
 with a `Resolved:` note. The note states plainly that the record's title figure (43 of
 2 500 lines) is long stale, that the room this file spent was bought by step 2 of this
 plan rather than by this fix, and that the record's **second** question — whether a
 re-approval comment belongs on a budget derived from what test code costs to maintain and
 to run — is **not** closed. That question is filed as
-`shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md` and
+`260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md` and
 stays open; the record itself named it as not its own to answer.
 
 The separate defect
-`shared/issues/260822-1154_o_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`
-is about a **different** record, `shared/issues/260810-0510_o_…`, not this one. It was read
+`260822-1154_*_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`
+is about a **different** record, `260810-0510_*_…`, not this one. It was read
 and is untouched.
 
 ## Files changed
 
 - `hooks/lib/__tests__/fusion-prose-metric.test.ts` (new, 162 lines)
 - `hooks/lib/__tests__/fixtures/surface-growth.golden` (regenerated)
-- `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_o_…` →
+- `260821-0144_*_…` →
   `…_c_…` (renamed, `Resolved:` note appended)
-- `shared/issues/260822-0035_o_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md` (one citation to wildcard form)
-- `shared/issues/260822-0119_o_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md` (one citation to wildcard form)
+- `260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md` (one citation to wildcard form)
+- `260822-0119_*_the-prose-metrics-worked-exhibit-reports-six-em-dashes-in-a-file-that-carries-four.md` (one citation to wildcard form)
 
 Nothing staged, nothing committed.

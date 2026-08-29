@@ -5,8 +5,8 @@ The head-room correction left two figures for one quantity in adjacent clauses
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing `084c626..dbf259a`
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md:106-110`
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2214_c_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`, whose stated fix named the companion figure; `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`, which records the decision to leave it; commit `e202016`
+**Affects:** `260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md:106-110`
+**Cross-references:** `260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`, whose stated fix named the companion figure; `260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`, which records the decision to leave it; commit `e202016`
 
 ---
 
@@ -34,7 +34,7 @@ Two figures over two sets became two figures over one set.
 ## On the reasoning that left it
 
 The executing coder recorded the decision and its principle
-(`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`,
+(`260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`,
 `## What I did not touch, and why`): a figure that was true at the moment it was written is a
 record of that moment rather than a defect.
 
@@ -71,7 +71,7 @@ last line of `hooks/lib/__tests__/fixtures/surface-growth.golden`.
 
 ---
 Resolved: coder, 2026-08-22, one clause in
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md:108`.
+`260821-2145-coder-the-cut-that-pays-for-steps-2-and-3.md:108`.
 The passage now reads "so none of the hook test suite's 11 lines of head-room, the figure that
 stood when this step ran, was spent." Both figures stand as written, nothing else in the file moved,
 and the same in-place discipline `e202016` used was kept: the clause names the moment the 11 belongs
@@ -83,7 +83,7 @@ edit does not add it, so the repair is the weaker of the two available: it remov
 by telling the reader the two figures speak about different moments, which is what made them look
 like one quantity with two values, but it does not let the reader re-derive the 11. The reconciling
 surface still lives only in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`,
+`260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`,
 which is named here so the trail exists in a record rather than nowhere.
 
 The reviewer's argument is accepted in full: the principle the executing coder applied protects a

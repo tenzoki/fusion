@@ -4,7 +4,7 @@
 **Sender:** coderev
 **Circle:** `260801-1244-curator`
 **Reviewed-range:** `0301909..d5b71f1`
-**Not-opened:** `fusion-workbench/circles/260801-1244-curator/history/260814-1332-curator-run.md` (2 633 lines; unchanged in this range; opened structurally — every heading; the 28-row ledger table; the ledger entry headings L01-L23 and the candidate list; not read end to end), `fusion-workbench/orchestrator-events.jsonl` (1 431 lines; the 19 lines this range adds read in full; plus every event from 2026-08-14T11:00 and every historical reconciliation / rebalance / shaper line; the remaining ~1 380 lines not read), `fusion-workbench/circles/260801-1244-curator/history/260814-1457-reconciliation.md` (lines 61-196; the head; the two closed planning files; the decision-record section and the Coherence output were read; the per-defect-record middle not read end to end)
+**Not-opened:** `260814-1332-curator-run.md` (2 633 lines; unchanged in this range; opened structurally — every heading; the 28-row ledger table; the ledger entry headings L01-L23 and the candidate list; not read end to end), `fusion-workbench/orchestrator-events.jsonl` (1 431 lines; the 19 lines this range adds read in full; plus every event from 2026-08-14T11:00 and every historical reconciliation / rebalance / shaper line; the remaining ~1 380 lines not read), `260814-1457-reconciliation.md` (lines 61-196; the head; the two closed planning files; the decision-record section and the Coherence output were read; the per-defect-record middle not read end to end)
 
 Everything else in the range was opened in full, including all eight files carried forward as
 not-opened by the Turn-3 review. Three of the eight are cleared with nothing to add: the three
@@ -55,7 +55,7 @@ defect this Turn's work made visible rather than caused.
   (`:47`) are both conditional, in the one commit. Neither still reads absolutely; both keep the two
   clauses that are still true (playmaker cannot dispatch, `/fusion:next` does the writes itself).
 - **Constraint 3 — the loop closes from both ends.** Read against the closed defect
-  `circles/260801-1244-guard-rules-write/issues/260805-1839_c_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md`.
+  `260805-1839_*_der-shaper-portfolio-activation-modus-hat-keinen-erreichbaren-dispatcher-mehr.md`.
   The dispatcher named is the orchestrator, which holds `Agent(fusion:shaper)` and `AskUserQuestion`
   in its allowlist (`agents/orchestrator.md:4`) and now carries a contract naming the condition, the
   three parameter lines and the relay. The inverse failure — a contract with no permission, or a
@@ -63,14 +63,14 @@ defect this Turn's work made visible rather than caused.
 - **The orchestrator's cross-references resolve.** `## Circle head fields` does carry the
   "does not already cite it" test the new section relies on (`agents/orchestrator.md:283`).
   `agents/shaper.md` `## Tool Discipline` exists and says what the new section says it says.
-- **Marker footers on the four renames.** `260813-0027` `_a_`→`_i_` carries `Implemented: bf9553f`
+- **Marker footers on the four renames.** `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` `_a_`→`_i_` carries `Implemented: bf9553f`
   with a per-constraint account; `260801-1020` `_a_`→`_i_` carries `Implemented:` citing `6ba9d77`
-  and `1a36fe4`; `260814-1012` `_o_`→`_c_` carries `Resolved: duplicate` naming the surviving record;
-  `260811-0826` `_o_`→`_c_` carries the `Split:` line naming its three successors. All four
+  and `1a36fe4`; `260814-1012_*_a-conceptrev-review-is-counted-unusable-by-the-coverage-helper.md` `_o_`→`_c_` carries `Resolved: duplicate` naming the surviving record;
+  `260811-0826_*_observations.md` `_o_`→`_c_` carries the `Split:` line naming its three successors. All four
   conform to `rules/fusion-workbench-conventions.md:332-333` and `:403`.
 - **The backlog split matches the portfolio.** `portfolio.md:81-91` `**Performed this run:**` names
   three entries by slug and one-line description; the three files exist under those slugs with those
-  titles, each carrying `**Filed by:** user (hand-written, 260811-0826), split out by playmaker
+  titles, each carrying `**Filed by:** user (hand-written, 260811-0826_*_observations.md), split out by playmaker
   260814-1733`, and the original carries the retirement line. Nothing else was created, renamed,
   merged, closed or deferred, as the portfolio claims.
 - **The five live citations the rename broke are repaired.** See *On the open records* below.
@@ -89,7 +89,7 @@ produced this. Six line-number citations in the same table also moved by two, be
 inserted two lines into `agents/shaper.md` above them; `:55` now lands on a different parameter's
 definition. Nothing catches that: `reference-resolution-lint.test.ts` resolves file paths, heading
 anchors and workbench records, and reads no line numbers anywhere.
-Filed: `circles/260801-1244-curator/issues/260814-1850_o_the-dispatch-parameter-roster-still-forbids-the-dispatch-and-has-no-row-for-the-new-parameter.md`.
+Filed: `260814-1850_*_the-dispatch-parameter-roster-still-forbids-the-dispatch-and-has-no-row-for-the-new-parameter.md`.
 
 **F2 — High. The halt that guards the audit trail rests on a self-test the inheritance model denies.**
 `agents/shaper.md:55` decides whether `**Initiated by:**` is required by asking whether the run holds
@@ -108,7 +108,7 @@ but unusable, which the self-test would read as top-level.
 What `bf9553f` changed is the cost of being wrong. The same claim used to be self-correcting: an
 agent that misjudged simply asked, or returned its questions, and either way finished. It is now the
 trigger of a halt, and it fails silently in the dangerous direction.
-Filed: `circles/260801-1244-curator/issues/260814-1850_o_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies.md`.
+Filed: `260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies.md`.
 
 **F3 — Medium. Phase 0b.1 still tells the orchestrator not to intercept a dialogue the same file now
 mandates it relays.** `agents/orchestrator.md:422` against `:350`. One prompt, two protocols, for two
@@ -118,17 +118,17 @@ documents is a lookup problem while a contradiction inside one prompt gets read 
 situations.
 
 Worth noting alongside it: `bf9553f` edited `agents/shaper.md:121` — the exact line that open record
-`shared/issues/260813-1334_o_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`
+`260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`
 names as half of its gap — to add portfolio-activation, and left `/fusion:direct` out. The
 enumeration is now three of four dispatched shapes, and that record stays open at a line this range
 rewrote.
-Filed: `shared/issues/260814-1850_o_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`.
+Filed: `260814-1850_*_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`.
 
 ### The gate that answered the decision left half its trace
 
 **F4 — Medium. The `Answered:` footer cites a location that does not hold the answer, and a trigger
-that postdates the gate.** The footer on `260813-0027_i_…` sends a reader to
-`shared/history/260813-2345-orchestrator-session.md` `## Coherence`, which is reconciler-owned and
+that postdates the gate.** The footer on `260813-0027_*_…` sends a reader to
+`260813-2345-orchestrator-session.md` `## Coherence`, which is reconciler-owned and
 records a verdict and a recommendation, not a user answer; the session's
 `## User decisions recorded this session` has no entry for it either. The answer exists only at
 `orchestrator-events.jsonl:1424-1425`. The footer also says the gate "followed the reconciler's
@@ -151,7 +151,7 @@ on record at that moment.
 No work was lost and no wrong decision followed; what is damaged is reconstructability. Nothing in
 the log says a reconciliation happened, and the only artifact that dates it is a history file a
 reader has to know to open.
-Filed: `circles/260801-1244-curator/issues/260814-1850_o_the-final-reconciliation-emitted-no-reconciliation-event-and-the-gate-it-is-recorded-as-triggering-fired-first.md`.
+Filed: `260814-1850_*_the-final-reconciliation-emitted-no-reconciliation-event-and-the-gate-it-is-recorded-as-triggering-fired-first.md`.
 
 ### The contract exists and nothing routes to it
 
@@ -167,7 +167,7 @@ the section says "You ask, they choose it, you dispatch" — so the orchestrator
 question itself. The section is usable. What it lacks is a route: the duty it states most emphatically
 is a duty to *ask*, and it lives behind two tables an orchestrator consults when dispatching, not when
 deciding whether to.
-Filed: `circles/260801-1244-curator/issues/260814-1850_o_the-new-dispatch-contract-is-reachable-from-no-flow-step-and-no-surface-offers-the-choice-it-waits-for.md`.
+Filed: `260814-1850_*_the-new-dispatch-contract-is-reachable-from-no-flow-step-and-no-surface-offers-the-choice-it-waits-for.md`.
 
 ## Cross-cutting observations
 
@@ -188,7 +188,7 @@ review does not answer, but the corpus now uses that form heavily — the `## Di
 table alone carries about forty.
 
 **The event log was the surface that stayed honest in Turn 3 and did not in Turn 4.** Record
-`260814-1450_o_the-turn-3-bookkeeping-…` reasons explicitly from the log being the reliable one
+`260814-1450_*_the-turn-3-bookkeeping-…` reasons explicitly from the log being the reliable one
 ("the pattern is the one this session already recorded twice as a `state_drift` event"). F5 is that
 assumption failing one Turn later, and F4 is the same session's other record pointing at a place the
 answer is not. Both are the Turn-3→Turn-4 boundary, and both fixes are cheap now and archaeological
@@ -199,22 +199,22 @@ later.
 Thirteen open defect records stood in the Circle before this pass; five are added here.
 
 **One is now stale.**
-`260814-1450_o_renaming-the-spec-and-plan-to-closed-broke-twenty-citations-that-spelled-the-open-marker.md`
+`260814-1450_*_renaming-the-spec-and-plan-to-closed-broke-twenty-citations-that-spelled-the-open-marker.md`
 names five live citations to repoint and ten historical ones to leave. All five are repaired at HEAD:
 `_t_circle.md`'s `**Active spec/plan:**` and the two decision `**Cross-references:**` in `e02f268`
-itself, the two issue records (`260814-0813_o_`, `260814-0828_o_`) in the same commit, and
+itself, the two issue records (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md`, `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md`) in the same commit, and
 `agentstate.yaml` (gitignored, checked on disk: both `plan_file` and `source_file` read `_c_`). Its
 recommended fix is applied and its "what must not be done instead" was respected. It reads as open
 work and is not.
 
 **The other twelve stand.** The six Turn-3 findings were re-checked at the sites they cite and none
-has been overtaken; `260814-1419_o_the-layout-trees-consumer-column-…`, named by the previous
-reviewer as wanted before closure, is untouched by this range. `260814-1200_o_the-proof-run-cannot-be-dispatched-…`
+has been overtaken; `260814-1419_*_the-layout-trees-consumer-column-…`, named by the previous
+reviewer as wanted before closure, is untouched by this range. `260814-1200_*_the-proof-run-cannot-be-dispatched-…`
 correctly stays open on its general shape after the reconciler cleared the instance, and its closing
 observation — that the installed and source `8.2.0` are no longer the same bytes — has grown by three
 more commits since it was written.
 
-**One live consumer of the new contract.** `260814-0828_o_` names its own remaining repair as
+**One live consumer of the new contract.** `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md` names its own remaining repair as
 "the shaper's in portfolio-activation mode, or the orchestrator's within its three head fields" — a
 stale `## Grounding snapshot` on this Circle's own record. That repair became reachable from inside
 this session for the first time with `bf9553f`, subject to the gate the contract requires.
@@ -256,22 +256,22 @@ re-derived from the tree rather than taken from the closing commit's message.
   `**Mode:** portfolio-activation` and cites `agents/orchestrator.md:337`; `:67` carries the same for
   `**Circle file:**`; `:68` is the new `**Initiated by:**` row the finding said was missing, with its
   halt condition and its dispatcher. Landed in `9f4cdac`; record renamed at `41c224c`
-  (`circles/260801-1244-curator/issues/260814-1850_c_the-dispatch-parameter-roster-still-forbids-the-dispatch-and-has-no-row-for-the-new-parameter.md`).
+  (`260814-1850_*_the-dispatch-parameter-roster-still-forbids-the-dispatch-and-has-no-row-for-the-new-parameter.md`).
 - **F2 — not resolved, and correctly so.** The finding's own recommendation was to settle the
   question empirically before editing. Two headless probes were run; they establish that the
   discriminator is unsound and could not reach the direction the halt depends on, so `agents/shaper.md`
   was deliberately left untouched. The remedy is a contract change and is filed as
-  `circles/260801-1244-curator/decisions/260814-1915_o_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`.
+  `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`.
   The defect record stays open and cites that decision as its closing condition.
 - **F3 — resolved.** `agents/orchestrator.md:421` (Step 0b.1, item 3) now mandates the relay and
   points at the `## Re-sharpening an anticipated Circle` contract for the mechanics instead of
   carrying a second copy. Record closed in the shared store
-  (`shared/issues/260814-1850_c_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`).
+  (`260814-1850_*_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`).
 - **F4 — open.** `circles/260801-1244-curator/issues/260814-1850_o_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`
   stands; nothing in `9f4cdac` or `41c224c` touches the footer it names.
-- **F5 — open.** `circles/260801-1244-curator/issues/260814-1850_o_the-final-reconciliation-emitted-no-reconciliation-event-and-the-gate-it-is-recorded-as-triggering-fired-first.md`
+- **F5 — open.** `260814-1850_*_the-final-reconciliation-emitted-no-reconciliation-event-and-the-gate-it-is-recorded-as-triggering-fired-first.md`
   stands.
-- **F6 — open.** `circles/260801-1244-curator/issues/260814-1850_o_the-new-dispatch-contract-is-reachable-from-no-flow-step-and-no-surface-offers-the-choice-it-waits-for.md`
+- **F6 — open.** `260814-1850_*_the-new-dispatch-contract-is-reachable-from-no-flow-step-and-no-surface-offers-the-choice-it-waits-for.md`
   stands. `grep -n 'portfolio-activation' agents/orchestrator.md` still returns no hit inside a
   numbered flow step.
 
@@ -279,4 +279,4 @@ re-derived from the tree rather than taken from the closing commit's message.
 `**Reviewed-range:**` above ends at `d5b71f1`. Three commits followed it — `6d433c2`, `9f4cdac`,
 `41c224c` — and `bin/fusion-review-coverage` reports them `uncovered`. `9f4cdac` is the commit that
 resolved F1 and F3 above, and it edits an always-on rule file. No review pass has opened it. Filed
-as `circles/260801-1244-curator/issues/260814-2017_o_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`.
+as `260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`.

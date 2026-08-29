@@ -1,6 +1,6 @@
 # fusion-paths key sets miss reads agents actually perform; conceptrev gets an OUT_* for a read
 
-**Filed:** 260716-1957
+**Filed:** 260716-1957_*_fusion-paths-key-sets-miss-reads-agents-perform.md
 **Severity:** High
 **Domain:** code
 **Filed by:** coderev
@@ -57,7 +57,7 @@ read-only) or ignore it.
 ## Recommendation
 
 Settle this together with the already-open argument-namespace decision
-(`fusion-workbench/decisions/260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`),
+(`260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`),
 since both are "what is the key vocabulary and who gets which key".
 
 1. Add `SCAN_ISSUES` to `consultant`, `shaper`, `playmaker`.
@@ -80,7 +80,7 @@ since both are "what is the key vocabulary and who gets which key".
 - `bin/fusion-paths` §1 "Per-agent key sets"
 - `rules/fusion-workbench-conventions.md` `## Path Resolution (Pfadauflösung)` → Contract table
 - `agents/conceptrev.md:32,42`
-- Open decision: `fusion-workbench/decisions/260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`
+- Open decision: `260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`
 
 ---
 Resolved: commit 6228391 (task T2-A). Verified by the orchestrator against the running system, not by reading.

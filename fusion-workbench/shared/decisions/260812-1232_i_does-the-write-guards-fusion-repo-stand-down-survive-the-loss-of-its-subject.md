@@ -5,9 +5,9 @@
 **Status:** implemented
 **Filed by:** planner, planning the protected-path removal
 **Cross-references:**
-`shared/planning/260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (step 6, which keeps the code and corrects the comment),
+`260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` (step 6, which keeps the code and corrects the comment),
 `hooks/guard.ts:401-415` (the stand-down), `hooks/lib/self-detect.ts` (both entry points and why they ask about different directories),
-`shared/decisions/260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md` (the answer here follows that one)
+`260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md` (the answer here follows that one)
 
 ---
 
@@ -46,7 +46,7 @@ Option 3, resolved after the escalation question. The coupling is real: if the e
 If the escalation question is answered by keeping the apparatus, option 2 becomes the better answer, on the ground that a halt that does not bind where the code is written is a halt nobody will ever test.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3: the question dissolves; the stand-down and isFusionPluginCwd() go in the same Circle as escalation, isFusionPluginRoot() stays with a comment stating why. User answered inline 2026-08-16.
-Implemented: `2f624ca` (plan step P-2) and `ec3b6ad` (P-4) — option 3, the question dissolved. `2f624ca` removed the stand-down branch from `hooks/guard.ts` along with CHECK 3 and the import of `hooks/lib/self-detect.js`, so the hook has no verdict left to stand down; `ec3b6ad` then deleted `isFusionPluginCwd()` and its module-level cache, which had lost their only caller there. `isFusionPluginRoot(dir)` stays without a caller, as this record's constraint requires, and the header of `hooks/lib/self-detect.ts` now carries in the present tense the measured rule the pair existed for: a stand-down is evaluated in the coordinate space the mechanism keys its state by. The work-tree preference in `bin/fusion-plugin-cwd`, `bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` is a separate mechanism and was re-checked in `ec3b6ad` rather than assumed. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3: the question dissolves; the stand-down and isFusionPluginCwd() go in the same Circle as escalation, isFusionPluginRoot() stays with a comment stating why. User answered inline 2026-08-16.
+Implemented: `2f624ca` (plan step P-2) and `ec3b6ad` (P-4) — option 3, the question dissolved. `2f624ca` removed the stand-down branch from `hooks/guard.ts` along with CHECK 3 and the import of `hooks/lib/self-detect.js`, so the hook has no verdict left to stand down; `ec3b6ad` then deleted `isFusionPluginCwd()` and its module-level cache, which had lost their only caller there. `isFusionPluginRoot(dir)` stays without a caller, as this record's constraint requires, and the header of `hooks/lib/self-detect.ts` now carries in the present tense the measured rule the pair existed for: a stand-down is evaluated in the coordinate space the mechanism keys its state by. The work-tree preference in `bin/fusion-plugin-cwd`, `bin/fusion-rules`, `bin/fusion-paths` and `bin/fusion-source-root` is a separate mechanism and was re-checked in `ec3b6ad` rather than assumed. Plan: `260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
 Deferred:
 Superseded by:

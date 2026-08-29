@@ -3,12 +3,12 @@
 **Datum:** 2026-08-07
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Schritt 6
-**Bindende Entscheidung:** `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`, Option 3
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 6
+**Bindende Entscheidung:** `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`, Option 3
 
 ## Was umgesetzt wurde
 
-**`rules/protected-path-discipline.md` neu geschrieben.** 348 → 53 Zeilen, 21 063 → 5 919 Bytes. Aufbau und Ton an der Schwesterdatei `rules/git-branch-discipline.md` (55 Zeilen, 6 299 Bytes) ausgerichtet: Kopf mit Durchsetzungsmechanismus, `## The rule`, die Sache selbst, die Ausnahme, `## What to do instead`, Halt-Kosten. Englisch, damit das Regelkorpus einheitlich bleibt. Der `**Provenance:**`-Kopf (`circles/260801-1244-guard-bash-inspection`) steht unverändert an Zeile 3.
+**`rules/protected-path-discipline.md` neu geschrieben.** 348 → 53 Zeilen, 21 063 → 5 919 Bytes. Aufbau und Ton an der Schwesterdatei `rules/git-branch-discipline.md` (55 Zeilen, 6 299 Bytes) ausgerichtet: Kopf mit Durchsetzungsmechanismus, `## The rule`, die Sache selbst, die Ausnahme, `## What to do instead`, Halt-Kosten. Englisch, damit das Regelkorpus einheitlich bleibt. Der `**Provenance:**`-Kopf (`260801-1244-guard-bash-inspection`) steht unverändert an Zeile 3.
 
 Ersatzlos gestrichen, wie beauftragt: Vier-Fragen-Prozedur, Joiner-Tabelle, Fail-Closed-Klausel, `cd`-Verfolgung, Ancestor-Regel in beide Richtungen, Residuen-Katalog, der ganze Abschnitt "Where this check does not reach", die Verweise auf die Referenz- und die Forensik-Schicht.
 
@@ -35,7 +35,7 @@ Beide fallen in Dateien, die kein anderer Schritt beansprucht, und beide wären 
 | Prüfung | Ergebnis |
 |---|---|
 | `reference-resolution-lint.test.ts` — Haupt-Gate (keine hängende Referenz) | **grün.** Alle fünf gemeldeten Fundstellen erledigt: `rules/protected-path-discipline.md:7`, `rules/protected-path-internals.md:8` und `:20` (Datei gelöscht), `CLAUDE.md:122`, `bin/fusion-rules:204`. |
-| `reference-resolution-lint.test.ts` — "no dead weight" | **rot**, neu und erwartet: vier `EXAMPLE_PATHS`-Einträge sind mit ihren Fundstellen gefallen. Nicht behoben, weil der Auftrag `hooks/lib/__tests__/` außer der Goldfixture-Suite sperrt. Als Befund abgelegt: `260807-1133_o_example-paths-im-referenz-lint-sind-nach-der-textschicht-tot.md`. |
+| `reference-resolution-lint.test.ts` — "no dead weight" | **rot**, neu und erwartet: vier `EXAMPLE_PATHS`-Einträge sind mit ihren Fundstellen gefallen. Nicht behoben, weil der Auftrag `hooks/lib/__tests__/` außer der Goldfixture-Suite sperrt. Als Befund abgelegt: `260807-1133_*_example-paths-im-referenz-lint-sind-nach-der-textschicht-tot.md`. |
 | `derivable-enumerations-lint.test.ts` | **grün** (18 Zusicherungen). Die Modultabelle listet wieder genau die vorhandenen `hooks/lib/*.ts`: `protected-snapshot.ts` aufgenommen, `bash-mutation-guard.ts` und `shell-reach.ts` entfernt. |
 | `provenance-header-lint.test.ts` | **grün** (27 Zusicherungen). |
 | `rules-emission-golden.test.ts` | **rot am Fixture-Vergleich**, wie geplant — das zieht Schritt 7 nach. Die acht übrigen Zusicherungen der Datei sind grün. |

@@ -6,7 +6,7 @@ The plan's `## Where this Circle stops` requires that "none of the four growth b
 
 ---
 
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md:57` and `:180`; `hooks/lib/__tests__/reference-resolution-lint.test.ts:905-914`; `hooks/lib/__tests__/fixtures/surface-growth.golden:81,92`.
+**Affects:** `260821-1805_*_plan-reply-bounded-whole-question-answered.md:57` and `:180`; `hooks/lib/__tests__/reference-resolution-lint.test.ts:905-914`; `hooks/lib/__tests__/fixtures/surface-growth.golden:81,92`.
 
 **Severity:** Medium. The growth itself is small and was honestly reported; the unfiled state is the defect, and the stopping criterion cannot be met as written.
 
@@ -26,7 +26,7 @@ That criterion is unmet and cannot be met by anything the Circle still has to do
 
 **What spent the ten lines.** Two attribution comment blocks above `BASELINE` in `hooks/lib/__tests__/reference-resolution-lint.test.ts`, six lines for step 2 and four for step 3. No test logic was added.
 
-**One claim in the step-6 log does not hold, and it is the claim that justifies the spend.** `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md:197`:
+**One claim in the step-6 log does not hold, and it is the claim that justifies the spend.** `260821-2147-coder-the-corpus-is-measured.md:197`:
 
 > The gate demands a written attribution for every baseline move, so the lines are the cost of an existing gate being obeyed rather than new test logic.
 
@@ -36,11 +36,11 @@ The gate demands no comment. `hooks/lib/__tests__/reference-resolution-lint.test
 
 The attribution comment is a convention of that file, carried by its accumulated comment stack, not a demand of the assertion. The convention is a good one and this record does not argue for dropping it. It argues that the cost was a choice and could have been sized as one.
 
-**And the two blocks could have been one.** Both baseline moves land in a single commit; only the final triple `{ paths: 1258, anchors: 163, records: 116 }` is committed, and the intermediate `{ 1257, 162, 116 }` appears in no commit. One block naming both contributions would have carried the same reconstruction at roughly half the lines. The mitigating context is real and should be recorded with the fix: the user chose green-at-each-step over the plan's regenerate-once (`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2108-coder-regenerate-two-golden-fixtures-after-step-2.md:10-15`), which forced a per-step number update. It did not force a per-step comment block.
+**And the two blocks could have been one.** Both baseline moves land in a single commit; only the final triple `{ paths: 1258, anchors: 163, records: 116 }` is committed, and the intermediate `{ 1257, 162, 116 }` appears in no commit. One block naming both contributions would have carried the same reconstruction at roughly half the lines. The mitigating context is real and should be recorded with the fix: the user chose green-at-each-step over the plan's regenerate-once (`260821-2108-coder-regenerate-two-golden-fixtures-after-step-2.md:10-15`), which forced a per-step number update. It did not force a per-step comment block.
 
 **What the fix is not.** Not a baseline move. `hooks/lib/__tests__/helpers/growth-bound.ts` authors the two events at which a baseline moves and neither happened here. The options are to consolidate the two comment blocks, or to accept the 11 lines and say so in the closure note instead of repeating the criterion at `:180`.
 
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md` `## The other three growth bounds` (where the executor recorded it, correctly and in full); `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-0803_*_the-plans-step-3-file-list-says-fourteen-fixture-files-and-the-tree-held-fifteen.md` (the same class, a measurement recorded only in a history log); `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`.
+**Cross-references:** `260821-2147-coder-the-corpus-is-measured.md` `## The other three growth bounds` (where the executor recorded it, correctly and in full); `260815-0803_*_the-plans-step-3-file-list-says-fourteen-fixture-files-and-the-tree-held-fifteen.md` (the same class, a measurement recorded only in a history log); `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`.
 
 ---
 
@@ -58,7 +58,7 @@ $ cd hooks && npm test                                        # exit 0, 40 files
 
 `hooks/lib/__tests__/fixtures/surface-growth.golden` was regenerated per its own header. Its diff is the one file entry (1432 to 1428) and the surface total (20 364 to 20 360), nothing else.
 
-**Why the last six are not recoverable here.** They are the note itself. The stopping criterion asks that no bound stand closer to failing than at the anchor, and this Circle moved the pin, which the file's convention answers with a written attribution. Only a note costing zero lines satisfies the criterion as written, and a note costing zero lines is no note. This record argues against buying lines that way, so six lines of the gap stand: the closure note should state 15 lines of head-room rather than repeat the criterion at `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md:180`.
+**Why the last six are not recoverable here.** They are the note itself. The stopping criterion asks that no bound stand closer to failing than at the anchor, and this Circle moved the pin, which the file's convention answers with a written attribution. Only a note costing zero lines satisfies the criterion as written, and a note costing zero lines is no note. This record argues against buying lines that way, so six lines of the gap stand: the closure note should state 15 lines of head-room rather than repeat the criterion at `260821-1805_*_plan-reply-bounded-whole-question-answered.md:180`.
 
 The record stays open. What it now holds is a decision for the closure, not a defect with an unapplied fix.
 
@@ -78,7 +78,7 @@ asks only that the received numbers be checked and written into `BASELINE` with 
 attribution comment is that file's accumulated convention, which this record itself says it does
 not argue for dropping. Honouring the convention was a defensible choice and it cost the six
 remaining lines. The criterion at
-`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+`260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 `## Where this Circle stops` is unmet at closure either way, which is what this record asks the
 closure note to say.
 
@@ -90,15 +90,15 @@ tree the way that test does: 20 360 lines against a budget of 20 375, so 15 line
 where HEAD `e764637` had 21. `cd hooks && npm test` exits 0, 40 files and 718 tests.
 
 **Tonight's eleven commits touched no file under `hooks/`**, verified with `git diff --stat
-084c626..HEAD`, so nothing in the 260822-0019 session spent or recovered a line here. The six-line
+084c626..HEAD`, so nothing in the 260822-0019-orchestrator-session.md session spent or recovered a line here. The six-line
 gap this record ends on is the same six lines, and the disposition it asks for is unchanged: the
 closure note states 15 lines of head-room rather than repeating the criterion at
-`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+`260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 `## Where this Circle stops`.
 
 **This is the single flagged item on the Artifact-to-Grounding edge of tonight's Coherence
 verdict**, recorded in
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`
+`260822-0019-orchestrator-session.md`
 `## Coherence`. The record stays open past the Circle's closure by design: what it holds is a
 statement the closure note has to make, and it survives the Circle to say so.
 
@@ -107,10 +107,10 @@ Resolved: the disposition this record asked for was made, verified against the t
 taken on report, so the record closes with no further change to any shipped file.
 
 **Both claims checked independently.** The closure note of
-`circles/260821-1042-reply-bounded-whole-question-answered/_c_circle.md` `## Closure note` names
+`260821-1042-reply-bounded-whole-question-answered` `## Closure note` names
 this as residual 1 and states 15 lines of head-room against 21 at HEAD `e764637`, rather than
 repeating the criterion at
-`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+`260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 `## Where this Circle stops`. And the two attribution blocks are one: a single six-line block dated
 2026-08-21 at `hooks/lib/__tests__/reference-resolution-lint.test.ts:905-910` carries both steps 2
 and 3 of that Circle in one re-approval, where two blocks stood before.
@@ -136,7 +136,7 @@ note is written, because the Circle that closes this record is cutting that surf
 were a choice and could have been sized as one, and it does not answer whether a comment line
 belongs on a budget the bounding file justifies by what test code costs to maintain and to run.
 That question is filed as an open decision at
-`shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`, which cites
+`260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`, which cites
 this record as its measured instance and reaches no recommendation, on the stated ground that every
 option changing what the surface counts needs a baseline recomputation the current Circle is
 forbidden to make. The decision stays open past this closure. What closes here is the defect, which

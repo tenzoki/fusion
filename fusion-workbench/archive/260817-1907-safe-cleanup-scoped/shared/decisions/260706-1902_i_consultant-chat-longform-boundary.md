@@ -4,7 +4,7 @@
 **Domain:** knowledge
 **Status:** implemented
 **Filed by:** analyst
-**Cross-references:** `shared/issues/260706-1902_*_consultant-chat-misrouted-to-longform-voice.md`, `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`
+**Cross-references:** `260706-1902_*_consultant-chat-misrouted-to-longform-voice.md`, `260706-1902-user-facing-agents-garbled-language-rootcause.md`
 ---
 
 ## Question
@@ -34,7 +34,7 @@ The fix for the consultant's garbled-chat defect reclassifies "Conversation-mode
 Option 1. It is the single integral rule — the surface (chat stream vs `consult/` file) decides the profile, length does not. It matches the other five agents, removes any length-based branching, and directly resolves the reported defect. Option 3 is a reasonable escalation *within* Option 1 (when an inline answer would be very long, offer to write the report file), not a competing rule.
 
 ---
-Answered: user chose Option 1 (surface decides the profile, never length) — orchestrator session 260706-1851
+Answered: user chose Option 1 (surface decides the profile, never length) — orchestrator session 260706-1851-orchestrator-session.md
 Implemented: agents/consultant.md:166 — chat stream always chat-voice (incl. expanded answers); only consult/*.md is long-form default-voice
 Deferred:
 Superseded by:

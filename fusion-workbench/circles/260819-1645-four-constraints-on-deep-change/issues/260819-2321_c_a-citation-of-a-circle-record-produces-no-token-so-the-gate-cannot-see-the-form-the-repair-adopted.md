@@ -21,13 +21,13 @@ test holds them there. The first clause holds for these 28. The second does not.
 
 **Measured beyond the repairs:** outside `archive/`, 25 such paths name a Circle directory that no
 longer exists there. The sharpest instance is
-`shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md`, which carries
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`, which carries
 one dead path three times. Step 7 repaired `:40` and `:48` because the scanner reported them, and left
 `:7` — the record's own `**Cross-references:**` field, spelled identically — standing, because no scan
 ever named it. One record, one path, two treatments, decided entirely by what the grammar happens to
 tokenise.
 
-**Adjacent but not the same as `260819-2300`.** That record says `circleDirs()` never learned the
+**Adjacent but not the same as `260819-2300_*_circledirs-did-not-learn-the-archive-prefix-that-findrecord-did-so-an-archived-circle-directory-stays-unexpressible.md`.** That record says `circleDirs()` never learned the
 one-sweep archive prefix, and cites this silence as the reason its workaround is safe. This record says
 what the same silence costs on the form the workaround produced. Fixing either alone leaves the other.
 
@@ -36,7 +36,7 @@ grammar the Circle-record form widens what both callers tokenise, which moves th
 counts and changes what step 9's gate must be green over before it can be armed. That is a decision
 about scope, taken by the user, not an extension an executor or an orchestrator awards itself.
 
-Filed by the orchestrator of session `260819-2006` from step 8's report, before step 9 is dispatched, so
+Filed by the orchestrator of session `260819-2006-orchestrator-session.md` from step 8's report, before step 9 is dispatched, so
 that arming the gate is a choice made with this known and not one made around it.
 
 ---

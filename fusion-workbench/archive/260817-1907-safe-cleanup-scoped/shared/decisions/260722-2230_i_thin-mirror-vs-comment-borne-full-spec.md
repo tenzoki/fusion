@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** circles/260719-1536-plane-mirror-integration/decisions/260719-2313_i_round-trip-write-overwrites-origin-story-description.md (the parent decision this continues — its Option 3 named this spec-comment as the planned next step); shared/planning/260722-1943_*_spec-plane-spec-comment.md (spec); shared/planning/260722-2021_c_plan-plane-spec-comment.md (plan)
+**Cross-references:** 260719-2313_*_round-trip-write-overwrites-origin-story-description.md (the parent decision this continues — its Option 3 named this spec-comment as the planned next step); 260722-1943_*_spec-plane-spec-comment.md (spec); 260722-2021_*_plan-plane-spec-comment.md (plan)
 
 ---
 
@@ -21,7 +21,7 @@ creating a source-of-truth conflict with the local Circle record?
 1. **PATCH the full spec into the issue description.** Rejected: the next
    `fusion-plane push` rewrites the description back to the thin stub (the push always
    writes `description_html`), so the spec would be clobbered on every reconcile. It
-   also collides with decision 260719-2313, which forbids overwriting a human-authored
+   also collides with decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md, which forbids overwriting a human-authored
    seed-origin story's description.
 2. **Keep the description thin; carry the full brief in a Plane comment.** Chosen. The
    push writes only `name` / `description_html` / `state` and never touches comments
@@ -36,7 +36,7 @@ creating a source-of-truth conflict with the local Circle record?
 ## Constraints
 
 - The push must never overwrite a seed-origin (human-authored) story's description
-  (decision 260719-2313).
+  (decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md).
 - The bridge stays bash + jq + curl — no Markdown renderer, no new dependency.
 - The comment write is auxiliary: it must never block or defer the state transition
   (the C4 offline doctrine), and it must be idempotent across re-pushes.
@@ -49,10 +49,10 @@ non-deferred Circle push upserts the full Circle record body as one idempotent P
 comment, keyed on an embedded marker `<!-- fusion-spec-comment:<key> -->` (GET comments,
 marker-match, PATCH the match else POST). Body wrapped in `<pre>` and HTML-escaped
 (jq `@html`). It applies to seed-origin and fusion-owned issues alike — a comment never
-touches the description, so decision 260719-2313 is preserved rather than reopened. A
+touches the description, so decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md is preserved rather than reopened. A
 failed comment write is non-blocking (self-heals on the next push).
 
-This is the planned continuation of decision 260719-2313 (its Option 3), unblocked by
+This is the planned continuation of decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md (its Option 3), unblocked by
 the comments-endpoint body shape `{"comment_html": <html>}` being verified against a live
 Plane instance (ticket #66).
 
@@ -60,4 +60,4 @@ Plane instance (ticket #66).
 Implemented: dd6b092 (docs/version) atop bf5dc5e (wiring) and 4d95a91 (primitives), tests d75afed — bin/fusion-plane `spec_comment` opt-in; the full Circle brief now rides in an idempotent, re-push-surviving Plane comment while the description stays a thin stub. 315 tests passing; plugin validates.
 
 ---
-Retired: `d0ddabb` + `7c12d6a` (steps 2 and 3 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md) — the thin-mirror description this record chose was written by `bin/fusion-plane push`, which no longer exists. Nothing fusion ships now writes anything into Plane.
+Retired: `d0ddabb` + `7c12d6a` (steps 2 and 3 of 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md) — the thin-mirror description this record chose was written by `bin/fusion-plane push`, which no longer exists. Nothing fusion ships now writes anything into Plane.

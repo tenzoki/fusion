@@ -4,7 +4,7 @@
 **Date:** 2026-08-21
 **Status:** Complete
 **Task:** Turn 2 repair of the AI04 extension, at a user gate, per
-`circles/260821-1042-reply-bounded-whole-question-answered/reviews/260821-2210-ontorev-two-register-habits-in-the-four-chat-voice-profiles.md`
+`260821-2210-ontorev-two-register-habits-in-the-four-chat-voice-profiles.md`
 findings A1, C1 and the AI04 half of A3.
 
 ## What changed
@@ -71,7 +71,7 @@ languages and both are absorbed: English +5, not −1 (17 characters to 22); Ger
 
 **C06's name was deliberately left.** The clause it undersells is the one whose residency in
 the profile is the open question in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`,
+`260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`,
 which the review recommends taking to the user rather than fixing, and both routes there
 move or copy the clause out of the profile. Renaming for a half that may leave spends +7
 bytes English and +9 German on text that would then be renamed back. That record's own
@@ -123,7 +123,7 @@ Measured with `wc -c` against `git show HEAD:<path> | wc -c`.
   the only statement of AI04 reaching a project with no `stilwerk/`. Filed rather than
   appended to its neighbour in `shared/`, which is about the same line's missing entries,
   because another task held that file at the time and a same-line append would have been the
-  live-tree mutation `shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
+  live-tree mutation `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
   is about.
 
 ## Not done, and not silently

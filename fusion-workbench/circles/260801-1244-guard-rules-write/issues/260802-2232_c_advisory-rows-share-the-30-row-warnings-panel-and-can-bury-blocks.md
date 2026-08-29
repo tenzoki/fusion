@@ -4,12 +4,12 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 1 of `circles/260801-1244-guard-rules-write` (`c7f117b..HEAD`)
+**Filed by:** coderev, reviewing Turn 1 of `260801-1244-guard-rules-write` (`c7f117b..HEAD`)
 **Affects:** `bin/monitor` (Step 5, commit `bf75941`)
 **Cross-references:** `bin/monitor:91-97` (`WARNING_EVENT_TYPES`, `MAX_WARNINGS_RETURNED`),
 `bin/monitor:961` (`return warnings[-MAX_WARNINGS_RETURNED:]`),
 `hooks/guard.ts:386-389` (the reasoning this collides with),
-`shared/issues/260707-0751_c_guard-allow-bash-events-flood-events-jsonl.md` (the same failure, closed)
+`260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md` (the same failure, closed)
 
 ---
 
@@ -58,7 +58,7 @@ advisory exists, so behaviour with the flag unset is unchanged.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` reviewing Step 5.
+Found in `260801-1244-guard-rules-write` reviewing Step 5.
 
 ---
 Resolved: Direction 1 — the two classes now have independent budgets rather than one
@@ -104,4 +104,4 @@ is the whole content of an advisory. Direction 1 fit the rendering without touch
 Residual, measured not assumed: two `guard_advisory` details in `hooks/guard.ts` are
 unbounded in length (they skip the `forEvent()` 200-char clamp every other detail passes
 through). Out of scope here — filed as
-`260803-1352_o_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md`.
+`260803-1352_*_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md`.

@@ -2,18 +2,18 @@
 
 ---
 **Domain:** code
-**Status:** implemented (corrected from `open` by reconciliation 260804-1021; the filename marker `_i_` was already right)
-**Filed by:** coder (task T6-1, `circles/260801-1244-guard-rules-write`)
+**Status:** implemented (corrected from `open` by reconciliation 260804-1021-reconciliation.md; the filename marker `_i_` was already right)
+**Filed by:** coder (task T6-1, `260801-1244-guard-rules-write`)
 **Cross-references:**
-`issues/260803-2238_o_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md`
+`260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md`
 (the finding this answers),
-`issues/260803-1835_o_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`
+`260803-1835_*_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`
 (the reason option 1 does not close all four measured escapes on its own),
-`reviews/260803-2240-coderev-turn5-wrapper-walk-and-pushd-rotation.md` `### Recommended sequencing`,
+`260803-2240-coderev-turn5-wrapper-walk-and-pushd-rotation.md` `### Recommended sequencing`,
 `hooks/lib/bash-mutation-guard.ts:1887-1914` (the `word` arm), `:1291-1303` (`resolveDir`),
 `:2193-2245` (the segment loop), `hooks/lib/shell-parse.ts:102-112` (`ParsedSegment` — the
 shape that would have to change),
-`decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`
+`260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`
 (the same question, answered once already for a different cause).
 
 ---
@@ -206,7 +206,7 @@ will stop at:
 
 ---
 *(Empty template block left in place when the record was filed. The live transition
-lines are at the foot of this file. Flagged by reconciliation 260804-1021 — a reader
+lines are at the foot of this file. Flagged by reconciliation 260804-1021-reconciliation.md — a reader
 stopping here concludes the decision is unanswered, which it is not.)*
 
 ## Answer
@@ -250,17 +250,17 @@ Implemented: `hooks/lib/shell-parse.ts` (`SegmentJoiner`, `ParsedSegment.joiner`
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — `_i_` confirmed, with three record-integrity notes and one substantive one.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — `_i_` confirmed, with three record-integrity notes and one substantive one.**
 
 **The realisation is real.** `hooks/lib/shell-parse.ts` carries `SegmentJoiner` and `ParsedSegment.joiner`; `hooks/lib/bash-mutation-guard.ts` carries `ShellState.moved` (`:1596`), `degradeUnprovenCd`, and the segment-boundary check at `:2465`. Measured at HEAD `cc012fc`: `cd nonexistent; rm rules/x.md` denies, `cd build; rm rules/x.md` denies, `cd build && rm out.js` still allows. The bypass this record was answered to close is closed.
 
-**The `Implemented:` line names a task, not a commit.** `rules/fusion-workbench-conventions.md` asks for `Implemented: <short-hash>`. Task T7-1 is commit **`c9c44a3`** ("fix(hooks): the model assumes a cd succeeded only where the shell guarantees it"). Recorded here rather than edited into the line above, so the original wording stands. The same applies to `260804-0106_i_`, which cites the same task.
+**The `Implemented:` line names a task, not a commit.** `rules/fusion-workbench-conventions.md` asks for `Implemented: <short-hash>`. Task T7-1 is commit **`c9c44a3`** ("fix(hooks): the model assumes a cd succeeded only where the shell guarantees it"). Recorded here rather than edited into the line above, so the original wording stands. The same applies to `260804-0106_*_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`, which cites the same task.
 
 **Header field corrected** from `open` to `implemented`, and the empty template block at the record's midpoint annotated — a reader stopping at the first `Answered:` line found it blank and would conclude the decision was never answered.
 
-**The substantive note: this record's own premise is the thing that leaked.** The answer taught the model to give the working directory up at any joiner that is not `&&`, and it consults that joiner **for the segment that writes and never for the segment that moves**. The Turn 7 review found both consequences the same day: `true || cd build && rm rules/x.md` and `echo hi | cd build && rm rules/x.md` still delete a protected rule file (`issues/260804-0836_o_`, `260804-0837_o_`, both High, both open), and the flat joiner model over-denies in the other direction (`issues/260804-0839_o_`). The successor record is `260804-0947_o_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`, filed and unanswered.
+**The substantive note: this record's own premise is the thing that leaked.** The answer taught the model to give the working directory up at any joiner that is not `&&`, and it consults that joiner **for the segment that writes and never for the segment that moves**. The Turn 7 review found both consequences the same day: `true || cd build && rm rules/x.md` and `echo hi | cd build && rm rules/x.md` still delete a protected rule file (`260804-0836_*_`, `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`, both High, both open), and the flat joiner model over-denies in the other direction (`260804-0839_*_`). The successor record is `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`, filed and unanswered.
 
 This does not make the answer wrong and the marker stays `_i_`: the decision closed what it was asked to close, at the cost the record predicted. What it shows is that the question was scoped one half too narrow, and the successor says so in its title.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the model that gave up the working directory at any joiner other than `&&` was in `hooks/lib/bash-mutation-guard.ts` and went with it (commit `c9c44a3` had built it). The successor this record's own footer names, `260804-0947`, is retired by the same commit.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md) — the model that gave up the working directory at any joiner other than `&&` was in `hooks/lib/bash-mutation-guard.ts` and went with it (commit `c9c44a3` had built it). The successor this record's own footer names, `260804-0947_*_should-the-joiner-be-consulted-for-the-segment-that-moves-as-well-as-the-one-that-writes.md`, is retired by the same commit.

@@ -1,7 +1,7 @@
 # ontocoder — P-15b: close the last two review findings (stylometric profiles)
 
 **Agent:** ontocoder
-**Circle:** circles/260824-1853-close-every-open-defect
+**Circle:** 260824-1853-close-every-open-defect
 **Status:** Complete
 
 ## What changed

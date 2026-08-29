@@ -2,14 +2,14 @@
 
 **Date:** 2026-08-24 09:03
 **Agent:** coder
-**Circle:** circles/260824-0530-record-attribution-and-circle-claim
-**Plan:** `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 1
+**Circle:** 260824-0530-record-attribution-and-circle-claim
+**Plan:** `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` step 1
 **Status:** Complete
 
 ## What was done
 
 Appended an `Answered:` annotation and an `## Answer (user, 260824)` section to
-`shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
+`260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
 then renamed the marker `_o_` to `_a_` with `mv`.
 
 The appended text states that the answer is not among the three options and why: the options

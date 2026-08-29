@@ -41,4 +41,4 @@ Add the `staging-drift.ts` row next to its two siblings, phrased like theirs, th
 Filed by: coderev (review of Circle Turn 1, range `6590cd5..79ec7bb`).
 
 ---
-Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `README-hooks.md:159-166` holds eight top-level `.ts` rows and `staging-drift.ts` is not among them, while `ls hooks/*.ts` returns nine. The lint's `lib/` regex at `derivable-enumerations-lint.test.ts:340-352` is unchanged, so the top-level half is still ungated. Out of this Circle's plan scope — no step names `README-hooks.md`.
+Reconciled: 260813-2258-reconciliation.md — Still open, re-verified at HEAD `c0e4219`: `README-hooks.md:159-166` holds eight top-level `.ts` rows and `staging-drift.ts` is not among them, while `ls hooks/*.ts` returns nine. The lint's `lib/` regex at `derivable-enumerations-lint.test.ts:340-352` is unchanged, so the top-level half is still ungated. Out of this Circle's plan scope — no step names `README-hooks.md`.

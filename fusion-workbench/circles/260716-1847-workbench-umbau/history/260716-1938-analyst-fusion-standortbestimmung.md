@@ -15,7 +15,7 @@ Test a favourable external assessment of fusion ("more mature than Level 2"; "wh
 - Ran the hook test suite (110 pass) and searched for CI / eval harness (neither exists).
 - Mined fusion's own dogfood telemetry as evidence: `orchestrator-events.jsonl`, `issues/` markers, `circles/`, `history/`.
 - Fetched and verified six external primary sources (Anthropic ×2, Cognition, METR, arXiv self-preference, GitHub Spec Kit).
-- Consolidated with `analyses/260621-1316-fusion-vs-spec-driven-agentic-engineering-critique.md`, including closing its open thread #139.
+- Consolidated with `260621-1316-fusion-vs-spec-driven-agentic-engineering-critique.md`, including closing its open thread #139.
 
 ## Key findings
 
@@ -38,14 +38,14 @@ Test a favourable external assessment of fusion ("more mature than Level 2"; "wh
 
 ## New defect found live
 
-While writing the analysis, the **branch guard denied the write** — because the prose contains backticked git commands. Isolated in 3 probes: the bare string in a quoted heredoc is allowed; the same string in **markdown backticks** is denied. The classifier reads markdown inline-code as shell command substitution and has no heredoc-quoting model. An agent asked to edit `rules/git-branch-discipline.md` would be blocked by the rule it documents. Fails in the safe direction, so it is a precision defect, not a safety one. Filed as `issues/260716-2005[o]`.
+While writing the analysis, the **branch guard denied the write** — because the prose contains backticked git commands. Isolated in 3 probes: the bare string in a quoted heredoc is allowed; the same string in **markdown backticks** is denied. The classifier reads markdown inline-code as shell command substitution and has no heredoc-quoting model. An agent asked to edit `rules/git-branch-discipline.md` would be blocked by the rule it documents. Fails in the safe direction, so it is a precision defect, not a safety one. Filed as `260716-2005[o]`.
 
 Notable: fusion's 48 guard tests all feed the classifier *commands*, never *data regions*. The contract boundary is untested — the same shape as the 13-day dead-guard defect.
 
 ## Artifacts
 
-- `fusion-workbench/analyses/260716-1938-fusion-standortbestimmung-vs-top-orgs.md` (411 lines)
-- `fusion-workbench/issues/260716-2005[o]-branch-guard-false-positive-on-markdown-backticks-in-heredoc.md`
+- `260716-1938-fusion-standortbestimmung-vs-top-orgs.md` (411 lines)
+- `260716-2005[o]-branch-guard-false-positive-on-markdown-backticks-in-heredoc.md`
 
 ## Notes for follow-up
 

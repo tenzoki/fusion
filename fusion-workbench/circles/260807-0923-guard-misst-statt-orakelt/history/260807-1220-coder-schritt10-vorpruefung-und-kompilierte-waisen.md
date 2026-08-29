@@ -1,11 +1,11 @@
 # Schritt 10 (Vorprüfung im Fremdprojekt) und der Nachzug der kompilierten Waisen
 
 **Agent:** coder
-**Datum:** 260807-1220
+**Datum:** 260807-1220-coder-schritt10-vorpruefung-und-kompilierte-waisen.md
 **Status:** Complete
-**Circle:** `circles/260807-0923-guard-misst-statt-orakelt`
-**Plan:** `planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Schritt 10
-**Befund:** `issues/260807-1202_c_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md`
+**Circle:** `260807-0923-guard-misst-statt-orakelt`
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 10
+**Befund:** `260807-1202_*_kompilierte-waisen-des-klassifizierers-stehen-noch-in-hooks-dist.md`
 **Commit:** keiner — der Auftrag verbot das Committen ausdrücklich
 
 ## Teil 1 — die kompilierten Waisen

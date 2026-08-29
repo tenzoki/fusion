@@ -4,8 +4,8 @@
 **Agent:** coder
 **Date:** 2026-08-16
 **Domain:** code
-**Source record:** `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
-**Related:** `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` (option 4: no gate is built, the repair is the whole intervention)
+**Source record:** `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+**Related:** `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` (option 4: no gate is built, the repair is the whole intervention)
 
 ## What was done
 

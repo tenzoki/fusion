@@ -1,4 +1,4 @@
-# Orchestrator Session — 260816-1814
+# Orchestrator Session — 260816-1814-orchestrator-session.md
 
 **Directive:** (not yet stated — session started via /fusion:setup, awaiting the user's task)
 **Mode:** (not yet resolved — Phase 0 pending)
@@ -24,7 +24,7 @@ The tree holds source and data does not outweigh it, so the cascade's second bra
 | shared/decisions | 1 open | 26 answered, 25 implemented, 2 deferred, 1 superseded |
 
 **Circles:** 1 anticipated, 1 bounded, 13 closed, 1 superseded. None active.
-The anticipated one is `circles/260816-1741-guard-becomes-observation-only/`.
+The anticipated one is `260816-1741-guard-becomes-observation-only`.
 Portfolio hint printed to the user, pointing at /fusion:next.
 
 **Guard:** not halted (`haltActive: false`, 0 consecutive blocks). The recent-events list

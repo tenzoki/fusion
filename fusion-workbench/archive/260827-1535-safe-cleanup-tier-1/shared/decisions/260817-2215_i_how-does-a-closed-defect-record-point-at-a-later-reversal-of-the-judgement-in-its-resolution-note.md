@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** `shared/issues/260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md` (the measured instance), `shared/issues/260817-2130_c_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` and `shared/issues/260817-2147_c_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md` (the two records the instance spans), `shared/history/260817-2207-reconciliation.md` (the reconciliation that found it)
+**Cross-references:** `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md` (the measured instance), `260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` and `260817-2147_*_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md` (the two records the instance spans), `260817-2207-reconciliation.md` (the reconciliation that found it)
 
 ---
 
@@ -58,8 +58,8 @@ reasoning was revised rather than that the defect was superseded, and the no-ren
 record whose body went stale while its marker stayed correct.
 
 ---
-Answered: user gate, orchestrator session `shared/history/260817-2037-orchestrator-session.md`, 2026-08-17 — option 1, a supersession-style note on the issue vocabulary, following the `Retired:` precedent. The label and the no-rename rule are the recommendation above; the mechanism is the user's choice.
-Implemented: `rules/fusion-workbench-conventions.md` `## Inline State Tracking` (issue half) and `## State Markers — issues and planning` (`_c_` row pointer) — the issue vocabulary gains a `Revised by:` footer, citing the commit or record that reversed the reasoning in a `Resolved:` note, with no rename and `Superseded by:` reserved to decision records. Applied to the measured instance in `shared/issues/260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`; `shared/issues/260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md` closed.
+Answered: user gate, orchestrator session `260817-2037-orchestrator-session.md`, 2026-08-17 — option 1, a supersession-style note on the issue vocabulary, following the `Retired:` precedent. The label and the no-rename rule are the recommendation above; the mechanism is the user's choice.
+Implemented: `rules/fusion-workbench-conventions.md` `## Inline State Tracking` (issue half) and `## State Markers — issues and planning` (`_c_` row pointer) — the issue vocabulary gains a `Revised by:` footer, citing the commit or record that reversed the reasoning in a `Resolved:` note, with no rename and `Superseded by:` reserved to decision records. Applied to the measured instance in `260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`; `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md` closed.
 Deferred:
 Superseded by:
 Retired:

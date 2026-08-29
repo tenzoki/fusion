@@ -8,7 +8,7 @@
 **Affects:** `hooks/lib/bash-mutation-guard.ts:1788-1792` (`DIR_BUILTINS` and its comment)
 **Kind:** PRE-EXISTING. `048f3db` did not touch this set; the review reached it by asking where else a name-keyed table carries a shell fact.
 **Cross-references:**
-`issues/260803-2236_c_…` (`runsBuiltins` — the same shape one table up, and the reason it was deleted),
+`260803-2236_*_…` (`runsBuiltins` — the same shape one table up, and the reason it was deleted),
 `hooks/lib/command-word.ts:106-132` (the empty space where `runsBuiltins` was, and the sentence "the row cannot carry a claim about a shell").
 
 ---
@@ -112,7 +112,7 @@ does not own, and this step changes no source comment.
 One of the six findings whose shape the plan's rule has no branch for; reported to the
 orchestrator as such.
 
-**Where it is answered.** `circles/260804-1205-shell-reachability-model` owns the tables the
+**Where it is answered.** `260804-1205-shell-reachability-model` owns the tables the
 directory model is keyed on, and this is the same shape as `runsBuiltins` one table up. This
 issue's § Recommendation supplies both the replacement comment and the generalisation that
 keeps the class from reappearing — state next to the set that every entry is a claim about a

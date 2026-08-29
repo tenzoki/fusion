@@ -65,7 +65,7 @@ denied whatever the program is — and give `npm test > "$LOG"` as the worked ex
 `curl -o $OUT` one, so the two forms are visibly different rather than silently so.
 
 **Related.** The must-never-deny corpus cannot catch a widening of this family; see
-`260801-1900_o_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md`.
+`260801-1900_*_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md`.
 
 **Found by** coderev on the `17730b8..e31c0f3` review, by testing the documented bound against the
 compiled classifier rather than reading it.
@@ -75,9 +75,9 @@ Resolved: the code was changed to match the documentation, not the other way rou
 
 ---
 **Half of this resolution was superseded on 2026-08-04 (task T7-1 of
-`circles/260801-1244-guard-rules-write`).** The record that carries the argument
+`260801-1244-guard-rules-write`).** The record that carries the argument
 is
-`circles/260801-1244-guard-rules-write/decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
+`260804-0106_*_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`.
 
 What stands: the defect this issue found was real, and the documented sentence —
 *an unrecognised program is allowed however unparseable its ARGUMENTS are* — is
@@ -105,7 +105,7 @@ because after the reversal the guard is looser on `curl -o rules/x.md` than on
 stands on the measured defect alone (`260803-1835` — an agent prompt overwritten
 with no flag), which is enough on its own, and the superseding record now says so
 in `## The argument, corrected` rather than restating the conclusion with the
-false premise quietly removed. Filed as `260804-0841`, found by coderev on the
+false premise quietly removed. Filed as `260804-0841_*_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md`, found by coderev on the
 Turn 7 review.
 
 What was superseded: the bound was drawn around the **program**, and it should

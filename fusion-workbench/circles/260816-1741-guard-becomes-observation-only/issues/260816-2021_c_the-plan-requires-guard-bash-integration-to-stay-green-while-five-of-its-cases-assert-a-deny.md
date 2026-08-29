@@ -27,7 +27,7 @@ after step 2 landed:
 The two properties the Testing Strategy actually names are green and were verified case by case:
 `a fresh project running innocuous Bash writes no counter and no event` passes, and
 `allows an unguarded file_path, and records the allow` passes, so the Bash zero-side-effect
-property (issue `260707-0751`) and the `guard_allow` write trace both survive step 2 intact.
+property (issue `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md`) and the `guard_allow` write trace both survive step 2 intact.
 
 The file also carries a `describe` block whose whole subject is the stand-down, and header prose
 describing the stand-down and a protected-path fingerprint that left on 2026-08-12.
@@ -35,7 +35,7 @@ describing the stand-down and a protected-path fingerprint that left on 2026-08-
 ---
 
 Context: found while implementing plan step 2
-(`circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`).
+(`260816-1915_*_the-compliance-guard-becomes-observation-only.md`).
 The dispatch asked for the list of failing test files rather than a fix, so nothing was changed
 in the test file.
 
@@ -83,4 +83,4 @@ The Testing Strategy's own claim was NOT corrected — it still names this file
 among those that must stay green throughout, which is the half of this record
 that belongs to whoever next edits the plan's prose rather than its steps.
 
-History: `circles/260816-1741-guard-becomes-observation-only/history/260816-2250-step-9-test-surface-follows-the-removal.md`.
+History: `260816-2250-step-9-test-surface-follows-the-removal.md`.

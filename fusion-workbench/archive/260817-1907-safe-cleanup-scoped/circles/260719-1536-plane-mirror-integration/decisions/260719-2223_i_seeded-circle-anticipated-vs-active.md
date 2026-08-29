@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** planner
-**Cross-references:** circles/260719-1536-plane-mirror-integration/_c_circle.md (the bounded read path in the Directive), circles/260719-1536-plane-mirror-integration/planning/260719-2223_*_plan-plane-bounded-bridge.md (Step 5, the seeding-read skill — depends on this answer), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (`/new-fe-feature` moves the story straight to In Progress), shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md §2 (activation mapping "breaks" — Martin reads to seed; fusion activates from files)
+**Cross-references:** 260719-1536-plane-mirror-integration (the bounded read path in the Directive), 260719-2223_*_plan-plane-bounded-bridge.md (Step 5, the seeding-read skill — depends on this answer), /Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator/MARTIN.md (`/new-fe-feature` moves the story straight to In Progress), 260719-2141-plane-mirror-martin-convergence-feasibility.md §2 (activation mapping "breaks" — Martin reads to seed; fusion activates from files)
 
 ---
 
@@ -24,7 +24,7 @@ The one bounded read path — seed a new Circle from a named Plane issue — mat
 
 ## Constraints
 
-- fusion is single-active-Circle with no concurrency lock (user decision, Option 3, `shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md`). Any straight-to-active path must handle "a Circle is already active" without corrupting `.active-circle`.
+- fusion is single-active-Circle with no concurrency lock (user decision, Option 3, `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`). Any straight-to-active path must handle "a Circle is already active" without corrupting `.active-circle`.
 - The seeded Circle's future pushes must land on the SAME origin Plane issue (the natural-key map records the origin UUID at seed time) — true under both options; only the timing of the first In-Progress push differs.
 - The read is one-shot and materialised into files; after seeding, Plane is not consulted about that Circle again (unchanged by this choice).
 
@@ -39,9 +39,9 @@ Deferred:
 Superseded by:
 
 ---
-Answered: user approved the plan gate with recommended defaults (session 260719-1632) — the seeded Circle enters as **anticipated (`_a_`)**, reusing the `/fusion:direct` capture path; the user activates it later. Not straight-to-active. Realised in the plane bounded-bridge plan (this Circle's planning/).
+Answered: user approved the plan gate with recommended defaults (session 260719-1632-orchestrator-session.md) — the seeded Circle enters as **anticipated (`_a_`)**, reusing the `/fusion:direct` capture path; the user activates it later. Not straight-to-active. Realised in the plane bounded-bridge plan (this Circle's planning/).
 
 Implemented: `bd62bf1` (Step 5, seeding read) — `skills/seed-from-plane/SKILL.md` hands the fetched Plane title+description to the existing `/fusion:direct` → shaper path, producing an anticipated `_a_` Circle; `bin/fusion-plane seed` records the origin UUID under the new Circle's natural key so later pushes land on the same origin story. No straight-to-active path was built. Verified by reconciler 2026-07-19: seed-extraction + origin-UUID-record tests green in `hooks/lib/__tests__/fusion-plane.test.ts`.
 
 ---
-Retired: `d0ddabb` (step 2 of circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md), completed by `1e29572` (step 12) — the seeding read left with the mirror and `/fusion:seed-from-plane` left with the administrative-surface collapse. No path now creates a Circle from a Plane issue, so the anticipated-versus-active question this record settled has no caller.
+Retired: `d0ddabb` (step 2 of 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md), completed by `1e29572` (step 12) — the seeding read left with the mirror and `/fusion:seed-from-plane` left with the administrative-surface collapse. No path now creates a Circle from a Plane issue, so the anticipated-versus-active question this record settled has no caller.

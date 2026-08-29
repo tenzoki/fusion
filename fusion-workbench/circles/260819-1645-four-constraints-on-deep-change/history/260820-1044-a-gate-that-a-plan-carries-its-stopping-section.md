@@ -3,7 +3,7 @@
 **Date:** 2026-08-20
 **Agent:** coder
 **Status:** Complete
-**Task:** Circle Turn 2, task F3 — fix direction 1 of `issues/260820-0917_o_the-first-plan-written-after-the-stopping-section-was-made-mandatory-does-not-carry-it.md`.
+**Task:** Circle Turn 2, task F3 — fix direction 1 of `260820-0917_*_the-first-plan-written-after-the-stopping-section-was-made-mandatory-does-not-carry-it.md`.
 **HEAD at start:** `8e7cae7`
 
 ## What was built

@@ -42,7 +42,7 @@ substitutions with the surrounding lines untouched.
 **Fix direction.** Reflow the two paragraphs and rebuild `dist/`. Nothing else in the file is
 affected.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

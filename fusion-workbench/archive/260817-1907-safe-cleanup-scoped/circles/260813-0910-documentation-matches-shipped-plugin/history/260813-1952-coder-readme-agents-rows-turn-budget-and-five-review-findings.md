@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13
 **Agent:** coder
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `planning/260813-1820_p_documentation-matches-shipped-plugin.md` step 4 (now `[DONE]`)
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md` step 4 (now `[DONE]`)
 **Status:** Complete
 
 ## What was implemented
@@ -101,12 +101,12 @@ Shipped:
 - `/Users/k1/Projects/productive/fusion/CLAUDE.md`
 
 Workbench (five issue closures and the plan, all renames):
-- `issues/260813-1929_o_readme-agents-claims-the-lint-catches-a-forgotten-registration-when-it-only-checks-counts.md` → `..._c_...`
-- `issues/260813-1929_o_the-count-sources-layout-row-says-no-markdown-describes-it-while-being-that-markdown.md` → `..._c_...`
-- `issues/260813-1929_o_the-commit-lock-row-restates-two-of-four-acquirers-while-saying-it-restates-none.md` → `..._c_...`
-- `issues/260813-1929_o_the-measure-it-yourself-instruction-names-the-emit-if-exists-list-which-includes-three-conditional-rules.md` → `..._c_...`
-- `issues/260813-1929_o_the-plan-file-carries-the-open-marker-and-status-draft-while-three-of-ten-steps-are-done.md` → `..._c_...`
-- `planning/260813-1820_o_documentation-matches-shipped-plugin.md` → `planning/260813-1820_p_documentation-matches-shipped-plugin.md`
+- `260813-1929_*_readme-agents-claims-the-lint-catches-a-forgotten-registration-when-it-only-checks-counts.md` → `..._c_...`
+- `260813-1929_*_the-count-sources-layout-row-says-no-markdown-describes-it-while-being-that-markdown.md` → `..._c_...`
+- `260813-1929_*_the-commit-lock-row-restates-two-of-four-acquirers-while-saying-it-restates-none.md` → `..._c_...`
+- `260813-1929_*_the-measure-it-yourself-instruction-names-the-emit-if-exists-list-which-includes-three-conditional-rules.md` → `..._c_...`
+- `260813-1929_*_the-plan-file-carries-the-open-marker-and-status-draft-while-three-of-ten-steps-are-done.md` → `..._c_...`
+- `260813-1820_*_documentation-matches-shipped-plugin.md` → `260813-1820_*_documentation-matches-shipped-plugin.md`
 
 ## Verification
 

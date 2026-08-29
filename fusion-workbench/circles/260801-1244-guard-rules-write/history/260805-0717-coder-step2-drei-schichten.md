@@ -3,16 +3,16 @@
 **Date:** 2026-08-05
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 2
-**Decision executed:** `decisions/260805-0709_i_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Step 2
+**Decision executed:** `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
 **Baseline:** `658653a`. Not committed — the orchestrator commits after validation.
 
 **Voice profiles:** `bin/fusion-rules coder`, run from the project root, emitted
 `./fusion-workbench/stilwerk/chat-voice-en.yaml`. The dispatch asked for a German report, so
 I read `chat-voice-de.yaml` directly and applied it to the chat report. `CLAUDE.md` carries no
 `**Language:**` line, so the helper's documented default (`en`) is what it resolved — the same
-observation `history/260805-0645-coder-step1-emission-golden.md` records.
+observation `260805-0645-coder-step1-emission-golden.md` records.
 
 ---
 
@@ -84,8 +84,8 @@ arriving from either direction can complete the thought.
 closure ran through one of the two moved sections carries its own `## Measured` or
 `## Evidence — measured` block, so no issue's evidence lives only in the rule file. The two
 closest calls were both closed by prose in *three* places, not one:
-`260802-2335` (the planted alias) put its row in the rule file **and** in `README-hooks.md`,
-and `260803-2040` (ambient `CDPATH`) put its statement in `ambientCdpathIsSet`'s docstring, in
+`260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md` (the planted alias) put its row in the rule file **and** in `README-hooks.md`,
+and `260803-2040_*_the-ambient-cdpath-check-reads-the-hooks-environment-not-the-shell-the-command-runs-in.md` (ambient `CDPATH`) put its statement in `ambientCdpathIsSet`'s docstring, in
 `README-hooks.md` **and** in the rule file. Nothing had to stay in the reference on this
 ground. What did change is the *reach* of those closures: the residual catalogue is no longer
 loaded by any agent, which is exactly the loss the user accepted at the gate.
@@ -119,11 +119,11 @@ because the new file does not carry a pattern word either.
 |---|---|
 | `rules/protected-path-discipline.md` | 50 559 → 16 346. Core layer. |
 | `rules/protected-path-internals.md` | new, 20 754. Reference layer. Provenance header cites the gate decision. |
-| `circles/260801-1244-guard-rules-write/analyses/260805-0717-protected-path-forensics.md` | new, 19 090. Forensics layer, in the workbench, reachable by no emission path. |
+| `260805-0717-protected-path-forensics.md` | new, 19 090. Forensics layer, in the workbench, reachable by no emission path. |
 | `bin/fusion-rules` | third agent-flag block + `emit_if_exists`; header comment rewritten for the three layers. |
 | `hooks/lib/__tests__/fixtures/rules-emission.golden` | regenerated. |
 | `hooks/lib/__tests__/rules-emission-golden.test.ts` | `CEILING` 150 817 → 131 685, with the history line the ratchet requires. |
-| `planning/260804-2356_o_…ausstieg…md` | Step 2 marked `[DONE]` with the deviation noted. |
+| `260804-2356_*_…ausstieg…md` | Step 2 marked `[DONE]` with the deviation noted. |
 
 The three layers total 56 190 against the original 50 559. The 5 631-byte difference is new
 connective text and nothing else: three ledes, the core's pointer paragraphs, the one-paragraph
@@ -161,11 +161,11 @@ forensics' framing section with its layer table.
   `hooks/lib/bash-mutation-guard.ts:546` ("documented … in
   `rules/protected-path-discipline.md`", the symlink residual) and `:2523` (the ambient-`CDPATH`
   bound). Both should point at the forensics analysis.
-- **`issues/260804-1220_o_…`** (the illustration block still says "three questions" where the
+- **`260804-1220_*_…`** (the illustration block still says "three questions" where the
   procedure has four) travelled with its section into the forensics analysis. Its `Affects:`
   line names `rules/protected-path-discipline.md:218`, which no longer holds. Step 3 owns it.
 - **The guard did not protect `rules/` during this session**, which is
-  `issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies`
+  `260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies`
   observed live: a `cp` into `rules/` with literal operands was allowed, while an earlier
   command with a `$`-built operand outside any protected path was denied fail-closed. The
   session's cwd is `fusion-workbench/`, one level below the project root. Filed already; noted

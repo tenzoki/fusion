@@ -16,7 +16,7 @@ beside it, and twice in two Turns the claim was broader than the gate.
 
 ---
 
-**The fix is one the user has already chosen once.** Decision `260810-2032` adopted a baseline pin for
+**The fix is one the user has already chosen once.** Decision `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` adopted a baseline pin for
 the drift check's four sentences: assert equality against a committed baseline rather than screening
 for what might have gone wrong, with a failure message stating that re-approving the baseline is the
 expected response to a legitimate change. Pinning a coverage *count* is the same mechanism applied to
@@ -36,13 +36,13 @@ legitimate edit without saying so gets routed around, and that is the whole risk
 **Scope question for whoever takes this**, which is worth settling once rather than per site: is
 count-pinning a convention for every gate that reports what it examined, or a fix applied to these
 two? Three applications in one session is the point at which the answer stops being obvious by
-default. Note that `260810-2032`'s answer covered the drift check only, and deliberately did not
+default. Note that `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`'s answer covered the drift check only, and deliberately did not
 settle whether the blacklist beside it comes out — the same restraint applies here.
 
-**Sequencing.** Decision `260810-2032`'s pin is already sequenced behind
+**Sequencing.** Decision `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`'s pin is already sequenced behind
 `I:260801-2038-frozen-state`. This one has no such dependency and can land on its own.
 
-**Filed by:** orchestrator, session `260810-1646`, on the silent-skip executor's costed proposal.
+**Filed by:** orchestrator, session `260810-1646-orchestrator-session.md`, on the silent-skip executor's costed proposal.
 
 ---
 
@@ -74,7 +74,7 @@ the edit they made and write them into `BASELINE` in the same commit, and names 
 that is not wanted: widening the assertion back into a floor.
 
 **The scope question the record raised is deliberately NOT answered here**, on the restraint the
-record itself asks for — `260810-2032` covered the drift check only, and this closure covers
+record itself asks for — `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` covered the drift check only, and this closure covers
 `reference-resolution-lint.test.ts` only. **The cascade reach gate is untouched and still carries
 its hand-written claim.** Whether count-pinning becomes a convention for every gate that reports
 what it examined remains open; this is the third application, which is the point at which the record
@@ -87,7 +87,7 @@ guards the same quantity that `BASELINE.records` now pins exactly, so it can no 
 thing standing between a departure and a green suite.
 
 ---
-**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — the fix holds; two statements in the
+**Reconciliation 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`) — the fix holds; two statements in the
 closure above do not. Marker unchanged.**
 
 The fix itself verifies: `hooks/lib/__tests__/reference-resolution-lint.test.ts:490` carries
@@ -104,5 +104,5 @@ Two corrections to the annotation:
 2. The scope question the closure deferred — *"whether count-pinning becomes a convention for every
    gate that reports what it examined"* — was to be *"settled as its own decision"* and no decision
    was filed. That filing gap is closed now:
-   `shared/decisions/260816-0711_o_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`.
+   `260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md`.
    The record is a filing of the deferred question, not a new one.

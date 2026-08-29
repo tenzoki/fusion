@@ -6,7 +6,7 @@ Two of six baseline re-approvals carry no accounting, and the log now contradict
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `hooks/lib/__tests__/reference-resolution-lint.test.ts:488`, `:552`
-**Cross-references:** `shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`, where the rolled entries live
+**Cross-references:** `260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`, where the rolled entries live
 
 ---
 
@@ -19,7 +19,7 @@ The file states its own invariant at `hooks/lib/__tests__/reference-resolution-l
 `BASELINE` moved in six of the nine commits of this range. Four carry an accounting block and each of those four is accurate, checked token by token against its own diff. Two carry nothing:
 
 - `c9eba48` (plan step 3): `paths 1286 → 1287`, `anchors 176 → 177`. No block. The next commit's block mentions it after the fact, in its last line: "Step 3 moved both counts by one the same way and approved it in `git:c9eba48` with no note here."
-- `1400402` (plan step 6): `paths 1291 → 1292`, `anchors 179 → 180`. No block anywhere. Its accounting exists only in the workbench history file `circles/260823-0023-settle-what-travels-between-checkouts/history/260823-1040-coder-next-briefing-states-its-provenance.md`, which is not where the invariant says it goes.
+- `1400402` (plan step 6): `paths 1291 → 1292`, `anchors 179 → 180`. No block anywhere. Its accounting exists only in the workbench history file `260823-1040-coder-next-briefing-states-its-provenance.md`, which is not where the invariant says it goes.
 
 The visible consequence at HEAD: the last entry of the in-file log ends by stating `paths 1291, anchors 179, records 117`, and the constant on the very next line reads `{ paths: 1292, anchors: 180, records: 117 }`. A reader checking the log against the constant finds them disagreeing, with nothing to say which is right.
 

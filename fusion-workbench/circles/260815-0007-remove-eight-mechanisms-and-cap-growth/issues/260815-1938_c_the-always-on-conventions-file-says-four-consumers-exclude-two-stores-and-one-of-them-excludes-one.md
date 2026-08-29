@@ -27,7 +27,7 @@ agents/playmaker.md           stashes=1  migration-v2=1
 
 No `.migration-v2-backup/`. Four consumers exclude `stashes/`; three of them also exclude `.migration-v2-backup/`.
 
-**How the widening happened, which is the part worth keeping.** The change ledger's own citation for entry L12 (`history/260815-1706-curator-run.md`, §5) reads "Four shipped consumers still exclude **it**" — singular, naming the `stashes/` store, which is what was measured. The After text generalised "it" to "them" across two stores, and the second store was never measured against the four consumers. The user approved the After text; the measurement behind it only ever covered half of what the text asserts.
+**How the widening happened, which is the part worth keeping.** The change ledger's own citation for entry L12 (`260815-1706-curator-run.md`, §5) reads "Four shipped consumers still exclude **it**" — singular, naming the `stashes/` store, which is what was measured. The After text generalised "it" to "them" across two stores, and the second store was never measured against the four consumers. The user approved the After text; the measurement behind it only ever covered half of what the text asserts.
 
 **Two ways to make it true, and they are not equivalent.**
 
@@ -41,4 +41,4 @@ Option 1 unless somebody argues option 2 on its merits.
 **Found by:** coderev, review of `1e29572..9306f0a`, commit `e8052e7`.
 
 ---
-Resolved: Option 1 taken. `rules/fusion-workbench-conventions.md:64` now states the measured split — four consumers exclude `stashes/`, and all but the archive skill exclude `.migration-v2-backup/` too. The split was re-measured against all four files before the edit and matches what this record reports. Option 2 was deliberately not taken: `skills/archive/SKILL.md:96` is unchanged, and the question of whether it *should* carry the exclusion is filed separately as `shared/issues/260816-0025_o_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`. The correction cost 97 bytes on the always-on surface; `hooks/lib/__tests__/fixtures/rules-emission.golden` was regenerated and the universal-core growth bound still passes.
+Resolved: Option 1 taken. `rules/fusion-workbench-conventions.md:64` now states the measured split — four consumers exclude `stashes/`, and all but the archive skill exclude `.migration-v2-backup/` too. The split was re-measured against all four files before the edit and matches what this record reports. Option 2 was deliberately not taken: `skills/archive/SKILL.md:96` is unchanged, and the question of whether it *should* carry the exclusion is filed separately as `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`. The correction cost 97 bytes on the always-on surface; `hooks/lib/__tests__/fixtures/rules-emission.golden` was regenerated and the universal-core growth bound still passes.

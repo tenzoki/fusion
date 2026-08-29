@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Dispatched by:** orchestrator
-**Plan:** `shared/planning/260812-1232_p_remove-the-protected-path-half-of-the-compliance-guard.md`, step 9
+**Plan:** `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md`, step 9
 
 ---
 
@@ -181,7 +181,7 @@ here:
   assumed).
 - **Case folding** — both paragraphs. The fold was the protected list's; `foldCase` has one
   caller left and it is the review-coverage store comparison. The section now says the match is
-  case-SENSITIVE and points at the open decision `260804-1632`, one of whose two grounds ("this
+  case-SENSITIVE and points at the open decision `260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`, one of whose two grounds ("this
   is CHECK 3, not CHECK 2; `guard.protectedPaths` is matched folded and is unaffected either
   way") has no other side left. That is the same residual step 6 recorded in `paths.ts`, now
   visible to a user rather than only to a reader of the module.

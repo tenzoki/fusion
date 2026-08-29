@@ -12,11 +12,11 @@ Turn 2 entry names "steps P-4 to P-6". The only place the step exists is `orches
 **Severity:** Medium — a resumed session reads the plan first, and the plan at HEAD says the
 concurrency work never happened. Steps 11 and 13 both touch the hooks build this step changed.
 **Domain:** data
-**Filed by:** `ontorev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1247-ontorev-turn-2-structured-data.md`)
+**Filed by:** `ontorev`, reviewing `7c12d6a..5d29b6d` (`260815-1247-ontorev-turn-2-structured-data.md`)
 **Owner:** `ontocoder`
 **Affects:**
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:138-345`;
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/_t_circle.md:216`
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:138-345`;
+`260815-0007-remove-eight-mechanisms-and-cap-growth:216`
 
 **Verified 2026-08-15 at HEAD `5d29b6d`.**
 
@@ -52,7 +52,7 @@ Both plan and record were edited inside this range — the plan three times (`d1
 
 ## Why the just-closed sibling did not prevent it
 
-`issues/260815-0804_c_three-plan-steps-have-landed-and-the-plan-carries-no-inline-state-marker-for-any-of-them.md`
+`260815-0804_*_three-plan-steps-have-landed-and-the-plan-carries-no-inline-state-marker-for-any-of-them.md`
 closed with *"Marking is now performed with each step's commit."* That repair works on steps the plan
 contains: steps 4, 5 and 6 all carry `[DONE]` correctly. It has nothing to act on for a step that was
 never written into the plan, so the two defects are adjacent rather than the same one, and closing the
@@ -68,11 +68,11 @@ about the plan-gate contract and belongs in a decision record, not in this fix.
 
 ## Related
 
-- `issues/260815-0804_c_three-plan-steps-have-landed-and-the-plan-carries-no-inline-state-marker-for-any-of-them.md`
+- `260815-0804_*_three-plan-steps-have-landed-and-the-plan-carries-no-inline-state-marker-for-any-of-them.md`
   — the sibling defect, closed this session.
-- `shared/decisions/260811-2009_i_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
+- `260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`
   — the decision the inserted step implements.
-- `history/260815-1133-coder-hooks-suite-concurrency-safety.md` — the run's own record, which exists.
+- `260815-1133-coder-hooks-suite-concurrency-safety.md` — the run's own record, which exists.
 
 ---
 Resolved: both surfaces now carry it. The Circle record's Turn 2 entry names the inserted step, its commit `332267a`, the measurement behind it and why the Circle grew by it (orchestrator, before `b093a54`). The plan carries it as step `3b. [DONE]` between 3 and 4, with its binding decision, and steps 11 and 13 each gained a paragraph naming where the changed build reaches them (planner correction pass). The reviewer's point stands as filed: marking cannot reach a step the plan never contained, so this was not the same defect as the missing `[DONE]` markers.

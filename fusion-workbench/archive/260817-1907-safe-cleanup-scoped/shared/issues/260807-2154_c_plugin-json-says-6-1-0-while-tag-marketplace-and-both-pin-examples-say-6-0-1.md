@@ -43,8 +43,8 @@ than carried only in a closed plan.
 
 The same drift class has been filed and closed twice before:
 
-- `circles/260801-1244-guard-rules-write/issues/260805-1150_c_readme-nennt-als-pin-beispiel-eine-version-die-nie-getaggt-wurde.md`
-- `circles/260801-1244-guard-rules-write/issues/260805-1840_c_readme-fusion-ref-beispiel-zeigt-auf-ungetaggte-version.md`
+- `260805-1150_*_readme-nennt-als-pin-beispiel-eine-version-die-nie-getaggt-wurde.md`
+- `260805-1840_*_readme-fusion-ref-beispiel-zeigt-auf-ungetaggte-version.md`
 
 `CLAUDE.md` already names it: "there are effectively **four version surfaces** to keep coherent …
 Refresh it at each release rather than letting it drift back to a version nobody tagged." Three
@@ -60,8 +60,8 @@ version. Both are the user's call at the release gate; this record just keeps th
 ## Cross-references
 
 - `CLAUDE.md` `## Release process`
-- Plan: `fusion-workbench/shared/planning/260807-2024_c_two-language-declarations.md` step S11, Out of Scope
-- Review: `fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
+- Plan: `260807-2024_*_two-language-declarations.md` step S11, Out of Scope
+- Review: `260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
 
 ---
 Resolved: All four version surfaces now read 6.1.0, and the release is out. The two pin examples

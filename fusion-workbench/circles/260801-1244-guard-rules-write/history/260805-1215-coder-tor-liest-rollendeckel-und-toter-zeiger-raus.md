@@ -1,7 +1,7 @@
 # Session — das Release-Tor liest die Rollendeckel, und der tote Forensik-Zeiger ist raus
 
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Datum:** 2026-08-05, 12:15
 **Status:** Complete
 **Dispatch:** Orchestrator, zwei Änderungen vor dem Push von 5.9.0
@@ -113,8 +113,8 @@ Ableitung aus dem Quelltext, keine Messung.
 
 ## 2. Der Forensik-Zeiger
 
-`260805-1145`, jetzt `_c_`. Der Nutzer entschied: **Zeiger entfernen, Herkunft nennen**, also
-weder Weg 1 noch Weg 2 des Issues, sondern die vierte Möglichkeit. Entscheidung `260805-0709`
+`260805-1145_*_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md`, jetzt `_c_`. Der Nutzer entschied: **Zeiger entfernen, Herkunft nennen**, also
+weder Weg 1 noch Weg 2 des Issues, sondern die vierte Möglichkeit. Entscheidung `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
 bleibt unberührt; die Forensik liegt weiterhin im Analysespeicher dieses Circles.
 
 **Fünf Stellen, alle geändert** — `rules/protected-path-discipline.md` (2),
@@ -142,7 +142,7 @@ belegen eine Behauptung, statt eine Fundstelle zu versprechen, und alle bis auf
 `protected-path-internals.md:332` sind ohnehin mit `…` abgeschnitten, also gar nicht als
 öffnbarer Pfad gemeint. Die `**Provenance:**`-Kopfzeilen sind eine dokumentierte Konvention
 (`rules/rule-file-provenance.md`) und nennen eine Herkunft, keinen Fundort. Ob die Zitate
-ebenso weichen sollen, gehört zum Nutzer; es ist nicht in Entscheidung `260805-1145` enthalten.
+ebenso weichen sollen, gehört zum Nutzer; es ist nicht in Entscheidung `260805-1145_*_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md` enthalten.
 
 ---
 
@@ -174,7 +174,7 @@ habe ich mitgezogen (`21 897` → `21 870`), sonst wäre die Begründung still v
 die Fehlerklasse ist, gegen die die Anker-Zusicherung geschrieben wurde.
 
 Der Verlauf im Kopfkommentar hat eine Zeile bekommen: `111 766 — 2026-08-05, at release
-preparation`, ausdrücklich als **kein Schnitt** gekennzeichnet, mit Ursache (Issue `260805-1145`)
+preparation`, ausdrücklich als **kein Schnitt** gekennzeichnet, mit Ursache (Issue `260805-1145_*_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md`)
 und Aufteilung.
 
 ---
@@ -219,4 +219,4 @@ und Aufteilung.
 - `rules/protected-path-discipline.md` — 2 Stellen
 - `rules/protected-path-internals.md` — 1 Stelle
 - `README-hooks.md` — 2 Stellen + 1 Folgesatz
-- `fusion-workbench/.../issues/260805-1145_c_…` — Auflösung angehängt, `_o_` → `_c_`
+- `fusion-workbench/.../260805-1145_*_…` — Auflösung angehängt, `_o_` → `_c_`

@@ -2,8 +2,8 @@
 
 **Agent:** coder
 **Date:** 2026-08-21 02:17
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
-**Plan:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, steps 9, 10 and 11
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
+**Plan:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, steps 9, 10 and 11
 **Status:** Complete
 
 ## What was done
@@ -20,14 +20,14 @@ and block-quote lines were not touched, because those are the files' own exhibit
 | 11 | `rules/critical-stance.md` | 29 in 1 557 words | 1 in 1 529 | 1 | 9 941 to 9 858 |
 
 The ceiling is read per file, per
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`.
+`260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`.
 `bin/fusion-prose-metric` is the authority for every count above.
 
 ## The two failure modes the first repunctuation pass introduced
 
 Both open records were read before starting and each replacement was checked against both.
 
-`shared/issues/260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`
+`260816-1330_*_the-repunctuation-replaced-three-em-dashes-with-three-vague-pronoun-openers-the-same-blacklist-bans.md`
 asks that no replacement sentence open with a bare demonstrative or pronoun standing for a whole
 preceding clause. Four sentence splits were made in total across the three files. Their openers are
 `Read` (imperative), `And`, `And` and `The rule` (an explicit noun phrase). None is a demonstrative or
@@ -35,7 +35,7 @@ a pronoun. The reviewer's correction to the argument offered for that record was
 opener is not created only by splitting a sentence, so every colon and parenthesis site was checked
 for the same figure as well, and none produces one.
 
-`shared/issues/260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`
+`260816-1330_*_two-of-the-twenty-nine-replacements-chose-a-mark-weaker-than-the-clause-it-replaced.md`
 asks that a dash carrying a strong break become a colon or a full stop and never a comma. Three commas
 were used, all in `rules/critical-stance.md`, and every one sits on an `X, not Y` correlative
 appositive where no independent clause follows and the contrast is carried by the word `not` rather
@@ -74,11 +74,11 @@ bytes rather than spending them: the core-only emission measures 93 384 against 
 **Suite.** `cd hooks && npm test` exits 0, 40 files and 718 tests.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The paragraph on the two failure modes says three commas were used
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The paragraph on the two failure modes says three commas were used
 in `rules/critical-stance.md`, all on an `X, not Y` appositive. Five em-dashes became commas: `:5`,
 `:29` and `:51` are the `X, not Y` case; `:38` coordinates two imperative clauses and carries no `not`;
 `:47`, a section heading, joins two independent clauses with a comma before `or`, which is the clause
 boundary the paragraph says none sits on. The heading comma at `:47` stays: a colon is ungrammatical
 there, a full stop leaves a heading in two sentences, and the file's one permitted prose em-dash is
 spent at `:17`. Filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0257_*_the-repunctuation-record-claims-three-commas-where-five-were-made-and-one-sits-on-a-clause-boundary.md`.
+`260821-0257_*_the-repunctuation-record-claims-three-commas-where-five-were-made-and-one-sits-on-a-clause-boundary.md`.

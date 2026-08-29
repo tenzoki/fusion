@@ -8,7 +8,7 @@ now instructs the opposite of what it says.
 same sentence that says no second `turn_start` may be emitted. `agents/orchestrator.md:467` states the
 log is now the Turn number's only record, so a double emission mis-counts every Turn from the resume on.
 **Domain:** code
-**Filed by:** coderev, session `260816-0713`, reviewing range `3a0408a..f77633f`
+**Filed by:** coderev, session `260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md`, reviewing range `3a0408a..f77633f`
 **Owner:** coder
 **Affects:** `agents/orchestrator.md:111`
 
@@ -46,7 +46,7 @@ number, since this is the second renumbering the paragraph has survived unchange
 - `shared/issues/260811-2304_*` — the placement defect `b00a7a4` was fixing
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:111` still names Phase 2 step 3 and step 2, while at HEAD step 3 is the `turn_start` emission and the loop resumes at step 1. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:111` still names Phase 2 step 3 and step 2, while at HEAD step 3 is the `turn_start` emission and the loop resumes at step 1. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — the resume paragraph re-enters at the dashboard refresh (step 4) and names the check-in (step 1) as what resumes, each cited by what it does; agents/orchestrator.md:119

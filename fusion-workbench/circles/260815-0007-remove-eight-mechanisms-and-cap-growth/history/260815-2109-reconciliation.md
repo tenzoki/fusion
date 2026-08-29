@@ -46,7 +46,7 @@ Nothing below was read off a marker or a footer.
 | Turn-4 entry carries its range | `_t_circle.md:218` | `commits 9955e8f..9306f0a` |
 | Active-plan pointer | `_t_circle.md:7` | names the `_c_` path |
 | Last step landed | `agentstate.yaml` `work_queue` | P-15 `done` at `9306f0a` |
-| Plan closed | `planning/260815-0029_c_…` | `**Status:** Complete`, 20 `[DONE]` markers |
+| Plan closed | `260815-0029_*_…` | `**Status:** Complete`, 20 `[DONE]` markers |
 | `docs/` + `README*.md` reduction | byte sum at `9a7da8e` vs HEAD | 153 101 → 137 699 = **15 402**, confirming the recorded 23 534 is stale |
 
 Both figures the dispatch asserted — 761 bytes of cost and 9 894 of head-room — reproduce to the
@@ -92,16 +92,16 @@ against my own two prior verdicts:
 reconciliation, each with reproduction steps produced by running the mechanism rather than reading
 it:
 
-- `260815-1935_o_` — **High.** `surface-growth-bound.test.ts` reads `__tests__/*.ts` and
+- `260815-1935_*_the-hook-test-growth-bound-reads-two-directories-and-a-test-file-in-a-third-runs-unbounded.md` — **High.** `surface-growth-bound.test.ts` reads `__tests__/*.ts` and
   `__tests__/helpers/*.ts` only, while Vitest's include is recursive. A test file in a third
   subdirectory runs and is uncounted. Demonstrated with 3 002 lines, 120 % of that surface's entire
   head-room, all twelve assertions green.
-- `260815-1942_o_` — the three baseline maps are asserted on by nothing; the doctrine forbidding a
+- `260815-1942_*_nothing-detects-a-raised-growth-baseline-and-the-only-bound-on-one-is-a-comment.md` — the three baseline maps are asserted on by nothing; the doctrine forbidding a
   silent raise lives in a comment. Filed with the honest note that the golden/baseline separation
   itself was verified by execution and **works**.
-- `260815-1939_o_` — the head-rooms' worst-day inputs reproduce from git exactly; the sustained-rate
+- `260815-1939_*_the-caps-rate-and-percentile-inputs-do-not-reproduce-from-git-while-every-point-figure-does.md` — the head-rooms' worst-day inputs reproduce from git exactly; the sustained-rate
   and percentile inputs do not, off by 1.5× and 8×.
-- `260815-1941_o_` — the motivating table's `rules/` before-row was taken at an anchor two days off
+- `260815-1941_*_the-after-measurements-rules-before-row-was-taken-two-days-after-the-anchor-its-two-neighbours-use.md` — the motivating table's `rules/` before-row was taken at an anchor two days off
   its two neighbours: −7.5 %, not −10 %.
 
 That is more scrutiny than a coderev pass usually delivers. A rule that blocked closure for want of
@@ -115,7 +115,7 @@ leaves a reader believing the cap does not work; one that says only "latent" lea
 
 **The cap was demonstrated working on two of three new surfaces, by execution.** `skills/` at
 `9306f0a` — an 897-byte edit turned the suite red and the fixture was regenerated with the baseline
-unmoved. `agents/` in `260815-1942_o_`'s reproduction — two restored agent prompts failed the bound
+unmoved. `agents/` in `260815-1942_*_nothing-detects-a-raised-growth-baseline-and-the-only-bound-on-one-is-a-comment.md`'s reproduction — two restored agent prompts failed the bound
 at 18 000 bytes of head-room. That is behavioural evidence at HEAD on precisely the property a
 reviewer would have been trying to establish.
 
@@ -135,27 +135,27 @@ verdict's central move.
 ## 5. Files written
 
 **One tracking-file repair.** `agentstate.yaml:26` — `current_task.source_file` named
-`planning/260815-0029_o_plan-…`, a path that no longer exists; its sibling `plan_context.plan_file`
+`260815-0029_*_plan-…`, a path that no longer exists; its sibling `plan_context.plan_file`
 already named the `_c_` path. Repointed. This is a live field a resume reads, which is why it was
 fixed on sight while the other 40 dangling citations were not (§6).
 
 **One decision filed.**
-`shared/decisions/260815-2109_o_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`.
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`.
 Three Coherence verdicts in this one session decided this ad hoc — two flagging the edge, one not —
 on reasoning defensible each time and inconsistent across the three. `bin/fusion-review-coverage`'s
 own header names the decision as unfiled and declines to pre-empt it; no decision record anywhere in
 the workbench owns it. Filed to `shared/` rather than this Circle's store per the Origin Rule: its
-instances (`260814-2017`, `260814-2033`, `260814-2153`) predate this Circle. Four options,
+instances (`260814-2017`, `260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`, `260814-2153`) predate this Circle. Four options,
 recommendation options 3 and 1 together, at moderate confidence, with the conflict of interest stated
 in the record — I raised this edge twice and am recommending the option that stops it blocking.
 
 **One issue annotated.**
-`issues/260815-1913_o_closing-the-plan-dangles-thirty-four-workbench-citations…` — re-measured at 57
+`260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations…` — re-measured at 57
 occurrences, or 41 excluding the two append-only event streams. Stays open; the title was
 deliberately not corrected, since renaming it would create the very class it describes in the four
 places that cite it.
 
-**One history file appended.** `shared/history/260814-2306-orchestrator-session.md`, a third
+**One history file appended.** `260814-2306-orchestrator-session.md`, a third
 `## Coherence` section. The two earlier ones were left byte-for-byte intact.
 
 **And this file.**

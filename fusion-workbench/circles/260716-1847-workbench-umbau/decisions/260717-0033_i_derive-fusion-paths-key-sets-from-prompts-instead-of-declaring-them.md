@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator (Befund von `coder` in T2-B)
-**Cross-references:** `fusion-workbench/issues/260717-0031[o]-p8-lint-gate-scope-open-questions-from-conversions.md`, `fusion-workbench/decisions/260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`, `bin/fusion-paths`, `fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md` (Schritt 8)
+**Cross-references:** `260717-0031[o]-p8-lint-gate-scope-open-questions-from-conversions.md`, `260716-1940[o]-fusion-paths-argument-namespace-agents-vs-skills.md`, `bin/fusion-paths`, `260716-1910[p]-plan-workbench-umbau-circle-container.md` (Schritt 8)
 
 ---
 
@@ -34,14 +34,14 @@ Der Punkt ist nicht, dass jemand geschludert hat. Der Audit war sorgfältig und 
 
 - `bin/fusion-paths` spiegelt bewusst `bin/fusion-rules` (Wiederverwendung eines bewährten Musters). `fusion-rules` pflegt seine Zuordnung ebenfalls von Hand — eine Ableitung hier würde die beiden Skripte auseinanderlaufen lassen.
 - Die Namensraum-Frage (`260716-1940[o]`) hängt daran: unter deren Option 2 fragt jede Skill ihre eigenen Keys ab, und die "Prompt vereinigt mit gehosteten Skills"-Komplikation entfällt.
-- Die zwei Abweichungsrichtungen sind nicht symmetrisch (siehe `issues/260717-0031[o]`): Unter-Emission ist ein eindeutiger Fehler, Über-Emission ist mehrdeutig und oft eine Prompt-Lücke, kein überflüssiger Key. Eine Ableitung würde Über-Emission per Konstruktion beseitigen — und damit die Frage "fehlt hier ein Schritt im Prompt?" unsichtbar machen, die die elf Über-Emissionen gerade aufwerfen.
+- Die zwei Abweichungsrichtungen sind nicht symmetrisch (siehe `260717-0031[o]`): Unter-Emission ist ein eindeutiger Fehler, Über-Emission ist mehrdeutig und oft eine Prompt-Lücke, kein überflüssiger Key. Eine Ableitung würde Über-Emission per Konstruktion beseitigen — und damit die Frage "fehlt hier ein Schritt im Prompt?" unsichtbar machen, die die elf Über-Emissionen gerade aufwerfen.
 
 ## Recommendation
 
 Keine. Der `coder` in T2-B empfiehlt Option 2 mit dem Argument, Handpflege sei hier der additive Workaround im Sinne von `rules/critical-stance.md` §2. Das Gegenargument unter Constraints (Über-Emission trägt Information über Prompt-Lücken) ist nicht durchgearbeitet und könnte für Option 3 sprechen. Die Frage sollte vor Schritt 8 fallen, weil sie dessen Zuschnitt bestimmt.
 
 ---
-Answered: history/260716-1800-orchestrator-session.md — Option 2 (Sets aus den Prompts ableiten). Der Nutzer hat am Gate 2026-07-17 gewählt. Begründung des Coders aus T2-B trägt: der handgepflegte Audit war ausdrücklich und zeilenweise und ging trotzdem 14/15, wobei der fehlende Fall in die workbench-Wurzel schrieb; jede künftige Prompt-Änderung würfelt neu. Die Voraussetzung, an der T2-A scheiterte, existiert seit P-4..P-7: die Prompts tragen $OUT_*/$SCAN_* als maschinenlesbare Lese/Schreib-Markierung. Gemeinsam mit der Namensraum-Entscheidung (260716-1940) umzusetzen. Offen und bei der Umsetzung zu beantworten: die Über-Emission verschwindet durch die Ableitung, und mit ihr das Signal 'diesem Prompt fehlt ein Schritt' (elf Fälle, siehe issues/260717-0031). Falls dieses Signal erhalten bleiben soll, braucht es einen eigenen Ort.
-Implemented: f261a6a (derive key sets from prompts instead of declaring them) — shipped in v4.0.0. Verifiziert: fusion-paths.test.ts "every emitted key set is complete and self-consistent for all 15 agents" + der exit-4-Vertrag (Prompt nennt einen Key, den der Resolver nicht kennt) grün. Das offene Folge-Signal (elf Prompt-Lücken, `shared/issues/260717-0031[o]` + `260717-0107[o]`) bleibt als eigenes Issue bestehen.
+Answered: 260716-1800-orchestrator-session.md — Option 2 (Sets aus den Prompts ableiten). Der Nutzer hat am Gate 2026-07-17 gewählt. Begründung des Coders aus T2-B trägt: der handgepflegte Audit war ausdrücklich und zeilenweise und ging trotzdem 14/15, wobei der fehlende Fall in die workbench-Wurzel schrieb; jede künftige Prompt-Änderung würfelt neu. Die Voraussetzung, an der T2-A scheiterte, existiert seit P-4..P-7: die Prompts tragen $OUT_*/$SCAN_* als maschinenlesbare Lese/Schreib-Markierung. Gemeinsam mit der Namensraum-Entscheidung (260716-1940) umzusetzen. Offen und bei der Umsetzung zu beantworten: die Über-Emission verschwindet durch die Ableitung, und mit ihr das Signal 'diesem Prompt fehlt ein Schritt' (elf Fälle, siehe 260717-0031). Falls dieses Signal erhalten bleiben soll, braucht es einen eigenen Ort.
+Implemented: f261a6a (derive key sets from prompts instead of declaring them) — shipped in v4.0.0. Verifiziert: fusion-paths.test.ts "every emitted key set is complete and self-consistent for all 15 agents" + der exit-4-Vertrag (Prompt nennt einen Key, den der Resolver nicht kennt) grün. Das offene Folge-Signal (elf Prompt-Lücken, `260717-0031[o]` + `260717-0107_*_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`) bleibt als eigenes Issue bestehen.
 Deferred:
 Superseded by:

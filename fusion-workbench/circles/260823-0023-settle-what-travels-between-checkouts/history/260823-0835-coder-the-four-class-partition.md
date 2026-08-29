@@ -2,15 +2,15 @@
 
 **Date:** 2026-08-23 08:35
 **Agent:** coder
-**Circle:** `circles/260823-0023-settle-what-travels-between-checkouts`
-**Task:** plan step 1 of `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
+**Circle:** `260823-0023-settle-what-travels-between-checkouts`
+**Task:** plan step 1 of `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
 **Status:** Complete
 
 ## What was implemented
 
 `rules/workbench-tracking.md` was rewritten. The two-bullet record-versus-live-state split is gone,
 replaced by the four-class partition transcribed from
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `## The state partition`
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `## The state partition`
 (R1 travels with one writer per file, R2 travels and is appended by many, R3 travels and is written
 once or per item, L stays in the checkout). The table ranges over every entry of the layout tree in
 `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout` plus the two frozen stores, and
@@ -28,7 +28,7 @@ of `.gitattributes`, and what `/fusion:setup` does in each of the three branches
 `.fusion-setup` is written when it is missing or when the plugin version changes rather than on every
 run.
 
-`shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`
+`260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`
 carries a `Resolved:` note and is renamed `_o_` -> `_c_`. The note is written against the Circle's
 answer 6 and names the record's own fix direction (keep `portfolio.md` in the records group under a
 corrected ground) as superseded, so the closure does not read as agreement.
@@ -58,5 +58,5 @@ and the pin re-approval, once after an em-dash reduction pass.
 
 Two further surfaces still classify `portfolio.md` as an authored record: `hooks/lib/staging-drift.ts`
 `ROOT_RECORDS` and the class table in `agents/orchestrator.md`. Both are filed as
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`
+`260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`
 and are outside this step's file bound.

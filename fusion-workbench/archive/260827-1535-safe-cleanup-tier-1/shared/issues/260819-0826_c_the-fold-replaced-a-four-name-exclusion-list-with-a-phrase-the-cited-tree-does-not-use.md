@@ -2,7 +2,7 @@ The fold replaced a four-name exclusion list with a phrase the cited tree does n
 
 ---
 
-`260819-0042_c_the-move-turned-an-adjacent-duplicate-enumeration-of-the-root-entries-into-a-cross-file-one.md`
+`260819-0042_*_the-move-turned-an-adjacent-duplicate-enumeration-of-the-root-entries-into-a-cross-file-one.md`
 paid for its addition by folding out two restatements. The second fold, in
 `rules/workbench-tracking.md:9`, replaced the four names that bound the split's scope with a citation
 of the layout tree — and the tree labels two of those four as something other than an artifact store,
@@ -50,7 +50,7 @@ entries by hand.
 one word in the tree's comment column for `archive/` and `stilwerk/`. The first is four tokens and
 undoes the fold's saving; the second keeps it and puts the criterion where the citation points.
 
-Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
+Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301-orchestrator-session.md`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
 
 ---

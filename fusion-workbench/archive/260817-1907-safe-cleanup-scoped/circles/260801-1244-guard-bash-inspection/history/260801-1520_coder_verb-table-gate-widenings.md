@@ -1,9 +1,9 @@
 # Coder — the three widenings approved at the verb-table (Q3) gate
 
-**Date:** 260801-1520
+**Date:** 260801-1520_coder_verb-table-gate-widenings.md
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — amendment to step 2, ahead of steps 3 and 5
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — amendment to step 2, ahead of steps 3 and 5
 **Status:** Complete
 
 ## What was implemented
@@ -60,7 +60,7 @@ whitespace, no segment operator and no `=`, so it glues to its neighbours the wa
 substitution's value would (`"$(pwd)/build"` stays one word), can never read as a leading
 `VAR=value`, and stays readable when a deny reason quotes the segment back at a human.
 
-Closes `issues/260801-1430_c_substitution-operand-is-invisible-to-the-mutation-classifier.md`
+Closes `260801-1430_*_substitution-operand-is-invisible-to-the-mutation-classifier.md`
 as the "yes" branch of its own proposed resolution.
 
 ## Verification
@@ -148,8 +148,8 @@ in the module docstring.
   docstring rewritten (wrappers, ancestors, the revised residual list)
 - `hooks/lib/shell-parse.ts` — `SUBSTITUTION_FILLER`, the `filler` parameter on
   `scanSegments`, docstrings
-- `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 2 amended with the gate
+- `260801-1253_*_plan-guard-bash-inspection.md` — step 2 amended with the gate
   outcome. Q3's checkbox left for the orchestrator.
-- `issues/260801-1430_c_substitution-operand-…` — `Resolved:` appended, `_o_` → `_c_`
+- `260801-1430_*_substitution-operand-…` — `Resolved:` appended, `_o_` → `_c_`
 
 Not committed — the orchestrator commits.

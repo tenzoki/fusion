@@ -44,7 +44,7 @@ rewritten correct prose into something worse.
 The withdrawal is recorded rather than edited away because the mistake has a shape worth keeping:
 a grep count was treated as a read. That is the same failure a measuring help skill is most
 exposed to, which is why the analysis at
-`shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md` cites this
+`260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md` cites this
 record as a worked example.
 
 ## What is confirmed clean
@@ -62,7 +62,7 @@ under `skills/`, matching what `CLAUDE.md` states.
 
 ## The survey
 
-`shared/analyses/260813-0828-documentation-staleness-survey.md` is the systematic pass and
+`260813-0828-documentation-staleness-survey.md` is the systematic pass and
 **supersedes the table above wherever the two differ.** It carries 15 findings across four work
 groups, ordered so the five mechanical one-line edits are separable from the four prose rewrites.
 Its headline results:
@@ -81,7 +81,7 @@ Its headline results:
 - `bin/fusion-count-sources` is documented in **no** markdown file in the repository.
 - `CLAUDE.md:51` claims 612 tracked workbench files against a measured 1023.
 
-A second analysis, `shared/analyses/260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`,
+A second analysis, `260813-0831-the-seam-between-a-measured-answer-and-a-cited-one.md`,
 found one further defect on the same table while checking something else: `README-agents.md:29`
 describes `coderev` as reviewing "Go / TS / Python code" where `agents/coderev.md:3` says
 "application code, prompts, build/packaging, and tooling". A wrong answer rather than a missing
@@ -119,8 +119,8 @@ inventory lints run mechanically; the Circle's job is the surfaces outside them.
 ## Update 260813-1500 — four of these passages changed class, from lagging to wrong
 
 Commit `b995049` landed the playmaker's backlog maintenance capability
-(`circles/260813-0858-playmaker-maintains-backlog-store/`). That Circle's four documentation
-passages were deferred by `circles/260813-0910-documentation-matches-shipped-plugin/` explicitly
+(`260813-0858-playmaker-maintains-backlog-store`). That Circle's four documentation
+passages were deferred by `260813-0910-documentation-matches-shipped-plugin` explicitly
 **until this Circle lands**. It has landed, so they are unblocked — and measured against HEAD they
 are no longer merely behind. Two of them now contradict shipped behaviour outright:
 
@@ -163,7 +163,7 @@ Each of the five rows in `## Update 260813-1500` was re-opened against the worki
 - `skills/help/SKILL.md:62` — names the playmaker for `/fusion:next` only. Silence, unchanged.
 
 **The handoff is findable from both ends, which is what was asked.**
-`circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md:38-59` names the same four
+`260813-0910-documentation-matches-shipped-plugin:38-59` names the same four
 passages with line ranges under *The four passages that wait on the playmaker Circle*, and its
 `## Dependencies` at `:148-156` names the playmaker Circle's directory. A reader arriving from
 either the issue store or the documentation Circle reaches the same list. The reverse edge is
@@ -181,7 +181,7 @@ record repeats the withdrawn claim.**
 **One consequence of this session's closure worth stating here.** The version bump to `8.2.0` that
 `:142` mentions as context is not carried as an acceptance item by any open record: the
 documentation Circle's Directive puts the version surfaces out of its scope explicitly. Filed as
-`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
+`260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
 
 ---
 Resolved: Every claim in this record checks out fixed at HEAD `2552586`, verified surface by surface rather than from a report. `docs/working-model.md` now covers the backlog store and the playmaker (6 and 4 mentions, both were 0). `skills/help/SKILL.md:58-68` documents the backlog store, the playmaker ranking it and `/fusion:next` reading the briefing. `README-agents.md:38` describes the playmaker as maintaining the backlog with the split, merge, close and defer semantics and lists `backlog/` in its Writes column. The three stale claims the record named are gone: `grep -c "max 5 Turns" README-agents.md` is 0, `grep -c "fusion-workbench/history/" README-agents.md` is 0, and the invented tracked-file count is out of `CLAUDE.md`. Closed by reconciliation pass 260817-1836.

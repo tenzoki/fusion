@@ -169,4 +169,4 @@ Technical and mechanical decisions deferred to per-circle planning, not to the s
 
 ## Reconciliation Log
 
-**260806-1152 (reconciler, workbench-wide pass)** — marker `_o_` → `_c_`, retroactive: every capability this spec carries was delivered by the master plan (`planning/260718-1001_*_master-plan-fusion-v5x-overhaul.md`, now Complete) and verified at the Circle's coherent closure on 2026-07-19 (`history/260719-1455-reconciliation.md`). Same record-lag class as the master plan; see its log for the delivery evidence.
+**260806-1152 (reconciler, workbench-wide pass)** — marker `_o_` → `_c_`, retroactive: every capability this spec carries was delivered by the master plan (`260718-1001_*_master-plan-fusion-v5x-overhaul.md`, now Complete) and verified at the Circle's coherent closure on 2026-07-19 (`260719-1455-reconciliation.md`). Same record-lag class as the master plan; see its log for the delivery evidence.

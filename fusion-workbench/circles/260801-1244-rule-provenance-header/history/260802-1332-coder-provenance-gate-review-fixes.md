@@ -3,7 +3,7 @@
 **Date:** 2026-08-02 13:32
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260801-1244-rule-provenance-header`
+**Circle:** `260801-1244-rule-provenance-header`
 **Plan:** not a plan step. Turn 2 review remediation — three of the seven findings a code
 review filed against Turn 1 (`929dbf5`..`cac3726`), the three that live in the gate's test
 file. The prompt was the specification.
@@ -18,7 +18,7 @@ outside `fusion-workbench/` changed. No commit.
 
 ## Issue 1 (Medium) — the gate did not recurse
 
-`260802-1250_p_provenance-gate-does-not-recurse-so-rules-shards-would-escape-it.md`.
+`260802-1250_*_provenance-gate-does-not-recurse-so-rules-shards-would-escape-it.md`.
 
 Took fix option 1 (recurse), not option 2 (assert flatness), because the curator Circle's
 shards may land nested and option 1 survives either shape.
@@ -67,7 +67,7 @@ from a scratchpad backup; final state re-verified green.
 
 ## Issue 2 (Low) — removed the corpus-prose test
 
-`260802-1254_p_the-corpus-prose-test-asserts-a-fact-about-the-corpus-not-about-the-gate.md`.
+`260802-1254_*_the-corpus-prose-test-asserts-a-fact-about-the-corpus-not-about-the-gate.md`.
 
 Chose **removal** over the reviewer's suggested reduction, and went one step further by also
 dropping the drift guard the reviewer wanted kept.
@@ -98,7 +98,7 @@ recording what stood there and why it went.
 
 ## Issue 3 (Low) — the ten-line rationale, corrected
 
-`260802-1253_p_the-line-8-blockquote-rationale-is-false-in-the-commit-that-states-it.md`.
+`260802-1253_*_the-line-8-blockquote-rationale-is-false-in-the-commit-that-states-it.md`.
 
 **The true numbers, measured, for the sibling task that owns the conventions file:**
 

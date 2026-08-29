@@ -21,13 +21,13 @@ Case 3 currently reads as case 2. The dispatch prompts in this session worked ar
 **Three ways it could go, none obviously right:**
 
 1. **Leave it.** A red baseline is a real defect and blocking on it is arguably correct: the alternative is executors deciding for themselves which failures are theirs, which is exactly the judgement the derivation removed. The cost is the noise above.
-2. **Add a fourth `Verification:` form** for "failed, and the failure is named and predates this task". This reintroduces a judgement call, and the reviewer's own findings this session show how readily an agent's self-assessment overstates (`260810-0502`, `260810-0510`).
+2. **Add a fourth `Verification:` form** for "failed, and the failure is named and predates this task". This reintroduces a judgement call, and the reviewer's own findings this session show how readily an agent's self-assessment overstates (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`).
 3. **Make the question narrower rather than the answer softer.** Ask the suite about the task's own surface — the tests that touch the changed files — so the exit code being read is about this task. That is the shape `critical-stance` §4 recommends when a question cannot be decided from the inputs at hand: change the question, not the tolerance. It costs a way to select tests per change, which this repository does not currently have.
 
 **Not a defect in `1f2faaf`.** The derivation is what made `done` mean something. This records a consequence that was not visible until a red baseline and the new contract coexisted, which happened about two hours after it landed.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/coder.md:77-79` still defines the same three `Verification:` forms with no fourth for a named pre-existing failure, and no changed-files test selection exists. The record needs a decision more than a patch, but its factual claim is independently true at HEAD. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/coder.md:77-79` still defines the same three `Verification:` forms with no fourth for a named pre-existing failure, and no changed-files test selection exists. The record needs a decision more than a patch, but its factual claim is independently true at HEAD. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Resolved: referred (decision) — whether the report contract gets a fourth form for a named pre-existing failure or a per-change test selection is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_does-the-executor-report-contract-get-a-form-for-a-named-pre-existing-failure-or-a-per-change-test-selection.md
+Resolved: referred (decision) — whether the report contract gets a fourth form for a named pre-existing failure or a per-change test selection is the decision's question; 260824-2013_*_does-the-executor-report-contract-get-a-form-for-a-named-pre-existing-failure-or-a-per-change-test-selection.md

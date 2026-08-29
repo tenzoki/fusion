@@ -4,9 +4,9 @@ Setup Step 0j misses a class L entry that is untracked but not ignored
 ---
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 
-Evidence: session 260828-0846 in this repository. `fusion-workbench/.cadence-anchors` (class L per `rules/workbench-tracking.md` `## The four classes`, added v10.8.1) was untracked and not ignored; Step 0j printed nothing. The `.gitignore` had no line for it because the helper landed after the ignore list was written. Repaired by hand in that session (`.gitignore`, `fusion-workbench/.cadence-anchors`).
+Evidence: session 260828-0846-orchestrator-session.md in this repository. `fusion-workbench/.cadence-anchors` (class L per `rules/workbench-tracking.md` `## The four classes`, added v10.8.1) was untracked and not ignored; Step 0j printed nothing. The `.gitignore` had no line for it because the helper landed after the ignore list was written. Repaired by hand in that session (`.gitignore`, `fusion-workbench/.cadence-anchors`).
 
 Acceptance: for a tracked workbench, Step 0j's class L loop also runs `git check-ignore -q` on each entry and reports one that is untracked and not ignored (report, per decision `260825-1030`; whether it repairs by appending the exclusion is that decision's call). A test or the setup skill's own probe over a scratch root with an unignored `.cadence-anchors` produces the report line.
 
 ---
-Reconciled 260828-0907 (session 260828-0846, HEAD ffc6ae88): still open. `skills/setup/SKILL.md:378` reports a class L entry only on `git ls-files --error-unmatch`; no `git check-ignore` runs over an untracked entry. The instance itself is repaired: `.gitignore:91` excludes `fusion-workbench/.cadence-anchors` (commit `19b58eef`), `git check-ignore -v` confirms. Stays `_o_` until Step 0j carries the check.
+Reconciled 260828-0907 (session 260828-0846-orchestrator-session.md, HEAD ffc6ae88): still open. `skills/setup/SKILL.md:378` reports a class L entry only on `git ls-files --error-unmatch`; no `git check-ignore` runs over an untracked entry. The instance itself is repaired: `.gitignore:91` excludes `fusion-workbench/.cadence-anchors` (commit `19b58eef`), `git check-ignore -v` confirms. Stays `_o_` until Step 0j carries the check.

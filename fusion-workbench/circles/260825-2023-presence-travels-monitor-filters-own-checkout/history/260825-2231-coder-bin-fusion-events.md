@@ -4,7 +4,7 @@
 **Agent:** coder
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
 **Checkout:** 5e8248d7
-**Plan:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_o_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, step 2
+**Plan:** `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, step 2
 
 ## What was implemented
 
@@ -64,7 +64,7 @@ The helper is unreachable from this session's own call sites — every one is wr
 - Exit 2 from a directory with no workbench above it; exit 1 on a bad subcommand and on `--days x`; exit 3 and exit 4 driven by setting the identity environment variables directly against `hooks/dist/events-query.js`.
 - The classification table exercised against fixture text through the compiled module: an absent `checkout` counted as ours, another person kept, a further checkout of the same person classed separately, a line past the window dropped, a malformed line counted, and `countTurns` excluding another checkout's `turn_start` inside the same window.
 
-**The proof run through a real call site belongs to the next session**, after `fusion --update` and a restart. That is the two-session shape `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` measured, and steps 5 and 6 are written against the `[ -x ]` miss branch for exactly this reason.
+**The proof run through a real call site belongs to the next session**, after `fusion --update` and a restart. That is the two-session shape `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md` measured, and steps 5 and 6 are written against the `[ -x ]` miss branch for exactly this reason.
 
 ## Surfaces
 

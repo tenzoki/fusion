@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (UX round, findings 3 and 4 of the 260827 UX review), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `agents/orchestrator.md` Setup step 1b, steps 6–8, and the backgrounded-dispatch line before `## Agent Routing Table` (the three realisations) · `shared/decisions/260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md` and `260827-1311_*` (the same round's first two findings)
+**Cross-references:** `agents/orchestrator.md` Setup step 1b, steps 6–8, and the backgrounded-dispatch line before `## Agent Routing Table` (the three realisations) · `260827-1310_*_does-the-coherence-gate-ask-when-its-own-verdict-is-ok.md` and `260827-1311_*_where-in-the-cleanup-pipeline-does-the-one-gate-stand.md_*` (the same round's first two findings)
 
 ---
 

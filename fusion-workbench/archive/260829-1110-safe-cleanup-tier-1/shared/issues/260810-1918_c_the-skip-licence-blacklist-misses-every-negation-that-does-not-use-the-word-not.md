@@ -48,16 +48,16 @@ fires every Turn, which is the condition issue `260801-2038` measured four times
 block so none is merely declared. Decide separately whether to widen the sentence scope; that one
 changes what the gate reads and deserves its own note in the header.
 
-**Cross-references.** `shared/issues/260810-0502_c_the-state-drift-lint-anchors-on-the-phrase-it-
+**Cross-references.** `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-
 checks-and-one-negative-control-is-a-duplicate.md`;
-`shared/issues/260810-1813_o_the-condition-table-test-accepts-a-row-whose-drift-when-cell-is-empty.md`
+`260810-1813_*_the-condition-table-test-accepts-a-row-whose-drift-when-cell-is-empty.md`
 (the other named remainder of the same rewrite).
 
-**Filed by:** coderev, review of session `260810-1646` Turn 1, range `5ef92eb..940d522`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 1, range `5ef92eb..940d522`.
 
 ---
 
-**Resolved, route 1, and the class is still open** — session `260810-1646` Turn 2,
+**Resolved, route 1, and the class is still open** — session `260810-1646-orchestrator-session.md` Turn 2,
 `hooks/lib/__tests__/state-drift-detection-lint.test.ts`.
 
 Eleven patterns added for the eight forms in the table above (two contraction families,
@@ -65,7 +65,7 @@ Eleven patterns added for the eight forms in the table above (two contraction fa
 `provid(ed|ing) that`, `as time allows|permits`, `best effort`, `where|when|if practical`,
 `drop(s|ped|ping)`, `sparingly`, `at most`); `skip`, `defer` and `omit` widened to their `s`/`ing`
 forms. Each of the eleven was spliced one at a time into the Step 3e sentence of a **scratch copy**
-of `agents/orchestrator.md` (never the real one — decision `260810-1820`): all eleven pass the
+of `agents/orchestrator.md` (never the real one — decision `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`): all eleven pass the
 pre-change lint and fail the changed one.
 
 The header's standing instruction became structural rather than a sentence. `SKIP_LICENCES` is now
@@ -92,10 +92,10 @@ About forty lines, plus a re-approval on every legitimate rewording of those fou
 taken here for sequencing: a queued task in the same session rewrites the drift-check prose in
 `agents/orchestrator.md`, and a pin landed first would hand that executor a red suite in a file it
 does not own. Recorded in the test file's header. History:
-`shared/history/260810-2029-coder-drift-lint-residuals.md`.
+`260810-2029-coder-drift-lint-residuals.md`.
 
 ---
-**Correction to the resolution note above — issue 260810-2110, session `260811-1315`.**
+**Correction to the resolution note above — issue 260810-2110, session `260811-1315-coder-three-test-file-corrections.md`.**
 
 "Eleven patterns added" and "each of the eleven was spliced one at a time" are both one short.
 **Twelve** entries were added, and the enumeration in that same sentence names twelve: the

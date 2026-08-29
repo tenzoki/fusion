@@ -92,7 +92,7 @@ record.
   an origin-aware write target would be a prompt change, not a resolver change.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:489-492` still lists the same four dispatch-prompt bullets with no origin or Directive line, and no decision answers the two choice points the record names. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `agents/orchestrator.md:489-492` still lists the same four dispatch-prompt bullets with no origin or Directive line, and no decision answers the two choice points the record names. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Resolved: referred (decision) — whether the dispatch prompt carries the task's origin, and whether a sub-agent's history follows it, is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md
+Resolved: referred (decision) — whether the dispatch prompt carries the task's origin, and whether a sub-agent's history follows it, is the decision's question; 260824-2013_*_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md

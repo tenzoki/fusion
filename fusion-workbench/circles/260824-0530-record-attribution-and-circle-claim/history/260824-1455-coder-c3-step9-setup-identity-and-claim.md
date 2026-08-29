@@ -3,7 +3,7 @@
 **Status:** Complete (edits landed; verification red on two out-of-scope baselines)
 **Agent:** coder
 **Circle:** 260824-0530-record-attribution-and-circle-claim
-**Plan:** `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_o_c3-attribution-on-records-and-a-claim-on-the-circle.md`, step 9
+**Plan:** `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`, step 9
 
 ## What was written
 

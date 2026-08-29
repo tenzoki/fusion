@@ -3,7 +3,7 @@
 **Agent:** coder
 **Date:** 2026-08-17
 **Circle:** 260816-1741-guard-becomes-observation-only
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 12
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 12
 **Status:** Complete
 
 ## What was asked
@@ -91,7 +91,7 @@ Head-room checked before editing a bounded surface: `skills/` stood 8 796 bytes 
 - `skills/help/SKILL.md`
 - `docs/upgrading-to-v9.md`
 - `hooks/lib/__tests__/reference-resolution-lint.test.ts` (baseline re-approval)
-- `fusion-workbench/circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md` (step 12 -> `[DONE]`)
+- `260816-1915_*_the-compliance-guard-becomes-observation-only.md` (step 12 -> `[DONE]`)
 
 Nothing was committed. No version was bumped — step 14 writes `10.0.0`, which is the version
 this note names.

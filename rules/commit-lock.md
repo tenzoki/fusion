@@ -1,6 +1,6 @@
 # The Commit Lock
 
-**Provenance:** circles/260801-1244-guard-rules-write; narrowed to the commit lock and renamed in circles/260815-0007-remove-eight-mechanisms-and-cap-growth
+**Provenance:** 260801-1244-guard-rules-write; narrowed to the commit lock and renamed in 260815-0007-remove-eight-mechanisms-and-cap-growth
 
 One workbench protocol, lifted verbatim out of `rules/fusion-workbench-conventions.md`.
 Its audience is bounded by a mechanism rather than by a guess about what an agent might

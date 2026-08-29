@@ -3,7 +3,7 @@
 **Date:** 2026-08-21 20:20
 **Type:** Document Study
 **Status:** Complete
-**Requested by:** orchestrator, for step 1 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Requested by:** orchestrator, for step 1 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 
 ## Question
 
@@ -27,14 +27,14 @@ check reads it, none may be built from it, and a later re-run of the command tha
 number is not a failure of anything.
 
 **It does not amend and does not run the prose register measurement protocol.** That protocol,
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`,
+`260820-2354-prose-register-measurement-protocol.md`,
 was read for this step and left untouched. It measures em-dash rate over session history files, and
 its two windows both exclude any history file written by a session primed on the subject being
 measured. Every session in this Circle is so primed. The measurement below is a different quantity
 over a different corpus and it satisfies no part of that protocol's registration.
 
 **Reading the transcripts is authorised** by
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`,
+`260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`,
 answered at option 1, evidence including verbatim quotation. This report quotes six one-line agent
 narrations and no user prompt.
 
@@ -147,7 +147,7 @@ The cap the three readings are measured against is `rules/user-facing-output.md:
 default: ≤ 12 lines."* That line is the only source of the number. Both chat voice profiles were
 checked and neither states a line cap any more: `stilwerk/chat-voice-de.yaml` C04 defers to the rule
 by name, and the shipped and workbench copies are byte identical under `diff -q`. The contradiction
-recorded in `shared/issues/260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
+recorded in `260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 does not reach this measurement, because no profile competes with the rule for the number.
 
 ### 4. The distribution
@@ -226,7 +226,7 @@ four are per-session sequences specific enough that agreement is not coincidence
 
 | Grounding claim | Reproduced | How |
 |---|---|---|
-| 69 transcripts, 2 231 replies, 398 over the cap | yes, exactly | the section 1 command with `CUT=2026-08-21T08:47:00Z`, which is the shaper's own run stamp `260821-1047` in local time, over the 69 files that existed then |
+| 69 transcripts, 2 231 replies, 398 over the cap | yes, exactly | the section 1 command with `CUT=2026-08-21T08:47:00Z`, which is the shaper's own run stamp `260821-1047-shaper-reply-bounded-whole-question-answered.md` in local time, over the 69 files that existed then |
 | the session ending 2026-08-20 20:40 wrote six replies of 23, 26, 38, 36, 31 and 45 lines | yes, exactly | `11fe8a84-d631-431f-aaad-52f57dc45895.jsonl` returns `23 26 38 36 31 45` |
 | the session ending 2026-08-20 21:01 wrote three, one of them 19 lines | yes, exactly | `0ae1fd28-1855-44e4-9eb4-9bdb8b316965.jsonl` returns `1 1 19` |
 | the session that filed this Circle wrote three, of 44, 15 and 17 lines | yes, exactly | `2db8a70a-26ec-424f-86a1-9e05c5758825.jsonl` returns `44 15 17` |
@@ -290,7 +290,7 @@ the plan's step 2 addresses, and it is now a measured condition rather than an a
    to an instant after the rule change lands, and adds a lower bound so the window opens after it
    as well. Report reading A and reading B together. Reading A alone understates by a factor of
    about two and a half, and reading A was what the Grounding had.
-2. Do not build a check, a hook or a test from anything in this document. `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+2. Do not build a check, a hook or a test from anything in this document. `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
    forbids a prose gate until its own registered measurement runs, and this is not that measurement.
 3. Whoever writes the after-reading states in the same document that the corpus is outside version
    control and embeds its own frequency table, for the same reason section 2 gives.
@@ -303,15 +303,15 @@ them, is closed by this report rather than tracked, and no defect was found in a
 ## Sources
 
 - `~/.claude/projects/-Users-k1-Projects-productive-fusion/*.jsonl`, 70 files, read through `jq` only
-- `circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md`, `## Grounding snapshot`
-- `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`, step 1
-- `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1047-shaper-reply-bounded-whole-question-answered.md`, `## What was measured rather than carried over`
-- `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_a_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`
-- `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`, read and not amended
-- `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- `260821-1042-reply-bounded-whole-question-answered`, `## Grounding snapshot`
+- `260821-1805_*_plan-reply-bounded-whole-question-answered.md`, step 1
+- `260821-1047-shaper-reply-bounded-whole-question-answered.md`, `## What was measured rather than carried over`
+- `260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`
+- `260820-2354-prose-register-measurement-protocol.md`, read and not amended
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 - `rules/user-facing-output.md:110`, `:113`, `:114`, `:117`
 - `stilwerk/chat-voice-de.yaml` and `fusion-workbench/stilwerk/chat-voice-de.yaml`, C04
-- `shared/issues/260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
+- `260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 
 ## Open Questions
 

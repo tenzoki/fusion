@@ -4,7 +4,7 @@ The narrowed `coherent` row is still not complete: a `coherent` verdict with an 
 ---
 **Filed by:** coderev (person half absent: the installed plugin at `$FUSION_PLUGIN_ROOT` carries no `bin/fusion-identity`, so attribution was dropped rather than composed)
 
-Scope: `agents/reconciler.md:175-181`. Range `01964e4..13aaa85`, commit `011cc92`; follow-on to `260824-2056_c_the-reconcilers-state-directive-recommendation-overlaps-the-coherent-row-and-the-orchestrator-never-surfaces-it.md`.
+Scope: `agents/reconciler.md:175-181`. Range `01964e4..13aaa85`, commit `011cc92`; follow-on to `260824-2056_*_the-reconcilers-state-directive-recommendation-overlaps-the-coherent-row-and-the-orchestrator-never-surfaces-it.md`.
 
 Fix direction: one more row, "`coherent` with an edge `not evaluable` for any other reason → `none`, and the reason is carried on the edge line", or fold it into row 2 by dropping "with every edge evaluable" and making row 1 the only exception. Prose only.
 

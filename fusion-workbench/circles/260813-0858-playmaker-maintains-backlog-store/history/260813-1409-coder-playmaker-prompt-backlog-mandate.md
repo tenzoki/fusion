@@ -1,10 +1,10 @@
 # Coder — step 2: the playmaker gains the backlog write, the mandate and the gate
 
-**Date:** 260813-1409
+**Date:** 260813-1409-coder-playmaker-prompt-backlog-mandate.md
 **Status:** Complete
 **Agent:** coder
-**Circle:** circles/260813-0858-playmaker-maintains-backlog-store
-**Plan:** circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_*_the-playmaker-maintains-the-backlog-store.md, step 2
+**Circle:** 260813-0858-playmaker-maintains-backlog-store
+**Plan:** 260813-1306_*_the-playmaker-maintains-the-backlog-store.md, step 2
 **Files changed:** agents/playmaker.md (and the plan, step 2 marked `[DONE]`)
 
 ## What the step was

@@ -3,7 +3,7 @@
 **Date:** 2026-08-16
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 7a and the second half of step 5
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 7a and the second half of step 5
 **Predecessor commits:** `05d848b` (step 1), `2f624ca` (step 2), `9c79202` (steps 3 and 6), `ec3b6ad` (step 4), `3c2e1c6` (step 5, first half)
 
 ## What the step asked for
@@ -16,7 +16,7 @@ a non-guard setting lived in the guard's configuration file. Then, and only once
 
 The step's user gate was discharged at the plan gate on 2026-08-16: the loader keeps two merge
 layers and no `guard.enabled` (`260816-1915`, option 1), Setup makes no migration offer
-(`260816-1916`, option 1), and the new file is `fusion.json`.
+(`260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`, option 1), and the new file is `fusion.json`.
 
 ## What landed
 
@@ -69,7 +69,7 @@ asserts on that string, and `bin/monitor` does not read it.
 
 ### The retired-file diagnostic, which is the whole of the migration
 
-The user chose it over a Setup step (`260816-1916`, option 1), so it carries the loss alone.
+The user chose it over a Setup step (`260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`, option 1), so it carries the loss alone.
 Emitted verbatim, from this repository's own root:
 
 ```
@@ -176,7 +176,7 @@ lists diffed:
 |---|---|
 | `a retired key reaches the user > names guard.protectedPaths and says what to do, without denying anything` | the leaf-scoped table folded away; the key is now announced through its retired container |
 | `a retired key reaches the user > repeats it on every guarded call, write tool and Bash alike` | same |
-| `what a project configuration can and cannot reach > reports the ignored key, once, naming it — decision 260804-1631` | `guard.enabled`'s project-layer refusal retired with the container |
+| `what a project configuration can and cannot reach > reports the ignored key, once, naming it — decision 260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` | `guard.enabled`'s project-layer refusal retired with the container |
 | `an unparseable project configuration > leaves an innocuous Bash call in a VALID-config project writing nothing` | the harness seeds `fusion-guard.json`, now a retired file, so one advisory is emitted where the case expects none |
 | `the Edit write path still denies a governed path > allows an unguarded file_path, and records the allow` | same harness cause |
 
@@ -213,6 +213,6 @@ fixtures.
   routes to `ontocoder`. **Between 7a and 7b the loader looks for a file that does not exist**,
   which is the expected intermediate state.
 - `bin/fusion-turn-budget`'s header still documents `fusion-guard.json` as the project file.
-  Filed as `260816-2124`, step 11's.
+  Filed as `260816-2124_*_bin-fusion-turn-budgets-header-documents-the-configuration-file-7a-renames-and-no-step-owns-it.md`, step 11's.
 - No test file was touched, and no decision record was transitioned — step 13 holds that walk.
 - Nothing committed.

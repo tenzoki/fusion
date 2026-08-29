@@ -6,7 +6,7 @@ The live-plan clause's own comment still says the tree carries no live plan, and
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 3
 **Affects:** `hooks/lib/__tests__/workbench-citation-lint.test.ts:331-333`, and the dated measurement it repeats at `:151-156`
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_the-readme-corpus-description-omits-live-plans-the-fifth-kind-the-predicate-selects.md`, which corrected the prose description of this same clause in the same commit
+**Cross-references:** `260823-1318_*_the-readme-corpus-description-omits-live-plans-the-fifth-kind-the-predicate-selects.md`, which corrected the prose description of this same clause in the same commit
 
 ---
 

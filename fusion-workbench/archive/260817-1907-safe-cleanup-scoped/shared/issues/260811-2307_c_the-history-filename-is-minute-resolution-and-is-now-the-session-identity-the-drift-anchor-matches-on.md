@@ -24,7 +24,7 @@ const named = starts.find((i) => lines[i].includes(historyRel));
 if (named !== undefined) return { from: named, why: "" };
 ```
 
-so the second session's Turn count would run from the first session's start and fold the first session's Turns in — which is precisely the Restart-after-crash failure the record for `260811-2143` rejected the positional rule for.
+so the second session's Turn count would run from the first session's start and fold the first session's Turns in — which is precisely the Restart-after-crash failure the record for `260811-2143_*_the-drift-checks-turn-row-and-commits-row-use-two-different-session-anchors-so-every-resume-reports-a-permanent-false-drift.md` rejected the positional rule for.
 
 ## How reachable this is
 

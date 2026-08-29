@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator
-**Cross-references:** hooks/lib/__tests__/surface-growth-bound.test.ts (`## Updating the golden`), hooks/lib/__tests__/fixtures/surface-growth.golden, hooks/lib/__tests__/helpers/growth-bound.ts, shared/history/260815-2147-orchestrator-session.md (`## Turn 1 — a finding that changed the session's rhythm`)
+**Cross-references:** hooks/lib/__tests__/surface-growth-bound.test.ts (`## Updating the golden`), hooks/lib/__tests__/fixtures/surface-growth.golden, hooks/lib/__tests__/helpers/growth-bound.ts, 260815-2147-orchestrator-session.md (`## Turn 1 — a finding that changed the session's rhythm`)
 
 ---
 
@@ -69,7 +69,7 @@ session reported the same failure and each had to be told separately, in its dis
 not theirs — which is the cost being paid right now, once per dispatch.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: the green unit is the Turn, and the golden's failure text carries the sentence. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 1: the green unit is the Turn, and the golden's failure text carries the sentence. User answered inline 2026-08-16.
 Implemented: <set when status moves to _i_>
 Deferred: <set when status moves to _d_>
 Superseded by: <set when status moves to _s_>

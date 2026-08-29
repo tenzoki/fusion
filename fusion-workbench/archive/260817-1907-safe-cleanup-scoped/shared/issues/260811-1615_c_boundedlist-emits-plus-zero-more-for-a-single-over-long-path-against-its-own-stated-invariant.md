@@ -7,7 +7,7 @@
 **Filed by:** coderev (Turn 3 review, range `7d9efc8..adaa545`)
 **Affects:** `hooks/lib/rules-write-exemption.ts:790-792` (the comment and the return), `hooks/lib/__tests__/rules-write-exemption.test.ts:1117-1124` (the case that does not reach it)
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260803-1352_c_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md` (the finding the bound closes)
+`260803-1352_*_two-guard-advisory-details-skip-the-200-char-clamp-and-render-a-row-nine-times-normal-height.md` (the finding the bound closes)
 
 ---
 

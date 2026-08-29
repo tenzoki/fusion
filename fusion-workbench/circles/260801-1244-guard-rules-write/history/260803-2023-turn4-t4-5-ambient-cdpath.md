@@ -2,12 +2,12 @@
 
 **Date:** 2026-08-03 20:23
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 1 (the Circle's fourth)
+**Circle:** `260801-1244-guard-rules-write`, Turn 1 (the Circle's fourth)
 **Task:** T4-5 — implement the answered decision on an ambient `CDPATH`
 **Status:** Complete. Not committed — the orchestrator commits after validation.
 
 **Realises:**
-`decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`
+`260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`
 (option 1, chosen by the user at the Turn 4 closing gate). Left at `_a_`; the
 `_a_`→`_i_` transition belongs with the commit that gives it a hash to cite.
 
@@ -216,7 +216,7 @@ Two further measurements worth having on the record:
 4. **The redirection residual is untouched** and is now reachable one more way:
    `echo pwned > agents/coder.md` after a bare-word `cd` with an ambient `CDPATH` allows,
    exactly as it does after `pushd -n docs`. Out of scope per the task; already filed as
-   `issues/260803-1835_o_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`,
+   `260803-1835_*_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`,
    whose measurement this change widens by one entrance but does not alter in kind.
 5. **The write-tool surface is untouched**, per the decision's own constraint: it has no
    working-directory model, so there is nothing there for a `CDPATH` to invalidate.

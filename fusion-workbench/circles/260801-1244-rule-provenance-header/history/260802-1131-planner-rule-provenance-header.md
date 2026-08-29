@@ -2,12 +2,12 @@
 
 **Date:** 2026-08-02 11:31
 **Agent:** planner (dispatched, domain `code`, executors `coder` + `ontocoder`)
-**Circle:** `circles/260801-1244-rule-provenance-header`
-**Output:** `circles/260801-1244-rule-provenance-header/planning/260802-1131_o_plan-rule-provenance-header.md`
+**Circle:** `260801-1244-rule-provenance-header`
+**Output:** `260802-1131_*_plan-rule-provenance-header.md`
 
 ## What was planned
 
-Four steps, all assigned to `coder`, implementing C8 against the user-approved spec at `circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md`. The order is backfill, then conventions section, then lint gate, then an acceptance sweep, chosen so `npm test` is green at every commit boundary.
+Four steps, all assigned to `coder`, implementing C8 against the user-approved spec at `260802-1103_*_spec-rule-provenance-header.md`. The order is backfill, then conventions section, then lint gate, then an acceptance sweep, chosen so `npm test` is green at every commit boundary.
 
 ## The five items the spec left open, and how each was settled
 

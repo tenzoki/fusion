@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** orchestrator, from a finding the Step 4 coder reported rather than absorbed
 **Cross-references:** `hooks/guard.ts:427` (`isHalted`, the only consultation),
-`shared/planning/260801-1122_o_spec-normative-consolidation.md:326` (the criterion this makes
+`260801-1122_*_spec-normative-consolidation.md:326` (the criterion this makes
 vacuous on one surface), `rules/protected-path-discipline.md` (which states the halt to agents)
 
 ---
@@ -54,7 +54,7 @@ Option 1 or 3 is a behaviour change and wants a decision record. Option 2 is a d
 
 ## Origin
 
-Found inside `circles/260801-1244-guard-rules-write` while proving that the new flag does not lift a
+Found inside `260801-1244-guard-rules-write` while proving that the new flag does not lift a
 halt. Filed in this Circle's store because the Directive's own criterion is what exposed it, though
 the defect itself predates the Circle.
 

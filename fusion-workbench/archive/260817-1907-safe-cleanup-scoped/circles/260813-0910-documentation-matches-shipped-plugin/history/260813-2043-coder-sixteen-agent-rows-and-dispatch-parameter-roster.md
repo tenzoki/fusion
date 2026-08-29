@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13 20:43
 **Agent:** coder
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `planning/260813-1820_p_documentation-matches-shipped-plugin.md`, step 6
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, step 6
 **Status:** Complete
 
 ## What was done
@@ -54,16 +54,16 @@ Corrected: `CLAUDE.md:14` (membership now `reconciler`, `taskplanner`, `playmake
 
 **Read and deliberately not edited:** `.claude-plugin/plugin.json:3`. Its claim is a bare count — "3 parameterised by domain" — naming no member, and the count is still exactly right once the membership is corrected (`taskplanner`, `reconciler`, `playmaker`). Editing it would have changed 3 to 3. This is not a knowingly-false copy left standing; it is a true sentence that survived a membership change because it never named the members. The plugin version was left at 8.1.0: the file was not changed, and the four version surfaces stay coherent.
 
-**A fifth carrier was found and is out of scope.** `agents/orchestrator.md:153` names `planner` among the agents receiving the `domain` parameter and omits `playmaker`, contradicting its own `:200` and `:850`. Agent prompts are not in this step's file scope, so it is filed as `issues/260813-2045_o_the-orchestrator-prompt-names-the-planner-among-the-domain-parameterised-agents-and-omits-the-playmaker.md` for a later step.
+**A fifth carrier was found and is out of scope.** `agents/orchestrator.md:153` names `planner` among the agents receiving the `domain` parameter and omits `playmaker`, contradicting its own `:200` and `:850`. Agent prompts are not in this step's file scope, so it is filed as `260813-2045_*_the-orchestrator-prompt-names-the-planner-among-the-domain-parameterised-agents-and-omits-the-playmaker.md` for a later step.
 
 ## Issues closed in passing
 
-Two reviewer findings against the step-4 `shaper` row were resolved by this pass's independent reading of the same row and closed with `Resolved:` notes: `260813-2009_c_the-shaper-writes-cell-enumerates-two-of-three-in-place-record-edits.md` and `260813-2009_c_the-shaper-writes-cell-states-the-backlog-promotion-unconditionally-while-the-prompt-conditions-it.md`.
+Two reviewer findings against the step-4 `shaper` row were resolved by this pass's independent reading of the same row and closed with `Resolved:` notes: `260813-2009_*_the-shaper-writes-cell-enumerates-two-of-three-in-place-record-edits.md` and `260813-2009_*_the-shaper-writes-cell-states-the-backlog-promotion-unconditionally-while-the-prompt-conditions-it.md`.
 
 ## Verification
 
 - `cd hooks && npx vitest run lib/__tests__/derivable-enumerations-lint.test.ts` — exit 0, 21 tests. Run after the row rewrites and again after the table insertion. No parser needed fixing: the file's `README-agents.md` parsers key on the skill table, the `of the 16 prompts` claim, the "Always-on core" bullet and the conditional-rule co-mentions, none of which this step's edits touch.
-- `cd hooks && npx vitest run` — exit 0, 49 files, 1022 tests. Above the 48/1010 baseline recorded in `shared/issues/260813-0828_c_…`, which is the two new spec files landing between that note and this run, not a change from this step.
+- `cd hooks && npx vitest run` — exit 0, 49 files, 1022 tests. Above the 48/1010 baseline recorded in `260813-0828_*_…`, which is the two new spec files landing between that note and this run, not a change from this step.
 
 ## Files changed
 

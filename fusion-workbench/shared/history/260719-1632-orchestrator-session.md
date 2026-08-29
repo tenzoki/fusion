@@ -1,4 +1,4 @@
-# Orchestrator Session — 260719-1632
+# Orchestrator Session — 260719-1632-orchestrator-session.md
 
 **Directive:** (not yet stated — awaiting user task)
 **Mode:** (unresolved — Phase 0 pending)
@@ -29,13 +29,13 @@
 
 ### Open issues (shared/)
 
-1. `260707-1006_o_pin-bash-allow-path-no-writeguard-side-effects-with-test.md`
-2. `260716-1940_o_stale-bin-fu-exception-in-gitignore.md`
-3. `260717-0030_o_git-stash-include-untracked-can-sweep-the-stash-directory.md`
-4. `260717-0031_o_p8-lint-gate-scope-open-questions-from-conversions.md`
-5. `260717-0032_o_stash-manifest-field-count-says-nine-lists-ten.md`
-6. `260717-0107_o_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
-7. `260717-0115_o_live-workbench-split-across-two-layouts-during-conversion.md`
+1. `260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md`
+2. `260716-1940_*_stale-bin-fu-exception-in-gitignore.md`
+3. `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`
+4. `260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md`
+5. `260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md`
+6. `260717-0107_*_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
+7. `260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md`
 
 ## Per-Turn Log
 
@@ -56,9 +56,9 @@ Scope: Circle `260719-1536-brest-unite-co-creator-conversion` (final reconciliat
 **Verdict:** coherent
 
 **Edges:**
-- Artifact↔Grounding: 8/8 plan steps verified on disk / 0 drift items / 0 open coderev+ontorev issues (Circle `issues/` store empty; conceptrev verdict was "clean"). The 6 unite commits (`a957bd30 3876e0c0 1e9b5649 06734571 5be1cb25 2e9abf30`) each land the claimed change; acceptance evidence is 9/9 PROVEN (`circles/260719-1536-brest-unite-co-creator-conversion/history/260719-2045-step6-acceptance-evidence.md`); both premise decisions transitioned `_a_` → `_i_`.
+- Artifact↔Grounding: 8/8 plan steps verified on disk / 0 drift items / 0 open coderev+ontorev issues (Circle `issues/` store empty; conceptrev verdict was "clean"). The 6 unite commits (`a957bd30 3876e0c0 1e9b5649 06734571 5be1cb25 2e9abf30`) each land the claimed change; acceptance evidence is 9/9 PROVEN (`260719-2045-step6-acceptance-evidence.md`); both premise decisions transitioned `_a_` → `_i_`.
 - Artifact↔Directive: commits move fully toward the stated Directive ("convert unite to fusion v5 selective rule-loading: consolidate rules, remove mirror, author manifest, lean CLAUDE.md, prove"). Each Directive clause maps to a commit — consolidate=`3876e0c0`, extract-gotchas=`1e9b5649`, manifest=`06734571`, remove-mirror=`5be1cb25`, lean-CLAUDE.md=`2e9abf30` (43,145→8,504 B), prove=acceptance 9/9. No orthogonal or away-from-Directive commits.
-- Grounding↔Directive: 2 active decisions consistent / 0 conflicting. Both decisions are now `_i_` and their resolutions are exactly what was built (canonical lowercase `rules/`, mirror removed, selective manifest, lean index; `coding-frontend.md` accepted always-on + documented omission). Consistent with the master-plan Circle B Steps 5–8 this Circle dogfoods (`circles/260718-1924-v5x-overhaul/planning/260718-1001_o_master-plan-fusion-v5x-overhaul.md`).
+- Grounding↔Directive: 2 active decisions consistent / 0 conflicting. Both decisions are now `_i_` and their resolutions are exactly what was built (canonical lowercase `rules/`, mirror removed, selective manifest, lean index; `coding-frontend.md` accepted always-on + documented omission). Consistent with the master-plan Circle B Steps 5–8 this Circle dogfoods (`260718-1001_*_master-plan-fusion-v5x-overhaul.md`).
 
 **Rebalance recommendation:** none
 
@@ -74,27 +74,27 @@ Active Circle `260719-1536-brest-unite-co-creator-conversion` executed and close
 - remove `.claude/rules/` mirror + fix 17 stale references
 - lean CLAUDE.md 43,145 → 8,504 bytes (80%)
 
-**Proof:** 9/9 acceptance checks PROVEN (`circles/260719-1536-.../history/260719-2045-step6-acceptance-evidence.md`).
+**Proof:** 9/9 acceptance checks PROVEN (`circles/260719-1536-.../260719-2045-step6-acceptance-evidence.md`).
 
-**Course correction:** the master plan's Step 5 (dedup-by-deletion) rested on a false premise — unite had no git-tracked duplication (`.claude/rules/` was a gitignored `make mirror-rules` mirror). The mis-step deleted 11 tracked source files; caught in verification, reverted before any commit, re-planned. Decision `260719-1856_i_unite-rules-mirror-vs-dedup-premise.md`.
+**Course correction:** the master plan's Step 5 (dedup-by-deletion) rested on a false premise — unite had no git-tracked duplication (`.claude/rules/` was a gitignored `make mirror-rules` mirror). The mis-step deleted 11 tracked source files; caught in verification, reverted before any commit, re-planned. Decision `260719-1856_*_unite-rules-mirror-vs-dedup-premise.md`.
 
 **Reconciler verdict:** coherent (see `## Coherence`).
 
 ## Portfolio update
 
-Playmaker regenerated `portfolio.md` after closure. Next recommended Circle: `260719-1536-plane-mirror-integration` (sole anticipated; deps closed; no stale grounding). Run log: `shared/history/260719-2054-playmaker-orchestrator-phase4.md`.
+Playmaker regenerated `portfolio.md` after closure. Next recommended Circle: `260719-1536-plane-mirror-integration` (sole anticipated; deps closed; no stale grounding). Run log: `260719-2054-playmaker-orchestrator-phase4.md`.
 
 ## Coherence
 
 <!-- RECONCILER-OWNED -->
 
-Scope: Circle `260719-1536-plane-mirror-integration` (Plane bounded bridge — final reconciliation, 2026-07-19 23:36, domain=code). All three edges verified against ground truth in this repo (the fusion plugin source). Session-start anchor `74cc11b`; commit walk `74cc11b..HEAD` = 6 feature commits (`eb9cf59 982336f bd62bf1 be9cbb9 ecc0568 aefbf39`) + the `ca2d016` gitignore un-ignore. Reconciliation log: `circles/260719-1536-plane-mirror-integration/history/260719-2336-reconciliation.md`.
+Scope: Circle `260719-1536-plane-mirror-integration` (Plane bounded bridge — final reconciliation, 2026-07-19 23:36, domain=code). All three edges verified against ground truth in this repo (the fusion plugin source). Session-start anchor `74cc11b`; commit walk `74cc11b..HEAD` = 6 feature commits (`eb9cf59 982336f bd62bf1 be9cbb9 ecc0568 aefbf39`) + the `ca2d016` gitignore un-ignore. Reconciliation log: `260719-2336-reconciliation.md`.
 
 **Verdict:** coherent
 
 **Edges:**
 - Artifact↔Grounding: 8/8 plan steps verified on disk / 0 drift items / 0 open coderev+ontorev issues (none were dispatched; the one open issue is an orchestrator-filed live-verification gap, not a review finding). `npm test` = 284/284 passed including both lint guards (no state-UUID literal in `bin/fusion-plane`, no key field in `templates/plane.config.yaml`). Plan-gate conceptrev was advisory, verdict "acceptable" (two diagram-completeness notes, no structural defect). Both premise decisions transitioned `_a_`→`_i_`.
-- Artifact↔Directive: commits move fully toward the stated Directive ("install, implement, and **test** a Plane bridge… work items appear in a Plane project") on every clause the plan scoped as this session's acceptance — install surface (`ecc0568`), implement (`982336f` core + `bd62bf1` seed + `be9cbb9` wiring), test (`aefbf39`, 284/284). One honest nuance: the Directive's "appear in a Plane project" is proven only **offline** (dry-run/mock — the plan deliberately scoped acceptance that way, no live Plane was reachable); the **live** mirror is unverified and tracked by open issue `circles/260719-1536-plane-mirror-integration/issues/260719-2304_o_verify-plane-create-patch-body-against-live-instance.md`. I judge this **coherent, not review-needed**: offline proof was the planned and stated acceptance criterion (Testing §, agenda item 8: "no live Plane needed"), so the commits satisfy the Directive as the plan defined "done"; the live check is a separate operational/install-time step, not drift between what was planned and what was built. No orthogonal or away-from-Directive commits.
+- Artifact↔Directive: commits move fully toward the stated Directive ("install, implement, and **test** a Plane bridge… work items appear in a Plane project") on every clause the plan scoped as this session's acceptance — install surface (`ecc0568`), implement (`982336f` core + `bd62bf1` seed + `be9cbb9` wiring), test (`aefbf39`, 284/284). One honest nuance: the Directive's "appear in a Plane project" is proven only **offline** (dry-run/mock — the plan deliberately scoped acceptance that way, no live Plane was reachable); the **live** mirror is unverified and tracked by open issue `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md`. I judge this **coherent, not review-needed**: offline proof was the planned and stated acceptance criterion (Testing §, agenda item 8: "no live Plane needed"), so the commits satisfy the Directive as the plan defined "done"; the live check is a separate operational/install-time step, not drift between what was planned and what was built. No orthogonal or away-from-Directive commits.
 - Grounding↔Directive: all active/answered decisions consistent / 0 conflicting. This Circle's two design decisions are now `_i_` and their resolutions are exactly what was built (single swappable attach with child-default + links fallback; seeded Circle enters `_a_` via `/fusion:direct`). The one remaining `_o_` decision (round-trip description overwrite) is an open refinement question consistent with the Directive, not a conflict. Framing decisions in `shared/` (D1 mirror→bounded bridge, D3 offline→keep-working, concurrency→single-active-Circle) all `_a_` and consistent with the bounded-bridge Directive this Circle carries.
 
 **Rebalance recommendation:** none
@@ -115,7 +115,7 @@ Active Circle `260719-1536-plane-mirror-integration` (reshaped to variant b, bou
 
 **Concurrency decision:** NOT supported (user, Option 3) — single-active-Circle stands; Martin's worktree slots remain his own mechanism.
 
-**Reconciler verdict:** coherent (offline acceptance was the planned proof; live mirror check is a separate operational step). Two go-live follow-ups deliberately left open: issue 260719-2304 (live API verification) and decision 260719-2313 (round-trip write semantics).
+**Reconciler verdict:** coherent (offline acceptance was the planned proof; live mirror check is a separate operational step). Two go-live follow-ups deliberately left open: issue 260719-2304_*_verify-plane-create-patch-body-against-live-instance.md (live API verification) and decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md (round-trip write semantics).
 
 ## Session close
 
@@ -126,10 +126,10 @@ Board clear — all 5 Circles `_c_`. No active or anticipated Circle. Session en
 Triggered by "is the bridge documented, can Martin try it tomorrow?" — the honest answer was no, for two reasons, both now fixed.
 
 - **The code was not pushed.** The 6 bridge commits were local-only on `main`. Pushed: `origin/main` `ca2d016..c605626`. `fusion --update` (installer fetches `heads/main`) now delivers the bridge.
-- **Round-trip write safety implemented** (`a7eccbe`) — decision `260719-2313` resolved as Option 1 and marked `_i_`. A durable `origin` field (`seed`|`fusion`) in `.plane-map.json`, preserved across updates, makes push write **state only** for seed-origin issues, so a human's Plane story description is never overwritten. Entries lacking `origin` resolve to `fusion` (existing maps unchanged). 6 new tests; `npm test` 290/290.
+- **Round-trip write safety implemented** (`a7eccbe`) — decision `260719-2313_*_round-trip-write-overwrites-origin-story-description.md` resolved as Option 1 and marked `_i_`. A durable `origin` field (`seed`|`fusion`) in `.plane-map.json`, preserved across updates, makes push write **state only** for seed-origin issues, so a human's Plane story description is never overwritten. Entries lacking `origin` resolve to `fusion` (existing maps unchanged). 6 new tests; `npm test` 290/290.
 - **`docs/plane-setup.md` gained a `## First run` section** (`c605626`): get the code, push on a throwaway Circle first and verify in Plane, why `doctor` does not cover the issue create/update body (the one unconfirmed piece), seeding safety, and a what-worked checklist.
 
-**Still open by design:** issue `260719-2304` (live API body verification) — Martin's first real push is exactly that check, and the doc now says so.
+**Still open by design:** issue `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md` (live API body verification) — Martin's first real push is exactly that check, and the doc now says so.
 
 **Optional, not done:** version bump 5.4.0 → 5.5.0 + marketplace entry. `fusion --update` pulls main HEAD so it is not required for delivery; only the marketplace version string is stale.
 
@@ -137,9 +137,9 @@ Triggered by "is the bridge documented, can Martin try it tomorrow?" — the hon
 
 Writing the concrete "how" into `docs/plane-setup.md` (`b4cbbcf`) exposed three real gaps, all verified independently before filing:
 
-- **`shared/issues/260720-0039_o_plane-kind-labels-specified-but-never-written.md`** — the plan's mapping specifies a kind label (`circle`/`fusion-issue`/`decision`) per mirrored artifact; `build_write_body` never sends a `labels` field. `kind` exists only in `--plan` output and `.plane-map.json`. Two doc statements were false because of this and were corrected in the same commit. **The orchestrator had also relayed this false check to the user in chat — owned and corrected.**
-- **`shared/issues/260720-0039_o_rebuild-map-reads-description-but-push-writes-description-html.md`** — `rebuild_map` (`:684`) reads the embedded key from `.description` while push writes `description_html`; the seed path already reads a fallback chain. `inference:` from code, not reproduced live.
-- **`shared/issues/260720-0039_o_no-map-forget-stale-entries-after-deleting-plane-issues.md`** — no `map --forget`, so the documented cleanup (deleting test issues in Plane) strands map entries that 404 the next push into the outbox. Interim workaround documented.
+- **`260720-0039_*_plane-kind-labels-specified-but-never-written.md`** — the plan's mapping specifies a kind label (`circle`/`fusion-issue`/`decision`) per mirrored artifact; `build_write_body` never sends a `labels` field. `kind` exists only in `--plan` output and `.plane-map.json`. Two doc statements were false because of this and were corrected in the same commit. **The orchestrator had also relayed this false check to the user in chat — owned and corrected.**
+- **`260720-0039_*_rebuild-map-reads-description-but-push-writes-description-html.md`** — `rebuild_map` (`:684`) reads the embedded key from `.description` while push writes `description_html`; the seed path already reads a fallback chain. `inference:` from code, not reproduced live.
+- **`260720-0039_*_no-map-forget-stale-entries-after-deleting-plane-issues.md`** — no `map --forget`, so the documented cleanup (deleting test issues in Plane) strands map entries that 404 the next push into the outbox. Interim workaround documented.
 
 Pushed: `origin/main` `c605626..b4cbbcf`.
 
@@ -148,10 +148,10 @@ Pushed: `origin/main` `c605626..b4cbbcf`.
 All three issues from the first-run doc pass are resolved, committed and pushed (`b4cbbcf..4f6a3d2`). `npm test` 290 → 309.
 
 - **`05bb3b8`** — rebuild-map field fallback (`description_stripped`/`description_html`/`description`) with a string type guard, plus `map --forget` and `map --prune`. The type guard exceeded the filed diagnosis: some Plane builds return `description` as a ProseMirror object, where jq `capture` errored and collapsed the *entire* rebuild rather than skipping one issue. `--prune` deletes only on a definitive 404; every other failure keeps the entry and defers (C4).
-- **`4f6a3d2`** — kind labels implemented as the mapping always specified: `labels:` rename map in config, name→UUID via `labels/` cached per run (mirroring `states/`), create-if-missing, and a label failure never blocks a push (named on stderr, counted in `STATUS:`, push continues unlabelled). Seed-origin issues deliberately get **no** label — a label is also a modification of a human's story, so decision `260719-2313`'s state-only invariant holds unbroken.
+- **`4f6a3d2`** — kind labels implemented as the mapping always specified: `labels:` rename map in config, name→UUID via `labels/` cached per run (mirroring `states/`), create-if-missing, and a label failure never blocks a push (named on stderr, counted in `STATUS:`, push continues unlabelled). Seed-origin issues deliberately get **no** label — a label is also a modification of a human's story, so decision `260719-2313_*_round-trip-write-overwrites-origin-story-description.md`'s state-only invariant holds unbroken.
 - Docs kept truthful throughout: the "fusion does not write labels" note added when that was true is gone; the board check regained the label item.
 
-**Standing honesty note:** the labels API shape (GET/POST `labels/`, the `labels` body field) is Plane-v1 inference, unverified against a live instance — same standing as issue `260719-2304`. Blast radius is bounded by design: a wrong assumption drops the label, the state transition still lands.
+**Standing honesty note:** the labels API shape (GET/POST `labels/`, the `labels` body field) is Plane-v1 inference, unverified against a live instance — same standing as issue `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md`. Blast radius is bounded by design: a wrong assumption drops the label, the state transition still lands.
 
 ## Release 5.5.0 (2026-07-20)
 

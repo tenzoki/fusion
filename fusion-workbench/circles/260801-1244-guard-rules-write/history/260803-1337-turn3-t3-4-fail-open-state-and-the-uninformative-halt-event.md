@@ -2,10 +2,10 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Closes:**
-`issues/260802-2334_c_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` (Medium),
-`issues/260802-2336_c_the-bash-guard-halt-event-records-neither-the-command-nor-the-segment-it-blocked.md` (Low)
+`260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md` (Medium),
+`260802-2336_*_the-bash-guard-halt-event-records-neither-the-command-nor-the-segment-it-blocked.md` (Low)
 **Scope touched:** `hooks/lib/escalation.ts`, `hooks/guard.ts`,
 `hooks/lib/__tests__/guard-escalation-shape.test.ts` (new),
 `hooks/lib/__tests__/guard-halt-event.test.ts` (new),

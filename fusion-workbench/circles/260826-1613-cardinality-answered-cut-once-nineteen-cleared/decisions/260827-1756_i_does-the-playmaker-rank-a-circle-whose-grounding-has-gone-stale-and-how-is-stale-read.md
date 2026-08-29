@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260826-1445_*_the-playmakers-ranking-rewards-a-stale-grounding-because-no-criterion-asks-whether-the-directive-is-still-true.md` (the defect and its four design questions); `agents/playmaker.md` Step 2 read cap and Step 3 criteria; `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/issues/260826-1901_*_the-playmakers-rationale-contract-requires-a-citation-and-caps-the-read-that-would-check-it.md` (the same read cap, the other failure); `agents/shaper.md` portfolio-activation mode (the re-sharpen path a warning would point at)
+**Cross-references:** `260826-1445_*_the-playmakers-ranking-rewards-a-stale-grounding-because-no-criterion-asks-whether-the-directive-is-still-true.md` (the defect and its four design questions); `agents/playmaker.md` Step 2 read cap and Step 3 criteria; `260826-1901_*_the-playmakers-rationale-contract-requires-a-citation-and-caps-the-read-that-would-check-it.md` (the same read cap, the other failure); `agents/shaper.md` portfolio-activation mode (the re-sharpen path a warning would point at)
 
 ---
 
@@ -37,8 +37,8 @@ Option 1. Threshold: half or more of the cited records terminal or archived. The
 
 Option 1: a `stale-grounding` warning, never a demotion. Threshold: half or more of the cited records terminal or archived; HEAD distance reported as a count beside it. A dependency resolving under `archive/` is reported as `archived`, not counted as closed. Realised by plan step 17.
 
-Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session 260827-1749-orchestrator-session.md; the recommendation is adopted as written.
 
 Implemented: pending the orchestrator's commit of plan step 17 (edited at HEAD d49e258) — `agents/playmaker.md` Step 3 stale-Grounding count, Step 4 `stale-grounding` warning line, `## Warnings` roster, archive-resolving dependency reported as `archived`, Step 2 read-cap carve-out.
 
-Reconciled 260827-2034: the `Implemented:` line above was written before the commit; it landed in `e7c0440` (this file and the shipped edit in the same commit).
+Reconciled 260827-2034-reconciliation.md: the `Implemented:` line above was written before the commit; it landed in `e7c0440` (this file and the shipped edit in the same commit).

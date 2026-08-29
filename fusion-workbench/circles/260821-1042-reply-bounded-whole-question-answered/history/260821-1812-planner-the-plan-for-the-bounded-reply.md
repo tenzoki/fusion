@@ -2,14 +2,14 @@
 
 **Status:** Complete
 **Agent:** planner
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
 **Dispatched by:** the orchestrator, with `**Executors:** coder, ontocoder, analyst` and the Circle named
 **HEAD at time of work:** `e764637`
 
 ## What was planned
 
 Six steps against the Circle's Directive, with no spec in front of them. The plan is
-`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`.
+`260821-1805_*_plan-reply-bounded-whole-question-answered.md`.
 
 The design converges on one idea rather than five clauses: the workbench is where material goes and
 the reply is not. Both destinations already exist and are already mandatory, the issue store for a
@@ -53,7 +53,7 @@ The plan head carries it in full. The short of it: whether a block of a draft fa
 question asked is decidable while the agent drafts and is decidable nowhere else, because no
 artifact this project stores holds both the reply and what the user would have accepted as an
 answer. So the mechanism changed is the text the writer reads. That is also what
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 requires until its registered measurement runs, and the plan states that the clauses land unenforced
 rather than leaving a reader to infer it.
 
@@ -61,11 +61,11 @@ rather than leaving a reader to infer it.
 
 One decision record, open, because the number binds every agent's session report and is not the
 planner's to set:
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`.
+`260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`.
 Recommendation is option 1, a total of 25 lines with the ten-line header cap kept.
 
 One defect, in the shared store because it arose beside the Directive rather than from it:
-`shared/issues/260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`.
+`260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`.
 `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` fails at HEAD with four dangling
 citations, all in this Circle's own scoping records, all broken by the activation rename and none
 written badly.
@@ -79,9 +79,9 @@ em-dashes over 4 932 prose words.
 
 ## Files written
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
-- `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_o_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`
-- `shared/issues/260821-1810_o_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`
+- `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+- `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`
+- `260821-1810_*_activating-a-circle-turns-the-suite-red-because-its-own-decision-records-cite-the-anticipated-marker.md`
 - this history file
 
 No shipped file was touched. No agent was dispatched.

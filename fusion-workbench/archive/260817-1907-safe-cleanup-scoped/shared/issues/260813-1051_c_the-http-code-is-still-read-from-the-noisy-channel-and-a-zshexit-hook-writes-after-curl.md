@@ -4,9 +4,9 @@
 
 **Severity:** Medium — the same defect class `7342fdd` closed for the body remains open for the status code, and the new header comment asserts it cannot.
 **Domain:** code
-**Filed by:** coderev, reviewing `7342fdd` (`shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md`)
+**Filed by:** coderev, reviewing `7342fdd` (`260813-1051-coderev-plane-curl-response-via-temp-file.md`)
 **Affects:** `bin/fusion-plane:349-350` (the comment's claim), `bin/fusion-plane:375-377` (the `tail -n1` read)
-**Cross-references:** `shared/issues/260813-0828_c_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
+**Cross-references:** `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
 
 ---
 

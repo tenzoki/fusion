@@ -8,7 +8,7 @@
 **Affects:** `hooks/lib/paths.ts` `matchesAny` docstring (the "unreachable at HEAD" paragraph); `hooks/lib/config.ts` `findRelevantDecisions`; `hooks/tracker.ts` noise filtering
 **Kind:** Documentation falsified by this step, plus the decision the docstring itself asked for. Not a regression in behaviour — nothing about `matchesAny` changed.
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/decisions/260803-1419_i_how-should-the-protected-path-check-treat-the-case-of-a-path.md` (where the protection side's fold was decided, deliberately leaving these two alone),
+`260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` (where the protection side's fold was decided, deliberately leaving these two alone),
 `hooks/lib/paths.ts` `matchesAnyFolded` (the argument the protection side runs on).
 
 ---

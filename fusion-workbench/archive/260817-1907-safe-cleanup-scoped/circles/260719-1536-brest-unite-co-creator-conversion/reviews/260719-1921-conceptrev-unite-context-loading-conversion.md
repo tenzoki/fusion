@@ -1,7 +1,7 @@
 # Concept Evaluation: unite-co-creator context-loading conversion
 
 **Date:** 2026-07-19 19:21
-**Target:** `/Users/kai/Dropbox/qboot/projects/F04-FUSION/codebase/fusion/fusion-workbench/circles/260719-1536-brest-unite-co-creator-conversion/planning/260719-1917_o_unite-context-loading-conversion.md`
+**Target:** `/Users/kai/Dropbox/qboot/projects/F04-FUSION/codebase/fusion/260719-1917_*_unite-context-loading-conversion.md`
 **Verdict:** clean
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mmdc)
 

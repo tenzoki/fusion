@@ -5,12 +5,12 @@
 **Status:** open
 **Filed by:** planner, planning the C5b remediation
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md` (the measurement that raises this),
-`circles/260801-1244-guard-rules-write/issues/260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` (the validation whose drop behaviour this decides),
-`circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md` `### The merge semantics, assessed as a design`,
-`shared/planning/260801-1122_o_spec-normative-consolidation.md:299` (the merge rule as specified),
+`260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md` (the measurement that raises this),
+`260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` (the validation whose drop behaviour this decides),
+`260804-1600-c5b-independent-assessment.md` `### The merge semantics, assessed as a design`,
+`260801-1122_*_spec-normative-consolidation.md:299` (the merge rule as specified),
 `hooks/lib/config.ts:277-292` (the merge and the leaf fallback), `:144-168` (`DEFAULTS`),
-plan `circles/260801-1244-guard-rules-write/planning/260802-1856_*_plan-guard-rules-write.md` `### Q2` (where the consequence was reasoned through for one field and not turned around)
+plan `260802-1856_*_plan-guard-rules-write.md` `### Q2` (where the consequence was reasoned through for one field and not turned around)
 
 ---
 
@@ -37,7 +37,7 @@ HEAD `53b3765`, and `guard.protectedPaths` is the single leaf where the two sour
 Nothing keeps them agreeing. An answer scoped to `protectedPaths` alone leaves four latent
 instances of the same defect, armed the day someone edits a threshold in one file and not the
 other. Filed separately as
-`circles/260801-1244-guard-rules-write/issues/260804-1633_*_the-omission-defect-is-latent-in-four-more-top-level-keys.md`.
+`260804-1633_*_the-omission-defect-is-latent-in-four-more-top-level-keys.md`.
 
 ## Options
 
@@ -115,7 +115,7 @@ implementation rather than being optional:
   both mechanisms.
 
 The four latent instances (`escalation`, `churn`, `crossFile`, `decisions`, filed at
-`issues/260804-1633`) close with the same three lines rather than with four per-key rules.
+`260804-1633`) close with the same three lines rather than with four per-key rules.
 
 ---
 Answered: this record, `## Answer` — user chose option 1 at the plan gate; omission means inherit, declaration means exactly what is declared.

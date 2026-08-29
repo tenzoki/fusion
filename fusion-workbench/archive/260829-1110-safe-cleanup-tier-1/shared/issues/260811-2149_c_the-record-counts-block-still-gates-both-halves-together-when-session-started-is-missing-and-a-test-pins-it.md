@@ -7,8 +7,8 @@
 **Filed by:** coderev (Turn 4 review, range `b261d83..951c809`)
 **Affects:** `agents/orchestrator.md:704-728`, `agents/orchestrator.md:734-740` (the cause list), `hooks/lib/__tests__/record-counts-measurement.test.ts:322-327`
 **Cross-references:**
-`shared/issues/260811-1610_c_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md` (the half that was fixed);
-`shared/issues/260811-1616_c_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
+`260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md` (the half that was fixed);
+`260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
 
 ---
 
@@ -37,7 +37,7 @@ fi
 
 `A` missing or unusable → `records=partial`, and the `filed` half is still taken. Correct, and the fix.
 
-`T` missing → the whole `else` is skipped, so the `now_` half is discarded **even when `A` is present and the anchor probe passes**. The `now_` half needs only `A`: it asks git whether a filename existed at the anchor commit, a question `session.started` plays no part in. So the half that is measurable is thrown away, which is the exact shape `260811-1610` was filed against, arriving from the other side.
+`T` missing → the whole `else` is skipped, so the `now_` half is discarded **even when `A` is present and the anchor probe passes**. The `now_` half needs only `A`: it asks git whether a filename existed at the anchor commit, a question `session.started` plays no part in. So the half that is measurable is thrown away, which is the exact shape `260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md` was filed against, arriving from the other side.
 
 `records=partial` exists and would be the right header here (`Issues resolved`, `Decisions answered`, `Decisions implemented` measured; `Issues created` unmeasured) — the branch is simply not written.
 
@@ -55,7 +55,7 @@ The comment is true about the *filed* half and silent about the other one. So th
 
 ## A second, smaller point on the same branch
 
-The `why=` value for this branch is `no-anchor-in-agentstate`. When `A` is present and only `T` is missing, that name is false about the record: the anchor *is* in `agentstate.yaml`. The prose at `agents/orchestrator.md:739` covers it by defining the cause name as "missing either `git_head_at_start` or `started`", so it is documented rather than wrong — but a cause list whose name contradicts the state it names is what `260811-1616` was filed about, and the same commit fixed the other instance of it.
+The `why=` value for this branch is `no-anchor-in-agentstate`. When `A` is present and only `T` is missing, that name is false about the record: the anchor *is* in `agentstate.yaml`. The prose at `agents/orchestrator.md:739` covers it by defining the cause name as "missing either `git_head_at_start` or `started`", so it is documented rather than wrong — but a cause list whose name contradicts the state it names is what `260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md` was filed about, and the same commit fixed the other instance of it.
 
 ## Fix direction
 

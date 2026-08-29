@@ -1,7 +1,7 @@
 # Playmaker — Phase-4 portfolio refresh after a `_t_` → `_c_` transition
 
 **Status:** Complete
-**Run:** 260822-2253, session `260822-2253-playmaker-orchestrator-phase4`
+**Run:** 260822-2253-playmaker-orchestrator-phase4.md, session `260822-2253-playmaker-orchestrator-phase4`
 **Trigger:** orchestrator, Phase 4, after `260822-1921-measure-what-two-checkouts-share` closed coherent
 **Domain bias:** `code` (parsed from the dispatch prompt's `**Domain:**` line)
 **git HEAD at run:** `4aaabc3`
@@ -33,11 +33,11 @@ Fifteen Circle records, every one of them terminal:
 **Top-ranked anticipated Circle: none.** No `_a_` record exists, so no ranking was computed and no
 `## Activation proposal` was appended to any record. The portfolio says why the section is empty
 rather than only that it is: capabilities C2, C3 and C4 of
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` are specified and uncaptured.
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` are specified and uncaptured.
 
-**Top-ranked backlog entry: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`** — the only
+**Top-ranked backlog entry: `260814-1733_*_bounded-executor-dispatches.md`** — the only
 live idea whose evidence is on disk and which needs no user act before shaping. Rationale unchanged
-from 260822-2104.
+from 260822-2104-playmaker-direct-dispatch.md.
 
 ## Backlog
 
@@ -50,7 +50,7 @@ from 260822-2104.
 
 **Proposed and not performed** (no confirmation held on this dispatch path):
 
-    defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived
+    defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived
 
 Carried forward verbatim from the two previous runs. Re-verified on disk this run: the decision
 carries `_d_` and the issue it waits on carries `_o_`.
@@ -84,7 +84,7 @@ standing are statements about markers rather than pointers: the `## Recently clo
 heading, the marker-count table above, and the `_t_` → `_c_` transition this dispatch followed. The
 one class the gate cannot see — a `circles/<dir>/_S_circle.md` pointer, whose stamp sits one path
 segment before the marker — was written as
-`circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md` in both places it appears.
+`260822-1921-measure-what-two-checkouts-share` in both places it appears.
 
 ## Verification
 

@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-02
 **Status:** Complete
-**Circle:** `circles/260801-1244-rule-provenance-header`
-**Spec:** `circles/260801-1244-rule-provenance-header/planning/260802-1103_o_spec-rule-provenance-header.md` (user-approved 2026-08-02)
+**Circle:** `260801-1244-rule-provenance-header`
+**Spec:** `260802-1103_*_spec-rule-provenance-header.md` (user-approved 2026-08-02)
 **Executors:** `coder` for every step. All four steps touch Markdown prose that documents a code-enforced convention, plus one TypeScript test file. No step touches structured data, ontology, manifests, or schemas, so `ontocoder` has no work here.
 
 ## Directive
@@ -37,7 +37,7 @@ The only on-disk fixtures in the suite are under `lib/__tests__/fixtures/plane/`
 
 ### Two facts checked rather than taken from the spec
 
-**The backfill table is correct.** All ten citations were re-derived at HEAD `e8988d9` with `git log --diff-filter=A`. The six admission hashes match the spec exactly: `critical-stance.md` `dac82b8` (2026-06-18), `decision-record-examples.md` `b05b423` (2026-05-04), `design-diagrams.md` `bd5f6e6` (2026-06-29), `fusion-workbench-conventions.md` `b05b423` (2026-05-04), `git-branch-discipline.md` `4950ffa` (2026-06-24), `user-facing-output.md` `c18a946` (2026-05-12). The four Circle citations are consistent with the introducing dates: `agent-setup.md` (`046453e`, 2026-07-18), `context-manifest.md` and `context-lean-claude-md.md` (`4620837`, 2026-07-18) against `circles/260718-1924-v5x-overhaul`; `protected-path-discipline.md` (`3806a49`, 2026-08-01) against `circles/260801-1244-guard-bash-inspection`. Both Circle directories exist in the workbench. No correction is needed.
+**The backfill table is correct.** All ten citations were re-derived at HEAD `e8988d9` with `git log --diff-filter=A`. The six admission hashes match the spec exactly: `critical-stance.md` `dac82b8` (2026-06-18), `decision-record-examples.md` `b05b423` (2026-05-04), `design-diagrams.md` `bd5f6e6` (2026-06-29), `fusion-workbench-conventions.md` `b05b423` (2026-05-04), `git-branch-discipline.md` `4950ffa` (2026-06-24), `user-facing-output.md` `c18a946` (2026-05-12). The four Circle citations are consistent with the introducing dates: `agent-setup.md` (`046453e`, 2026-07-18), `context-manifest.md` and `context-lean-claude-md.md` (`4620837`, 2026-07-18) against `260718-1924-v5x-overhaul`; `protected-path-discipline.md` (`3806a49`, 2026-08-01) against `260801-1244-guard-bash-inspection`. Both Circle directories exist in the workbench. No correction is needed.
 
 **`bin/fusion-rules` cannot see a header.** The plugin's rule files reach the helper's output through exactly two functions, `emit_if_exists` (line 156, a `[ -f "$1" ]` test and a `printf`) and `emit_pattern_in_dir` (line 160, a filename glob and a `printf`). Neither opens a file. The helper's only content reads are `./CLAUDE.md` (the `**Language:**` line, line 185), `.active-circle` (line 241), the active Circle's `*_circle.md` record (a `Topic:`/`Tags:` line, line 250), and a consuming project's `./rules/context-manifest.yaml` (line 313). Adding a line inside a rule file therefore cannot change what the helper emits. Acceptance criterion 7 holds by construction, and Step 1 verifies it empirically anyway.
 
@@ -117,10 +117,10 @@ Every step runs from the repository root `/Users/k1/Projects/productive/fusion` 
 
 | File | Line to insert at line 3 |
 |---|---|
-| `rules/agent-setup.md` | `**Provenance:** circles/260718-1924-v5x-overhaul` |
-| `rules/context-lean-claude-md.md` | `**Provenance:** circles/260718-1924-v5x-overhaul` |
-| `rules/context-manifest.md` | `**Provenance:** circles/260718-1924-v5x-overhaul` |
-| `rules/protected-path-discipline.md` | `**Provenance:** circles/260801-1244-guard-bash-inspection` |
+| `rules/agent-setup.md` | `**Provenance:** 260718-1924-v5x-overhaul` |
+| `rules/context-lean-claude-md.md` | `**Provenance:** 260718-1924-v5x-overhaul` |
+| `rules/context-manifest.md` | `**Provenance:** 260718-1924-v5x-overhaul` |
+| `rules/protected-path-discipline.md` | `**Provenance:** 260801-1244-guard-bash-inspection` |
 | `rules/critical-stance.md` | ``**Provenance:** No motivating record recoverable; introduced in `git:dac82b8`.`` |
 | `rules/decision-record-examples.md` | ``**Provenance:** No motivating record recoverable; introduced in `git:b05b423`.`` |
 | `rules/design-diagrams.md` | ``**Provenance:** No motivating record recoverable; introduced in `git:bd5f6e6`.`` |
@@ -307,7 +307,7 @@ Read the inserted section and confirm by eye that it states the keyword, all thr
 
 *The pattern matches the keyword, not prose.* Accepted: `**Provenance:** x`; the unbolded `Provenance: x`; the blockquote form `> **Provenance:** x`; a three-space indent; and the exact admission line from the spec. Rejected: a four-space indent (Markdown's indented-code threshold); lowercase `provenance: x`; `Provenance` with no colon; the real corpus line `...pending-stefan provenance markers...` from `rules/user-facing-output.md`, which fails on case, on the colon, and on position; and `**Provenance:**x` with no separator after the keyword, which the trailing lookahead rejects on purpose.
 
-*The three negative fixtures criterion 5 names.* A file with no header at all; a file whose only `Provenance:` line sits at line 11; and a file carrying `**Cross-references:** issues/260430-1900_o_rag-sanitisation.md` and `Binding decision: decisions/260716-1910_i_....md` in its first ten lines and no `Provenance:` line. The third proves that the corpus's existing provenance-adjacent vocabulary does not satisfy the gate.
+*The three negative fixtures criterion 5 names.* A file with no header at all; a file whose only `Provenance:` line sits at line 11; and a file carrying `**Cross-references:** 260430-1900_*_rag-sanitisation.md` and `Binding decision: 260716-1910_*_....md` in its first ten lines and no `Provenance:` line. The third proves that the corpus's existing provenance-adjacent vocabulary does not satisfy the gate.
 
 *A real rule file stripped of its header fails, with an actionable message.* Read `rules/critical-stance.md`, remove its header line in memory, and assert `headerLine` returns `null`. Then assert `report(["rules/critical-stance.md"])` contains the file name, the string `first 10 lines`, and the verbatim admission wording `No motivating record recoverable; introduced in`. This is criterion 5's "demonstrated by a fixture rather than by adding a real file to `rules/`", in the same shape as the injection tests in the two sibling gates.
 
@@ -408,8 +408,8 @@ What is deliberately not tested: that a citation resolves to anything. The spec 
 | A `bin/fusion-rules` regression check silently tests the installed copy at `~/.fusion` instead of this repository, because `FUSION_PLUGIN_ROOT` is exported by the SessionStart hook. | Step 1's verification commands override `FUSION_PLUGIN_ROOT=$PWD` explicitly, and the plan says why. |
 | The gate has no exemption list, so a non-rule Markdown file dropped into `rules/` (a README, a template) would be required to carry a header. | Intended. `rules/` holds rule files and nothing else, and the correct response to a new file failing is a header, not an exemption. The absence of an exemption list is stated in the gate's header comment so the next reader does not add one reflexively. |
 | A hollow header (`**Provenance:** see the spec`) passes the gate. | Accepted limitation, recorded in the spec and restated in the conventions section. Review is what catches it; the gate does not claim to. |
-| A header cites a record that is later archived out of every read set, and the citation resolves to nothing. | Accepted limitation, out of scope by the spec. The underlying defect is already filed at `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` and is not refiled here. |
-| Scope creep into the curator Circle: partitioning the conventions file, or writing headers into a consuming project's rules. | Step 4's `git status --porcelain` check bounds the change to eleven paths. `circles/260801-1244-curator` owns everything else. |
+| A header cites a record that is later archived out of every read set, and the citation resolves to nothing. | Accepted limitation, out of scope by the spec. The underlying defect is already filed at `260801-1020_*_scan-keys-never-reach-the-archive-store.md` and is not refiled here. |
+| Scope creep into the curator Circle: partitioning the conventions file, or writing headers into a consuming project's rules. | Step 4's `git status --porcelain` check bounds the change to eleven paths. `260801-1244-curator` owns everything else. |
 
 ## Open Questions
 
@@ -430,14 +430,14 @@ Two checks the spec asked for, both done before this plan was written.
 
 ## Reconciliation Log
 
-**260802-1413 (reconciler, domain `code`) — Status Draft → Complete, marker `_o_` → `_c_`.**
+**260802-1413-reconciliation.md (reconciler, domain `code`) — Status Draft → Complete, marker `_o_` → `_c_`.**
 
 All four steps verified against the tree at `b568ad9`, not against their `[DONE]` markers.
 
 | Step | Claimed | Verified |
 |---|---|---|
 | 1. Backfill ten headers | `[DONE]` | **Yes.** `ls -1 rules/` returns ten files; `head -10` plus the spec's regex reports `3:` on all ten, no `MISSING`. Every citation matches the plan's table character for character, including the six `git:<hash>` admissions. Landed in `929dbf5` (2 insertions, 0 deletions per rule file). |
-| 2. Conventions section | `[DONE]` | **Yes.** `## Provenance headers on rule files` at `rules/fusion-workbench-conventions.md:562`, before `## History Logging` at `:594`. The section-scoped `Binding decision: shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` at `:592`. The two pre-existing section notes survive at `:328` and `:688`. Landed in `c2c2a04`, revised by `7703330`. |
+| 2. Conventions section | `[DONE]` | **Yes.** `## Provenance headers on rule files` at `rules/fusion-workbench-conventions.md:562`, before `## History Logging` at `:594`. The section-scoped `Binding decision: 260801-1020_*_provenance-header-on-rule-files.md` at `:592`. The two pre-existing section notes survive at `:328` and `:688`. Landed in `c2c2a04`, revised by `7703330`. |
 | 3. Lint gate | `[DONE]` | **Yes.** `hooks/lib/__tests__/provenance-header-lint.test.ts` exists, 438 lines. `npm test` from `hooks/`: **17 files, 780 tests, all passing** (re-run by the reconciler at 260802-1411, not taken from the coder's report). Landed in `de9d5aa`, corrected by `cc004fc` and `b568ad9`. |
 | 4. Acceptance sweep | `[DONE]` | **Yes, and its scope check is now stale.** All eight criteria re-verified independently (see the spec's own reconciliation log). The sweep's own bound — "exactly eleven changed paths" — no longer describes the Circle. See the drift note below. |
 
@@ -448,8 +448,8 @@ All four steps verified against the tree at `b568ad9`, not against their `[DONE]
 `git diff --stat e8988d9..HEAD -- . ':!fusion-workbench'` returns fourteen paths. Step 4's scope check names eleven (ten `rules/*.md` plus the new test file). The three extra, each with its provenance:
 
 - `hooks/package.json` — `b568ad9`, the `engines` field closing issue `260802-1345`. A review-finding fix; legitimate and inside the Circle's subject.
-- `CLAUDE.md` — `7703330` and `b568ad9`, closing issues `260802-1251` and `260802-1343`. The plan's Open Question 2 asked whether `CLAUDE.md` gains a line and **recommended deferring it to session close**. It was done mid-Circle instead, as the second half of a review-finding fix. A departure from the plan's own recommendation, taken for a good reason and worth naming rather than absorbing.
-- `templates/investigator-capture-layout.md` — `482e9c3`. **Named in neither the spec nor the plan.** `grep -n 'templates/'` across both planning documents returns nothing. This commit is the one piece of the Circle with no step behind it. It is defensible on the merits (the template becomes a rule file in a consuming project, where the gate cannot reach) and it is small, four insertions. It also produced open issue `260802-1256`, which is a review finding against work the plan never scoped. Recorded as scope drift, not as a defect.
+- `CLAUDE.md` — `7703330` and `b568ad9`, closing issues `260802-1251_*_conventions-lede-scope-excludes-the-new-provenance-section.md` and `260802-1343_*_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md`. The plan's Open Question 2 asked whether `CLAUDE.md` gains a line and **recommended deferring it to session close**. It was done mid-Circle instead, as the second half of a review-finding fix. A departure from the plan's own recommendation, taken for a good reason and worth naming rather than absorbing.
+- `templates/investigator-capture-layout.md` — `482e9c3`. **Named in neither the spec nor the plan.** `grep -n 'templates/'` across both planning documents returns nothing. This commit is the one piece of the Circle with no step behind it. It is defensible on the merits (the template becomes a rule file in a consuming project, where the gate cannot reach) and it is small, four insertions. It also produced open issue `260802-1256_*_template-placeholder-opts-out-of-the-templates-own-fill-in-convention.md`, which is a review finding against work the plan never scoped. Recorded as scope drift, not as a defect.
 
 ### What the plan got right that is worth keeping
 

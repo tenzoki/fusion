@@ -71,7 +71,7 @@ status code has its own temp file redirected inside the zsh string, that shell's
 discarded whole, and each of the three local failure modes is named on stderr. The trailing
 `[ -n "$tmpbody" ] && rm -f "$tmpbody"` is not in final position, so it leaks no status. The
 EXIT-trap residual and the `map_view` mktemp are already carried by the open record
-`shared/issues/260813-1051_o_an-unguarded-mktemp-in-plane-curl-…`.
+`260813-1051_*_an-unguarded-mktemp-in-plane-curl-…`.
 
 ## Findings by theme
 
@@ -83,7 +83,7 @@ follow-up question the third needs. The four fixed line forms exist precisely so
 approve one at a time, and the step that asks cannot record a subset. Step 6 of the same
 skill (`:209`) specifies exactly this follow-up for its own "choose another" option; Step 5b
 has no equivalent sentence. **High** — this is the case a 13-idea entry produces.
-Record: `260813-1545_o_the-choose-which-branch-of-step-5b-…`
+Record: `260813-1545_*_the-choose-which-branch-of-step-5b-…`
 
 **2. The second dispatch re-appends Circle-record sections.** `agents/playmaker.md:207` tells
 the second run to regenerate `$PORTFOLIO`, which is defined as a full six-section
@@ -91,14 +91,14 @@ regeneration (`:58`) and therefore re-runs Steps 3, 4 and 5 — each of which ap
 records with no idempotence guard (`:182`, `:141`, `:149`). One `/fusion:next` with an
 approved operation leaves two `## Activation proposal` blocks on the record it then
 activates. "propose nothing further" reads as being about backlog proposals. **Medium.**
-Record: `260813-1545_o_the-relays-second-dispatch-re-appends-…`
+Record: `260813-1545_*_the-relays-second-dispatch-re-appends-…`
 
 **3. `**Proposal source:**` is carried and never compared.** Both files carry the stamp
 (`skills/next/SKILL.md:172`, `agents/playmaker.md:216`) and neither tells the second run to
 check it against the portfolio's `**Generated:**` header. The window is the user's answer to
 an `AskUserQuestion`, during which any Phase 4 dispatch or second `/fusion:next` overwrites
 the portfolio in full. The instrument that would detect it exists and is inert. **Medium.**
-Record: `260813-1545_o_the-proposal-source-stamp-is-carried-…`
+Record: `260813-1545_*_the-proposal-source-stamp-is-carried-…`
 
 **4. The relay reads its lines out of report prose.** `skills/next/SKILL.md:159` reads the
 operations from the returned report, which has no delimiter, no verbatim obligation beyond
@@ -107,39 +107,39 @@ one clause, and a style rule pulling the other way (`agents/playmaker.md` `## Ou
 narrative bullets, not as `split … into: …` (`fusion-workbench/portfolio.md:155`–`186`) —
 which is what the prose profile asks for and what the relay cannot parse. The skill already
 holds the portfolio from Step 4 (`:139`), where the four forms are actually mandated.
-**Medium.** Record: `260813-1545_o_the-relay-reads-its-operation-lines-…`
+**Medium.** Record: `260813-1545_*_the-relay-reads-its-operation-lines-…`
 
 **5. The explicit form skips Step 5b silently.** `/fusion:next <circle-dirname>` jumps from
 Step 3 to Step 6 (`skills/next/SKILL.md:108`); Step 5b is reachable only from Step 5's
 closing line (`:151`). The behaviour is probably right; its invisibility is not. **Low.**
-Record: `260813-1545_o_the-explicit-form-of-fusion-next-skips-…`
+Record: `260813-1545_*_the-explicit-form-of-fusion-next-skips-…`
 
 **6. The split line form cannot express a partial split.** One operation per line makes the
 whole split the unit of approval (`rules/circle-records.md:128`), against an entry the last
 run partitioned three ways across 13 ideas. Also: semicolon and em-dash separators inside
 free-prose titles, and an option label that exceeds the four-line cap in
 `rules/user-facing-output.md`. **Low.**
-Record: `260813-1545_o_the-split-line-form-cannot-express-…`
+Record: `260813-1545_*_the-split-line-form-cannot-express-…`
 
 ### Survivors of the old boundary, outside the linted file
 
 **7. `skills/next/SKILL.md:291`** still reads *"playmaker … writes only Circle records and
 the portfolio."* The same commit edited this paragraph, adding a sentence three lines above
 it. The safety conclusion the clause supports is still true, which is why nothing will
-announce it. **Medium.** Record: `260813-1545_o_the-next-skills-boundaries-paragraph-…`
+announce it. **Medium.** Record: `260813-1545_*_the-next-skills-boundaries-paragraph-…`
 
 **8. `skills/direct/SKILL.md:77`,** the sentence step 5 corrected, acquired a new overclaim:
 *"That bound holds for every consumer of the backlog except the playmaker."* It does not hold
 for the shaper, which resolves `SCAN_BACKLOG` and renames plus appends into the store
 (`agents/shaper.md:86`–`88`). The conventions table this commit added names the shaper as a
 `_c_` writer (`rules/fusion-workbench-conventions.md:213`), so two files written in one
-commit disagree. **Low.** Record: `260813-1545_o_the-corrected-sentence-in-fusion-direct-…`
+commit disagree. **Low.** Record: `260813-1545_*_the-corrected-sentence-in-fusion-direct-…`
 
 **Deliberately deferred, not findings.** `README-agents.md:40` (Writes column omits the
 backlog store; body says the playmaker "names duplicates" where it now merges them) and
 `CLAUDE.md:51` are both carried by
-`shared/issues/260813-0825_o_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
-and handed to `circles/260813-0910-documentation-matches-shipped-plugin/`. `docs/working-model.md`
+`260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
+and handed to `260813-0910-documentation-matches-shipped-plugin`. `docs/working-model.md`
 and `skills/help/SKILL.md` were grepped and carry no backlog claim at all — silence, not
 contradiction, as the `2a029eb` commit message states. `skills/archive/SKILL.md:102`–`103`
 was checked and is true through the change, as the plan predicted.
@@ -152,7 +152,7 @@ was checked and is true through the change, as the plan predicted.
 section only, because `findMandateClauses` (`:136`) reads that section alone. A maintainer
 rewording both linted surfaces together — the motion the lint's header explicitly permits
 (`:45`–`:50`) — leaves `## Dispatch sources` behind, green. **Medium.**
-Record: `260813-1545_o_the-phase-4-mandate-is-stated-a-third-time-…`
+Record: `260813-1545_*_the-phase-4-mandate-is-stated-a-third-time-…`
 
 Two further boundaries, stated rather than filed: case 3's retired-prohibition corpus is
 `agents/playmaker.md` alone, so findings 7 and 8 above are structurally invisible to it; and
@@ -181,7 +181,7 @@ lead, `agents/playmaker.md:114` ("file the new entries at `_o_`") violates it. T
 table rescues this two paragraphs down (`:211`, the `_o_` row names the playmaker "on a
 split's new entries"), so the document is consistent — but the one sentence a reader was
 meant to be able to quote does not settle the split case alone. One word fixes it. **Low.**
-Record: `260813-1545_o_the-backlog-bounds-bold-lead-says-entry-…`
+Record: `260813-1545_*_the-backlog-bounds-bold-lead-says-entry-…`
 
 ## Cross-cutting observations
 
@@ -235,18 +235,18 @@ met and verified. Step 9's deferral is recorded and is not counted as incomplete
 ## Files opened
 
 Every file in the range was opened. In addition, the seven paths the previous review
-(`shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md`) declared
+(`260813-1051-coderev-plane-curl-response-via-temp-file.md`) declared
 not-opened were carried forward and opened here:
 
 | Path | Judgement |
 |---|---|
 | `circles/260813-0858-…/_t_circle.md` | Substantive. Read in full; the Directive, Grounding and three Turn-log entries are the authority this review measured the delivery against. No finding. |
-| `circles/260813-0858-…/history/260813-1031-bugfix-circle-stash-test-locale.md` | Read. A bugfixer log for the locale-dependent test repair in `7342fdd`, already reviewed at its own commit. No finding. |
-| `circles/260813-0858-…/history/260813-1036-bugfix-plane-curl-interactive-shell-noise.md` | Read. Same — the `plane_curl` repair log. Its root-cause section is accurate against `bin/fusion-plane` at HEAD. No finding. |
+| `circles/260813-0858-…/260813-1031-bugfix-circle-stash-test-locale.md` | Read. A bugfixer log for the locale-dependent test repair in `7342fdd`, already reviewed at its own commit. No finding. |
+| `circles/260813-0858-…/260813-1036-bugfix-plane-curl-interactive-shell-noise.md` | Read. Same — the `plane_curl` repair log. Its root-cause section is accurate against `bin/fusion-plane` at HEAD. No finding. |
 | `fusion-workbench/orchestrator-events.jsonl` | Read (tail, the Turn 1–3 window). Session telemetry; the three `state_drift` and one `staging_drift` entries are self-reported bookkeeping corrections, not product defects. No finding. |
 | `fusion-workbench/portfolio.md` | Substantive. Read in full and it produced evidence for finding 4: its `## Backlog — ranked` section states the split proposal as narrative bullets rather than in the four fixed forms, which is what the relay would have to parse. Generated before the template change, so not itself a defect. |
-| `shared/history/260813-0806-orchestrator-session.md` | Read. The session that answered the binding decision; its record of the user's four-part definition of "full maintenance" matches what shipped. No finding. |
-| `shared/history/260813-0926-playmaker-direct-dispatch.md` | Read. The playmaker run that produced the portfolio above. Consistent with it. No finding. |
+| `260813-0806-orchestrator-session.md` | Read. The session that answered the binding decision; its record of the user's four-part definition of "full maintenance" matches what shipped. No finding. |
+| `260813-0926-playmaker-direct-dispatch.md` | Read. The playmaker run that produced the portfolio above. Consistent with it. No finding. |
 
 ---
 
@@ -260,17 +260,17 @@ coderev` header and a severity matching its finding.
 `## Summary` says "eleven issues filed". The findings section enumerates **ten**, numbered 1 to 10,
 and ten records are on disk: 1 High, 5 Medium, 4 Low. The Low row should read 4 and the total 10.
 The twelfth file in that store carrying a `260813-1545` stamp is
-`260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`,
+`260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`,
 filed by the reconciler in the same minute, and is not one of this review's findings.
 
 **Coverage.** With this review on disk, `bin/fusion-review-coverage --since 1c2d555` moves from
 `verdict=uncovered` (6 of 8 commits) to `verdict=covered`, `uncovered=0`, `carried=none`. The
 session range `1c2d555..2a029eb` is fully tiled by this review (`7342fdd..2a029eb`, covers=6) and
-`shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md` (`1c2d555..7342fdd`,
+`260813-1051-coderev-plane-curl-response-via-temp-file.md` (`1c2d555..7342fdd`,
 covers=2). The seven files that review left in its `**Not-opened:**` field were carried into this
 one, which declares `**Not-opened:** none`.
 
 **Findings 7 and 8 bear on the Circle's Directive**, and are read that way in the Coherence verdict
-in `shared/history/260813-0806-orchestrator-session.md`: the Directive states that the five
+in `260813-0806-orchestrator-session.md`: the Directive states that the five
 surfaces asserting the old no-write boundary come to agree with the new one, and
 `skills/next/SKILL.md:291` still asserts it.

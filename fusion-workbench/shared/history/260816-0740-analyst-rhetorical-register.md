@@ -61,10 +61,10 @@ em-dashes against five, six rendered lines against about twenty.
 
 ## Artifacts written
 
-- `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`
-- `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
-- `shared/issues/260816-0740_o_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`
-- `shared/decisions/260816-0740_o_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- `260816-0740-rhetorical-register-of-agent-output.md`
+- `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+- `260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 
 ## Calibration
 
@@ -75,7 +75,7 @@ recommendation 4 and cannot run until the corpus is repunctuated.
 
 ## Cross-references, not duplicated
 
-`shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md` found a
+`260706-1902-user-facing-agents-garbled-language-rootcause.md` found a
 different cause for the same complaint, a routing fault since fixed. This analysis finds
 correct routing to a profile whose surrounding corpus contradicts it. The two do not overlap.
 `shared/issues/260814-1419_o_*`, the stale loaded chat profile, was verified still divergent

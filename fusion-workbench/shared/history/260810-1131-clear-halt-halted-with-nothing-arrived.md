@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Source:** `shared/issues/260810-1032_o_clear-halts-still-halted-with-nothing-arrived-branch-points-the-human-at-a-list-it-never-printed.md`
+**Source:** `260810-1032_*_clear-halts-still-halted-with-nothing-arrived-branch-points-the-human-at-a-list-it-never-printed.md`
 **Follows:** `e39b3fe` (the post-clear re-read), reviewed in `7f617b1..7ddacbc`
 
 ---

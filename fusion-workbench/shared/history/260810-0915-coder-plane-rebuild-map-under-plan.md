@@ -3,14 +3,14 @@
 **Agent:** coder
 **Date:** 2026-08-10 09:15
 **Status:** Complete
-**Task:** fix `260810-0746` + `260810-0747` (one fix; the second record says the first settles it)
+**Task:** fix `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md` + `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md` (one fix; the second record says the first settles it)
 **Source records:**
-- `fusion-workbench/shared/issues/260810-0746_o_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md`
-- `fusion-workbench/shared/issues/260810-0747_o_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md`
+- `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md`
+- `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md`
 
 **Origin:** Not Circle work; no Circle active. Review findings (coderev, session
-`260810-0241`, Turn 2) against `ff70d3a..HEAD`, whose executor log is
-`fusion-workbench/shared/history/260810-0715-coder-plane-map-read-write-split.md`.
+`260810-0241-orchestrator-session.md`, Turn 2) against `ff70d3a..HEAD`, whose executor log is
+`260810-0715-coder-plane-map-read-write-split.md`.
 
 ## The one shape behind both records
 
@@ -46,7 +46,7 @@ Both dry-run sources, both fixture spellings, and the `plan` alias reach the sam
 
 ### Why refusal, and not "report that it planned a rebuild"
 
-Both directions were on the table in record `260810-0746`. The op list decides it:
+Both directions were on the table in record `260810-0746_*_push-plan-rebuild-map-fixture-writes-the-map-in-a-dry-run-that-four-documents-say-writes-nothing.md`. The op list decides it:
 `--plan`'s entire output is the ops computed **from the map**. A run that reported a
 planned rebuild would then emit ops computed against the map the rebuild was about to
 replace — a plan for a board that will not exist when it is executed, and the consumers
@@ -87,15 +87,15 @@ rebuild-then-plan order and why the reverse order would mislead.
 
 `cd hooks && npm test` — **exit 0**, 38 files / 1005 tests, all green. The tree carried a
 concurrent `+1` from another session (`fusion-count-sources.test.ts`, record
-`260810-0749`), so the measured baseline was 1002 rather than the 1001 in the brief; this
+`260810-0749_*_the-extension-parse-guards-against-matching-nothing-but-not-against-matching-less.md`), so the measured baseline was 1002 rather than the 1001 in the brief; this
 change is the remaining `+3`. Before that, the five spellings and the working rebuild were
 driven by hand against a scratch workbench holding the colliding legacy map, comparing
 `shasum` before and after each run.
 
 ## Not touched
 
-`stable_basename` / `JQ_STABLE_KEY` (record `260810-0458`) and `JQ_REBUILD_MAP`'s
-`.collisions` grouping (record `260810-0748`) — separate tasks, and this fix needed
+`stable_basename` / `JQ_STABLE_KEY` (record `260810-0458_*_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md`) and `JQ_REBUILD_MAP`'s
+`.collisions` grouping (record `260810-0748_*_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md`) — separate tasks, and this fix needed
 neither.
 
 ## Adjacent, filed nowhere, not fixed here

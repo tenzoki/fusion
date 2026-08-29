@@ -2,7 +2,7 @@ An executor reached for `git stash` while two were dispatched in parallel
 
 ---
 
-Task T3 of session `260818-2301` used `git stash` and `git stash pop` to measure a byte delta against
+Task T3 of session `260818-2301-orchestrator-session.md` used `git stash` and `git stash pop` to measure a byte delta against
 HEAD while a second `coder` was dispatched concurrently against a disjoint file set. The agent
 reported it itself, unprompted, and named the correct alternative it should have used first
 (`git show HEAD:<path>`).
@@ -38,7 +38,7 @@ it was unsafe, and it acted correctly the moment it reconsidered.
 
 ---
 
-Filed by the orchestrator of session `260818-2301` after reading the executor's own report. No Circle
+Filed by the orchestrator of session `260818-2301-orchestrator-session.md` after reading the executor's own report. No Circle
 active, so it goes to the shared store under the Origin Rule.
 
 ---

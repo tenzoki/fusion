@@ -3,13 +3,13 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (direct session, Phase 3 of `refactor/260827-0335-bookkeeping-cost-repair-plan.md`), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `bin/fusion-rules` (the emission list this decides) · `rules/decision-record-examples.md` (the file whose audience moves) · `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md` (the norm whose landing forced the choice)
+**Cross-references:** `bin/fusion-rules` (the emission list this decides) · `rules/decision-record-examples.md` (the file whose audience moves) · `260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md` (the norm whose landing forced the choice)
 
 ---
 
 ## Question
 
-Realising decision `260826-1252` puts critical-stance §5 (a cardinality is enumerated or derived, never asserted) on the always-on floor, where it must sit to reach every agent's every edit. Even at minimum phrasing the floor then stands 872 bytes past its hard 12,000-byte head-room — the set had grown to within ~50 bytes of its budget before this change (`fusion-workbench-conventions.md` alone +8,749 since the baseline). The bound's rule is a cut, never a baseline move. Where is the cut?
+Realising decision `260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md` puts critical-stance §5 (a cardinality is enumerated or derived, never asserted) on the always-on floor, where it must sit to reach every agent's every edit. Even at minimum phrasing the floor then stands 872 bytes past its hard 12,000-byte head-room — the set had grown to within ~50 bytes of its budget before this change (`fusion-workbench-conventions.md` alone +8,749 since the baseline). The bound's rule is a cut, never a baseline move. Where is the cut?
 
 An audience change to the emission list "is a decision, and it may not happen silently" (`hooks/lib/__tests__/rules-emission-golden.test.ts`), which is why this is a record and a gate rather than an edit.
 

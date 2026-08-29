@@ -48,12 +48,12 @@ than growing the list once more — but if the list does grow first, `only when`
 `consider`, `recommended` and `advisory` are the six with the best cost-to-coverage ratio.
 
 **Cross-references.** `hooks/lib/__tests__/state-drift-detection-lint.test.ts:57-88, 194-245, 306-322`;
-`shared/issues/260810-1918_c_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`;
-`shared/decisions/260810-2032_o_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`.
+`260810-1918_*_the-skip-licence-blacklist-misses-every-negation-that-does-not-use-the-word-not.md`;
+`260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 Resolved: Its whole subject, the SKIP_LICENCES blacklist in hooks/lib/__tests__/state-drift-detection-lint.test.ts, was deleted with the state-drift mechanism in f45f76a; SKIP_LICENCES returns nothing anywhere at HEAD.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

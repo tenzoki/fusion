@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, reviewing Turn 2 range `270c566..1d5eed6` (commit `619dfb7`, task 35)
 **Affects:** `agents/ontocoder.md:2`, `:7`, `:24`
-**Cross-references:** `shared/issues/260811-1301_o_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` (the routing-table half of the same edit, already filed); `agents/coder.md:2`, `:24`; `README-agents.md` ontocoder row
+**Cross-references:** `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` (the routing-table half of the same edit, already filed); `agents/coder.md:2`, `:24`; `README-agents.md` ontocoder row
 
 ---
 
@@ -37,7 +37,7 @@ hold only their own prompt, and each is told the file is theirs. `agents/coder.m
 the coder to *"stop and file an issue for `ontocoder`"* on a data file; the ontocoder receiving
 that issue has no text telling it to hand a `Cargo.toml` back.
 
-Record `260811-1301` covers the orchestrator's routing table and correctly calls that one *"a gap,
+Record `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` covers the orchestrator's routing table and correctly calls that one *"a gap,
 not a contradiction"* — the ontocoder row there is already scoped to `ontology/`, `manifests/` and
 schema directories. This is the contradiction the routing-table record explicitly is not.
 
@@ -72,4 +72,4 @@ Two siblings the closing grep found were fixed with it rather than left for a fi
 every `.toml` and `.json` and omitted `Cargo.toml` from `coder`), and the two `README-agents.md`
 rows, whose exception clause was replaced by one statement of the rule below the table so neither
 row restates it. `agents/orchestrator.md:346` was left alone: it is already filed as
-`260811-1301`, and it is a gap in the coder row rather than a competing claim.
+`260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`, and it is a gap in the coder row rather than a competing claim.

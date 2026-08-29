@@ -32,9 +32,9 @@ to delete the hand-maintained session counters and derive them from git and the 
 
 ## Artifacts
 
-- Report: `fusion-workbench/shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md`
+- Report: `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`
 - No issues filed: all six observations already carry records dated `260812-0253`.
-- Answers requested against existing decision `shared/decisions/260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, which is one open issue (`260810-0510`) from decidable.
+- Answers requested against existing decision `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`, which is one open issue (`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`) from decidable.
 
 ## Method note
 

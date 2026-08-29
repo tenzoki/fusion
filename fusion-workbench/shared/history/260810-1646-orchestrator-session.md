@@ -1,4 +1,4 @@
-# Orchestrator Session — 260810-1646
+# Orchestrator Session — 260810-1646-orchestrator-session.md
 
 **Directive:** "wir fixen weiterhin erst die defekte" — work the open defect records in
 `shared/issues/` before anything else. Stated by the user immediately after Setup and **not revised**
@@ -48,7 +48,7 @@ Top of the ranking, all with `session=0`:
 
 ### Portfolio hint
 
-1 anticipated Circle exists (`circles/260801-1244-curator/`), 0 active. The hint pointing at
+1 anticipated Circle exists (`260801-1244-curator`), 0 active. The hint pointing at
 `/fusion:next` was printed to the user.
 
 ### Voice profiles
@@ -127,7 +127,7 @@ plainest second copy the cascade gate walks past; catching them costs 14 honest 
 standing alternative is the baseline pin the user approved earlier in the session, not a wider
 regex.
 
-**The general answer arrived from the second executor** (`260810-2149`): a coverage *floor* cannot
+**The general answer arrived from the second executor** (`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`): a coverage *floor* cannot
 see coverage leave. 148 citations against a floor of 50 lose eight invisibly, and raising the floor
 makes it brittle. Pinning the count against a committed baseline is the same mechanism the user had
 already chosen for the drift check, which makes this its second application rather than a new idea.
@@ -152,8 +152,8 @@ works; the bookkeeping beneath it remains exactly as dependable as the intention
   commits later); 3 new defects filed; **22 open `coderev`-filed records** in `shared/issues/`. The
   flag is not the closures — it is that two Grounding artefacts never reached the Artifact:
   `fusion-workbench/tasklist.md`'s 17:23 rebuild is uncommitted (last commit touching it is
-  `8b2a206`, the release *before* this session) and `shared/history/260810-1723-tasklist-update.md`
-  is untracked, both across eighteen commits, neither gitignored. Filed as `260811-0114`. The record
+  `8b2a206`, the release *before* this session) and `260810-1723-tasklist-update.md`
+  is untracked, both across eighteen commits, neither gitignored. Filed as `260811-0114_*_the-queue-rebuild-and-its-history-file-never-entered-a-commit-and-survive-only-in-the-working-tree.md`. The record
   store itself is intact: all 40 slugs touched in the range exist exactly once at HEAD.
 - **Artifact↔Directive:** the commits move **toward** the Directive, and the raw open count is the
   wrong measure of it. Every one of the 26 closures is a defect genuinely fixed and independently
@@ -165,22 +165,22 @@ works; the bookkeeping beneath it remains exactly as dependable as the intention
   revision, not the original Directive, is what produced the one Turn that reduced the queue
   (`c714d8c`, `861e695`, `d169b0d`).
 - **Grounding↔Directive:** 15 active decisions (9 `_o_` + 6 `_a_` across `shared/` and `circles/`),
-  **0 conflicting**. The one that could have conflicted does not: `260810-2032_a_` sequences its own
+  **0 conflicting**. The one that could have conflicted does not: `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` sequences its own
   implementation behind the still-open `260801-2038`, and the session honoured that — no pin exists
   in `state-drift-detection-lint.test.ts`, whose header at `:92-104` records the sequencing as the
-  reason. `260810-1822_i_` is realised on disk as cited. `260810-2030_o_` and `260810-2145_o_` are
+  reason. `260810-1822_*_should-the-queue-ground-procedure-become-a-rule-file-when-one-of-its-three-consumers-cannot-be-emitted-to.md` is realised on disk as cited. `260810-2030_o_` and `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` are
   consistent but understated: both count two call sites where `260811-0109` measures four.
 
 **Rebalance recommendation:** revise Artifact
 
 Only one edge is flagged, and the action it names is narrow and concrete: stage and commit
-`fusion-workbench/tasklist.md` and `shared/history/260810-1723-tasklist-update.md` by name, and
+`fusion-workbench/tasklist.md` and `260810-1723-tasklist-update.md` by name, and
 decide where the commit-message file belongs (`agents/orchestrator.md` Step 3b says `/tmp`;
 `fusion-workbench/.commit-msg-tmp` says otherwise). Neither the Directive nor the Grounding needs
 revising — the Directive was already revised once, by the user, and that revision is what reversed
 the net-negative trend.
 
-**Read alongside this:** `shared/history/260811-0108-reconciliation.md` carries the per-record
+**Read alongside this:** `260811-0108-reconciliation.md` carries the per-record
 evidence, the queue-accuracy measurement (43 of 45 entries correct; tasks 1 and 5 stale), and the
 open counts across every store.
 
@@ -229,8 +229,8 @@ reach is now data carrying probes the suite runs, with the documentation rendere
 compared byte-for-byte. It caught its own author twice before the work was finished.
 
 **Stop screening for what might be wrong and pin what is right.** The user approved this for the
-drift check's four sentences (`260810-2032`), and the second executor arrived at it independently for
-coverage counts (`260810-2149`). Whether it becomes a convention for every counting gate is filed as
+drift check's four sentences (`260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`), and the second executor arrived at it independently for
+coverage counts (`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`). Whether it becomes a convention for every counting gate is filed as
 an open question rather than assumed.
 
 ## Remaining work
@@ -239,12 +239,12 @@ an open question rather than assumed.
   critical. The queue at `fusion-workbench/tasklist.md` is 20 commits old and two of its entries are
   known to be overtaken; the next `taskplanner` run is where that is corrected.
 - **`I:260801-2038-frozen-state`** is the one to take next. It is high priority in its own right, and
-  it blocks the approved baseline pin (`260810-2032`), which cannot land until it rewrites the four
+  it blocks the approved baseline pin (`260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`), which cannot land until it rewrites the four
   sentences the pin would hold.
-- **`260810-2145`** asks the user whether a repeated skill-body snippet becomes a `bin/` helper. It
+- **`260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`** asks the user whether a repeated skill-body snippet becomes a `bin/` helper. It
   became concrete when one factual change had to be written into four executable copies across two
   files.
-- **`260810-1820`** has its answer (a scratch copy for destructive verification) and nothing built
+- **`260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`** has its answer (a scratch copy for destructive verification) and nothing built
   yet; the record names the dispatch-fence line as a known gap in the chosen option.
 
 ## Commits

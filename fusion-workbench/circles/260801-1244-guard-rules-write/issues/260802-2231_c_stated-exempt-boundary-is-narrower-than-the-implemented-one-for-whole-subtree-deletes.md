@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 1 of `circles/260801-1244-guard-rules-write` (`c7f117b..HEAD`)
+**Filed by:** coderev, reviewing Turn 1 of `260801-1244-guard-rules-write` (`c7f117b..HEAD`)
 **Affects:** `hooks/lib/rules-write-exemption.ts` docstring accuracy; the Bash surface behaviourally
 **Cross-references:** `hooks/lib/rules-write-exemption.ts:105-115` (the claim),
 `hooks/lib/bash-mutation-guard.ts:1247-1282` (passes 1 and 2, where `exempt` is consulted)
@@ -65,7 +65,7 @@ project-configurable through `fusion-guard.json`. Two consequences to settle the
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while enumerating what the flag exempts.
+Found in `260801-1244-guard-rules-write` while enumerating what the flag exempts.
 
 ---
 Resolved: documentation, in `isProjectRulePath`'s docstring
@@ -103,6 +103,6 @@ spellings not).
 The two adjacent questions — `RULE_DIR_PATTERNS` hardcoded while `protectedPaths` becomes
 project-configurable, and the exemption outranking a project's own protected entry — are Step
 6's and were not decided here. Filed as a decision record rather than answered in a docstring:
-`decisions/260803-1314_o_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`
+`260803-1314_*_may-a-project-protect-a-path-inside-its-own-rule-directory-against-the-rules-write-flag.md`
 
-Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
+Session: `260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`

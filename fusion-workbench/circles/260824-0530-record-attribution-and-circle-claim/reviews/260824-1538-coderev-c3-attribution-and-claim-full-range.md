@@ -4,7 +4,7 @@
 **Not-opened:** none
 **Sender:** coderev
 **Reviewed:** 2026-08-24
-**Circle:** `circles/260824-0530-record-attribution-and-circle-claim`
+**Circle:** `260824-0530-record-attribution-and-circle-claim`
 **Filed by:** coderev, Kai Stalmann <ks@qantr.com>
 
 ## Summary
@@ -64,7 +64,7 @@ nothing. The form is authored in `rules/circle-records.md:191-199`.
 The two paths concerned are the only paths on which two identities ever land in one record, which is
 the whole point of the override. No gate can see it: `reference-resolution-lint` resolves the file
 token and the heading token, and both exist. Record:
-`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_both-override-call-sites-cite-a-section-that-does-not-define-the-sentence-they-must-write.md`.
+`260824-1538_*_both-override-call-sites-cite-a-section-that-does-not-define-the-sentence-they-must-write.md`.
 
 **Finding 2 (High). The filing rule names the identity helper with no root, no guard, and no branch
 for its absence.** `rules/fusion-workbench-conventions.md:494` `### Who filed it` is always-on for
@@ -75,8 +75,8 @@ call sites both guard with `[ -x ]` (`skills/setup/SKILL.md:340`, `skills/next/S
 The rule branches on exits 1, 4 and "every other code". Exit 127 is none of those, and 127 is what a
 consuming project gets today. The same paragraph forbids the two escapes an agent would otherwise
 take — "compose no value and substitute none". The condition was measured at the `/fusion:next` site
-during step 10 (`history/260824-1502-…:52-53`) and the measurement did not reach the rule. Record:
-`…/issues/260824-1538_*_the-filing-rule-names-the-identity-helper-with-no-root-no-guard-and-no-branch-for-its-absence.md`.
+during step 10 (`260824-1502-…:52-53`) and the measurement did not reach the rule. Record:
+`…/260824-1538_*_the-filing-rule-names-the-identity-helper-with-no-root-no-guard-and-no-branch-for-its-absence.md`.
 
 ### Theme 2 — A case split that stops one branch short
 
@@ -91,7 +91,7 @@ project deliberately and in shipped code, and cites the decision that made it so
 activate a Circle, and the field then has a slot with nothing to put in it. The read side has the
 same hole — `skills/next/SKILL.md:207` compares against "this checkout's own identity" with no branch
 for there being none. `rules/critical-stance.md` §4 is the standard this misses. Record:
-`…/issues/260824-1538_*_the-claim-has-no-defined-value-when-the-identity-helper-produces-one-half-or-neither.md`.
+`…/260824-1538_*_the-claim-has-no-defined-value-when-the-identity-helper-produces-one-half-or-neither.md`.
 
 **Finding 8 (Low). The helper's exit-4 message names a cause it never established.**
 `bin/fusion-identity:144` is one `&&` chain over two independent facts and its `else` at `:162`
@@ -100,7 +100,7 @@ asserts the second one. Verified by probe: inside a tree with `git` unreachable 
 *is* owed. The file's own header commits to the opposite rule for exit 3 at `:79-89` — "names an
 outcome, never a cause" — and argues at `:42-51` that 1 and 4 must stay separate; an unverified cause
 routed into 4 rejoins them from the other side. Record:
-`…/issues/260824-1538_*_the-identity-helpers-exit-4-message-names-a-cause-it-never-established.md`.
+`…/260824-1538_*_the-identity-helpers-exit-4-message-names-a-cause-it-never-established.md`.
 
 ### Theme 3 — A measurement whose product reaches nobody
 
@@ -112,7 +112,7 @@ risk table charges step 6 to the always-on core, but `circle-records.md` is a co
 three agents, so it is charged to the role budget instead — a fifth instrument in a fifth file that no
 step measured. It reports and does not block, so nothing is red; what is lost is the moment somebody
 is told a cleanup is due. Record:
-`…/issues/260824-1538_*_a-fifth-budget-crossed-in-this-range-and-the-verification-step-measured-four.md`.
+`…/260824-1538_*_a-fifth-budget-crossed-in-this-range-and-the-verification-step-measured-four.md`.
 
 **Finding 5 (Medium). A lint asserts the orchestrator must use the tool the prompt now bans.**
 `hooks/lib/__tests__/turn-budget-lint.test.ts:449-453` requires `agents/orchestrator.md` to contain
@@ -124,10 +124,10 @@ the ban sentence and the frontmatter allowlist.
 The tripwire now points the wrong way. Removing the allowlist grant leaves one occurrence and the
 suite stays green; rewording the ban to drop the literal token turns it red for a change that
 strengthens the policy the lint serves. Filed to `shared/`:
-`shared/issues/260824-1538_*_a-lint-asserts-the-orchestrator-must-use-the-tool-the-prompt-now-bans-and-passes-on-the-ban-itself.md`.
+`260824-1538_*_a-lint-asserts-the-orchestrator-must-use-the-tool-the-prompt-now-bans-and-passes-on-the-ban-itself.md`.
 
 **Finding 6 (Medium). Two design forks from the dialog ban were recorded only in a history log.**
-`shared/history/260824-0443-…:38-53` argues both forks and closes "Both were put back to the user in
+`260824-0443-…:38-53` argues both forks and closes "Both were put back to the user in
 chat." No decision record exists. `## Issue and Decision Filing — MANDATORY` requires one and names a
 history log among the places they must not live.
 
@@ -136,7 +136,7 @@ new mandated `AskUserQuestion` uses to the very surface the second fork is about
 (`skills/next/SKILL.md:207`, `skills/setup/SKILL.md:351`), with nothing on disk for their author to
 read. The history file's count of five skill bodies is also wrong: nine carry the tool. Filed to
 `shared/`:
-`shared/issues/260824-1538_*_two-design-forks-from-the-dialog-ban-were-put-to-the-user-in-chat-and-recorded-only-in-a-history-log.md`.
+`260824-1538_*_two-design-forks-from-the-dialog-ban-were-put-to-the-user-in-chat-and-recorded-only-in-a-history-log.md`.
 
 ### Theme 4 — An exhibit that fails the rule it exhibits
 
@@ -151,7 +151,7 @@ And the address is not the one the helper prints here: `./bin/fusion-identity` g
 the exhibit was composed, which is what the rule it illustrates forbids in the sentence directly under
 it. An example is what a model copies when it cannot obtain the real thing, and finding 2 says it
 cannot. Record:
-`…/issues/260824-1538_*_an-always-on-rule-files-worked-example-carries-a-real-address-composed-by-hand.md`.
+`…/260824-1538_*_an-always-on-rule-files-worked-example-carries-a-real-address-composed-by-hand.md`.
 
 ### Theme 5 — Coverage and residue
 
@@ -160,19 +160,19 @@ cannot. Record:
 `:91-94` calls that the property whose loss would hand two checkouts one history. The test file drives
 all six exits and mint-once and names one deliberate omission, the concurrent mint; this branch is not
 named, so its absence reads as coverage. Verified live by probe: exit 5, file byte-identical. Record:
-`…/issues/260824-1538_*_the-checkout-identifier-is-never-overwritten-and-no-test-holds-that-property.md`.
+`…/260824-1538_*_the-checkout-identifier-is-never-overwritten-and-no-test-holds-that-property.md`.
 
 **Finding 10 (Low). The plan's stopping clause names one cut and two landed.** `8092c11` cut 44 lines
 from three hook test files because the surface stood at 20 375 against a budget of 20 375. That is
 exactly what the plan's risk table asks for, in a commit that names the cut, and the clause was not
 amended. Record:
-`…/issues/260824-1538_*_the-plans-stopping-clause-names-one-cut-and-two-landed.md`.
+`…/260824-1538_*_the-plans-stopping-clause-names-one-cut-and-two-landed.md`.
 
 **Finding 11 (Low). The new layout row is misaligned and a cut left a line holding one space.**
 `rules/fusion-workbench-conventions.md:55` puts its comment at column 43 where six neighbours sit at
 46, inside a fenced diagram in an always-on file. `skills/setup/SKILL.md:467` holds a single space.
 Record:
-`…/issues/260824-1538_*_the-new-layout-row-is-misaligned-and-a-cut-left-a-line-holding-one-space.md`.
+`…/260824-1538_*_the-new-layout-row-is-misaligned-and-a-cut-left-a-line-holding-one-space.md`.
 
 ## The two cuts, checked against their own claims
 
@@ -199,7 +199,7 @@ High findings are the cost of executing it under a lint that checks whether a ci
 never whether the target carries what was cited. Finding 1 is a citation to a real section without the
 content; finding 2 is a citation with a path that resolves to nothing from the reader's working
 directory. A third instance is already filed against the anchor gate this Circle uncovered
-(`shared/issues/260824-1506_*_the-anchor-gate-silently-skips-every-var-rooted-citation-…`). Three
+(`260824-1506_*_the-anchor-gate-silently-skips-every-var-rooted-citation-…`). Three
 independent instances in one Circle is a property of the instrument, not of the authors.
 
 **Three of eleven findings are the same shape: a statement written where nothing reads it.** The
@@ -248,7 +248,7 @@ orchestrator's route overwrites a standing claim — it renames only `_a_` recor
 
 ## Reconciliation annotation — 260824-1637 (reconciler, Phase 3, HEAD `cf7a5b0`)
 
-Findings are not rewritten here; each is marked against the tree as this pass found it. Log: `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`.
+Findings are not rewritten here; each is marked against the tree as this pass found it. Log: `260824-1637-reconciliation.md`.
 
 | Finding | State at HEAD | Evidence |
 |---|---|---|
@@ -264,6 +264,6 @@ Findings are not rewritten here; each is marked against the tree as this pass fo
 | 10 (Low) stopping clause names one cut | Open, confirmed | this pass reads it as the one false property of the eight; both cuts name themselves in their commit messages |
 | 11 (Low) misalignment and a one-space line | Open, confirmed | comment column 43 against six neighbours at 46; `skills/setup/SKILL.md:467` is one space |
 
-**On this review's own coverage read.** Its `## Verification performed` records `uncovered=15` taken before the file landed. At HEAD the two passes tile all but one commit: `uncovered=1`, and it is `cf7a5b0`, the second review's own commit, which touches no shipped file. Filed as `circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
+**On this review's own coverage read.** Its `## Verification performed` records `uncovered=15` taken before the file landed. At HEAD the two passes tile all but one commit: `uncovered=1`, and it is `cf7a5b0`, the second review's own commit, which touches no shipped file. Filed as `260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
 
 **On the summary's stopping-property count.** This pass reaches the same seven-of-eight and the same false property, and counts four properties holding with a named exception rather than two. The four and their exceptions are enumerated in the plan's `## Reconciliation Log`.

@@ -25,10 +25,10 @@ broken; the point is that nothing would say so.
 **Filed in the shared store** rather than in the Circle, per the Origin Rule: the defect was found
 next to this Circle's work, not caused by its Directive.
 
-**Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+**Filed by:** orchestrator, session `260813-2345-orchestrator-session.md`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). One of the two omissions is moot and one is live. `seed-from-plane` no longer exists, so its absence from the array is correct now. `cadence` does exist and is still missing from the hand-written `SKILLS` array in `hooks/lib/__tests__/fusion-paths.test.ts:22-25`, which still derives nothing from `skills/`. The class defect the record is about, a hand-written roster where a derived one is available, is untouched.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). One of the two omissions is moot and one is live. `seed-from-plane` no longer exists, so its absence from the array is correct now. `cadence` does exist and is still missing from the hand-written `SKILLS` array in `hooks/lib/__tests__/fusion-paths.test.ts:22-25`, which still derives nothing from `skills/`. The class defect the record is about, a hand-written roster where a derived one is available, is untouched.
 
 ---
 Resolved: fixed — `SKILLS` in `hooks/lib/__tests__/fusion-paths.test.ts` is read off `skills/*/` with `readdirSync`, the way `skillDirs()` does in the enumeration lint, so `cadence` and every future skill are covered and nothing is hand-listed; `cd hooks && npx vitest run lib/__tests__/fusion-paths.test.ts`

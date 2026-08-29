@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-02
 **Agent:** coderev
-**Circle:** `circles/260801-1244-rule-provenance-header`
+**Circle:** `260801-1244-rule-provenance-header`
 **Scope:** `cac3726..HEAD` excluding `fusion-workbench/`. 3 paths, 143 insertions, 34 deletions. Commits `cc004fc`, `7703330`.
-**Prior review:** `reviews/260802-1257-coderev-turn1-rule-provenance-header.md`.
+**Prior review:** `260802-1257-coderev-turn1-rule-provenance-header.md`.
 
 ## Summary
 
@@ -31,7 +31,7 @@ reverted.
 ## Fix accounting
 
 Four of the seven Turn 1 issues carry `_c_` in the Circle's issue store
-(`260802-1250`, `-1251`, `-1253`, `-1254`); three remain `_o_` by the user's
+(`260802-1250_*_provenance-gate-does-not-recurse-so-rules-shards-would-escape-it.md`, `-1251`, `-1253`, `-1254`); three remain `_o_` by the user's
 decision and were not re-examined. That matches the brief.
 
 ## Verified correct
@@ -158,7 +158,7 @@ the fix for Turn 1 finding 2, and it is that finding's mirror image: a lede that
 excluded a subject it hosts, replaced by a row that excludes subjects it hosts.
 `CLAUDE.md` is auto-loaded into every session here, so it is read before any edit
 to the conventions file.
-Filed: `issues/260802-1343_o_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md`
+Filed: `260802-1343_*_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md`
 
 ### Theme 2: drift inside the rewritten test file
 
@@ -169,7 +169,7 @@ under `rules/` at ANY depth". `:160` is the line a contributor reads in the
 vitest runner when the gate fails, and the recursion exists precisely so a nested
 curator shard is gated, so the stale glob is worst in exactly the scenario the
 fix was built for.
-Filed: `issues/260802-1344_o_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md`
+Filed: `260802-1344_*_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md`
 
 ### Theme 3: runtime floor
 
@@ -184,7 +184,7 @@ naming `join` rather than the Node version. Exposure is limited to a contributor
 running `npm test` — `tsconfig.json` excludes `lib/__tests__`, so no test reaches
 `hooks/dist/`, and `install.sh` ships no tests and needs no Node on the user's
 machine. One line in `hooks/package.json` closes it.
-Filed: `issues/260802-1345_o_the-recursion-fix-raises-the-node-floor-to-20-12-and-no-engines-field-declares-it.md`
+Filed: `260802-1345_*_the-recursion-fix-raises-the-node-floor-to-20-12-and-no-engines-field-declares-it.md`
 
 ## Observed, not filed
 
@@ -216,7 +216,7 @@ which is the same shape as Turn 1 findings 4 and 5. Finding 2 here is a string
 invalidated by code moving under it in the same commit. That makes four
 instances of this class across two Turns in a Circle whose whole subject is
 keeping normative text answerable to what actually exists. Worth naming for
-`circles/260801-1244-curator`, whose remit is exactly that reconciliation.
+`260801-1244-curator`, whose remit is exactly that reconciliation.
 
 **Nothing in the two prose files drifted beyond the three edited lines.**
 `git diff --stat` reports one changed line in `CLAUDE.md` and two in
@@ -240,12 +240,12 @@ Nothing here blocks the Circle from closing. No finding is a release blocker.
 
 ---
 
-**Reconciliation annotation, 260802-1413 (reconciler). All three findings confirmed fixed in `b568ad9`; no finding text altered.**
+**Reconciliation annotation, 260802-1413-reconciliation.md (reconciler). All three findings confirmed fixed in `b568ad9`; no finding text altered.**
 
 | Issue | Verified |
 |---|---|
-| `260802-1343` `CLAUDE.md` exclusivity parenthetical | `_c_`. The parenthetical is gone from `CLAUDE.md:30`, which now ends "…the decision-record template, and the provenance headers on rule files." The row and the conventions lede agree. |
-| `260802-1344` stale `rules/*.md` strings | `_c_`. `provenance-header-lint.test.ts:160` and `:175` both read `rules/**/*.md`, matching the recursive set `cc004fc` introduced. |
+| `260802-1343_*_claude-md-parenthetical-claims-provenance-is-the-only-subject-outside-the-workbench.md` `CLAUDE.md` exclusivity parenthetical | `_c_`. The parenthetical is gone from `CLAUDE.md:30`, which now ends "…the decision-record template, and the provenance headers on rule files." The row and the conventions lede agree. |
+| `260802-1344_*_corpus-test-name-and-vacuity-message-still-say-rules-star-md-after-the-set-became-recursive.md` stale `rules/*.md` strings | `_c_`. `provenance-header-lint.test.ts:160` and `:175` both read `rules/**/*.md`, matching the recursive set `cc004fc` introduced. |
 | `260802-1345` undeclared Node floor | `_c_`. `hooks/package.json:5-7` declares `"engines": { "node": ">=20.12.0" }`. |
 
 Worth recording about this review specifically: all three findings were regressions introduced by the Turn 1 fix pass, and the review caught them in the same session that created them. That is the review loop working as intended rather than a sign of a sloppy fix pass.

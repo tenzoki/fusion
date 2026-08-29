@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (conditioning-load work; the cadence question raised by the 260827 audit), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `agents/orchestrator.md` Step 3c and Phase 4 (the two sites the answer reshapes) · `bin/fusion-review-coverage` (the tiling that makes the cadence safe) · `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` (coverage stays advisory) · `hooks/tracker.ts` (the review-landing measurement, unchanged)
+**Cross-references:** `agents/orchestrator.md` Step 3c and Phase 4 (the two sites the answer reshapes) · `bin/fusion-review-coverage` (the tiling that makes the cadence safe) · `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` (coverage stays advisory) · `hooks/tracker.ts` (the review-landing measurement, unchanged)
 
 ---
 

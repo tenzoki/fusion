@@ -1,4 +1,4 @@
-# Playmaker session 260825-0707 (orchestrator Phase 4)
+# Playmaker session 260825-0707-playmaker-orchestrator-phase4.md (orchestrator Phase 4)
 
 **Trigger:** orchestrator Phase 4 dispatch after `260824-1853-close-every-open-defect` moved `_t_` to `_c_` (closed coherent at `cce3c8e`)
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:**` line)
@@ -10,19 +10,19 @@
 - `.active-circle`: absent, and no record carries `_t_`. Normal post-closure state; no pointer warning.
 - Shared decisions: 3 open (`_o_`), 18 answered (`_a_`). Terminal Circles hold 21 further open decision records, 8 of them in the Circle that just closed.
 - Shared defects: 0 open, 0 recommended, 278 closed. Terminal Circles hold 0 open defect records.
-- Context read: the closing Circle's record and closure note, the previous portfolio, the tail of `shared/history/260824-1750-orchestrator-session.md`, the C4 section of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, and the current marker of every record the previous portfolio cited under its warnings.
+- Context read: the closing Circle's record and closure note, the previous portfolio, the tail of `260824-1750-orchestrator-session.md`, the C4 section of `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, and the current marker of every record the previous portfolio cited under its warnings.
 
 ## Ranking
 
 - Top-ranked anticipated Circle: (none). No `_a_` record exists; no `## Activation proposal` written.
-- Top-ranked backlog entry: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`. One idea; its analysis `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` is on disk, so it can be shaped with one narrowing question.
-- Rank 2: `shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md`. Still second, but the obstruction changed: the deferred decision `shared/decisions/260810-0710_*` waited on three lint records, two of which (`260810-0503`, `260810-0510`) are now closed and the third (`260810-0502`) is in no live store. Reviving the decision is one user act away.
+- Top-ranked backlog entry: `260814-1733_*_bounded-executor-dispatches.md`. One idea; its analysis `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` is on disk, so it can be shaped with one narrowing question.
+- Rank 2: `260814-1733_*_attach-the-rule-to-the-act.md`. Still second, but the obstruction changed: the deferred decision `shared/decisions/260810-0710_*` waited on three lint records, two of which (`260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`) are now closed and the third (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`) is in no live store. Reviving the decision is one user act away.
 
 ## Backlog counts
 
 - Entries read: 1 recommended (`_p_`), 1 open (`_o_`), 1 closed (`_c_`).
 - Distinct ideas in the live entries: 2, one per entry. Duplicate groups: 0. Items read as defect- or decision-shaped: 0.
-- Ideas not in the store: 7, listed in the closure note of `circles/260824-1853-close-every-open-defect/_c_circle.md` for the user to file. Not ranked and not filed (no agent originates an entry).
+- Ideas not in the store: 7, listed in the closure note of `260824-1853-close-every-open-defect` for the user to file. Not ranked and not filed (no agent originates an entry).
 
 ## Backlog writes performed
 
@@ -30,7 +30,7 @@
 
 ## Confirmed operations proposed and not performed
 
-- None proposed this run. The deferral of `shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md` that stood proposed since 260814 is withdrawn: its target condition (the decision's own blockers being answered) is met, so the entry is now live and near, not live-but-later. Stated in the portfolio's `## Backlog — ranked`.
+- None proposed this run. The deferral of `260814-1733_*_attach-the-rule-to-the-act.md` that stood proposed since 260814 is withdrawn: its target condition (the decision's own blockers being answered) is met, so the entry is now live and near, not live-but-later. Stated in the portfolio's `## Backlog — ranked`.
 
 ## Warnings emitted to the portfolio
 

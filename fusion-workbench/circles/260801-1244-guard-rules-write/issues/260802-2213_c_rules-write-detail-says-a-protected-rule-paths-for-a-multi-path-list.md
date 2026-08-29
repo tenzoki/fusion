@@ -20,7 +20,7 @@ that can pass several: `mv rules/x.md rules/retired/` exempts the source and the
 directory, and the plural branch is reached for the first time.
 
 Observed with the real predicate against a throwaway project root during Step 4
-(`circles/260801-1244-guard-rules-write/history/260802-2213-step4-bash-path-exemption.md`,
+(`260802-2213-step4-bash-path-exemption.md`,
 `## Measured results`).
 
 Not fixed in Step 4: that step's scope explicitly excludes `hooks/lib/rules-write-exemption.ts`,
@@ -44,4 +44,4 @@ The test gap the issue names is closed the way it describes. The two assertions 
 joined now compare the WHOLE string, plus a third asserting `"a protected rule paths"` never
 appears. Comparing substrings is how a grammatical category went unnoticed in the first place.
 
-Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
+Session: `260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`

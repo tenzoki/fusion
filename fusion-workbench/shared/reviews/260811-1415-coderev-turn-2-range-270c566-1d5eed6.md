@@ -6,7 +6,7 @@
 **Not-opened:** `hooks/dist/**`
 **Commits:** 5 — `337c01b`, `7749845`, `619dfb7`, `f2d9905`, `1d5eed6`
 **Files in range:** 53 (23 outside `fusion-workbench/`), 1608 insertions
-**Cross-references:** issues `260811-1406` … `260811-1413`; open records `260810-1135`, `260811-1301`, `260811-1345`, `260811-1142`, `260811-1149`
+**Cross-references:** issues `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` … `260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`; open records `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`, `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`, `260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`, `260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md`, `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`
 
 ---
 
@@ -91,14 +91,14 @@ path inside the workbench?" — and inherited the narrowing. A prompt line namin
 `fusion-workbench/shared/consult/commit-message.txt` is no longer flagged. The file states and
 defends this at `:72-81`, and the defence rests on an assumption about where a future improvisation
 will land, which is the same shape of guess the whole family exists because of. Filed as
-`260811-1410`, Low: three assertions that do not go through `classify()` still pin the prescription.
+`260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md`, Low: three assertions that do not go through `classify()` still pin the prescription.
 
 ### The wording landed on four surfaces and missed the fifth
 
 `hooks/lib/staging-drift.ts`, `hooks/tracker.ts`, `agents/orchestrator.md`'s class table and
 `skills/commit/SKILL.md` all carry the new definition. `README-hooks.md:180` still carries the old
 one. It survived because `derivable-enumerations-lint.test.ts` checks that a row exists per
-`lib/*.ts` file and never what the row says. Filed as `260811-1413`, Low.
+`lib/*.ts` file and never what the row says. Filed as `260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`, Low.
 
 The orchestrator table's new cell is the strongest text in this commit: it names the class as
 name-decided, says a false positive can enter it, and says a deletion is not recoverable, with the
@@ -135,7 +135,7 @@ fails for every Circle that had no committed issue when the session began. Measu
 on a fully tracked workbench in both shells. Four of the twelve Circle directories in this
 repository's own workbench hold no tracked file under `issues/` at all, so a session against any of
 them would print `unmeasured` for its whole life. The prompt then tells the model to *"say which of
-the two causes applies"* — and neither does. **Filed as `260811-1406`, High**: the mechanism that
+the two causes applies"* — and neither does. **Filed as `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md`, High**: the mechanism that
 replaced the hand tally does not run for the common Circle session, and the fallback instructs a
 false diagnosis.
 
@@ -144,7 +144,7 @@ three resolver keys unset, the block prints `fusion bug: a resolver key is empty
 taken` and exits 1. The only sibling block with this guard idiom (`:178-179`) carries the missing
 sentence directly under it — *"Substitute the `WORKBENCH` and `SCAN_CIRCLES` values from Step 2"* —
 and the file states the reason in full at `:712`: *"the Bash tool gives every call its own shell, so
-no value Setup resolved survives to here."* Filed as `260811-1407`, Medium.
+no value Setup resolved survives to here."* Filed as `260811-1407_*_the-record-counts-block-reads-shell-variables-a-fresh-bash-call-never-has-and-calls-the-result-a-fusion-bug.md`, Medium.
 
 ### The other two corrections check out
 
@@ -158,7 +158,7 @@ three sentences now say what a short session can *find* rather than which points
 
 One small claim in shipped prose is machine-specific rather than false: *"The Bash tool runs zsh"*.
 The implementation is shell-agnostic and correct either way; only the justification generalises one
-machine's shell to every consumer. Filed as `260811-1412`, Low.
+machine's shell to every consumer. Filed as `260811-1412_*_the-orchestrator-prompt-ships-the-bash-tool-runs-zsh-as-fact-to-every-consuming-project.md`, Low.
 
 ---
 
@@ -179,19 +179,19 @@ renders it, and `domain-cascade.test.ts:935-947` compares the rendered block aga
 `agents/ontocoder.md` still claims `.toml` unconditionally at `:2` (the frontmatter description a
 dispatcher reads), `:7` and `:24`. So `README-agents.md` and `agents/ontocoder.md` now contradict
 each other about the ontocoder's own scope, and two agent prompts each claim `Cargo.toml`. Record
-`260811-1301` covers the routing table and explicitly calls that one *"a gap, not a contradiction"* —
-this is the contradiction it is not. Filed as `260811-1408`, Medium.
+`260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` covers the routing table and explicitly calls that one *"a gap, not a contradiction"* —
+this is the contradiction it is not. Filed as `260811-1408_*_the-ontocoder-prompt-still-claims-every-toml-three-times-after-cargo-toml-was-given-to-the-coder.md`, Medium.
 
 Inside `agents/coder.md` itself the same sentence resolves `.toml` and leaves `.json` standing:
 `.json` is in the exclusion list while `package.json` is in the ownership list two lines above and
-`tsconfig.json` is cited as the coder's one clause later. Filed as `260811-1411`, Low.
+`tsconfig.json` is cited as the coder's one clause later. Filed as `260811-1411_*_the-coder-scope-sentence-carves-toml-out-of-its-own-exclusion-list-and-leaves-json-standing.md`, Low.
 
 **A known defect was parked in a history log.** The commit message records that *"the coderev row
 repeats the language omission one line below, noted in the executor's history."* `README-agents.md`
 still reads *"Reviews Go / TS / Python code"*. `rules/fusion-workbench-conventions.md` `## Issue and
 Decision Filing — MANDATORY` says every discovered defect is a separate file and **"NEVER put issues
 … inside … history logs."** Its sibling — the routing-table omission — was filed correctly as
-`260811-1301`; this one was not. Not refiled here, because it is one line of documentation prose and
+`260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`; this one was not. Not refiled here, because it is one line of documentation prose and
 the record would cost more than the fix; named so the discipline gap is visible.
 
 ---
@@ -224,8 +224,8 @@ against a 30 s `it` timeout. So the ten-second budget inside the case expired, n
 already-recorded `fusion-commit-lock.test.ts` case failed beside it in all three.
 
 So: **cannot tell whether the worker death recurs; can tell that the file has a load-sensitive
-wall-clock case, and it is the second file of the class `260810-1135` records.** Filed as
-`260811-1409`, Medium — this session commits on the suite's exit code, and two independently
+wall-clock case, and it is the second file of the class `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` records.** Filed as
+`260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`, Medium — this session commits on the suite's exit code, and two independently
 load-sensitive cases give a three-executor batch a false-failure rate that teaches its reader to
 re-run rather than to look.
 
@@ -289,20 +289,20 @@ text did not. Cross-referenced, not refiled.
 
 **1. The batching damage is real and it has one shape: the sibling that was not in the file set.**
 Three of the eight findings are the same event. `agents/ontocoder.md` was outside task 35's file set
-(`260811-1408`). `README-hooks.md` was outside `337c01b`'s (`260811-1413`). The substitution sentence
+(`260811-1408_*_the-ontocoder-prompt-still-claims-every-toml-three-times-after-cargo-toml-was-given-to-the-coder.md`). `README-hooks.md` was outside `337c01b`'s (`260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`). The substitution sentence
 that exists at `agents/orchestrator.md:181` was not carried to the block added at `:618`
-(`260811-1407`). In every case the batch's disjoint-file-set discipline — which is correct, and which
+(`260811-1407_*_the-record-counts-block-reads-shell-variables-a-fresh-bash-call-never-has-and-calls-the-result-a-fusion-bug.md`). In every case the batch's disjoint-file-set discipline — which is correct, and which
 is what let four tasks run in parallel — is exactly what produced the miss. The mitigation already
 exists and was used twice: file a record for what you saw outside your set. It was used for the
-routing table (`260811-1301`) and not for the ontocoder prompt, the README row or the substitution
+routing table (`260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`) and not for the ontocoder prompt, the README row or the substitution
 sentence.
 
 **2. Where a claim was measured, it held; where it was reasoned, it slipped.** Every claim in this
 range that came with a measurement survived checking: the churn stand-down demonstration, the
 two-shell run of the counts block, the four churn-exit-code claims, the `describeReach` reach, the
 `--comments-fixture` call site. The two that did not survive are both *generalisations* from a
-measurement — "the Bash tool runs zsh" from one machine (`260811-1412`), and "the place a
-prescription puts one is where no store owns it" from one improvisation (`260811-1410`). That is
+measurement — "the Bash tool runs zsh" from one machine (`260811-1412_*_the-orchestrator-prompt-ships-the-bash-tool-runs-zsh-as-fact-to-every-consuming-project.md`), and "the place a
+prescription puts one is where no store owns it" from one improvisation (`260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md`). That is
 `rules/critical-stance.md` §3 working exactly as intended in one direction and being skipped in the
 other: the verification was done, the scope of what it verified was widened afterwards.
 
@@ -313,9 +313,9 @@ instructing the model to report a cause that is not the cause. A number that can
 better than a wrong number, which the block gets right; a number that could have been taken and was
 not, reported as unmeasurable, is the old failure with a new label.
 
-**4. A borrowed predicate answered a question it was not narrowed for.** `260811-1410` is worth
+**4. A borrowed predicate answered a question it was not narrowed for.** `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md` is worth
 reading beside Turn 1's chassis decision. The instinct — reach through the shipped `classify()`
-rather than transcribe its pattern — is the discipline `260810-0510` asks for, and it is right. What
+rather than transcribe its pattern — is the discipline `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` asks for, and it is right. What
 it does not survive is the shipped function being narrowed for a *different* caller's reasons. The
 lesson is not "stop reusing"; it is that a reused predicate needs the question it answers written at
 the seam, so a change to one caller's answer is visibly a change to the other's.
@@ -324,7 +324,7 @@ the seam, so a change to one caller's answer is visibly a change to the other's.
 pattern.** `48 files / 1248 tests`, three times, exit 0. Under three concurrent copies — the state a
 multi-executor batch or a reviewer running `npm test` alongside puts it in — 3 of 3 failed, both
 times on wall-clock cases with no product defect behind them. Two records now describe that
-(`260810-1135`, `260811-1409`) and neither is a code defect. It is worth deciding, once, whether this
+(`260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`, `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`) and neither is a code defect. It is worth deciding, once, whether this
 suite is meant to be run concurrently with itself at all.
 
 ---
@@ -333,23 +333,23 @@ suite is meant to be run concurrently with itself at all.
 
 **Before the next Turn touches the orchestrator prompt**
 
-1. `260811-1406` (High) — the `unmeasured` probe. The section it lives in is the Turn's own
+1. `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` (High) — the `unmeasured` probe. The section it lives in is the Turn's own
    deliverable and it does not run in the common case.
-2. `260811-1407` — the substitution sentence. One line, same file, same section.
+2. `260811-1407_*_the-record-counts-block-reads-shell-variables-a-fresh-bash-call-never-has-and-calls-the-result-a-fusion-bug.md` — the substitution sentence. One line, same file, same section.
 
 **Before the next dispatch that routes a `.toml`**
 
-3. `260811-1408` — the ontocoder prompt. Its `:2` line is what a dispatcher reads.
-4. `260811-1411` — the `.json` half of the same sentence, in the same edit.
+3. `260811-1408_*_the-ontocoder-prompt-still-claims-every-toml-three-times-after-cargo-toml-was-given-to-the-coder.md` — the ontocoder prompt. Its `:2` line is what a dispatcher reads.
+4. `260811-1411_*_the-coder-scope-sentence-carves-toml-out-of-its-own-exclusion-list-and-leaves-json-standing.md` — the `.json` half of the same sentence, in the same edit.
 
 **Test infrastructure, before the next parallel batch**
 
-5. `260811-1409` — with `260810-1135`. Neither is a product defect and both cost the commit gate.
+5. `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md` — with `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`. Neither is a product defect and both cost the commit gate.
 
 **Cleanup, any time**
 
-6. `260811-1410`, `260811-1412`, `260811-1413`.
-7. `260811-1345` (already open, uncommitted) — the CLAUDE.md troubleshooting row. It now names all
+6. `260811-1410_*_the-commit-message-path-gate-narrowed-with-the-classifier-it-reuses-and-no-longer-catches-a-prescription-inside-a-store.md`, `260811-1412_*_the-orchestrator-prompt-ships-the-bash-tool-runs-zsh-as-fact-to-every-consuming-project.md`, `260811-1413_*_readme-hooks-still-describes-the-commit-message-class-without-the-store-scoping-that-defines-it.md`.
+7. `260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md` (already open, uncommitted) — the CLAUDE.md troubleshooting row. It now names all
    three stand-down sites, so correcting it closes the drift `1d5eed6` widened rather than caused.
 
 **Not a release blocker, stated so it is not mistaken for one:** the range compiles clean, ships a

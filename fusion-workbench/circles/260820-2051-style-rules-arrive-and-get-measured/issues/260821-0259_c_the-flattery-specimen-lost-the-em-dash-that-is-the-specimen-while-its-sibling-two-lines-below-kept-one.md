@@ -21,7 +21,7 @@ equally designated and is the English one, in a repository whose artifact langua
 right!"` is a specimen of AI sycophancy, and the em-dash is part of the register being exhibited.
 `"Great catch: your instinct was exactly right!"` is a less faithful specimen of the thing the bullet
 tells an agent to recognise. This is the same defect as the open Turn-1 record
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`,
+`260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`,
 which found a blacklist entry in `chat-voice-en.yaml` whose inline demonstration was repunctuated
 away. It recurs here, in a different file, in the same Turn, after the finding was filed.
 
@@ -30,17 +30,17 @@ away. It recurs here, in a different file, in the same Turn, after the finding w
 at 2 and `over`. So this cannot be fixed by keeping one more mark.
 
 ---
-**Found by:** coderev, review gate R1 of `circles/260820-2051-style-rules-arrive-and-get-measured`,
-review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
+**Found by:** coderev, review gate R1 of `260820-2051-style-rules-arrive-and-get-measured`,
+review file `260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
 **Owner:** `coder`.
 **Severity:** Low-Medium. Nothing is wrong. The cost is that an always-on file exhibits the
 anti-pattern less faithfully at the one place it is exhibiting it on purpose, and that the choice
 between two identical objects was made silently.
 **Filed in the Circle store** per the Origin Rule.
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
+`260821-0147_*_the-english-em-dash-entry-lost-its-inline-demonstration-and-the-german-one-still-breaks-its-own-rule.md`
 (the same class, filed in Turn 1 of this Circle, still open);
-`shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+`260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
 (the register argument the whole programme rests on).
 
 **Verified at HEAD `c226949`** by reading `rules/critical-stance.md:9-19` against

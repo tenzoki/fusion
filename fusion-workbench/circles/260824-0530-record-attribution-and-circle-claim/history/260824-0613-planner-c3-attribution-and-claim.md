@@ -2,21 +2,21 @@
 
 **Date:** 2026-08-24
 **Agent:** planner (dispatched, non-interactive)
-**Circle in scope:** `circles/260824-0530-record-attribution-and-circle-claim` (passed as the resolver's second argument)
+**Circle in scope:** `260824-0530-record-attribution-and-circle-claim` (passed as the resolver's second argument)
 **Status:** Complete
 
 ## What was asked
 
 Produce the implementation plan for capability `### C3` of
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, reading the Circle
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, reading the Circle
 record's `## Grounding snapshot` as binding over the spec where the two disagree, and landing the
 plan inside the named Circle rather than wherever `.active-circle` points.
 
 ## What was produced
 
-- `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`,
+- `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`,
   twelve steps, each routed to one executor and each carrying its own acceptance criterion.
-- `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
+- `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
   the one choice point planning surfaced whose reach goes beyond this plan.
 
 ## What the plan turns on
@@ -49,14 +49,14 @@ field that does not exist rather than a value inside one that does. The spec pla
 the placement.
 
 **The claim does not inherit the activation-route divergence, for a structural reason.**
-`shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
+`260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
 is used in its narrowed 260823 form. The orchestrator's `**Active spec/plan:**` row carries a
 condition the skill cannot evaluate; the claim's value is one command's output that either performer
 can run, so the plan writes it as an unconditional row in the one authoring home both routes cite.
 
 **The filename question is answered as option 2**, write the citation form down as normative and
 leave every filename alone, and approving the plan is the answer. That also meets the condition
-`shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` set for itself on
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md` set for itself on
 2026-08-07 and has been waiting on since.
 
 ## Checks run before finishing

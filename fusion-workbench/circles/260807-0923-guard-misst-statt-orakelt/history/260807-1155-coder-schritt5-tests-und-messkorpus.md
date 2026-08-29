@@ -3,7 +3,7 @@
 **Status:** Complete
 **Datum:** 2026-08-07 11:55
 **Ausführer:** coder
-**Plan:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Schritt 5
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Schritt 5
 **Ausgangslage:** 219 Fehlschläge in 13 Dateien, vier davon luden gar nicht mehr (Commit `ba7ccda`)
 **Ergebnis:** 999 grün, 2 rot — beide nachweislich Schritt 6 und 7
 
@@ -44,7 +44,7 @@ kann — der Grund steht als Kommentar an seiner Stelle.
 
 ## Die zehn `guardStateWritten === false` — geschärft, nicht entfernt
 
-Die Eigenschaft (Befunde `260707-0750` und `260707-0751`) besteht fort: ein
+Die Eigenschaft (Befunde `260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md` und `260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md`) besteht fort: ein
 harmloser Bash-Aufruf setzt den Eskalationszähler nicht zurück und hängt kein
 Ereignis an. Falsch war nur die Formulierung — seit der Umstellung legt der
 PreToolUse-Hook bei **jedem** Werkzeugaufruf einen frischen Fingerabdruck unter

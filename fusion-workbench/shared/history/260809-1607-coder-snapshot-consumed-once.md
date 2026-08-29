@@ -3,8 +3,8 @@
 **Date:** 2026-08-09
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260809-1229_o_plan-five-severe-guard-defects.md`, Step 4
-**Closes (code half):** `shared/issues/260809-1108_o_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md` (High)
+**Plan:** `260809-1229_*_plan-five-severe-guard-defects.md`, Step 4
+**Closes (code half):** `260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md` (High)
 
 ---
 
@@ -43,11 +43,11 @@ headers now say why in place.
   of admissibility` — the claim was that the pair makes the measurement
   *attributable*. It does not: it bounds the **interval**, not the author. A
   human editor, a watcher and a second Claude session are indistinguishable from
-  the agent here. Now stated, citing `260809-1107`, which Step 5 answers.
+  the agent here. Now stated, citing `260809-1107_*_any-writer-active-during-the-tool-call-window-is-attributed-to-the-agent-and-reverted.md`, which Step 5 answers.
 - A new header section, `## A before-picture is consumed exactly once`, carries
   the invariant and the rejected age bound.
 - `tracker.ts` — the "no before-picture" section now names all four ways there is
-  none (including a failed save, the case `260809-1108` measured), and the
+  none (including a failed save, the case `260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md` measured), and the
   parallel-call residual states exactly what single use narrows: one picture can
   no longer serve two measurements. The remaining exposure is under-reporting,
   which was already its shape.
@@ -129,7 +129,7 @@ happened.
   rather than carried over: 108 commands × 8 verdicts, 90 verdicts moved from
   allow to deny across 24 distinct commands, 0 from deny to allow. The acceptance
   criteria were not touched.
-- `260809-1108` stays `_o_`. The plan holds all five issues open until Step 6.
+- `260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md` stays `_o_`. The plan holds all five issues open until Step 6.
 
 ## Open
 

@@ -20,7 +20,7 @@ exactly the way this Circle spent three passes correcting elsewhere.
 `bin/fusion-events` and `hooks/events-query.ts` were created.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`
+`260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`
 — the same shape, one file over: an enumeration about the event log that this Circle grew by one and
 did not update.
 
@@ -64,7 +64,7 @@ path and is not listed, so the tree undercounts the blast radius of both.
 ## Why the Circle's own sweep did not see it
 
 The sixth pass over this theme (recorded in
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1200-coder-z2-the-three-remaining-counts.md`,
+`260826-1200-coder-z2-the-three-remaining-counts.md`,
 `## The sixth pass`) searched for **count words** within 110 characters of the mechanism's vocabulary.
 This column carries no count word — it is an unnumbered enumeration — so it fell outside the declared
 boundary. That boundary is stated in the record rather than left implicit, so this is a gap the method
@@ -82,4 +82,4 @@ lines sit in a code fence, which buys nothing here: `scanPluginPaths` has no fen
 kind, so `bin/fusion-events` inside the fence is a class-(a) path token like any other and the
 citation pin in `reference-resolution-lint.test.ts` will move and need re-approving.
 
-**Resolved:** 260827-1811, coder (Bundle B step 16 of `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md`). `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`: the `orchestrator-events.jsonl` row now names `bin/fusion-events` (`hooks/events-query.ts`), and the `agentstate.yaml` parenthetical names events-query beside review-coverage and staging-drift. The column check the record asked for (`grep -n 'fusion-workbench/' hooks/*.ts hooks/lib/*.ts bin/*`, comment lines set aside) found four more unlisted consumers and they are in the tree now: `hooks/lib/orchestrator-events.ts` (writes the event log, probes `agentstate.yaml`), `bin/fusion-commit-lock` (appends the commit event, probes `agentstate.yaml`), `bin/fusion-session-domain` (reads `agentstate.yaml`), and `bin/fusion-cadence-anchor` on a `.cadence-anchors` row that was missing altogether while `rules/workbench-tracking.md` already classed the file as root-anchored. Cost: +250 bytes always-on (49 851 -> 50 101); golden regenerated; the citation pin re-approved 1477/207 -> 1508/208, of which +7 paths is this step's by single-file revert, the rest pre-existing drift stated on the `BASELINE` line.
+**Resolved:** 260827-1811-coder-b16-layout-tree-consumer-column.md, coder (Bundle B step 16 of `260827-1756_*_repair-the-twenty-open-defect-records.md`). `rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`: the `orchestrator-events.jsonl` row now names `bin/fusion-events` (`hooks/events-query.ts`), and the `agentstate.yaml` parenthetical names events-query beside review-coverage and staging-drift. The column check the record asked for (`grep -n 'fusion-workbench/' hooks/*.ts hooks/lib/*.ts bin/*`, comment lines set aside) found four more unlisted consumers and they are in the tree now: `hooks/lib/orchestrator-events.ts` (writes the event log, probes `agentstate.yaml`), `bin/fusion-commit-lock` (appends the commit event, probes `agentstate.yaml`), `bin/fusion-session-domain` (reads `agentstate.yaml`), and `bin/fusion-cadence-anchor` on a `.cadence-anchors` row that was missing altogether while `rules/workbench-tracking.md` already classed the file as root-anchored. Cost: +250 bytes always-on (49 851 -> 50 101); golden regenerated; the citation pin re-approved 1477/207 -> 1508/208, of which +7 paths is this step's by single-file revert, the rest pre-existing drift stated on the `BASELINE` line.

@@ -1,4 +1,4 @@
-# coder session 260827-2022 — plan steps 12 and 20
+# coder session 260827-2022-coder-session.md — plan steps 12 and 20
 
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
 **Status:** Complete

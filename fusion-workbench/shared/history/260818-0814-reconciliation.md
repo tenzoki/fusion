@@ -3,7 +3,7 @@
 **Agent:** reconciler
 **Domain:** `code`
 **Status:** Complete
-**Session reconciled:** `shared/history/260818-0708-orchestrator-session.md`
+**Session reconciled:** `260818-0708-orchestrator-session.md`
 **Range:** `1dc062d..f3a3565` (four commits)
 **HEAD at reconciliation:** `f3a3565`
 **Active Circle:** none — every record in scope is in the shared stores
@@ -92,7 +92,7 @@ Verified true:
   that file's own header states that regenerating it moves no baseline.
 
 **Nothing was found claiming more than the file enforces.** The correction that landed in `f3a3565`
-(issue `260818-0746`) holds: the header now says the relation catches an identifier a *builder*
+(issue `260818-0746_*_the-containment-headers-nothing-authored-in-the-source-claim-is-wider-than-the-relation-it-enforces.md`) holds: the header now says the relation catches an identifier a *builder*
 authors, and says plainly that one authored into a report field is contained by construction and
 passes. The residual list at `:36-61` is accurate and does not understate.
 
@@ -117,7 +117,7 @@ carried=none
 So: **one commit uncovered, `f3a3565`, by the user's decision.** `c4ead2a` and `2d62af6` are inside
 the single review's declared range, which is what the dispatch summary said.
 
-Neither review file claims a range it did not open. `260818-0748` declares
+Neither review file claims a range it did not open. `260818-0748-coderev-turn-1-range-1dc062d-33645a2.md` declares
 `**Reviewed-range:** 1dc062d..33645a2` and `**Not-opened:** none`, both parse, and its narrative
 scope ("the gate added by `33645a2`, plus confirmation that `c4ead2a` and `2d62af6` carry no code")
 sits inside its declared range rather than outside it. Its claim that the two carry no code is true
@@ -126,23 +126,23 @@ version strings.
 
 **One correction to the dispatch summary: this session produced one review file, not two.**
 `shared/reviews/` holds a single file dated `260818`. The two dated `260817` belong to the previous
-session (`260817-2037`), and `1dc062d` — that session's last commit, before this session's anchor —
+session (`260817-2037-orchestrator-session.md`), and `1dc062d` — that session's last commit, before this session's anchor —
 is what appended to them. The count of agent history files is right if the orchestrator's own file
-is counted: three agent logs (analyst `260818-0715`, coder `260818-0733`, coder `260818-0759`) plus
+is counted: three agent logs (analyst `260818-0715`, coder `260818-0733-coder-sentence-identifier-containment-gate.md`, coder `260818-0759-coder-containment-gate-three-review-findings.md`) plus
 `260818-0708-orchestrator-session.md`.
 
 ### 4. The two open exposure records — both still hold at HEAD
 
 Re-read rather than assumed; the annotations are on the records themselves.
 
-- `260818-0715_o_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`
+- `260818-0715_*_four-shipped-surfaces-use-a-real-fusion-circle-directory-name-as-the-format-example.md`
   — all four sites carry `260716-1847-workbench-umbau` verbatim at the filed line numbers
   (`bin/fusion-paths:262`, `rules/fusion-workbench-conventions.md:27` and `:91`,
   `skills/next/SKILL.md:42`), and the Circle directory still exists, so the lint still resolves it.
   Two further occurrences are outside the record's scope as written and are named on the record so a
   one-change fix does not sweep them: `rules/circle-records.md:41` is a provenance citation that must
   keep the real name to resolve, and `hooks/lib/__tests__/fusion-paths.test.ts:82` is a test constant.
-- `260818-0715_o_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md`
+- `260818-0715_*_the-orchestrator-prompt-names-a-fusion-record-inside-the-instruction-for-what-to-report-to-the-user.md`
   — `agents/orchestrator.md:866`, `:811` and `:819` all carry `260810-1205` verbatim at the filed
   line numbers. No commit in the range touched `agents/`, so none of the three options was taken and
   none was foreclosed.
@@ -155,39 +155,39 @@ Neither was silently resolved. Both stay `_o_`.
 
 | File | Change |
 |---|---|
-| `shared/issues/260817-2131_c_…lint-reads-comment-lines-only.md` | `Revised by:` footer appended, no rename |
-| `shared/issues/260818-0715_o_…format-example.md` | reconciliation evidence appended |
-| `shared/issues/260818-0715_o_…report-to-the-user.md` | reconciliation evidence appended |
-| `shared/decisions/260816-1707_o_…emitted-when-its-consumers-are-a-human-and-a-skill.md` | search recorded, marker held |
-| `shared/decisions/260817-1613_o_…read-by-a-human-or-not-at-all.md` | search recorded, marker held |
-| `shared/reviews/260818-0748-coderev-turn-1-range-1dc062d-33645a2.md` | three findings confirmed against disk |
-| `shared/decisions/260818-0814_o_…convention-rule-was-not-chosen.md` | **filed** |
-| `shared/history/260818-0708-orchestrator-session.md` | `## Coherence` appended |
+| `260817-2131_*_…lint-reads-comment-lines-only.md` | `Revised by:` footer appended, no rename |
+| `260818-0715_*_…format-example.md` | reconciliation evidence appended |
+| `260818-0715_*_…report-to-the-user.md` | reconciliation evidence appended |
+| `260816-1707_*_…emitted-when-its-consumers-are-a-human-and-a-skill.md` | search recorded, marker held |
+| `260817-1613_*_…read-by-a-human-or-not-at-all.md` | search recorded, marker held |
+| `260818-0748-coderev-turn-1-range-1dc062d-33645a2.md` | three findings confirmed against disk |
+| `260818-0814_*_…convention-rule-was-not-chosen.md` | **filed** |
+| `260818-0708-orchestrator-session.md` | `## Coherence` appended |
 
-### Why `260817-2131` gained a `Revised by:` and not a rename
+### Why `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` gained a `Revised by:` and not a rename
 
 The record is closed and stays closed — the gate was never in question. What moved is a claim in its
 `Resolved:` note. That note states that the companion assertion means "a third builder wired into the
 funnel fails the suite until it is registered", and at `33645a2` that guarantee did not hold: the
 parse kept the local alias and discarded the imported name, so `import { budgetSentence as budgetLine }`
 and `import * as rc from "./lib/…"` both left the suite green with an unregistered builder present.
-`260818-0745` measured it; `f3a3565` made the sentence true. That is precisely the shape the
+`260818-0745_*_the-registry-completeness-parse-misses-an-aliased-and-a-namespace-import-so-a-named-builder-still-escapes.md` measured it; `f3a3565` made the sentence true. That is precisely the shape the
 `Revised by:` footer was added for, in `1dc062d`, one commit before this session's anchor — a closed
 record whose stated reasoning a later commit moved, with no rename and the `Resolved:` note left
 unedited. The footer also notes the note's "273 lines" is the file at `33645a2` and is 425 at HEAD.
 
 ### Why a decision record was filed
 
-`shared/decisions/260818-0814_o_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md`.
+`260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md`.
 
 The user's gate on analysis `260818-0715` took recommendations 1 and 2 and declined 3, the convention
 rule. That choice is recorded in exactly two places, and neither is the decision store:
 `agentstate.yaml` `plan_context.user_directive`, which Cleanup deletes, and the closing paragraph of
-`260817-2131`'s `Resolved:` note, which is a defect record's account of its own scope. The convention
+`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`'s `Resolved:` note, which is a defect record's account of its own scope. The convention
 of this workbench is that a design fork gets a decision record.
 
 The rejection itself needs no further answer. Its stated consequence does. Recommendation 3 says in
-its own text that the convention rule "is also the only surface that covers `260807-2153`" — a record
+its own text that the convention rule "is also the only surface that covers `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`" — a record
 open since 2026-08-07 about `rules/fusion-workbench-conventions.md`'s exempt-surface list being
 written from the plugin repository's position while shipping to every consumer. With 3 declined,
 nothing in the workbench names a route to it. The record is filed `_o_` rather than `_a_` because the
@@ -198,7 +198,7 @@ the same act as recording it.
 
 ## Filed during this pass
 
-- `shared/decisions/260818-0814_o_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md`
+- `260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md`
 
 No new defect was filed. Nothing found in this pass is a defect: the three items worth the
 orchestrator's attention are a bookkeeping divergence, an unpushed range and a Grounding gap, and
@@ -213,7 +213,7 @@ None found this pass.
 ## For Phase 4, three things this pass will not do itself
 
 1. **The two recorded Directives do not agree, and the state file claims zero revisions.**
-   `shared/history/260818-0708-orchestrator-session.md` reads "Release the version that fixes the
+   `260818-0708-orchestrator-session.md` reads "Release the version that fixes the
    leaked identifiers, and have the general prevention of fusion-internal identifiers reaching
    consumer projects **examined**". `agentstate.yaml` `session.directive` reads "Release the
    identifier fix, and **gate the composed channel** so a fusion-internal identifier cannot return to
@@ -223,7 +223,7 @@ None found this pass.
    says a revision happened. One of them should be corrected at Phase 4, and the history file is the
    durable one.
 2. **The uncovered commit has to be named in the closure note, not counted.** Decision
-   `260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` is answered
+   `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` is answered
    (options 3 then 1: coverage stays advisory, the gap is named in the closure note) and unrealised.
    Its obligation is live: name `f3a3565` and its subject, not "one commit".
 3. **Three commits are unpushed.** `2d62af6`, `33645a2`, `f3a3565`.

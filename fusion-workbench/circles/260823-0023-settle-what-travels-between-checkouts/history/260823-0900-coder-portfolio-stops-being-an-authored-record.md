@@ -3,9 +3,9 @@
 **Date:** 2026-08-23
 **Agent:** coder
 **Domain:** code
-**Circle:** `circles/260823-0023-settle-what-travels-between-checkouts`
+**Circle:** `260823-0023-settle-what-travels-between-checkouts`
 **Task:** not a numbered plan step. The user widened the Circle's scope at the plan gate to close
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_c_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`.
+`260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`.
 **Status:** Complete
 
 ## The finding, taken before anything was changed

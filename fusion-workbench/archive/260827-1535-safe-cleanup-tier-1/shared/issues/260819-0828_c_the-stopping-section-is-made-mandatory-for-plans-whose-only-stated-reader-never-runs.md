@@ -43,7 +43,7 @@ Circle-scoped plan and say that a plan with no Circle in scope has no automated 
 section stands on being read by whoever opens the plan. Costs a line and removes a contradiction; it
 does not weaken the mandate, which was never mechanical.
 
-Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
+Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301-orchestrator-session.md`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
 
 ---

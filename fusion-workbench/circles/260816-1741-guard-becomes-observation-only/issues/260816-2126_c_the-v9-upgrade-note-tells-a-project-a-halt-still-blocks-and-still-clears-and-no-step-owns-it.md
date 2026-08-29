@@ -19,7 +19,7 @@ topic, and it is the surface a project upgrading over these removals reads first
 this sentence is most wrong for is exactly the population it was written for. It falls inside the
 Directive's stated scope by property, "the shipped text that presents a blocking, halting guard as
 a live property", the same reading
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-1917_o_the-groundings-text-surface-list-omits-three-surfaces-that-state-the-halt-as-live.md`
+`260816-1917_*_the-groundings-text-surface-list-omits-three-surfaces-that-state-the-halt-as-live.md`
 already applied to three other omissions.
 
 **A second, smaller omission of the same kind, in a file step 11 does open.**

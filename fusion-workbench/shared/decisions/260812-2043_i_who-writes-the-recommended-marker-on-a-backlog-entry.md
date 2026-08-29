@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** orchestrator (surfaced by the executor of plan step 7)
-**Cross-references:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md` steps 1, 7 and 8; `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
+**Cross-references:** `260812-1720_*_circle-first-placement-and-the-backlog-store.md` steps 1, 7 and 8; `260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
 
 ---
 
@@ -64,7 +64,7 @@ user expects to work with the store, which is a question a week of using it answ
 argument does.
 
 ---
-Answered: shared/history/260813-0806-orchestrator-session.md `## Decision answered — the playmaker maintains the backlog` — option 2, widened: the playmaker gets full maintenance of the backlog store (marker renames across `_o_`/`_p_`/`_c_`/`_d_`, splitting multi-idea entries, merging duplicates, closing dead ones), not the single `_p_` rename this record framed. Filing stays outside it and is not answered here. Answered by the user; the record's own recommendation to decline option 2 was overruled, not met.
+Answered: 260813-0806-orchestrator-session.md `## Decision answered — the playmaker maintains the backlog` — option 2, widened: the playmaker gets full maintenance of the backlog store (marker renames across `_o_`/`_p_`/`_c_`/`_d_`, splitting multi-idea entries, merging duplicates, closing dead ones), not the single `_p_` rename this record framed. Filing stays outside it and is not answered here. Answered by the user; the record's own recommendation to decline option 2 was overruled, not met.
 
 Implemented: b995049 — the playmaker's prompt names the write, so `bin/fusion-paths playmaker` emits `OUT_BACKLOG=shared/backlog` (run directly by the reconciler at 260813-1545, not inferred from the test); `agents/playmaker.md:60` grants the four confirmed operations and the autonomous `_o_`/`_p_` rename; `rules/fusion-workbench-conventions.md:209-214` gives every marker in the backlog vocabulary exactly one named writer, which is the question this record asked; `hooks/lib/__tests__/playmaker-backlog-mandate-lint.test.ts` (5 cases) fails if either surface stops stating it. Full suite green at 49 files / 1019 tests.
 
@@ -72,7 +72,7 @@ Implemented: b995049 — the playmaker's prompt names the write, so `bin/fusion-
 
 **Late addition, 260813-1548 — a sixth surface was found while this reconciliation ran.** A
 `coderev` pass over `b995049`, running concurrently with the reconciler, filed
-`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_*_the-next-skills-boundaries-paragraph-still-says-playmaker-writes-only-circle-records-and-the-portfolio.md`:
+`260813-1545_*_the-next-skills-boundaries-paragraph-still-says-playmaker-writes-only-circle-records-and-the-portfolio.md`:
 `skills/next/SKILL.md:291` still enumerates the playmaker's writes as "only Circle records and the
 portfolio", in a paragraph the same commit edited. **This does not weaken `_i_`.** The question
 this record asked — who writes `_p_` — has exactly one answer on disk, and the mechanism that

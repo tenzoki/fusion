@@ -1,7 +1,7 @@
-# Orchestrator Session — 260813-2345
+# Orchestrator Session — 260813-2345-orchestrator-session.md
 
 **Directive:** Run Circle `260801-1244-curator` — build the curator agent that reconciles a project's three normative surfaces (decision records, project-owned rule files, `CLAUDE.md`) against what actually happened, and add a hard growth bound on the always-on rule text. Stated by the user on 2026-08-14 after activating the Circle.
-**Mode:** plan (the Circle's spec `circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md`, 7 capabilities)
+**Mode:** plan (the Circle's spec `260814-0738_*_spec-curator.md`, 7 capabilities)
 **Status:** Complete — Circle closed coherent
 
 ## Snapshot at Setup
@@ -32,7 +32,7 @@ hooks/lib/__tests__/domain-cascade.test.ts (27), README-hooks.md (24).
 ## Turns
 
 Filled on 260824 from `## Per-Turn Log` below, which was written as the session ran; this section
-never was (`circles/260801-1244-curator/issues/260814-1450_*_the-turn-3-bookkeeping-says-no-review-ran-in-the-commit-that-landed-the-review.md`).
+never was (`260814-1450_*_the-turn-3-bookkeeping-says-no-review-ran-in-the-commit-that-landed-the-review.md`).
 
 - Turn 1: T1, T2, T3 completed; T4 deliberately held.
 - Turn 2: T5 and T4 completed; commits `5a1ec16`, `5c843e6`, `00f4a0b`.
@@ -65,7 +65,7 @@ the user. Five answers, all as recommended:
 5. **The growth bound is armed by re-baselining once**, at the moment of arming, with the
    2026-08-14 overshoot written into the file as text so the standing cleanup request survives the
    number moving. Answers
-   `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
+   `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`,
    option 1. The user was shown that this overrides the position recorded in
    `rules-emission-golden.test.ts`, that option 2 would put an unscoped 11 KB cut on the Circle's
    critical path, and that the shaper labelled its reading of the instrument's intent as inference
@@ -79,18 +79,18 @@ the user. Five answers, all as recommended:
    has twice concluded in writing that a figure nothing checks should not be written down.
    Historical measurements in the cut log of `rules-emission-golden.test.ts` are untouched under
    either option. Answers
-   `circles/260801-1244-curator/decisions/260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`.
+   `260814-0845_*_are-the-sixteen-agent-claims-corrected-or-derived-away.md`.
 
 ## Phase 0b — Plan gate
 
 **Plan approved by the user on 2026-08-14.**
-`circles/260801-1244-curator/planning/260814-0845_o_plan-curator.md`, five steps, every one routed
+`260814-0845_*_plan-curator.md`, five steps, every one routed
 to `coder`. No `ontocoder` work: the Circle touches agent prompts, a skill body, two shell helpers,
 one test file and the shipped documentation, and no ontology, manifest, schema or domain-data file.
 C11, the validation run, is deliberately unassigned — the finished curator performs it, invoked by
 the user through `/fusion:curate`.
 
-**`conceptrev` verdict: acceptable** (`circles/260801-1244-curator/reviews/260814-0857-conceptrev-plan-curator.md`).
+**`conceptrev` verdict: acceptable** (`260814-0857-conceptrev-plan-curator.md`).
 Three Mermaid blocks, all parsing and rendering, no cycle, no god node, no orphan, maximum fan-out
 2, all three tree-shaped. Two substantive findings, both on diagram 1: the three invocation paths
 are drawn identically, so the second dispatch that drives the apply pass lives only in the edge
@@ -127,7 +127,7 @@ in one working session.
   already-armed bound. Review first, arm second.
 - **Review findings:** `coderev` over `d7786eb..HEAD`, seven commits, filed seven defects, all in
   shipped text and none in behaviour. The severe one is
-  `circles/260801-1244-curator/issues/260814-1023_*_the-curator-is-not-in-the-orchestrators-dispatch-allowlist-so-two-of-its-three-invocation-shapes-cannot-be-reached.md`:
+  `260814-1023_*_the-curator-is-not-in-the-orchestrators-dispatch-allowlist-so-two-of-its-three-invocation-shapes-cannot-be-reached.md`:
   `agents/orchestrator.md` lists thirteen sub-agents and the curator is not among them, so two of
   the three invocation shapes the curator's own prompt describes have no possible caller, and spec
   criterion C7 is unmet. The T1 executor had named this as a plan-level gap at the time and
@@ -176,7 +176,7 @@ The session was interrupted after Turn 3's second commit and resumed at 13:11 on
 in full: workbench located, monitor refreshed to 8.2.0, session marker written, drift check clean
 (five rows, no divergence; `progress.commits` read 14 against git's 15, inside the one-commit
 tolerance for a commit in flight, and has been brought current). The user chose **Continue**, so this
-session inherits the history file, the session anchor `d7786eb`, the start stamp `260813-2345` and
+session inherits the history file, the session anchor `d7786eb`, the start stamp `260813-2345-orchestrator-session.md` and
 the Turn counter at 3, and emits no second `turn_start` for the Turn it re-enters.
 
 **T7's blocker is cleared.** Issue `circles/260801-1244-curator/issues/260814-1200_o_*.md` recorded
@@ -206,7 +206,7 @@ is not on its path; it should be rebuilt before anything consumes it as current.
 
   *Correction appended 260824 (ontocoder, plan step 5).* The two bullets above were false in the
   commit that wrote them: `18173e1` landed this Turn's incremental review,
-  `circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`, with six findings
+  `260814-1419-coderev-curator-turn-3.md`, with six findings
   (four Medium, two Low, split four under the Circle's `issues/` and two under `shared/issues/`),
   and the per-Turn `coherence_review` for Turn 3 was recorded `ok` at 12:42:06 before the Rebalance
   gate at 13:13:35. The bullets stand as written; this note is the correction.
@@ -245,9 +245,9 @@ commit. Recorded as a `state_drift` event.
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: **flagged.** 12 claims verified against the tree at HEAD `18173e1` — 5 plan steps, 7 spec capabilities, 2 implemented decision records re-derived from their commits, and `npm test` re-run at 1 030 tests green. 11 drift items: 3 repaired by this pass (plan and spec both Draft-with-every-step-done, now Complete and `_c_`; D1 `shared/decisions/260801-1020_*_where-does-normative-consistency-live.md` walked `_a_`→`_i_` since the agent it specifies now exists and has run), 3 newly filed at stamp `260814-1450`, 2 already filed and confirmed standing (`260814-0813_o`, `260814-0828_o`), 3 folded into the new filings. 13 open defect records in the Circle, of which 6 are the Turn-3 review's findings — all six re-checked and all six still stand, one Medium (`260814-1419_o_the-layout-trees-consumer-column-…`) named by the reviewer as wanted before closure because it leaves an always-on rule file promising more than it says.
+- Artifact↔Grounding: **flagged.** 12 claims verified against the tree at HEAD `18173e1` — 5 plan steps, 7 spec capabilities, 2 implemented decision records re-derived from their commits, and `npm test` re-run at 1 030 tests green. 11 drift items: 3 repaired by this pass (plan and spec both Draft-with-every-step-done, now Complete and `_c_`; D1 `260801-1020_*_where-does-normative-consistency-live.md` walked `_a_`→`_i_` since the agent it specifies now exists and has run), 3 newly filed at stamp `260814-1450`, 2 already filed and confirmed standing (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o`, `260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o`), 3 folded into the new filings. 13 open defect records in the Circle, of which 6 are the Turn-3 review's findings — all six re-checked and all six still stand, one Medium (`260814-1419_*_the-layout-trees-consumer-column-…`) named by the reviewer as wanted before closure because it leaves an always-on rule file promising more than it says.
 - Artifact↔Directive: **OK.** 17 of the 18 commits in `d7786eb..HEAD` move toward the Directive: `f273b9a`/`55ead50`/`e321a54`/`a2e82cb` set the Circle up, `6ba9d77`/`44b9967`/`5b81f5a`/`5c843e6` are plan steps 1 to 5, `5a1ec16`/`2a8a2f7` close review defects, `1a36fe4`/`0301909` are the C11 proof run, and `249e606`/`7421f51`/`18173e1`/`00f4a0b`/`e101761` are review and record keeping. One is orthogonal — `ae21c87` tightened the shipped chat-voice profiles, was caused by no part of this Directive, and produced two of the Turn-3 findings; the Turn-3 review classifies it the same way. I agree with the review that both halves of the Directive are met, with the qualification the run states itself: the editable surface was 46 of 84 decision records, so "no living record supersedes another" holds over the surface the selection rule reached and the corpus-wide claim is filed as an open decision rather than asserted. That residual was stated by the run, reviewed, and recorded; it does not bear on closure.
-- Grounding↔Directive: **flagged.** 19 active decisions in `$SCAN_DECISIONS` scanned (8 open, 11 answered) and 18 are consistent with the Directive. One is flagged: `shared/decisions/260813-0027_o_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` is open, and this session executed the path it asks about — the orchestrator dispatched the shaper in portfolio-activation mode, which `agents/shaper.md:3` and `:47` forbid in two absolute sentences, and the result is `f273b9a`, the re-sharpened Grounding this whole Circle then ran against. Annotated with that evidence. The Circle's own new open record `260814-1332_o` is a residual the Directive's proof half produced rather than a conflict with it. Two further open records sit in `circles/260813-0910-documentation-matches-shipped-plugin/decisions/` and no scan key reaches them from here.
+- Grounding↔Directive: **flagged.** 19 active decisions in `$SCAN_DECISIONS` scanned (8 open, 11 answered) and 18 are consistent with the Directive. One is flagged: `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` is open, and this session executed the path it asks about — the orchestrator dispatched the shaper in portfolio-activation mode, which `agents/shaper.md:3` and `:47` forbid in two absolute sentences, and the result is `f273b9a`, the re-sharpened Grounding this whole Circle then ran against. Annotated with that evidence. The Circle's own new open record `260814-1332_o` is a residual the Directive's proof half produced rather than a conflict with it. Two further open records sit in `circles/260813-0910-documentation-matches-shipped-plugin/decisions/` and no scan key reaches them from here.
 
 **Rebalance recommendation:** revise Grounding
 
@@ -262,7 +262,7 @@ section above is the per-Turn verdict recorded at the Turn-3 gate and is left as
 **Edges:**
 - Artifact↔Grounding: **flagged.** 18 claims re-derived at HEAD `41c224c` rather than inherited from the mid-session pass — 5 plan steps, 7 spec capabilities, the 3 Turn-5 closures (`README-agents.md:66-68`, `agents/orchestrator.md:421`, `rules/fusion-workbench-conventions.md:58-60`), 2 implemented decision footers, and the growth bound re-run at 15 of 15 passing with no budget report. Review coverage is **complete**: `bin/fusion-review-coverage` reports `commits=25`, `reviews=6`, `uncovered=0`, `verdict=covered` after the Turn-5 review landed at 20:31; the one `unusable=1` is the conceptrev plan evaluation, tracked separately as `shared/issues/260811-1145_o_*`. 7 drift items from this pass: 3 standing at stamp `260814-2017`, 2 filed and closed within it (one a duplicate of the reviewer's fuller record, one closed when its range became covered), 1 repaired (`shared/decisions/260813-0027_i_*` header read `open` two transitions after its marker moved), 1 re-measured and left open (`shared/issues/260812-1232_o_*`, now 35 of 86 records whose header contradicts their marker, against 34 of 74 when filed). 21 open defect records in the Circle and 96 in `shared/`. **The two open High findings are what flag this edge**, both from the Turn-5 review and both verified independently by this pass. `9f4cdac` left ten stale line-number citations standing in shipped documentation, seven of them inside the same `## Dispatch parameters` table the commit corrected the other half of — `README-agents.md:59` cites `agents/orchestrator.md:392`, a table separator; `:61` cites `:850`, a sentence about review-coverage derivation; `:72` cites `:438`, the plan-review gate. And `cd hooks && npm test` is red 1 of 1 030 in the working tree on an uncommitted `orchestrator.maxTurns` line in the root `fusion-guard.json`, while `git show HEAD:fusion-guard.json | diff - templates/fusion-guard.json` is empty, so HEAD is green and only the tree is red. Beneath those, the Circle's Turn log has no Turn-5 entry and this file has no Turn 3, Turn 4 or Turn 5 section, while `bin/fusion-state-drift` reads `clean` because the `Turn 3, continued` bullet is counted as a Turn.
 - Artifact↔Directive: **OK.** All 25 commits in `d7786eb..41c224c` move toward the Directive except the one already classified orthogonal at the Turn-3 gate (`ae21c87`, the chat-voice profile tightening). Both halves of the Directive are met and were verified by running the instruments, not by reading the reports. The curator half: `agents/curator.md`, `skills/curate/SKILL.md`, the seventeenth-agent registration at `bin/fusion-rules:174` and `:185`, and all three invocation shapes reachable including the roster surface `9f4cdac` corrected. The growth-bound half: the hard assertion at `hooks/lib/__tests__/rules-emission-golden.test.ts:994-995`, with the arming baseline at `:475-479` and unit tests at `:1158-1177` proving it fires in both directions; re-run green, with 415 of the head-room spent by Turn 5's own rule-file edit and the bound holding. The proof half T7 delivered: 28 tier-1 corrections proposed, all approved, all applied, 0 stale and 0 failed (`1a36fe4`, run file 2 633 lines), with its one unsettleable question filed as decision `260814-1332_o` rather than asserted.
-- Grounding↔Directive: **OK.** 19 active decisions in `$SCAN_DECISIONS` (6 open and 11 answered in `shared/`, 2 open in the Circle), all 19 consistent with the Directive. The one flagged at the Turn-3 gate, `shared/decisions/260813-0027_*`, was answered at the Rebalance gate and implemented in `bf9553f`; it has left the active set and this pass corrected its stale header. The Circle's two open records are residuals its own proof half produced, not conflicts with it. Four further active decisions sit in `circles/260801-1244-guard-rules-write/`, `circles/260807-0923-guard-misst-statt-orakelt/` and `circles/260813-0910-documentation-matches-shipped-plugin/`, and no scan key reaches them from here — unchanged from the Turn-3 verdict.
+- Grounding↔Directive: **OK.** 19 active decisions in `$SCAN_DECISIONS` (6 open and 11 answered in `shared/`, 2 open in the Circle), all 19 consistent with the Directive. The one flagged at the Turn-3 gate, `shared/decisions/260813-0027_*`, was answered at the Rebalance gate and implemented in `bf9553f`; it has left the active set and this pass corrected its stale header. The Circle's two open records are residuals its own proof half produced, not conflicts with it. Four further active decisions sit in `260801-1244-guard-rules-write`, `260807-0923-guard-misst-statt-orakelt` and `260813-0910-documentation-matches-shipped-plugin`, and no scan key reaches them from here — unchanged from the Turn-3 verdict.
 
 **Rebalance recommendation:** revise Artifact
 
@@ -272,7 +272,7 @@ running the instruments. One short Turn discharges the three items: close the te
 Turn-5 review found in shipped documentation, resolve the uncommitted `fusion-guard.json` edit so the
 suite is green in the tree as well as at HEAD, and write the Turn-5 entry on the Circle record
 together with the missing Turn sections in this file. If instead the choice is to close now, the
-records at stamps `260814-2017`, `260814-2022` and `260814-2033` carry every item forward with its
+records at stamps `260814-2017`, `260814-2022` and `260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md` carry every item forward with its
 evidence — but a Circle that closes `_c_` over a red working-tree suite and two open High findings in
 text it shipped is making a claim its own records contradict, and bounded closure would be the honest
 marker.
@@ -290,7 +290,7 @@ against, and that decision is unreadable without it.
 **Edges:**
 - Artifact↔Grounding: **OK.** Both conditions the previous verdict flagged are discharged, and each was re-derived from the tree rather than from its `_c_` marker. **High 1** (`shared/issues/260814-2022_c_*`, the guard config pinned byte-identical): `hooks/lib/__tests__/config.test.ts:1266` declares `PROJECT_SET_KEYS = ["orchestrator"]` and `withoutProjectSetKeys` at `:1369-1373` cuts it from the source text of both sides; `fusion-guard.json` carries `"orchestrator": { "maxTurns": 12 }` with `git status --short` empty, so the line is committed and not in flight; `diff fusion-guard.json templates/fusion-guard.json` differs on that line and nothing else; `cd hooks && npm test` run by this pass is **49 files, 1 030 tests, all passed**, so the tree and HEAD now agree, which is exactly what they did not do before. **High 2** (`circles/260801-1244-curator/issues/260814-2022_c_*`, the ten stale citations): all ten target lines read at HEAD one by one — `agents/orchestrator.md:434` the planner dispatch, `:449` the taskplanner dispatch, `:495` the `**Deliverable language:**` halt, `:706` the reconciler dispatch, `:907` the playmaker dispatch, `:1454` the `editor` routing row, `agents/shaper.md:89` the marker-rename sentence and `:90` the `Promoted:` append; a repo-wide sweep outside the workbench returns 16 citing lines and every one resolves. 26 claims re-checked in all, across 2 plan and spec files, 6 defect records, 3 decision records and 2 review files, with the growth bound re-run at 15 of 15 and no budget report. **Four residuals are carried forward, not flagged, and each is named so it is not read as missed:** `bin/fusion-review-coverage` reads `uncovered=1` on `d90b794`, the commit that closed the Turn-6 review's own High finding and therefore necessarily later than it — filed as `circles/260801-1244-curator/issues/260814-2153_o_*`, with its one substantive clause verified by this pass against `config.test.ts:1266` and the `diff`; one open Low, the cut helper's untested last-entry branch, which the reviewer ran by transcription and found correct in both directions; 21 open defect records in the Circle and 96 in `shared/`; and the missing Turn entries, which are the orchestrator's Phase-4 write and therefore downstream of this verdict. `shared/issues/260814-2118_o_*` bounds what the green run proves: the suite is nondeterministic under full-run load on clean HEAD, that record predates this Circle, and one green run is claimed as one green run.
 - Artifact↔Directive: **OK.** 28 of the 29 commits in `d7786eb..d90b794` move toward the Directive; the one exception is `ae21c87`, already classified orthogonal at the Turn-3 gate and unchanged. All four Turn-6 commits move toward it: `f0d9d60` discharges the condition that made the Circle's own suite red at the tree, `b90ea28` repairs the citation residue of `bf9553f`, which realised the Grounding revision this Circle's own Rebalance produced, `d270666` writes the records Turn 5 never wrote, and `d90b794` corrects a normative surface that had gone on describing a mechanism the same Turn replaced — which is the Directive's own subject matter applied by hand. Both halves of the Directive remain met and were verified by running the instruments a third time, not by reading the reports: the curator half at `agents/curator.md`, `skills/curate/SKILL.md` and the seventeenth-agent registration at `bin/fusion-rules:174` and `:185`; the growth-bound half at `hooks/lib/__tests__/rules-emission-golden.test.ts:994-995`, re-run at 15 of 15 with Turn 6's own +160-byte rule-file edit charged against it in the same commit that made it, which is the behaviour C10 was armed to produce. The proof half, T7, is unchanged: 28 tier-1 corrections proposed, approved and applied, 0 stale and 0 failed, with its one unsettleable question filed as `circles/260801-1244-curator/decisions/260814-1332_o_*` rather than asserted.
-- Grounding↔Directive: **OK.** 20 active decisions across `$SCAN_DECISIONS` (2 open in the Circle, 7 open and 11 answered in `shared/`), all 20 consistent with the Directive. The set is unchanged since the previous verdict except for `shared/decisions/260814-2017_o_*`, which that pass filed and `d270666` committed. Three were read in full. `shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` is the one that bears on Turn 6 and it agrees with it rather than conflicting: the Turn-6 High finding is a sixth instance of the class that record counts, and the answer it already carries — state a claim once and cite it, rather than placing an obligation on a reviewer or a gate — is what the repair as landed does, naming `PROJECT_SET_KEYS` as the one constant where the exemption is declared instead of restating the rule. Annotated with that instance; marker unchanged at `_a_`, because the answer is recorded and not yet realised across the corpus. Four further active decisions sit in `circles/260801-1244-guard-rules-write/`, `circles/260807-0923-guard-misst-statt-orakelt/` and `circles/260813-0910-documentation-matches-shipped-plugin/`, and no scan key reaches them from here — unchanged from both earlier verdicts.
+- Grounding↔Directive: **OK.** 20 active decisions across `$SCAN_DECISIONS` (2 open in the Circle, 7 open and 11 answered in `shared/`), all 20 consistent with the Directive. The set is unchanged since the previous verdict except for `shared/decisions/260814-2017_o_*`, which that pass filed and `d270666` committed. Three were read in full. `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md` is the one that bears on Turn 6 and it agrees with it rather than conflicting: the Turn-6 High finding is a sixth instance of the class that record counts, and the answer it already carries — state a claim once and cite it, rather than placing an obligation on a reviewer or a gate — is what the repair as landed does, naming `PROJECT_SET_KEYS` as the one constant where the exemption is declared instead of restating the rule. Annotated with that instance; marker unchanged at `_a_`, because the answer is recorded and not yet realised across the corpus. Four further active decisions sit in `260801-1244-guard-rules-write`, `260807-0923-guard-misst-statt-orakelt` and `260813-0910-documentation-matches-shipped-plugin`, and no scan key reaches them from here — unchanged from both earlier verdicts.
 
 **Rebalance recommendation:** none
 
@@ -302,8 +302,8 @@ the suite is green in the tree as well as at HEAD, the growth bound holds, and t
 which is what open records are for. Three writes belong to the closure itself rather than standing
 in its way, and all three are the orchestrator's: the Turn-6 bullet on the Circle record and the
 missing `### Turn` sections here (`circles/260801-1244-curator/issues/260814-2017_o_*`), the Circle
-record's title and `## Dependencies` (`260814-0813_o`), and its `## Grounding snapshot` lag on the
-answered growth-bound decision (`260814-0828_o`). Note for whoever writes them: after the Turn-6
+record's title and `## Dependencies` (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o`), and its `## Grounding snapshot` lag on the
+answered growth-bound decision (`260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o`). Note for whoever writes them: after the Turn-6
 bullet lands, `bin/fusion-state-drift`'s Turn-log row will read 7 bullets against 6 Turns and report
 drift, because the continuation bullet is counted as a Turn — that is the masking described in
 `260814-2017_o_*` surfacing from the other side, and it is the record's own second fix, not a new
@@ -321,7 +321,7 @@ already been dispatched. Three commits were sitting outside every review's decla
 ordering was the orchestrator's error: the resume contract re-enters at Phase 2 step 3, and step 3c
 is the incremental review, but the resumed session read the state file's `tasks_done: 10` as "the
 work is finished" and went to Phase 3. Filed as
-`circles/260801-1244-curator/issues/260814-2033_o_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`.
+`260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md`.
 The review was dispatched in parallel with the reconciler rather than after it, which recovered the
 coverage but left the two agents working the same tree without sight of each other; both
 independently found the same red suite, and the reconciler closed its own record as the duplicate.
@@ -346,7 +346,7 @@ because neither had run the suite since.
 
 ### Turn 4 (written retroactively at Phase 4)
 
-- **Tasks attempted:** T9, realising decision `260813-0027` across `agents/shaper.md` and
+- **Tasks attempted:** T9, realising decision `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` across `agents/shaper.md` and
   `agents/orchestrator.md`.
 - **Tasks completed:** T9, in one commit `bf9553f` so that no state existed in which a dispatcher
   claim was unreachable in one file and permitted in the other.
@@ -420,7 +420,7 @@ line and contributes no coverage; it ran and cannot be tiled, which is a reviewe
 than an unreviewed range.
 **Not covered:** `d90b794` — the commit that closed the Turn-6 review's own High finding, and
 therefore necessarily later than that review. Filed as
-`circles/260801-1244-curator/issues/260814-2153_o_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`.
+`260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md`.
 Its one substantive sentence was verified by the reconciler against `config.test.ts:1266` and the
 diff; what is missing is an independent reviewer pass, not a checked claim.
 **Carried out-of-scope files:** none. The Turn-5 pass cleared all three files the Turn-4 review had
@@ -434,7 +434,7 @@ Nothing blocks. The Circle closed coherent and carries its open records forward.
 - 96 open defect records in `shared/`, including three filed at Phase 4 of this session: the suite's
   non-deterministic full-run failures, the queue-ground parse reading a backticked token out of
   prose, and the structural review-coverage gap.
-- The parent spec `shared/planning/260801-1122_o_spec-normative-consolidation.md` is in an undecided
+- The parent spec `260801-1122_*_spec-normative-consolidation.md` is in an undecided
   state: all four of its Circles have delivered, three of its capabilities were retired rather than
   delivered, and whether it may close is the open decision `260814-2017_o_*`.
 - The work queue `tasklist.md` is three days old and was built with no Circle active. It survived
@@ -445,10 +445,10 @@ Nothing blocks. The Circle closed coherent and carries its open records forward.
 ## Portfolio update
 
 Regenerated by playmaker at Phase 4; its log is
-`shared/history/260814-2203-playmaker-orchestrator-phase4.md`.
+`260814-2203-playmaker-orchestrator-phase4.md`.
 
 The portfolio now stands at zero active and zero anticipated Circles, so the backlog is the only
-source of the next unit of work. Playmaker ranked `shared/backlog/260814-1733_*_radical-simplification.md`
+source of the next unit of work. Playmaker ranked `260814-1733_*_radical-simplification.md`
 top and renamed it to recommended, on the ground that it is the only live idea whose evidence is
 already on disk: two analyses answer its question with measurements rather than opinion, one of them
 naming a first move with its price. It proposed one deferral it could not perform, since a Phase-4

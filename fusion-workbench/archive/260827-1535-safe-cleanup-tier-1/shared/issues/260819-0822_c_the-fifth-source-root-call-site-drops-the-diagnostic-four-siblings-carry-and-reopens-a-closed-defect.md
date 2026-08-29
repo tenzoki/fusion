@@ -4,8 +4,8 @@ The fifth `fusion-source-root` call site drops the diagnostic its four siblings 
 
 `06ab15b` added a fifth prompt call site for `bin/fusion-source-root`, in
 `skills/archive/SKILL.md:39`. The four existing ones share one shape, settled by
-`260810-2110_c_fusion-src-resolves-to-the-empty-string-with-no-report-when-fusion-plugin-root-is-unset.md`
-and decision `260810-0921` (option a1, *tolerate and report*). The new one is a different shape and
+`260810-2110_*_fusion-src-resolves-to-the-empty-string-with-no-report-when-fusion-plugin-root-is-unset.md`
+and decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` (option a1, *tolerate and report*). The new one is a different shape and
 drops the report, which is the half that record was filed about.
 
 ---
@@ -55,7 +55,7 @@ the one failure the surrounding prose is careful about everywhere else.
 Verified at HEAD `83488e9` by
 `grep -rn "fusion-source-root" skills/ agents/` (five call sites, four in the `if`/`else` shape and
 one one-liner) and by reading
-`shared/issues/260810-2110_c_fusion-src-resolves-to-the-empty-string-with-no-report-when-fusion-plugin-root-is-unset.md`
+`260810-2110_*_fusion-src-resolves-to-the-empty-string-with-no-report-when-fusion-plugin-root-is-unset.md`
 `Resolved:` note, which states the convention and its reason.
 
 Not verified, stated as **inference:** the behaviour under `nounset` was not run. Departure 1 is read
@@ -67,7 +67,7 @@ that `260816-0133_*_the-setup-and-migrate-probes-are-byte-identical-in-three-cop
 is the standing record that nothing gates this kind of drift; this is a fresh instance of it and a
 reason to weigh that record rather than to refile it.
 
-Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301`, Turn 2. No Circle active,
+Found in the coderev pass over `5ec26b2..83488e9`, session `260818-2301-orchestrator-session.md`, Turn 2. No Circle active,
 so it is filed in the shared store under the Origin Rule.
 
 ---

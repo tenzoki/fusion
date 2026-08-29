@@ -66,7 +66,7 @@ Two routes, either acceptable:
 - give `resolveGit` a shallow second hop for `stash` — treat positionals as written only when the
   first one is `push` or `save`, and drop that word from the written set; or
 - drop `stash` back out of the table and state it in the residual list, which is where it sat before
-  `18e2e4f` and which `260801-1902` would also have accepted (that issue asked for "covered **or**
+  `18e2e4f` and which `260801-1902_*_git-clean-restore-and-stash-mutate-protected-paths-and-are-in-neither-the-table-nor-the-residual-list.md` would also have accepted (that issue asked for "covered **or**
   documented", and the other two rows carry the value).
 
 If the row stays, `-m` / `--message` belongs in its `valueFlags` regardless, next to `git clean`'s

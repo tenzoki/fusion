@@ -3,8 +3,8 @@
 **Date:** 2026-07-22
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260722-2021_p_plan-plane-spec-comment.md` (Step 1 only)
-**Spec:** `shared/planning/260722-1943_o_spec-plane-spec-comment.md`
+**Plan:** `260722-2021_*_plan-plane-spec-comment.md` (Step 1 only)
+**Spec:** `260722-1943_*_spec-plane-spec-comment.md`
 
 ## Scope
 

@@ -21,7 +21,7 @@ rationale rather than in an instruction.
 
 ## Why this is filed and what it is not
 
-It is **not** the defect `260817-2110` closed. That one was a run-time-composed hook sentence,
+It is **not** the defect `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` closed. That one was a run-time-composed hook sentence,
 where fusion's prose and the consuming project's own measurement shared a sentence and the
 frame was the consumer's. A prompt is statically delivered text: the agent has just read a
 block of fusion's own conventions and the frame is visibly fusion's. By that criterion this
@@ -59,7 +59,7 @@ being told why a rule exists.
 **Severity:** Low
 **Domain:** code
 **Filed by:** analyst, analysis `260818-0715`
-**Cross-references:** `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 6 (the criterion this site is measured against), `shared/issues/260817-2110_c_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the incident, a different channel), `shared/issues/260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the gate, which does not and should not reach this surface)
+**Cross-references:** `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 6 (the criterion this site is measured against), `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the incident, a different channel), `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the gate, which does not and should not reach this surface)
 
 ---
 **Reconciliation 260818-0814** (reconciler, domain `code`, HEAD `f3a3565`). Still open, and re-read
@@ -73,15 +73,15 @@ this record is cut on.
 
 One citation in this record's own `**Cross-references:**` line (`:62`) no longer resolved when
 this note was written: it named the comment-line gate record,
-`shared/issues/260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`,
+`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`,
 with a literal `_o_` marker, and that record closed this session and is now `_c_`. (A later repair
 pass rewrote `:62` to the wildcard form, so the line reads differently today than it did here.)
-It is an instance of the class `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+It is an instance of the class `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
 records — re-verified open at HEAD, the lint's `surface()` still walks the shipped tree only — and
-decision `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+decision `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
 answered that class option 1: nothing new carries the obligation. The body is left unedited on that
 basis rather than silently repaired. Marker stays `_o_`.
-Log: `shared/history/260818-0814-reconciliation.md`.
+Log: `260818-0814-reconciliation.md`.
 
 ---
 Resolved: fixed — option 2: the record identifier leaves the report bullet and the correction it carried stays; the rationale sites keep it; agents/orchestrator.md:953

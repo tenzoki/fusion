@@ -13,7 +13,7 @@ unreachable with a green suite either way.
 **Cross-references:**
 `hooks/lib/__tests__/hooks-wiring.test.ts`, the describe block "the working-directory warning runs at SessionStart";
 `hooks/session-id.ts`;
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`,
+`260825-2214-can-a-hook-obtain-the-session-identifier.md`,
 finding (b).
 
 ## What is uncovered

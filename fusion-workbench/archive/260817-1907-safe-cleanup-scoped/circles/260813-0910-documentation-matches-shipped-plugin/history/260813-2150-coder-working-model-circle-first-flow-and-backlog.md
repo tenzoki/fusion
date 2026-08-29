@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13 21:50
 **Agent:** coder
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `planning/260813-1820_p_documentation-matches-shipped-plugin.md`, step 7
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, step 7
 **Status:** Complete
 
 ## What was done

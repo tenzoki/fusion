@@ -1,4 +1,4 @@
-# Playmaker Session — 260813-1623
+# Playmaker Session — 260813-1623-playmaker-direct-dispatch.md
 
 **Trigger:** direct-dispatch (no skill; the dispatch prompt carried only the domain line)
 **Domain bias:** `code`, parsed from `**Domain:** code` on the first content line
@@ -31,7 +31,7 @@ closes. This run was that opportunity. It could not take it, and the cause is on
 
 Fourteen Circle directories, each carrying exactly one record.
 
-| Marker | Meaning | Count | Change since 260813-0926 |
+| Marker | Meaning | Count | Change since 260813-0926-playmaker-direct-dispatch.md |
 |---|---|---|---|
 | `_a_` | anticipated | 2 | −1 |
 | `_t_` | active | 0 | unchanged |
@@ -40,9 +40,9 @@ Fourteen Circle directories, each carrying exactly one record.
 | `_s_` | superseded | 1 | unchanged |
 | `_d_` | deferred | 0 | unchanged |
 
-`circles/260813-0858-playmaker-maintains-backlog-store/` moved from anticipated to closed coherent
+`260813-0858-playmaker-maintains-backlog-store` moved from anticipated to closed coherent
 between the two runs. It was the previous run's top-ranked Circle, and it was activated, executed
-over four Turns and closed inside session `shared/history/260813-0806-orchestrator-session.md`.
+over four Turns and closed inside session `260813-0806-orchestrator-session.md`.
 
 `.active-circle` is absent and no record carries the active marker. The two agree, so no pointer
 warning was emitted. No Circle directory is missing its record.
@@ -66,7 +66,7 @@ entry rather than only here.
 
 | Measure | Value |
 |---|---|
-| Entries read | 1, `shared/backlog/260811-0826_*_observations.md` (`_o_`; no `_p_` entries exist) |
+| Entries read | 1, `260811-0826_*_observations.md` (`_o_`; no `_p_` entries exist) |
 | Distinct ideas named inside it | 13 |
 | Non-idea fragments excluded from the count | 2 (a bare file path, a churn-ranking note) |
 | Evidence transcripts excluded from the count | 5 (the quoted agent replies) |
@@ -76,10 +76,10 @@ entry rather than only here.
 | Live and shapeable ideas remaining | 3 |
 
 **Top-ranked backlog idea:** `bounded-dispatches-and-re-injected-context`, inside
-`shared/backlog/260811-0826_*_observations.md`. It rests entirely on records already on disk, so it
+`260811-0826_*_observations.md`. It rests entirely on records already on disk, so it
 can be shaped as soon as the entry is split:
-`shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` names the competing
-remedies, and `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures
+`260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` names the competing
+remedies, and `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures
 that the handoff between dispatches costs nothing while shorter dispatches would cut cost roughly
 fourfold.
 
@@ -103,7 +103,7 @@ absence of a write key — the key exists at HEAD and the resolver emitted it.
 - `backlog-acceptance-run-still-not-performed` — new this run. The closed Circle's own gap, now
   with a named cause.
 - `write-key-defect-record-open-after-its-circle-closed` — new this run.
-  `shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
+  `260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
   reads as met against HEAD and still carries the open marker.
 - `curator-grounding-measurements-falsified` — fourth consecutive run. Claimed 54 401 bytes across
   32 second-level headings; measured 51 920 across 24. The byte figure moved toward the claim,
@@ -111,16 +111,16 @@ absence of a write key — the key exists at HEAD and the resolver emitted it.
 - `curator-circle-missing-artifact-subdirectories` — unchanged from the previous run.
 - `one-sided-dependency-is-now-frozen` — changed class this run. The Circle holding the incomplete
   citation has closed, so the citation cannot be completed on that side at all. Filed as
-  `shared/issues/260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`,
+  `260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`,
   whose scope now needs widening.
 - `claude-md-always-on-figure-is-stale` — `CLAUDE.md:64` claims 88 023 bytes (80 670 shipped);
   measured 93 819 (86 466 shipped) over the five always-on files plus this project's chat profile.
 - `fusion-direct-cannot-run-the-flow-it-documents` — new this run, from
-  `shared/issues/260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`.
+  `260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`.
   Surfaced because the path from a split backlog idea to a Circle runs through `/fusion:direct`.
 - `backlog-idea-only-partly-filed` — unchanged from the previous run.
 - Resolved and recorded so it is not re-reported: the three failing tests are fixed and
-  `shared/issues/260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
+  `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
   now carries the closed marker. The previous run reported them as live.
 
 ## Dependency warnings appended
@@ -140,10 +140,10 @@ scan in Step 5 had no starting point.
 | Path | Write |
 |---|---|
 | `fusion-workbench/portfolio.md` | full regeneration (overwrite) |
-| `circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md` | appended `## Activation proposal (playmaker run 260813-1623)` |
-| `shared/history/260813-1623-playmaker-direct-dispatch.md` | this file |
+| `260813-0910-documentation-matches-shipped-plugin` | appended `## Activation proposal (playmaker run 260813-1623-playmaker-direct-dispatch.md)` |
+| `260813-1623-playmaker-direct-dispatch.md` | this file |
 
 No marker was renamed, `.active-circle` was not touched, and no plan, queue, decision, issue,
 backlog entry, code or data file was modified. No `## Activation proposal` was appended to
-`circles/260801-1244-curator/_*_circle.md` this run; the two proposals already on that record, from
-runs 260807-1646 and 260813-0007, stand and were not rewritten.
+`260801-1244-curator` this run; the two proposals already on that record, from
+runs 260807-1646-playmaker-direct-dispatch.md and 260813-0007-playmaker-direct-dispatch.md, stand and were not rewritten.

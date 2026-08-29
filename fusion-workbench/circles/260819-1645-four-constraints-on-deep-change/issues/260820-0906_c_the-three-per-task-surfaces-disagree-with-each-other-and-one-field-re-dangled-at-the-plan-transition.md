@@ -3,8 +3,8 @@ The three per-task surfaces disagree with each other, and one field re-dangled a
 ---
 
 **Domain:** code
-**Filed by:** reconciler (reconciliation 260820-0830, HEAD `04db0b0`)
-**Related:** `circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-session-bookkeeping-froze-at-the-planning-step-while-ten-commits-landed.md` — closed at `bbfc912`; this is what the next commit and a closer reading found
+**Filed by:** reconciler (reconciliation 260820-0830-reconciliation.md, HEAD `04db0b0`)
+**Related:** `260820-0805_*_the-session-bookkeeping-froze-at-the-planning-step-while-ten-commits-landed.md` — closed at `bbfc912`; this is what the next commit and a closer reading found
 
 ---
 

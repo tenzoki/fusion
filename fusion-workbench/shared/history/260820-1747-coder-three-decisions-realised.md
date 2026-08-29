@@ -30,11 +30,11 @@ before writing**, by listing each commit's deletion set:
 - `5d29b6d` "refactor(stash): the two skills go…" deletes `skills/circle-stash/SKILL.md`,
   `skills/circle-pop/SKILL.md`, `rules/workbench-stash-and-lock.md` and
   `hooks/lib/__tests__/circle-stash-git-exclusion.test.ts`. Cited on
-  `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`.
+  `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`.
 - `f45f76a` "refactor(drift): the counters go…" deletes `bin/fusion-state-drift`,
   `hooks/lib/state-drift.ts`, `hooks/state-drift.ts`,
   `hooks/lib/__tests__/state-drift-detection-lint.test.ts` and four `dist` siblings. Cited on
-  `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`.
+  `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`.
 
 Every file each record's prose names appears in the corresponding commit's deletion set. One
 wording imprecision, not corrected because it is not load-bearing: `260806-1152` says `5d29b6d`
@@ -43,7 +43,7 @@ wording imprecision, not corrected because it is not load-bearing: `260806-1152`
 
 **Cost: +502 bytes on the always-on set. Head-room 6 206 -> 5 704.**
 
-## B. `analyst` gains a `PATTERNS` arm (decision `260815-1845`, option 3)
+## B. `analyst` gains a `PATTERNS` arm (decision `260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md`, option 3)
 
 `bin/fusion-rules` — new `analyst) PATTERNS="analyst" ;;` arm, `analyst` removed from the empty arm.
 
@@ -63,7 +63,7 @@ Three statements were made false by the arm and were repaired:
 - `docs/upgrading-to-v9.md` §4 — no longer says `analyst` draws no pattern, and no longer calls the
   question open.
 
-## C. `**Initiated by:**` required on every mode-3 run (decision `260814-1915`, option 1)
+## C. `**Initiated by:**` required on every mode-3 run (decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md`, option 1)
 
 `agents/shaper.md` — the `AskUserQuestion` self-test is deleted. The line is required on every
 portfolio-activation run, dispatched or top-level. The residual is carried in the prompt beside the
@@ -79,7 +79,7 @@ Others who believed the old two-case rule, both repaired:
 `curator.md:245`, `planner.md:71`, `shaper.md:131`) state "Run top-level (user-initiated). You have
 `AskUserQuestion`." The headless probes make that false for a headless top-level run. It is a claim
 about the clarification **channel**, not about the audit line, and correcting it properly needs the
-interactive-parent inheritance measurement that option 3 of `260814-1915` names and that no session
+interactive-parent inheritance measurement that option 3 of `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md` names and that no session
 has been able to take. Widening this change into those five would be deciding that unmeasured
 question by prose.
 
@@ -110,7 +110,7 @@ growth fits inside existing head-room, which is the condition for not moving one
 `66477e3`. All 10 are stale `_o_` citations of the three decision records that were renamed to `_a_`
 when the user's answers were appended. The fix form is the `_*_` wildcard (decision `260806-0015`).
 
-Not repaired here on purpose. `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+Not repaired here on purpose. `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
 is answered, and its closing paragraph assigns the obligation: "A change that renames a record's
 marker carries the grep for the old name itself." The renaming party is the session that appended
 the answers, not this dispatch, and record bookkeeping was excluded from it.
@@ -119,11 +119,11 @@ The 10, for whoever discharges them:
 
 | File | Lines |
 |---|---|
-| `circles/260801-1244-curator/_c_circle.md` | 140, 419 |
+| `260801-1244-curator` | 140, 419 |
 | `circles/260801-1244-curator/issues/260814-2017_o_the-newest-decision-record-carries-no-answered-implemented-footer-block…md` | 4, 37, 50 |
-| `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md` | 76, 89 |
-| `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences…md` | 163, 185 |
-| `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation…md` | 93 |
+| `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md` | 76, 89 |
+| `260810-2032_*_should-the-drift-checks-four-sentences…md` | 163, 185 |
+| `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation…md` | 93 |
 
 ## Not done, per the dispatch
 

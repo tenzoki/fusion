@@ -3,7 +3,7 @@
 **Date:** 2026-08-15 15:59
 **Agent:** coder
 **Status:** Complete
-**Task:** Plan step 11 of `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`, plus one reversal folded in from step 10.
+**Task:** Plan step 11 of `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`, plus one reversal folded in from step 10.
 **HEAD at start:** `dd312eb`
 
 ## Verification
@@ -157,7 +157,7 @@ argument against it is the gate's own: a Turn budget is a **configured ceiling**
 from `fusion-guard.json` through `bin/fusion-turn-budget` at Setup Step 2, and Setup Step 2
 runs on a resume exactly as on a fresh session. The persisted copy handed a resume nothing it
 could not resolve itself, while being one more number a session could write stale — and
-having several sources for this one value is the whole of issue `260811-1712`, which is why
+having several sources for this one value is the whole of issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`, which is why
 the gate exists.
 
 So the `### Format` case is **inverted rather than deleted**: it now asserts the field's

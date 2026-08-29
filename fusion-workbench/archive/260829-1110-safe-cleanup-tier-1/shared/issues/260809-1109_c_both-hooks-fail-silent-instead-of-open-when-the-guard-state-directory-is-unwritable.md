@@ -7,8 +7,8 @@
 **Filed by:** analyst, during the guard-enforced-policies analysis
 **Affects:** `hooks/guard.ts:776-781`, `hooks/tracker.ts:532-537`
 **Cross-references:**
-`fusion-workbench/shared/analyses/260809-1103-guard-enforced-policies.md` §Findings 2a-3,
-`circles/260801-1244-guard-rules-write/issues/260804-1607_c_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md` (closed; the visibility half of the same concern)
+`260809-1103-guard-enforced-policies.md` §Findings 2a-3,
+`260804-1607_*_guard-error-is-not-rendered-by-the-monitor-so-a-fail-open-guard-is-invisible.md` (closed; the visibility half of the same concern)
 
 ---
 
@@ -41,7 +41,7 @@ STDOUT: []
 STDERR: Error: EACCES: permission denied, open '.../.guard-state/events.jsonl'
 ```
 
-Empty stdout, non-zero exit. The same shape reproduced in `tracker.js`, where it additionally suppressed a halt that the same run had already earned (see the snapshot-staleness record `260809-1108`).
+Empty stdout, non-zero exit. The same shape reproduced in `tracker.js`, where it additionally suppressed a halt that the same run had already earned (see the snapshot-staleness record `260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md`).
 
 `speculation:` how Claude Code treats a PreToolUse hook that exits non-zero with empty stdout. I did not measure it. Both readings are bad in different ways: read as "no verdict", the guard is off with no notice; read as an error, the agent is blocked with no reason. Neither is the "fail open" the comment promises, and the ambiguity itself is worth removing.
 
@@ -62,8 +62,8 @@ Worth checking in the same pass whether the same inversion exists in the other c
 
 ---
 
-**Reconciliation 260809-1651 (reconciler, domain `code`) — stays `_o_`. Checked because this session rewrote one of the two files it names.**
-`hooks/tracker.ts` was substantially rewritten in `62f5490` and `d8745f0`, so the handler this record cites by line was a plausible incidental fix. It was not touched. Both top-level handlers still call `emitEvent` before the verdict: `hooks/guard.ts` ends `emitEvent(...)` then `allow()`, `hooks/tracker.ts` ends `emitEvent(...)` then `respond()`. All four acceptance criteria remain unmet. One thing did change in the record's favour: the sharper instance it inherited from `260809-1108` — a stale before-picture surviving the same failure — is closed, so the fail-silent path now costs a lost verdict rather than a lost verdict plus a wrong revert.
+**Reconciliation 260809-1651-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Checked because this session rewrote one of the two files it names.**
+`hooks/tracker.ts` was substantially rewritten in `62f5490` and `d8745f0`, so the handler this record cites by line was a plausible incidental fix. It was not touched. Both top-level handlers still call `emitEvent` before the verdict: `hooks/guard.ts` ends `emitEvent(...)` then `allow()`, `hooks/tracker.ts` ends `emitEvent(...)` then `respond()`. All four acceptance criteria remain unmet. One thing did change in the record's favour: the sharper instance it inherited from `260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md` — a stale before-picture surviving the same failure — is closed, so the fail-silent path now costs a lost verdict rather than a lost verdict plus a wrong revert.
 
 ---
 Resolved: the verdict is written before the report in all three hook entry points. `hooks/lib/fail-open.ts` is the new shared tail — it calls the hook's own verdict function first and unguarded, then the event emit and the stderr marker in a `try` each, so neither reporting step can withdraw a verdict already written or take the other down with it. `hooks/guard.ts` and `hooks/tracker.ts` now end in `failOpen("guard", err, allow, …)` / `failOpen("tracker", err, () => respond(), …)`; `hooks/session-start.ts` routes its handler through the same helper with no event emit, which is the one way its situation differs (it writes nothing under `.guard-state/` on any path, so it has no log to append to).
@@ -72,4 +72,4 @@ Measured on the real hooks as subprocesses, scratch project, `.guard-state/` at 
 
 `hooks/clear-halt.ts` was checked and deliberately not given a fail-open tail: it is a manual tool reporting to a human, owes Claude Code no verdict, and a run that could not do its job must exit non-zero with the stack trace rather than print a reassuring line. The reporting half does apply there, so its closing `emitEvent` is now best effort with a note on stderr — the halt is already cleared by then and an unwritable log must not cost the confirmation.
 
-One consequence surfaced while measuring and is filed rather than fixed here: with `.guard-state/` unwritable, `guard.ts` persists the escalation counter before it writes a deny, so the deny is lost and the fail-open allow goes out on a protected path — `shared/issues/260809-1825_*_an-unwritable-guard-state-directory-turns-….md`. Not a regression (the same call previously exited 1 with empty stdout), and the same ordering defect one level down.
+One consequence surfaced while measuring and is filed rather than fixed here: with `.guard-state/` unwritable, `guard.ts` persists the escalation counter before it writes a deny, so the deny is lost and the fail-open allow goes out on a protected path — `260809-1825_*_an-unwritable-guard-state-directory-turns-….md`. Not a regression (the same call previously exited 1 with empty stdout), and the same ordering defect one level down.

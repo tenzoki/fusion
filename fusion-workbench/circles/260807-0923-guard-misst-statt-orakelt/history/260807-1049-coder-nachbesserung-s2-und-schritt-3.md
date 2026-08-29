@@ -3,13 +3,13 @@
 **Datum:** 2026-08-07
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_o_plan-guard-misst-statt-orakelt.md`, Nachbesserung zu Schritt 2 und Schritt 3
+**Plan:** `260807-0931_*_plan-guard-misst-statt-orakelt.md`, Nachbesserung zu Schritt 2 und Schritt 3
 **Nicht committet** — der Auftrag schließt das Committen aus.
 
 ## Teil 1 — der Fingerabdruck trägt den Inhalt
 
 Vom Nutzer am 260807 entschieden, auf Vorschlag des Befundsatzes
-`260807-1026_c_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`.
+`260807-1026_*_rueckrollen-auf-head-kann-menschliche-vorarbeit-verwerfen.md`.
 
 | Datei | Art |
 |---|---|

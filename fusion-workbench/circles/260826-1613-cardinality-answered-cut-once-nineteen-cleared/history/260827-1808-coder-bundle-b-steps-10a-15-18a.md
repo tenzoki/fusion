@@ -1,12 +1,12 @@
 # coder — Bundle B steps 10a, 15, 18a
 
-**Plan:** `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md`
+**Plan:** `260827-1756_*_repair-the-twenty-open-defect-records.md`
 **Status:** Complete
 
 ## Done
 
 - 10a: `CLAUDE.md` `## Release process`, one sentence appended to the two-session paragraph: a `bin/` helper added in a session is absent from `$FUSION_PLUGIN_ROOT` until `fusion --update`, every `[ -x ]` call site takes its miss branch for the rest of that session; cites `shared/issues/260825-1329_*` by starred path. Record 10 left at `_p_` (closes at 10b).
-- 15: `hooks/lib/__tests__/reference-resolution-lint.test.ts:479`, the `2026-08-26 (C4 Turn 3 task Z-2)` clause now states the two facts separately (`hooks/dist/` outside `surface()`; `hooks/lib` sources `recordsOnly`). File stays 990 lines. Issue `shared/issues/260826-1330` closed with `Resolved:`, renamed `_p_` -> `_c_` (plain `mv`; the file was untracked, so `git mv` refused).
+- 15: `hooks/lib/__tests__/reference-resolution-lint.test.ts:479`, the `2026-08-26 (C4 Turn 3 task Z-2)` clause now states the two facts separately (`hooks/dist/` outside `surface()`; `hooks/lib` sources `recordsOnly`). File stays 990 lines. Issue `260826-1330` closed with `Resolved:`, renamed `_p_` -> `_c_` (plain `mv`; the file was untracked, so `git mv` refused).
 - 18a: `rules/workbench-tracking.md` `## The four classes`, the `.guard-state/` paragraph enumerates the live set (`review-coverage.json`, `staging-drift.json`, `dispatch-map.json`, `events.jsonl`) and the leftovers with their retiring commits: `escalation.json` (2026-08-16, `9c79202`), `churn.json` (`a69d56e`), `state-drift.json` (`f45f76a`). No count word for the set. Record 18 left open (closes at 18b).
 
 ## Verification

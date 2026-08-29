@@ -6,11 +6,11 @@ Closing the plan and the verbosity record dangles seventeen marker-literal citat
 the next act this Circle's closure needs, and the person who meets the failure will not be the
 person who wrote the citations.
 **Domain:** code
-**Filed by:** reconciler, final pass on `circles/260821-1042-reply-bounded-whole-question-answered`
+**Filed by:** reconciler, final pass on `260821-1042-reply-bounded-whole-question-answered`
 at HEAD `9a68760`
-**Affects:** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`,
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
-**Cross-references:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md`
+**Affects:** `260821-1805_*_plan-reply-bounded-whole-question-answered.md`,
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+**Cross-references:** `260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md`
 is the same class, filed against a different Circle's closure and never closed;
 `rules/fusion-workbench-conventions.md` `## Marker globs` states the `_*_` citation form this
 repairs to.
@@ -25,18 +25,18 @@ Fifteen citations across twelve workbench files spell its `_o_` marker literally
 sit inside the corpus `hooks/lib/__tests__/workbench-citation-lint.test.ts` recomputes from the
 tree on every run, so they are judged rather than merely wrong:
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`
-- `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`
-- `shared/issues/260821-2206_*_the-german-voice-profiles-name-en-dash-as-the-character-to-avoid-while-every-other-surface-counts-em-dash.md`
-- `shared/issues/260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md` (two tokens)
-- `shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
+- `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`
+- `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`
+- `260821-2206_*_the-german-voice-profiles-name-en-dash-as-the-character-to-avoid-while-every-other-surface-counts-em-dash.md`
+- `260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md` (two tokens)
+- `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
 
 The remaining ten are in history files, analyses and the two review files, which the gate's
 predicates do not cover. They dangle for a reader without reddening anything.
 
-**The verbosity record.** `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+**The verbosity record.** `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 is the record this Circle was cut to close. Two citations spell its `_o_` marker literally, both in
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`,
+`260820-2249_*_spec-style-rules-arrive-and-get-measured.md`,
 which carries `_o_` and is therefore an in-corpus spec even though its Circle is closed.
 
 ## How it was measured
@@ -79,14 +79,14 @@ across sixteen markdown files, one of them added after this record was filed.
 **Fourteen were pointers and were rewritten to `_*_`** per `rules/fusion-workbench-conventions.md`
 `## Marker globs`, marker position only — one live decision, one open issue, two shared open issues
 (three tokens), six history logs, one analysis (two tokens) and one review (two tokens). Example:
-the `**Task:** Step 4 of …` line at `.../history/260821-2132-ontocoder-two-register-habits-in-four-profile-files.md:6`.
+the `**Task:** Step 4 of …` line at `.../260821-2132-ontocoder-two-register-habits-in-four-profile-files.md:6`.
 
 **Two were statements and keep their content.** Both are the coderev self-report about a `sed -i ''`
 run whose whole subject is which literal substitution the command could have made, so a star would
 have made the sentence read as a substitution of a token for itself. They were treated differently
 because the corpus predicate reaches one and not the other. The review copy
-(`.../reviews/260821-2215-coderev-the-bounded-reply-circle.md:96`) is out of the gate's corpus and
-stands verbatim. The copy at `shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md:81`
+(`.../260821-2215-coderev-the-bounded-reply-circle.md:96`) is out of the gate's corpus and
+stands verbatim. The copy at `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md:81`
 is an open shared issue and therefore judged, so it was rewritten in prose — it now names the marker
 position and the two markers without spelling an address, which is the first of the two remedies the
 gate's own failure message prescribes.
@@ -103,9 +103,9 @@ now points at a path that no longer exists, which is the orchestrator's to corre
 so it is not lost.
 
 **The verbosity record's half was deliberately withheld.**
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 keeps `_o_`, and its two citations in
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
+`260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
 were not touched, because they dangle only if that marker moves and it did not. The reason is not
 mechanical: the record's rule-text half is closed and verified, but nobody has observed whether a
 reply actually changed, and the after-measurement that would answer it is defined and deliberately

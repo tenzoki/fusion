@@ -3,8 +3,8 @@
 **Date:** 2026-08-21
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
-**Plan step:** 2 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
+**Plan step:** 2 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Base commit:** `58aae9b`
 
 ## What changed
@@ -19,7 +19,7 @@
    "Details" anchor, which left the tail unbounded. Now: 25 lines in total, of which at most 10
    before the anchor. The header cap and its stated reason survive. What will not fit stays in the
    session history file the summary already links. The line cites
-   `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`,
+   `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`,
    wildcarded at the marker position, which is where the 25 comes from: the user answered at the
    plan gate and took the planner's recommendation as filed.
 3. **The chat-reply remedy** (`## Length`). The Details half of *"move detail to a Details trailing
@@ -38,7 +38,7 @@
 with the attribution comment the gate's own failure message asks for.
 
 No heading was renamed, added or removed. No test was added and no gate was built, per
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.
 The clauses land unenforced, which is the decided outcome.
 
 ## Measurements

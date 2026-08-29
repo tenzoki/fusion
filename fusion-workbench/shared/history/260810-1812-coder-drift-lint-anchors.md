@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** `I:260810-0502-drift-lint` (tasklist task 7, session `260810-1646-orchestrator-session.md` Turn 1)
-**Source:** `shared/issues/260810-0502_p_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
+**Source:** `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
 **Files changed:** `hooks/lib/__tests__/state-drift-detection-lint.test.ts` (only)
 
 ---

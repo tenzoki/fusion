@@ -5,8 +5,8 @@
 **Status:** open
 **Filed by:** planner, planning the C5b remediation
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/issues/260804-1432_*_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md` (item 2, the half this record carries so the issue can close on item 1),
-`circles/260801-1244-guard-rules-write/decisions/260803-1419_i_how-should-the-protected-path-check-treat-the-case-of-a-path.md` (where the protection side chose unconditional folding, deliberately leaving these two callers alone),
+`260804-1432_*_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md` (item 2, the half this record carries so the issue can close on item 1),
+`260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md` (where the protection side chose unconditional folding, deliberately leaving these two callers alone),
 `hooks/lib/paths.ts` `matchesAny` (case-sensitive) and `matchesAnyFolded` (the protection side)
 
 ---
@@ -58,4 +58,4 @@ Deferred:
 Superseded by:
 
 ---
-Deferred: not this Circle — user's call, 2026-08-04. The half of `260804-1432` that was a false claim on disk is already corrected: `hooks/lib/paths.ts` no longer says the state is unreachable, because the C5b loader made it reachable. What remains is a behaviour choice that does not gate the ship and that would be the sixth question competing for attention in a Circle already carrying five security boundaries. Revisit when a project reports a category that misses its own file, or alongside `circles/260804-1205-shell-reachability-model` if path matching is unified there. The current behaviour is case-sensitive and the docstring now says so plainly rather than claiming the question cannot arise.
+Deferred: not this Circle — user's call, 2026-08-04. The half of `260804-1432_*_two-case-sensitive-matches-lib-paths-calls-unreachable-become-project-reachable-with-the-c5b-loader.md` that was a false claim on disk is already corrected: `hooks/lib/paths.ts` no longer says the state is unreachable, because the C5b loader made it reachable. What remains is a behaviour choice that does not gate the ship and that would be the sixth question competing for attention in a Circle already carrying five security boundaries. Revisit when a project reports a category that misses its own file, or alongside `260804-1205-shell-reachability-model` if path matching is unified there. The current behaviour is case-sensitive and the docstring now says so plainly rather than claiming the question cannot arise.

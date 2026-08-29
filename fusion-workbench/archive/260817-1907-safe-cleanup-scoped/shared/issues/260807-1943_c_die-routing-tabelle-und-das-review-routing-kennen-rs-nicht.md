@@ -6,7 +6,7 @@ Die Routing-Tabelle und das Review-Routing des Orchestrators kennen `.rs` nicht,
 **Domain:** code
 **Filed by:** consultant, gefunden beim Nachprüfen einer Meldung aus dem konsumierenden Projekt KRK
 **Affects:** `agents/orchestrator.md:290` (Agent Routing Table), `agents/orchestrator.md:380` (Phase 2, Step 3c, Review-Routing)
-**Cross-references:** `fusion-workbench/shared/issues/260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` — aus derselben Prüfung, der Befund zur gemeldeten Ursache
+**Cross-references:** `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md` — aus derselben Prüfung, der Befund zur gemeldeten Ursache
 
 ---
 

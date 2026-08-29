@@ -1,8 +1,8 @@
 # coder — wire the mutation classifier into the guard (plan step 5)
 
 **Date:** 2026-08-01 15:30
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 5
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 5
 **Status:** Complete
 
 ## What was implemented
@@ -55,7 +55,7 @@ roots (no plugin manifest at cwd → guard active; a fake `{"name":"fusion"}` ma
 - `mv`, `rm -f`, `sed -i`, `tee`, `printf >`, `git mv` against `rules/x.md` each block,
   naming the segment and the path.
 - Seven innocuous Bash calls after a block leave `consecutiveBlocks` at 1 and
-  `events.jsonl` at one line — the 260707-0750 and 260707-0751 constraints, on the files.
+  `events.jsonl` at one line — the 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md and 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md constraints, on the files.
 - Three consecutive denies → `consecutiveBlocks: 3`, `haltActive: true`, third event
   `guard_halt`.
 - Stand-down pair: `mv rules/x.md /tmp/` allowed while `git switch main` denied.

@@ -4,7 +4,7 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 2 of `circles/260801-1244-guard-rules-write` (`bf75941..HEAD`)
+**Filed by:** coderev, reviewing Turn 2 of `260801-1244-guard-rules-write` (`bf75941..HEAD`)
 **Affects:** every guard check on both surfaces — protected path, decision-governed,
 rules-write exemption, halt. Not the git branch policy, which returns above the failure.
 **Status at HEAD:** pre-existing in `lib/escalation.ts`, unchanged by this diff. In scope
@@ -116,7 +116,7 @@ shape.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while probing the new `FsLocator`'s failure
+Found in `260801-1244-guard-rules-write` while probing the new `FsLocator`'s failure
 modes for a fail-open. The locator has none — every throw returns null or false and refuses
 the grant, which leaves the path protected. The fail-open is one layer up, in a module this
 diff did not touch but now calls on the Bash path as well as the write-tool path.

@@ -3,7 +3,7 @@
 **Agent:** coder · **Date:** 2026-08-01 · **Status:** Complete
 
 Closes the two issues from the `e31c0f3..HEAD` review
-(`reviews/260801-1958-coderev-turn-2-fixes.md`), both regressions of Turn 2.
+(`260801-1958-coderev-turn-2-fixes.md`), both regressions of Turn 2.
 
 ## What changed
 
@@ -56,11 +56,11 @@ which is why the unresolvable sub-subcommand is fail-closed.
 
 ## Not done, deliberately
 
-Version not bumped, plan file untouched, nothing committed — per the task. `260801-1904`
+Version not bumped, plan file untouched, nothing committed — per the task. `260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md`
 (Low, three deletable behaviours) is untouched and still open.
 
 ## Artifacts
 
-- `issues/260801-1955_c_…` — High, resolved
-- `issues/260801-1956_c_…` — Medium, resolved
-- `issues/260801-1903_c_…` — correction appended to its false closing note
+- `260801-1955_*_…` — High, resolved
+- `260801-1956_*_…` — Medium, resolved
+- `260801-1903_*_…` — correction appended to its false closing note

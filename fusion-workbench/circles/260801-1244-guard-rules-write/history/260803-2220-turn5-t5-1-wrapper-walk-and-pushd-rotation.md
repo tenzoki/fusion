@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-03 22:20
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 2 of this session (the Circle's fifth)
-**Task:** T5-1 — close `260803-2038` (High), `260803-2039` (High), `260803-2040` (Low)
-**Source review:** `reviews/260803-2041-coderev-turn4-working-directory-allow-list.md`
+**Circle:** `260801-1244-guard-rules-write`, Turn 2 of this session (the Circle's fifth)
+**Task:** T5-1 — close `260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md` (High), `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md` (High), `260803-2040_*_the-ambient-cdpath-check-reads-the-hooks-environment-not-the-shell-the-command-runs-in.md` (Low)
+**Source review:** `260803-2041-coderev-turn4-working-directory-allow-list.md`
 **Suite:** `npm test` — 1182 passed, 24 files, green (was 1167)
 
 ---

@@ -19,7 +19,7 @@ repository, not the distribution.
 
 It was seen and deliberately not filed. The Turn-2 review records it under
 `## Two working-tree observations, filed nowhere`
-(`shared/reviews/260819-0832-coderev-turn-2-ten-closures-carried-scope-and-the-baseline-re-approval.md`),
+(`260819-0832-coderev-turn-2-ten-closures-carried-scope-and-the-baseline-re-approval.md`),
 correctly noting it is outside the range it was reviewing. A review document is not a filing home:
 `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing` names review documents
 explicitly among the places an item must not be left. This record moves it to one.
@@ -34,7 +34,7 @@ The second working-tree observation in the same review section is **not** filed 
 `git worktree` registration at `3a0408a` under another session's scratchpad belongs to that session
 and is not this repository's state to correct.
 
-**Found by:** reconciler, final reconciliation of session `260818-2301`, verified at HEAD `83488e9`.
+**Found by:** reconciler, final reconciliation of session `260818-2301-orchestrator-session.md`, verified at HEAD `83488e9`.
 No Circle is active, so it is filed in the shared store under the Origin Rule.
 
 ---

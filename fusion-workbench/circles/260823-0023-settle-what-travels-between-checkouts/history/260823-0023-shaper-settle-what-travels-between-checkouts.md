@@ -3,7 +3,7 @@
 **Date:** 2026-08-23
 **Agent:** shaper (anticipated-circle mode, dispatched via `/fusion:direct`)
 **Domain:** code
-**Product:** `circles/260823-0023-settle-what-travels-between-checkouts/_a_circle.md`
+**Product:** `260823-0023-settle-what-travels-between-checkouts`
 
 ## The draft
 
@@ -15,13 +15,13 @@ The draft arrived as prose rather than as a backlog entry, so no backlog entry w
 
 Six questions were put to the user and answered. The answers are recorded in full in the Circle's `## Grounding snapshot`; what follows is the shape of each decision and the cost the user accepted with it.
 
-1. **Event-log merge behaviour.** Option 1 of `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`: a union merge driver in a root `.gitattributes`. The C1 pass had already measured the option end to end, both the clean merge and the loss of chronological order. Accepted cost: every reader of the log must sort by `ts`.
+1. **Event-log merge behaviour.** Option 1 of `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`: a union merge driver in a root `.gitattributes`. The C1 pass had already measured the option end to end, both the clean merge and the loss of chronological order. Accepted cost: every reader of the log must sort by `ts`.
 
-2. **A pulled Circle record marked active.** Option 3 of `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`: `/fusion:setup` reports the state and offers activation as the user's own act. Accepted cost: one more gate on the setup surface, and a gate that informs without preventing.
+2. **A pulled Circle record marked active.** Option 3 of `260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`: `/fusion:setup` reports the state and offers activation as the user's own act. Accepted cost: one more gate on the setup surface, and a gate that informs without preventing.
 
 3. **The setup marker.** The write in `skills/setup/SKILL.md` changes rather than the classification in `rules/workbench-tracking.md` or the specification's class R3 paragraph. Write only when the file is missing or the plugin version changes, and drop `setup_pwd`. Accepted cost: bytes on the surface C0 has just cleared.
 
-4. **The filename convention under several checkouts.** Kept out of this Circle. `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md` stays open and is answered before C3, where the record templates are opened anyway.
+4. **The filename convention under several checkouts.** Kept out of this Circle. `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md` stays open and is answered before C3, where the record templates are opened anyway.
 
 5. **How the merge driver reaches a consuming project.** `/fusion:setup` creates or amends the `.gitattributes` line. This went **against** the shaper's own suggestion, which was to leave the line to the project's maintainer. Two costs accepted: bytes on the skill surface, and the fact that Setup would for the first time write a file outside `fusion-workbench/`. The user asked for the second to be treated expressly in the Grounding as an expansion of what Setup touches rather than as a byte question, and it is.
 
@@ -37,4 +37,4 @@ No spec was written; in this mode the Circle record is the artifact. No issue wa
 
 ## Result
 
-Circle `260823-0023-settle-what-travels-between-checkouts`, marker `_a_`, six artifact subdirectories created, no Turn started. It is capability C2 of `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` and depends on the closed C1 Circle `260822-1921-measure-what-two-checkouts-share`. Activation is the user's separate act via `/fusion:next`.
+Circle `260823-0023-settle-what-travels-between-checkouts`, marker `_a_`, six artifact subdirectories created, no Turn started. It is capability C2 of `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` and depends on the closed C1 Circle `260822-1921-measure-what-two-checkouts-share`. Activation is the user's separate act via `/fusion:next`.

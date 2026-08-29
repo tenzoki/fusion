@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (UX round, findings 5–7 of the 260827 UX review), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `rules/orchestrator-resume.md` (finding 5) · `skills/cadence/SKILL.md` `### 7b` (finding 6) · `skills/setup/SKILL.md` and `agents/orchestrator.md` Setup step 6 (finding 7) · `shared/decisions/260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md` (findings 3–4, same round)
+**Cross-references:** `rules/orchestrator-resume.md` (finding 5) · `skills/cadence/SKILL.md` `### 7b` (finding 6) · `skills/setup/SKILL.md` and `agents/orchestrator.md` Setup step 6 (finding 7) · `260827-1330_*_does-the-session-ask-for-its-directive-first-and-wait-silently.md` (findings 3–4, same round)
 
 ---
 

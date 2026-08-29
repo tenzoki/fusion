@@ -35,16 +35,16 @@ starts, which is exactly the moment the next agent runs the suite.
 
 ## What resolves it
 
-Rewriting the four citations to `circles/260821-1042-reply-bounded-whole-question-answered/_*_circle.md`
+Rewriting the four citations to `260821-1042-reply-bounded-whole-question-answered`
 clears the four failures. That is a repair rather than a fix: the next anticipated Circle with
 scoping decisions filed against it reproduces the condition. The fix is that whoever writes a
 citation of a Circle record writes the wildcard form, which
-`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`
+`260806-0015_*_zitierform-fuer-workbench-records.md`
 already ratified, and which `rules/circle-records.md` and the agent prompts that file against an
 anticipated Circle do not currently say in the place the writer is looking.
 
 Adjacent and not the same:
-`shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md`
+`260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md`
 measures stale citations written *inside* Circle records. This one is about citations *of* a Circle
 record from elsewhere, and about the rename that breaks them all at once.
 

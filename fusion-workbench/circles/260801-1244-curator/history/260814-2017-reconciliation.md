@@ -4,7 +4,7 @@
 **Agent:** reconciler
 **Domain:** `code`
 **Verified against:** the working tree at HEAD `41c224c`
-**Session:** `shared/history/260813-2345-orchestrator-session.md`, range `d7786eb..41c224c`, 25 commits, 5 Turns, 10 tasks
+**Session:** `260813-2345-orchestrator-session.md`, range `d7786eb..41c224c`, 25 commits, 5 Turns, 10 tasks
 **Status:** Complete
 
 ---
@@ -12,7 +12,7 @@
 ## What this pass was
 
 The final reconciliation before Circle `260801-1244-curator` closes. A previous pass ran mid-session
-at HEAD `18173e1` (`circles/260801-1244-curator/history/260814-1457-reconciliation.md`) and left the
+at HEAD `18173e1` (`260814-1457-reconciliation.md`) and left the
 Circle's plan and spec correct; six commits have landed since. This pass re-derived that pass's
 verdicts rather than inheriting them, covered the six new commits, and computed the three-edge
 Coherence verdict that decides how the Circle closes.
@@ -60,7 +60,7 @@ bound and not a report. Re-run by this pass:
 BUDGET` report printed for any role. Turn 5's rule-file edit spent 415 of the remaining head-room
 and the bound held.
 
-**T7, the Directive's proof half.** `circles/260801-1244-curator/history/260814-1332-curator-run.md`
+**T7, the Directive's proof half.** `260814-1332-curator-run.md`
 exists at 211 776 bytes and 2 633 lines. Its head states "approved: all 28 entries; 28 applied, 0
 skipped, 0 stale, 0 failed", and §5 records that all 28 are tier 1 with no constraint removed at any
 tier. The corrections landed in `1a36fe4`. The corpus-wide question the run could not settle —
@@ -74,7 +74,7 @@ decision rather than answered, which is the spec's own second admissible form.
 ### Repaired by this pass
 
 **A decision record's header contradicted its own filename.**
-`shared/decisions/260813-0027_i_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`
+`260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md`
 read `**Status:** open` while the filename marker said implemented and the file carried both an
 `Answered:` and an `Implemented:` footer. The record walked open → answered → implemented across
 commits `e02f268` and `0b14d03`; both renames moved the marker and neither touched the header.
@@ -86,7 +86,7 @@ roster rows. All three agree at HEAD.
 ### Re-measured and left open
 
 **The status-versus-marker population grew.**
-`shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`
+`260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`
 measured 34 of 74 on 2026-08-12. Re-derived at HEAD by comparing each filename's marker against that
 file's `**Status:**` line: **39 raw mismatches over 86 records**, of which 4 are false positives of
 the naive comparison (a header carrying the right word plus a parenthetical annotation an earlier
@@ -104,15 +104,15 @@ worth naming because each was verified by a command, not by reading the record:
 - `260814-1419_o` (three Plane files entered the layout tree and the two per-surface arguments were
   not extended) — `rules/fusion-workbench-conventions.md:64-66` carries the three files;
   line 71's justification paragraph names none of them, and the tracked-versus-live split at `:75`
-  contains zero occurrences of "plane". Stands, and its shared sibling `260810-0410_o` stands with it.
+  contains zero occurrences of "plane". Stands, and its shared sibling `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md_o` stands with it.
 - `260814-1419_o` (the golden-regeneration history says eighteen agent blocks) —
-  `circles/260801-1244-curator/history/260814-1352-coder-golden-regeneration.md:23` still reads "all
+  `260814-1352-coder-golden-regeneration.md:23` still reads "all
   eighteen agent blocks". Stands.
-- `shared/issues/260814-1001_o` (the skills array omits two skills) —
+- `260814-1001_o` (the skills array omits two skills) —
   `hooks/lib/__tests__/fusion-paths.test.ts:22-26` lists 15 names, `ls skills/` returns 17;
   `cadence` and `seed-from-plane` are the two missing. Stands.
 
-`shared/issues/260814-1419_o` (the shipped chat-voice profiles changed and the workbench copies did
+`260814-1419_o` (the shipped chat-voice profiles changed and the workbench copies did
 not) also stands: `stilwerk/chat-voice-de.yaml` is 7 358 bytes against the workbench copy's 7 353,
 and `chat-voice-en.yaml` is 6 800 against 6 801. The two long-form profiles match exactly.
 
@@ -123,7 +123,7 @@ and `chat-voice-en.yaml` is 6 800 against 6 801. The two long-form profiles matc
 All four are filed in this Circle's own store per the Origin Rule — each arose from running this
 Directive rather than being found beside it.
 
-**1. `260814-2017_o_an-uncommitted-turn-budget-edit-to-fusion-guard-json-makes-the-suite-red-at-the-working-tree-while-head-is-green.md`**
+**1. `260814-2017_*_an-uncommitted-turn-budget-edit-to-fusion-guard-json-makes-the-suite-red-at-the-working-tree-while-head-is-green.md`**
 
 `cd hooks && npm test` fails 1 of 1 030 tests in the working tree. The failing case is
 `config.test.ts:1325-1336`, which asserts the root `fusion-guard.json` is byte-identical to
@@ -139,7 +139,7 @@ Neither existing check would have caught it: `bin/fusion-staging-drift` reports 
 scans `fusion-workbench/` only and this file sits at the project root, and
 `bin/fusion-review-coverage` tiles commits, of which an uncommitted change is not one.
 
-**2. `260814-2017_o_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`**
+**2. `260814-2017_*_turn-5-edited-three-shipped-surfaces-including-an-always-on-rule-file-and-no-review-pass-ever-opened-them.md`**
 
 `bin/fusion-review-coverage` reports `uncovered=3` — `6d433c2`, `9f4cdac`, `41c224c`. The middle one
 is Turn 5's work commit and it edits `README-agents.md`, `agents/orchestrator.md` and
@@ -151,7 +151,7 @@ This is the measurement working and nothing acting on it — the record proposes
 over `6d433c2..HEAD` before closure, and separately giving the resume path the check, and states why
 taking one without the other leaves a hole.
 
-**3. `260814-2017_o_three-of-the-five-turns-have-no-per-turn-section-and-turn-5-is-absent-from-the-circle-turn-log-while-the-drift-check-reads-clean.md`**
+**3. `260814-2017_*_three-of-the-five-turns-have-no-per-turn-section-and-turn-5-is-absent-from-the-circle-turn-log-while-the-drift-check-reads-clean.md`**
 
 The session history's `## Per-Turn Log` carries `### Turn 1`, `### Turn 2` and `### Turn 3,
 continued` and nothing else. The Circle record's `## Turn log` runs Turn 1, 2, 3, 3-continued, 4 —
@@ -173,9 +173,9 @@ surface is missing.
 
 ## One new decision record
 
-**`shared/decisions/260814-2017_o_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`**
+**`260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`**
 
-`shared/planning/260801-1122_o_spec-normative-consolidation.md` spans four Circles and has now had
+`260801-1122_*_spec-normative-consolidation.md` spans four Circles and has now had
 three reconciliation passes decline to move its marker, each on the ground that Circles were still
 outstanding. With `260801-1244-curator` closing, that ground expires. But three of the spec's
 capabilities were *retired* rather than delivered — C9 by user direction, C4 by user decision on
@@ -194,8 +194,8 @@ delivered, and pointing at the decision.
 
 None found this pass. Every open record in the Circle store resolves to "go fix it" and belongs where
 it is. The one item in the Circle whose remedy is a choice —
-`260814-1850_o_the-halt-that-guards-the-audit-trail-…` — is correctly filed as a defect *and* cites
-its closing decision `260814-1915_o`, which is the right shape: the defect is real, and answering the
+`260814-1850_*_the-halt-that-guards-the-audit-trail-…` — is correctly filed as a defect *and* cites
+its closing decision `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md_o`, which is the right shape: the defect is real, and answering the
 decision is what closes it.
 
 ---
@@ -203,7 +203,7 @@ decision is what closes it.
 ## Coherence verdict
 
 Computed at session end and written to
-`shared/history/260813-2345-orchestrator-session.md` `## Coherence`, which is the surface the
+`260813-2345-orchestrator-session.md` `## Coherence`, which is the surface the
 orchestrator reads at Phase 3.
 
 **Verdict: `review-needed`.** One of the three edges is flagged: Artifact↔Grounding. The two others
@@ -221,23 +221,23 @@ Turn log missing its last Turn. None of the three is a defect in what was built.
 
 | File | What changed |
 |---|---|
-| `shared/decisions/260813-0027_i_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` | `**Status:**` corrected `open` → `implemented`; reconciliation evidence appended |
-| `shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` | re-measurement appended, 35 of 86; stays open |
-| `circles/260801-1244-curator/planning/260814-0845_c_plan-curator.md` | second reconciliation entry at HEAD `41c224c` |
-| `circles/260801-1244-curator/planning/260814-0738_c_spec-curator.md` | second reconciliation entry at HEAD `41c224c` |
-| `shared/planning/260801-1122_o_spec-normative-consolidation.md` | reconciliation entry; marker stays `_o_` pending the new decision |
-| `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md` | per-finding annotation, F1 and F3 resolved, F2 and F4-F6 standing |
-| `shared/history/260813-2345-orchestrator-session.md` | `## Coherence` section appended (append-only, this pass's only cross-agent write) |
+| `260813-0027_*_should-the-orchestrator-be-able-to-dispatch-the-shapers-portfolio-activation-mode.md` | `**Status:**` corrected `open` → `implemented`; reconciliation evidence appended |
+| `260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` | re-measurement appended, 35 of 86; stays open |
+| `260814-0845_*_plan-curator.md` | second reconciliation entry at HEAD `41c224c` |
+| `260814-0738_*_spec-curator.md` | second reconciliation entry at HEAD `41c224c` |
+| `260801-1122_*_spec-normative-consolidation.md` | reconciliation entry; marker stays `_o_` pending the new decision |
+| `260814-1850-coderev-curator-turn-4.md` | per-finding annotation, F1 and F3 resolved, F2 and F4-F6 standing |
+| `260813-2345-orchestrator-session.md` | `## Coherence` section appended (append-only, this pass's only cross-agent write) |
 
 Plus the four defect records and the one decision record named above.
 
 ## What this pass did not touch, and why
 
-`circles/260801-1244-curator/_t_circle.md`, `fusion-workbench/agentstate.yaml` and the session
+`260801-1244-curator`, `fusion-workbench/agentstate.yaml` and the session
 history's non-Coherence sections are outside the reconciler's write set. Three findings above land
 on them and stay as records for the orchestrator's Phase-4 write: the Circle record's title and
-`## Dependencies` (`260814-0813_o`), its `## Grounding snapshot` lag on the answered growth-bound
-decision (`260814-0828_o`), and the missing Turn-5 entry (`260814-2017_o`).
+`## Dependencies` (`260814-0813_*_the-circle-records-title-and-dependencies-still-describe-the-conventions-file-as-the-validation-case.md_o`), its `## Grounding snapshot` lag on the answered growth-bound
+decision (`260814-0828_*_the-grounding-and-the-spec-still-call-the-growth-bound-decision-open-after-it-was-answered.md_o`), and the missing Turn-5 entry (`260814-2017_o`).
 
 ---
 
@@ -251,7 +251,7 @@ no way to see each other.
 
 **Correction 1 — the guard-config record is a duplicate and was closed.** The reviewer filed the same
 defect at 20:24 as
-`shared/issues/260814-2022_o_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`.
+`260814-2022_*_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`.
 That record is fuller (it carries the edit's mtime, 2026-08-14 19:35:20, which places it after the
 Turn-5 task reported a green suite at 19:12; the default at `hooks/lib/config.ts:277`; the
 `_turnBudget` note at `templates/fusion-guard.json:6`; and two cross-references to the same shape one
@@ -262,7 +262,7 @@ here was renamed `_c_` against it and the measurement stays on disk as an indepe
 observation.
 
 **Correction 2 — the review gap is being closed, and it was not harmless.** The record
-`260814-2017_o_turn-5-edited-three-shipped-surfaces-…` stays open, because
+`260814-2017_*_turn-5-edited-three-shipped-surfaces-…` stays open, because
 `bin/fusion-review-coverage` still reports `uncovered=3` with `reviews=5`: the reviewer's findings
 exist but its review file does not, and the helper tiles declared `**Reviewed-range:**` fields rather
 than filed issues. The record now says to close it on `uncovered=0`, not on the findings appearing.
@@ -271,7 +271,7 @@ than filed issues. The record now says to close it on `uncovered=0`, not on the 
 line-number citations into `agents/orchestrator.md` and `agents/shaper.md` were left standing in
 shipped documentation by `9f4cdac`, seven of them inside the same `## Dispatch parameters` table the
 commit corrected the other half of
-(`circles/260801-1244-curator/issues/260814-2022_o_ten-citations-that-bf9553f-staled-…`). Three
+(`260814-2022_*_ten-citations-that-bf9553f-staled-…`). Three
 checked here by reading the cited line: `README-agents.md:59` cites `agents/orchestrator.md:392`,
 which is a table separator row; `:61` cites `:850`, a sentence about how the review-coverage range is
 derived; `:72` cites `:438`, the plan-review human gate. All three are wrong at HEAD. So the
@@ -288,21 +288,21 @@ shipped.
 
 ## Addendum 2, 20:33 — final state
 
-`circles/260801-1244-curator/reviews/260814-2022-coderev-curator-turn-5.md` landed at 20:31,
+`260814-2022-coderev-curator-turn-5.md` landed at 20:31,
 declaring `**Reviewed-range:** d5b71f1..41c224c` and `**Not-opened:** none`. Re-running the helper:
 `commits=25`, `reviews=6`, `uncovered=0`, `verdict=covered`. The session's whole commit range is
 now covered by a review.
 
 **Two records closed on that fact, and one refiled.**
 
-- `260814-2017_c_turn-5-edited-three-shipped-surfaces-…` closed on the condition it set for itself:
+- `260814-2017_*_turn-5-edited-three-shipped-surfaces-…` closed on the condition it set for itself:
   `uncovered=0`, checked by running the helper rather than by observing that a reviewer had been
   active. Its second candidate fix does not close with it, so it was refiled as
-  `260814-2033_o_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md` —
+  `260814-2033_*_a-resume-that-re-enters-at-phase-3-never-asks-whether-the-turn-it-skips-past-was-reviewed.md` —
   the resume branch reads `bin/fusion-state-drift` and not the coverage helper, so the one moment the
   check was cheap is the one moment nothing asked, and the next resumed session reaches the same
   place.
-- `260814-2017_c_an-uncommitted-turn-budget-edit-…` closed as a duplicate, as addendum 1 records.
+- `260814-2017_*_an-uncommitted-turn-budget-edit-…` closed as a duplicate, as addendum 1 records.
 
 **The Turn-5 review filed four findings** (`F1` and `F2` High, `F3` Medium, `F4` Low), all four open
 at the time of writing. F1, the ten stale citations, and F2, the pinned `fusion-guard.json`, are the

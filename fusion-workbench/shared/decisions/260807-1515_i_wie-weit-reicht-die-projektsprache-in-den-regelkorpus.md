@@ -3,13 +3,13 @@
 ---
 **Domain:** code
 **Status:** implemented
-**Filed by:** reconciler, Abschluss-Pass zu `circles/260807-0923-guard-misst-statt-orakelt`, 260807-1515
+**Filed by:** reconciler, Abschluss-Pass zu `260807-0923-guard-misst-statt-orakelt`, 260807-1515
 **Cross-references:**
 `rules/fusion-workbench-conventions.md` `## Project language` (die einzige Stelle, die die Deklaration definiert),
 `rules/user-facing-output.md` (die Stelle, die sie anwendet),
 `bin/fusion-rules` (der einzige Leser im Code),
 `CLAUDE.md:3` (`**Language:** de`),
-`shared/decisions/260706-1902_i_consultant-chat-longform-boundary.md` (die letzte Entscheidung über Sprachprofile)
+`260706-1902_*_consultant-chat-longform-boundary.md` (die letzte Entscheidung über Sprachprofile)
 
 ---
 
@@ -105,7 +105,7 @@ beim Zählen auffallen. Wer die Frage aufnimmt, sollte das zuerst prüfen, statt
 ## Warum im geteilten Speicher
 
 Der Bruch ist älter als jeder Circle und erfasst den ganzen Regelkorpus. Aufgefallen ist er beim
-Abschluss von `circles/260807-0923-guard-misst-statt-orakelt`, verursacht hat ihn dessen
+Abschluss von `260807-0923-guard-misst-statt-orakelt`, verursacht hat ihn dessen
 Directive nicht. Herkunftsregel: neben der Arbeit gefunden, nicht von ihr verursacht.
 
 ## Answer (user, 260807-1925)
@@ -143,7 +143,7 @@ scopes the declaration to "prose output" needs to say "direct user interaction" 
 
 Checked against the tree, not against the header. The `_o_` → `_a_` transition is real on disk, the
 `**Status:** answered` line matches the filename marker, and the `Answered:` footer cites a path that
-resolves (`shared/history/260807-1917-orchestrator-session.md`, section `## Decisions answered`).
+resolves (`260807-1917-orchestrator-session.md`, section `## Decisions answered`).
 
 Two observations about the answer's reach in this session:
 
@@ -152,19 +152,19 @@ Two observations about the answer's reach in this session:
    exactly this reason. That is the boundary working in the same session that drew it.
 2. **One recorded deviation.** Commit `1d6c8b3`, which lands this record, carries a German message
    while the answer makes commit messages English. The user was shown this at the Coherence gate of
-   session `260807-1917` and chose to proceed; amending was declined. It is an accepted deviation,
+   session `260807-1917-orchestrator-session.md` and chose to proceed; amending was declined. It is an accepted deviation,
    not a defect, and it is noted here so a later reader does not read the commit as evidence against
    the boundary. Consequence 2 of the answer already covers the shape of it: existing German
    artifacts are not translated.
 
 Stays `_a_` rather than moving to `_i_`: the answer implies three rule-text edits and none of them
 was made, by explicit user choice ("nur festschreiben"). They are enumerated in the answer above and
-in `shared/history/260807-1917-orchestrator-session.md` `## Remaining Work`. This record moves to
+in `260807-1917-orchestrator-session.md` `## Remaining Work`. This record moves to
 `_i_` when the rule text carries the exempt-surface list, the `**Decidability:**` resolution, and the
 "direct user interaction" wording.
 
 ---
-Answered: shared/history/260807-1917-orchestrator-session.md `## Decisions answered` — the language declaration covers direct user interaction only; every persisted artifact is English.
+Answered: 260807-1917-orchestrator-session.md `## Decisions answered` — the language declaration covers direct user interaction only; every persisted artifact is English.
 Implemented: def9d13..cd48540 — the declaration is split in two, `**Language:**` for the chat surface and `**Artifact language:**` for everything that persists as a file, with the first governing both when the second is absent, and the three rule-text edits this record set as its condition have landed: the exempt-surface list and the direct-user-interaction boundary in `rules/fusion-workbench-conventions.md` `## Project language`, and the `**Decidability:**` resolution in `rules/critical-stance.md`. The endpoints name what the range spans — `def9d13` rewrote `## Project language` into the authoring home for both declarations, `cd48540` regenerated the emission golden and left the suite green — because the work landed as task-scoped commits rather than as one. Consequence 2 of the answer holds unchanged: no existing German artifact was translated.
 Deferred:
 Superseded by:

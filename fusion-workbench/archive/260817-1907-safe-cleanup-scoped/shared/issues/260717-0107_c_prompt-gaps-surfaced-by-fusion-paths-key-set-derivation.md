@@ -3,13 +3,13 @@ Prompt gaps surfaced by the fusion-paths key-set derivation
 ---
 **Domain:** code
 **Filed by:** `coder` in T3-A
-**Cross-references:** `fusion-workbench/decisions/260717-0033[a]-derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`, `fusion-workbench/issues/260717-0031[o]-p8-lint-gate-scope-open-questions-from-conversions.md` (item 4), `bin/fusion-paths`, `rules/fusion-workbench-conventions.md` `## Path Resolution`
+**Cross-references:** `260717-0033[a]-derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`, `260717-0031[o]-p8-lint-gate-scope-open-questions-from-conversions.md` (item 4), `bin/fusion-paths`, `rules/fusion-workbench-conventions.md` `## Path Resolution`
 
 ---
 
 ## Why this exists
 
-The decision to derive `fusion-paths` key sets from the prompts (`260717-0033[a]`) left one thing open and said so: derivation makes over-emission structurally impossible, and the over-emission signal goes silent with it. Several of those cases were **prompt gaps**, not spare keys. This is the "eigener Ort" the decision asked for. It is filed before the derivation is committed, so the signal survives the change rather than dissolving into it.
+The decision to derive `fusion-paths` key sets from the prompts (`260717-0033_*_derive-fusion-paths-key-sets-from-prompts-instead-of-declaring-them.md`) left one thing open and said so: derivation makes over-emission structurally impossible, and the over-emission signal goes silent with it. Several of those cases were **prompt gaps**, not spare keys. This is the "eigener Ort" the decision asked for. It is filed before the derivation is committed, so the signal survives the change rather than dissolving into it.
 
 ## What the derivation actually dropped
 
@@ -38,7 +38,7 @@ Not fixed in T3-A on purpose: that task's mandate excluded re-editing the prompt
 
 ## Consequence for P-8
 
-`260717-0031[o]` item 4 is answered by this and by the derivation:
+`260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md` item 4 is answered by this and by the derivation:
 
 - **Under-emission** — impossible now. The prompt naming a key is what creates it. Nothing left to gate.
 - **Over-emission** — impossible now, and its signal is this file.
@@ -48,13 +48,13 @@ Not fixed in T3-A on purpose: that task's mandate excluded re-editing the prompt
 Filed by `coder` in T3-A, from the delta between the declared key sets at `HEAD` and the sets derived from the prompts.
 
 ---
-Reconciliation 260731-2324 (reconciler, domain `code`) — **stays `_o_`. Not resolved by the v5.7.0 cadence work, and not overlapping with it.**
+Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **stays `_o_`. Not resolved by the v5.7.0 cadence work, and not overlapping with it.**
 
 Checked directly against the current prompts. **Five of the seven rows are still gaps; two are settled and should be struck from the table.** A bare `grep -c '$KEY'` returns 0 for all seven — that count alone is not the answer, because a key can be legitimately absent when the prompt has *decided* the agent does not perform the act.
 
 | Row | Key named? | Verdict now |
 |---|---|---|
-| `coderev` / `ontorev` → `$OUT_HISTORY` | no / no | **Settled — not a gap.** Decision `circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_reviewers-history-log-step.md` ruled the three reviewers *exempt*, and the exemption is documented in the prompts: `agents/coderev.md:69` and `agents/ontorev.md:62` both read "You write no separate session-history entry — your review file under `$OUT_REVIEW` is this session's durable record, and a history log would only duplicate it." (`agents/conceptrev.md:32` likewise.) Absence of the key is the correct realisation of a decided answer. |
+| `coderev` / `ontorev` → `$OUT_HISTORY` | no / no | **Settled — not a gap.** Decision `260718-2150_*_reviewers-history-log-step.md` ruled the three reviewers *exempt*, and the exemption is documented in the prompts: `agents/coderev.md:69` and `agents/ontorev.md:62` both read "You write no separate session-history entry — your review file under `$OUT_REVIEW` is this session's durable record, and a history log would only duplicate it." (`agents/conceptrev.md:32` likewise.) Absence of the key is the correct realisation of a decided answer. |
 | `coderev` / `ontorev` → `$OUT_DECISION` | no / no | **Settled — not a gap.** `agents/coderev.md:22` and `agents/ontorev.md:19` both instruct: check `*_o_*.md` and `*_a_*.md` under `$SCAN_DECISIONS`, then "Don't refile; cross-reference instead". The reviewers read the decision store and never write to it, so a read key without a write key is the intended shape. `inference:` the original "probable gap" verdict was reached from the declared-set delta alone, before the prompt line was read. |
 | `planner` → `$OUT_ISSUE` | no | **Still a gap, and the most consequential of the five.** `agents/planner.md:23` says the output is "planning documents only (in `$OUT_PLAN`), plus history and **issue entries** per conventions" and `:72` says "file an issue referencing the spec rather than guessing". The act is named twice; the write path is named nowhere. Planner's full derived set is `$OUT_HISTORY $OUT_PLAN $SCAN_DECISIONS $SCAN_ISSUES $SCAN_PLANS` — a planner filing an issue today has no resolved target. |
 | `planner` → `$OUT_DECISION` | no | Still a probable gap. The prompt reads decisions (`:176`) and never names filing one. |
@@ -70,9 +70,9 @@ Remaining work is smaller than filed: five rows, four of them one-line prompt ad
 
 ---
 
-**Reconciliation 260802-1413 (reconciler, domain `code`) — stays `_o_`. Live corroboration for four of the five remaining rows, from a session that was not looking for it.**
+**Reconciliation 260802-1413-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Live corroboration for four of the five remaining rows, from a session that was not looking for it.**
 
-The planner reported during `circles/260801-1244-rule-provenance-header` that `bin/fusion-paths planner` emits no `OUT_DECISION` key. The reconciler re-ran the resolver against this repository rather than taking the report, and the output corroborates more rows than the one reported.
+The planner reported during `260801-1244-rule-provenance-header` that `bin/fusion-paths planner` emits no `OUT_DECISION` key. The reconciler re-ran the resolver against this repository rather than taking the report, and the output corroborates more rows than the one reported.
 
 ```
 $ FUSION_PLUGIN_ROOT=$PWD ./bin/fusion-paths planner
@@ -93,7 +93,7 @@ Four rows confirmed against the resolver's actual output, not against a grep of 
 | `planner` → `$SCAN_ANALYSES` | Absent. |
 | `shaper` → `$SCAN_PLANS` | Absent, and the contrast is sharp in the same output: shaper gets `OUT_PLAN` and every other store it writes, and no read key for prior specs and plans. |
 
-**Why this is evidence and not just a restatement.** The 260731-2324 pass reached its verdicts by reading prompts for a named `$KEY`, which is the right test for distinguishing a gap from a decided absence but tells you nothing about what an agent actually receives at run time. Running the resolver closes that loop from the other end: these four keys are not merely unnamed in the prompt, they are not in the emitted environment, so the gap is live rather than probable. The distinction matters because the derivation design makes the prompt the *only* source of the key set — an unnamed key cannot be supplied by any other route.
+**Why this is evidence and not just a restatement.** The 260731-2324-reconciliation.md pass reached its verdicts by reading prompts for a named `$KEY`, which is the right test for distinguishing a gap from a decided absence but tells you nothing about what an agent actually receives at run time. Running the resolver closes that loop from the other end: these four keys are not merely unnamed in the prompt, they are not in the emitted environment, so the gap is live rather than probable. The distinction matters because the derivation design makes the prompt the *only* source of the key set — an unnamed key cannot be supplied by any other route.
 
 `analyst` → `$SCAN_ANALYSES`, the fifth row, was not exercised this session and is unchanged.
 
@@ -110,4 +110,4 @@ One judgement call the record left open, and the reasoning for it. `planner` →
 
 Verified: `bin/fusion-paths` for all three agents exits 0 and emits the keys their instructed acts need. The path-literal lint passes (19 tests) — keys were named, no store path literal was introduced.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (task T11).
+Session: `260810-0241-orchestrator-session.md` (task T11).

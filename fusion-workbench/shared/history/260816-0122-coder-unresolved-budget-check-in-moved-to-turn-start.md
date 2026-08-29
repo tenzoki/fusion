@@ -3,16 +3,16 @@
 **Status:** Complete
 **Agent:** coder
 **Source records:**
-- `shared/issues/260811-2304_o_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md`
-- `shared/issues/260811-2305_o_the-unresolved-budget-check-in-fires-before-the-convergence-test-so-the-converging-turn-is-asked-a-question-whose-answer-is-discarded.md`
-- `shared/issues/260811-2305_o_continue-without-check-ins-falsifies-the-rebalance-sections-two-bounding-claims-and-neither-carries-the-qualification.md`
+- `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md`
+- `260811-2305_*_the-unresolved-budget-check-in-fires-before-the-convergence-test-so-the-converging-turn-is-asked-a-question-whose-answer-is-discarded.md`
+- `260811-2305_*_continue-without-check-ins-falsifies-the-rebalance-sections-two-bounding-claims-and-neither-carries-the-qualification.md`
 
 ---
 
 ## The choice, and why
 
 Three defects, one design problem: where the Unresolved-budget check-in sits. Record
-260811-2304 offered two fix directions and preferred the first. Direction 1 was taken:
+260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md offered two fix directions and preferred the first. Direction 1 was taken:
 the check-in moved from the end of a Turn (under Step 3d, between the circuit-breaker
 table and Step 3e) to the **start** of a Turn, as Phase 2 step 1, beside the `turn_start`
 emission. The fallback in that record — leave the gate where it is and qualify the two
@@ -89,7 +89,7 @@ paragraph away.
 is the property: the pre-fix text stated the residual plainly in the check-in's own bullet
 while the two sentences asserting the opposite, 260 lines away, did not.
 
-A second assertion covers the placement defect (260811-2304), which is a different
+A second assertion covers the placement defect (260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md), which is a different
 proposition and gets its own pattern: `BOUNDARY_CLAIM` fails any line that puts the gate
 at "every / each / the next Turn boundary". Its honest bound is documented in the file —
 it fires only on a line that also says "check-in", so the prompt's several legitimate

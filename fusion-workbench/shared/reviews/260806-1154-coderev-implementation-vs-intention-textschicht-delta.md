@@ -3,7 +3,7 @@
 **Sender:** coderev
 **Date:** 2026-08-06
 **Scope:** die 20 Commits seit dem v5.9.2-Release: `21a72b7..cde5319` (vier Guard-Template/Doku-Commits aus dem Vorgänger-Circle-Rest, dann der vollständige Circle `260805-2005-textschicht-gegen-code-nachziehen`)
-**Intentionsquellen:** Circle-Record `circles/260805-2005-…/_c_circle.md`; Entscheidungen D1–D3 (`decisions/260806-0015_*_zitierform…`, `…_*_wem-gehoert-die-circle-aktivierung`, `…_*_veraltete-regeln…`); Plan `planning/260805-2353_*_plan-textschicht-gegen-code.md`; Vorgänger-Plan Schritte 6–8 (`circles/260801-1244-guard-rules-write/planning/260804-1633_*_plan-c5b-remediation-and-ship.md`)
+**Intentionsquellen:** Circle-Record `circles/260805-2005-…/_c_circle.md`; Entscheidungen D1–D3 (`260806-0015_*_zitierform…`, `…_*_wem-gehoert-die-circle-aktivierung`, `…_*_veraltete-regeln…`); Plan `260805-2353_*_plan-textschicht-gegen-code.md`; Vorgänger-Plan Schritte 6–8 (`260804-1633_*_plan-c5b-remediation-and-ship.md`)
 **Methode:** empirisch, nicht berichtsgläubig — jede Kernbehauptung nachgemessen (Kommandos unten je Punkt). Mutation-Checks der Lints per In-Tree-Pflanzung mit sofortigem `git checkout HEAD --`-Revert (Pflanzdatei war vorher git-sauber; Revert verifiziert).
 
 ## Verdict
@@ -18,9 +18,9 @@ Critical 0 · High 0 · Medium 1 (CLAUDE.md/D3-Lücke) · Low 2 (cwd-Wurzel-Gren
 
 ### 1. Die vier Code-Fixes — alle nachgemessen, alle korrekt
 
-- **`shared_of` (Archive-Skill, `skills/archive/SKILL.md:51`):** Snippet standalone unter `zsh` und `bash` mit `SCAN_PLANS="circles/…/planning shared/planning"` → beide `[shared/planning]`; die alte Form unter zsh → `[]` (Defekt reproduziert). Leere Ableitung → benannter Abbruch, Exit 1 (`HYG-NO-SILENT-FAIL` realisiert). Die drei Schwester-Skills (cleanup Schritt 1, cadence, log-activity) tragen dieselbe Command-Substitution-Form — der Cross-Cutting-Befund `260806-0709` ist wirklich geschlossen.
+- **`shared_of` (Archive-Skill, `skills/archive/SKILL.md:51`):** Snippet standalone unter `zsh` und `bash` mit `SCAN_PLANS="circles/…/planning shared/planning"` → beide `[shared/planning]`; die alte Form unter zsh → `[]` (Defekt reproduziert). Leere Ableitung → benannter Abbruch, Exit 1 (`HYG-NO-SILENT-FAIL` realisiert). Die drei Schwester-Skills (cleanup Schritt 1, cadence, log-activity) tragen dieselbe Command-Substitution-Form — der Cross-Cutting-Befund `260806-0709_*_unquoted-scan-iteration-in-drei-schwester-skills-zsh.md` ist wirklich geschlossen.
 - **`emit_if_exists` (`bin/fusion-rules:242-249`):** Scratch-`FUSION_PLUGIN_ROOT` minus `critical-stance.md` → Exit 0, die verbleibenden sechs Always-on-Pfade vollständig emittiert, kein Abbruch mitten im Stream. Contract `rules/agent-setup.md` („skipped silently") hält jetzt unter `set -eu`.
-- **Klammer-Sonde (`skills/setup/SKILL.md:43`):** vier Fälle gemessen — `notes [draft].md` → `OLD=0` (Deadlock-Form beseitigt); echte Altmarker-Datei `260101-1200[o]-…` in `shared/` → `OLD=1`; Alt-Circle-Datei unter `circles/` → beide Sonden schlagen an; Altmarker nur unter `archive/` → `OLD=0` (Frozen-Store-Ausschlüsse intakt). Filter = exakt Migrates Executor-Set `\[[oatcibspd]\]-`. Der Rest-Scope-Mismatch ist ehrlich offen gefilt (`issues/260806-0022_*_…` im Circle).
+- **Klammer-Sonde (`skills/setup/SKILL.md:43`):** vier Fälle gemessen — `notes [draft].md` → `OLD=0` (Deadlock-Form beseitigt); echte Altmarker-Datei `260101-1200[o]-…` in `shared/` → `OLD=1`; Alt-Circle-Datei unter `circles/` → beide Sonden schlagen an; Altmarker nur unter `archive/` → `OLD=0` (Frozen-Store-Ausschlüsse intakt). Filter = exakt Migrates Executor-Set `\[[oatcibspd]\]-`. Der Rest-Scope-Mismatch ist ehrlich offen gefilt (`260806-0022_*_…` im Circle).
 - **awk-Meldung (`bin/fusion-rules:505-506`):** auf `/usr/bin/awk` 20200816 (BWK, die Plattform der Verstümmelung) mit fehlerhaftem Manifest → stderr wörtlich `unit 'docs/big-knowledge.md' is missing 'agents:'`, Exit 3. `\047`-Oktal statt `\x27`-Hex.
 
 ### 2. D3 / Repo-Präferenz — verhält sich wie entschieden (Option c), mit einer unausgesprochenen Grenze
@@ -41,7 +41,7 @@ Critical 0 · High 0 · Medium 1 (CLAUDE.md/D3-Lücke) · Low 2 (cwd-Wurzel-Gren
 
 ### 5. D1 / Referenz-Lint — Mutation-Check live bestanden
 
-Baseline grün (23+18 Tests). Gepflanzt in `rules/circle-records.md`: (a) tote Wildcard-Zitierung `…999999-9999_*_…`, (b) Stale-Marker-Zitierung `260806-0015_o_zitierform…` (existiert als `_i_`). Ein Lauf → **beide** gefangen, mit file:line und selbsterklärender Meldung; die Stale-Marker-Meldung nennt den heutigen Dateinamen und verlangt die `_*_`-Umschreibung. Revert per `git checkout HEAD --`, Status sauber. Enumerations-Lint: Scratch-Skill-Verzeichnis gepflanzt → beide Roster-Assertions rot mit benanntem Phantom, nach Entfernen wieder grün. *(Nicht selbst nachvollzogen: der Falsifier-Lauf gegen den Vor-Korrektur-Commit — der Plan dokumentiert 17/17 Treffer; die Grammatik fängt an HEAD beide Klassen, das genügt mir als Beleg zweiter Ordnung.)*
+Baseline grün (23+18 Tests). Gepflanzt in `rules/circle-records.md`: (a) tote Wildcard-Zitierung `…999999-9999_*_…`, (b) Stale-Marker-Zitierung `260806-0015_*_zitierform…` (existiert als `_i_`). Ein Lauf → **beide** gefangen, mit file:line und selbsterklärender Meldung; die Stale-Marker-Meldung nennt den heutigen Dateinamen und verlangt die `_*_`-Umschreibung. Revert per `git checkout HEAD --`, Status sauber. Enumerations-Lint: Scratch-Skill-Verzeichnis gepflanzt → beide Roster-Assertions rot mit benanntem Phantom, nach Entfernen wieder grün. *(Nicht selbst nachvollzogen: der Falsifier-Lauf gegen den Vor-Korrektur-Commit — der Plan dokumentiert 17/17 Treffer; die Grammatik fängt an HEAD beide Klassen, das genügt mir als Beleg zweiter Ordnung.)*
 
 ### 6. Lock unter Last und die holderlosen Pfade
 
@@ -67,13 +67,13 @@ Kein weiterer Plan-Schritt ohne Landung: Schritt 12s „install.sh header" brauc
 
 **Scope-Creep: keiner.** Geprüft u. a.: `.gitignore` (+`!bin/fusion-plugin-cwd`, von S16 erzwungen), `bin/fusion-plane`/`bin/fusion-workbench-root` (Wildcard-Zitat, Prosa-False-Positive aus Schritt 14), orchestrator-Dispatch-Tabelle (editor-/playmaker-Zeilen = Batch B/C, Commit `9a96466`, Klasse „stale Aufzählung"), playmaker (tote 260511-1031-Zitate ersetzt, Setup-Bullet auf `circle-records.md` umgezogen), Test-Zuwächse (context-manifest +102 = Schritt-5/7-Regression, fusion-paths +64 = D3, fusion-commit-lock +250 = Turn-4-Lock-Tests, monitor-warnings +8 = Bind), Guard-Template + Wurzelkopie byte-identisch (`cmp`) mit Leaf-Merge-Text (Vorgänger Schritt 6), README-hooks Leaf-Merge/`guard.enabled`/Floor-Reichweite (Vorgänger Schritt 7 + `def351e`).
 
-**Bookkeeping nachgezählt:** Neighbour-Corpus an HEAD 60 `_c_` + 6 `_o_` = 66 ✓; `260805-1859_*_im-eigenen-repo…` geschlossen mit korrigiertem Befundtext ✓; die beiden Inhaltskorrekturen real (`hooks/lib/paths.ts:66-75` sagt jetzt „raised and DEFERRED" und zitiert das existierende `_d_`-Record in Wildcard-Form; `rules/rule-file-provenance.md:52` zitiert `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`, existiert als `_i_`).
+**Bookkeeping nachgezählt:** Neighbour-Corpus an HEAD 60 `_c_` + 6 `_o_` = 66 ✓; `260805-1859_*_im-eigenen-repo…` geschlossen mit korrigiertem Befundtext ✓; die beiden Inhaltskorrekturen real (`hooks/lib/paths.ts:66-75` sagt jetzt „raised and DEFERRED" und zitiert das existierende `_d_`-Record in Wildcard-Form; `rules/rule-file-provenance.md:52` zitiert `260801-1020_*_provenance-header-on-rule-files.md`, existiert als `_i_`).
 
 ## Gefilte Issues (diese Review)
 
-- `shared/issues/260806-1153_*_claude-md-kennt-weder-fusion-plugin-cwd-noch-repo-praeferenz-noch-die-d3-verhaltensregel.md` (Medium)
-- `shared/issues/260806-1153_*_repo-praeferenz-greift-nur-bei-cwd-gleich-repo-wurzel-und-kein-text-sagt-es.md` (Low)
-- `shared/issues/260806-1154_*_lock-regel-zitiert-die-release-verweigerung-nicht-wortgetreu.md` (Low)
+- `260806-1153_*_claude-md-kennt-weder-fusion-plugin-cwd-noch-repo-praeferenz-noch-die-d3-verhaltensregel.md` (Medium)
+- `260806-1153_*_repo-praeferenz-greift-nur-bei-cwd-gleich-repo-wurzel-und-kein-text-sagt-es.md` (Low)
+- `260806-1154_*_lock-regel-zitiert-die-release-verweigerung-nicht-wortgetreu.md` (Low)
 
 ## Empfohlene Reihenfolge
 

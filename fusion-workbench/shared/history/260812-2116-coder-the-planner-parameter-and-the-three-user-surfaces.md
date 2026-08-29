@@ -3,11 +3,11 @@
 **Date:** 2026-08-12 21:16
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`, steps 9 and 10
-**Predecessors:** `shared/history/260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
-`shared/history/260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`),
-`shared/history/260812-2010-coder-the-playmaker-gains-the-backlog-job.md` (step 7, `6e261c4`),
-`shared/history/260812-2054-coder-the-shaper-becomes-circle-first.md` (step 8, `406ec0d`)
+**Plan:** `260812-1720_*_circle-first-placement-and-the-backlog-store.md`, steps 9 and 10
+**Predecessors:** `260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
+`260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`),
+`260812-2010-coder-the-playmaker-gains-the-backlog-job.md` (step 7, `6e261c4`),
+`260812-2054-coder-the-shaper-becomes-circle-first.md` (step 8, `406ec0d`)
 
 ## What was done
 
@@ -116,7 +116,7 @@ and no invocation. Nothing absurd in it. What it does mean is that the plan's en
 acceptance is exercisable only with a **freshly filed one-idea entry**: against the store's
 existing occupant, `/fusion:direct` is correctly not on offer at all.
 
-A second observation from the same walk. The live `portfolio.md` was generated 260807-1646 and
+A second observation from the same walk. The live `portfolio.md` was generated 260807-1646-playmaker-direct-dispatch.md and
 carries no `## Backlog — ranked` section, so the "section absent" branch is not hypothetical —
 though `/fusion:next` itself will rarely reach it, since Step 3 regenerates the portfolio before
 Step 4 reads it. The branch is for an install whose playmaker predates the section.
@@ -150,7 +150,7 @@ wrong here is a problem two agents downstream inherit.
 `cd hooks && npm test` — **exit 0**, 48 files, 1006 tests. Baseline at `406ec0d` was 1005; the one
 added is the memo key-asymmetry test. Run three times, exit 0 each time, the third against the
 final file state after the trimming pass. The `Worker exited unexpectedly` parallel-load flake
-(`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
+(`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
 did not appear.
 
 Four live reads beyond the suite, against this workbench rather than a fixture:
@@ -202,7 +202,7 @@ third leg is deliberately unavailable, which is the design working, not a gap.
 - `skills/memo/SKILL.md`
 - `hooks/lib/__tests__/fusion-paths.test.ts`
 - `hooks/lib/__tests__/queue-ground-lint.test.ts`
-- `fusion-workbench/shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` (steps 9 and 10 marked `[DONE]`)
+- `260812-1720_*_circle-first-placement-and-the-backlog-store.md` (steps 9 and 10 marked `[DONE]`)
 
 Not committed — the orchestrator commits. Step 11 not started, by instruction; it ends at a human
 gate the user is running separately.

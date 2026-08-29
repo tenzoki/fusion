@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-03 20:41
 **Agent:** coderev
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 4
+**Circle:** `260801-1244-guard-rules-write`, Turn 4
 **Scope:** `6c447eb..b85f6a0`, excluding `fusion-workbench/` — 15 files, ~2200 added lines
 (`a79ff1a`, `86a437a`, `7cf9693`, `b85f6a0`)
 **Suite at review time:** `vitest run` — 1167 passed, 24 files, green
@@ -49,7 +49,7 @@ plus the three `pushd -n` / `popd -n` routes the implementer found: all deny, no
 What the invariant is stated over is **writes to `state`**. That is necessary and not
 sufficient, and both findings below live in the gap.
 
-**Ninth entrance (`260803-2038`, High).** `command cd rules && rm x.md` and `builtin cd
+**Ninth entrance (`260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md`, High).** `command cd rules && rm x.md` and `builtin cd
 rules && rm x.md` both allow, and real bash deletes the file. `applyDirEffect` resolves its
 command word with plain `findCommandWord` (`:1695`), which does not walk `WRAPPER_PROGRAMS`
 — while the verb classifier in the same module does (`command rm rules/x.md` denies
@@ -62,7 +62,7 @@ This falsifies the stated reason for T4-2's Residual 5 — "a wrapper hides the 
 either". True of `env` and `sudo`. False of the two wrappers whose purpose is running
 builtins.
 
-**Tenth entrance (`260803-2039`, High).** `state.dirStack.push(state.cwd)` at `:1746` runs
+**Tenth entrance (`260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md`, High).** `state.dirStack.push(state.cwd)` at `:1746` runs
 for every surviving `pushd`, including bare `pushd` (bash swaps the top two entries) and
 `pushd +N` (bash rotates). Neither grows bash's stack; both grow the model's. The stack is
 then one deep and shifted, and each later `popd` recovers a *known* directory bash does not
@@ -97,7 +97,7 @@ corpus. I re-ran the controls that bound it — `rm -rf node_modules`, `pushd do
 rules/retired/` with the flag — all still allow. No finding.
 
 One consequence worth naming rather than filing: because `unmodelled` is stated over the
-record, it is the natural home for the two rotation forms in finding `260803-2039`. The fix
+record, it is the natural home for the two rotation forms in finding `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md`. The fix
 is to route them into a mechanism that already exists, not to build one.
 
 ### 3. Does the case folding leak into the grant? — No. The exempt set did not widen
@@ -163,7 +163,7 @@ the two amended test call sites. Stripping `CDPATH` in `guard-harness.ts` is the
 call and the docstring's widening from "permissions" to "every environment variable a guard
 verdict depends on" is the right generalisation.
 
-What is overstated is the reach, filed Low as `260803-2040`. `ambientCdpathIsSet` reads the
+What is overstated is the reach, filed Low as `260803-2040_*_the-ambient-cdpath-check-reads-the-hooks-environment-not-the-shell-the-command-runs-in.md`. `ambientCdpathIsSet` reads the
 **hook process's** environment; the docstring justifies the check by describing the **Bash
 tool's shell**, which is a different process assembled a different way. I measured that the
 tool shell really does source `~/.zshrc` (`FLIGHT_FILE_PREFIX`, defined only there, is set in
@@ -181,8 +181,8 @@ keeps re-finding.
 
 | # | Severity | Finding |
 |---|---|---|
-| `260803-2038` | High | `command cd` / `builtin cd` bypass `applyDirEffect` entirely — one module, two command-word resolutions, only one wrapper-aware |
-| `260803-2039` | High | Bare `pushd` and `pushd +N` push onto the model's stack where bash rotates; every later `popd` is off by one |
+| `260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md` | High | `command cd` / `builtin cd` bypass `applyDirEffect` entirely — one module, two command-word resolutions, only one wrapper-aware |
+| `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md` | High | Bare `pushd` and `pushd +N` push onto the model's stack where bash rotates; every later `popd` is off by one |
 
 Both are no-flag, both reach the whole `guard.protectedPaths` list on the delete and the
 write route, both were measured against real bash in a fresh project per row with the deny
@@ -192,9 +192,9 @@ asserted not to be `[HALTED]`.
 
 | # | Severity | Finding |
 |---|---|---|
-| `260803-2040` | Low | `ambientCdpathIsSet` reads the hook's environment while its docstring describes the command's shell |
+| `260803-2040_*_the-ambient-cdpath-check-reads-the-hooks-environment-not-the-shell-the-command-runs-in.md` | Low | `ambientCdpathIsSet` reads the hook's environment while its docstring describes the command's shell |
 
-Also, not filed separately because it is a line inside `260803-2039`: the `applyDirEffect`
+Also, not filed separately because it is a line inside `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md`: the `applyDirEffect`
 audit recipe certifies an invariant it cannot check. It says to grep for `state.cwd =`. The
 field this Turn learned was load-bearing is `dirStack`, and the recipe does not enumerate
 writes to it.
@@ -214,11 +214,11 @@ not the word "complete", it is any statement a later reader can stop at.
 resolution.** `WRAPPER_PROGRAMS` exists, is exported as the review surface, and is walked for
 verbs. `applyDirEffect` re-derives the command word with the raw helper. That is one
 mechanism duplicated at reduced fidelity — the project's own hygiene position calls that a
-defect, and here it is also the escape in `260803-2038`. The fix is to use the existing
+defect, and here it is also the escape in `260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md`. The fix is to use the existing
 resolver, not to add a table.
 
 **`unmodelled()` is the right mechanism and is under-used.** It is called at three sites, all
-flag-shaped. The two rotation forms in `260803-2039` want it and do not have it. Whatever
+flag-shaped. The two rotation forms in `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md` want it and do not have it. Whatever
 closes them should route into it rather than beside it.
 
 **The implementers' own measurements are trustworthy.** I re-ran eleven of their claimed
@@ -233,7 +233,7 @@ residuals. Nothing in this review is a re-file of something they measured and di
 ## Recommended sequencing
 
 **Release blockers for any claim that the protected-path boundary is established:**
-`260803-2038` and `260803-2039`. Both are no-flag escapes of the whole list at HEAD. Neither
+`260803-2038_*_command-cd-and-builtin-cd-move-the-shell-past-a-directory-model-that-never-sees-them.md` and `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md`. Both are no-flag escapes of the whole list at HEAD. Neither
 is expensive: 2038 is a call-site swap plus one `WRAPPER_PROGRAMS` row; 2039 is moving one
 `push` inside the arm that is a push. They are independent and can land in either order, or
 together — they touch one function.
@@ -241,7 +241,7 @@ together — they touch one function.
 **Same commit, cheap:** restate the `applyDirEffect` audit recipe over every write to
 `state`, since 2039 is the counterexample to it.
 
-**Cleanup, no urgency:** `260803-2040` (prose, plus the residual line in
+**Cleanup, no urgency:** `260803-2040_*_the-ambient-cdpath-check-reads-the-hooks-environment-not-the-shell-the-command-runs-in.md` (prose, plus the residual line in
 `rules/protected-path-discipline.md`).
 
 **Still open from earlier, unchanged by this Turn:** `260803-1835` (a redirection after an

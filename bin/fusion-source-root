@@ -33,8 +33,8 @@
 # shell call is a fresh shell). A correction to one fact then had to be written
 # into every copy, and getting it wrong in one was invisible: `63deec1` moved
 # two skills onto the resolved root and left two more citing the install copy,
-# which is issue 260811-0109. Repeated prose drifts in meaning; repeated shell
-# drifts in behaviour. Decision 260810-2145, option 1.
+# which is issue `260811-0109_*_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`. Repeated prose drifts in meaning; repeated shell
+# drifts in behaviour. Decision 260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md, option 1.
 #
 # Why the branch at all. $FUSION_PLUGIN_ROOT names the installed copy and is
 # pinned for the whole session. Inside the plugin's own source repository that
@@ -69,7 +69,7 @@
 # What this helper does NOT root. A `bin/` executable is always run from
 # $FUSION_PLUGIN_ROOT, and so is an asset a skill copies (templates/, stilwerk/,
 # bin/monitor, .claude-plugin/plugin.json). Whether the work-tree preference
-# extends to helper resolution is part (c) of decision 260810-1544 and is
+# extends to helper resolution is part (c) of decision 260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md and is
 # explicitly UNANSWERED; it must not be assumed here. The split is by what the
 # caller does with the path: read shipped text -> this root; run or copy an
 # installed artefact -> $FUSION_PLUGIN_ROOT.

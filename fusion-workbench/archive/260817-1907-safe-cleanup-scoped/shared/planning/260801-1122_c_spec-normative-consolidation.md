@@ -1,17 +1,17 @@
 # Spec: normative-surface consolidation
 
 **Date:** 2026-08-01 (revised 2026-08-01, third and final shaper pass)
-**Status:** Complete. Closed 2026-08-17 on the user's answer to `shared/decisions/260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md` (option 1: close `_c_` with a mandatory closing note). All four of this spec's Circles have closed, and three capabilities (C4, C5c, C9) were retired rather than delivered. The closing note at the end of this file is part of the answer, not an optional addendum: read it before reading `**Status:** Complete` as `delivered as specified`.
+**Status:** Complete. Closed 2026-08-17 on the user's answer to `260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md` (option 1: close `_c_` with a mandatory closing note). All four of this spec's Circles have closed, and three capabilities (C4, C5c, C9) were retired rather than delivered. The closing note at the end of this file is part of the answer, not an optional addendum: read it before reading `**Status:** Complete` as `delivered as specified`.
 **Status at authoring (preserved verbatim):** Final. All twelve decisions are answered and written into the capabilities below. Nothing is pending on the user. One answer, Q2, changed the shape of the work: the guard's Bash bypass is now a capability of its own (C5c) rather than a mechanism choice left to the planner. One answer, Q1, could not be realised the way it was framed — the mechanism named for the scoping step cannot perform it, and C9 step 4 states what does instead, with the evidence.
 **Source:** The user's proposal that fusion gain an agent which reads the project's history and the current state of the discussion, judges what must change and what remains, and consolidates the three normative surfaces (decision records, rule files, `CLAUDE.md`) that drift, contradict each other, and grow into a standing context tax.
 
 **Prior decisions this spec builds on, and does not reopen:**
 
-- **D1** (`shared/decisions/260801-1020_*_where-does-normative-consistency-live.md`) — a writing consolidation agent, not a report-only detector.
-- **D2** (`shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md`) — rule-file writes are permitted through an environment-gated exemption, plus project-level guard configuration.
-- **D3** (`shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`) — **answered** by D-e below and walked to anticipated (`_a_`). Full adoption: the convention, the backfill of the plugin's nine rule files, and a lint gate. C8 realises it.
+- **D1** (`260801-1020_*_where-does-normative-consistency-live.md`) — a writing consolidation agent, not a report-only detector.
+- **D2** (`260801-1020_*_may-any-fusion-writer-touch-rules.md`) — rule-file writes are permitted through an environment-gated exemption, plus project-level guard configuration.
+- **D3** (`260801-1020_*_provenance-header-on-rule-files.md`) — **answered** by D-e below and walked to anticipated (`_a_`). Full adoption: the convention, the backfill of the plugin's nine rule files, and a lint gate. C8 realises it.
 
-**Grounding:** `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`; `shared/history/260801-0936-orchestrator-session.md` `## Design decisions (session, 260801)` and `## Spec decisions (D-a through D-h)`; `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md`, which C5c closes.
+**Grounding:** `260801-1020-normative-surface-drift-gap-analysis.md`; `260801-0936-orchestrator-session.md` `## Design decisions (session, 260801)` and `## Spec decisions (D-a through D-h)`; `260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`, which C5c closes.
 
 **The agent is named `curator`** (D-h), and the skill that invokes it is `/fusion:curate`.
 
@@ -136,7 +136,7 @@ flowchart TD
 4. `git log --follow` on each rule file and on `CLAUDE.md`, and `git blame` when a single paragraph is in question.
 5. Reviews and analyses under `$SCAN_REVIEWS` and `$SCAN_ANALYSES`.
 6. `fusion-workbench/orchestrator-events.jsonl` — corroborating only. Its `detail` strings are summaries, so an event may support a finding but may never be its only evidence.
-7. The archive store. No `SCAN_*` key resolves into it today (`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`), so the agent reads the archive directory directly. Skipping it makes the agent blinder the longer a project has run, which inverts its purpose.
+7. The archive store. No `SCAN_*` key resolves into it today (`260801-1020_*_scan-keys-never-reach-the-archive-store.md`), so the agent reads the archive directory directly. Skipping it makes the agent blinder the longer a project has run, which inverts its purpose.
 8. The provenance header on a rule file, once C8 has landed. The header names the decision record, Circle, or analysis that motivated the rule. Where the named record carries `_s_`, the rule is a Tier 2 retirement candidate with no reconstruction required.
 
 **The thin spot, stated honestly.** For a consuming project's `./rules/` and `.claude/rules/`, sources 1 through 3 and 7 may be empty and source 4 may be uninformative, because those files can have been hand-authored outside any fusion session or copied from `templates/`. Behaviour there: Tier 1 changes still apply, and Tier 2 and Tier 3 findings are downgraded to candidates and reported. The agent does not reconstruct a rationale it cannot cite.
@@ -247,7 +247,7 @@ C8 narrows this gap forward but does not close it backward. The lint gate lives 
 
 **C5c — the guard inspects Bash for file mutation against protected paths.**
 
-Today every path in `protectedPaths` is writable through a shell. The guard reaches the protected-path check only from `Write`, `Edit`, `MultiEdit`, and `NotebookEdit`; a `Bash` call is classified for git branch and worktree operations and then returns unconditionally (`hooks/guard.ts:265-268`), never reaching the check at `hooks/guard.ts:309`. `Edit rules/x.md` is blocked and `mv rules/x.md /tmp/` is allowed. The full statement of the defect, with the verified control flow, is `shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md`.
+Today every path in `protectedPaths` is writable through a shell. The guard reaches the protected-path check only from `Write`, `Edit`, `MultiEdit`, and `NotebookEdit`; a `Bash` call is classified for git branch and worktree operations and then returns unconditionally (`hooks/guard.ts:265-268`), never reaching the check at `hooks/guard.ts:309`. `Edit rules/x.md` is blocked and `mv rules/x.md /tmp/` is allowed. The full statement of the defect, with the verified control flow, is `260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`.
 
 This is not curator-specific. It affects all sixteen agents today, and the sharpest case is `fusion-workbench/.guard-state/**`: an agent can delete its own escalation counter through a shell, which defeats the halt the counter exists to drive.
 
@@ -267,7 +267,7 @@ This is not curator-specific. It affects all sixteen agents today, and the sharp
 
 **Self-detect interaction, which is load-bearing and easy to get backwards.** The Bash branch sits *above* the `isFusionPluginCwd()` stand-down (`hooks/guard.ts:265-268` precedes `hooks/guard.ts:274-283`), and that ordering is deliberate: the branch policy stays active in the plugin's own repo because it only ever gated the agent's tool calls. A Bash path check is a **write-guard** concern and must stand down in the plugin repo alongside the other write protection, or a fusion developer's agent cannot edit the plugin's own `rules/` through a shell — precisely the freedom the stand-down exists to grant. So the new check is gated on the plugin-repo detection while the branch classifier above it remains ungated.
 
-**Bookkeeping stays as it is.** Two existing issues fixed the guard's Bash bookkeeping deliberately: an innocuous Bash call must not reset the consecutive-block counter (260707-0750) and must not emit a `guard_allow` event (260707-0751). Both hold unchanged. An allowed Bash call has zero side effect on guard state. A denied one records a block and emits `guard_block` or `guard_halt`, which is exactly what the branch deny already does at `hooks/guard.ts:180-199`.
+**Bookkeeping stays as it is.** Two existing issues fixed the guard's Bash bookkeeping deliberately: an innocuous Bash call must not reset the consecutive-block counter (260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md) and must not emit a `guard_allow` event (260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md). Both hold unchanged. An allowed Bash call has zero side effect on guard state. A denied one records a block and emits `guard_block` or `guard_halt`, which is exactly what the branch deny already does at `hooks/guard.ts:180-199`.
 
 **The C5a exemption applies on this path too.** With `FUSION_ALLOW_RULES_WRITE` set, a shell mutation of a rule directory is allowed and produces the same `guard_advisory` event as the write-tool path. Without that, C4's retirement move becomes impossible rather than merely guarded.
 
@@ -305,20 +305,20 @@ New behaviour: the loader looks for a project-level configuration first, at the 
 
 **Acceptance criteria:**
 
-*C5c — Bash inspection:* **nine of ten met — reconciler 260801-2029, verified at HEAD `9ab5a2a` against `circles/260801-1244-guard-bash-inspection` (closed).**
+*C5c — Bash inspection:* **nine of ten met — reconciler 260801-2029, verified at HEAD `9ab5a2a` against `260801-1244-guard-bash-inspection` (closed).**
 
 - [x] In a consuming project, each of `mv`, `rm`, `sed -i`, `tee` and `>` redirection targeting a path in `protectedPaths` is blocked, and the reason names the offending command segment and the path. — `hooks/lib/__tests__/guard-bash-integration.test.ts:77-153`, spawned `dist/guard.js` against a tmpdir project root.
-- [x] The same five commands targeting a path outside `protectedPaths` are allowed, and the allowed call resets no counter and emits no `guard_allow` event. — same file `:285-343`, asserted on `escalation.json` and `events.jsonl` themselves. Closes the long-open `shared/issues/260707-1006` as a side effect.
+- [x] The same five commands targeting a path outside `protectedPaths` are allowed, and the allowed call resets no counter and emits no `guard_allow` event. — same file `:285-343`, asserted on `escalation.json` and `events.jsonl` themselves. Closes the long-open `260707-1006` as a side effect.
 - [x] A recognised mutating command whose operands cannot be resolved to a definite path is blocked. — same file `:154-183`.
 - [x] An unrecognised command is allowed, and the spec's statement of that residual appears in the guard's own documentation rather than only here. — same file `:184-206`; residual stated in `rules/protected-path-discipline.md`, `README-hooks.md` and the module docstrings (commit `3806a49`, extended by `18e2e4f` and `9ab5a2a`).
 - [x] `git mv` of a protected path is blocked, and `git checkout HEAD -- <paths>` remains allowed, so the existing revert strategy is untouched. — `guard-bash-integration.test.ts:77-153` and `:322` (the revert form is in the innocuous-calls list).
 - [x] A protected-path denial through Bash records a block and emits `guard_block`, and the third consecutive block halts, matching the write-tool path. — same file `:350-383`: three denies, `consecutiveBlocks` 3, `haltActive` true, events `["guard_block","guard_block","guard_halt"]`, triggers all `protected_path` plus `consecutive_blocks`.
 - [x] In the fusion plugin's own repo the Bash path check stands down, while `git switch` on the same call remains denied. — same file `:389-458`, four cases: the mutation allows, `git switch` blocks with trigger `git_branch_switch`, the `Edit` path stands down too, and the boundary is asserted from the other side.
-- [x] With `FUSION_ALLOW_RULES_WRITE` set, a shell move of a rule file into `retired/` is allowed and emits one `guard_advisory` event; with it unset, the same move is blocked. — **MET — reconciler 260805-2323**: `hooks/lib/__tests__/guard-rules-write-integration.test.ts:454-515` ("blocks a shell move of a rule file into retired/ when the flag is unset" / "allows the same move with the flag set, and records exactly one advisory", events asserted `["guard_advisory"]` exactly). Formerly **DEFERRED, deliberately, to `circles/260801-1244-guard-rules-write`.** Recorded as Q1 in `circles/260801-1244-guard-bash-inspection/planning/260801-1253_c_plan-guard-bash-inspection.md`. That Circle shipped the seam this criterion needs (`MutationOptions.exempt`, `hooks/lib/bash-mutation-guard.ts:168`, checked at `:1243` and `:1252`); the flag itself appears nowhere in the source at HEAD.
+- [x] With `FUSION_ALLOW_RULES_WRITE` set, a shell move of a rule file into `retired/` is allowed and emits one `guard_advisory` event; with it unset, the same move is blocked. — **MET — reconciler 260805-2323**: `hooks/lib/__tests__/guard-rules-write-integration.test.ts:454-515` ("blocks a shell move of a rule file into retired/ when the flag is unset" / "allows the same move with the flag set, and records exactly one advisory", events asserted `["guard_advisory"]` exactly). Formerly **DEFERRED, deliberately, to `260801-1244-guard-rules-write`.** Recorded as Q1 in `260801-1253_*_plan-guard-bash-inspection.md`. That Circle shipped the seam this criterion needs (`MutationOptions.exempt`, `hooks/lib/bash-mutation-guard.ts:168`, checked at `:1243` and `:1252`); the flag itself appears nowhere in the source at HEAD.
 - [x] A shell mutation of `fusion-workbench/.guard-state/**` is blocked in a consuming project. — blocked directly, and through a `cd` (`cd fusion-workbench && rm -rf .guard-state`, commit `59a1cd9`).
 - [x] The classifier's cases run as unit tests without the hook firing. — `hooks/lib/__tests__/bash-mutation-guard.test.ts`, pure, no filesystem. Full suite at HEAD: 753 passed, 16 files.
 
-*C5a and C5b:* **all eleven met — reconciler 260805-2323, final reconciliation of `circles/260801-1244-guard-rules-write`, verified at HEAD `def351e`.** Evidence is the integration suite through the spawned guard against throwaway non-plugin project roots (`hooks/lib/__tests__/guard-rules-write-integration.test.ts`, cited per criterion below) plus the config unit suite (`hooks/lib/__tests__/config.test.ts`). The suite was run twice by the reconciler: against the TypeScript source and against the committed artifact (`FUSION_GUARD_ENTRY=dist npx vitest run`) — **1550 of 1551 passed in both runs; the sole failure is `rules-emission-golden.test.ts`, a `bin/fusion-rules` byte-count fixture stale since commit `373f5ed`, not a guard behaviour** (filed: `circles/260801-1244-guard-rules-write/issues/260805-2323_o_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md`).
+*C5a and C5b:* **all eleven met — reconciler 260805-2323, final reconciliation of `260801-1244-guard-rules-write`, verified at HEAD `def351e`.** Evidence is the integration suite through the spawned guard against throwaway non-plugin project roots (`hooks/lib/__tests__/guard-rules-write-integration.test.ts`, cited per criterion below) plus the config unit suite (`hooks/lib/__tests__/config.test.ts`). The suite was run twice by the reconciler: against the TypeScript source and against the committed artifact (`FUSION_GUARD_ENTRY=dist npx vitest run`) — **1550 of 1551 passed in both runs; the sole failure is `rules-emission-golden.test.ts`, a `bin/fusion-rules` byte-count fixture stale since commit `373f5ed`, not a guard behaviour** (filed: `260805-2323_*_emissions-golden-veraltet-nach-dem-step-7-doku-commit-die-suite-ist-um-einen-test-rot.md`).
 
 - [x] In a consuming project with the flag unset, an `Edit` to `./rules/anything.md` is blocked and the block counts toward the halt threshold. — integration `:226-247` (block + `consecutiveBlocks` 1 asserted at `:240`).
 - [x] With the flag set, the same edit is allowed, a `guard_advisory` event is written naming the variable and the path, and an escalation entry is recorded. — integration `:248-311` (advisory first, `clear`-level escalation entry, counter untouched).
@@ -329,7 +329,7 @@ New behaviour: the loader looks for a project-level configuration first, at the 
 - [x] A project whose seeded configuration is untouched gets the plugin's `protectedPaths`, including any path added to the plugin default after the project was set up. — unit `config.test.ts:1236-` (`describe` "the seeded template declares inheritance and lists nothing": the shipped template merges to the plugin's configuration; every asserted key deliberately distinct from `DEFAULTS`, so a template that grew any declaration fails).
 - [x] An `Edit` to the project guard configuration file is blocked whether or not that file lists itself. — integration `describe` "the self-protection floor, through the guard" `:1788-1903` (lists itself / does not / empty list / shell delete / creation allowed) and "…reached from a subdirectory" `:1904-2146` (bare and absolute spellings).
 - [x] An unparseable project configuration falls back to the plugin's and emits one advisory event. — integration `describe` "an unparseable project configuration is reported, not swallowed" `:2210-2305` (advisory emitted, protected list still the plugin's); unit diagnostics cases in `config.test.ts`.
-- [x] `/fusion:setup` creates the configuration file when absent and leaves a filled-in one untouched. — `skills/setup/SKILL.md:155-174` Step 0f (probe-then-copy, `[ -f ]`-guarded, measured against the guard); run-twice verification `history/260804-1511-coder-step8-setup-seeds-guard-config.md`, re-run through the real guard and a real bash at `history/260804-1940-coder-step1-floor-step4-exemption-precedence.md`.
+- [x] `/fusion:setup` creates the configuration file when absent and leaves a filled-in one untouched. — `skills/setup/SKILL.md:155-174` Step 0f (probe-then-copy, `[ -f ]`-guarded, measured against the guard); run-twice verification `260804-1511-coder-step8-setup-seeds-guard-config.md`, re-run through the real guard and a real bash at `260804-1940-coder-step1-floor-step4-exemption-precedence.md`.
 - [x] The two changes behave identically in the fusion plugin's own repo and in a consuming project, or the difference is stated in the prompt and in the release checklist. — The difference is stated: `rules/protected-path-discipline.md` (agent-facing stand-down statement, loaded into every agent's context) and `README-hooks.md`; the template's `_inFusionsOwnSourceTree` key; integration `describe` "the project configuration in the plugin's own repo" `:2656-2720` (write guard stands down on both surfaces together, a broken configuration is still reported). The release-checklist half landed at `CLAUDE.md:70` (commit `373f5ed`): before tagging a guard-touching release, confirm behaviour against a non-plugin project root.
 
 **Decisions made:**
@@ -358,7 +358,7 @@ New behaviour: the loader looks for a project-level configuration first, at the 
 
 **Pass 2 — Apply.** Only approved items. Working-tree edits. The agent never commits, exactly as `/fusion:revise-claude-md` never commits.
 
-**Revert path.** `CLAUDE.md` and rule files are git-tracked, so `git checkout -- <path>` restores them, and the agent's report names that command with the affected paths. Decision records are not covered: `git ls-files fusion-workbench/` returns zero files in this project, so the workbench has no git undo (`shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md`). For the decision surface the agent therefore writes the complete pre-edit content of every modified record into its own history file, so a revert is reconstructible by hand. The durable fix is the filed issue, not this spec.
+**Revert path.** `CLAUDE.md` and rule files are git-tracked, so `git checkout -- <path>` restores them, and the agent's report names that command with the affected paths. Decision records are not covered: `git ls-files fusion-workbench/` returns zero files in this project, so the workbench has no git undo (`260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md`). For the decision surface the agent therefore writes the complete pre-edit content of every modified record into its own history file, so a revert is reconstructible by hand. The durable fix is the filed issue, not this spec.
 
 **Wrong-prune detection.** The failure mode is silent, because a removed constraint breaks nothing at the time. Three mitigations, all cheap:
 
@@ -420,7 +420,7 @@ New behaviour: the loader looks for a project-level configuration first, at the 
 
 **Reach of the gate.** The lint gate lives in the plugin's own test suite, in the shape of the existing path-literal gate (`hooks/lib/__tests__/path-literal-lint.test.ts`), and reads the plugin's `rules/` directory. It cannot reach a consuming project's `./rules/` or `.claude/rules/`, whose files are not in any test set fusion controls. For consuming projects the header is therefore documented convention, enforced only by the curator writing one whenever it creates or edits a rule file. That split follows the answered record's recommendation and is stated so it is not read as an oversight.
 
-**Interaction with the archive.** A header pointing at a decision record that was later archived out of every read set resolves to nothing (`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`). C2's requirement that the curator read the archive directly is what keeps such a citation resolvable; the two must land together or the header degrades over time.
+**Interaction with the archive.** A header pointing at a decision record that was later archived out of every read set resolves to nothing (`260801-1020_*_scan-keys-never-reach-the-archive-store.md`). C2's requirement that the curator read the archive directly is what keeps such a citation resolvable; the two must land together or the header degrades over time.
 
 **Acceptance criteria:**
 
@@ -431,7 +431,7 @@ New behaviour: the loader looks for a project-level configuration first, at the 
 - [ ] Adding a new rule file without a header fails the test suite.
 - [ ] The curator writes a header whenever it creates a rule file, and preserves or updates the existing header whenever it edits one.
 - [ ] The header requires no change to `bin/fusion-rules`, which continues to emit paths without reading file content.
-- [ ] `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` is cited as the motivating record in the conventions-file documentation of this convention.
+- [ ] `260801-1020_*_provenance-header-on-rule-files.md` is cited as the motivating record in the conventions-file documentation of this convention.
 
 **Decisions made:**
 
@@ -463,9 +463,9 @@ Every assertion the file makes that can be checked is checked: paths, filenames,
 
 Three live instances were found while specifying this, all verified 2026-08-01, all inside the file's own text:
 
-- `analyses/260519-0438-circle-stash-pop-concept.md` is cited as a cross-reference and exists nowhere in the workbench or the archive.
-- `decisions/260519-1100_a_circle-stash-pop-design.md` — the same.
-- `decisions/260716-1910_i_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md` is cited at a pre-v4 root-relative path. The file exists, at `circles/260716-1847-workbench-umbau/decisions/260716-1910_i_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
+- `260519-0438-circle-stash-pop-concept.md` is cited as a cross-reference and exists nowhere in the workbench or the archive.
+- `260519-1100_*_circle-stash-pop-design.md` — the same.
+- `260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md` is cited at a pre-v4 root-relative path. The file exists, at `260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
 
 The third is the same failure class as the `CLAUDE.md` bus-decision instance the gap analysis found: a v4 layout change that the citations did not follow. That it survives in the conventions file, which is the document defining the v4 layout, is the strongest available argument that this step is worth doing.
 
@@ -609,7 +609,7 @@ Shards where the case is "this agent probably does not need it" stay emitted. A 
 - **The guard's write protection stands down in the fusion plugin's own repo** (`hooks/guard.ts:274-283`, `hooks/lib/self-detect.ts:18-33`). Anything built and tested here writes to `rules/` without resistance and would be blocked in every consuming project. Verification of C5 has to happen against a consuming project or a fixture that is not the plugin repo.
 - **The guard inspects file paths for write tools only, today.** `Write`, `Edit`, `MultiEdit`, and `NotebookEdit` are path-checked; `Bash` is routed to the git classifier and returns unconditionally (`hooks/guard.ts:265-268`), never reaching the protected-path check at `hooks/guard.ts:309`. Every entry in `protectedPaths` is therefore writable through a shell by all sixteen agents. C5c closes this; until it lands, no claim that a path is protected is true for an agent with a shell.
 - **The Bash branch sits above the plugin-repo stand-down** (`hooks/guard.ts:265-268` precedes `hooks/guard.ts:274-283`), deliberately, so the branch policy stays active in the plugin's own repo. C5c's path check is a write-guard concern and must stand down there instead, or a fusion developer's agent loses shell access to the plugin's own `rules/`.
-- **The guard's Bash bookkeeping is deliberate and settled.** An innocuous Bash call must not reset the consecutive-block counter (issue 260707-0750) and must not emit a `guard_allow` event (issue 260707-0751). C5c preserves both; only a denial does bookkeeping.
+- **The guard's Bash bookkeeping is deliberate and settled.** An innocuous Bash call must not reset the consecutive-block counter (issue 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md) and must not emit a `guard_allow` event (issue 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md). C5c preserves both; only a denial does bookkeeping.
 - **The shell parsing C5c needs already exists.** `hooks/lib/git-branch-guard.ts` exports `stripDataRegions` (line 169), `extractCommandSegments` (line 335), and an internal `tokenize` (line 409), all fail-closed. The classifier is a sibling consuming that segmentation, not a second parser.
 - **`./rules/context-manifest.yaml` cannot scope a plugin-shipped rule file.** It never ships in the plugin (`rules/context-manifest.md` `## Where the manifest lives (locked)`), and its emission is purely additive — units are emitted after the always-on set and nothing suppresses an `emit_if_exists`. The plugin's per-agent scoping lever is the `case "$AGENT"` PATTERNS table in `bin/fusion-rules`.
 - **`bin/fusion-rules` is agent-only.** It exits 2 on an unknown name, and only `/fusion:setup` invokes it, as `orchestrator`. Skill bodies reach rule content by direct citation, so per-agent scoping does not reach them.
@@ -620,11 +620,11 @@ Shards where the case is "this agent probably does not need it" stay emitted. A 
 - **`bin/fusion-rules` never reads a rule file's content** (`bin/fusion-rules:153-165`). Any lifecycle mechanism that depends on the helper parsing a marker or a header requires changing the helper, and C4 and C8 are both designed to avoid that.
 - **Six plugin rules are emitted by explicit path, not by pattern** (`bin/fusion-rules:262-267`). Relocation alone stops them loading but leaves the helper naming a missing path.
 - **The Origin Rule** (`rules/fusion-workbench-conventions.md:68-85`) governs where the agent's own outputs land: decision records, history files, and the change ledger resolve through `bin/fusion-paths`, never through a named store path. The path-lint test fails the build if a store literal appears in an agent prompt or skill body.
-- **No `SCAN_*` key resolves into the archive store** (`shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`). C2 requires the archive to be read, so the agent reads it directly, and the planner must handle that the resolver does not supply the path.
+- **No `SCAN_*` key resolves into the archive store** (`260801-1020_*_scan-keys-never-reach-the-archive-store.md`). C2 requires the archive to be read, so the agent reads it directly, and the planner must handle that the resolver does not supply the path.
 - **The workbench is neither tracked nor gitignored in this project** (`git ls-files fusion-workbench/` returns 0; `.gitignore:50` is a commented-out ignore rule). Decision-record edits have no git undo, which is what forces C6's pre-edit-content requirement, and what ruled the archive out as C4's retirement destination.
 - **`.claude/` is gitignored in this repo** (`.gitignore:2`). A `.claude/rules/retired/` destination would not be under version control here, which is why C4 checks the destination rather than assuming it.
 - **131 lines across 42 files cite the conventions file**, 70 of them by `##` section and none by line number (verified 2026-08-01). C9's citation-integrity check works from that set.
-- **Turn logs are unevenly populated.** The largest closed Circle in this project carries an unfilled Turn log with its content in the Closure note instead (`shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md`). An evidence pass that walks Turn logs mechanically will under-report; C2 lists closure notes as a separate source for that reason.
+- **Turn logs are unevenly populated.** The largest closed Circle in this project carries an unfilled Turn log with its content in the Closure note instead (`260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`). An evidence pass that walks Turn logs mechanically will under-report; C2 lists closure notes as a separate source for that reason.
 - **Setting `FUSION_ALLOW_RULES_WRITE` must not clear an active halt.** The halt exists precisely for a writer that keeps attempting blocked writes.
 - Fusion has no precedence semantics between rule sources, stated deliberately at `bin/fusion-rules:292-295`. C3 reports precedence-undecided pairs; it does not invent a precedence rule to resolve them.
 
@@ -667,7 +667,7 @@ Shards where the case is "this agent probably does not need it" stay emitted. A 
 
 ## Decisions taken
 
-Twelve decisions, all answered on 2026-08-01. D-a through D-h came from the second pass; D-i through D-l answer the four questions that pass raised. Four departed from the proposed default: D-b's destination, D-e, D-g, and D-i. The record for the first eight is in `shared/history/260801-0936-orchestrator-session.md` `## Spec decisions (D-a through D-h)`.
+Twelve decisions, all answered on 2026-08-01. D-a through D-h came from the second pass; D-i through D-l answer the four questions that pass raised. Four departed from the proposed default: D-b's destination, D-e, D-g, and D-i. The record for the first eight is in `260801-0936-orchestrator-session.md` `## Spec decisions (D-a through D-h)`.
 
 **D-a — The curator's boundary against the two existing appliers.** Split by the reason for the edit, confirming the proposed default. The curator may touch any of the three surfaces, but only when the reason is cross-surface consistency. `/fusion:revise-claude-md` keeps editing `CLAUDE.md` for session learnings, and the reconciler keeps walking decision markers against ground truth. Neither is subsumed. Realised in C1.
 
@@ -677,7 +677,7 @@ Twelve decisions, all answered on 2026-08-01. D-a through D-h came from the seco
 
 **D-d — The review gate.** Survey, gate, apply, in one dispatch, confirming the proposed default. Realised in C6.
 
-**D-e — The provenance header, which answers D3.** Full adoption now, rather than the first pass's proposal to adopt the convention and defer the backfill and the gate. The convention is documented, all nine plugin rule files are backfilled, and a lint gate fails when a rule file lacks a header. `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` is answered by this and has been walked to anticipated separately. Realised in C8.
+**D-e — The provenance header, which answers D3.** Full adoption now, rather than the first pass's proposal to adopt the convention and defer the backfill and the gate. The convention is documented, all nine plugin rule files are backfilled, and a lint gate fails when a rule file lacks a header. `260801-1020_*_provenance-header-on-rule-files.md` is answered by this and has been walked to anticipated separately. Realised in C8.
 
 **D-f — Cadence.** A user-invoked skill plus a staleness line in `/fusion:cleanup`, confirming the proposed default. Realised in C7.
 
@@ -685,7 +685,7 @@ Twelve decisions, all answered on 2026-08-01. D-a through D-h came from the seco
 
 **D-h — The agent's name.** `curator`. The skill follows as `/fusion:curate`. Realised in C1 and C7.
 
-**D-i — The guard's Bash bypass, answering Q2.** Fix the guard, rather than constraining the curator to guarded tools. The bypass was verified and filed as a standalone defect (`shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md`); the fix widens the guard's `Bash` inspection to file-mutating commands checked against `protectedPaths`, in the shape `classifyGitCommand` already uses for branch operations and with the same fail-closed discipline. Enforcement rather than instruction, and it protects all sixteen agents rather than one. It is also what makes `FUSION_ALLOW_RULES_WRITE` a control rather than a decoration, so it precedes C5a. Completeness is not the target: a shell can construct a path at run time, so fail-closed on the constructible cases is the standard, and the residual is documented. Realised in C5c.
+**D-i — The guard's Bash bypass, answering Q2.** Fix the guard, rather than constraining the curator to guarded tools. The bypass was verified and filed as a standalone defect (`260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`); the fix widens the guard's `Bash` inspection to file-mutating commands checked against `protectedPaths`, in the shape `classifyGitCommand` already uses for branch operations and with the same fail-closed discipline. Enforcement rather than instruction, and it protects all sixteen agents rather than one. It is also what makes `FUSION_ALLOW_RULES_WRITE` a control rather than a decoration, so it precedes C5a. Completeness is not the target: a shell can construct a path at run time, so fail-closed on the constructible cases is the standard, and the residual is documented. Realised in C5c.
 
 **D-j — Ordering for the conventions file, answering Q1.** Reconcile, then compact, then partition, then scope — all four in scope, none deferred. This replaced both options offered. Compacting before partitioning draws the seams on content that is already correct, rather than filing stale text into shards and then editing most of them again. And steps 1 and 2 exercise exactly the capability being built, on the largest target the project has, which no seeded fixture can do.
 
@@ -747,41 +747,41 @@ The original framing of each follows.
 
 **260801-2029 — reconciler, domain `code`. Marker stays `_o_`; status stays Final.**
 
-One of the spec's four Circles has closed. `circles/260801-1244-guard-bash-inspection` carried C5c and delivered nine of its ten acceptance criteria, ticked above with evidence. The three remaining Circles (`-guard-rules-write` for C5a/C5b, `-rule-provenance-header`, `-curator`) are all `_a_` and untouched, so the spec is not close to complete and its marker does not move.
+One of the spec's four Circles has closed. `260801-1244-guard-bash-inspection` carried C5c and delivered nine of its ten acceptance criteria, ticked above with evidence. The three remaining Circles (`-guard-rules-write` for C5a/C5b, `-rule-provenance-header`, `-curator`) are all `_a_` and untouched, so the spec is not close to complete and its marker does not move.
 
 **Verified against the codebase at HEAD `9ab5a2a`, not against the Circles' own reports:**
 
 - C5c's defect statement at line 249 and the Current-state bullet at line 609 are now historical rather than current. `hooks/guard.ts:249` runs the mutation check inside `guardBashCommand`; the `Bash` call no longer returns unconditionally. The line numbers those passages cite (`guard.ts:265-268`, `:309`) no longer point at what they describe — the file grew by 127 lines in commit `5b8430c` and again in `3177e65` and `5d9bbcc`. Left as written: they are the spec's record of the state it was written against, and the Reconciliation Log is where the difference belongs. A reader following those citations today will not find what the sentence promises.
 - Line 610's claim about the ordering (Bash branch above the stand-down) still holds and is now asserted by a test.
 - Line 611's bookkeeping claim still holds and is now pinned on the state files.
-- Line 271, "The C5a exemption applies on this path too", is **not yet true** and is the one C5c criterion left open. The seam exists; the flag does not. `circles/260801-1244-guard-rules-write` owns it, and its `## Dependencies` correctly names this Circle as the one that had to land first. That dependency is now satisfied, which makes that Circle the next one activatable of the three.
+- Line 271, "The C5a exemption applies on this path too", is **not yet true** and is the one C5c criterion left open. The seam exists; the flag does not. `260801-1244-guard-rules-write` owns it, and its `## Dependencies` correctly names this Circle as the one that had to land first. That dependency is now satisfied, which makes that Circle the next one activatable of the three.
 - Line 213's requirement — that no rule-file retirement occurs without `FUSION_ALLOW_RULES_WRITE` set and an advisory event recorded, whichever tool performs the move — is now enforceable in principle (the shell route is guarded) but not enforced in fact (the flag and the advisory do not exist).
 
 **Nothing in the spec was invalidated by what was built.** The one design divergence worth naming: C5c's `## Approach` shape, "the mutation classifier is a sibling consuming the same segmentation, not a second parser", held — but the implementation needed a third shared module, `hooks/lib/command-word.ts`, because both classifiers were independently answering "which word names the program" and answering it differently. That unification closed two High review findings. It strengthens rather than contradicts the spec's premise.
 
-**260811-2330 — reconciler, domain `code`. Marker stays `_o_`; status stays Final. Session `260811-0752` touched neither this spec nor its remaining Circle.**
+**260811-2330 — reconciler, domain `code`. Marker stays `_o_`; status stays Final. Session `260811-0752-orchestrator-session.md` touched neither this spec nor its remaining Circle.**
 
-Verified at HEAD `31746d1`. `git log 7785330..HEAD -- shared/planning/ circles/260801-1244-curator/` is empty: the session ran under an issues Directive with no Circle active, and this spec was out of its scope by the work queue's own statement of ground.
+Verified at HEAD `31746d1`. `git log 7785330..HEAD -- shared/planning/ 260801-1244-curator` is empty: the session ran under an issues Directive with no Circle active, and this spec was out of its scope by the work queue's own statement of ground.
 
-Three of the spec's four Circles have now closed (`-guard-bash-inspection`, `-guard-rules-write`, `-rule-provenance-header`, all `_c_`). The fourth, `circles/260801-1244-curator`, is still `_a_` and is the only anticipated Circle in the portfolio. The agent it specifies does not exist: `agents/` has no `curator.md` and `skills/` has no `curate/`.
+Three of the spec's four Circles have now closed (`-guard-bash-inspection`, `-guard-rules-write`, `-rule-provenance-header`, all `_c_`). The fourth, `260801-1244-curator`, is still `_a_` and is the only anticipated Circle in the portfolio. The agent it specifies does not exist: `agents/` has no `curator.md` and `skills/` has no `curate/`.
 
-**One thing has moved further than the previous entry recorded, and a reader should not be sent to it.** That entry called C5c's defect statement "historical rather than current". It is now stronger than historical: the mechanism it describes has been **deleted**. `hooks/lib/command-word.ts`, `hooks/lib/shell-parse.ts` and `hooks/lib/git-branch-guard.ts` do not exist; `hooks/guard.ts` names the mutation classifier only in three comments recording its retirement (`:23`, `:112`, `:216`). The guard now measures a fingerprint of the protected paths before and after a tool call instead of predicting a write from a command's text. Circle `circles/260804-1205-shell-reachability-model` carries `_s_` for that reason, and the binding decision is `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
+**One thing has moved further than the previous entry recorded, and a reader should not be sent to it.** That entry called C5c's defect statement "historical rather than current". It is now stronger than historical: the mechanism it describes has been **deleted**. `hooks/lib/command-word.ts`, `hooks/lib/shell-parse.ts` and `hooks/lib/git-branch-guard.ts` do not exist; `hooks/guard.ts` names the mutation classifier only in three comments recording its retirement (`:23`, `:112`, `:216`). The guard now measures a fingerprint of the protected paths before and after a tool call instead of predicting a write from a command's text. Circle `260804-1205-shell-reachability-model` carries `_s_` for that reason, and the binding decision is `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`.
 
 What this costs the spec: C5a and C5b landed and C5c's own subject is gone, so the guard half of this spec is settled by a mechanism the spec did not anticipate. **The curator capability itself is untouched by that** — it depends on the rule-write permission being a real control, which it is (`FUSION_ALLOW_RULES_WRITE`, outranked by a project's own `fusion-guard.json` entry), not on how the guard decides what a command writes. The spec's Grounding for the curator work therefore still holds; only its C5 sections describe a world that no longer exists, and they are left as written because they are the record of the state the spec was written against.
 
-Reconciled by `reconciler`, `shared/history/260811-2330-reconciliation.md`.
+Reconciled by `reconciler`, `260811-2330-reconciliation.md`.
 
 **260814-2017 — reconciler, domain `code`. Marker stays `_o_`; status stays Final. The reason it
 stayed `_o_` in the three entries above has now expired, and that is the finding.**
 
 Verified at HEAD `41c224c`. **All four of this spec's Circles have delivered.** The fourth,
-`circles/260801-1244-curator`, ran to the end of its plan this session: `agents/curator.md` (32 356
+`260801-1244-curator`, ran to the end of its plan this session: `agents/curator.md` (32 356
 bytes), `skills/curate/SKILL.md` (12 281 bytes), the seventeenth-agent registration across
 `bin/fusion-rules:174` and `:185` and the golden fixture, the staleness line in
 `skills/cleanup/SKILL.md`, and the armed growth bound at
 `hooks/lib/__tests__/rules-emission-golden.test.ts:994-995`. The agent then ran against this
 project's own three normative surfaces and applied 28 user-approved corrections
-(`circles/260801-1244-curator/history/260814-1332-curator-run.md`, commit `1a36fe4`). The previous
+(`260814-1332-curator-run.md`, commit `1a36fe4`). The previous
 entry's closing observation — "the agent it specifies does not exist" — is no longer true.
 
 **The marker is not moved, and this entry states why rather than repeating a judgement.** Three of
@@ -799,9 +799,9 @@ So "all four Circles closed" and "this spec is delivered" are not the same state
 first is a fact this pass can establish. Whether a spec whose last Circle closes over three retired
 capabilities is closed (`_c_`), deferred (`_d_`), or stays open as the record of a body of work that
 was re-scoped, is a choice and not a measurement. Filed as
-`shared/decisions/260814-2017_o_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`.
+`260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`.
 
-Reconciled by `reconciler`, `circles/260801-1244-curator/history/260814-2017-reconciliation.md`.
+Reconciled by `reconciler`, `260814-2017-reconciliation.md`.
 
 ---
 
@@ -809,8 +809,8 @@ Reconciled by `reconciler`, `circles/260801-1244-curator/history/260814-2017-rec
 
 **This spec is closed (`_c_`) over three retirements, and `Complete` here does not mean
 "delivered as specified".** The user answered
-`shared/decisions/260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`
-with option 1 on 2026-08-16 (`shared/history/260816-1500-orchestrator-session.md` `## Decisions
+`260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`
+with option 1 on 2026-08-16 (`260816-1500-orchestrator-session.md` `## Decisions
 answered by the user`), and that answer makes this note a condition of the close rather than a
 courtesy. What follows is the whole of what a reader needs in order not to misread the marker.
 
@@ -818,7 +818,7 @@ courtesy. What follows is the whole of what a reader needs in order not to misre
 `agents/curator.md` (33 621 bytes), `skills/curate/SKILL.md` (12 797 bytes), the agent registered
 in `bin/fusion-rules:168` and `:179`, and `/fusion:curate` reachable both directly and as step 5
 of `/fusion:cleanup`. All four Circles the spec spawned carry `_c_`:
-`circles/260801-1244-guard-bash-inspection`, `-guard-rules-write`, `-rule-provenance-header`,
+`260801-1244-guard-bash-inspection`, `-guard-rules-write`, `-rule-provenance-header`,
 `-curator`. C8's provenance header is a shipped convention with its own rule file
 (`rules/rule-file-provenance.md`) and lint.
 
@@ -836,7 +836,7 @@ of `/fusion:cleanup`. All four Circles the spec spawned carry `_c_`:
 **A fourth capability was delivered and then removed, which is a different thing from being
 retired and is recorded here so the marker is not read as covering it.** C5a and C5b (the
 rules-write exemption and its project-level guard configuration) landed in
-`circles/260801-1244-guard-rules-write` and were deleted with the protected-path half on
+`260801-1244-guard-rules-write` and were deleted with the protected-path half on
 2026-08-12. `grep -rn 'FUSION_ALLOW_RULES_WRITE' agents/ skills/ rules/ hooks/*.ts bin/` returns
 only comments recording the retirement (`hooks/guard.ts:30`) and test fixtures; `guard.protectedPaths`
 survives only in `hooks/lib/config.ts`'s retired-key table. The curator does not depend on either:
@@ -871,4 +871,4 @@ Evidence checked in the tree rather than in the Circles' reports:
 The closing note above is written into the file as the answer required. Nothing else in the spec
 was edited: no capability text, no acceptance criterion, no citation.
 
-Reconciled by `reconciler`, `shared/history/260817-1836-reconciliation.md`.
+Reconciled by `reconciler`, `260817-1836-reconciliation.md`.

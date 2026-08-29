@@ -1,4 +1,4 @@
-# Orchestrator Session — 260811-0752
+# Orchestrator Session — 260811-0752-orchestrator-session.md
 
 **Directive:** Close the open defect records to reach a clean state before any new feature or restructuring work begins.
 **Mode:** issues — all 69 open records (53 shared, 16 in five closed Circles); the nine open decisions are answered at gates, not up front
@@ -31,7 +31,7 @@ two to one, so the cascade resolves at the `code_files > 0` branch: **domain = c
 
 `fusion-workbench/tasklist.md` names no Circle and none is active, so it is an unaffiliated
 backlog over `shared/` and current by the ground test in `agents/orchestrator.md`. It was built
-on 260810-1723 against HEAD `5ef92eb`; 20 commits have landed since, so its 45 open entries
+on 260810-1723-tasklist-update.md against HEAD `5ef92eb`; 20 commits have landed since, so its 45 open entries
 predate a day of work.
 
 ## Churn ranking
@@ -43,7 +43,7 @@ ranking, by design), 10 ranked. Top: `hooks/lib/__tests__/rules-emission-golden.
 
 ## Circle hint
 
-One anticipated Circle exists (`circles/260801-1244-curator`), so the portfolio hint was
+One anticipated Circle exists (`260801-1244-curator`), so the portfolio hint was
 printed and `/fusion:next` offered.
 
 ## Voice profiles
@@ -88,7 +88,7 @@ No fallback taken.
   orchestrator itself: the event log froze after `turn_start` for the whole of Turn 3 while three
   commits closed eleven tasks, because the counters were updated in `agentstate.yaml` and the
   emissions skipped. The drift check counts `turn_start` events, so it reported clean throughout.
-  Filed as `260811-1614`. The missing events were emitted late and marked as such.
+  Filed as `260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md`. The missing events were emitted late and marked as such.
 
 ## Session result
 
@@ -130,7 +130,7 @@ Turn-log row did not apply.
 
 **The event log froze again in Turn 4, and the drift check did not see it.** Nothing was emitted
 after `turn_start` for Turn 4 while `36984d7` and `9f84254` landed, closing five queue entries.
-This is the third instance in this session of the defect filed as `260811-1614`, and it confirms
+This is the third instance in this session of the defect filed as `260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md`, and it confirms
 that record's substance: the drift check counts `turn_start` events, so a Turn that commits
 without recording what it committed reads as clean throughout. Queue entry 16 is the fix for
 exactly this and is still outstanding.
@@ -161,11 +161,11 @@ Ten commits, sixteen queue entries closed, fifteen records created, no executor 
   every `npm test` deletes and rebuilds `hooks/dist/`, so a lint reading the tree mid-rebuild
   reported eleven files missing. The two other pairs were the already-recorded load-sensitive
   cases, queue entries 37 and 38. Filed as a decision rather than a third symptom record —
-  `shared/decisions/260811-2009_o_…` — and dispatching went serial for the rest of the Turn.
+  `260811-2009_*_…` — and dispatching went serial for the rest of the Turn.
 - **Three findings arrived from a consuming project** (`bb9d66d`), transferred by the user because
   all three are in the plugin's sources. Two entered the shared store at their original stamps and
   were both worked in this Turn (`b53c7dd`, `282ef42`). The third was the same defect this session
-  had filed six hours later, so it was merged into `260811-1915` as a second and stronger witness
+  had filed six hours later, so it was merged into `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md` as a second and stronger witness
   rather than filed twice.
 - **The user asked for queue entry 10 by name** (`61bd21f`): the Turn budget became an
   `orchestrator.maxTurns` leaf on the existing per-leaf merge, with `bin/fusion-turn-budget`, and
@@ -194,7 +194,7 @@ Ten commits, sixteen queue entries closed, fifteen records created, no executor 
 <!-- RECONCILER-OWNED -->
 
 Per-Circle verdict, computed at Phase 3 by `reconciler` over `7785330..31746d1` (37 commits, five
-Turns, no active Circle). Full working: `shared/history/260811-2330-reconciliation.md`.
+Turns, no active Circle). Full working: `260811-2330-reconciliation.md`.
 
 **Verdict:** review-needed
 
@@ -205,12 +205,12 @@ Turns, no active Circle). Full working: `shared/history/260811-2330-reconciliati
   hash in those notes resolving; suite green at 52 files / 1349 tests. Six drift items found, four
   repaired here (three stale decision-marker citations rewritten to the wildcard form, 13
   contradicted template placeholders removed across 9 decision records, 1 empty `Resolved:` stub,
-  and record `260811-1915`'s misattributed first witness annotated). Two left standing on purpose:
+  and record `260811-1915_*_the-queue-ground-check-reads-any-backticked-word-in-the-head-line-as-a-circle-name.md`'s misattributed first witness annotated). Two left standing on purpose:
   **29 of 67 live decision records state a `**Status:**` their filename contradicts**
-  (`shared/issues/260811-2146_*_…` — the record forbids hand-correction before the user answers
-  `260802-0920`; the measurement reproduces at 34 by exact equality, of which 5 are formatting
+  (`260811-2146_*_…` — the record forbids hand-correction before the user answers
+  `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`; the measurement reproduces at 34 by exact equality, of which 5 are formatting
   variance), and **3 of the work queue's 81 literal-marker citations are dead**, filed as
-  `shared/issues/260811-2330_*_the-work-queue-carries-eighty-one-literal-marker-citations-and-three-are-already-dead.md`.
+  `260811-2330_*_the-work-queue-carries-eighty-one-literal-marker-citations-and-three-are-already-dead.md`.
   **12 reviewer findings from this session's own two evening passes remain open** (Turn-4 review 4
   of 10, Turn-5 review 8 of 8). Flagged: the artifact is sound, its Grounding is not fully legible.
 - **Artifact↔Directive:** the commits move **partially toward** the Directive, and the workbench
@@ -228,7 +228,7 @@ Turns, no active Circle). Full working: `shared/history/260811-2330-reconciliati
   findings. Flagged, and it is the load-bearing edge.
 - **Grounding↔Directive:** **1 open decision, 12 answered, 50 implemented, 4 deferred across every
   store.** The one open record is
-  `shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`,
+  `260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`,
   and it is a live constraint rather than a loose end: it governs `agents/orchestrator.md` Step 3a
   batching, Step 3b validation and `agents/coder.md`'s report contract together, so the next
   session cannot choose a dispatch shape without answering it. Evidence was added to it this pass —
@@ -248,7 +248,7 @@ is not reachable from the inputs the mechanism has, the mechanism changes, not t
 
 It is **not** unreachable, so Bounded Closure is not proposed. Binding the Directive to a **fixed**
 population measured at a stated moment makes it monotone and 35 % done: *"close the 69 defect
-records open at 260811-0752; records filed after that moment are the next Directive's."* The
+records open at 260811-0752-orchestrator-session.md; records filed after that moment are the next Directive's."* The
 concrete next step under that reading is the 45 survivors of the original 69, of which 22 are
 blocked on a human answer — so the first Turn of the next session is a decision batch, not a
 dispatch batch.

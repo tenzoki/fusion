@@ -40,11 +40,11 @@ The first is the cheapest and needs no prompt change. Deciding between them is n
 work, not caused by its Directive. The defect is in the coverage helper and the conceptrev
 convention, both of which predate this Circle.
 
-**Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+**Filed by:** orchestrator, session `260813-2345-orchestrator-session.md`.
 
 ---
 Resolved: duplicate. The same defect is filed more fully as
-`shared/issues/260811-1145_o_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`,
+`260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`,
 which names both halves of the mechanism — the scan in `hooks/lib/review-coverage.ts` and the
 trigger in `hooks/tracker.ts` — and cites the commit that gave the mandate to the other two review
 agents. Closed against that record on the Turn-3 review's recommendation; its measurement of

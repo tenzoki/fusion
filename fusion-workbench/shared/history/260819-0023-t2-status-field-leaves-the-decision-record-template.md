@@ -10,7 +10,7 @@
 ## Task
 
 Task T2 — realise decision
-`shared/decisions/260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`,
+`260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`,
 answered option 1 by the user on 2026-08-18: the `**Status:**` head field leaves the
 decision-record template and the filename marker becomes the only source of a decision
 record's state. The change surface the record names is two rule files, and the measurement

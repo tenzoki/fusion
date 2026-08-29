@@ -4,10 +4,10 @@
 
 **Severity:** Medium — the deny the guard already decided is discarded by a failure in its own bookkeeping
 **Domain:** code
-**Filed by:** coder, while fixing `260809-1109` (verdict before reporting)
+**Filed by:** coder, while fixing `260809-1109_*_both-hooks-fail-silent-instead-of-open-when-the-guard-state-directory-is-unwritable.md` (verdict before reporting)
 **Affects:** `hooks/guard.ts` — CHECK 1 (halt), CHECK 2 (protected path) and CHECK 3 (decision-governed), each of which calls `saveEscalation` before `block`
 **Cross-references:**
-`fusion-workbench/shared/issues/260809-1109_*_both-hooks-fail-silent-instead-of-open-….md` (the handler this was found from; a different fix in a different place),
+`260809-1109_*_both-hooks-fail-silent-instead-of-open-….md` (the handler this was found from; a different fix in a different place),
 `hooks/lib/__tests__/hook-fail-open.test.ts` — the case "fails open on a protected path too" pins the current behaviour
 
 ---
@@ -29,13 +29,13 @@ permission on `.guard-state/`. When it throws, the deny that was already decided
 is never written. The top-level handler then supplies the fail-open verdict,
 which is an allow — on a protected path.
 
-The order is the same one issue `260809-1109` closed in the top-level handlers,
+The order is the same one issue `260809-1109_*_both-hooks-fail-silent-instead-of-open-when-the-guard-state-directory-is-unwritable.md` closed in the top-level handlers,
 one level down: a record about the decision stands ahead of the decision.
 
 ## Measured
 
 Scratch consuming project, `.guard-state/` at mode `0555`, real hook as a
-subprocess, after the `260809-1109` fix landed:
+subprocess, after the `260809-1109_*_both-hooks-fail-silent-instead-of-open-when-the-guard-state-directory-is-unwritable.md` fix landed:
 
 ```
 $ echo '<PreToolUse Edit rules/x.md>' | tsx hooks/guard.ts
@@ -48,7 +48,7 @@ STDERR: [guard] Error: Error: EACCES: permission denied, open '…/.guard-state/
 
 ## What this is not
 
-It is not a regression from `260809-1109`. Before that fix the same call exited 1
+It is not a regression from `260809-1109_*_both-hooks-fail-silent-instead-of-open-when-the-guard-state-directory-is-unwritable.md`. Before that fix the same call exited 1
 with empty stdout, and what Claude Code makes of that was never measured — the
 ambiguity the record was filed about. The outcome is now stated rather than
 guessed at; it is not yet the right outcome.
@@ -110,7 +110,7 @@ the "before" is measured rather than argued.
   `[guard] Error: … escalation.json.tmp`, after the verdict, through `bestEffort` →
   `writeMarker` (`hooks/lib/fail-open.ts:130`, `:104`).
 - Criterion 4 — CONFIRMED. The test is now
-  `"denies a protected path with the state directory unwritable (260809-1825)"`
+  `"denies a protected path with the state directory unwritable (260809-1825_*_an-unwritable-guard-state-directory-turns-the-protected-path-deny-into-an-allow.md)"`
   (`hook-fail-open.test.ts:212`); the surviving mention of this record at `:214-216` is
   historical ("That record is this change"), so it no longer pins the defect.
 
@@ -126,8 +126,8 @@ deny sites and best-effort at `hooks/tracker.ts:583` — with the reasoning writ
 `tracker.ts:576-582` and the failure carried into the halt wording (`:603-615`), verified live
 with `escalation.json` replaced by a directory. That is a documented resolution, not drift.
 
-**Scope note the record could not have carried.** This record named three sites, `260809-2046`
-a fourth and `260809-2045` a fifth. The commit treated the shape rather than the enumeration
+**Scope note the record could not have carried.** This record named three sites, `260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-and-is-not-in-the-open-records-scope.md`
+a fourth and `260809-2045_*_the-churn-half-still-runs-before-the-reply-so-any-failure-there-discards-the-protected-path-halt-sentence.md` a fifth. The commit treated the shape rather than the enumeration
 and converted fifteen sites; eleven of them were verdict-discarding before it, which is exactly
 the count the commit claims. The commit's own "fourteen" is one short of its own class — see the
 reconciliation log for the omitted site.

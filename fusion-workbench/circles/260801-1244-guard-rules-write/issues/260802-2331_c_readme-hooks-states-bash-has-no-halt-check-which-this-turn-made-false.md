@@ -4,12 +4,12 @@
 
 **Severity:** High
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 2 of `circles/260801-1244-guard-rules-write` (`bf75941..HEAD`)
+**Filed by:** coderev, reviewing Turn 2 of `260801-1244-guard-rules-write` (`bf75941..HEAD`)
 **Affects:** agent-facing and user-facing documentation of a security control
 **Cross-references:** `README-hooks.md:143`, `README-hooks.md:9`, `README-hooks.md:19`,
 `README-hooks.md:180`, `rules/protected-path-discipline.md:217-220`,
 `hooks/guard.ts:309-352` (STEP 2a, the behaviour that landed),
-`circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md:362-369`
+`260802-1856_*_plan-guard-rules-write.md:362-369`
 (Step 9, the documentation step, whose stated scope does not name these sentences)
 
 ---
@@ -91,7 +91,7 @@ separate finding.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while checking that the halt change landed
+Found in `260801-1244-guard-rules-write` while checking that the halt change landed
 coherently across the two surfaces. It did, in code.
 
 ---
@@ -126,5 +126,5 @@ of `events.jsonl`.
 
 **Left for plan Step 9, deliberately:** the `FUSION_ALLOW_RULES_WRITE` gap this issue
 names under "Also missing". Both documents still say no override exists for a
-protected-path write. See `issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md`
+protected-path write. See `260803-1402_*_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md`
 for the third sentence Step 9 must add alongside the two this issue lists.

@@ -32,7 +32,7 @@
  * ## What this module is NOT
  *
  * It is not the measurement chassis. Decision
- * `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
+ * `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
  * takes option 2 — the two pieces that already had an owner — and leaves the
  * tracker's per-measurement bodies, the CLI mains and the `bin/` wrappers as
  * per-measurement copies until a further measurement is proposed. There were

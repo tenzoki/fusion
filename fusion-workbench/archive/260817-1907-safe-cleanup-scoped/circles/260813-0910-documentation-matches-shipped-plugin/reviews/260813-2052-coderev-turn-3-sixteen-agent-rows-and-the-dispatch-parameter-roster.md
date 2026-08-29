@@ -4,7 +4,7 @@
 **Sender:** coderev
 **Reviewed-range:** `22f892e..8d87192`
 **Not-opened:** none
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
 **Files as dispatched:** `README-agents.md`, `CLAUDE.md`, `docs/philosophy.md`
 
 ## Summary
@@ -90,7 +90,7 @@ membership.
 The claim is real: `:153` names `planner` among the agents receiving the domain parameter and
 omits `playmaker`, and the same prompt contradicts it at `:200` ("pass it as the `executors`
 selection cue to `planner`") and at `:850` (which passes `**Domain:**` to playmaker). The
-filed issue, `issues/260813-2045_o_…`, cites both sides accurately and states the one-line fix.
+filed issue, `260813-2045_*_…`, cites both sides accurately and states the one-line fix.
 
 Three reasons the filing is right rather than cautious. The step's file scope was three
 documentation files, and an agent prompt is the plugin's executable surface — an edit there
@@ -121,7 +121,7 @@ mechanism that authorises the four destructive backlog operations. The section a
 how a non-parameter is excluded (the bugfixer's freeform pre-authorisation, `:76`); these two
 carry the `**<Keyword>:**` form that exclusion turns on.
 
-Filed: `issues/260813-2052_o_the-dispatch-parameter-roster-omits-the-two-lines-the-playmaker-relay-carries.md`
+Filed: `260813-2052_*_the-dispatch-parameter-roster-omits-the-two-lines-the-playmaker-relay-carries.md`
 
 ### 2. The `Passed by` column was read against the agent prompts only — Medium
 
@@ -135,7 +135,7 @@ against, and no skill body is in that list. `Passed by` is the one column whose 
 lives outside the agent prompts, and it was populated from them anyway — the passers it names
 are the ones a prompt happens to mention.
 
-Filed: `issues/260813-2052_o_the-passed-by-column-was-read-against-the-agent-prompts-only-so-two-skills-that-pass-parameters-are-missing.md`
+Filed: `260813-2052_*_the-passed-by-column-was-read-against-the-agent-prompts-only-so-two-skills-that-pass-parameters-are-missing.md`
 
 ### 3. The planner's `**Circle:**` row names a passer that does not exist — Medium
 
@@ -148,7 +148,7 @@ verbatim, including the exit-1 halt.
 This is the same class of defect the step corrected elsewhere in the same commit — a surface
 describing a mechanism the prompts do not have — one column over.
 
-Filed: `issues/260813-2052_o_the-planner-circle-row-names-the-orchestrator-as-a-passer-and-nothing-in-the-orchestrator-prompt-passes-it.md`
+Filed: `260813-2052_*_the-planner-circle-row-names-the-orchestrator-as-a-passer-and-nothing-in-the-orchestrator-prompt-passes-it.md`
 
 ### 4. The shaper's `**Mode:**` row reads an absent line as user-direct — Low
 
@@ -158,7 +158,7 @@ mode-detection heuristic" and stops there; the table adds "i.e. user-direct", wh
 the heuristic into one of its two outcomes — and the same table's `**Parent task:**` row states
 the other one.
 
-Filed: `issues/260813-2052_o_the-shaper-mode-row-reads-an-absent-mode-line-as-user-direct-while-a-second-mode-carries-no-mode-line.md`
+Filed: `260813-2052_*_the-shaper-mode-row-reads-an-absent-mode-line-as-user-direct-while-a-second-mode-carries-no-mode-line.md`
 
 ### 5. The orchestrator's Writes cell calls four files the root-anchored set — Low
 
@@ -172,11 +172,11 @@ Stated as a judgement rather than a certainty: both writes go through a `bin/` h
 the cell is defensible. `.session-marker` is harder to place outside a set the definite article
 closes. This enumeration is what the step's "ten write targets" count rests on.
 
-Filed: `issues/260813-2052_o_the-orchestrator-writes-cell-calls-four-files-the-root-anchored-set-while-the-prompt-writes-two-more.md`
+Filed: `260813-2052_*_the-orchestrator-writes-cell-calls-four-files-the-root-anchored-set-while-the-prompt-writes-two-more.md`
 
 ### 6. The step's own evidence says twelve corrected where fifteen changed — Medium
 
-The plan file's completion note and `history/260813-2043-coder-…:15` both say "twelve
+The plan file's completion note and `260813-2043-coder-…:15` both say "twelve
 corrected, four left standing after a reading", and the note names the four as `shaper`,
 `planner`, `bugfixer`, `editor`. Row-by-row diff of `22f892e` against `8d87192`: fifteen rows
 changed, `bugfixer` alone is byte-identical. Three of the four named rows are in the changed
@@ -192,7 +192,7 @@ evidence. An auditor reads "four stand as they were" as four rows verified and f
 and three of the four names are rows the pass rewrote. The same sentence is in the commit
 message, which is immutable; the two workbench records are not.
 
-Filed: `issues/260813-2052_o_the-step-6-completion-note-says-twelve-rows-corrected-and-names-three-that-changed.md`
+Filed: `260813-2052_*_the-step-6-completion-note-says-twelve-rows-corrected-and-names-three-that-changed.md`
 
 ## Cross-cutting observations
 
@@ -235,4 +235,4 @@ broken.
 
 ---
 
-**Reconciled 260813-2258.** Six findings filed, three closed and three still open. The three closures were re-checked at HEAD `c0e4219`: `README-agents.md:61-62` carry the two playmaker relay rows with `/fusion:next` Step 5b as the passer, `:59` and `:65-68` carry the two skill passers the agent-prompt-only reading had missed, and `:64` no longer names the orchestrator as a passer of `**Circle:**`. The three open findings were re-verified as still present, and the third of them — the step-6 completion note — was confirmed independently: fifteen of the sixteen agent rows differ between `22f892e` and `8d87192`, `bugfixer` alone is byte-identical.
+**Reconciled 260813-2258-reconciliation.md.** Six findings filed, three closed and three still open. The three closures were re-checked at HEAD `c0e4219`: `README-agents.md:61-62` carry the two playmaker relay rows with `/fusion:next` Step 5b as the passer, `:59` and `:65-68` carry the two skill passers the agent-prompt-only reading had missed, and `:64` no longer names the orchestrator as a passer of `**Circle:**`. The three open findings were re-verified as still present, and the third of them — the step-6 completion note — was confirmed independently: fifteen of the sixteen agent rows differ between `22f892e` and `8d87192`, `bugfixer` alone is byte-identical.

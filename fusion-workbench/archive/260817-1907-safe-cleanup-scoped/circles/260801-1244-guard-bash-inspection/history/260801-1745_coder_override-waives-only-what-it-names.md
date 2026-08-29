@@ -1,8 +1,8 @@
 # coder — the git override waives only what it names (plan step 6)
 
 **Date:** 2026-08-01 17:45
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 6
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 6
 **Status:** Complete
 
 ## The hole
@@ -87,7 +87,7 @@ no-override cases mean what they say.
 | `FUSION_ALLOW_BRANCH_SWITCH=1`, `git switch main` | allows; zero blocks; one `guard_advisory` naming the env var |
 | no override, `git switch main` | blocks; one block, trigger `git_branch_switch` |
 | no override, `git switch main && rm rules/x.md` | blocks on the branch; **exactly one** block, one event |
-| `ls -la` | allows; `escalation.json` and `events.jsonl` do not exist (260707-0750/0751 on the files, not the source) |
+| `ls -la` | allows; `escalation.json` and `events.jsonl` do not exist (260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md/0751 on the files, not the source) |
 | block, then `git status`, then re-read state | `consecutiveBlocks` still 1; no event appended by the innocuous call |
 
 The harness overlaps what plan step 6's original brief reserved for an integration harness.
@@ -96,7 +96,7 @@ integration step can extend it rather than start over.
 
 ## Finding filed
 
-`issues/260801-1745_o_one-git-override-lifts-the-deny-for-the-other-git-class.md` — the same
+`260801-1745_*_one-git-override-lifts-the-deny-for-the-other-git-class.md` — the same
 failure one layer down, inside `classifyGitCommand`. It returns on the first deny-case
 segment, so an active override for one class stops the scan and the *other* class goes
 unclassified. Verified by probe: `FUSION_ALLOW_WORKTREE=1 git worktree add ../wt f && git

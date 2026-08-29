@@ -219,11 +219,11 @@ A second, softer point on permissions. `settings.json` auto-allows writes only u
 
 **Where the evidence is thin. Five specific spots.**
 
-*Rule files carry no in-band provenance.* No rule file in the plugin's `rules/` states which decision motivated it or which Circle produced it, with exactly one exception that proves the convention is available: `rules/fusion-workbench-conventions.md:326` reads "Binding decision: `decisions/260716-1910_i_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`". Used once, in one section, of one file. Reconstructing why a rule exists therefore means reading git log and hoping the commit message is informative. In fusion's own repo that works, because commits are conventional and descriptive. In a consuming project whose `.claude/rules/` may have been hand-authored outside any fusion session, it may yield nothing at all. This is the single cheapest high-leverage fix available, and it is independent of who does the consolidating.
+*Rule files carry no in-band provenance.* No rule file in the plugin's `rules/` states which decision motivated it or which Circle produced it, with exactly one exception that proves the convention is available: `rules/fusion-workbench-conventions.md:326` reads "Binding decision: `260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`". Used once, in one section, of one file. Reconstructing why a rule exists therefore means reading git log and hoping the commit message is informative. In fusion's own repo that works, because commits are conventional and descriptive. In a consuming project whose `.claude/rules/` may have been hand-authored outside any fusion session, it may yield nothing at all. This is the single cheapest high-leverage fix available, and it is independent of who does the consolidating.
 
 *The workbench is not in version control here, so its history has no history.* Verified: `git ls-files fusion-workbench/` returns zero files, and `.gitignore:50` reads `## fusion-workbench/`, a commented-out ignore rule, so the directory is neither tracked nor ignored. `CLAUDE.md` states it is "gitignored"; that claim is wrong in both directions. The consequence for grounding is direct. Every record can be read in its current state, and no record's evolution can be diffed. The reconciler appends to files in place, and playmaker regenerates `portfolio.md` wholesale on every run (`agents/playmaker.md:136`), so prior states are simply gone. An agent asked to judge "what changed in our understanding, and when" has the endpoints and not the trajectory.
 
-*Turn logs are unevenly populated, and the largest unit of work is the empty one.* Four of the five Circle records carry substantive Turn logs. The fifth, `circles/260719-1536-plane-mirror-integration/_c_circle.md`, still reads "(none yet — anticipated; on activation: ...)" under `## Turn log` despite being closed with six commits. Its Closure note carries the content instead. Any consolidation pass that walks Turn logs mechanically would under-report the biggest Circle in the project. Filed as an issue.
+*Turn logs are unevenly populated, and the largest unit of work is the empty one.* Four of the five Circle records carry substantive Turn logs. The fifth, `260719-1536-plane-mirror-integration`, still reads "(none yet — anticipated; on activation: ...)" under `## Turn log` despite being closed with six commits. Its Closure note carries the content instead. Any consolidation pass that walks Turn logs mechanically would under-report the biggest Circle in the project. Filed as an issue.
 
 *Archived history leaves every agent's read set.* No `SCAN_*` key names the archive store. The resolution table at `rules/fusion-workbench-conventions.md:129-153` lists `SCAN_PLANS`, `SCAN_ISSUES`, `SCAN_DECISIONS`, `SCAN_HISTORY`, `SCAN_REVIEWS`, `SCAN_ANALYSES`, `SCAN_INVESTIGATIONS`, `SCAN_CONSULT` and `SCAN_CIRCLES`, and none of them resolves into `archive/`. After a tier-1 archive, a closed Circle's decisions and history sit on disk where no agent looks. The structural irony is sharp: the capability that most needs long-horizon history would operate on a read set that is deliberately pruned of it, and the pruning grows with project age. Filed as an issue.
 
@@ -259,16 +259,16 @@ The history finding qualifies the ambition. Grounding a prune in what actually h
 
 ## Filed Issues
 
-- `fusion-workbench/shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md` — the workbench is neither tracked nor gitignored, so archive's "git preserves the bytes" premise and CLAUDE.md's "gitignored" claim are both false.
-- `fusion-workbench/shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md` — asymmetric protection of two normative rule directories that `bin/fusion-rules` treats alike.
-- `fusion-workbench/shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md` — archived Grounding-Historie is invisible to every agent's resolved read set.
-- `fusion-workbench/shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` — the largest closed Circle carries an unfilled Turn log.
+- `260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md` — the workbench is neither tracked nor gitignored, so archive's "git preserves the bytes" premise and CLAUDE.md's "gitignored" claim are both false.
+- `260801-1020_*_guard-protects-rules-but-not-claude-rules.md` — asymmetric protection of two normative rule directories that `bin/fusion-rules` treats alike.
+- `260801-1020_*_scan-keys-never-reach-the-archive-store.md` — archived Grounding-Historie is invisible to every agent's resolved read set.
+- `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md` — the largest closed Circle carries an unfilled Turn log.
 
 ## Filed Decisions
 
-- `fusion-workbench/shared/decisions/260801-1020_o_where-does-normative-consistency-live.md` — extend existing surfaces, build a report-only detector, or build a writing agent.
-- `fusion-workbench/shared/decisions/260801-1020_o_may-any-fusion-writer-touch-rules.md` — guard policy for `rules/**` write access.
-- `fusion-workbench/shared/decisions/260801-1020_o_provenance-header-on-rule-files.md` — required, recommended, or rely on git.
+- `260801-1020_*_where-does-normative-consistency-live.md` — extend existing surfaces, build a report-only detector, or build a writing agent.
+- `260801-1020_*_may-any-fusion-writer-touch-rules.md` — guard policy for `rules/**` write access.
+- `260801-1020_*_provenance-header-on-rule-files.md` — required, recommended, or rely on git.
 
 ## Sources
 
@@ -299,16 +299,16 @@ Plugin source, v5.7.0, commit `17730b8`:
 
 Workbench evidence, this project:
 
-- `fusion-workbench/circles/260719-1536-plane-mirror-integration/_c_circle.md` (Grounding snapshot, empty Turn log, Closure note)
-- `fusion-workbench/circles/260716-1847-workbench-umbau/_c_circle.md`, `260717-1638-marker-format-ohne-glob-metazeichen/_c_circle.md`, `260718-1924-v5x-overhaul/_c_circle.md`, `260719-1536-brest-unite-co-creator-conversion/_c_circle.md` (Turn logs)
+- `260719-1536-plane-mirror-integration` (Grounding snapshot, empty Turn log, Closure note)
+- `260716-1847-workbench-umbau`, `260717-1638-marker-format-ohne-glob-metazeichen/_c_circle.md`, `260718-1924-v5x-overhaul/_c_circle.md`, `260719-1536-brest-unite-co-creator-conversion/_c_circle.md` (Turn logs)
 - `fusion-workbench/orchestrator-events.jsonl` (31 event kinds, counted)
 - `fusion-workbench/shared/decisions/` (six records), `fusion-workbench/shared/history/` (31 files)
 
-Commands run: `git ls-files fusion-workbench/` (0 results), `git check-ignore -v fusion-workbench/shared/history/260801-0936-orchestrator-session.md` (no match), `git log --oneline -- rules/` (42 commits), `git log --oneline --follow -- rules/user-facing-output.md` (6 commits).
+Commands run: `git ls-files fusion-workbench/` (0 results), `git check-ignore -v 260801-0936-orchestrator-session.md` (no match), `git log --oneline -- rules/` (42 commits), `git log --oneline --follow -- rules/user-facing-output.md` (6 commits).
 
 ## Open Questions
 
-- [ ] Which of the three shapes the capability takes. Filed as `260801-1020_o_where-does-normative-consistency-live.md`; needs the user.
-- [ ] Whether fusion ever grants a writer access to `rules/**`. Filed as `260801-1020_o_may-any-fusion-writer-touch-rules.md`; needs the user.
-- [ ] Whether rule files gain a provenance header. Filed as `260801-1020_o_provenance-header-on-rule-files.md`; needs the user.
+- [ ] Which of the three shapes the capability takes. Filed as `260801-1020_*_where-does-normative-consistency-live.md`; needs the user.
+- [ ] Whether fusion ever grants a writer access to `rules/**`. Filed as `260801-1020_*_may-any-fusion-writer-touch-rules.md`; needs the user.
+- [ ] Whether rule files gain a provenance header. Filed as `260801-1020_*_provenance-header-on-rule-files.md`; needs the user.
 - [ ] Whether the workbench being untracked is intended or accidental. The commented-out `.gitignore` line suggests a reversal that was never finished. Captured in the issue; needs the user's intent to resolve.

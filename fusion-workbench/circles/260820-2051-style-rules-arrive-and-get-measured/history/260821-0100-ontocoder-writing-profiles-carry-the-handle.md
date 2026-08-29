@@ -3,9 +3,9 @@
 **Agent:** ontocoder
 **Date:** 2026-08-21
 **Status:** Complete, with one acceptance criterion not met as written
-**Plan:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md` step 6
-**Decision read first:** `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`
-**Issue:** `shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`, item 2 only
+**Plan:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md` step 6
+**Decision read first:** `260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`
+**Issue:** `260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`, item 2 only
 
 ## What changed
 

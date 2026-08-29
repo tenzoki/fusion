@@ -3,7 +3,7 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Source record:** `fusion-workbench/shared/issues/260813-1334_c_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`
+**Source record:** `260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`
 
 ## What was wrong
 

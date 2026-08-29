@@ -4,9 +4,9 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** commit `2d103be` message; `hooks/lib/__tests__/fixtures/rules-emission.golden`
-**Cross-references:** `shared/issues/260810-0455_c_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md` (the finding it answers); commit `b6bbae7`
+**Cross-references:** `260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md` (the finding it answers); commit `b6bbae7`
 
 ---
 
@@ -49,7 +49,7 @@ totals in the golden (95 951, 101 624, 108 908) appear nowhere in the approval.
   **floor** from `RULE_BASELINE`, not against the current total; the orchestrator's floor is
   102 149 and its budget 114 149, leaving 5 241 bytes of head-room. `npm test` is green
   (993 passed, 38 files) and prints no cleanup report.
-- Regenerating ahead of the still-open `260810-0504` (where the tracked-workbench section lives)
+- Regenerating ahead of the still-open `260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md` (where the tracked-workbench section lives)
   reverses this reviewer's Turn 1 sequencing, and the message argues the reversal explicitly: a
   red suite across a session boundary is worse than a second fixture diff. That is a reasoned
   deviation, not a defect.
@@ -80,4 +80,4 @@ Recounted from the fixture rather than re-derived: `shaper` carries `circle-reco
 
 **No threshold was breached** — the reviewer measured 5241 bytes of head-room — so the approval stands as an approval. What was wrong was the account of it, not the decision.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (Turn 3). Filed by `coderev` reviewing `ff70d3a..HEAD`; corrected by the orchestrator, which wrote the error.
+Session: `260810-0241-orchestrator-session.md` (Turn 3). Filed by `coderev` reviewing `ff70d3a..HEAD`; corrected by the orchestrator, which wrote the error.

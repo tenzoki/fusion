@@ -4,13 +4,13 @@
 **Domain:** code
 **Status:** open
 **Filed by:** reconciler (reconciliation pass 260817-1836)
-**Cross-references:** `agents/reconciler.md:26`, `:108`, `:109`, `:113-115`, `:172-176` (the Step 2.5 contract and the verdict table); `shared/issues/260817-1613_o_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md` (the adjacent gap, a *different* one); `shared/history/260817-1821-orchestrator-session.md` (the session that produced the case)
+**Cross-references:** `agents/reconciler.md:26`, `:108`, `:109`, `:113-115`, `:172-176` (the Step 2.5 contract and the verdict table); `260817-1613_*_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md` (the adjacent gap, a *different* one); `260817-1821-orchestrator-session.md` (the session that produced the case)
 
 ---
 
 ## What happened
 
-Session `260817-1821` opened with `/fusion:setup`, was never given a work scope, and closed with
+Session `260817-1821-orchestrator-session.md` opened with `/fusion:setup`, was never given a work scope, and closed with
 `/fusion:cleanup`. Its history file records the Directive as `(not yet stated — session opened with
 /fusion:setup, no work scope given)`. The reconciler was then dispatched at Phase 3 and had to
 produce a three-edge Coherence verdict against a Directive that does not exist.
@@ -72,7 +72,7 @@ before either is planned.
 
 ---
 Also seen: 260823-1446 by reconciler — session
-`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md`
+`260823-0721-orchestrator-session.md`
 carries `**Directive:** (not yet stated — session started via /fusion:setup, awaiting the user's scope)`
 after three Turns and 19 commits, and this pass could evaluate both Directive edges only because
 `agentstate.yaml` still held `session.directive` — a class L file that a clean exit deletes.

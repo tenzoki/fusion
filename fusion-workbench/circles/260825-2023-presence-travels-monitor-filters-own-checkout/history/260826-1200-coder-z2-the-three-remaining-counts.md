@@ -3,13 +3,13 @@
 **Date:** 2026-08-26
 **Agent:** coder
 **Task:** Z-2, Turn 3, dispatched by the orchestrator before closure
-**Circle:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout`
+**Circle:** `260825-2023-presence-travels-monitor-filters-own-checkout`
 **Status:** Complete
 
 ## What was asked
 
 Three wrong counts about this Circle's own mechanism, found by the reconciliation pass at
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1132-reconciliation.md`,
+`260826-1132-reconciliation.md`,
 plus one substantive residual on acceptance criterion 6. The dispatch was explicit that no number in
 it was to be taken on trust: each was to be measured and the measuring command reported.
 
@@ -68,7 +68,7 @@ the `## Reconciliation Log` heading at line 296. Above it, seven distinct record
 eleven, the extra four being the reconciliation pass's own findings appended after closure.
 
 The seventh above the line is
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`,
+`260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`,
 named in criterion 5 and discharged in `6deeb33`. Five of the seven are discharged, two are not, which
 is what the clause already said about its six plus one.
 
@@ -143,7 +143,7 @@ sentence:
   templates README*.md CLAUDE.md` — `agents/orchestrator.md:235` (`session_start` executable), `:953`
   (`session_end` prose), `:1322` (the generic template), `skills/setup/SKILL.md:483`. No live prose
   states a number; `agents/orchestrator.md:139` says "every emit template below" and counts nothing.
-  The "all three" survives only inside the closed `260826-0136` record's `Resolved:` note, deliberately
+  The "all three" survives only inside the closed `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md` record's `Resolved:` note, deliberately
   left unedited with its `Revised by:` correction beside it.
 - SessionStart commands: **four** in `hooks/hooks.json`, and `CLAUDE.md:29` says four.
 - `bin/fusion-identity` exit codes: **six** (0-5 in its header table), and both `CLAUDE.md:42` and
@@ -172,10 +172,10 @@ themselves.
 
 ## Records closed
 
-- `issues/260826-1127_o_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`
+- `260826-1127_*_the-repairs-authoring-home-says-three-readers-scope-by-checkout-and-this-circle-built-a-fourth.md`
   → `_c_`, with a `Resolved:` note carrying the measurement and stating that the curator observation in
   it is not discharged.
-- `issues/260826-1127_o_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`
+- `260826-1127_*_five-shipped-sites-say-the-turn-count-helper-replaced-four-whole-file-grep-copies-and-there-were-two.md`
   → `_c_`, with a `Resolved:` note carrying both measured quantities and correcting the record's own
   two-versus-three estimate.
 
@@ -192,8 +192,8 @@ committed.
 - `/Users/k1/Projects/productive/fusion/hooks/dist/lib/events-query.d.ts` (rebuild)
 - `/Users/k1/Projects/productive/fusion/CLAUDE.md`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/reference-resolution-lint.test.ts`
-- `.../planning/260825-2140_c_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
-- `.../260823-0023-settle-what-travels-between-checkouts/issues/260823-1110_c_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
+- `.../260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`
+- `.../260823-0023-settle-what-travels-between-checkouts/260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-whose-repair-direction-is-positional.md`
 - the two `260826-1127` records, appended and renamed `_o_` → `_c_`
 
 ## Verification

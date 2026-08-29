@@ -4,7 +4,7 @@ The resume shell is two independent copies and nothing holds them identical
 
 The five-line block that derives the commit and Turn counts at an interrupted-session resume exists
 twice — `agents/orchestrator.md:88-93` and `skills/setup/SKILL.md:248-252` — with no shared owner
-and no gate. Closing `260815-1631_c_the-resume-shell-…` fixed both copies identically; it did not
+and no gate. Closing `260815-1631_*_the-resume-shell-…` fixed both copies identically; it did not
 give them a reason to stay that way.
 
 ---
@@ -44,4 +44,4 @@ call at a gate, not an executor's inside a repair dispatch. Both copies are corr
 nothing is broken while this is open — the exposure is the next correction reaching one of them.
 
 ---
-Resolved: closed by user decision at gate G1, option three of the three the filing executor costed — two copies are accepted and no mechanism is built to hold them identical. Reasoning recorded at shared/history/260814-2306-orchestrator-session.md:252 — five lines of shell justify neither a thirteenth bin helper with its gitignore line and its asserted table row, nor a fortieth test file, and both are the kind of addition the growth cap in step 13 exists to slow. The risk is not denied: the two copies can diverge and nothing will say so. It stays named here rather than engineered away.
+Resolved: closed by user decision at gate G1, option three of the three the filing executor costed — two copies are accepted and no mechanism is built to hold them identical. Reasoning recorded at 260814-2306-orchestrator-session.md:252 — five lines of shell justify neither a thirteenth bin helper with its gitignore line and its asserted table row, nor a fortieth test file, and both are the kind of addition the growth cap in step 13 exists to slow. The risk is not denied: the two copies can diverge and nothing will say so. It stays named here rather than engineered away.

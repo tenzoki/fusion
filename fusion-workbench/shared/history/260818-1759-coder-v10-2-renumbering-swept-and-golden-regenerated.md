@@ -98,7 +98,7 @@ curator surface behind a user gate. Left for `/fusion:cleanup --only claude-md`.
 - `/Users/k1/Projects/productive/fusion/README.md`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/reference-resolution-lint.test.ts`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/surface-growth.golden`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/history/260818-1703-coder-v10-2-release-material-and-two-fixture-reapprovals.md` (renamed from `...-v11-...`)
+- `/Users/k1/Projects/productive/fusion/260818-1703-coder-v10-2-release-material-and-two-fixture-reapprovals.md` (renamed from `...-v11-...`)
 
 Not changed: `.claude-plugin/plugin.json`, `install.sh`, `skills/help/SKILL.md` (the user's
 renumbering, found correct), `CLAUDE.md` (finding above), and no baseline file.

@@ -6,7 +6,7 @@ Closing a Circle removes its open records from every agent's scan set, and no cl
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 3
 **Affects:** `agents/orchestrator.md:880-905` (Phase 4 Circle closure, steps 1 to 7 and the Report block), `bin/fusion-paths` (the `SCAN_*` resolution), `rules/fusion-workbench-conventions.md` `## Path Resolution`
-**Cross-references:** `shared/issues/260801-1020_*_scan-keys-never-reach-the-archive-store.md`, the same shape one store further on and **not** this record. That one is about `archive/`; this one is about Circles still sitting under `circles/`
+**Cross-references:** `260801-1020_*_scan-keys-never-reach-the-archive-store.md`, the same shape one store further on and **not** this record. That one is about `archive/`; this one is about Circles still sitting under `circles/`
 
 ---
 
@@ -38,7 +38,7 @@ SCAN_ISSUES=circles/260823-0023-settle-what-travels-between-checkouts/issues sha
 
 75 open issues and 19 open decisions are already outside every scan, none of them archived.
 
-**Why it is filed now rather than as general framework drift.** C2 is closing over three `_o_` issues and one `_o_` decision whose deferral reasoning depends on being found later. `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-…` says explicitly that its warning is "a note onto C4", and C4's own plan input, `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-…`, carries **no reference back to it**. Checked: zero hits for the C2 record or for the merge driver in that file. So the mechanism the deferral relies on is a reader who happens to open a closed Circle's issue store.
+**Why it is filed now rather than as general framework drift.** C2 is closing over three `_o_` issues and one `_o_` decision whose deferral reasoning depends on being found later. `260823-1110_*_the-merge-driver-unsorts-a-second-event-log-reader-…` says explicitly that its warning is "a note onto C4", and C4's own plan input, `260822-1136_*_two-definitions-of-the-turn-count-disagree-…`, carries **no reference back to it**. Checked: zero hits for the C2 record or for the merge driver in that file. So the mechanism the deferral relies on is a reader who happens to open a closed Circle's issue store.
 
 ## Verified
 
@@ -55,7 +55,7 @@ Or relocate them: closure moves open records to `shared/`, which is the store de
 Or widen the read: a `SCAN_*` variant that reaches every Circle's store. That is the option `260801-1020` weighs for `archive/`, at the same cost, unbounded read scope, and answering the two together would be cheaper than answering either alone.
 
 ---
-Reconciliation evidence, second Coherence pass, 260823-2130. Marker unchanged: the gap is real,
+Reconciliation evidence, second Coherence pass, 260823-2130-reconciliation.md. Marker unchanged: the gap is real,
 unrepaired, and fusion-wide. Two figures in the table above are corrected here rather than in place,
 so the record's own measurement stays legible beside the correction.
 
@@ -66,7 +66,7 @@ Circle: **75** open defect records, held by **9** non-active Circles. The table 
 
 **The decisions column counts open plus answered, and the summary line calls it open.** Re-counted at
 HEAD: **12** open (`_o_`) and 7 answered (`_a_`), 19 together, across 4 Circles. Per row —
-`260820-2051-style-rules-arrive-and-get-measured` 11 open and 0 answered; `260821-1042-…` 1 open and 4
+`260820-2051-style-rules-arrive-and-get-measured` 11 open and 0 answered; `260821-1042-reply-bounded-whole-question-answered-…` 1 open and 4
 answered; `260801-1244-curator` 0 open and 1 answered; `260815-0007-remove-eight-mechanisms-and-cap-growth`
 0 open and 2 answered. So line 39's "19 open decisions" should read 12 open decisions, or 19 active ones
 if the answered are meant to be in scope, which is defensible: an `_a_` record is grounding a later
@@ -83,4 +83,4 @@ own inputs (`260823-1110_*` the second event-log reader, `260823-1302_*` the mon
 session attribution), so a C4 planner reading only `shared/` will not find them.
 
 ---
-Resolved: referred (decision) — whether terminal Circles' stores enter any scan set is the decision's question; this Circle closes the 94 stranded records, so the live instance ends here; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md
+Resolved: referred (decision) — whether terminal Circles' stores enter any scan set is the decision's question; this Circle closes the 94 stranded records, so the live instance ends here; 260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md

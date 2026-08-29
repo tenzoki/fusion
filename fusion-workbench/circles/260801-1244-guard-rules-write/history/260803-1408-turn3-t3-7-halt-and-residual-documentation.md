@@ -2,13 +2,13 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Closes:**
-`issues/260802-2331_c_readme-hooks-states-bash-has-no-halt-check-which-this-turn-made-false.md` (High),
-`issues/260802-2335_c_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md` (Medium)
+`260802-2331_*_readme-hooks-states-bash-has-no-halt-check-which-this-turn-made-false.md` (High),
+`260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md` (Medium)
 **Files:**
-`decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md` (open, direction 2 of `260802-2335`),
-`issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md` (Low, the deferred piece)
+`260803-1402_*_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md` (open, direction 2 of `260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md`),
+`260803-1402_*_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md` (Low, the deferred piece)
 **Scope touched:** `README-hooks.md`, `rules/protected-path-discipline.md`. Nothing else.
 **Tests:** 1080 passed, 23 files — identical to T3-6's closing count, as it must be: no
 code changed.
@@ -159,11 +159,11 @@ residual.
 
 ### Direction 2 — filed, not implemented
 
-`decisions/260803-1402_o_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md`,
+`260803-1402_*_should-the-mutation-classifier-inspect-a-read-operand-to-close-the-planted-alias.md`,
 per the issue's own instruction that it wants a decision record.
 
 It had to be filed rather than dropped, for a reason the issue does not give: closing
-`260802-2335` with direction 1 puts direction 2's analysis inside a closed issue, and the
+`260802-2335_*_the-stated-residual-list-omits-the-alias-an-agent-can-plant-for-itself-in-one-allowed-command.md` with direction 1 puts direction 2's analysis inside a closed issue, and the
 row that just shipped calls the residual **accepted**. That row is wrong the day a deny
 lands, so the question needs somewhere to live that is not a closed file.
 
@@ -188,7 +188,7 @@ opposite of its existence:
 - `README-hooks.md`: "There is no env override for a protected-path shell write; the
   answer is a human decision."
 
-Both sentences are false at HEAD and both are plan Step 9's, named in `260802-2331`. Left
+Both sentences are false at HEAD and both are plan Step 9's, named in `260802-2331_*_readme-hooks-states-bash-has-no-halt-check-which-this-turn-made-false.md`. Left
 alone.
 
 **Findings 1 and 2 turned out not to need the flag at all.** The halt correction is
@@ -200,7 +200,7 @@ drafts for that reason: it was accurate, and in a document that says no flag exi
 reads as a hint at one, which is the undefined-referent failure `user-facing-output.md`
 names.
 
-**The hard-link piece (direction 3 of `260802-2332`, deferred to me by T3-2) I did NOT
+**The hard-link piece (direction 3 of `260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md`, deferred to me by T3-2) I did NOT
 write, and that is a judgement call.** It cannot be stated without naming the flag, and
 naming the flag inside a file that says the flag does not exist ships a self-contradiction
 in a security document. Making it coherent means correcting both "no override" sentences
@@ -208,8 +208,8 @@ and adding the tuning-table row, which is Step 9's stated scope and most of its 
 — the thing this task was told not to do quietly.
 
 So: deferred, and filed as
-`issues/260803-1402_o_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md`
-so it is not lost. `260802-2332` is already closed and the only surviving record was a
+`260803-1402_*_step-9-must-also-document-that-a-hard-linked-rule-file-is-not-exempt.md`
+so it is not lost. `260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md` is already closed and the only surviving record was a
 "Considered and deliberately not done" section in T3-2's history. The issue names all
 three things Step 9 must now land together (the table row, the two corrected sentences,
 the hard-link non-exemption with its reason), so Step 9 absorbs one coherent edit rather

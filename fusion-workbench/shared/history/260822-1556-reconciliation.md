@@ -57,29 +57,29 @@ Each was checked against the tree rather than against its own `Resolved:` note.
 
 ## What was corrected
 
-**The plan** (`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`),
+**The plan** (`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`),
 `_o_` → `_c_`. Four of nine steps carried `[DONE]` and all nine had executed; steps 1, 2, 7, 8 and 9
 are now marked against the commit that landed each. `**Status:** Draft` → `Complete`. Three of the
 five `## Open Questions` are ticked, with the resolutions stated in the log rather than inline. A
 `## Reconciliation Log` carries the per-step evidence table and the re-measurement. The rename
 dangled five citations in three live records, all rewritten to the wildcard form
-`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`
+`260806-0015_*_zitierform-fuer-workbench-records.md`
 ratified, as `rules/fusion-workbench-conventions.md` `## Marker globs` requires; the citation gate
 is green.
 
-**The spec** (`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`), marker held
+**The spec** (`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`), marker held
 at `_o_`, `**Status:** Draft` → `Partially Complete`. One of five capabilities is delivered and four
 are not started, so the marker does not move: nothing in the range adds a person field, changes
 `.gitignore` or gives the event log a presence line. Four of C0's five acceptance criteria are
 ticked; the fifth asks for a closure note that does not exist yet and is the orchestrator's.
 
 **One defect closed.**
-`shared/issues/260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`,
+`260822-1228_*_plan-step-8-asks-for-a-closure-that-was-already-made-and-the-record-already-carries-the-note.md`,
 `_o_` → `_c_`, with the correction in its `Resolved:` note and its body left untouched. Its premise
 is false: the target record was `_o_` at `370bfc5` and became `_c_` in `4a58be1`, which is step 8
 itself. The analyst read the effect of the step and dated it to the session anchor.
 
-**Three records annotated and left open.** `260822-1227` (the harm it predicted did not occur and
+**Three records annotated and left open.** `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md` (the harm it predicted did not occur and
 its fix direction is now unreachable, because a closed plan is not edited to make a past state
 true), and the two `260822-1136` decisions plus both `260822-1154` decisions, each with the search
 that found no answer on disk.
@@ -104,23 +104,23 @@ reviewer prompts fell 5 240 and 4 264 bytes. One figure inside the note is discu
 
 Three defects and one decision, all in the shared store.
 
-- `shared/issues/260822-1556_*_the-cut-ledger-states-a-head-anchor-two-commits-behind-where-it-ran.md`
-  — Medium. `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md:54` says "Measured
+- `260822-1556_*_the-cut-ledger-states-a-head-anchor-two-commits-behind-where-it-ran.md`
+  — Medium. `260822-1226-cut-ledger-for-three-bounded-surfaces.md:54` says "Measured
   at HEAD `370bfc5`" and the analyst was standing on `faac921`. No measurement is wrong — `4a58be1`
   and `faac921` touch workbench records only and every shipped surface is identical at both commits
   — but the misdating produced the false defect closed above.
-- `shared/issues/260822-1556_*_the-closure-measurement-assigns-610-bytes-of-the-five-claim-cut-to-the-reviewer-contract-relocation.md`
+- `260822-1556_*_the-closure-measurement-assigns-610-bytes-of-the-five-claim-cut-to-the-reviewer-contract-relocation.md`
   — Low. The step-3 history and the decision record both say 8 894 bytes for the relocation; the
   closure measurement assigns the whole 9 504 that the two reviewer prompts gave back. The 610-byte
   difference is their share of the five-claim cut, 305 each. The head-room totals are unaffected;
   what is wrong is the sentence a closure note will quote, and the relocation was accepted at a user
   gate on the statement that its figure would be reproducible.
-- `shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`
+- `260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`
   — Medium. `circles/` holds fourteen directories, every one terminal, none created this session, and
   `.active-circle` was absent throughout. So Phase 4 has no `_t_` record to transition, the closure
   note clause 6 asks for has no canonical home, and C1 through C4 exist only as spec prose that the
   playmaker does not rank. The record proposes two ways out and prescribes neither.
-- `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
+- `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
   — `_o_`. `260807-0158` settled "no minting helper" on a collision measurement taken over a corpus
   one person wrote from one checkout, which is the input the Directive changes. Due at C3's planning
   gate beside the two the spec already lists.
@@ -130,10 +130,10 @@ Three defects and one decision, all in the shared store.
 The orchestrator's session history file stops at Turn 2 and carries `**Status:** In progress`. That
 is correct while the session runs: this pass is Phase 3 and the orchestrator has Phase 4 still to
 write. The standing defect about a history file left at that status after its session ended
-(`shared/issues/260819-1511_*_a-session-history-file-is-left-at-status-in-progress-after-its-session-ended.md`)
+(`260819-1511_*_a-session-history-file-is-left-at-status-in-progress-after-its-session-ended.md`)
 is not triggered yet.
 
-`shared/decisions/260822-1102_*_…` cites its answer as `shared/history/260822-1009-orchestrator-session.md`
+`260822-1102_*_…` cites its answer as `260822-1009-orchestrator-session.md`
 with no line number, where `rules/fusion-workbench-conventions.md` `## State Markers — decisions`
 asks for `<path>:<line>`. The cited file is untracked in git and its line numbers move with every
 Phase-4 append, so a line number written now would be wrong by the end of the session. Left as it
@@ -141,7 +141,7 @@ stands, recorded here.
 
 ## Coherence
 
-The three-edge verdict is appended to `shared/history/260822-1009-orchestrator-session.md`
+The three-edge verdict is appended to `260822-1009-orchestrator-session.md`
 `## Coherence`: **review-needed**, all three edges flagged, recommendation **revise Grounding** —
 supersede `260719-2141`, which is the one active decision that forbids what the Directive asks for
 and the one change at HEAD that removes a standing contradiction. Bounded Closure is not proposed.

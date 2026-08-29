@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** curator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_is-claude-mds-register-repair-inside-this-circle.md` (the answer that routes the repair here); `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md` (the ceiling's scope, still open and answered by an orchestrator rather than by the user); `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`; `rules/user-facing-output.md` `## Self-review before sending: the readability gate`; `shared/history/260825-1453-curator-run.md` `## 6` candidate C01 (the survey that surfaced this)
+**Cross-references:** `260821-1108_*_is-claude-mds-register-repair-inside-this-circle.md` (the answer that routes the repair here); `260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md` (the ceiling's scope, still open and answered by an orchestrator rather than by the user); `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`; `rules/user-facing-output.md` `## Self-review before sending: the readability gate`; `260825-1453-curator-run.md` `## 6` candidate C01 (the survey that surfaced this)
 
 ---
 

@@ -3,11 +3,11 @@
 **Date:** 2026-08-12 20:10
 **Agent:** coder
 **Status:** Complete
-**Plan:** `shared/planning/260812-1720_*_circle-first-placement-and-the-backlog-store.md`, step 7
-**Predecessors:** `shared/history/260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
-`shared/history/260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`)
+**Plan:** `260812-1720_*_circle-first-placement-and-the-backlog-store.md`, step 7
+**Predecessors:** `260812-1938-coder-backlog-store-and-resolver-target.md` (steps 1–3, `3c6ec4e`),
+`260812-1954-coder-backlog-keys-enumerations-and-the-move.md` (steps 4–6, `dec40bb`)
 **Decision realised (not marked; step 13 owns the marker):**
-`shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
+`260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`
 
 ## What was done
 
@@ -39,7 +39,7 @@ entry is not a Circle record.
 
 ## The test of the design: a run against the real dump
 
-`shared/backlog/260811-0826_*_observations.md` is the 12 KB dump step 6 moved in unsplit. I read
+`260811-0826_*_observations.md` is the 12 KB dump step 6 moved in unsplit. I read
 the instructions against it rather than assuming they work. Roughly eleven distinct ideas are in
 there: setup latency; agent verbosity across nearly all agents; overall operation latency; rules
 and goals decaying mid-session; ETA not computed; the monitor's localhost no longer answering;
@@ -90,7 +90,7 @@ added is the playmaker key-asymmetry test. Run four times in total, green at exi
 three; the first run failed on exactly the two gates this change was expected to move (the
 `playmaker`-names-neither assertion, and the emission golden), both then updated deliberately.
 The `Worker exited unexpectedly` parallel-load flake
-(`shared/decisions/260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
+(`260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md`)
 did not appear.
 
 The golden was regenerated with
@@ -138,6 +138,6 @@ second statement would be a place for the two to drift apart.
 - `rules/circle-records.md`
 - `hooks/lib/__tests__/fusion-paths.test.ts`
 - `hooks/lib/__tests__/fixtures/rules-emission.golden`
-- `fusion-workbench/shared/planning/260812-1720_o_circle-first-placement-and-the-backlog-store.md` (step 7 marked `[DONE]`)
+- `260812-1720_*_circle-first-placement-and-the-backlog-store.md` (step 7 marked `[DONE]`)
 
 Not committed — the orchestrator commits. Step 8 not started, by instruction.

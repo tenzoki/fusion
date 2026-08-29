@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-03 18:03
 **Agent:** analyst
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Task:** T4-1, dispatched by the orchestrator as a gate on three queued coding tasks
 **Status:** Complete
 
@@ -18,7 +18,7 @@ from entry.
 
 ## What was done
 
-Read the four issue files, the two neighbouring open issues (`260802-2320` case folding,
+Read the four issue files, the two neighbouring open issues (`260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` case folding,
 `260803-1251` `fs-locator.absolute()`), the case-folding decision record, the Turn 3 code
 review, and the five source files named in the brief. Then measured, rather than reasoned,
 three questions the reading raised.
@@ -61,13 +61,13 @@ already diagnosable.
 
 ## Artifacts
 
-- `analyses/260803-1803-guard-path-model-root-cause.md` — the analysis
-- `issues/260803-1803_o_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md` — the two new entrances, High, open
-- `decisions/260803-1803_o_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md` — the ambient-`CDPATH` contract question, open, needs the user
+- `260803-1803-guard-path-model-root-cause.md` — the analysis
+- `260803-1803_*_the-classifier-asserts-a-working-directory-that-cdpath-and-pushd-n-invalidate.md` — the two new entrances, High, open
+- `260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md` — the ambient-`CDPATH` contract question, open, needs the user
 
 ## What was deliberately not done
 
-`260802-2320` (case folding) and `260803-1251` (`fs-locator.absolute()`) were examined and
+`260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (case folding) and `260803-1251` (`fs-locator.absolute()`) were examined and
 placed rather than refiled. Case folding is the same root cause as instance 2, touches
 `paths.ts` only, and has no ordering dependency on the recommendation. The `absolute()` collapse
 is the same root cause as instances 3 and 4 one layer down, remains unreachable behind gate 0,

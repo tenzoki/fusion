@@ -27,7 +27,7 @@ tree, not only against the rule that states it: 19 records carry a person half, 
 260824 or later, and no record predating the Circle carries one.
 
 **2. The third criterion is stale *and* unmet, which the lead treated as alternatives.** Its second
-half prescribes `$USER`; `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
+half prescribes `$USER`; `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
 replaced that on 260824 with the git identity read from `bin/fusion-identity`, so the criterion's text
 no longer describes what the project decided and the record governs. That is the stale half. The
 first half — *every agent that files a record writes the field* — is separately false on disk: of the
@@ -41,7 +41,7 @@ record carries `_i_` on disk, with an `Answered:` line citing the user's answer 
 spec's `## User decisions pending` checkbox, which still read `[ ]`. Ticked.
 
 **4a. C0's fifth criterion is deliverable in substance and not in its stated home; ticked with the
-deviation named.** `shared/history/260822-1540-coder-c0-step-9-closure-measurement.md`
+deviation named.** `260822-1540-coder-c0-step-9-closure-measurement.md`
 `## The four surfaces` carries exactly what the criterion asks — a section per surface with the cut
 and the head-room before and after. The home cannot be built: C0 ran with no Circle and no closure
 note, the spec records that at `:94`, and the defect that raised it closed on that statement rather
@@ -74,10 +74,10 @@ question: `workbench-citation-lint.test.ts` carries `OPEN_ISSUE_RE`, `LIVE_DECIS
 **The 21 open decisions inside terminal Circles split three ways, and the pattern is the finding.**
 
 - **Nine are open by construction and must not be moved.** Eight `260820-2314_*` records and one
-  `260821-0414_*` each carry a closing paragraph stating in terms that the answer above it was written
+  `260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md_*` each carry a closing paragraph stating in terms that the answer above it was written
   by an orchestrator during an unattended run, is not the user's, and that the record is filed `_o_`
   so the user meets it live. One of them records exactly this class being overturned by the user on
-  2026-08-21. `260821-2004_*` in the reply-bounded Circle carries a prior reconciliation verdict
+  2026-08-21. `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md_*` in the reply-bounded Circle carries a prior reconciliation verdict
   reaching the same conclusion in its own words.
 - **Two were stale and are transitioned.** Both `260820-2324_*` records had option 1 on disk with
   empty annotation stubs: `bin/fusion-source-root` in all three of Step 0e's bash blocks, and
@@ -89,12 +89,12 @@ question: `workbench-citation-lint.test.ts` carries `OPEN_ISSUE_RE`, `LIVE_DECIS
 `bin/fusion-paths` emits no `SCAN_DECISIONS` that names their stores. No future reconciler,
 taskplanner or playmaker opens them. The question of whether a terminal Circle's stores should enter
 any scan set is itself one of the 21
-(`circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`),
+(`260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`),
 which makes it unreachable by its own argument. This pass reached them only because the dispatch named
 them.
 
 **The one live plan inside a terminal Circle carried `Draft` against a delivered Circle.**
-`circles/260820-2051-.../planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`: header
+`circles/260820-2051-.../260820-2249_*_spec-style-rules-arrive-and-get-measured.md`: header
 set to `Partially Complete` on its Circle's closure note, marker left `_o_`, and none of its 49
 acceptance criteria ticked — verifying them is a pass of its own and ticking them from the closure note
 rather than from the tree would be the substitution `rules/critical-stance.md` §3 forbids. Its Circle's

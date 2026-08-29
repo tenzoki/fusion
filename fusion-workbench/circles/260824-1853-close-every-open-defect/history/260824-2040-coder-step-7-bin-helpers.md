@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Person:** Kai Stalmann <ks@qantr.com>
-**Plan:** circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md, step 7
+**Plan:** 260824-1905_*_plan-close-every-open-defect.md, step 7
 **Status:** Complete
 
 ## What was done
@@ -21,7 +21,7 @@
 
 `cd hooks && npm test` exit 1: 3 failed files of 42, 746 of 749 tests pass. None of the three is a fault in this step's edits:
 1. `committed-dist.test.ts` "git ls-files bin/ equals the directory listing": `bin/fusion-session-domain` is untracked until the orchestrator stages it (this step may not run `git add`). `git check-ignore` confirms the `.gitignore` line admits it.
-2. `derivable-enumerations-lint.test.ts`: the new helper has no `CLAUDE.md` Layout row and this step may not edit `CLAUDE.md`. Filed with the row text: `circles/260824-1853-close-every-open-defect/issues/260824-2040_*_the-new-session-domain-helper-has-no-claude-md-layout-row-and-the-enumeration-lint-is-red-until-it-gets-one.md`.
+2. `derivable-enumerations-lint.test.ts`: the new helper has no `CLAUDE.md` Layout row and this step may not edit `CLAUDE.md`. Filed with the row text: `260824-2040_*_the-new-session-domain-helper-has-no-claude-md-layout-row-and-the-enumeration-lint-is-red-until-it-gets-one.md`.
 3. `path-literal-lint.test.ts`: two `decisions/…` literals at `agents/orchestrator.md:33`, step 12's file, not touched here.
 
 The workbench citation lint is green.

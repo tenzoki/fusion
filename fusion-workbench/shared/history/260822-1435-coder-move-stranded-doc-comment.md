@@ -3,8 +3,8 @@
 **Status:** Complete
 **Dispatched by:** orchestrator
 **Circle:** none active (shared)
-**Finding:** `shared/issues/260822-1422_c_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md` (Low)
-**Review:** `shared/reviews/260822-1421-coderev-c0-cut-only-circle.md`
+**Finding:** `260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md` (Low)
+**Review:** `260822-1421-coderev-c0-cut-only-circle.md`
 
 ## What the finding claimed, and what the file said
 
@@ -53,7 +53,7 @@ suite reads comment placement.
 
 ## Issue closed
 
-`260822-1422` renamed `_o_` → `_c_` with a `Resolved:` note per
+`260822-1422_*_the-doc-comment-for-shippedprompts-is-stranded-above-agentnames.md` renamed `_o_` → `_c_` with a `Resolved:` note per
 `rules/fusion-workbench-conventions.md` `### Issue files`. Left unstaged for the orchestrator.
 
 ## Not committed

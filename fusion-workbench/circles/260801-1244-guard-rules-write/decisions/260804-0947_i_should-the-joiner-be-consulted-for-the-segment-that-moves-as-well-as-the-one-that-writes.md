@@ -3,16 +3,16 @@
 ---
 **Domain:** code
 **Status:** open
-**Filed by:** coder (task T8-1, `circles/260801-1244-guard-rules-write`)
+**Filed by:** coder (task T8-1, `260801-1244-guard-rules-write`)
 **Cross-references:**
-`issues/260804-0836_o_…` (`X || cd DIR && <write>` — the `cd` may have been skipped),
-`issues/260804-0837_o_…` (`X | cd DIR && <write>` — bash subshells the `cd`),
-`issues/260804-0839_o_…` (the over-deny in the other direction: a conditional body,
+`260804-0836_*_…` (`X || cd DIR && <write>` — the `cd` may have been skipped),
+`260804-0837_*_…` (`X | cd DIR && <write>` — bash subshells the `cd`),
+`260804-0839_*_…` (the over-deny in the other direction: a conditional body,
 a loop body, a brace group and a pipeline stage all degrade although the shell
 guarantees the `cd`),
-`reviews/260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md`
+`260804-0845-coderev-turn7-separator-degrade-and-the-cause-bound.md`
 (where all three were measured),
-`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`
+`260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`
 (the decision that introduced the joiner and consulted it on one side only),
 `hooks/lib/bash-mutation-guard.ts` — `ShellState.moved` (`:1564`),
 `applyDirEffect`, `degradeUnprovenCd`, and the joiner test in the segment walk,
@@ -22,7 +22,7 @@ guarantees the `cd`),
 
 ## Question
 
-`260803-2338` gave every segment the operator that joins it to the one before it,
+`260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` gave every segment the operator that joins it to the one before it,
 and taught the model to give the working directory up at any joiner that is not
 `&&`. It consults that operator **for the segment that writes** and never **for
 the segment that moves**.
@@ -80,11 +80,11 @@ The sentence the review wants to be able to put in front of the user —
 ## What the two findings have in common
 
 One fact, stated once: **the joiner is consulted for the segment that writes and
-never for the segment that moves.** `260804-0836` is that fact met through `||`;
-`260804-0837` is the same fact met through `|`. One decision closes both, and no
+never for the segment that moves.** `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` is that fact met through `||`;
+`260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` is the same fact met through `|`. One decision closes both, and no
 option below closes one without the other.
 
-`260804-0839` is the same asymmetry seen from the other side — a segment the
+`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` is the same asymmetry seen from the other side — a segment the
 shell *does* guarantee that the flat model degrades anyway — which is why it is
 costed here rather than separately.
 
@@ -126,13 +126,13 @@ the option is aimed at, and it does not spill.
   `[ -d nope ] || cd build && rm rules/x.md` is a `cd` that genuinely runs, and
   it will deny. That is an over-deny on a shape almost nobody writes (`0` rows
   in both non-generated corpora), with the usual two ways through named in the
-  deny reason. It also does **not** address `260804-0839`: the 84 generated
+  deny reason. It also does **not** address `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`: the 84 generated
   `if` / `while` / brace-group / pipeline rows that degrade although the shell
   guarantees the `cd` still degrade, measured identically before and after.
 - **Residual it leaves.** The model still cannot read an exit status, so it
   still cannot distinguish "reached" from "reached and succeeded". This option
   makes the *reachability* half right and leaves the *success* half where
-  `260803-2338` left it.
+  `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` left it.
 
 ### 2. Model the and-or list instead of a flat joiner sequence
 
@@ -143,11 +143,11 @@ started**. The directory model then asks that question for the `cd` and for the
 write, instead of asking about one adjacent operator each time.
 
 - **Pros.** It is the correct model rather than a proxy for it, and it is the
-  only option that also closes `260804-0839` — the over-deny where the shell
+  only option that also closes `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` — the over-deny where the shell
   *does* guarantee the `cd`. Measured relief: **84 of 84** generated rows of the
   `if cd X; then W; fi` / `while cd X; do W; done` / `{ cd X; } && W` /
   `cd X && Y | tee W` family deny today and should allow under a reachability
-  model. It also makes the `|` half of `260804-0837` fall out of the model as a
+  model. It also makes the `|` half of `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` fall out of the model as a
   scope fact (a pipeline stage is a subshell, like `(…)` and `$(…)` already are)
   rather than as a special case.
 - **Cons.** Much the largest change in the module's history. The lexer is a
@@ -160,7 +160,7 @@ write, instead of asking about one adjacent operator each time.
   radius is bounded to the mutation side — but inside that side it is total.
 - **Cost, honestly not measured.** Its deny set on the `||`/`|` rows must equal
   option 1's — a correct reachability model says the same thing about a `cd` the
-  shell may have skipped — and its allow set gains the 84-row `260804-0839`
+  shell may have skipped — and its allow set gains the 84-row `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`
   family. Beyond those two ends, its cost **cannot be measured without
   implementing it**, and this record does not claim a number it did not run.
   Stating a number here is exactly the failure the last two Turns were spent
@@ -195,18 +195,18 @@ write, instead of asking about one adjacent operator each time.
 ### 4. Option 1 now, option 2 as a separate Circle
 
 Take the ten-line give-up, close both findings, keep the measured zero-cost
-result — and file `260804-0839` plus the reachability model as their own unit of
+result — and file `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` plus the reachability model as their own unit of
 work with its own Grounding, rather than as the tail of a Circle that has run
 seven Turns.
 
 - **Pros.** The two findings that are **hazards** close in the same commit as
   the fixes around them, at a cost measured at zero on real work. The one that
-  is a **cost** (`260804-0839`, over-deny, no security consequence) waits for
+  is a **cost** (`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`, over-deny, no security consequence) waits for
   the change that can do it properly. It also keeps the property every Turn of
   this Circle has kept: no command newly allows.
 - **Cons.** The module keeps two facts about a joiner in two places until the
   reachability work happens, which is a shape this Circle has been burned by
-  (`260803-2237`, `260803-2039`). Mitigated by writing the give-up as one
+  (`260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md`, `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md`). Mitigated by writing the give-up as one
   condition at the existing call site rather than as a second model.
 
 ## Constraints
@@ -220,10 +220,10 @@ Any answer must satisfy all five:
 3. **The shell list is bash *and* zsh**, and a row must be measured in the shell
    that performs its write. `echo hi | cd build && rm rules/x.md` writes in bash
    and not in zsh; a bash-only measurement would have missed
-   `260804-0837`'s reach and a zsh-only one would have missed the finding.
+   `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`'s reach and a zsh-only one would have missed the finding.
 4. **The cost is stated as a rule, with measured examples — never as a closed
    list.** Two enumerations shipped in this Circle and both were falsified
-   within a day (`issues/260804-0840`). Measure with a generated cross-product,
+   within a day (`260804-0840`). Measure with a generated cross-product,
    not with a corpus harvested from the suite: a harvest can only reproduce what
    the tests already contain.
 5. **`until` stays denying.** It is the member of the compound-command family
@@ -243,7 +243,7 @@ allows. Ten lines at a call site that already exists.
 
 Option 2 is the right model and should be built, but not as the eighth Turn of a
 Circle whose lesson has been that a large change to this module opens something
-elsewhere. It also has a real prize attached — the 84-row `260804-0839` family
+elsewhere. It also has a real prize attached — the 84-row `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` family
 is a live over-deny an agent meets on ordinary work (`if cd hooks; then rm -rf
 dist; fi`) — which is an argument for planning it properly, not for bolting it
 on.
@@ -256,7 +256,7 @@ Two notes for whoever implements option 1:
   the write-side degrade's job); `&&` is safe; `&` as a **leading** joiner is
   safe, because `A & cd B` backgrounds `A` and runs the `cd` in the foreground
   shell. A joiner added to `SegmentJoiner` later is then unsafe by default,
-  which is the direction `260803-2338` chose for the write side and the reason
+  which is the direction `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` chose for the write side and the reason
   that test reads `!== "&&"`.
 - **The give-up belongs after the scope restore**, for the same reason the
   write-side one does: a `cd` bash itself discarded casts no doubt forward.
@@ -269,19 +269,19 @@ Superseded by:
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Genuinely unanswered, and it is the right next question. One correction to how it has been framed.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Genuinely unanswered, and it is the right next question. One correction to how it has been framed.**
 
 **Unanswered, verified rather than assumed.** Searched both planning stores, both decision stores, both analysis stores, the Circle's `history/` and the shared `history/`. Nothing answers it. The record was filed at the end of Turn 8 and the session hit its max-Turns circuit breaker in the same commit (`orchestrator-events.jsonl`, `{"event":"circuit_breaker","turn":5,"detail":"max Turns reached (5/5); normal exit"}`), so no gate was reached at which the user could answer it.
 
 **The two defects it closes are live at HEAD `cc012fc`**, re-measured through `classifyBashMutation` with the shipped protected list: `true || cd build && rm rules/x.md` allows, `echo hi | cd build && rm rules/x.md` allows. Both delete a file on the protected list in the real shell with no flag and no wrapper.
 
-**The correction, and it changes what the next session should scope.** This record has been described — in the Turn 7 review's `## Recommended sequencing`, in the Turn 8 handover's item 1, and in the two issues it answers — as *the* release blocker for any claim about the boundary. It is a blocker and it is not the only one. The reconciler's own pass found a third live no-flag route into `agents/**` and `rules/**` that has no joiner in it at all: `git -C rules rm x.md` allows and deletes the file, because `resolveGit` (`hooks/lib/bash-mutation-guard.ts:1084-1087`) skips `-C` **and its value** to find the subcommand and never applies the directory. Filed as `issues/260804-1024_o_`.
+**The correction, and it changes what the next session should scope.** This record has been described — in the Turn 7 review's `## Recommended sequencing`, in the Turn 8 handover's item 1, and in the two issues it answers — as *the* release blocker for any claim about the boundary. It is a blocker and it is not the only one. The reconciler's own pass found a third live no-flag route into `agents/**` and `rules/**` that has no joiner in it at all: `git -C rules rm x.md` allows and deletes the file, because `resolveGit` (`hooks/lib/bash-mutation-guard.ts:1084-1087`) skips `-C` **and its value** to find the subcommand and never applies the directory. Filed as `260804-1024_*_`.
 
-Answering this record in any of its three options leaves that route open. So the sentence this Circle wants to be able to put in front of the user — that the model is exact for every `cd` written in the command text and reached by a path the shell guarantees — needs both this decision **and** `260804-1024` before it is true.
+Answering this record in any of its three options leaves that route open. So the sentence this Circle wants to be able to put in front of the user — that the model is exact for every `cd` written in the command text and reached by a path the shell guarantees — needs both this decision **and** `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` before it is true.
 
 That is not an argument against answering this first. Option 1's cost is measured at zero on every corpus of real work, which makes it the cheapest thing on the board, and the two defects it closes are the two the Circle's own review rates highest. It is an argument against calling the boundary closed when it lands.
 
-**One thing worth deciding alongside, since the record already raises it.** Option 2 (model the and-or list) is the only option that also closes `issues/260804-0839_o_`, the over-deny this session introduced and did not close, which an agent meets on ordinary work (`if cd hooks; then rm -rf dist; fi`). The record recommends option 4 — take the ten-line give-up now and give the reachability model its own Circle. On the evidence that recommendation is sound: `260804-0839` is a cost with a documented mitigation, while `260804-0836` and `260804-0837` are live writes.
+**One thing worth deciding alongside, since the record already raises it.** Option 2 (model the and-or list) is the only option that also closes `260804-0839_*_`, the over-deny this session introduced and did not close, which an agent meets on ordinary work (`if cd hooks; then rm -rf dist; fi`). The record recommends option 4 — take the ten-line give-up now and give the reachability model its own Circle. On the evidence that recommendation is sound: `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` is a cost with a documented mitigation, while `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` and `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` are live writes.
 
 ## Answer
 
@@ -293,4 +293,4 @@ Answered: this record, `## Recommendation` — the user instructed "follow the r
 Implemented: `4f1007f` — `JOINER_FACTS`, one row per joiner and two fields, read at two call sites in the segment walk. The lookup is a safe-list, so an unenumerated joiner answers `false` to both fields. All five constraints met and measured: nothing newly allows on any of the four corpora (0 on the suite harvest, 0 on the thirty ordinary rows, 0 on a 41,656-row generated cross-product), `until` still denies as its own pinned case, both shells measured in the shell that performs each write, and the cost is stated as a rule with the examples labelled an open set. One departure from the record, measured: the condition is stated over `state.moved` rather than over a builtin new in the segment, because the weaker form left `cd rules && true || cd /tmp && rm x.md` open. The one-fact-not-two property the option's own con warned about is checkable — `grep -c '\.joiner'` returns 1, and a source assertion fails if a third comparison appears. Tests 1241 → 1252.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — `JOINER_FACTS` and the two call sites in the segment walk that `4f1007f` added were inside `hooks/lib/bash-mutation-guard.ts`, which the classifier removal deleted. The 41,656-row cross-product that measured the change, and the corpus fixtures behind it, went with it.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md) — `JOINER_FACTS` and the two call sites in the segment walk that `4f1007f` added were inside `hooks/lib/bash-mutation-guard.ts`, which the classifier removal deleted. The 41,656-row cross-product that measured the change, and the corpus fixtures behind it, went with it.

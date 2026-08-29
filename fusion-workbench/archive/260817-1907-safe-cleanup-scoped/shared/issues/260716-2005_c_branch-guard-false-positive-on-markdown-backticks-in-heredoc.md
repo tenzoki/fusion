@@ -42,7 +42,7 @@ Probe 2 vs probe 3 isolates the cause to the backticks, not the heredoc and not 
 
 This blocks a legitimate and recurring case: any agent authoring or editing documentation about git discipline. Concretely, `rules/git-branch-discipline.md` itself contains the strings `` `git switch` `` and `` `git worktree add …` `` in backticks — **an agent asked to update fusion's own branch-discipline rule via a heredoc would be denied by the rule it is documenting.**
 
-Discovered when the analyst was blocked from writing `fusion-workbench/analyses/260716-1938-fusion-standortbestimmung-vs-top-orgs.md`, a document that discusses the branch guard.
+Discovered when the analyst was blocked from writing `260716-1938-fusion-standortbestimmung-vs-top-orgs.md`, a document that discusses the branch guard.
 
 Fail-closed is the right default and the guard behaved safely. This is a precision defect, not a safety defect.
 
@@ -73,7 +73,7 @@ Both are properties of shell grammar the classifier already half-implements, so 
 - `hooks/lib/git-branch-guard.ts:67-133` (segmentation + substitution recursion)
 - `hooks/lib/__tests__/git-branch-guard.test.ts` (48 tests, none on data regions)
 - `rules/git-branch-discipline.md` (the document that cannot be written by heredoc)
-- `fusion-workbench/analyses/260716-1938-fusion-standortbestimmung-vs-top-orgs.md` §6.1 (the guard is fusion's strongest control; this refines it, it does not diminish it)
+- `260716-1938-fusion-standortbestimmung-vs-top-orgs.md` §6.1 (the guard is fusion's strongest control; this refines it, it does not diminish it)
 
 ---
 ## Resolution (2026-07-18)
@@ -92,5 +92,5 @@ backticked git command → allowed; bare git command in a quoted heredoc → all
 real branch switch → still denied; a backtick inside a double-quoted string → still
 denied. git-branch-guard suite grew 63 → 84 tests; npm test 232 green.
 
-This was facet 3 of the three-facet branch-guard defect set; see `260717-1938` for the
+This was facet 3 of the three-facet branch-guard defect set; see `260717-1938_*_branch-switch-guard-not-invoked-live-harness-pretooluse-bash.md` for the
 umbrella. Closed.

@@ -4,9 +4,9 @@
 **Status:** Complete
 **File:** `hooks/lib/__tests__/surface-growth-bound.test.ts` (the only file touched)
 **Sources:**
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1939_*_the-caps-rate-and-percentile-inputs-do-not-reproduce-from-git-while-every-point-figure-does.md`
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1941_*_the-after-measurements-rules-before-row-was-taken-two-days-after-the-anchor-its-two-neighbours-use.md`
-- `shared/issues/260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`
+- `260815-1939_*_the-caps-rate-and-percentile-inputs-do-not-reproduce-from-git-while-every-point-figure-does.md`
+- `260815-1941_*_the-after-measurements-rules-before-row-was-taken-two-days-after-the-anchor-its-two-neighbours-use.md`
+- `260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md`
 
 ## What changed
 

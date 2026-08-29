@@ -1,7 +1,7 @@
 # ontocoder — Plan Step 6: the guard-configuration template and the repository's own copy
 
 **Status:** In progress
-**Task:** Plan `planning/260804-1633_p_plan-c5b-remediation-and-ship.md` Step 6 — correct
+**Task:** Plan `260804-1633_*_plan-c5b-remediation-and-ship.md` Step 6 — correct
 `templates/fusion-guard.json` and the byte-identical root copy `fusion-guard.json` so their
 documentation keys state what the loader actually does.
 
@@ -9,7 +9,7 @@ documentation keys state what the loader actually does.
 
 Rewrote the underscore-prefixed documentation keys of `templates/fusion-guard.json` and
 copied the result byte-identically to `fusion-guard.json`. The file grew from six keys to
-seven: `_guardEnabled` is new and carries the one-key exception of decision `260804-1631`
+seven: `_guardEnabled` is new and carries the one-key exception of decision `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md`
 (the plan step allowed "a key or clause"; a clause inside the already-long `_override` would
 have buried it).
 
@@ -35,7 +35,7 @@ tree state after plan Steps 1–4.
      the plugin layer, not from DEFAULTS", "mixes the two layers inside one object, leaf by
      leaf", "walks the same way through escalation, churn, crossFile and decisions".
    - The `defaultSensitivity: "high"` example: the exact shape of "an OMITTED leaf comes
-     from the plugin layer" (issue `260804-1601`'s measured edit).
+     from the plugin layer" (issue `260804-1601_*_a-partial-guard-object-silently-removes-every-protected-path.md`'s measured edit).
    - Declared empty list stays empty: "a DECLARED empty list is the empty list, not an
      inheritance"; `guard-rules-write-integration.test.ts` "blocks it even when the
      project's own list is empty" (proves the empty list took effect through the guard).
@@ -57,12 +57,12 @@ tree state after plan Steps 1–4.
    layer and DEFAULTS only; declared true or false both ignored; reported in a guard
    advisory on every guarded call until removed. Backing: `config.ts:563-568, 697`; describe
    "the project layer may not set guard.enabled" (both directions, one diagnostic);
-   integration "reports the ignored key, once, naming it — decision 260804-1631" and
+   integration "reports the ignored key, once, naming it — decision 260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md" and
    "STATED COST: that advisory repeats on every guarded call until the line is removed".
 5. **`_gitTracked`** — kept, plus one sentence naming what the git tracking bounds: the
    pre-existence gap of the floor. Backing: `config.ts:104-110`; integration "does NOT
    block creating it when the project has none — the seeding case".
-6. **`_protectsItself`** — the two falsified claims (issue `260804-1605`) are true again
+6. **`_protectsItself`** — the two falsified claims (issue `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`) are true again
    and now stated with their proof surface: holds under a declared empty list ("blocks it
    even when the project's own list is empty"), when it lists itself ("blocks it just the
    same when the file DOES list itself"), when unparseable (`config.test.ts` "applies even
@@ -94,15 +94,15 @@ tree state after plan Steps 1–4.
 
 ## Issues closed
 
-- `issues/260804-1605_c_the-seeded-template-states-two-properties-the-loader-does-not-have.md`
+- `260804-1605_*_the-seeded-template-states-two-properties-the-loader-does-not-have.md`
   — `Resolved:` footer appended, renamed `_o_` → `_c_`.
-- `issues/260805-1840_c_fusion-guard-template-beschreibt-top-level-merge-statt-leaf-merge.md`
+- `260805-1840_*_fusion-guard-template-beschreibt-top-level-merge-statt-leaf-merge.md`
   — `Resolved:` footer appended (German, matching the record), renamed `_o_` → `_c_`.
 
 ## Side effects / notes
 
-- Plan Step 6 marked `[DONE — ontocoder, 260805-2222]` inline in
-  `planning/260804-1633_p_plan-c5b-remediation-and-ship.md`.
+- Plan Step 6 marked `[DONE — ontocoder, 260805-2222-ontocoder-step6-guard-template-rewrite.md]` inline in
+  `260804-1633_*_plan-c5b-remediation-and-ship.md`.
 - Not committed — the orchestrator commits (plan convention; Step 8 rebuilds `dist` and
   ships).
 - `tasklist.md` carries no entry for this step (it belongs to an older plan); left

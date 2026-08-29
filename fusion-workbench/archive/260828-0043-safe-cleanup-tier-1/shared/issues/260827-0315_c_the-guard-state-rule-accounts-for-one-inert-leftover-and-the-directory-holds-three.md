@@ -6,11 +6,11 @@ The guard-state rule accounts for one inert leftover and the directory holds thr
 
 ## What is on disk
 
-Measured 260827-0315 in `fusion-workbench/.guard-state/`:
+Measured 260827-0315_*_the-guard-state-rule-accounts-for-one-inert-leftover-and-the-directory-holds-three.md in `fusion-workbench/.guard-state/`:
 
 | File | Size | Last written | Status |
 |---|---|---|---|
-| `review-coverage.json` | 46 B | 260815-2327 | live throttle record |
+| `review-coverage.json` | 46 B | 260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md | live throttle record |
 | `staging-drift.json` | 74 B | 260826-1758 | live throttle record |
 | `events.jsonl` | 155 052 B | 260826-1853 | live, appended per guarded call |
 | `escalation.json` | 3 301 B | 260817-1041 | inert, named by the rule |
@@ -34,8 +34,8 @@ Not in the active Circle's Directive. It surfaced while answering a user questio
 ## Related
 
 - `rules/workbench-tracking.md` `## The four classes`, the paragraph beginning "`.guard-state/` is not one thing".
-- `shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`, which the same paragraph cites.
-- The wider pattern this belongs to: `circles/260825-2023-presence-travels-monitor-filters-own-checkout/decisions/260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`. This is another count stated in prose that a later HEAD falsified.
+- `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`, which the same paragraph cites.
+- The wider pattern this belongs to: `260826-1252_*_how-does-this-project-keep-a-cardinality-stated-in-prose-true-when-seven-passes-could-not.md`. This is another count stated in prose that a later HEAD falsified.
 
 ---
-Resolved: 260827-2020 by coder (plan `260827-1756` step 18b). `skills/setup/SKILL.md` Step 3 now probes `escalation.json`, `churn.json` and `state-drift.json`, the three `rules/workbench-tracking.md` `## The four classes` names as written by nothing at this version, and offers all found in the one existing question; the halt-flag probe and the three phrases `hooks/lib/__tests__/legacy-halt-clearing.test.ts` pins are unchanged. The rule itself already names all three (step 18a).
+Resolved: 260827-2020-coder-setup-skill-steps-5-18b-c4.md by coder (plan `260827-1756` step 18b). `skills/setup/SKILL.md` Step 3 now probes `escalation.json`, `churn.json` and `state-drift.json`, the three `rules/workbench-tracking.md` `## The four classes` names as written by nothing at this version, and offers all found in the one existing question; the halt-flag probe and the three phrases `hooks/lib/__tests__/legacy-halt-clearing.test.ts` pins are unchanged. The rule itself already names all three (step 18a).

@@ -10,15 +10,15 @@
  * the parsed value to the caller, and write it back through a `.tmp` and a
  * rename. Copies drift, and this set drifted in the way that matters.
  * `escalation.ts` was taught to COERCE the parsed value after a shape-valid
- * `escalation.json` failed the whole guard open (issue `260802-2334`); the other
+ * `escalation.json` failed the whole guard open (issue `260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`); the other
  * two kept casting with `as` and threw on the next field access, which discarded
- * the message the same tool call had already produced (issue `260809-1101`).
+ * the message the same tool call had already produced (issue `260809-1101_*_churn-and-cross-file-state-are-cast-not-coerced-so-a-shape-valid-file-swallows-the-halt-message.md`).
  * Measured on the protected-path halt sentence, which is gone with its half of
  * the guard; the defect class is not, and is not specific to what the message
  * said. A throw in a state load takes out whatever the hook was about to tell
  * the model, and the tracker still tells it what it has to say — the coverage
  * and staging measurements leave through the same reply. One defect, fixed
- * once, in one place. The ping-back tracker left with decision `260809-2004`,
+ * once, in one place. The ping-back tracker left with decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`,
  * the churn heatmap on 2026-08-15, and the session-state drift measurement with
  * the counters it measured on the same day.
  *
@@ -29,7 +29,7 @@
  * through it, and they had already diverged: all three wrote with a bare
  * `writeFileSync` where this one writes through a `.tmp` and a rename, and all
  * three read with an `as` cast where this one takes a coercion. Decision
- * `260811-1146` moved them onto the seam and widened it by one optional `root`,
+ * `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md` moved them onto the seam and widened it by one optional `root`,
  * which is the only thing they needed and did not have. Two modules use it
  * today — `review-coverage.ts` and `staging-drift.ts`. `churn.ts` and
  * `state-drift.ts` were the third and fourth, both removed on 2026-08-15, and
@@ -75,7 +75,7 @@
  * stale file when its own write failed, and whose read unlinked the file as it
  * went — three deliberate differences, each with a measured issue behind it. It
  * was recommendation C2 in
- * `fusion-workbench/shared/analyses/260809-1101-guard-support-layer.md`, and it
+ * `260809-1101-guard-support-layer.md`, and it
  * was deleted with the protected-path half of the guard on 2026-08-12, so the
  * recommendation is moot rather than done.
  *

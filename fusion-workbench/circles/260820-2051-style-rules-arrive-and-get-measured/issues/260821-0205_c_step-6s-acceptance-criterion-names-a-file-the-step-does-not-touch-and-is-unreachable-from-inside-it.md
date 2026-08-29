@@ -11,7 +11,7 @@ is repunctuation and changes no word. The criterion cannot be met by the step th
 
 **Domain:** code
 **Filed by:** orchestrator
-**Cross-references:** `shared/issues/260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`
+**Cross-references:** `260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`
 
 ## How it surfaced
 

@@ -36,13 +36,13 @@ wrong word", not "the classifier cannot know".
   and not `if`, `elif`, `while`, `until`. `if rm -rf agents; then :; fi` allows; `while :; do rm
   rules/x.md; done` denies, because `do` is in the set. `exec` is the same gap in the wrapper
   table. Filed:
-  `260801-1857_o_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`.
+  `260801-1857_*_compound-command-head-hides-the-verb-from-both-bash-classifiers.md`.
 - **A backslash-escaped command word is unrecognised.** `stripData` emits escape pairs verbatim
   (`shell-parse.ts:227`) and nothing downstream removes them, so `\rm -rf rules` allows. The one
   backslash residual that is documented (`protected-path-discipline.md:192-194`) reasons about an
   **operand**, where shortening a word is harmless; the reasoning does not transfer to the command
   word, where it renames the program out of the table. Filed:
-  `260801-1858_o_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`.
+  `260801-1858_*_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md`.
 
 Both also defeat the git branch policy — `if git switch main; then :; fi`, `\git switch main`,
 `sudo git switch main` and `exec git switch main` all allow. That is pre-existing, but it makes
@@ -71,7 +71,7 @@ The `cd`-tracking half is the exception and is genuinely well covered — 22 sub
 `pushd`/`popd`, subshells, `cd -`, absolute-vs-relative. That was the newest and riskiest step and
 it shows.
 
-Filed: `260801-1900_o_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md`.
+Filed: `260801-1900_*_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md`.
 
 Two false-positive mechanisms are worth separating from the general fail-closed rule, because the
 documentation says they do not exist:
@@ -79,15 +79,15 @@ documentation says they do not exist:
 - **Redirection carries fail-closed into unrecognised programs.** Three documents state that an
   unrecognised program is allowed however unparseable its arguments are. `npm test > "$LOG"`
   denies. Filed:
-  `260801-1859_o_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`.
+  `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`.
 - **A `>` inside a double-quoted string is read as a redirection.**
   `git commit -m "docs: rules/a.md -> rules/b.md"` denies on `rules/b.md`. Measured against this
   repository's own history: 0 of 257 commit subjects and 4 of 5370 body lines trip it, so it is
   latent rather than painful — but it is a deny on `git commit` with a reason an agent cannot act
   on. Filed:
-  `260801-1901_o_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`.
+  `260801-1901_*_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md`.
 
-Also filed: `260801-1903_o_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`
+Also filed: `260801-1903_*_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md`
 (Low), where `perl -Ilib` trips `isPerlInPlaceFlag` although the docstring three lines above says
 `-I` is excluded.
 
@@ -144,7 +144,7 @@ survival correctly. Nine of thirteen mutations were caught, several with double-
 counts. Four survived — `--` end-of-flags, `isSkippedRedirectTarget`, `ancestorOfProtected`'s
 segment boundary, and `cd ~` → `outside` — and in each case the intended discriminating command is
 absent or defeated by its own choice of fixture. Filed:
-`260801-1904_o_four-classifier-behaviours-are-deletable-with-a-green-suite.md`, which also records
+`260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md`, which also records
 that roughly 86 deny assertions check only the boolean and that the `normalize` stub is unpinned
 against `guard.ts`.
 
@@ -220,15 +220,15 @@ Findings not rewritten; disposition only, verified at HEAD `9ab5a2a`.
 
 | Filed issue | Severity | State | Evidence |
 |---|---|---|---|
-| `260801-1857` compound-command head | High | `_c_` | `5d9bbcc` — `GRAMMAR_PREFIXES` driven off the exported set in both directions; `exec` added to the wrapper table |
-| `260801-1858` backslash-escaped command word | High | `_c_` | `5d9bbcc` — shared `hooks/lib/command-word.ts`, consumed by both classifiers |
-| `260801-1859` redirection fail-closed on unrecognised programs | Medium | `_c_` | `18e2e4f` — pass 3 runs only for a recognised verb; three docs corrected |
-| `260801-1900` must-never-deny corpus gap | Medium | `_c_` | `18e2e4f` — corpus 72 → 102, `KNOWN_FALSE_POSITIVES` block, count floor replaced by a detected-write filter |
-| `260801-1901` redirect operator inside a double-quoted string | Medium | `_c_` | `18e2e4f` — capture-mode placeholder for double-quoted spans that expand nothing |
-| `260801-1902` git clean / restore / stash | Medium | `_c_` | `18e2e4f`, corrected by `9ab5a2a` — rows added, `mutatesOnlyWhen` seam |
-| `260801-1903` perl `-Ilib` misread as in-place | Medium | `_c_` | `18e2e4f`, **regressed and re-fixed** by `9ab5a2a` — see `260801-1955` |
-| `260801-1904` four behaviours deletable | Low | `_o_` | still open; `rm -- -rf` absent from the suite, `normalize` stub still unpinned |
+| `260801-1857_*_compound-command-head-hides-the-verb-from-both-bash-classifiers.md` compound-command head | High | `_c_` | `5d9bbcc` — `GRAMMAR_PREFIXES` driven off the exported set in both directions; `exec` added to the wrapper table |
+| `260801-1858_*_a-backslash-escaped-command-word-is-unrecognised-by-both-classifiers.md` backslash-escaped command word | High | `_c_` | `5d9bbcc` — shared `hooks/lib/command-word.ts`, consumed by both classifiers |
+| `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` redirection fail-closed on unrecognised programs | Medium | `_c_` | `18e2e4f` — pass 3 runs only for a recognised verb; three docs corrected |
+| `260801-1900_*_the-must-never-deny-corpus-omits-the-largest-false-positive-family.md` must-never-deny corpus gap | Medium | `_c_` | `18e2e4f` — corpus 72 → 102, `KNOWN_FALSE_POSITIVES` block, count floor replaced by a detected-write filter |
+| `260801-1901_*_a-redirect-operator-inside-a-double-quoted-string-is-read-as-a-redirection.md` redirect operator inside a double-quoted string | Medium | `_c_` | `18e2e4f` — capture-mode placeholder for double-quoted spans that expand nothing |
+| `260801-1902_*_git-clean-restore-and-stash-mutate-protected-paths-and-are-in-neither-the-table-nor-the-residual-list.md` git clean / restore / stash | Medium | `_c_` | `18e2e4f`, corrected by `9ab5a2a` — rows added, `mutatesOnlyWhen` seam |
+| `260801-1903_*_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md` perl `-Ilib` misread as in-place | Medium | `_c_` | `18e2e4f`, **regressed and re-fixed** by `9ab5a2a` — see `260801-1955_*_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md` |
+| `260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md` four behaviours deletable | Low | `_o_` | still open; `rm -- -rf` absent from the suite, `normalize` stub still unpinned |
 
 The review's headline recommendation — "the single most valuable change would be adding the four compound-command heads to `GRAMMAR_PREFIXES`" — was taken. Its claim that both High findings also defeat the pre-existing git branch policy was correct and is what pulled the fix into the shared command-word resolver rather than into the mutation classifier alone.
 
-Two of the seven fixes introduced regressions that the next review caught (`260801-1955`, `260801-1956`). Both are closed at HEAD.
+Two of the seven fixes introduced regressions that the next review caught (`260801-1955_*_value-letter-truncation-loses-the-in-place-flag-for-perl-lpi.md`, `260801-1956_*_the-git-stash-row-reads-its-sub-subcommand-and-refs-as-written-paths.md`). Both are closed at HEAD.

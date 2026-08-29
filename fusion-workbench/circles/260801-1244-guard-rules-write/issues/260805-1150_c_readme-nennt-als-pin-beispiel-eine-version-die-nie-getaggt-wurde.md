@@ -7,7 +7,7 @@
 **Filed by:** coder, während Schritt 6 des Ausstiegsplans (Release-Vorbereitung 5.9.0)
 **Affects:** `README.md` Zeile 26
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md` Schritt 6,
+`260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md` Schritt 6,
 `CLAUDE.md` → *Release process*, Schritt 5 und *HTTPS installer*
 
 ---

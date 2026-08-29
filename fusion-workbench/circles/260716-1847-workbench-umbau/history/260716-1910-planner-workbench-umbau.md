@@ -3,7 +3,7 @@
 **Date:** 2026-07-16 19:10
 **Agent:** planner
 **Status:** Complete
-**Input:** `fusion-workbench/planning/260716-1847[o]-spec-plane-integration-und-workbench-struktur.md` (C1, C2)
+**Input:** `260716-1847[o]-spec-plane-integration-und-workbench-struktur.md` (C1, C2)
 
 ## Auftrag
 
@@ -32,6 +32,6 @@ Migration: dieselbe Regel löst sie. Für Altbestände ist die Circle-Zugehörig
 
 ## Ergebnis
 
-- Plan: `fusion-workbench/planning/260716-1910[o]-plan-workbench-umbau-circle-container.md` — 11 Schritte, alle an `coder`, vier Phasen, drei Mermaid-Diagramme (Auflösungskette, Schritt-DAG, Layout als Baum).
-- Entscheidung gefilt: `fusion-workbench/decisions/260716-1910[o]-circle-marker-am-verzeichnis-oder-an-der-circle-datei.md` — Marker an `[m]-circle.md` bei stabilem Verzeichnisnamen, empfohlen, am Gate zu bestätigen.
+- Plan: `260716-1910[o]-plan-workbench-umbau-circle-container.md` — 11 Schritte, alle an `coder`, vier Phasen, drei Mermaid-Diagramme (Auflösungskette, Schritt-DAG, Layout als Baum).
+- Entscheidung gefilt: `260716-1910[o]-circle-marker-am-verzeichnis-oder-an-der-circle-datei.md` — Marker an `[m]-circle.md` bei stabilem Verzeichnisnamen, empfohlen, am Gate zu bestätigen.
 - Offen im Plan: Name der gemeinsamen Ablage (`shared/` vorgeschlagen), Kosten eines Wechsels nahe null vor Schritt 4.

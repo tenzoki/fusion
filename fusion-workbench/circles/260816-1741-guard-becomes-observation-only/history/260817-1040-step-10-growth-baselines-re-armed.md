@@ -2,8 +2,8 @@
 
 **Agent:** coder
 **Date:** 2026-08-17
-**Circle:** `circles/260816-1741-guard-becomes-observation-only`
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 10
+**Circle:** `260816-1741-guard-becomes-observation-only`
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 10
 **Status:** Complete
 
 ## What was asked
@@ -33,13 +33,13 @@ silent raise `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` ex
 and the same argument the dispatch itself used to keep `rules-emission-golden.test.ts` out of
 this step. Both surfaces pass their bounds untouched, and leaving them keeps their growth
 visible in the next failure text instead of absorbing it. Filed as
-`circles/260816-1741-guard-becomes-observation-only/issues/260817-1032_o_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`.
+`260817-1032_*_two-of-the-three-bounded-surfaces-grew-through-this-circle-so-only-the-hook-tests-baseline-moves.md`.
 
 ## Changes
 
 - `hooks/lib/__tests__/surface-growth-bound.test.ts`
   - New header section `## The cleanup re-baseline, 2026-08-17 — the hook tests, and them alone`.
-    It names the cut (Circle `260816-1741`, `3d41d4a..5763550`, what was removed), gives the
+    It names the cut (Circle `260816-1741-guard-becomes-observation-only`, `3d41d4a..5763550`, what was removed), gives the
     three-surface measurement, states why two maps did not move, and writes down what the
     re-baseline absolves as text, per the helper's rule that the absolution survive the numbers.
   - `TEST_LINE_BASELINE` re-armed: five entries dropped for files deleted in `1d1d3a3`

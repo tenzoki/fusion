@@ -5,18 +5,18 @@
 **Severity:** Medium
 **Domain:** code (security control)
 **Filed by:** coder, implementing plan Step 6 (the C5b loader)
-**Affects:** `circles/260801-1244-guard-rules-write/decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (the residual's stated bound); `hooks/lib/config.ts` (the floor); `rules/protected-path-discipline.md` and `README-hooks.md`, which Step 9 owes a sentence about this residual
+**Affects:** `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` (the residual's stated bound); `hooks/lib/config.ts` (the floor); `rules/protected-path-discipline.md` and `README-hooks.md`, which Step 9 owes a sentence about this residual
 **Kind:** NOT a regression. Step 6 is what makes the residual reachable at all — before it, no project configuration existed to narrow anything. The issue is that the residual's stated bound is narrower than its measured reach, not that Step 6 chose wrongly.
 **Cross-references:**
 `hooks/lib/__tests__/guard-rules-write-integration.test.ts`, `describe("what a project configuration can currently reach — measured, not endorsed")` — both halves of this are asserted there,
-`shared/planning/260801-1122_o_spec-normative-consolidation.md:301` (the floor as an invariant),
-plan `260802-1856_o_plan-guard-rules-write.md` `### Q2` (where the residual is first written down).
+`260801-1122_*_spec-normative-consolidation.md:301` (the floor as an invariant),
+plan `260802-1856_*_plan-guard-rules-write.md` `### Q2` (where the residual is first written down).
 
 ---
 
 ## What is wrong
 
-Decision `260802-1912` chose that the self-protection floor applies **once `fusion-guard.json` exists on disk**, and accepted one residual in these words:
+Decision `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` chose that the self-protection floor applies **once `fusion-guard.json` exists on disk**, and accepted one residual in these words:
 
 > in a project where the file has never been created, an agent may create one that narrows `protectedPaths`, and the guard will honour it from the next tool call onward.
 
@@ -79,7 +79,7 @@ state directory is an ordinary entry and goes with the rest.
 
 **Branch B, done.** The forensics catalogue gains the entry § "Step 9 already owes a
 sentence here" asks for, and it states the **measured** reach rather than the narrower one
-`decisions/260802-1912_a_…` records: the four-call sequence with no flag on both surfaces;
+`260802-1912_*_…` records: the four-call sequence with no flag on both surfaces;
 the bound that an active halt blocks the narrowing write itself, so an agent can narrow its
 way out of halts it has not yet earned and not out of one it is in; and the git-diff bound
 the decision record rests on, undisputed and named as the main one.
@@ -87,7 +87,7 @@ the decision record rests on, undisputed and named as the main one.
 **Why it stays `_o_`.** The choice this issue puts — a second floor entry, or leave it and
 correct the stated bound — is a decision about what a project may configure, and the spec
 authorises exactly one floor entry
-(`shared/planning/260801-1122_o_spec-normative-consolidation.md:301`). The documentation
+(`260801-1122_*_spec-normative-consolidation.md:301`). The documentation
 half of the "leave it" arm is now done in the two places an agent and an auditor read. The
 other half is the **decision record's own** stated bound, and a decision record is not this
 step's file. "Not both, and not neither" still stands as this issue's own condition, and it
@@ -97,7 +97,7 @@ is not yet satisfied.
 Resolved: The "leave it" arm, completed per plan `260804-1633` Step 7 obligation 10 — the
 floor stays one entry (the spec authorises exactly one), and the shipped documentation
 now states the residual at its measured reach rather than the narrower reach decision
-`260802-1912` records. `rules/protected-path-discipline.md` carries it where every agent
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` records. `rules/protected-path-discipline.md` carries it where every agent
 reads it (the project-layer paragraph under `## The rule`: a narrowing list stands the
 check down and the guard's own state directory goes with the rest; the floor and the
 `guard.enabled` exception sit outside that reach). `README-hooks.md` § "Per-project
@@ -106,7 +106,7 @@ across everything on the effective list, `fusion-workbench/.guard-state/**` and 
 the escalation machinery included; the git-diff bound; and the halt bound (an agent can
 narrow its way out of halts it has not yet earned, not out of one it is already in). The
 seeded template's `_gitTracked` / `_protectsItself` keys state the same bound inside the
-file itself (Step 6, 260805-2222). Decision record `260802-1912_a_` keeps its original
+file itself (Step 6, 260805-2222-ontocoder-step6-guard-template-rewrite.md). Decision record `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` keeps its original
 narrower wording as Grounding-Historie; the shipped documents, which are what agents and
 users read, carry the measured bound — flagged in the closing session report so the
 orchestrator can decide whether the record itself gets a correcting appendix.

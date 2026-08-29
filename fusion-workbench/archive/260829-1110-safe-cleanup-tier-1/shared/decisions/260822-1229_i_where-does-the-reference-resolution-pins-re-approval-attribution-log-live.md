@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md` (the measurement that raises it); `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 2 and Gate A; `hooks/lib/__tests__/reference-resolution-lint.test.ts:493-913`; `shared/decisions/260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md` (the adjacent question about what the budget counts); `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` (the measured instance); `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` (the neighbouring convention that requires text to survive a number moving)
+**Cross-references:** `260822-1226-cut-ledger-for-three-bounded-surfaces.md` (the measurement that raises it); `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` step 2 and Gate A; `hooks/lib/__tests__/reference-resolution-lint.test.ts:493-913`; `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md` (the adjacent question about what the budget counts); `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` (the measured instance); `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` (the neighbouring convention that requires text to survive a number moving)
 
 ---
 
@@ -24,7 +24,7 @@ and even the minimum needed to land the Circle's own new test file (about 190) i
 without touching this log. So the Circle either takes a decision here or reports a shortfall.
 
 This is **not** the question already filed as
-`shared/decisions/260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`. That one asks
+`260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`. That one asks
 whether a comment line should be charged to the budget at all, and cannot be answered without
 recomputing a baseline. This one asks where one particular log belongs, and is answerable without
 moving any baseline.
@@ -57,7 +57,7 @@ moving any baseline.
    which lists 26 commits, and `git log -p` recovers each block's text.
    - Pros: the largest single cut available, no relocation, no new record to maintain.
    - Cons: this project has twice written down that a finding living only in a log is a defect, and
-     `git` is a log. `circles/260821-1042-…/issues/260821-2204_*_…` was filed for exactly that. Taking
+     `git` is a log. `circles/260821-1042-…/260821-2204_*_…` was filed for exactly that. Taking
      this option would answer, by side effect and inside a cut-only Circle, a question about evidence
      that the project has not put to itself.
 4. **Cap the log at the last N entries, keeping the shape and bounding the growth.** Say the last
@@ -74,7 +74,7 @@ moving any baseline.
 - No baseline map may move. `TEST_LINE_BASELINE` is byte-identical at closure under the plan's own
   stopping clauses, so no option here may be paired with a re-baseline.
 - Whatever is kept must still let a reader answer, for the current `BASELINE`, what moved it and why.
-  The pin's value rests on that (issue `260810-2149`, cited in the file at line 484-492).
+  The pin's value rests on that (issue `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`, cited in the file at line 484-492).
 - `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` governs the *arming and absolution*
   text of the four growth bounds and is untouched by any option here. This log is a different
   instrument's convention and must not be conflated with it.
@@ -93,7 +93,7 @@ not be taken inside a cut-only Circle whatever its merits, because it decides an
 a by-product of a budget.
 
 ---
-Answered: shared/history/260822-1009-orchestrator-session.md — user decision at Gate A of the C0
+Answered: 260822-1009-orchestrator-session.md — user decision at Gate A of the C0
 plan, 260822: **Option 2.** The pin's rationale and the newest re-approval stay in
 `hooks/lib/__tests__/reference-resolution-lint.test.ts`; the other 25 entries move to a workbench
 record, cited from the file by one line. The user took this over capping at the last N entries
@@ -108,7 +108,7 @@ relocated rather than removed.
 Implemented: `hooks/lib/__tests__/reference-resolution-lint.test.ts:488-493` — option 2 applied at
 step 2 of the C0 plan: the pin's rationale and the newest re-approval stay above `const BASELINE`,
 entries 1 to 25 moved verbatim to
-`shared/analyses/260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`, and a
+`260822-1318-reference-resolution-pin-re-approval-log-entries-1-to-25.md`, and a
 six-line citation block names that record and instructs the next roll. The file fell 1431 -> 1014
 lines; `TEST_LINE_BASELINE` did not move.
 Deferred:

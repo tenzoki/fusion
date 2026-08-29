@@ -28,7 +28,7 @@ is what "the instructions are often wrong" looks like from the inside, and it is
 same thing as rule decay — it may be the more ordinary failure of trusting a summary over a source.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The dispatched analysis declined to measure the claim, and no mechanism beyond the narrower git-status-over-report convention at `agents/orchestrator.md:1060` was added. The record is unmeasured rather than unfixed, which is worth naming before it is planned. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The dispatched analysis declined to measure the claim, and no mechanism beyond the narrower git-status-over-report convention at `agents/orchestrator.md:1060` was added. The record is unmeasured rather than unfixed, which is worth naming before it is planned. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: referred (backlog) — unmeasured, and the git-status-over-report convention in `agents/orchestrator.md` exists; a measurement design that counts wrong dispatch instructions against their executor runs is the idea; backlog entry to be filed by the user

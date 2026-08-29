@@ -6,7 +6,7 @@ The Done report enumeration omits Step 0i while Step 0i instructs it to report t
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `skills/setup/SKILL.md:354`, `skills/setup/SKILL.md:470`
-**Cross-references:** plan step 5 in `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
+**Cross-references:** plan step 5 in `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
 
 ---
 

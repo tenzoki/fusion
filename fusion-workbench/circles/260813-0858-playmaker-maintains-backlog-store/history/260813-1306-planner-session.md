@@ -7,22 +7,22 @@
 ## What was planned
 
 The implementation plan for this Circle's Directive:
-`circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
+`260813-1306_*_the-playmaker-maintains-the-backlog-store.md`
 — eight steps, all assigned to `coder`, plus a user-executed acceptance run at the Turn
 boundary.
 
 ## Inputs read
 
 The Circle record in full; the two binding decision records
-(`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`,
-`circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`);
+(`260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`,
+`260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`);
 the surfaces list in
-`shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`;
+`260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`;
 `agents/playmaker.md`, `bin/fusion-paths`, `rules/fusion-workbench-conventions.md`
 `## Backlog entries`, `rules/circle-records.md`, `rules/workbench-path-resolution.md`,
 the four skill bodies that touch the store, the seven test files that gate agent prompts
 or the resolver's key sets, `fusion-workbench/portfolio.md` `## Backlog — ranked`, and
-`circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md`.
+`260813-0910-documentation-matches-shipped-plugin`.
 
 ## Findings that shaped the plan
 

@@ -5,7 +5,7 @@ The fold of the two version-gap records dropped the `bin/fusion-rules` half, and
 **Severity:** Medium
 **Domain:** code
 **Filed by:** coderev, reviewing `084c626..dbf259a`
-**Affects:** `fusion-workbench/shared/issues/260822-0035_o_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`, the surviving record; `fusion-workbench/shared/issues/260822-0026_c_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`, the closure note
+**Affects:** `260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`, the surviving record; `260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md`, the closure note
 **Cross-references:** commit `c53a903`, whose message carries the dropped fact; commit `4c7aae6`, which performed the fold
 
 ---
@@ -17,7 +17,7 @@ Two records of one fact were folded into one. The closure note on the thinner re
 > Nothing from it is lost; its remedy was the same, to cut a release under `CLAUDE.md`
 > `## Release process` [...]
 
-**One substantive fact was lost.** The closed record `260822-0026` names a second half of the
+**One substantive fact was lost.** The closed record `260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md` names a second half of the
 version gap and calls it the more consequential one:
 
 > The 22 lines of `bin/fusion-rules` in the same range are the second half and are the more
@@ -71,8 +71,8 @@ One of two, and the first is cheaper.
 1. **Add the `fusion-rules` half to `260822-0035`**: name the helper, state that the installed copy
    lacks the stderr fallback notice from `1c1178d`, and say that this one runs at every agent's
    Setup in every consuming project while the other has no call site at all. Correct the
-   two-item list to three. Then the closure note on `260822-0026` becomes true.
-2. **Reopen `260822-0026` for that half only**, leaving `260822-0035` as the `fusion-prose-metric`
+   two-item list to three. Then the closure note on `260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md` becomes true.
+2. **Reopen `260822-0026_*_forty-eight-commits-stand-behind-the-manifest-version-so-two-bin-helpers-are-unreleased-and-one-is-absent-from-every-install.md` for that half only**, leaving `260822-0035` as the `fusion-prose-metric`
    record. This gives two records again and is what the fold was performed to avoid.
 
 Route 1 is recommended. The fold was the right call and the surviving record only needs the half
@@ -83,7 +83,7 @@ both records end to end.
 
 ---
 Resolved: both halves repaired by the orchestrator, which wrote the false sentence. The live record
-`shared/issues/260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
+`260822-0035_*_two-installed-copies-report-the-same-version-and-differ-in-which-bin-helpers-they-carry.md`
 now carries the `bin/fusion-rules` half as a section of its own, naming the 22 lines, the missing
 stderr fallback notice, and that `fusion-rules` runs at every agent's Setup while nothing calls the
 prose metric. The closed record's note no longer claims nothing was lost: it states what was lost,

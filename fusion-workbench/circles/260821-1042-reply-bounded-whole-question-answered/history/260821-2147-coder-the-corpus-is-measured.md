@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-21
 **Agent:** coder
-**Circle:** circles/260821-1042-reply-bounded-whole-question-answered
-**Plan step:** 6 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`
+**Circle:** 260821-1042-reply-bounded-whole-question-answered
+**Plan step:** 6 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md`
 **Status:** Complete
 
 ## What this note is
@@ -35,19 +35,19 @@ decidable at the moment of drafting and nowhere else, because the project persis
 chat reply to check it against.
 
 **No gate was built, and the reason is a standing decision rather than an oversight.**
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 is answered at option 4, and its reconciliation authorises no prose gate until its
 registered measurement has run. This Circle did not run that measurement.
 
 **Whether these clauses change a reply is not observed by this Circle, and this note is
 where that is written down.** The measurement protocol is
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`.
+`260820-2354-prose-register-measurement-protocol.md`.
 Both of its windows exclude any history file written by a session primed on the subject
 being measured, and every session in this Circle is primed on exactly that subject: the
 Directive names the register, the plan names the register, and each dispatch named it
 again. A session cannot supply its own evidence under that protocol. Step 1 froze a
 pre-change baseline in
-`circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md`
+`260821-2020-reply-length-baseline.md`
 so that a later Circle can re-run the same command and compare, and that later Circle is
 where an effect could first be seen. Nothing here claims one. A landed clause is not a
 changed reply, and reading this note as evidence of a shorter reply would be reading it
@@ -63,7 +63,7 @@ $ wc -c < rules/user-facing-output.md
 ```
 
 Net delta **−84 bytes**. The budget in
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
+`260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
 is net zero or less, and it is met.
 
 ## The four voice profile files
@@ -225,7 +225,7 @@ tool reports and gates nothing, which is why the verdict is read here rather tha
 ## The correction I made to another agent's log
 
 The step 2 log,
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md`,
+`260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md`,
 stated in its `## Measurements` section that the hook-test surface moved to **20 363 lines**,
 "the six-line attribution comment plus its blank neighbours". Both halves were wrong. The
 comment block is six lines and has no blank neighbours, so the surface stood at
@@ -269,7 +269,7 @@ non-events rather than as figures:
 
 - The plan's Testing Strategy assigned the golden regeneration to this step. Step 2 had
   already done it, correctly and with its own log at
-  `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2108-coder-regenerate-two-golden-fixtures-after-step-2.md`,
+  `260821-2108-coder-regenerate-two-golden-fixtures-after-step-2.md`,
   and step 5 left the result consistent. Regenerating again would have produced an empty
   diff, so I ran the suite without the flag and read the match.
 - `RULE_BASELINE` was not touched, which is what the plan required. This Circle shrank the
@@ -287,7 +287,7 @@ fault.
 
 ## Files changed by this step
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md` (this file, new)
-- `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md` (two figures corrected, nothing else)
+- `260821-2147-coder-the-corpus-is-measured.md` (this file, new)
+- `260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md` (two figures corrected, nothing else)
 
 No shipped file was touched. Nothing was staged and nothing was committed.

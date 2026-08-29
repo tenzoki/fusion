@@ -24,16 +24,16 @@ anyway, and the record's replacement table does not distinguish them. A reader t
 the pass's method will not reproduce these four.
 
 ---
-**Found by:** coderev, review gate R1 of `circles/260820-2051-style-rules-arrive-and-get-measured`,
-review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
+**Found by:** coderev, review gate R1 of `260820-2051-style-rules-arrive-and-get-measured`,
+review file `260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
 **Owner:** `coder`. Each is a one-character change plus, at three of the four, one capital.
 **Severity:** Low. Nothing is ambiguous to the point of being wrong. The cost is legibility on
 always-on text, on the same surface whose legibility is the Circle's subject.
 **Filed in the Circle store** per the Origin Rule.
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0242-coder-the-conventions-file-reaches-its-em-dash-ceiling.md`
+`260821-0242-coder-the-conventions-file-reaches-its-em-dash-ceiling.md`
 ("What each mark became", the Full stop row);
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0301_*_the-decision-marker-table-loses-its-parallelism-at-one-of-five-rows.md`
+`260821-0301_*_the-decision-marker-table-loses-its-parallelism-at-one-of-five-rows.md`
 (the same choice made the other way, with its own cost).
 
 **Verified at HEAD `c226949`** by extracting every sentence-level unit carrying two or more colons

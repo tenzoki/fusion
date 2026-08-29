@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** coder
-**Cross-references:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` (step 3 and Gate A); `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md` (row R1 and the relocation-is-not-removal section)
+**Cross-references:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` (step 3 and Gate A); `260822-1226-cut-ledger-for-three-bounded-surfaces.md` (row R1 and the relocation-is-not-removal section)
 
 ---
 

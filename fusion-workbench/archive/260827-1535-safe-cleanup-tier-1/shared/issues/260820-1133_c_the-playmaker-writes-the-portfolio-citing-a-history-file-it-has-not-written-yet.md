@@ -37,7 +37,7 @@ terminal.
 
 **Adjacent and not the same.** `shared/issues/260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-*` is about a citation dying because its target moved. This is about a citation being written before its target exists. Both now redden the same gate, and a reader meeting either failure sees the same message.
 
-Filed by the orchestrator of session `260819-2006` from the playmaker's own report. No Circle is active,
+Filed by the orchestrator of session `260819-2006-orchestrator-session.md` from the playmaker's own report. No Circle is active,
 so it goes to the shared store under the Origin Rule.
 
 ---

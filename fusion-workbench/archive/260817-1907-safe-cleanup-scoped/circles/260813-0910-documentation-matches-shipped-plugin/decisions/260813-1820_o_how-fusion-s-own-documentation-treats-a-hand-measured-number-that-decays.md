@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** planner
-**Cross-references:** `circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md` steps 2 and 3; `shared/analyses/260813-0828-documentation-staleness-survey.md` findings 6 and 7; `circles/260813-0910-documentation-matches-shipped-plugin/_t_circle.md` `## Grounding snapshot`
+**Cross-references:** `260813-1820_*_documentation-matches-shipped-plugin.md` steps 2 and 3; `260813-0828-documentation-staleness-survey.md` findings 6 and 7; `260813-0910-documentation-matches-shipped-plugin` `## Grounding snapshot`
 
 ---
 
@@ -50,4 +50,4 @@ Implemented:
 Deferred:
 Superseded by:
 
-Reconciled: 260813-2258 — still open, and the marker is correct. Searched the same set as the sibling record and found no stated convention. All three treatments the record tabulates were carried out as the plan specified, so the record now has three worked instances instead of two proposals: the tracked-file count is deleted (`grep -c '612 files' CLAUDE.md` = 0), the `bin/` roster is gated (`derivable-enumerations-lint.test.ts:435`, both directions, 15 files against 15 rows), and the byte-budget claim keeps its 260812-stamped historical measurement while stating no current floor (`CLAUDE.md:65`). The rule connecting them is still unwritten, and the cost the record predicted has already been paid inside this Circle: the same line re-introduced an undated 30 588-byte figure, filed as `issues/260813-2009_o_the-byte-budget-line-bans-a-number-and-then-states-one-two-sentences-later.md` and still open. Note: this record's `Cross-references:` names the plan under its old `_o_` filename; the file is now `planning/260813-1820_p_documentation-matches-shipped-plugin.md`.
+Reconciled: 260813-2258-reconciliation.md — still open, and the marker is correct. Searched the same set as the sibling record and found no stated convention. All three treatments the record tabulates were carried out as the plan specified, so the record now has three worked instances instead of two proposals: the tracked-file count is deleted (`grep -c '612 files' CLAUDE.md` = 0), the `bin/` roster is gated (`derivable-enumerations-lint.test.ts:435`, both directions, 15 files against 15 rows), and the byte-budget claim keeps its 260812-stamped historical measurement while stating no current floor (`CLAUDE.md:65`). The rule connecting them is still unwritten, and the cost the record predicted has already been paid inside this Circle: the same line re-introduced an undated 30 588-byte figure, filed as `260813-2009_*_the-byte-budget-line-bans-a-number-and-then-states-one-two-sentences-later.md` and still open. Note: this record's `Cross-references:` names the plan under its old `_o_` filename; the file is now `260813-1820_*_documentation-matches-shipped-plugin.md`.

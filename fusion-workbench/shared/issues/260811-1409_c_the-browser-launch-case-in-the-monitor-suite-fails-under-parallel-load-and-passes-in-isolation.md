@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, reviewing Turn 2 range `270c566..1d5eed6`
 **Affects:** `hooks/lib/__tests__/monitor-warnings-panel.test.ts:695` — the case *"a terminal on stdout still gets the dashboard opened for it"*
-**Cross-references:** `shared/issues/260810-1135_o_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` (the same class, a different file — that record's four observations are all under parallel load too); `shared/history/260811-1329-coder-four-low-priority-corrections.md:17-22` (the honest report that asked for this record if it recurred); commit `f2d9905`
+**Cross-references:** `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` (the same class, a different file — that record's four observations are all under parallel load too); `260811-1329-coder-four-low-priority-corrections.md:17-22` (the honest report that asked for this record if it recurred); commit `f2d9905`
 
 ---
 
@@ -53,7 +53,7 @@ than adding one.
 
 ## Why it is worth a record
 
-`260810-1135` is scoped to `fusion-commit-lock.test.ts` and its fix direction — make the timing
+`260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` is scoped to `fusion-commit-lock.test.ts` and its fix direction — make the timing
 injectable rather than widen the tolerance — is written for that file. This is a second file of
 the same class, in a suite whose exit code is what every task in this session is asked to report
 as the thing that decides whether its work lands. Two independently load-sensitive cases means a
@@ -74,13 +74,13 @@ that never happened. If the launch latency is bounded by something the test can 
 the server answering, the pty runner's own output — waiting on that rather than on a wall clock
 removes the sensitivity instead of lengthening the fuse.
 
-Consider recording both this and `260810-1135` against one decision about whether this suite is
+Consider recording both this and `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md` against one decision about whether this suite is
 meant to be run concurrently with itself at all. Three of the project's own working patterns
 (parallel executors, a reviewer running `npm test` beside them) put it in that state routinely.
 
 ---
 
-Resolved: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1133-coder-hooks-suite-concurrency-safety.md`
+Resolved: `260815-1133-coder-hooks-suite-concurrency-safety.md`
 — the marker wait ends on an event, and one run no longer claims every core.
 
 **What was done.** `waitForFile(marker, 10000)` is now `waitForFile(marker, proc)`: it ends
@@ -104,7 +104,7 @@ idle 16-core machine: 5 of 9 runs red, this case among them every time. After: 3
 **One thing this record's `## What this is not` section pointed at is still open.** The
 `Error: Worker exited unexpectedly` signature is a different fault, it still occurs at
 roughly 1 run in 12 with three concurrent suites, and it is held by
-`shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`.
+`260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`.
 Two facts about it were established while closing this one: the worker that dies is always
 `monitor-warnings-panel.test.ts`'s, and a real SIGTERM reaches it.
 

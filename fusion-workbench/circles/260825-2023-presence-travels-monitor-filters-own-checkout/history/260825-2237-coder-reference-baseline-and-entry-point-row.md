@@ -4,7 +4,7 @@
 **Agent:** coder
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
 **Checkout:** 5e8248d7
-**Plan:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, step 2
+**Plan:** `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, step 2
 
 ## What was changed
 

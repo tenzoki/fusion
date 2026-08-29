@@ -4,7 +4,7 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 2 of `circles/260801-1244-guard-rules-write` (`bf75941..HEAD`)
+**Filed by:** coderev, reviewing Turn 2 of `260801-1244-guard-rules-write` (`bf75941..HEAD`)
 **Affects:** `hooks/lib/rules-write-exemption.ts` (documentation), `hooks/lib/paths.ts`
 **Cross-references:** `hooks/lib/rules-write-exemption.ts:43-48`,
 `hooks/lib/rules-write-exemption.ts:12-16`, `hooks/lib/paths.ts:41-95`,
@@ -82,12 +82,12 @@ In `rules-write-exemption.ts`, gate 1's paragraph:
 One further note for whoever edits this paragraph: `isProjectRulePath` keeping its own
 `canonicalise` call is load-bearing for a second reason the docstring does not give — the
 Bash path hands it operands `guard.ts` never collapses. That reason is currently recorded
-only in the resolution note on `260802-2230`, which is a closed issue file and not where a
+only in the resolution note on `260802-2230_*_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md`, which is a closed issue file and not where a
 maintainer looks.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while judging the split at the reviewer's
+Found in `260801-1244-guard-rules-write` while judging the split at the reviewer's
 specific request. The split is right; its rationale is one file away from where it is needed.
 
 ---
@@ -110,9 +110,9 @@ recommendations taken.
   surface hands over operands nobody collapsed, and the classifier's own `path.normalize`
   keeps a trailing separator, so `rm -rf rules/` arrives spelled exactly that way. A predicate
   trusting its caller would be right on one surface and wrong on the other. It no longer lives
-  only in the resolution note on `260802-2230`.
+  only in the resolution note on `260802-2230_*_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md`.
 
 No behaviour changed. The test at `guard-rules-write-integration.test.ts:1069-1082` remains
 the net; this closes the comment that was sending people to write the change first.
 
-Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
+Session: `260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`

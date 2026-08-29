@@ -12,14 +12,14 @@ per-row table classes all three as corrected. The step's evidence contradicts it
 
 **Documentation side**, two workbench records.
 
-`planning/260813-1820_p_documentation-matches-shipped-plugin.md`, step 6's completion note:
+`260813-1820_*_documentation-matches-shipped-plugin.md`, step 6's completion note:
 
 > Completion: all sixteen rows read against their prompt and their `bin/fusion-paths` key
 > set; twelve corrected, four left standing after a reading (`shaper`, `planner`, `bugfixer`,
 > `editor` — the last three of those gained no change beyond the parameter clause moving out
 > of the `editor` row).
 
-`history/260813-2043-coder-sixteen-agent-rows-and-dispatch-parameter-roster.md:15`:
+`260813-2043-coder-sixteen-agent-rows-and-dispatch-parameter-roster.md:15`:
 
 > Twelve rows were corrected; four stand as they were after a reading.
 
@@ -83,4 +83,4 @@ the two sets of numbers stop being read as one.
 Filed by: coderev (review of Circle Turn 3, range `22f892e..8d87192`, commit `8d87192`).
 
 ---
-Reconciled: 260813-2258 — Still open, and **independently confirmed** at this reconciliation rather than taken on the reviewer's word: comparing each `| \`<agent>\` |` row of `README-agents.md` at `22f892e` against `8d87192`, fifteen rows differ and `bugfixer` alone is byte-identical. The plan's step-6 completion note and `history/260813-2043-coder-…` both still say "twelve corrected, four left standing". The reconciler left both records as written — correcting a step's evidence belongs to `coder`, per this record's own fix direction — and restated the finding in the plan's `## Reconciliation Log`.
+Reconciled: 260813-2258-reconciliation.md — Still open, and **independently confirmed** at this reconciliation rather than taken on the reviewer's word: comparing each `| \`<agent>\` |` row of `README-agents.md` at `22f892e` against `8d87192`, fifteen rows differ and `bugfixer` alone is byte-identical. The plan's step-6 completion note and `260813-2043-coder-…` both still say "twelve corrected, four left standing". The reconciler left both records as written — correcting a step's evidence belongs to `coder`, per this record's own fix direction — and restated the finding in the plan's `## Reconciliation Log`.

@@ -1,9 +1,9 @@
 # ontocoder — version bump and `dist` rebuild (plan step 8)
 
 **Date:** 2026-08-01 18:45
-**Circle:** `circles/260801-1244-guard-bash-inspection`
-**Plan:** `planning/260801-1253_o_plan-guard-bash-inspection.md` — step 8
-**Closes:** `issues/260801-1821_c_npm-test-does-not-build-so-the-committed-dist-can-ship-stale.md`
+**Circle:** `260801-1244-guard-bash-inspection`
+**Plan:** `260801-1253_*_plan-guard-bash-inspection.md` — step 8
+**Closes:** `260801-1821_*_npm-test-does-not-build-so-the-committed-dist-can-ship-stale.md`
 **Status:** Complete
 
 ## What changed

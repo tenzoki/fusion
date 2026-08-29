@@ -3,9 +3,9 @@
 **Date:** 2026-08-15 08:04
 **Sender:** coderev
 **Reviewed-range:** `9a7da8e..7c12d6a`
-**Not-opened:** `bin/fusion-plane`, `hooks/lib/__tests__/fusion-plane.test.ts`, `docs/plane-setup.md`, `fusion-workbench/orchestrator-events.jsonl`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0007-shaper-remove-eight-mechanisms-and-cap-growth.md`, `fusion-workbench/circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0029-planner-remove-eight-mechanisms-and-cap-growth.md`, `templates/plane.config.yaml`, `fusion-workbench/plane.config.yaml`, `fusion-workbench/.plane-map.json`, `fusion-workbench/.plane-outbox.jsonl`, `hooks/lib/__tests__/fixtures/plane/` (15 files)
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
-**Suite at review time:** `cd hooks && npx vitest run` — 48 files, 903 tests, 4 failures in `legacy-halt-clearing.test.ts`; the same file passes 6 of 6 in isolation. Known flake, `shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`.
+**Not-opened:** `bin/fusion-plane`, `hooks/lib/__tests__/fusion-plane.test.ts`, `docs/plane-setup.md`, `fusion-workbench/orchestrator-events.jsonl`, `260815-0007-shaper-remove-eight-mechanisms-and-cap-growth.md`, `260815-0029-planner-remove-eight-mechanisms-and-cap-growth.md`, `templates/plane.config.yaml`, `fusion-workbench/plane.config.yaml`, `fusion-workbench/.plane-map.json`, `fusion-workbench/.plane-outbox.jsonl`, `hooks/lib/__tests__/fixtures/plane/` (15 files)
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Suite at review time:** `cd hooks && npx vitest run` — 48 files, 903 tests, 4 failures in `legacy-halt-clearing.test.ts`; the same file passes 6 of 6 in isolation. Known flake, `260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`.
 
 The first four entries in `**Not-opened:**` are files this range deleted, read as diffs and as commit statistics rather than line by line; the last five are the structured-data half, which `ontorev` reviewed in parallel and whose review is `260815-0803-ontorev-plane-structured-data-removal.md`.
 
@@ -42,12 +42,12 @@ Three further findings of mine duplicated `ontorev`'s and were withdrawn rather 
 
 **A1 — A defect record is live under two names in two Circles, and the closed copy lost its body.**
 High. Filed by `ontorev` as
-`issues/260815-0803_o_the-layout-tree-record-is-live-under-two-names-in-two-circles-and-the-closed-copy-lost-its-body.md`;
+`260815-0803_*_the-layout-tree-record-is-live-under-two-names-in-two-circles-and-the-closed-copy-lost-its-body.md`;
 I withdrew my own record for it. Two pieces of evidence from my pass that record does not carry, and
 that matter for the fix:
 
 The mechanism that caught the sibling and missed this one is stated in `507dbc6`'s own commit
-message — *"A rename is two paths and P-2's staging list named only one."* For `shared/issues/260810-0410`
+message — *"A rename is two paths and P-2's staging list named only one."* For `260810-0410`
 the leftover `_o_` and the new `_c_` were the same basename in the same directory, so
 `bin/fusion-staging-drift` reported them as a pair and the fix landed one commit later. For
 `260814-1419` the new path is in a **different Circle**, so the two never appeared together and
@@ -67,11 +67,11 @@ performing a fix — that record was still `_o_` at the time of writing.
 
 **A2 — Seven open defect records name a deleted Plane file as their subject.** Medium in my reading,
 High in `ontorev`'s; filed as
-`issues/260815-0803_o_seven-open-defect-records-name-the-deleted-plane-mirror-and-neither-removal-step-owns-a-record-sweep.md`.
+`260815-0803_*_seven-open-defect-records-name-the-deleted-plane-mirror-and-neither-removal-step-owns-a-record-sweep.md`.
 My own record was withdrawn. Two additions:
 
 An eighth needs a different disposition rather than a `_c_` rename.
-`circles/260813-0910-documentation-matches-shipped-plugin/issues/260813-2305_o_the-directive-promises-plane-setup-verification-and-step-10-was-deferred-with-no-record.md`
+`260813-2305_*_the-directive-promises-plane-setup-verification-and-step-10-was-deferred-with-no-record.md`
 records that a Directive promised `docs/plane-setup.md` be verified against `bin/fusion-plane`. Both
 files are gone, so the promise is moot — but that Circle carries Bounded Closure (`_b_`) and its
 Directive is part of its record, so the surface that has to say so is its closure note. And the
@@ -79,12 +79,12 @@ plan's own `## Risks & Mitigations` last row already required this: *"Its open r
 step 2."* They were not.
 
 A ninth is **not** in this class and should be left alone:
-`shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` is about the
+`260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md` is about the
 `_c_circle.md` record's unfilled Turn log, and that record still exists.
 
 **Why the whole class was invisible, and it is not the executor's attention.** The plan's
 `**Decidability:**` line rests the sweep on `reference-resolution-lint.test.ts`, and
-`shared/issues/260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
+`260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`
 records that it does not scan the workbench. So `bin/fusion-plane:360` inside a defect record is not
 a citation as far as `npm test` is concerned. The plan then states, in `## Testing Strategy`, that
 each step's file list *"is not a guess at blast radius, it is what the lint will demand"* — so a
@@ -95,9 +95,9 @@ compose into a blind spot, and eleven removals are still ahead of it.
 
 **B1 — Step 4 still says `derivable-enumerations-lint` does not read `CLAUDE.md`'s Layout table, and
 step 11 inherits it by omission.** Medium. Filed as
-`issues/260815-0804_o_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`.
+`260815-0804_*_the-plan-still-carries-the-false-premise-step-2-disproved-and-steps-4-and-11-will-ship-red-on-it.md`.
 
-`planning/260815-0029_o_plan-…md:195` ends *"The `CLAUDE.md` Layout row waits for gate G1."*
+`260815-0029_*_plan-…md:195` ends *"The `CLAUDE.md` Layout row waits for gate G1."*
 `hooks/lib/__tests__/derivable-enumerations-lint.test.ts:423-495` is section 8, a closed enumeration
 in both directions, whose second branch is `CLAUDE.md's Layout table has a row for bin/${r} but that
 file does not exist`. Step 4 deletes `bin/fusion-churn-rank`; following the sentence lands a red
@@ -107,7 +107,7 @@ it produces the same red commit without having been told anything false. One ste
 one is uninformed; only the first is fixed by correcting a sentence.
 
 The executing coder found this, acted on it correctly, and wrote it up —
-`history/260815-0742-coder-remove-plane-mirror-code-and-prose.md` `## What the plan did not predict`
+`260815-0742-coder-remove-plane-mirror-code-and-prose.md` `## What the plan did not predict`
 item 1 even says *"Step 4 inherits the correction"*. The plan was never edited: `git log` over it
 returns one commit, `348f6db`. A correction recorded only in a history entry reaches the next
 executor only if that executor reads a history entry it was not pointed at.
@@ -117,7 +117,7 @@ HEAD. `bin/` holds 14 regular files and `CLAUDE.md`'s Layout table holds 14 `| \
 same 14 names. The defect is in the instruction, not in the tree.
 
 **B2 — Three steps have landed and the plan carries no `[DONE]` marker.** Medium. Filed as
-`issues/260815-0804_o_three-plan-steps-have-landed-and-the-plan-carries-no-inline-state-marker-for-any-of-them.md`.
+`260815-0804_*_three-plan-steps-have-landed-and-the-plan-carries-no-inline-state-marker-for-any-of-them.md`.
 `grep -n "IN PROGRESS\|\[DONE\]\|^\*\*Status:\*\*"` over the plan returns one line, the header. The
 rule is `rules/fusion-workbench-conventions.md` `### Planning files`, and its `### When to update`
 opens *"After completing each plan step — not just at session end."* This is a fifteen-step plan on a
@@ -132,12 +132,12 @@ any of them. The preamble is selecting which obligations get met.
 
 **C1 — Both history entries inventory "two remaining Plane mentions" in `CLAUDE.md`, and there are
 three.** Low. Filed as
-`issues/260815-0804_o_two-history-entries-inventory-two-remaining-plane-mentions-in-claude-md-and-there-are-three.md`.
+`260815-0804_*_two-history-entries-inventory-two-remaining-plane-mentions-in-claude-md-and-there-are-three.md`.
 `CLAUDE.md:73` still says the marker-on-the-record design gives *"the later Plane mirror … an
 immutable natural key"*. The same justification was **deleted** from `rules/circle-records.md:30` by
 `d0ddabb`, correctly. So the authoring home for that design now gives one reason and `CLAUDE.md`
 gives two, the second naming a mechanism that no longer exists. This is adjacent to `ontorev`'s
-`260815-0803_o_two-claude-md-inventory-rows-went-stale…` rather than a duplicate of it: theirs is
+`260815-0803_*_two-claude-md-inventory-rows-went-stale…` rather than a duplicate of it: theirs is
 about rows 51 and 52 and why no gate sees them, this one is about a third row whose claim a rule file
 now contradicts.
 
@@ -145,7 +145,7 @@ Both inventories reached "two" by the same correct method — asking which menti
 on — applied to a `grep` that stopped at the Layout table.
 
 **C2 — `.gitignore:30` keeps `!bin/fusion-plane`.** Low. Filed by `ontorev` as
-`issues/260815-0803_o_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md`;
+`260815-0803_*_gitignore-still-carries-the-ship-exception-for-the-deleted-bin-fusion-plane.md`;
 my record was withdrawn. The addition worth carrying: the file's own comment at `:20` describes this
 case in advance — *"Helper REMOVED? Take its line out too — nothing checks that this list matches
 `bin/`, so a stale exception sits here naming a file that does not exist and reads to the next editor
@@ -157,13 +157,13 @@ derives the roster, so the addition is small, and it is what the comment is aski
 ### D. Two small record defects
 
 **D1 — The Circle record's `## Dependencies` announces five bound artifacts and lists six.** Low.
-Filed as `issues/260815-0804_o_the-circle-records-dependencies-section-announces-five-bound-artifacts-and-lists-six.md`.
+Filed as `260815-0804_*_the-circle-records-dependencies-section-announces-five-bound-artifacts-and-lists-six.md`.
 Two candidate exclusions are available and nothing marks either, which is the shape of an off-by-one
 rather than a deliberate omission.
 
 **D2 — A decision record cross-references an `_a_circle.md` that activation renamed.** Low. Filed as
-`issues/260815-0804_o_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`.
-`decisions/260815-0007_a_does-fusion-cleanup-block-…md:7`. The shaper's history entry names the same
+`260815-0804_*_a-decision-records-cross-reference-points-at-an-a-circle-md-that-activation-renamed.md`.
+`260815-0007_*_does-fusion-cleanup-block-…md:7`. The shaper's history entry names the same
 path at `:83` and that one is correct and must not be touched: it states what that run wrote, at the
 name it wrote it under. The distinction is exactly the one step 2 drew for the two test comments that
 keep the word "Plane" — a historical statement survives its subject, a live pointer does not.
@@ -194,7 +194,7 @@ stop re-checking.
   marker requires, and the cited lines resolve. One is off by a line, `:103` landing on the blank
   above the record path rather than on it; not worth a record.
 - **The one closed defect that was renamed rather than copied carries its `Resolved:` footer**
-  (`shared/issues/260810-0410_c_…`, a 93 %-similarity rename with the footer appended).
+  (`260810-0410_*_…`, a 93 %-similarity rename with the footer appended).
 - **`claude plugin validate .` passes** with the standing CLAUDE.md-at-root warning, and `skills/`
   holds 16 directories against `CLAUDE.md`'s 16-name listing.
 - **`skills/setup/SKILL.md` runs 0d → 0f** with 0e removed and not re-lettered, which the history
@@ -222,7 +222,7 @@ owner rather than let the records sit unassigned.
 
 **HEAD is not reliably green, and three history entries in this range state `exit 0`.** My full run
 failed four tests in `legacy-halt-clearing.test.ts` that pass 6 of 6 in isolation — the exact
-behaviour of `shared/issues/260814-2118_o_…`, which is open and Medium. Every step in this plan takes
+behaviour of `260814-2118_*_…`, which is open and Medium. Every step in this plan takes
 "`npm test` green" as its acceptance criterion, and the release process's step 0 does too. Nothing in
 this range caused it and nothing in this range can fix it, but a plan that runs the suite fifteen
 more times as its principal instrument is resting on an instrument that reports differently on

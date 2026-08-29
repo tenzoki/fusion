@@ -89,7 +89,7 @@
 # pattern (fusion-turn-budget, fusion-session-domain, fusion-events) is that
 # the mechanism and its contract live in the helper's header while the prompt
 # carries one guarded call. The `[ -x ]` guard at every call site is decision
-# `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
+# `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
 # an installed copy predating this helper simply never skips a pass.
 
 set -eu

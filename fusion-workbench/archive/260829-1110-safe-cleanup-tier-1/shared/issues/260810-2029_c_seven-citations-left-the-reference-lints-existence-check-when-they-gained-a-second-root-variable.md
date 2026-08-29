@@ -11,7 +11,7 @@ correction note at the foot.)
 exactly two root variables: `$FUSION_PLUGIN_ROOT` and `$CLAUDE_PLUGIN_ROOT`. A citation written with
 either is resolved and its target is checked to exist.
 
-Session `260810-1646` introduced a third. Both skills now resolve a source root once —
+Session `260810-1646-orchestrator-session.md` introduced a third. Both skills now resolve a source root once —
 `$FUSION_SRC`, which is the work tree inside the plugin's own repository and the install everywhere
 else — and the eight citations of `agents/orchestrator.md` in `skills/setup/SKILL.md` (five) and
 `skills/next/SKILL.md` (three) were rewritten to use it. `ROOT_VAR_RE` does not know the name, so all
@@ -42,7 +42,7 @@ of a record filed after the fact.
 **Scope note.** The executor that introduced `$FUSION_SRC` reported this itself; `hooks/**` was
 outside its assigned files, which is why it is filed rather than fixed.
 
-**Filed by:** orchestrator, session `260810-1646`, on the rooted-citations executor's report.
+**Filed by:** orchestrator, session `260810-1646-orchestrator-session.md`, on the rooted-citations executor's report.
 
 ---
 Resolved: the gate now fails on an unrecognised root variable instead of skipping it, which is the
@@ -72,7 +72,7 @@ variable whose remainder is not plugin-shaped stays skipped. That is not a resid
 class boundary: a path no plugin directory could hold is not a plugin citation.
 
 **Demonstrated, not asserted.** Both halves were shown failing against a scratch copy of the tree
-(decision `260810-1820`, option 1) with two dangling citations planted in `skills/next/SKILL.md`:
+(decision `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`, option 1) with two dangling citations planted in `skills/next/SKILL.md`:
 `$FUSION_HOME/agents/no-such-agent.md` and `$FUSION_SRC/bin/no-such-helper`. The previous gate passed
 the file at 23 tests green. The new gate reports both, the first as an unclassified root and the
 second as a dangling plugin path. Six negative controls now hold that behaviour in the suite.
@@ -85,7 +85,7 @@ from 140 to 148 when `FUSION_SRC` is classified. The filename keeps the supersed
 record's topic is immutable and three live texts cite this slug.
 
 ---
-**Reconciliation note — reconciler, 260811-0108, at HEAD `e2a34f0`.** The closure holds and the
+**Reconciliation note — reconciler, 260811-0108-reconciliation.md, at HEAD `e2a34f0`.** The closure holds and the
 corrected count of eight is right. The *line anchors* have already gone stale inside the same
 session: this record and its sibling `260810-2110_*_…seven-citations…-and-there-are-eight.md` both
 cite `skills/setup/SKILL.md:220,238,239,254,260` and `skills/next/SKILL.md:115,121,185`. At HEAD the
@@ -93,5 +93,5 @@ eight `$FUSION_SRC`-rooted citations of `agents/orchestrator.md` sit at `skills/
 240,241,256,262` and `skills/next/SKILL.md:117,122,187` — every anchor moved two lines when `c714d8c`
 landed, four commits after the measurement. Five plus three is still eight and the claim is intact;
 only the anchors are wrong. This is the class the open record
-`260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` is about,
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` is about,
 now with a same-session instance.

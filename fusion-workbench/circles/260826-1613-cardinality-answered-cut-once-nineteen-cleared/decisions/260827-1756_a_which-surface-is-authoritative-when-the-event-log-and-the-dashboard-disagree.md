@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md` `## What to consider` item 2 (the question, left unfiled there); `hooks/lib/orchestrator-events.ts` (the machine-written rows since v10.8.0; `turn_start`/`turn_end` stay prompt-emitted); `bin/fusion-events` (reads the log); `bin/monitor` (renders it); `bin/fusion-review-coverage` (anchors on git); `rules/workbench-tracking.md` `## The four classes` (the log travels, the dashboard does not)
+**Cross-references:** `260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md` `## What to consider` item 2 (the question, left unfiled there); `hooks/lib/orchestrator-events.ts` (the machine-written rows since v10.8.0; `turn_start`/`turn_end` stay prompt-emitted); `bin/fusion-events` (reads the log); `bin/monitor` (renders it); `bin/fusion-review-coverage` (anchors on git); `rules/workbench-tracking.md` `## The four classes` (the log travels, the dashboard does not)
 
 ---
 
@@ -37,4 +37,4 @@ Option 1, and it is compatible with option 2 as the derivation a reader falls ba
 
 Option 1, with option 2 as the derivation a reader falls back to. The diagnostic is restated as an observed frequency in the closure note of record 260825-1430 only. No shipped text changes; realised by that closure (plan step 11, commit cb7fa7b).
 
-Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/history/260827-1749-orchestrator-session.md; the recommendation is adopted as written.
+Answered: 260827-1830, Kai Stalmann <ks@qantr.com> at the orchestrator gate of session 260827-1749-orchestrator-session.md; the recommendation is adopted as written.

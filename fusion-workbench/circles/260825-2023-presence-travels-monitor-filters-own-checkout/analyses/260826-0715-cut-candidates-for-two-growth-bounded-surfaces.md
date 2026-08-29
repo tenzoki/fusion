@@ -103,7 +103,7 @@ Verified: banner, prose header and describe span lines 307 to 423, 117 lines. Co
 
 **What still covers it.** `config.test.ts:404-476`, case for case and phrase for phrase, under the same titles. The two files' own division of labour, stated in the integration file's header, is that `config.test.ts` proves `loadConfig` returns the right diagnostics and this file proves the hook turns them into a visible `guard_advisory`. That transport claim is one assertion, and the other two describes in the same file already make it twice, for an unparseable file and for a retired key. This block re-proves the loader instead.
 
-**Residual to name in the commit.** The negative case at 411 is the strongest live guard on the harness seeding a retired filename (issue `260816-2122`), so keep it rather than the migration-text case; that is the difference between 74 and 84. With it kept, the regression is held here and at `guard-bash-integration.test.ts:180`.
+**Residual to name in the commit.** The negative case at 411 is the strongest live guard on the harness seeding a retired filename (issue `260816-2122_*_step-9s-harness-reduction-deletes-four-fixtures-guard-bash-integration-still-imports.md`), so keep it rather than the migration-text case; that is the difference between 74 and 84. With it kept, the regression is held here and at `guard-bash-integration.test.ts:180`.
 
 #### 3. The harness-capability block, `guard-project-config-integration.test.ts:82-147`: 66 lines
 
@@ -119,7 +119,7 @@ Verified: the `historicalPreFix` fixture at 155-166 with its case at 227-233, an
 
 **What stops being checked.** That the two position helpers in this file reject the historical pre-fix cascade and the trailing-comment decoy.
 
-**What still covers it.** `domain-cascade.test.ts` drives both shapes end to end against the production parser: `HISTORICAL_PRE_FIX` is carried there verbatim and asserted to throw `/retired/` at line 411, and the trailing-comment decoy is `DEFEATS[3]`, checked both for rejection and for the defect it restores. Keep `dataAloneLifted` and `countAboveAbsent`: those two fixtures are what stop each of this file's own helpers from being vacuous, which is the failure issue `260810-0503` recorded.
+**What still covers it.** `domain-cascade.test.ts` drives both shapes end to end against the production parser: `HISTORICAL_PRE_FIX` is carried there verbatim and asserted to throw `/retired/` at line 411, and the trailing-comment decoy is `DEFEATS[3]`, checked both for rejection and for the defect it restores. Keep `dataAloneLifted` and `countAboveAbsent`: those two fixtures are what stop each of this file's own helpers from being vacuous, which is the failure issue `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` recorded.
 
 #### 5. Three `growth()` property cases, `rules-emission-golden.test.ts:1122-1144`: 23 lines
 

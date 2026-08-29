@@ -4,7 +4,7 @@
 **Agent:** coder
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
 **Checkout:** 5e8248d7
-**Plan:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_o_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, step 7
+**Plan:** `260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`, step 7
 
 ## What was implemented
 
@@ -18,7 +18,7 @@ The order matters and is the whole repair: the window is taken **after** the fil
 
 ## Why the read is shaped this way
 
-The method carries a comment naming the four false readings — `_parse_mode`, `computeETA`, the paired-duration average and the Event Log panel, all downstream of the one array — and citing the record that measured them, `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`. That record also measured that sorting by `ts` alone moves reading 1 from vague to wrong, which is why the comment states the mechanism change rather than the ordering.
+The method carries a comment naming the four false readings — `_parse_mode`, `computeETA`, the paired-duration average and the Event Log panel, all downstream of the one array — and citing the record that measured them, `260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md`. That record also measured that sorting by `ts` alone moves reading 1 from vague to wrong, which is why the comment states the mechanism change rather than the ordering.
 
 Sorting on the raw string is correct for the reason `_read_warnings` already gives for the guard log: the emit convention writes a fixed-width UTC stamp, so lexical order is chronological order and no parse (and no parse failure) is involved. A line missing `ts` sorts oldest rather than raising, and the sort is stable.
 
@@ -49,4 +49,4 @@ Measured rather than asserted, against a fixture workbench holding two checkouts
 
 ## Records closed
 
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` — a second `Resolved:` note appended beside the referral note it already carried, naming where the work landed. The marker was already `_c_` from that referral, so no rename was needed.
+`260823-1302_*_the-monitor-attributes-a-merged-event-log-to-one-session-and-reports-another-checkouts-state.md` — a second `Resolved:` note appended beside the referral note it already carried, naming where the work landed. The marker was already `_c_` from that referral, so no rename was needed.

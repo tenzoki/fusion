@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Session:** 260810-1646-orchestrator-session, Turn 1, task `I:260810-1558-monitor-orphan` (tasklist task 3)
-**Source record:** `fusion-workbench/shared/issues/260810-1558_c_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md`
+**Source record:** `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md`
 **Files changed:** `bin/monitor` (browser-launch block at the tail only)
 
 ## What the defect was

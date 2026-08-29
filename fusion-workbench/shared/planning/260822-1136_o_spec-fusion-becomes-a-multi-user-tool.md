@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-22
 **Status:** Partially Complete
-**Source:** "wir bauen fusion jetzt zu einem multiuser tool um. [...] Die blockierende Decision (nur ein aktiver Orchestrator) wird aufgehoben und reframed, so dass wir mehere User auf einer workbench arbeiten lassen können, bzw. ev. auch mehrere Instanzen auf einer Maschine. Workbench- und Zustandsdaten, die jetzt gitignored sind, müssen daher ins repo." Three shaping rounds, eight answers from the user, recorded in `shared/history/260822-1009-orchestrator-session.md`.
+**Source:** "wir bauen fusion jetzt zu einem multiuser tool um. [...] Die blockierende Decision (nur ein aktiver Orchestrator) wird aufgehoben und reframed, so dass wir mehere User auf einer workbench arbeiten lassen können, bzw. ev. auch mehrere Instanzen auf einer Maschine. Workbench- und Zustandsdaten, die jetzt gitignored sind, müssen daher ins repo." Three shaping rounds, eight answers from the user, recorded in `260822-1009-orchestrator-session.md`.
 **Decidability:** The load-bearing question is whether a workbench record can be attributed to the person and to the session that produced it, from inputs fusion already holds. The person is decidable and needs no new input: `/fusion:memo` reads `$USER` from the environment today (`skills/memo/SKILL.md:38`), and every agent can do the same. The session is decidable for the hooks and not for the agent. Claude Code passes `session_id` to PreToolUse and PostToolUse, fusion declares it at `hooks/guard.ts:84` and `hooks/tracker.ts:132`, and nothing reads it; no agent ever receives it. Whether an agent could obtain it rests on one measurement nobody has taken, namely whether the SessionStart input package carries the field and whether a hook can relay it to the model as `additionalContext`. **No capability in this spec depends on that measurement**, because attribution in records is by person, the session identifier appears only in the event log the hooks write, and nothing here walks from a record back to a session. C4 states the measurement as its own first step and names what happens if it fails.
 
 ## Directive
@@ -87,11 +87,11 @@ flowchart TD
   C3 -->|"identity exists to attribute a presence line to"| C4
 ```
 
-**Why C0 is its own Circle and is not absorbed.** The user's answer to the head-room question chose "a cut-only Circle runs first, and the rebuild starts against the room it produces" (`shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`). Absorbing the cut into the first rebuild Circle would give that Circle two Directives, one of which is a reduction and one of which is a feature, and it would let the reduction be traded against the feature at the same gate. The instrument the cut protects exists precisely to make that trade visible, so a Circle that contains both sides of it cannot report on it honestly. The cut also has a test of its own that has nothing to do with multi-user work, which is the second reason it is a Circle rather than a step.
+**Why C0 is its own Circle and is not absorbed.** The user's answer to the head-room question chose "a cut-only Circle runs first, and the rebuild starts against the room it produces" (`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`). Absorbing the cut into the first rebuild Circle would give that Circle two Directives, one of which is a reduction and one of which is a feature, and it would let the reduction be traded against the feature at the same gate. The instrument the cut protects exists precisely to make that trade visible, so a Circle that contains both sides of it cannot report on it honestly. The cut also has a test of its own that has nothing to do with multi-user work, which is the second reason it is a Circle rather than a step.
 
 **Why C1 comes before anything is built.** The arrangement the user chose is the option the superseded decision could not take, because it rested on a fact nobody has ever verified: that N checkouts really produce N isolated workbenches rather than sharing one at a common parent. If that fact does not hold, C2 through C4 are all wrong, and they are wrong in a way no amount of care inside them would reveal. C1 is the cheapest possible refutation of the whole sequence, so it runs when refuting is still cheap.
 
-**What happened to the sequence (appended 260824).** C0 ran as a plan in `shared/` with no Circle directory and no Circle record, so its closure had nothing to transition; C1 to C3 have their own Circles under `circles/` and closed as Circles (`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`).
+**What happened to the sequence (appended 260824).** C0 ran as a plan in `shared/` with no Circle directory and no Circle record, so its closure had nothing to transition; C1 to C3 have their own Circles under `circles/` and closed as Circles (`260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`).
 
 ## Capabilities
 
@@ -110,17 +110,17 @@ flowchart TD
 
 **The test the user set, enumerated.** The answered decision names "the four defects already open against `skills/setup/SKILL.md` and the hook tests" and does not list them. These four are the ones whose own text names the bound as the reason they are unfixed, so they are the enumeration this spec adopts:
 
-1. `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` (both parts of its fix add text to `skills/setup/SKILL.md`, roughly 160 bytes against 30)
-2. `shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md` (one upgrade paragraph in `skills/help/SKILL.md`, 600 to 1 100 bytes)
-3. `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` (a test file for `bin/fusion-prose-metric`)
-4. `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` (a stopping criterion that cannot be met as written)
+1. `260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md` (both parts of its fix add text to `skills/setup/SKILL.md`, roughly 160 bytes against 30)
+2. `260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md` (one upgrade paragraph in `skills/help/SKILL.md`, 600 to 1 100 bytes)
+3. `260821-0144_*_the-authoritative-prose-metric-has-no-test-and-the-hook-test-surface-has-43-of-2500-lines-left.md` (a test file for `bin/fusion-prose-metric`)
+4. `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md` (a stopping criterion that cannot be met as written)
 
 **Acceptance criteria:**
 - [x] Each of the four defects above is fixed, and `cd hooks && npm test` exits 0 after each fix.
 - [x] After the four fixes, `skills/*/SKILL.md` has at least 3 000 bytes of head-room and the hook test suite at least 300 lines, measured by the same summation the bound performs.
 - [x] `agents/*.md` has at least 12 000 bytes of head-room, which is what C3 and C4 need to write into the agent prompts.
 - [x] No baseline map is edited. The three maps in `hooks/lib/__tests__/surface-growth-bound.test.ts` and the map in `hooks/lib/__tests__/rules-emission-golden.test.ts` are byte-identical before and after this Circle, except where a re-baseline follows an actual cut and the cut is named in the same commit, which is event 1 of `## Re-baselining` in `hooks/lib/__tests__/helpers/growth-bound.ts`.
-- [x] The Circle's closure note states, per surface, what was cut and what the head-room measured before and after. *(Ticked 260825-1241 with the deviation stated: C0 had no Circle and therefore no closure note, which `## The Circle sequence` now records at `:94`. The content this criterion asks for is on disk in full at `shared/history/260822-1540-coder-c0-step-9-closure-measurement.md` `## The four surfaces`, a section per surface naming what was cut and the head-room before and after.)*
+- [x] The Circle's closure note states, per surface, what was cut and what the head-room measured before and after. *(Ticked 260825-1241-reconciliation.md with the deviation stated: C0 had no Circle and therefore no closure note, which `## The Circle sequence` now records at `:94`. The content this criterion asks for is on disk in full at `260822-1540-coder-c0-step-9-closure-measurement.md` `## The four surfaces`, a section per surface naming what was cut and the head-room before and after.)*
 
 **Decisions made:**
 - Cut-only Circle rather than paying per step or declaring a third re-baselining moment (user, at the gate on 2026-08-22).
@@ -137,9 +137,9 @@ flowchart TD
 - [x] The report states what a fresh clone of a project that tracks its workbench holds and what it lacks, and what an agent does in that tree before `/fusion:setup` has run there.
 - [x] The report states what happens when the second tree is created **inside** a directory that already holds a workbench, because `bin/fusion-workbench-root` walks upward from the working directory and will find the parent's marker. This is the failure mode the superseded decision named and nobody measured.
 - [x] The report states whether two trees of one repository can hold the same Circle active at once, and what git does when both push a changed Circle record.
-- [x] `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` gains a `Superseded by:` line citing a new record, and is renamed from answered (`_a_`) to superseded (`_s_`). The new record states the arrangement this spec settles and is filed in the same Circle.
+- [x] `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` gains a `Superseded by:` line citing a new record, and is renamed from answered (`_a_`) to superseded (`_s_`). The new record states the arrangement this spec settles and is filed in the same Circle.
 - [x] The new record states in its own words what survives of the superseded one. The sentence that binds it is the superseded record's own: nothing in fusion may assume two orchestrators can run safely against one workbench. That sentence is **not** overturned. It is satisfied by the arrangement, because two orchestrators never run against one workbench: they run against two.
-- [ ] If the measurement shows that two checkouts do **not** get isolated workbench state in a case the user intends to use, the Circle stops and reports, and C2 through C4 do not start. That outcome is a valid closure of this Circle and is worth more than the sequence it stops. *(condition did not arise: the measurement showed isolation holds for both arrangements, so the branch never opened; decision `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_how-does-a-checkbox-criterion-say-that-its-condition-never-arose.md`)*
+- [ ] If the measurement shows that two checkouts do **not** get isolated workbench state in a case the user intends to use, the Circle stops and reports, and C2 through C4 do not start. That outcome is a valid closure of this Circle and is worth more than the sequence it stops. *(condition did not arise: the measurement showed isolation holds for both arrangements, so the branch never opened; decision `260827-1756_*_how-does-a-checkbox-criterion-say-that-its-condition-never-arose.md`)*
 
 **Decisions made:**
 - The supersession is written after the spec is agreed and not before, because the reframed decision's answer is what the spec settles (user, round 1 sequencing).
@@ -153,11 +153,11 @@ flowchart TD
 
 **Acceptance criteria:**
 - [x] `rules/workbench-tracking.md` carries the four-class partition above, ranging over every entry of the layout tree, and states that a multi-checkout arrangement requires the project to track its workbench. That rule is emitted to no agent, so its bytes fall on no bounded surface.
-- [x] `rules/workbench-tracking.md` no longer calls `portfolio.md` "authored text, not machine-refreshed". The playmaker regenerates it in full on every run, which is the defect already filed as `shared/issues/260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`. That defect is closed by this Circle.
+- [x] `rules/workbench-tracking.md` no longer calls `portfolio.md` "authored text, not machine-refreshed". The playmaker regenerates it in full on every run, which is the defect already filed as `260816-1049_*_the-split-calls-portfolio-md-not-machine-refreshed-and-the-playmaker-regenerates-it-in-full.md`. That defect is closed by this Circle.
 - [x] `fusion-workbench/portfolio.md` is removed from git tracking with `git rm --cached`, and an ignore rule is added. The file itself is not deleted from anybody's working tree.
-- [x] The `KEPT:` comment in `.gitignore` lists exactly the tracked root entries and matches the rule it cites. That closes `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`.
+- [x] The `KEPT:` comment in `.gitignore` lists exactly the tracked root entries and matches the rule it cites. That closes `260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`.
 - [x] `/fusion:next` states, in the briefing it renders, when the portfolio was generated and that it reflects only what this checkout has pulled. The user accepted that a person who has not pulled sees an older ranking; the timestamp is what lets them notice.
-- [x] The behaviour of `orchestrator-events.jsonl` under a git merge is decided and implemented, per the open decision `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`. The Circle does not close with that question open, because it is the only file in class R2 and every later capability writes to it.
+- [x] The behaviour of `orchestrator-events.jsonl` under a git merge is decided and implemented, per the open decision `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`. The Circle does not close with that question open, because it is the only file in class R2 and every later capability writes to it.
 - [x] A person can produce two checkouts, run a session in each, push both, and pull each into the other, and the event log in both trees then holds every line from both sessions with no line lost and no hand editing.
 
 **Decisions made:**
@@ -178,7 +178,7 @@ flowchart TD
 **Acceptance criteria:**
 - [x] The decision-record template in `rules/fusion-workbench-conventions.md` `## Decision Record Template` carries the person alongside the agent in its `**Filed by:**` field, and the template states the form.
 - [x] The defect-record format and the Circle-record template in `rules/circle-records.md` carry the same field in the same form. One form, three record kinds.
-- [ ] Every agent that files a record writes the field. The value is read from the environment the way `/fusion:memo` reads it today, which is `$USER`. No second identity mechanism is introduced, because a mechanism that duplicates one already in the system is a defect rather than a solution. *(Two halves, and they fail differently — see the 260825-1241 entry in `## Reconciliation Log`. The second half is **stale**, overridden by `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`, which the user answered on 260824 against the option set: attribution is the git identity, read from `bin/fusion-identity`. The first half is **unmet on disk**: 28 of the 63 records filed since the obligation landed carry `**Filed by:**` with no person half and no stated reason for its absence, filed as `shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`.)*
+- [ ] Every agent that files a record writes the field. The value is read from the environment the way `/fusion:memo` reads it today, which is `$USER`. No second identity mechanism is introduced, because a mechanism that duplicates one already in the system is a defect rather than a solution. *(Two halves, and they fail differently — see the 260825-1241-reconciliation.md entry in `## Reconciliation Log`. The second half is **stale**, overridden by `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`, which the user answered on 260824 against the option set: attribution is the git identity, read from `bin/fusion-identity`. The first half is **unmet on disk**: 28 of the 63 records filed since the obligation landed carry `**Filed by:**` with no person half and no stated reason for its absence, filed as `260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`.)*
 - [x] The Circle record gains a claim field that says which person holds the Circle active and from which checkout. It is written when the record is renamed from anticipated to active, and cleared when the record reaches a terminal marker. Both writes ride the rename that already happens, so no new obligation is created.
 - [x] `/fusion:next` refuses to activate a Circle whose claim field names somebody else, and says who holds it and when the claim was written. The user can override, in which case the claim field records both people and the override is visible in the record.
 - [x] The honest limit is stated in `rules/circle-records.md`: two people who both pull, both see an empty claim and both activate will both write the field, and git will refuse the second push. The collision is **detected** rather than prevented, which is what answer 1 forecloses by choosing git as the transport. A person who loses that race pulls, sees the claim, and picks another Circle.
@@ -200,9 +200,9 @@ flowchart TD
 - [x] The first step of this Circle measures whether the SessionStart hook input carries `session_id`, and whether a hook can relay a value to the model as `additionalContext`. The measurement is run and reported before anything is built on it. *(Ticked 260828-0044: `hooks/session-id.ts` exists and `hooks/hooks.json:20` runs it at SessionStart; `CLAUDE.md` Layout `hooks/` row records the measured channel, plain stdout to the model.)*
 - [x] `session_start` and `session_end` events in `orchestrator-events.jsonl` carry the person. They already carry `history_file`, which the orchestrator prompt names as the session's identity in a log where a resume appends a second `session_start`. The person is added beside it. *(Ticked 260828-0044: `orchestrator-events.jsonl` carries a `person` key on 176 lines at HEAD `36cd574`; the four `session_start` rows written since v10.8.0 carry it, the 81 earlier ones predate the field.)*
 - [x] The session identifier is added to the events the hooks write, if and only if the measurement above shows the hooks can obtain it. If they cannot, the identifier is not added, the event log carries the person alone, and the Circle says so in its closure note rather than substituting something weaker. *(Ticked 260828-0044: `session_id` appears on 114 event lines; the measurement in the previous criterion showed the hooks obtain it.)*
-- [x] `/fusion:setup` reports, at the concurrent-session check in Step 0c, any session by another person in the pulled event log within a stated recent window, naming the person, the Circle and the time. The existing marker check is unchanged and still covers the same-checkout case, which is the only case it can see. *(Ticked 260828-0044: `skills/setup/SKILL.md:151-155` runs `bin/fusion-events presence` at Step 0c and renders `other_people` and `other_checkouts` separately; the marker check stands beside it. C4 closure note, `circles/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md` `## Closure note`.)*
+- [x] `/fusion:setup` reports, at the concurrent-session check in Step 0c, any session by another person in the pulled event log within a stated recent window, naming the person, the Circle and the time. The existing marker check is unchanged and still covers the same-checkout case, which is the only case it can see. *(Ticked 260828-0044: `skills/setup/SKILL.md:151-155` runs `bin/fusion-events presence` at Step 0c and renders `other_people` and `other_checkouts` separately; the marker check stands beside it. C4 closure note, `260825-2023-presence-travels-monitor-filters-own-checkout` `## Closure note`.)*
 - [x] The report says plainly that it reflects what this checkout has pulled, and that a session started since the last pull is invisible. That is answer 1's foreclosure, made visible at the moment somebody would otherwise assume otherwise. *(Ticked 260828-0044: same site; the line states it covers only what this checkout has pulled, per the C4 closure note.)*
-- [x] The Turn count derivation is scoped to the reading session. Today `agents/orchestrator.md:91` counts every `turn_start` in the whole log while `agents/orchestrator.md:1060` defines the same figure as the events since this session's `session_start`. Those two disagree at HEAD on any project with more than one session, and several writers make the gap wider. The defect is filed as `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` and is fixed here. *(Ticked 260828-0044: `agents/orchestrator.md:973` reads `progress.turn` from `bin/fusion-events turns`; `grep -c 'grep -c turn_start' agents/orchestrator.md` is 0.)*
+- [x] The Turn count derivation is scoped to the reading session. Today `agents/orchestrator.md:91` counts every `turn_start` in the whole log while `agents/orchestrator.md:1060` defines the same figure as the events since this session's `session_start`. Those two disagree at HEAD on any project with more than one session, and several writers make the gap wider. The defect is filed as `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md` and is fixed here. *(Ticked 260828-0044: `agents/orchestrator.md:973` reads `progress.turn` from `bin/fusion-events turns`; `grep -c 'grep -c turn_start' agents/orchestrator.md` is 0.)*
 - [x] No capability reads another session's `agentstate.yaml`, `orchestrator-live.md` or work queue, and none of those files becomes tracked. *(Ticked 260828-0044: `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns `.asset-provenance`, `.fusion-setup`, `orchestrator-events.jsonl` and nothing else at `36cd574`.)*
 
 **Decisions made:**
@@ -217,7 +217,7 @@ flowchart TD
 - Nothing in fusion may assume two orchestrators can run safely against one workbench. The superseded decision's binding sentence survives its supersession, and the arrangement satisfies it rather than overturning it.
 - No currently ignored workbench file becomes tracked, and no session reads another session's live state. Answer 5, stated by the user as final.
 - The multi-checkout arrangement requires the project to track its workbench. fusion ships no rule about that and does not acquire one here; the requirement is stated in `rules/workbench-tracking.md` so that a project that ignores its workbench learns why multi-user does not work there.
-- Attribution reuses `$USER`. The residual is that `$USER` is an operating-system account name while the transport is git, whose commits carry a different identity. Nothing here reconciles the two, and the choice is the subject of an open decision, `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`.
+- Attribution reuses `$USER`. The residual is that `$USER` is an operating-system account name while the transport is git, whose commits carry a different identity. Nothing here reconciles the two, and the choice is the subject of an open decision, `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`.
 - The event log has no line or byte ceiling and may not acquire one. Every ceiling expressible in lines discards the oldest lines first, and the archive roll of `/fusion:cleanup` is what bounds the file instead.
 - Every record filename pattern stays as it is. No component of any filename changes in this rebuild.
 
@@ -241,8 +241,8 @@ flowchart TD
 
 ## User decisions pending
 
-- [x] `shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` — what happens when two checkouts have both appended to the one tracked log. Blocks the close of C2.
-- [x] `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` — the operating-system account, the git identity, or both. Blocks nothing before C3 and should be answered at C3's planning gate. *(Answered by the user on 260824 and implemented the same day; the record carries `_i_` with an `Answered:` and an `Implemented:` line naming six commits. The answer is none of the three options: attribution takes the git identity, the claim takes the git identity plus a locally minted checkout identifier.)*
+- [x] `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md` — what happens when two checkouts have both appended to the one tracked log. Blocks the close of C2.
+- [x] `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` — the operating-system account, the git identity, or both. Blocks nothing before C3 and should be answered at C3's planning gate. *(Answered by the user on 260824 and implemented the same day; the record carries `_i_` with an `Answered:` and an `Implemented:` line naming six commits. The answer is none of the three options: attribution takes the git identity, the claim takes the git identity plus a locally minted checkout identifier.)*
 
 ## Reconciliation Log
 
@@ -252,7 +252,7 @@ flowchart TD
 *Why the marker does not move.* One of five capabilities is delivered. C1 through C4 are untouched:
 nothing in `370bfc5..9f65463` adds a person field to any record template, changes `.gitignore`, or
 gives `orchestrator-events.jsonl` a presence line, and the decision C1 exists to supersede
-(`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`) still
+(`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`) still
 carries `_a_` and still says parallelism is out of scope. A spec closes when its capabilities are
 delivered, and four of them are not started. `Partially Complete` is the honest field value.
 
@@ -270,17 +270,17 @@ diffed: `AGENT_BASELINE` 413 bytes, `SKILL_BASELINE` 389, `TEST_LINE_BASELINE` 1
 *The fifth criterion is the only one left, and it is not the reconciler's.* "The Circle's closure
 note states, per surface, what was cut and what the head-room measured before and after" is the
 orchestrator's at Phase 4. The figures it needs are in
-`shared/history/260822-1540-coder-c0-step-9-closure-measurement.md`. Two things the note has to
+`260822-1540-coder-c0-step-9-closure-measurement.md`. Two things the note has to
 carry that the acceptance criterion does not name: stopping clause 5 is answered **no** by 206 bytes
 and 49 lines, re-derived here per commit and matching the closure measurement exactly; and there is
 no Circle record for C0 to hold the note, filed as
-`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
+`260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
 
 *The two pending user decisions are still pending.* Both `260822-1136` records carry `_o_`, neither
 has an `Answered:` line, and neither blocks anything before C2 and C3 respectively, exactly as
 `## User decisions pending` states.
 
-**260822-2236 (reconciler, domain `code`, range `f90de0c..b938f68`), marker unchanged at `_o_`,
+**260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md (reconciler, domain `code`, range `f90de0c..b938f68`), marker unchanged at `_o_`,
 `**Status:** Partially Complete` unchanged, and six of C1's seven acceptance criteria ticked.**
 
 *Why the marker and the status do not move.* Two of five capabilities are delivered. C2, C3 and C4 are
@@ -290,19 +290,19 @@ record template, and the two pending user decisions in `## User decisions pendin
 
 *Which criteria this session met, and which were already met.* Criteria 1 through 4 are the report's,
 and this session produced it:
-`circles/260822-1921-measure-what-two-checkouts-share/analyses/260822-2219-what-two-checkouts-of-one-project-actually-share.md`,
+`260822-2219-what-two-checkouts-of-one-project-actually-share.md`,
 committed in `06d1bd1`. Criterion 1 is `## Findings` section 1, a row per partition entry and a column
 per arrangement, identity taken by device and inode; criterion 2 is sections 3 and 4; criterion 3 is
 section 5 with four nested placements probed; criterion 4 is section 6, both push cases measured with
 transcripts. Criteria 5 and 6 were discharged in the **previous** session, in commit `02dff51`, and
 were re-verified here rather than assumed:
-`shared/decisions/260719-2141_s_concurrency-worktree-slots-vs-single-active-circle.md` carries the `_s_`
-marker and a `Superseded by:` line citing `260822-1610`, and that record states what survives of the
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` carries the `_s_`
+marker and a `Superseded by:` line citing `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`, and that record states what survives of the
 superseded one in its `## Constraints`, first bullet.
 
 *One deviation on criterion 5, ticked with it stated.* The criterion says the new record "is filed in
 the same Circle". It is filed in `shared/decisions/`, because it was written at the Rebalance gate of
-session `shared/history/260822-1009-orchestrator-session.md`, when no Circle was active. The Origin
+session `260822-1009-orchestrator-session.md`, when no Circle was active. The Origin
 Rule's "unknown origin means `shared/`" gives that placement, so the substance is met and the literal
 placement clause is not. Nothing is moved: reach is cited, never re-placed.
 
@@ -317,7 +317,7 @@ carrying `setup_pwd`, contradicting R3's "already tolerates a second writer". Re
 source: `skills/setup/SKILL.md:94-98` writes `printf ... > ./fusion-workbench/.fusion-setup` with
 `$(pwd -P)`, and this repository's own committed marker reads
 `"setup_pwd":"/Users/k1/Projects/productive/fusion"`. The defect is filed as
-`circles/260822-1921-measure-what-two-checkouts-share/issues/260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
+`260822-2219_*_the-tracked-setup-marker-is-rewritten-by-every-setup-and-carries-the-checkouts-absolute-path.md`.
 The R3 paragraph is not edited here: which of the three surfaces changes is a design choice for C2,
 and the spec text is not the reconciler's to rewrite.
 
@@ -351,10 +351,10 @@ at its own site at HEAD `7cd79f1`, not read off the plan's `[DONE]` markers:
    same three the command returns.
 5. `skills/next/SKILL.md:122` renders the portfolio's `**Generated:**` stamp with the clause that the
    ranking covers only what this checkout has pulled.
-6. `shared/decisions/260822-1136_i_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+6. `260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
    carries `Implemented: c9eba48`; that commit exists and touches `skills/setup/SKILL.md`, which now
    holds Step 0h at `:315`.
-7. `circles/260823-0023-settle-what-travels-between-checkouts/analyses/260823-1302-two-checkouts-one-event-log-and-what-the-monitor-makes-of-it.md`
+7. `260823-1302-two-checkouts-one-event-log-and-what-the-monitor-makes-of-it.md`
    reports 19 of 19 event lines present in both clones, files byte-identical, both pulls exiting 0. Its
    `## Scope` states the bound it accepts, that the sessions were simulated rather than run by a live
    orchestrator, which is the same bound C1 named for itself.
@@ -368,14 +368,14 @@ own closure and is not this range's to satisfy.
 
 *What C2 leaves behind, stated here because the spec is where C3 and C4 are planned from.* Six open
 defect records and one open decision sit in
-`circles/260823-0023-settle-what-travels-between-checkouts/`, and closing that Circle puts every one of
+`260823-0023-settle-what-travels-between-checkouts`, and closing that Circle puts every one of
 them outside every `SCAN_*` the resolver emits. Two of them are C4's own inputs: the second event-log
 reader (`260823-1110_*`) and the monitor's session attribution (`260823-1302_*`). A C4 planner reading
 only `shared/` will not find them.
 
 ---
 
-**260825-1241 (reconciler, domain `code`, range `a99e680..cfab17e`) — marker unchanged at `_o_`,
+**260825-1241-reconciliation.md (reconciler, domain `code`, range `a99e680..cfab17e`) — marker unchanged at `_o_`,
 `**Status:** Partially Complete` unchanged, six of C3's seven acceptance criteria ticked, C0's fifth
 ticked with a deviation stated, and the second entry under `## User decisions pending` ticked.**
 
@@ -386,7 +386,7 @@ gate responses and one task report); `skills/setup/SKILL.md` Step 0c reports onl
 marker; the SessionStart `session_id` measurement C4 names as its own first step has not been run; and
 `agents/orchestrator.md:99` still counts every `turn_start` in the whole log against the session-scoped
 definition at `:1111`. That last one deserves a note, because its defect record is **closed and the
-code is unchanged**: `shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+code is unchanged**: `260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
 carries `_c_` with `Resolved: referred (C4)`, so the fix lives only in C4's sixth criterion now. The
 seventh criterion is a negative that currently holds — `git ls-files fusion-workbench | awk -F/ 'NF==2'`
 returns `.asset-provenance`, `.fusion-setup` and `orchestrator-events.jsonl` and nothing else — but it
@@ -409,7 +409,7 @@ stays the honest field value, and `_o_` stays for the reason the `260822-1556` p
    partial-identity form) plus the value's two halves, person and checkout, both from
    `bin/fusion-identity`. The writers are in place: `agents/orchestrator.md` `## Circle head fields`
    writes the `Claimed ` form on the `_a_`→`_t_` rename, and `agents/shaper.md` writes `Unclaimed` at
-   creation. The clearing half is verifiable on disk — `circles/260824-1853-close-every-open-defect/_c_circle.md`,
+   creation. The clearing half is verifiable on disk — `260824-1853-close-every-open-defect`,
    terminal, reads `**Claim:** Unclaimed`.
 5. **Met.** `skills/next/SKILL.md` Step 6.1 refuses in the claim's terms, names who holds the Circle
    and when, and offers one override at an `AskUserQuestion`; taking it appends the `Overridden `
@@ -424,7 +424,7 @@ stays the honest field value, and `_o_` stays for the reason the `260822-1556` p
 *The third criterion, which the orchestrator flagged as stale and is both stale and unmet.* Its second
 half prescribes reading the value "the way `/fusion:memo` reads it today, which is `$USER`". That is
 **stale**, and the spec's own `## Constraints` names the record that made it so:
-`shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
+`260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
 was answered by the user on 260824 against its own option set — attribution takes the git identity,
 the claim takes the git identity plus a locally minted checkout identifier — and `bin/fusion-identity`
 implements exactly that. The criterion's text no longer describes what the project decided, which is
@@ -435,20 +435,20 @@ after `2b055a0` landed `### Who filed it` on 260824 at 12:14, 18 carry the perso
 stated absence the rule's exit-127 branch prescribes, and **28 carry neither** — across six agents
 (`analyst` 8, `ontorev` 10, `coderev` 5, `coder` 3, `reconciler` 2, `planner` 1), so it is the
 obligation's reach rather than one prompt. Filed as
-`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`.
+`260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`.
 C3 is therefore substantially delivered and not complete: six criteria of text, one criterion of
 behaviour, and the behaviour is the one that is short.
 
 *C0's fifth criterion, ticked with the deviation stated, on the precedent this log already carries for
 C1's fifth.* It asks the Circle's closure note to state per surface what was cut and what the head-room
 measured before and after. **The content exists in full**, at
-`shared/history/260822-1540-coder-c0-step-9-closure-measurement.md` `## The four surfaces`: four
+`260822-1540-coder-c0-step-9-closure-measurement.md` `## The four surfaces`: four
 sections, each headed with the before and after figures (always-on rule core 3 509 → 3 509,
 `agents/*.md` 1 638 → 16 601, `skills/*/SKILL.md` 30 → 4 661, hook tests 12 → 302 lines), and its
 `## The seven stopping clauses, read back` answers the same clause. **The home does not and cannot.**
 C0 ran as a plan in `shared/` with no Circle directory and no Circle record, which
 `## The Circle sequence` records at `:94`, and the defect that raised the question
-(`shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`)
+(`260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`)
 is closed by that statement rather than by a Circle being created — retro-fitting one would break the
 `shared/`-rooted citations other records already carry. Left unticked, the box would stay open for the
 life of the spec against work nobody can do. Ticked, with the deviation named here, it says what
@@ -458,14 +458,14 @@ happened. C0 is now 5 of 5.
 false: the measurement showed the isolation holds, so the stopping branch never opened. Three passes
 have now re-derived that same explanation, and the checkbox notation has no third state to carry it,
 so a reader counting what remains reads C1 as 6 of 7 forever. Filed as
-`shared/issues/260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`.
+`260825-1250_*_a-conditional-acceptance-criterion-has-no-notation-for-a-false-antecedent-so-three-passes-re-derived-the-same-explanation.md`.
 
 *The pending-decisions list is now clear, and both entries were cleared elsewhere rather than here.*
 The C2-blocking event-log record carries `_i_`; the identity record carries `_i_` with an `Answered:`
 line citing the user's answer of 260824 and an `Implemented:` line naming six commits, each checked
 against its own diff. The unticked box was the stale artifact, not the marker.
 
-*One thing this range does that no capability covers.* `shared/issues/260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md`
+*One thing this range does that no capability covers.* `260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md`
 and the two decisions answering it were filed in `cfab17e`, this range's only commit. They are about a
 **consuming project's** `.gitignore`; C2 delivered agreement between fusion's own `.gitignore` and
 `rules/workbench-tracking.md` and reaches no further. The spec's `## Constraints` sentence
@@ -479,9 +479,9 @@ record; it is the user's call and not the reconciler's.
 
 **260828-0044 (reconciler, domain `code`, cleanup Step 3 after Circle `260826-1613` closed; range `e9dc9b2..36cd574`) — marker unchanged at `_o_`, `**Status:** Partially Complete` unchanged, C4's seven acceptance criteria ticked against the tree.**
 
-*What the tree shows.* All five capability Circles are terminal: C0 as the closed plan `shared/planning/260822-1154_c_*` (no Circle, `:94`), C1 to C3 as `_c_circle.md` under `circles/260822-1921-*`, `260823-0023-*`, `260824-0530-*`, and C4 as `circles/260825-2023-presence-travels-monitor-filters-own-checkout/_b_circle.md`, whose closure note states all four Directive clauses hold and that `_b_` records a Rebalance run, not an unreachable Directive. Each of C4's seven criteria was opened at its own site rather than read off that note; the evidence is on the line beside each box.
+*What the tree shows.* All five capability Circles are terminal: C0 as the closed plan `shared/planning/260822-1154_c_*` (no Circle, `:94`), C1 to C3 as `_c_circle.md` under `circles/260822-1921-*`, `260823-0023-*`, `260824-0530-*`, and C4 as `260825-2023-presence-travels-monitor-filters-own-checkout`, whose closure note states all four Directive clauses hold and that `_b_` records a Rebalance run, not an unreachable Directive. Each of C4's seven criteria was opened at its own site rather than read off that note; the evidence is on the line beside each box.
 
-*Why the status does not move to Complete.* One criterion is unmet as written: C3's third (`:181`, "every agent that files a record writes the field"). Its reach was settled by `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2, `_i_`): defects, decisions, reviews and session histories owe the person half. Re-measured at `36cd574` over the 62 records stamped `260827` in the closed Circle's stores and in `shared/issues` and `shared/decisions`: 28 carry a `**Filed by:** <agent>, Name <email>` line and 34 do not, of which 21 are session-history entries (every coder, planner, analyst, playmaker, orchestrator and reconciler entry of that day), 11 are `shared/decisions/260827-*` records, and 2 are `shared/issues/260827-*`. The rule reached the four kinds on 260827-1845; the behaviour has not followed on the history and shared-decision kinds. The defect that counted the first 28 (`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`) closed on the reach question, so no open record names this second count; filed as `shared/issues/260828-0044_o_thirty-four-of-sixty-two-records-filed-on-260827-carry-no-person-half-after-the-reach-was-settled.md`.
+*Why the status does not move to Complete.* One criterion is unmet as written: C3's third (`:181`, "every agent that files a record writes the field"). Its reach was settled by `260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md` (option 2, `_i_`): defects, decisions, reviews and session histories owe the person half. Re-measured at `36cd574` over the 62 records stamped `260827` in the closed Circle's stores and in `shared/issues` and `shared/decisions`: 28 carry a `**Filed by:** <agent>, Name <email>` line and 34 do not, of which 21 are session-history entries (every coder, planner, analyst, playmaker, orchestrator and reconciler entry of that day), 11 are `shared/decisions/260827-*` records, and 2 are `shared/issues/260827-*`. The rule reached the four kinds on 260827-1845; the behaviour has not followed on the history and shared-decision kinds. The defect that counted the first 28 (`260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`) closed on the reach question, so no open record names this second count; filed as `260828-0044_*_thirty-four-of-sixty-two-records-filed-on-260827-carry-no-person-half-after-the-reach-was-settled.md`.
 
 *One box the notation decision leaves as it is.* C1's seventh (`:142`) carries the inline "condition did not arise" clause option 2 of `260827-1756_*_how-does-a-checkbox-criterion-say-that-its-condition-never-arose.md` prescribes; it stays `[ ]` by that decision, and no pass needs to re-derive it again.
 

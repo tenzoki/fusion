@@ -2,9 +2,9 @@
 
 ---
 
-`fusion-workbench/tasklist.md` at HEAD is the v4.0.0 workbench-restructure queue, generated `260716-1920`. Every one of its nine entries is `[x]` or `[deferred]`. Its `**Source plan:**` line points at `planning/260716-1910[p]-plan-workbench-umbau-circle-container.md` — a pre-v4 root-relative path in the bracket marker format, so it resolves to nothing in the current layout, twice over.
+`fusion-workbench/tasklist.md` at HEAD is the v4.0.0 workbench-restructure queue, generated `260716-1920`. Every one of its nine entries is `[x]` or `[deferred]`. Its `**Source plan:**` line points at `260716-1910[p]-plan-workbench-umbau-circle-container.md` — a pre-v4 root-relative path in the bracket marker format, so it resolves to nothing in the current layout, twice over.
 
-The Circle it belongs to (`circles/260716-1847-workbench-umbau`) is closed. The session of 260801 ran three Turns and sixteen commits without the file being read, written, or noticed as stale until a coder mentioned it in passing.
+The Circle it belongs to (`260716-1847-workbench-umbau`) is closed. The session of 260801 ran three Turns and sixteen commits without the file being read, written, or noticed as stale until a coder mentioned it in passing.
 
 ---
 
@@ -31,10 +31,10 @@ Option 2 composes with option 1 rather than competing: closure deletes, activati
 
 ## Provenance
 
-Found by the reconciler during the closing pass of `circles/260801-1244-guard-bash-inspection`, 260801-2038, after a coder flagged it during the session. Filed to the shared store rather than into that Circle per the Origin Rule: the Circle's Directive is the guard's Bash inspection, and this file was found next to that work rather than caused by it.
+Found by the reconciler during the closing pass of `260801-1244-guard-bash-inspection`, 260801-2038, after a coder flagged it during the session. Filed to the shared store rather than into that Circle per the Origin Rule: the Circle's Directive is the guard's Bash inspection, and this file was found next to that work rather than caused by it.
 
 ---
-Resolved: `fusion-workbench/tasklist.md` rebuilt 2026-08-07 00:02 by `taskplanner` (domain `code`) against the active Circle `circles/260804-1205-shell-reachability-model` and its approved plan `planning/260806-2353_o_plan-shell-reachability-model.md`.
+Resolved: `fusion-workbench/tasklist.md` rebuilt 2026-08-07 00:02 by `taskplanner` (domain `code`) against the active Circle `260804-1205-shell-reachability-model` and its approved plan `260806-2353_*_plan-shell-reachability-model.md`.
 
 **What the rebuild did.** All eleven stale entries (P-1 … P-11) were removed together with the dead `**Source plan:**` and `**Circle:** 1 of 2` header lines this issue names. The new file carries a resolvable Circle-directory reference, a plan path in the current underscore-marker form, and a `**Generated:**` stamp taken from the clock. The queue itself is the active Circle's eleven plan steps in the plan's own dependency order, followed by three explicitly separated sections: adjacent backlog (nine defects in the files the plan will edit), unaffiliated backlog (twenty-four ranked defects), and eleven open items deliberately not queued with the blocking reason for each. The section boundary is stated in the file so the orchestrator's Turn loop cannot pull backlog into this Circle by accident — the failure this issue's own diagnosis is about, arrived at from the other direction.
 

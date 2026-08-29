@@ -3,8 +3,8 @@
 **Date:** 2026-08-15
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth`
-**Plan step:** 14 of `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`
+**Circle:** `260815-0007-remove-eight-mechanisms-and-cap-growth`
+**Plan step:** 14 of `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`
 **Dispatched by:** orchestrator
 **HEAD:** `0609945`, working tree clean
 
@@ -207,7 +207,7 @@ moved since.** At HEAD the reading is 6 277, so:
 - **real −1 337** (7 934 → 6 597, counting the 320 invisible lines)
 
 State both. The command reads a shrink 320 lines larger than the one the Circle produced.
-Defect: `issues/260815-1251_o_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`.
+Defect: `260815-1251_*_the-after-measurement-command-cannot-see-the-320-lines-the-build-change-added.md`.
 
 The hook-source delta also contains an addition the row does not show: `hooks/lib/state-file.ts`
 is new, arriving at step 11 as the survivor of `hooks/lib/state-drift.ts`. The −1 337 is net of it.
@@ -315,7 +315,7 @@ the whole session and cannot see a helper this Circle changed.
 
 ## Files written
 
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1832-coder-after-measurement.md` (this entry)
+- `260815-1832-coder-after-measurement.md` (this entry)
 
 No shipped file was touched. Nothing under `agents/`, `skills/`, `rules/`, `hooks/`, `bin/`,
 `docs/` or `templates/` was written. Nothing was committed.

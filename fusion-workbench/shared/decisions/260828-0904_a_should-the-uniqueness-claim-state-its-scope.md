@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `shared/analyses/260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`
+**Cross-references:** `260828-0828_*_fusion-citation-bookkeeping-defect-report.md`, `260828-0859-citation-bookkeeping-defect-report-measured-against-fusions-own-corpus.md`
 
 ---
 
@@ -22,7 +22,7 @@
 Option 1 if the storeless form is chosen; the form's correctness is exactly this property.
 
 ---
-Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*`, reconciliation note).
+Reconciled 260828-0907 (HEAD ffc6ae88): still `_o_`. Searched `shared/analyses/`, `shared/planning/` and the other four `260828-0904_*` records for an answer; none records one. The "twelve shipped lines" figure the cross-referenced issue carries is sixteen at HEAD (issue `260828-0900_*_twelve-shipped-lines-tell-a-consuming-agent-that-one-of-fusions-own-records-sits-in-its-scan-store.md_*`, reconciliation note).
 
 ---
-Answered: shared/decisions/260828-0904_a_should-the-uniqueness-claim-state-its-scope.md — option 1, user 2026-08-28: the sentence names its scope (live tree and archive) and the commit it was measured at, and a test pins (stamp, slug) uniqueness so a collision reddens npm test.
+Answered: 260828-0904_*_should-the-uniqueness-claim-state-its-scope.md — option 1, user 2026-08-28: the sentence names its scope (live tree and archive) and the commit it was measured at, and a test pins (stamp, slug) uniqueness so a collision reddens npm test.

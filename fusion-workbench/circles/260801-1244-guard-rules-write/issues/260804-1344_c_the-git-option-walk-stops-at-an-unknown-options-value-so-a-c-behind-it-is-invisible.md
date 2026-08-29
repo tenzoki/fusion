@@ -6,11 +6,11 @@
 **Domain:** code (security control)
 **Filed by:** coderev, review of `613d6fd`
 **Affects:** `hooks/lib/bash-mutation-guard.ts:1277-1325` (`resolveGit` — the walk's `break` at `:1312` and the candidate list at `:1317`)
-**Kind:** The FAIL-OPEN half is pre-existing. What is new in `613d6fd` is the claim that it is closed: `260804-1333_c_…` says the class was "closed structurally", and `rules/protected-path-discipline.md:139-145` states the same to every agent.
+**Kind:** The FAIL-OPEN half is pre-existing. What is new in `613d6fd` is the claim that it is closed: `260804-1333_*_…` says the class was "closed structurally", and `rules/protected-path-discipline.md:139-145` states the same to every agent.
 **Cross-references:**
-`issues/260804-1333_c_…` (closed by `613d6fd` — this is the same class, still open through a different door; do not reopen it, its own instance really is closed),
-`issues/260804-1024_c_…` (the `-C` recording this defeats),
-`decisions/260804-1323_i_…` (`## Answer`, third bullet — where the structural claim is made).
+`260804-1333_*_…` (closed by `613d6fd` — this is the same class, still open through a different door; do not reopen it, its own instance really is closed),
+`260804-1024_*_…` (the `-C` recording this defeats),
+`260804-1323_*_…` (`## Answer`, third bullet — where the structural claim is made).
 
 ---
 
@@ -50,7 +50,7 @@ The discriminator is exactly one thing: whether the unrecognised option **takes 
 value**. A valueless one leaves the walk running and everything after it is read; one with a
 value ends the walk one word early and everything after it is invisible.
 
-## Why `260804-1333` does not cover it
+## Why `260804-1333_*_an-unrecognised-git-global-option-swallows-the-subcommand-and-the-invocation-reads-as-an-unrecognised-program.md` does not cover it
 
 That issue's closure note says: *"when the word in subcommand position matches no row AND an
 unrecognised option stands immediately in front of it, the NEXT word is tried as a

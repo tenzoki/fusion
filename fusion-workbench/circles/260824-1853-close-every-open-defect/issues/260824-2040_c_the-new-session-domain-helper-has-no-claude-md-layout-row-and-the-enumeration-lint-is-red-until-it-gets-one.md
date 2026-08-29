@@ -3,14 +3,14 @@ The new session-domain helper has no `CLAUDE.md` Layout row, and the enumeration
 ---
 **Severity:** Low. One test, one row, and the row is written below; the fault is that plan step 7 lists `bin/fusion-session-domain` as new and step 8 lists `CLAUDE.md` as its own, so nobody's file list carried the row the gate demands.
 **Domain:** code
-**Filed by:** coder, plan step 7 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`
-**Attribution backfilled 260825 (not written by the filing agent):** `coder` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+**Filed by:** coder, plan step 7 of `260824-1905_*_plan-close-every-open-defect.md`
+**Attribution backfilled 260825 (not written by the filing agent):** `coder` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 **Owner:** whoever holds `CLAUDE.md` in this Circle (step 8's coder, or the orchestrator at commit time)
 **Affects:** `CLAUDE.md` `## Layout`; `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` (`every bin/ helper has a Layout row`)
 
 ---
 
-`derivable-enumerations-lint.test.ts` asserts a two-way match between `ls bin/` and the `| `bin/…` |` rows of `CLAUDE.md`'s Layout table. Step 7 added `bin/fusion-session-domain` (issue `shared/issues/260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`, plan row 19) and was told not to touch `CLAUDE.md`, so the suite reads:
+`derivable-enumerations-lint.test.ts` asserts a two-way match between `ls bin/` and the `| `bin/…` |` rows of `CLAUDE.md`'s Layout table. Step 7 added `bin/fusion-session-domain` (issue `260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`, plan row 19) and was told not to touch `CLAUDE.md`, so the suite reads:
 
 ```
 bin/fusion-session-domain exists but CLAUDE.md's Layout table has no row for it

@@ -1,7 +1,7 @@
 # Versionsanhebung auf 6.0.1 — vier Oberflächen und drei überholte Aussagen
 
 **Agent:** coder
-**Circle:** `circles/260807-0923-guard-misst-statt-orakelt`
+**Circle:** `260807-0923-guard-misst-statt-orakelt`
 **Datum:** 2026-08-07 16:38
 **Status:** Complete
 **Auftrag:** Patch-Release 6.0.1 vorbereiten. Vier Versionsoberflächen anheben, prüfen was

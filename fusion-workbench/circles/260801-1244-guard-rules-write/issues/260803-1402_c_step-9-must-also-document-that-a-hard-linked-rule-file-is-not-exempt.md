@@ -7,13 +7,13 @@
 **Filed by:** coder, Turn 3 task T3-7, deferring a piece it could not write coherently
 **Affects:** `README-hooks.md`, `rules/protected-path-discipline.md`
 **Cross-references:**
-`issues/260802-2332_c_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md`
+`260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md`
 (direction 3, the deferred piece),
-`history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
+`260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
 "Considered and deliberately not done" (where the deferral is recorded),
-`issues/260802-2331` "Also missing, and probably Step 9's" (the two sentences Step 9
+`260802-2331` "Also missing, and probably Step 9's" (the two sentences Step 9
 already names),
-`planning/260802-1856_o_plan-guard-rules-write.md` Step 9,
+`260802-1856_*_plan-guard-rules-write.md` Step 9,
 `hooks/lib/rules-write-exemption.ts:146-156` (the reason, in the module docstring),
 `hooks/lib/rules-write-exemption.ts:458-462` (`REFUSAL_NOTES["hard-link"]`, the wording
 the deny already uses)
@@ -33,7 +33,7 @@ It matters because nobody has to choose that state: `rsync --link-dest`, `cp -al
 tree meets a deny with the flag set and no shipped document explains it.
 
 `245b8b7` made the refusal *say* so at the point of denial (`REFUSAL_NOTES["hard-link"]`).
-T3-2 deferred the document half to T3-7 as direction 3 of `260802-2332`.
+T3-2 deferred the document half to T3-7 as direction 3 of `260802-2332_*_the-nlink-heuristic-locks-out-legitimately-hard-linked-rule-files-with-no-diagnosable-reason.md`.
 
 ## Why T3-7 did not write it
 
@@ -68,7 +68,7 @@ Three things, together, in one pass:
 
 ## Origin
 
-`circles/260801-1244-guard-rules-write`, Turn 3 task T3-7, while correcting the halt and
+`260801-1244-guard-rules-write`, Turn 3 task T3-7, while correcting the halt and
 residual claims in the same two documents.
 
 ---
@@ -84,13 +84,13 @@ And the flag they deny is still absent from every shipped document: `grep -rn FU
 
 The wording the deny already uses is where the issue cites it: `hooks/lib/rules-write-exemption.ts:458-462`, `REFUSAL_NOTES["hard-link"]`, ending "Rewriting the command will not help — ask the user."
 
-**Recorded on the plan.** `planning/260802-1856_o_plan-guard-rules-write.md` Step 9 now carries a `[SCOPE CHANGED]` note naming this issue as work added to that step, alongside the halt and residual passages `ce7a125` already wrote. Step 9 remains unstarted; what it must write is no longer what its own body says.
+**Recorded on the plan.** `260802-1856_*_plan-guard-rules-write.md` Step 9 now carries a `[SCOPE CHANGED]` note naming this issue as work added to that step, alongside the halt and residual passages `ce7a125` already wrote. Step 9 remains unstarted; what it must write is no longer what its own body says.
 
-**One sequencing constraint arrived after this issue was filed.** `reviews/260803-1431-coderev-turn3-guard-boundary.md` `## Verdict` asks that `issues/260803-1431_o_` land before Step 9 writes the flag into shipped documents, so the user-facing text is not authored against a boundary that is about to move again.
+**One sequencing constraint arrived after this issue was filed.** `260803-1431-coderev-turn3-guard-boundary.md` `## Verdict` asks that `260803-1431_*_` land before Step 9 writes the flag into shipped documents, so the user-facing text is not authored against a boundary that is about to move again.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. The hard-link item is untouched; the rest of this issue's own factual basis has moved under it, in the damaging direction.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_o_`. The hard-link item is untouched; the rest of this issue's own factual basis has moved under it, in the damaging direction.**
 
 **The item this issue is named for is genuinely still open.** `grep -rn "hard link\|hard-link\|nlink"` over `README-hooks.md` and `rules/` at HEAD `cc012fc` finds only the *symlink and hard-link alias residual* (`README-hooks.md:201`, `rules/protected-path-discipline.md:521-522`) — that is the bypass, not the exemption's `nlink` refusal. The deny wording this issue cites is still at `hooks/lib/rules-write-exemption.ts:458-462`, `REFUSAL_NOTES["hard-link"]`. Nothing has documented why a hard-linked rule file is refused under a set flag.
 
@@ -108,9 +108,9 @@ Measured with the predicate supplied, `rm rules/x.md`, `mv rules/x.md rules/reti
 
 **A third file carries the same false sentence and is named by the plan but not by this issue.** `CLAUDE.md:113` — "There is **no** env override for this policy: it is a human decision." Add it to this issue's `**Affects:**` when Step 9 is picked up; three files must change together or the correction ships incomplete.
 
-**Two more items belong to Step 9 than this issue lists**, both found in the same audit and filed separately rather than folded in here, because each is a distinct defect with its own fix: `260804-1025_o_` (the decision procedure at `rules/protected-path-discipline.md:172` tells an agent the model stays exact for the two commands that delete a rule file) and the residual-list omissions named on `260804-1024_o_` and `260804-1026_o_`.
+**Two more items belong to Step 9 than this issue lists**, both found in the same audit and filed separately rather than folded in here, because each is a distinct defect with its own fix: `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` (the decision procedure at `rules/protected-path-discipline.md:172` tells an agent the model stays exact for the two commands that delete a rule file) and the residual-list omissions named on `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md` and `260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md`.
 
-**The sequencing constraint recorded at the foot of this issue is now satisfied.** `issues/260803-1431` closed in `a79ff1a`. The Turn 3 review asked that it land before Step 9 writes the flag into shipped documents; it has. Step 9 is no longer blocked by it.
+**The sequencing constraint recorded at the foot of this issue is now satisfied.** `260803-1431` closed in `a79ff1a`. The Turn 3 review asked that it land before Step 9 writes the flag into shipped documents; it has. Step 9 is no longer blocked by it.
 
 ---
 
@@ -138,7 +138,7 @@ All three items this issue asks for have landed, in the two files it names.
    user who did not choose the state can recognise it, and pointing at
    `REFUSAL_NOTES["hard-link"]` as the wording the deny already uses.
 
-**The third file the 260804-1021 reconciliation added is NOT fixed, and is not this step's
+**The third file the 260804-1021-reconciliation.md reconciliation added is NOT fixed, and is not this step's
 to fix.** `CLAUDE.md` carries the same false sentence ("There is **no** env override for
 this policy: it is a human decision"). Step 3's scope is the two rule layers, the forensics
 analysis, `README-hooks.md` and the issue files. Reported to the orchestrator rather than

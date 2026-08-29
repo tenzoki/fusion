@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-21
 **Status:** Complete
-**Spec:** none. Planned from the Directive in `circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md`, whose `**Active spec/plan:**` field reads `(none yet)`.
-**Decidability:** The load-bearing question is whether an agent can tell, while it drafts a reply, that a block of that reply falls outside the question it was asked. It is decidable at that moment and only there. The agent holds the user's message and the draft together, and the correspondence between them is a judgement over two texts it has in front of it. The same question is not decidable from anything the project persists: the workbench stores no chat reply at all, and a session transcript holds what the agent said without holding what the user would have accepted as an answer. So the mechanism this plan changes is the text the writer reads, and no check is added anywhere. That matches what `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` requires until its registered measurement runs. The second question, whether a reply is over its cap, is decidable by counting and the file already tells the writer to count. The residual is stated rather than closed: an instruction placed at the writer is overridable under task pressure, this project has a worked case of exactly that in `CLAUDE.md`, and nothing in this plan would notice a violation.
+**Spec:** none. Planned from the Directive in `260821-1042-reply-bounded-whole-question-answered`, whose `**Active spec/plan:**` field reads `(none yet)`.
+**Decidability:** The load-bearing question is whether an agent can tell, while it drafts a reply, that a block of that reply falls outside the question it was asked. It is decidable at that moment and only there. The agent holds the user's message and the draft together, and the correspondence between them is a judgement over two texts it has in front of it. The same question is not decidable from anything the project persists: the workbench stores no chat reply at all, and a session transcript holds what the agent said without holding what the user would have accepted as an answer. So the mechanism this plan changes is the text the writer reads, and no check is added anywhere. That matches what `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` requires until its registered measurement runs. The second question, whether a reply is over its cap, is decidable by counting and the file already tells the writer to count. The residual is stated rather than closed: an instruction placed at the writer is overridable under task pressure, this project has a worked case of exactly that in `CLAUDE.md`, and nothing in this plan would notice a violation.
 
 ## Directive
 
@@ -23,7 +23,7 @@ Those three are the whole of it. I read `## Length`, `## Information architectur
 
 ### The rule text, and where the question the user asked is governed
 
-Nowhere. `## Information architecture` orders a reply's parts, `## Length` caps its pieces, `## Questions and gates` governs what an agent asks. No clause says the reply answers what was asked. That is the structural half of `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`, whose specimen is a sixty-line reply in which every sentence is true and the question was a two-line lookup.
+Nowhere. `## Information architecture` orders a reply's parts, `## Length` caps its pieces, `## Questions and gates` governs what an agent asks. No clause says the reply answers what was asked. That is the structural half of `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`, whose specimen is a sixty-line reply in which every sentence is true and the question was a two-line lookup.
 
 The destination for the material such a reply carries already exists and is already mandatory. `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY` requires every defect and every open question found during work to be written as its own file, and it already forbids putting them in chat output. What is missing is the sentence that binds the two: the reply names the filed record and does not carry its content.
 
@@ -37,11 +37,11 @@ The destination for the material such a reply carries already exists and is alre
 
 ### The constraints that shape every step
 
-**Two independent byte budgets, each net zero or less.** `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_what-may-the-circles-own-new-clauses-cost.md` answers option 1: the always-on corpus may not grow and every new clause is paid for by a cut. This plan holds that as **two** budgets rather than one, and forbids paying either from the other. `rules/user-facing-output.md` is inside the always-on growth bound; the voice profiles are outside it by construction, as `hooks/lib/__tests__/rules-emission-golden.test.ts` states in its header. A single budget spanning both would be satisfiable by moving text from the bounded file into the unbounded one, which is the same move `## Length` is being repaired for. Relocation is not removal here either.
+**Two independent byte budgets, each net zero or less.** `260821-1108_*_what-may-the-circles-own-new-clauses-cost.md` answers option 1: the always-on corpus may not grow and every new clause is paid for by a cut. This plan holds that as **two** budgets rather than one, and forbids paying either from the other. `rules/user-facing-output.md` is inside the always-on growth bound; the voice profiles are outside it by construction, as `hooks/lib/__tests__/rules-emission-golden.test.ts` states in its header. A single budget spanning both would be satisfiable by moving text from the bounded file into the unbounded one, which is the same move `## Length` is being repaired for. Relocation is not removal here either.
 
-**One surface set.** `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_which-surfaces-may-this-circle-change.md` answers option 1: `rules/` and `stilwerk/`. No agent prompt is touched, and the `agents/` budget's 1 638 free bytes stay untouched.
+**One surface set.** `260821-1108_*_which-surfaces-may-this-circle-change.md` answers option 1: `rules/` and `stilwerk/`. No agent prompt is touched, and the `agents/` budget's 1 638 free bytes stay untouched.
 
-**No prose gate, and no new test.** `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` is answered at option 4 and its reconciliation states that no gate is authorised until its measurement runs. This Circle does not run that measurement: `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md` excludes from both its windows any history file written by a session primed on the subject being measured, and every session in this Circle is so primed. The protocol may be read and is not amended. The hook test suite has 21 lines of head-room in any case.
+**No prose gate, and no new test.** `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` is answered at option 4 and its reconciliation states that no gate is authorised until its measurement runs. This Circle does not run that measurement: `260820-2354-prose-register-measurement-protocol.md` excludes from both its windows any history file written by a session primed on the subject being measured, and every session in this Circle is so primed. The protocol may be read and is not amended. The hook test suite has 21 lines of head-room in any case.
 
 **Headings may not be renamed or removed where shipped text cites them.** `hooks/lib/__tests__/reference-resolution-lint.test.ts` resolves the adjacent form `` `file.md` `## Section` `` against the cited file. Measured over `agents/`, `rules/`, `skills/`, `CLAUDE.md` and the READMEs with `grep -rn "user-facing" --include='*.md' … | grep -o '`## [^`]*`' | sort | uniq -c`, three of this file's headings are cited from shipped text: `## Style anti-patterns apply to everything` (11 citations), `## Effort estimates` (9) and `## Self-review before sending` (7). `## Length`, `## Questions and gates`, `## Vocabulary`, `## Information architecture` and `## Sketch structure instead of narrating it` are cited only from workbench records, which the workbench gate does not check for headings. **The plan keeps every heading anyway.** The repair belongs inside the sections that already own each subject, so no heading needs to move, and keeping them all removes a class of failure for free.
 
@@ -100,7 +100,7 @@ flowchart TD
 1. [DONE] **Freeze the pre-change reply baseline**
    - Executor: `analyst`
    - Files: `circles/260821-1042-reply-bounded-whole-question-answered/analyses/<stamp>-reply-length-baseline.md`
-   - Changes: write down the command that produces the Circle's Grounding figures over `~/.claude/projects/<project-slug>/*.jsonl`, together with the figures it produced at HEAD `e764637`: the transcript count, the count of top-level assistant text replies, and the count of those exceeding twelve rendered lines. Record the denominator's known bias, that it counts one-line narration between tool calls and so understates the share of substantive replies over the cap. State in the document, in its own sentence, that it is a frozen baseline and not a gate, that it does not amend and does not run the protocol in `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`, and that reading the transcripts is authorised by `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`.
+   - Changes: write down the command that produces the Circle's Grounding figures over `~/.claude/projects/<project-slug>/*.jsonl`, together with the figures it produced at HEAD `e764637`: the transcript count, the count of top-level assistant text replies, and the count of those exceeding twelve rendered lines. Record the denominator's known bias, that it counts one-line narration between tool calls and so understates the share of substantive replies over the cap. State in the document, in its own sentence, that it is a frozen baseline and not a gate, that it does not amend and does not run the protocol in `260820-2354-prose-register-measurement-protocol.md`, and that reading the transcripts is authorised by `260821-1108_*_may-an-agent-read-the-session-transcripts-as-a-source-of-evidence.md`.
    - Why it is first: the Circle's own Grounding states these figures and no command anywhere reproduces them. Without one, nothing anybody does later can tell whether this Circle changed a reply.
    - Dependencies: none
    - Bounded surfaces touched: none
@@ -111,7 +111,7 @@ flowchart TD
    - Changes, all four of them rewrites of existing sentences:
      - Line 117: the closing instruction stops offering Details as the remedy. Every cap in the section is the budget for the complete output it names, trailing Details included; a count that is over is brought down by cutting, and the cut material goes to the store or the file that already holds that kind of thing.
      - Line 114: delete the Details half of the remedy and keep the file half, which is already correct.
-     - Line 113: the session summary entry states a total as well as its header cap. The number is `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`; write the recommended 25 unless the user answered otherwise at the plan gate, and cite the record on the line.
+     - Line 113: the session summary entry states a total as well as its header cap. The number is `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`; write the recommended 25 unless the user answered otherwise at the plan gate, and cite the record on the line.
      - Line 61 and its sentence in `## Sketch structure instead of narrating it`: a sketch counts against the cap. It earns its place by being shorter than the prose it replaces, which is what the rest of that section already says.
      - One entry is added to the `## Length` list, for the habit no clause reaches: an agent's account of its own work is sized by what the reader needs to know, not by how much work there was. A longer run does not buy more lines.
    - Acceptance: `## Length` contains no clause that routes material out of a count, and no entry in it caps a prefix. Each of the four rewrites is checkable by reading the four lines named.
@@ -120,7 +120,7 @@ flowchart TD
 3. [DONE] **Write the clause that makes the reply answer the question that was put**
    - Executor: `coder`
    - Files: `rules/user-facing-output.md`
-   - Changes: `## Information architecture (in this order)` gains its subject before its ordering. The reply answers the question that was asked. What the agent noticed on the way is filed under `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`, which already requires the record and already forbids putting it in chat output, and the reply spends one line naming the filed record rather than carrying what is in it. Cite the conventions rule by file and heading, in the adjacent form the reference lint resolves. Keep the clause to the shortest form that states the rule and its one worked contrast, taken from `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`: the question was where the acceptance criteria are, the answer is the path and the section names, and the two defects found on the way are two filed records named in one line each.
+   - Changes: `## Information architecture (in this order)` gains its subject before its ordering. The reply answers the question that was asked. What the agent noticed on the way is filed under `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`, which already requires the record and already forbids putting it in chat output, and the reply spends one line naming the filed record rather than carrying what is in it. Cite the conventions rule by file and heading, in the adjacent form the reference lint resolves. Keep the clause to the shortest form that states the rule and its one worked contrast, taken from `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`: the question was where the acceptance criteria are, the answer is the path and the section names, and the two defects found on the way are two filed records named in one line each.
    - Acceptance: an agent reading `## Information architecture` learns what the reply is about before it learns what order the parts come in, and the destination for everything else is a store that already exists.
    - Dependencies: step 2, same file. Records its byte delta.
 
@@ -182,7 +182,7 @@ flowchart TD
 
 Two preconditions before any closure note is written. The measurement note of step 6 exists first: this Circle does not close over an unrecorded number, which is the fault its own Grounding records in the Circle before it. And the closure note states in its own words that the clauses landed unenforced and that no observation of their effect was taken, so that a later reader does not mistake a landed clause for a changed reply.
 
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is closed by steps 2, 3 and 5 together, both halves, which is what the Circle was cut to do. Its adjacent record `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` is not closed and is not touched.
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is closed by steps 2, 3 and 5 together, both halves, which is what the Circle was cut to do. Its adjacent record `260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` is not closed and is not touched.
 
 ## Data Structures
 
@@ -194,7 +194,7 @@ None.
 
 ## Testing Strategy
 
-No test is added, and this is a constraint rather than an omission. `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` forbids a prose gate until its registered measurement runs, this Circle does not run that measurement, and the hook test suite has 21 lines of head-room in any case.
+No test is added, and this is a constraint rather than an omission. `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md` forbids a prose gate until its registered measurement runs, this Circle does not run that measurement, and the hook test suite has 21 lines of head-room in any case.
 
 What the existing suite must keep saying, run at step 6 as `cd hooks && npm test`:
 
@@ -218,14 +218,14 @@ The substantive verification is a reading rather than a run, and step 6 records 
 
 ## Open Questions
 
-- [ ] What total caps a session summary, now that no reply has an uncapped tail? Filed as `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`, recommendation option 1. Step 2 needs the number; it is not blocking, because the recommendation is written unless the user answers otherwise at this gate.
+- [ ] What total caps a session summary, now that no reply has an uncapped tail? Filed as `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`, recommendation option 1. Step 2 needs the number; it is not blocking, because the recommendation is written unless the user answers otherwise at this gate.
 - [ ] Three decisions this Circle's Grounding cites still carry an open marker while their substance is settled elsewhere, all three in `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/`. The playmaker recorded the same observation at activation. Moving a decision marker is not the planner's act and no step here does it.
 
 ## Reconciliation Log
 
 **Reconciliation 260821-2349** (reconciler, domain `code`, HEAD `9a68760`, session anchor
 `e764637`, working tree clean). Log:
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2349-reconciliation.md`.
+`260821-2349-reconciliation.md`.
 
 **`**Status:**` moved from `Draft` to `Complete`. The filename marker is deliberately left at
 `_o_`, and the reason is measured rather than judged.** All six steps carry `[DONE]`, all six
@@ -237,18 +237,18 @@ plan's `_o_` marker literally, and five of them sit inside the corpus
 performed as a trial and reverted; the gate went red with `stale marker '_o_'` on those five, so
 the rename would turn `npm test` red for whoever runs it next. The blocking citations and the order
 that clears them are filed as
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
+`260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`.
 
 **Verified against the tree, step by step.**
 
 | Step | Claim | Verified |
 |---|---|---|
-| 1 | The baseline exists as a re-runnable command with figures | `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md` exists, 325 lines, committed in `58aae9b` |
+| 1 | The baseline exists as a re-runnable command with figures | `260821-2020-reply-length-baseline.md` exists, 325 lines, committed in `58aae9b` |
 | 2 | The three routes out of the length cap are closed | `rules/user-facing-output.md:49` (a sketch counts like every other line), `:103` (session summary a total of 25 as well as a 10-line header), `:108` (an over-count comes down by cutting, never by moving material down the same reply) |
 | 3 | The reply answers the question that was put | `rules/user-facing-output.md:53`, opening `## Information architecture` before its ordering, citing `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing` |
 | 4 | Both register habits in four profile files, pairs byte-identical, each file net negative | AI04 and C06 carry them; `diff -q` silent on both pairs; `chat-voice-en.yaml` 6 876 → 6 854, `chat-voice-de.yaml` 7 480 → 7 407 |
 | 5 | `rules/user-facing-output.md` net zero or less against `e764637` | 20 144 → 20 142, −2 |
-| 6 | The measurement note exists and states the clauses landed unenforced | `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-2147-coder-the-corpus-is-measured.md` |
+| 6 | The measurement note exists and states the clauses landed unenforced | `260821-2147-coder-the-corpus-is-measured.md` |
 
 **One drift between this plan and what landed, stated rather than repaired.** The budget table at
 `## Current State` records the hook test suite as "Not touched, and no test is added". It was
@@ -257,14 +257,14 @@ touched: two attribution comment blocks entered
 them into one. The surface stands at 20 360 lines against a budget of 20 375, so head-room is 15
 where the anchor had 21. The plan's stopping criterion that "none of the four growth bounds stands
 closer to failing than it did at HEAD `e764637`" is therefore unmet at closure. Filed and reasoned
-in `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`.
+in `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`.
 
 **The other three growth bounds, measured at HEAD.** Always-on rule set 95 064 bytes against a
 budget of 98 573, so 3 509 free where the anchor had 3 507. `agents/*.md` 416 205, unchanged at
 1 638 free. `skills/*/SKILL.md` 240 409, unchanged at 30 free.
 
 **The plan's closure claim on the verbosity record is not confirmed here.** `## Where this Circle
-stops` says `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+stops` says `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 is closed "both halves". Its rule-text half is closed, including the fourth route the plan's own
 survey missed. Whether the record may be called closed is the user's call and is reasoned in the
 reconciliation appended to that record. The marker was not moved.
@@ -276,13 +276,13 @@ measured across the workbench, fourteen pointers were rewritten to `_*_`, and th
 statements about the spelling were handled per `rules/fusion-workbench-conventions.md`
 `## Marker globs` — the out-of-corpus one left verbatim, the in-corpus one restated in prose. The
 citation gate is green after the rename and `cd hooks && npm test` exits 0. Recorded in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
+`260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
 whose `Resolved:` note also states that the verbosity record's half was withheld, so this plan's
 `_c_` marker does not assert that the record it names above is closed.
 
 **Reconciliation 260822-0234** (reconciler, domain `code`, HEAD `05b46f2`, session anchor
 `084c626`; two machine-written files modified in the working tree, no record). Log:
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`.
+`260822-0234-reconciliation.md`.
 
 **The closure is earned. `**Status:** Complete`, all six steps `[DONE]`, filename marker `_c_`, and
 the tree agrees with all three.** Re-verified independently rather than inherited from the
@@ -290,12 +290,12 @@ the tree agrees with all three.** Re-verified independently rather than inherite
 
 | Step | Re-verified at HEAD |
 |---|---|
-| 1 | `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260821-2020-reply-length-baseline.md` carries the counting command, the corpus and the frequency distribution |
+| 1 | `260821-2020-reply-length-baseline.md` carries the counting command, the corpus and the frequency distribution |
 | 2 | `rules/user-facing-output.md` `## Length`: the sketch counts like every other line, the session summary carries a 25-line total as well as its 10-line header, a gate is capped at eight lines on whatever surface renders it, and an over-count comes down by cutting rather than by moving material down the same reply |
 | 3 | `rules/user-facing-output.md` `## Information architecture (in this order)` opens with its subject: the reply answers the question that was asked, and what the agent noticed alongside it is filed and named in one line |
 | 4 | AI04 carries the enumeration-for-rhythm habit and C06 the restated-claim habit, each with its shorter form, in all four files; `diff -q` silent on both plugin/workbench pairs |
 | 5 | `rules/user-facing-output.md` 20 144 → 20 142 against `e764637`; `chat-voice-en.yaml` 6 876 → 6 743, `chat-voice-de.yaml` 7 480 → 7 306, each file net negative on its own side |
-| 6 | The measurement note exists, and `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md` now adds the three before-figures the baseline did not carry |
+| 6 | The measurement note exists, and `260822-0035-three-before-figures-and-the-after-measurement-defined.md` now adds the three before-figures the baseline did not carry |
 
 **`## Where this Circle stops`: five of six hold, one is unmet and unmeetable.** Measured, not
 carried over.
@@ -327,7 +327,7 @@ since the 260821-2349 pass; the six lines were spent in Turn 3 of the previous s
 the original ten were recovered there. The criterion asks for a note costing zero lines, which is
 no note, and that is why it cannot be met by anything the Circle still has to do. It is filed and
 reasoned in
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
+`260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
 which asks the closure note to state 15 lines rather than repeat the criterion. That remains the
 right disposition.
 
@@ -338,7 +338,7 @@ of their effect was taken, is unwritten because the closure note is unwritten; i
 orchestrator's Phase 4 act and is not a defect of this plan.
 
 **The plan's closure claim on the verbosity record is still not confirmed.**
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
-remains `_o_` by a deliberate decision taken in Turn 2 of the 260822-0019 session, and this
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+remains `_o_` by a deliberate decision taken in Turn 2 of the 260822-0019-orchestrator-session.md session, and this
 reconciliation agrees with it. The plan's `_c_` marker does not assert that record is closed, which
 the closure entry above already states.

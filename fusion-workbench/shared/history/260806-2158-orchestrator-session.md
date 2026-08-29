@@ -1,4 +1,4 @@
-# Orchestrator Session — 260806-2158
+# Orchestrator Session — 260806-2158-orchestrator-session.md
 
 **Directive:** Replace the guard's flat joiner model with a shell reachability model, so the
 mutation classifier asks whether the shell guarantees a segment rather than reading the one
@@ -6,7 +6,7 @@ operator beside it. Plus two adopted defects and a task-queue rebuild.
 **Mode:** custom (active Circle `260804-1205-shell-reachability-model`)
 **Status:** Stopped by the user mid-Turn-1. The Circle is parked, not closed: its record still
 carries the active marker and `.active-circle` still points at it. Work resumes when decision
-`260807-0825` is answered.
+`260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` is answered.
 
 ## What the user needs to know
 
@@ -14,7 +14,7 @@ The session was stopped on a challenge to the Circle's premise, not on a failure
 which files a shell command writes is undecidable from the command's text, and the session
 produced evidence on both sides of whether the approximation is worth continuing. That
 question is filed at
-`circles/260804-1205-shell-reachability-model/decisions/260807-0825_o_should-the-guard-predict-shell-writes-or-enforce-them.md`
+`260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`
 with four options and no recommendation, because the trade-off is the user's.
 
 Nothing is left in a broken state. Four commits are on `main`, the suite is green at 1,677
@@ -78,7 +78,7 @@ Session default set to **code**; the user may override at any dispatch.
 | Plan steps completed | 2 of 11 |
 | Issues created | 2 (both by `coder`, inside the Circle) |
 | Issues resolved | 1 (`shared/issues/260801-2038_*` — the stale task queue) |
-| Decisions filed | 2 (`260807-0250` answered and implemented; `260807-0825` open) |
+| Decisions filed | 2 (`260807-0250_*_does-a-pipelines-subshell-fact-reach-every-segment-of-a-compound-element.md` answered and implemented; `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` open) |
 | Commits | 4 |
 | Agent errors | 0 |
 | Human gates hit | 4 |
@@ -126,7 +126,7 @@ Both are deliberate and are recorded so the next session does not read them as o
    template describes as append-only, and filled `Active spec/plan` and `Active session
    history`, which exist to be filled during a Circle's life. Leaving `Status: anticipated`
    beside two corrected fields would have been worse. The underlying defect is
-   `shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`.
+   `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`.
 
 ## Corrections issued during the session
 
@@ -144,10 +144,10 @@ worth seeing in one place.
 
 ## Remaining Work
 
-Plan steps 3 through 11, all blocked behind decision `260807-0825`. Step 3 is the one that
+Plan steps 3 through 11, all blocked behind decision `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`. Step 3 is the one that
 first moves a guard verdict and must not start before the decision is answered, both because
 the decision may make it moot and because the corpus gap at
-`circles/260804-1205-shell-reachability-model/issues/260807-0251_o_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
+`260807-0251_*_the-corpus-cannot-generate-the-operand-shape-where-the-worst-holes-were-measured.md`
 is still open.
 
 Also open and unowned, surfaced by the queue rebuild and left in backlog by user decision:
@@ -166,8 +166,8 @@ decision above and could be done at any time.
 **Verdict:** review-needed
 
 **Cadence note.** This verdict is taken at the Circle boundary, not at this file's own scope.
-The session began under `circles/260804-1205-shell-reachability-model` and continued under
-`circles/260807-0923-guard-misst-statt-orakelt` after the supersession on 260807-0923. The
+The session began under `260804-1205-shell-reachability-model` and continued under
+`260807-0923-guard-misst-statt-orakelt` after the supersession on 260807-0923-guard-misst-statt-orakelt. The
 verdict is computed against the **successor's** Directive, which is the one the work was done
 under; this file remained the session's history file across the supersession, which is why the
 verdict lands here.
@@ -189,9 +189,9 @@ verdict lands here.
   would be restored — and where the retired classifier at least fell back on fail-closed, this
   falls back on nothing. No test exercises the measurement from a subdirectory. This is
   *inference from the source, not measured*; the standing finding
-  `circles/260801-1244-guard-rules-write/issues/260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
+  `260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
   labels its own reachability the same way and stays open. Remaining reviewer-filed issues on the
-  guard surface: 10 in `circles/260801-1244-guard-rules-write`, 2 in the active Circle.
+  guard surface: 10 in `260801-1244-guard-rules-write`, 2 in the active Circle.
 
 - **Artifact↔Directive: toward, and the named prohibition is honoured.** Eight commits
   `bf48802..e684eae` (`2d55c66`, `327d0b6`, `309ee28`, `ba7ccda`, `436d78c`, `5a3cad4`,
@@ -214,10 +214,10 @@ verdict lands here.
 
 - **Grounding↔Directive: consistent.** Six active decision records across `$SCAN_DECISIONS`
   (four open, two answered-not-implemented), none conflicting with the Directive. The one inside
-  the Circle, `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md`,
+  the Circle, `260807-0945_*_integritaet-des-eskalationsspeichers.md`,
   is a consequence the Directive accepted knowingly and deferred by name rather than a
   contradiction of it; the user confirmed the waiver at plan approval. The binding decision
-  `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`
+  `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md`
   stands `_i_` with both of its own side conditions verified. The five shared records
   (`260719-2141_a_`, `260801-1020_a_`, `260806-1152_o_`, `260807-0158_o_`, and the new
   `260807-1515_o_` on the reach of the project-language declaration) are unrelated to this
@@ -234,4 +234,4 @@ resolution is to run the case once — the guard from a subdirectory of a projec
 establishes. Either closes the edge; guessing which one is right without the measurement is the
 failure mode this Circle exists to have stopped.
 
-Reconciliation log: `circles/260807-0923-guard-misst-statt-orakelt/history/260807-1526-reconciliation.md`
+Reconciliation log: `260807-1526-reconciliation.md`

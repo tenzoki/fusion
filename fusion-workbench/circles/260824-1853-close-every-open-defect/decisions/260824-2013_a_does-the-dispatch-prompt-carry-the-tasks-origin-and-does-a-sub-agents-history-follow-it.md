@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Filed by:** analyst
-**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
-**Cross-references:** `shared/issues/260805-0629_*_dispatch-prompt-carries-no-origin-so-a-sub-agents-history-lands-by-pointer-alone.md`; `shared/issues/260823-0700_*_every-sub-agent-files-its-history-into-the-active-circle-because-the-resolver-cannot-make-the-origin-rules-judgement.md`; `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)` and `## Issue and Decision Filing — MANDATORY`; `rules/agent-setup.md` `## What fusion-paths emits`; `rules/workbench-path-resolution.md`; plan `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md` step 1 (D-origin)
+**Attribution backfilled 260825 (not written by the filing agent):** `analyst` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+**Cross-references:** `260805-0629_*_dispatch-prompt-carries-no-origin-so-a-sub-agents-history-lands-by-pointer-alone.md`; `260823-0700_*_every-sub-agent-files-its-history-into-the-active-circle-because-the-resolver-cannot-make-the-origin-rules-judgement.md`; `rules/fusion-workbench-conventions.md` `## Origin Rule (Herkunftsregel)` and `## Issue and Decision Filing — MANDATORY`; `rules/agent-setup.md` `## What fusion-paths emits`; `rules/workbench-path-resolution.md`; plan `260824-1905_*_plan-close-every-open-defect.md` step 1 (D-origin)
 
 ---
 
@@ -46,4 +46,4 @@ Superseded by:
 Retired:
 
 ---
-Answered: circles/260824-1853-close-every-open-defect/decisions/260824-2013_a_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md — option 1, user 2026-08-29: the dispatch prompt gains an advisory `**Origin:**` line; the resolver stays the single resolution point and the agent applies the Origin Rule to its own history write.
+Answered: 260824-2013_*_does-the-dispatch-prompt-carry-the-tasks-origin-and-does-a-sub-agents-history-follow-it.md — option 1, user 2026-08-29: the dispatch prompt gains an advisory `**Origin:**` line; the resolver stays the single resolution point and the agent applies the Origin Rule to its own history write.

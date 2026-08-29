@@ -63,7 +63,7 @@ Three full runs of `cd hooks && npm test`, and the middle one is the interesting
 | 3 | **exit 0** — 49/49 files, 1030/1030 tests | After the repair below. |
 
 Run 2's failure was **not** one of the non-deterministic lock/halt-reaping failures recorded in
-`shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`,
+`260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`,
 and it would have been wrong to re-run past it. It was the reference-resolution lint reporting six
 dangling references, all of them `CLAUDE.md` naming `install.sh` — because **`install.sh` had been
 deleted from the working tree**, mid-task, after run 1 had already passed the same lint.

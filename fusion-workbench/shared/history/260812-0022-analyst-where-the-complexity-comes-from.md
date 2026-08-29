@@ -5,7 +5,7 @@
 **Domain:** code
 **Dispatched by:** orchestrator, on a user question
 **Status:** Complete
-**Output:** `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+**Output:** `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
 
 ## What was asked
 
@@ -47,4 +47,4 @@ in its own rules.
 
 Seven records could have been filed from the removal list. Six are decisions for the user rather
 than defects for an executor, and filing them would add to the 75-record backlog that prompted the
-question. The one already correctly filed is `shared/issues/260811-1734_o_reduce-the-surface-…`.
+question. The one already correctly filed is `260811-1734_*_reduce-the-surface-…`.

@@ -24,7 +24,7 @@ scope. Checked at HEAD `b54ace5`: the two groups tile the tree's ten exactly, wi
 split per file. No present error.
 
 **The risk is recorded, not speculative.** The closed defect
-`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0504_c_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
+`fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
 part 2 objected to this duplication when the two lists sat ten lines apart:
 
 > It is a second enumeration of a closed list ten lines below the first, so a helper adding a
@@ -59,9 +59,9 @@ make in a fix:
 Option 1 is the one that fits the project's stated preference and the one this record recommends, at
 low confidence.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---
 Resolved: Option 1: the layout tree's discipline sentence now names both landing sites by path, so a new root-anchored surface lands in the tree and in the record-or-live-state split in the same commit, and the obligation is written where the person adding a surface already reads. Two restatements were folded out while doing it: the emission-audience paragraph under the pointer, which the header table already carried verbatim, and the out-of-scope store list in `rules/workbench-tracking.md`, replaced by a citation of the tree. The ten root entries stay enumerated in their two groups, because that enumeration is the classification.
-Revised by: ontocoder, 260824. The verbatim carrier of the folded emission-audience paragraph is `rules/workbench-tracking.md` (its own lede), not the header table, which holds the same three facts compressed and without the reason clause; and the paragraph was merged into the conventions sentence above it rather than removed, since only the reason clause left the file. Filed as `shared/issues/260819-0827_*_the-fold-note-credits-the-header-table-with-carrying-verbatim-what-the-rule-files-own-lede-carries.md`.
+Revised by: ontocoder, 260824. The verbatim carrier of the folded emission-audience paragraph is `rules/workbench-tracking.md` (its own lede), not the header table, which holds the same three facts compressed and without the reason clause; and the paragraph was merged into the conventions sentence above it rather than removed, since only the reason clause left the file. Filed as `260819-0827_*_the-fold-note-credits-the-header-table-with-carrying-verbatim-what-the-rule-files-own-lede-carries.md`.

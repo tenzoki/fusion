@@ -14,7 +14,7 @@
 The `control.turn_start_head` bullet defined the Turn count as the `turn_start` events in the whole
 log since this session's `session_start`: unscoped by checkout, and naming no implementation. It now
 reads as a call site rather than a definition. The count comes from `bin/fusion-events turns` behind
-`[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-events" ]`, the guard decision `shared/decisions/260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
+`[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-events" ]`, the guard decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
 mandates; the sentence states that the helper scopes the figure to this session and this checkout,
 cites `agents/orchestrator.md` Phase 2 step 3 as the one place the definition is stated, and says the
 figure is `unavailable` when the helper is absent or prints no `scope=checkout` line, never `0` and
@@ -85,9 +85,9 @@ superseded by the four alternating reads above rather than averaged with them.
 
 ## Records closed
 
-- `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`
+- `260826-0906_*_a-fifth-turn-count-definition-site-still-reads-the-whole-file-and-names-no-implementation.md`
   — `Resolved:` note appended, marker `_o_` -> `_c_`.
-- `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`
+- `260826-0906_*_the-event-log-contract-names-three-fields-and-two-sentences-under-it-still-say-two.md`
   — `Resolved:` note appended, marker `_o_` -> `_c_`.
 
 Neither rename is staged and nothing was committed; the orchestrator holds both.

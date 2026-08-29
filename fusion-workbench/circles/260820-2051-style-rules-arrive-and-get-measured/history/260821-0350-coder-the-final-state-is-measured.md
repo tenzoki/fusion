@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
-**Task:** plan step 18 of `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
+**Task:** plan step 18 of `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
 **Working tree at HEAD:** `acef2ad` (the orchestrator commits)
 **Shipped files changed:** none. This step measures and reports.
 
@@ -182,7 +182,7 @@ again along with the rest.
 ## 5. The corpus word count, and the dilution separated from the repair
 
 The measurement protocol at
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`
+`260820-2354-prose-register-measurement-protocol.md`
 records in its untreated condition 3 that steps 13 and 14 lower the corpus rate by dilution
 rather than by repair, and that section 9's word count is what makes the two separable
 afterwards. This is that number.
@@ -330,8 +330,8 @@ this note fixes for the reader who runs it later:
 
 ## Files changed
 
-- `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0350-coder-the-final-state-is-measured.md` (this note)
-- `fusion-workbench/circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md` (step 18 marked `[DONE]`)
+- `260821-0350-coder-the-final-state-is-measured.md` (this note)
+- `260820-2324_*_plan-style-rules-arrive-and-get-measured.md` (step 18 marked `[DONE]`)
 
 No shipped file was changed by this step.
 
@@ -340,10 +340,10 @@ No shipped file was changed by this step.
 `cd hooks && npm test` exits 0. 40 test files, 718 tests, all passing.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Section 4's `+2 138` is the delta over the five plugin rule files,
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). Section 4's `+2 138` is the delta over the five plugin rule files,
 which is the set the growth bound in `rules-emission-golden.test.ts` reads. The set `bin/fusion-rules
 coder` emits is six, the five plus `fusion-workbench/stilwerk/chat-voice-de.yaml`, and it gained
 `+2 265` over the same range (100 222 to 102 487 bytes); the 127-byte difference is the workbench
 chat profile. Section 5's "always-on total" is the six-file set. Both figures are right for their own
 set and neither section said the sets differ. Filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0413_*_the-final-measurement-note-means-two-different-sets-by-always-on-and-its-headline-delta-is-the-smaller-one.md`.
+`260821-0413_*_the-final-measurement-note-means-two-different-sets-by-always-on-and-its-headline-delta-is-the-smaller-one.md`.

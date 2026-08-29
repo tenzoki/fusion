@@ -3,7 +3,7 @@
 **Status:** Complete
 **Circle:** 260823-0023-settle-what-travels-between-checkouts
 **Dispatched by:** orchestrator
-**Addresses:** `shared/issues/260823-0510_*_the-activation-chain-hands-off-to-a-parent-thread-that-is-the-same-thread.md`
+**Addresses:** `260823-0510_*_the-activation-chain-hands-off-to-a-parent-thread-that-is-the-same-thread.md`
 **Files changed:** `skills/next/SKILL.md`, `hooks/lib/__tests__/fixtures/surface-growth.golden`
 
 ## What changed

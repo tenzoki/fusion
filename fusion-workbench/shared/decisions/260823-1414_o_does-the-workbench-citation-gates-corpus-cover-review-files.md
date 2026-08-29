@@ -2,8 +2,8 @@
 
 ---
 **Domain:** code
-**Filed by:** coder, at the closing pass of Circle `circles/260823-0023-settle-what-travels-between-checkouts`
-**Cross-references:** `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md` (the user answer this question would amend); `hooks/lib/__tests__/workbench-citation-lint.test.ts` (`inCorpus`, the predicate at issue); `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1318_*_ten-record-citations-in-the-turn-1-review-dangle-after-this-turns-renames-and-no-gate-covers-reviews.md` (the first measured instance, and the closure note that left this question unfiled); `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1404_*_a-question-the-closing-pass-left-to-the-user-has-no-open-record-anywhere-only-a-closed-defects-prose.md` (the finding that this record exists at all); `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the wildcard form); `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` (answered: the gate is the whole mechanism, so a surface outside the corpus has nothing)
+**Filed by:** coder, at the closing pass of Circle `260823-0023-settle-what-travels-between-checkouts`
+**Cross-references:** `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md` (the user answer this question would amend); `hooks/lib/__tests__/workbench-citation-lint.test.ts` (`inCorpus`, the predicate at issue); `260823-1318_*_ten-record-citations-in-the-turn-1-review-dangle-after-this-turns-renames-and-no-gate-covers-reviews.md` (the first measured instance, and the closure note that left this question unfiled); `260823-1404_*_a-question-the-closing-pass-left-to-the-user-has-no-open-record-anywhere-only-a-closed-defects-prose.md` (the finding that this record exists at all); `260806-0015_*_zitierform-fuer-workbench-records.md` (the wildcard form); `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` (answered: the gate is the whole mechanism, so a surface outside the corpus has nothing)
 
 ---
 
@@ -88,7 +88,7 @@ answer grows with every review file written: 90 exist today.
   `260819-1645` imposed on its own 245-citation repair. An armed clause over unrepaired text is a
   red suite that invites the number nobody may write.
 - Reviews, history files and analyses share one gap. An answer that covers reviews alone should say
-  so deliberately rather than by omission; `260823-1402_*` measured the same class in an analysis
+  so deliberately rather than by omission; `260823-1402_*_four-hard-marker-citations-of-the-c1-circle-record-dangle-in-the-same-files-this-turn-repaired.md_*` measured the same class in an analysis
   and two history files, four files away from the review repair that was looking for it.
 
 ## Recommendation
@@ -127,9 +127,9 @@ Superseded by:
 Retired:
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `## Measured` anchor was changed from `a2a18f9` to `7cd79f1`,
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The `## Measured` anchor was changed from `a2a18f9` to `7cd79f1`,
 this record's own filing commit. The file counts in the table (90, 34, 3) and the "90 exist today" in
 `## Question` are the tree at `7cd79f1`; at `a2a18f9` the first and third read 89 and 2, because the
 active Circle's third review was added one commit later. The token and dangling figures (522, 270 in
 64, 116 in 22, zero) are identical at both anchors and are unchanged. Filed as
-`circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-1640_*_the-corpus-decisions-measured-block-declares-an-anchor-whose-tree-gives-different-file-counts.md`.
+`260823-1640_*_the-corpus-decisions-measured-block-declares-an-anchor-whose-tree-gives-different-file-counts.md`.

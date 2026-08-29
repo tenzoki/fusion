@@ -1,4 +1,4 @@
-# Orchestrator Session — 260822-2204
+# Orchestrator Session — 260822-2204-orchestrator-session.md
 
 **Directive:** Measure what two checkouts of one project actually share and what each keeps to itself — the premise the whole multi-user arrangement rests on and that nobody has ever measured. Taken from the Circle record's `## Directive`.
 **Circle:** 260822-1921-measure-what-two-checkouts-share
@@ -30,7 +30,7 @@ Both stores counted, per the two-store rule for every `SCAN_*` key.
 - The Circle record's `**Active session history:**` was `(none yet)` and is set to this file, in the
   same command that created it. `**Active spec/plan:**` is left as it stands: writing it belongs to
   the activation act, which `/fusion:next` performed and which declines it by its own text. That
-  divergence is filed as `shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`.
+  divergence is filed as `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`.
 
 ## Session log
 
@@ -53,7 +53,7 @@ read as in-flight without opening it once. The classification is almost right, w
 effective at hiding the case where it is wrong. The analyst found it by looking.
 
 **T-2 (orchestrator).** Appended the addendum to
-`shared/decisions/260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`
+`260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`
 resolving its closing sentence, and left that sentence standing above the addendum rather than
 editing it away. Commit `b938f68`.
 
@@ -66,7 +66,7 @@ than against the report, and all four held.
 **One of its findings is against this session.** Four bookkeeping surfaces stood frozen at their
 pre-Turn-1 state: `agentstate.yaml`, `orchestrator-live.md`, the Circle record's `## Turn log`, and
 this file's own `**Mode:**` and session log. Filed as
-`shared/issues/260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
+`260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
 and its title names the reason it recurred: the measurement that used to catch this was removed on
 2026-08-15 with the counters it watched. All four are written now, at Phase 4, which is later than
 they should have been.
@@ -93,7 +93,7 @@ session ran on the spec's `### C1` criteria rather than on a plan, and a spec ca
   `hooks/lib/guard-state-file.ts:186` both `mkdirSync` recursively; the installed and work-tree helper
   are byte-identical). 0 open coderev or ontorev issues in this Circle. `bin/fusion-review-coverage`
   reports `uncovered=2`, and both commits touch only `fusion-workbench/`, which is the padding that
-  `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+  `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
   names and settles as advisory, so it does not flag this edge. **11 drift items found, 4 corrected in
   place, 1 filed, 2 annotated; the remaining 4 are the frozen bookkeeping surfaces below.**
 
@@ -102,7 +102,7 @@ session ran on the spec's `### C1` criteria rather than on a plan, and a spec ca
   two-arrangement table over the whole state partition (`## Findings` 1), the fresh clone and the
   pre-Setup agent question (3 and 4), the nested case with four placements probed (5), and two trees
   holding one Circle plus both push cases with transcripts (6). `b938f68` appended the addendum to
-  `shared/decisions/260822-1610_*_...`, resolving the closing sentence and leaving it standing above
+  `260822-1610_*_...`, resolving the closing sentence and leaving it standing above
   the resolution rather than editing it away. **The positive result is supported and not merely
   reported:** identity was taken by device and inode and then by an append-and-compare write test, and
   the four mechanism claims re-checked here all held. Two bounds are stated rather than glossed. The
@@ -114,12 +114,12 @@ session ran on the spec's `### C1` criteria rather than on a plan, and a spec ca
 
 - **Grounding↔Directive:** 25 active decisions in scope across both stores, 24 in `shared/` and 1 in the
   Circle. **0 conflicting.** The multi-user cluster is mutually consistent and consistent with the
-  Directive: `260822-1610_a_` now carries the measurement it asked for and correctly stays answered
+  Directive: `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` now carries the measurement it asked for and correctly stays answered
   rather than implemented; `260719-2141_s_` is terminal and its binding sentence, that nothing may
   assume two orchestrators run safely against one workbench, is satisfied by measurement rather than
   overturned; the three open C2/C3-scoped records (`260822-1136` ×2, `260822-1556`) are untouched by
   this Circle and blocked on nothing it produced. The record filed this session,
-  `circles/260822-1921-measure-what-two-checkouts-share/decisions/260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`,
+  `260822-2219_*_what-does-a-second-checkout-do-with-a-circle-record-marked-active-that-it-never-activated.md`,
   **opens a question the arrangement did not previously have** and is not a tension: it is downstream of
   the Directive's own fourth clause, its option 2 is explicitly refused against the closed writer set of
   `.active-circle`, and the addendum names it. It needs the user, at C2.
@@ -133,13 +133,13 @@ the state before Turn 1: `agentstate.yaml` (T-1 running, T-2 queued), `orchestra
 `20:28:48`. Those four are yours to write and not the reconciler's, which is why they are named here
 rather than corrected. The condition is the fifth recorded instance and nothing measures it any more:
 the state-drift computation that closed
-`shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` was deleted
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` was deleted
 on 2026-08-15, that record now carries a `Revised by:` line saying so, and the live defect is filed as
-`shared/issues/260822-2236_o_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`.
+`260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`.
 It is a defect in how a session records itself, not drift between the Artifact, the Grounding and the
 Directive, so it is reported rather than made into a Rebalance the four options cannot answer.
 
-Full pass: `circles/260822-1921-measure-what-two-checkouts-share/history/260822-2239-reconciliation.md`
+Full pass: `260822-2239-reconciliation.md`
 
 ## Budget
 
@@ -150,7 +150,7 @@ Full pass: `circles/260822-1921-measure-what-two-checkouts-share/history/260822-
 | Commits | 3 (`06d1bd1`, `b938f68`, `4aaabc3`), plus the closing housekeeping commit |
 | Issues filed | 2 — one in the Circle, one in `shared/` (the reconciler's, against this session) |
 | Decisions filed | 1, in the Circle |
-| Decisions resolved by addendum | 1 (`260822-1610`, its closing sentence) |
+| Decisions resolved by addendum | 1 (`260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`, its closing sentence) |
 | Agent errors | 0 |
 | Human gates hit | 1 (the scope gate) |
 

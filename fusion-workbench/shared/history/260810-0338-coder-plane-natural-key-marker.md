@@ -4,7 +4,7 @@
 **Date:** 2026-08-10 03:38
 **Status:** Complete
 **Task:** T4 (queue entry 4, `I:260807-1939-plane-key`)
-**Source record:** `fusion-workbench/shared/issues/260807-1939_o_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md`
+**Source record:** `260807-1939_*_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md`
 
 ## What changed
 

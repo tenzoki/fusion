@@ -64,11 +64,11 @@ either profile. This is a robustness gap, not a live fault.
 
 ## Cross-references
 
-- Plan: `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/shared/planning/260807-2024_*_two-language-declarations.md` step S8
+- Plan: `fusion-workbench/archive/260817-1907-safe-cleanup-scoped/260807-2024_*_two-language-declarations.md` step S8
   ("`default-voice-*.yaml` carries no such pointer and is not touched")
 - Rule: `rules/agent-setup.md` `## Voice profiles`
 - Rule: `rules/fusion-workbench-conventions.md` `## Project language`
-- Review: `fusion-workbench/shared/reviews/260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
+- Review: `260807-2154-ontorev-chat-voice-sibling-reference-and-version-bump.md`
 
 ---
 
@@ -97,11 +97,11 @@ Severity stays Low, and both proposed items still need user approval: item 1 is 
 a file every consuming project holds.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Neither `stilwerk/default-voice-en.yaml` nor `-de.yaml` declares a `scope:` key or carries the long-form-writing-profile phrase, so the reference still resolves only through `rules/agent-setup.md`. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: Neither `stilwerk/default-voice-en.yaml` nor `-de.yaml` declares a `scope:` key or carries the long-form-writing-profile phrase, so the reference still resolves only through `rules/agent-setup.md`. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 
-## 260821-0100 (ontocoder, plan step 6) — item 2 landed; stays `_o_` for item 1
+## 260821-0100-ontocoder-writing-profiles-carry-the-handle.md (ontocoder, plan step 6) — item 2 landed; stays `_o_` for item 1
 
 **Item 2 is done.** Both writing profiles now name their own role in their own text, so the
 target side is no longer silent:
@@ -116,7 +116,7 @@ target side is no longer silent:
 
 **Item 1 stays open, and it is why this record keeps its `_o_` marker.** No `scope:` key was
 added, by
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`,
+`260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`,
 which chose option 2: the text handle alone, the key deferred. That decision was answered by
 the orchestrator during an unattended run and is itself still open, so the schema question
 reaches the user as a live question rather than as a change already made. Verified after this
@@ -134,34 +134,34 @@ both writing profiles. Neither file was in step 6's scope.
 
 Verification: `ruby -ryaml -e 'YAML.safe_load'` on both files, exit 0. `cd hooks && npm
 test`, exit 0, 718 tests. Log:
-`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0100-ontocoder-writing-profiles-carry-the-handle.md`.
+`260821-0100-ontocoder-writing-profiles-carry-the-handle.md`.
 
 ---
-**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0416-reconciliation.md`).
-**STAYS `_o_` for item 1. Item 2 is done and the cross-language residual the 260821-0100 note names
+**Reconciliation 260821-0412** (reconciler, domain `code`, HEAD `247abfe`; log `260821-0416-reconciliation.md`).
+**STAYS `_o_` for item 1. Item 2 is done and the cross-language residual the 260821-0100-ontocoder-writing-profiles-carry-the-handle.md note names
 is also closed, by a commit that note could not have seen.**
 
 Item 2, re-measured: `grep -ril "long-form writing profile" stilwerk/` names all four profiles, at
 `chat-voice-en.yaml:8` and `:12`, `default-voice-en.yaml:4` and `:11`, `default-voice-de.yaml:4`, and
 `chat-voice-de.yaml:12`.
 
-**The residual is closed.** The 260821-0100 note ends by saying the failure scenario in this record,
+**The residual is closed.** The 260821-0100-ontocoder-writing-profiles-carry-the-handle.md note ends by saying the failure scenario in this record,
 this repository's own chat-`de`-artifacts-`en` pairing, is not closed, and names the two ways to
 close it: the English phrase added to `chat-voice-de.yaml`, or both handles carried in both writing
 profiles. The first landed twenty-eight minutes later in `ca83e79`, which put the English term into
 `chat-voice-de.yaml:12` as a parenthetical gloss beside the German one. An agent here now holds a
 German chat profile and an English writing profile that share a plain-text match in both directions.
 That commit was made against
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`,
+`260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`,
 not against this record, which is why no note here recorded it.
 
 **Item 1 is what holds the marker.** `grep -n '^scope:'` over both writing profiles exits 1; the
 `scope:` asymmetry against the two chat profiles stands. The record itself says item 1 is a schema
 change to a file every consuming project holds a copy of and must not be made without the user's
 approval. It was answered in the user's absence, as
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`
+`260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`
 option 2, text handle now and key deferred, and that decision is still `_o_`. So the schema question
 reaches the user as a live question, which is the correct state.
 
 ---
-Resolved: referred (decision) — item 2 landed and the cross-language residual closed in ca83e79; item 1, the `scope:` key on the two writing profiles, is the decision's question; circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md
+Resolved: referred (decision) — item 2 landed and the cross-language residual closed in ca83e79; item 1, the `scope:` key on the two writing profiles, is the decision's question; 260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md

@@ -5,8 +5,8 @@
 **Status:** implemented
 **Filed by:** coder (Umsetzung von Schritt 2; die Antwort gab der Nutzer am 260807-0945)
 **Cross-references:**
-- `circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_*_plan-guard-misst-statt-orakelt.md` — Entscheidung 3 und Schritt 2
-- `circles/260804-1205-shell-reachability-model/decisions/260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` — die bindende Entscheidung, Option 3
+- `260807-0931_*_plan-guard-misst-statt-orakelt.md` — Entscheidung 3 und Schritt 2
+- `260807-0825_*_should-the-guard-predict-shell-writes-or-enforce-them.md` — die bindende Entscheidung, Option 3
 - `hooks/guard.ts` — die Stelle, an der der Zweig stand, trägt den Verweis auf diesen Satz
 - `rules/protected-path-discipline.md` §`### What a halt costs you` — die Textstelle, die den alten Zustand beschreibt und in Schritt 6 nachzuziehen ist
 

@@ -5,7 +5,7 @@
 The active Circle's record carries its plan in the head field, with the plan's current marker
 spelled out as a literal rather than as the wildcard the citation convention prescribes. The field
 and its exact spelling are at
-`circles/260819-1645-four-constraints-on-deep-change/_t_circle.md:6`.
+`260819-1645-four-constraints-on-deep-change:6`.
 
 It resolves today, so no gate complains. It stops resolving the moment the plan transitions — which
 is due now, since nine of the plan's ten steps are done and the tenth is struck. And a Circle record
@@ -29,7 +29,7 @@ creates.
 `agents/orchestrator.md` `## Circle head fields`)
 **Affects:** the head field named above
 **Cross-references:**
-`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`
+`260806-0015_*_zitierform-fuer-workbench-records.md`
 (the wildcard form for a marker that moves); `rules/circle-records.md` `### Citation form in the
 portfolio` (the pointer-versus-statement test — this is a pointer, so it stars)
 

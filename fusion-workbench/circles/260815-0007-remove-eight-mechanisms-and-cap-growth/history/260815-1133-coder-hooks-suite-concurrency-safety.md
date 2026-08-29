@@ -4,14 +4,14 @@
 **Agent:** coder
 **Status:** Complete
 **Trigger:** Inserted prerequisite step P-3b of Circle `260815-0007-remove-eight-mechanisms-and-cap-growth`.
-**Binding record:** `shared/decisions/260811-2009_a_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md` — option 2, chosen by the user.
-**Standing on:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-0850-bugfix-legacy-halt-clearing-flake.md` (the deterministic diagnosis of case 2).
+**Binding record:** `260811-2009_*_is-the-hooks-suite-meant-to-be-run-concurrently-with-itself-and-if-not-who-serialises-it.md` — option 2, chosen by the user.
+**Standing on:** `260815-0850-bugfix-legacy-halt-clearing-flake.md` (the deterministic diagnosis of case 2).
 
 ---
 
 ## What was wrong, restated as the three independent faults it turned out to be
 
-The decision record and issue `260814-2118` between them already separated three
+The decision record and issue `260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md` between them already separated three
 failure shapes. Working through them established that they are three separate causes and
 that a fourth one, nobody's record, was sitting underneath two of them:
 
@@ -179,7 +179,7 @@ say; the reconciler's note of 260811-2330 recorded that "which of the 52 died is
 established". Two things are now established: the file, and that a real SIGTERM reaches the
 worker. What sends it is not established. It is out of this step's scope, it predates this
 change, and it is held by
-`shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`,
+`260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`,
 whose marker stays open for exactly that reason.
 
 Two smaller residuals, neither a false failure:
@@ -206,9 +206,9 @@ Two smaller residuals, neither a false failure:
 
 ## Records
 
-- `shared/issues/260810-1135` — closed, with the evidence above.
-- `shared/issues/260811-1409` — closed, with the evidence above.
-- `shared/issues/260814-2118` — **not** closed. Two of its three shapes are gone; the third
+- `260810-1135` — closed, with the evidence above.
+- `260811-1409` — closed, with the evidence above.
+- `260814-2118` — **not** closed. Two of its three shapes are gone; the third
   is fault 3. A measurement section was appended and the marker left open.
-- `shared/decisions/260811-2009` — left at `_a_`. The `_a_` → `_i_` transition wants the
+- `260811-2009` — left at `_a_`. The `_a_` → `_i_` transition wants the
   commit hash that carries this work, and this agent does not commit.

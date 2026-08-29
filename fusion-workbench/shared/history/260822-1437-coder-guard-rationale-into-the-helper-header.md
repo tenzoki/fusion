@@ -99,7 +99,7 @@ so all four are byte-identical to HEAD `370bfc5`.
 - `/Users/k1/Projects/productive/fusion/skills/cleanup/SKILL.md`
 - `/Users/k1/Projects/productive/fusion/skills/help/SKILL.md`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/surface-growth.golden`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260822-1421_c_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
+- `/Users/k1/Projects/productive/fusion/260822-1421_*_two-skill-bodies-lost-the-x-guard-rationale-to-a-header-that-does-not-carry-it.md`
   (renamed from `_o_`, `Resolved:` note appended, status closed)
 
 Not committed. The rename is left unstaged for the orchestrator.

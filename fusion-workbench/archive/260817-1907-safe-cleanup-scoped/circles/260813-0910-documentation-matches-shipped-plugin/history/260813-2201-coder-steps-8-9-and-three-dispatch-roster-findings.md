@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-13 22:01
 **Status:** Complete
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `planning/260813-1820_p_documentation-matches-shipped-plugin.md`, steps 8 and 9
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, steps 8 and 9
 **Issues closed:** three, all stamped `260813-2052`
 
 ## What was done

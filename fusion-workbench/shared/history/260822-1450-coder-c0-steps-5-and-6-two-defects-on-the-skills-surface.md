@@ -4,14 +4,14 @@
 **Status:** Complete
 **Agent:** coder
 **Dispatch:** orchestrator, steps 5 and 6 of
-`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`,
+`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`,
 combined into one pass because both touch `skills/*/SKILL.md` and both were expected to move the
 same reference-resolution pin.
 
 ## What changed
 
 `skills/setup/SKILL.md`, Step 0e — **+372 bytes**, closing
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md`.
+`260821-0302_*_step-0es-repair-guards-one-of-its-three-blocks-and-its-done-report-omits-the-outcome-that-guard-emits.md`.
 
 - Part 1: the Done-report contract gained the `source-root-unresolved` skip as a reported outcome,
   and the enumeration's head became "**The eight tokens**", naming the skip as the first of them
@@ -22,7 +22,7 @@ same reference-resolution pin.
   longer leaves an empty `.asset-provenance` behind. Byte-neutral, and identical on a resolving root.
 
 `skills/help/SKILL.md`, topic 4 — **−68 bytes**, closing
-`shared/issues/260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`.
+`260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`.
 
 - The upgrade section is capped at the **last three releases** (option 2 at Gate B, N = 3), with one
   standing "**Older than that:**" line pointing at `$FUSION_SRC/docs/`.
@@ -55,7 +55,7 @@ rows and the total.
 
 ## Filed
 
-`shared/issues/260822-1503_o_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
+`260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
 — `CLAUDE.md`'s `docs/` row claims every upgrade note is pointed at from `/fusion:help`'s update
 topic, which the cap made false for three of the six. `CLAUDE.md` is the curator's surface and was
 outside this step's file scope.

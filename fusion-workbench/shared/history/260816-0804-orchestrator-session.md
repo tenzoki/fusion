@@ -1,4 +1,4 @@
-# Orchestrator Session — 260816-0804
+# Orchestrator Session — 260816-0804-orchestrator-session.md
 
 **Directive:** Given by the user in two parts. First: work through the defect records, scoped
 by the user at a gate to the single record then in progress. Second: the two independent defects
@@ -45,7 +45,7 @@ staging check does not read them as this session's miss.
 
 ### Turn 1
 
-**Task I:0136** — close part 2 of defect record `260816-0136`. Executor `coder`, three passes.
+**Task I:0136** — close part 2 of defect record `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`. Executor `coder`, three passes.
 
 - Pass 1 produced the three edits and returned `npm test` exit 1. Not a defect: the golden
   fixture pins each rule file's byte size and edit 3 moved one by 80 bytes. The remedy is
@@ -135,7 +135,7 @@ rebalance would cost the user a gate for nothing.
 
 ### Turn 2
 
-Two tasks, both from `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`. The
+Two tasks, both from `260816-0740-rhetorical-register-of-agent-output.md`. The
 user chose the order at a gate: curator before coder, because both fixes touch
 `rules/user-facing-output.md` and cannot run concurrently.
 
@@ -145,7 +145,7 @@ a new normative requirement is neither a cross-surface contradiction nor a histo
 obsolescence. It stated that approval would therefore be the user overriding its evidence
 requirement rather than a tiered change, and refused to route around its own rule. The user saw
 both texts in full and both tier reasonings, and approved. The override is recorded as an override
-in section 9 of `shared/history/260816-1251-curator-run.md`; neither entry was given a tier
+in section 9 of `260816-1251-curator-run.md`; neither entry was given a tier
 retroactively.
 
 The curator changed the record's proposed wording on four counts. Two are worth keeping in mind
@@ -209,14 +209,14 @@ Queue empty after Turn 2. No circuit breaker tripped. Turn budget 12, two Turns 
 | Human gates hit | 4 |
 
 The four record rows are read off the stores rather than tallied, per the orchestrator's Phase 4
-rule. Anchor `433e206`, session start `260816-0804`, both halves measurable.
+rule. Anchor `433e206`, session start `260816-0804-orchestrator-session.md`, both halves measurable.
 
 ## Review coverage
 
 **Range:** `433e206..HEAD` — 6 commits
 **Covered by:**
-- `shared/reviews/260816-1049-coderev-tracked-workbench-split-and-kept-line.md` — `**Reviewed-range:** 433e206..b18a8cf`, covers 1
-- `shared/reviews/260816-1330-coderev-repunctuation-and-gate-contract.md` — `**Reviewed-range:** b18a8cf..6049d3e`, covers 3
+- `260816-1049-coderev-tracked-workbench-split-and-kept-line.md` — `**Reviewed-range:** 433e206..b18a8cf`, covers 1
+- `260816-1330-coderev-repunctuation-and-gate-contract.md` — `**Reviewed-range:** b18a8cf..6049d3e`, covers 3
 
 **Not covered:**
 - `dd560ab` chore(review): the repunctuation claim is verified independently

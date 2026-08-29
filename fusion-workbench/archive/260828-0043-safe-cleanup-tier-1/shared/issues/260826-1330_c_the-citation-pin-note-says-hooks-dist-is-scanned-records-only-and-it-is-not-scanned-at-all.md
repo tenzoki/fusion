@@ -12,12 +12,12 @@ re-approves is correct; the reason it hands the next re-approver is not.
 **Filed by:** coderev, Kai Stalmann <ks@qantr.com>
 
 **Severity:** Low. Nothing behaves wrongly and the pinned number is right — it was re-derived
-independently in review `circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-1330-coderev-the-last-uncovered-commit.md`.
+independently in review `260826-1330-coderev-the-last-uncovered-commit.md`.
 What is wrong is a sentence written expressly so the next re-approver would not have to re-derive it,
 and it over-claims what the gate covers.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0154_*_the-reference-pin-shaped-a-comment-away-from-naming-a-path-and-the-vagueness-is-the-gates-doing.md`
+`260826-0154_*_the-reference-pin-shaped-a-comment-away-from-naming-a-path-and-the-vagueness-is-the-gates-doing.md`
 (the same pin, the other direction: there the pin distorted a comment, here a note about the pin
 misdescribes the pin).
 
@@ -32,7 +32,7 @@ entry:
 > untouched.
 
 The same sentence stands in
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1200-coder-z2-the-three-remaining-counts.md`,
+`260826-1200-coder-z2-the-three-remaining-counts.md`,
 under `## The citation pin`.
 
 ## What the surface actually is
@@ -86,4 +86,4 @@ record above is a session record and is left as written. No behaviour, no number
 
 ---
 
-**Resolved:** 2026-08-27, plan `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/planning/260827-1756_p_repair-the-twenty-open-defect-records.md` step 15. The clause on `hooks/lib/__tests__/reference-resolution-lint.test.ts:479` now states the two facts separately: `hooks/dist/` is outside the scanned surface because `surface()`'s hook loops are non-recursive and `isFile()`-filtered, and the rewritten `hooks/lib/events-query.ts` docstring moved no path count because those sources are `recordsOnly`. Same line, line count unchanged, no path or anchor token added, `BASELINE` unmoved. The history record named above is left as written.
+**Resolved:** 2026-08-27, plan `260827-1756_*_repair-the-twenty-open-defect-records.md` step 15. The clause on `hooks/lib/__tests__/reference-resolution-lint.test.ts:479` now states the two facts separately: `hooks/dist/` is outside the scanned surface because `surface()`'s hook loops are non-recursive and `isFile()`-filtered, and the rewritten `hooks/lib/events-query.ts` docstring moved no path count because those sources are `recordsOnly`. Same line, line count unchanged, no path or anchor token added, `BASELINE` unmoved. The history record named above is left as written.

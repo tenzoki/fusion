@@ -4,9 +4,9 @@
 
 **Severity:** Low — nothing is wrong today; the next prose assertion added through the helper reintroduces the same failure.
 **Domain:** code
-**Filed by:** coderev, reviewing `7342fdd` (`shared/reviews/260813-1051-coderev-plane-curl-response-via-temp-file.md`)
+**Filed by:** coderev, reviewing `7342fdd` (`260813-1051-coderev-plane-curl-response-via-temp-file.md`)
 **Affects:** `hooks/lib/__tests__/circle-stash-git-exclusion.test.ts:52` (the helper), `:205-212` (where the fix landed)
-**Cross-references:** `shared/issues/260813-0828_c_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
+**Cross-references:** `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md`
 
 ---
 

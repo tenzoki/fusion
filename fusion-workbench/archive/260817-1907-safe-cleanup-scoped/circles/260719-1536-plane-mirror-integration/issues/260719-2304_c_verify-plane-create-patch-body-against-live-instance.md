@@ -20,4 +20,4 @@ Reconciliation (2026-07-19, reconciler, domain=code): LEFT OPEN — verified thi
 ---
 Resolved: The subject bin/fusion-plane and its doctor subcommand were deleted with the whole Plane mirror in d0ddabb; there is no helper left to verify against a live instance.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

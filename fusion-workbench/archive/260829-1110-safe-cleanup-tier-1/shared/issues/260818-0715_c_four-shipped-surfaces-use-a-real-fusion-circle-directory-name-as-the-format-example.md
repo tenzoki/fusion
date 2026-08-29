@@ -3,7 +3,7 @@ Four shipped surfaces use a real fusion Circle directory name as the format exam
 ---
 
 `260716-1847-workbench-umbau` is a live Circle directory in fusion's own workbench
-(`fusion-workbench/circles/260716-1847-workbench-umbau/`). It is also the format example in four
+(`fusion-workbench/260716-1847-workbench-umbau`). It is also the format example in four
 places that ship to every consuming project:
 
 | Site | Reaches |
@@ -40,24 +40,24 @@ syntax.
 **Severity:** Low
 **Domain:** code
 **Filed by:** analyst, analysis `260818-0715`
-**Cross-references:** `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` findings 1 and 3, `shared/issues/260817-2110_c_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (same class, measured instance)
+**Cross-references:** `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` findings 1 and 3, `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (same class, measured instance)
 
 ---
 **Reconciliation 260818-0814** (reconciler, domain `code`, HEAD `f3a3565`). Still open, and re-read
 rather than assumed. All four cited sites carry `260716-1847-workbench-umbau` verbatim at the exact
 line numbers filed: `bin/fusion-paths:262` (the empty-pointer stderr), `rules/fusion-workbench-conventions.md:27`
 (the layout tree) and `:91` (the `.active-circle` contract), `skills/next/SKILL.md:42` (the explicit
-invocation form). The Circle directory `circles/260716-1847-workbench-umbau/` still exists, so the
+invocation form). The Circle directory `260716-1847-workbench-umbau` still exists, so the
 resolution-lint reading the record describes is unchanged. Nothing in this session's four commits
 (`1dc062d..f3a3565`) touched any of the four files.
 
 Two further occurrences exist and are **outside** this record's scope as written, named here so a
 one-change fix does not sweep them by accident. `rules/circle-records.md:41` cites
-`circles/260716-1847-workbench-umbau/decisions/260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`
+`260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`
 as the binding decision — a provenance citation, which analysis `260818-0715` finding 3 puts
 deliberately out of scope, and which must keep the real name to resolve at all.
 `hooks/lib/__tests__/fusion-paths.test.ts:82` uses the token as a test constant and reaches no
-consuming session. Marker stays `_o_`. Log: `shared/history/260818-0814-reconciliation.md`.
+consuming session. Marker stays `_o_`. Log: `260818-0814-reconciliation.md`.
 
 ---
 Resolved: fixed — the two rule sites take bin/fusion-paths' placeholder form <YYMMDD-HHMM>-<slug> (rules/fusion-workbench-conventions.md:28, rules/fusion-workbench-conventions.md:83); bin/fusion-paths carries it since step 7; residual: skills/next/SKILL.md:5 still carries the real name at this HEAD, step 10's half

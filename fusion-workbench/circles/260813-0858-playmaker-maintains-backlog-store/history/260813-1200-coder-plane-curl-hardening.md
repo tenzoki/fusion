@@ -9,9 +9,9 @@
 
 | Record | Outcome |
 |---|---|
-| `shared/issues/260813-1051_p_the-http-code-is-still-read-from-the-noisy-channel-and-a-zshexit-hook-writes-after-curl.md` | Closed |
-| `shared/issues/260813-1051_p_an-unguarded-mktemp-in-plane-curl-degrades-into-a-wrong-answer-because-every-call-site-suspends-set-e.md` | Closed except the EXIT-trap hygiene point (its "two smaller faults", item 2) |
-| `shared/issues/260813-1051_p_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md` | Closed, both lines |
+| `260813-1051_*_the-http-code-is-still-read-from-the-noisy-channel-and-a-zshexit-hook-writes-after-curl.md` | Closed |
+| `260813-1051_*_an-unguarded-mktemp-in-plane-curl-degrades-into-a-wrong-answer-because-every-call-site-suspends-set-e.md` | Closed except the EXIT-trap hygiene point (its "two smaller faults", item 2) |
+| `260813-1051_*_plane-curl-interpolates-tmpdir-unquoted-into-the-zsh-command-string.md` | Closed, both lines |
 
 ## What changed
 
@@ -83,7 +83,7 @@ against the fix.
 
 1. An exit hook that prints after curl is not mistaken for the status code (`TRAPEXIT` +
    `zshexit`, neither printing at startup — the startup-banner guard belongs to
-   `260813-1051_o_the-plane-curl-regression-guard-only-fires-…` and was deliberately left alone).
+   `260813-1051_*_the-plane-curl-regression-guard-only-fires-…` and was deliberately left alone).
 2. A `$TMPDIR` with a space and a command substitution in it neither breaks the request nor
    executes.
 3. A `$TMPDIR` it cannot create a temp file in is named, not reported as an HTTP error. Uses

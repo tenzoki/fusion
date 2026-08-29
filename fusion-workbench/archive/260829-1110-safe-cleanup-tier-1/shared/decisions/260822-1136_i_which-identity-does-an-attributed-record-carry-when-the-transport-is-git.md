@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** shaper
 **Cross-references:**
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (capability C3, which specifies `$USER` as the default and names this record as the residual);
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (capability C3, which specifies `$USER` as the default and names this record as the residual);
 `skills/memo/SKILL.md:38` (the existing mechanism, `echo "$USER"`, and the one place a person already appears in a fusion filename)
 
 ---
@@ -55,7 +55,7 @@ No record template gained a person field in `370bfc5..9f65463`: the decision-rec
 at C3's planning gate and C3 has not started.
 
 ---
-Answered: `circles/260824-0530-record-attribution-and-circle-claim/_t_circle.md:15` `## Grounding snapshot` — the user answered in chat on 260824; attribution takes the git identity, the claim takes the git identity plus a locally minted checkout identifier, and none of the three options above is selected.
+Answered: `260824-0530-record-attribution-and-circle-claim:15` `## Grounding snapshot` — the user answered in chat on 260824; attribution takes the git identity, the claim takes the git identity plus a locally minted checkout identifier, and none of the three options above is selected.
 
 ## Answer (user, 260824)
 
@@ -65,7 +65,7 @@ Answered: `circles/260824-0530-record-attribution-and-circle-claim/_t_circle.md:
 
 **The claim is the git identity plus a checkout identifier.** Who holds a Circle is not answered by the git identity, because two checkouts of one person carry the same git identity and the claim would pass. That collision is exactly what the field exists to prevent. The checkout identifier is minted once at Setup, lives in class L of the partition in `rules/workbench-tracking.md`, and therefore never travels, which is what makes it unique by construction.
 
-**No registry.** The user proposed `fusionusers.jsonl`, carrying an alias beside `user@host`, git name and git mail, and then withdrew the proposal himself as too complex. Three costs stand behind that withdrawal. It would be a tracked file with many writers, which is the shape `circles/260823-0023-settle-what-travels-between-checkouts/` spent a full pass reducing to exactly one. A person not yet enrolled in it could file nothing. And an entry goes stale in silence the moment somebody changes a git configuration, which is the failure mode a registry is least able to notice.
+**No registry.** The user proposed `fusionusers.jsonl`, carrying an alias beside `user@host`, git name and git mail, and then withdrew the proposal himself as too complex. Three costs stand behind that withdrawal. It would be a tracked file with many writers, which is the shape `260823-0023-settle-what-travels-between-checkouts` spent a full pass reducing to exactly one. A person not yet enrolled in it could file nothing. And an entry goes stale in silence the moment somebody changes a git configuration, which is the failure mode a registry is least able to notice.
 
 **What the user gives up, and knew before agreeing.** A stable alias that survives a changed git address. In a long-lived history that is a real loss, and it was named to him before he answered.
 
@@ -77,9 +77,9 @@ While the answer was being taken, the orchestrator told the user that the git id
 
 Measured on 260824 in `/Users/k1/Projects/test`: a repository with **no remote configured** still resolves a full identity, from the global `~/.gitconfig`, so a remote is irrelevant to whether an identity is available. The same measurement showed two addresses for one person already coexisting in this user's environment, a git identity `ks@qantr.com` beside an account address `kai@qantr.com`.
 
-The consequence lands on the claim rather than on attribution. A person working from a second machine whose git configuration differs is read as somebody else, and `/fusion:next` refuses their own Circle. That is a false positive, not a detected conflict, and it is the one failure the refusal cannot tell apart from the collision it is built for. The override in `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C3` clears it: the field then carries both identities, which makes the doubling visible to the next reader instead of hiding it.
+The consequence lands on the claim rather than on attribution. A person working from a second machine whose git configuration differs is read as somebody else, and `/fusion:next` refuses their own Circle. That is a false positive, not a detected conflict, and it is the one failure the refusal cannot tell apart from the collision it is built for. The override in `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C3` clears it: the field then carries both identities, which makes the doubling visible to the next reader instead of hiding it.
 
-**The mitigation chosen is a stated precondition and no mechanism:** the same git identity on every machine a person runs fusion from. Step 6 of `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` writes that sentence into the rule text; this record states that it is the mitigation, and that no code checks it.
+**The mitigation chosen is a stated precondition and no mechanism:** the same git identity on every machine a person runs fusion from. Step 6 of `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` writes that sentence into the rule text; this record states that it is the mitigation, and that no code checks it.
 
 ---
 Implemented: 3ba7a46, 2b055a0, 0a726b5, d34141c, 12b56d1, 9efe19f — the two-value design is on disk: one helper prints the git identity and mints the checkout identifier, the rules take attribution from the first and the claim from both, and four writers fill the fields.
@@ -99,4 +99,4 @@ Each hash was checked against its own diff with `git show --stat`, not read off 
 
 **The correction this record appended after the answer was given is realised as the record itself describes it**, a stated precondition and no mechanism. `2b055a0` writes the same-git-identity-on-every-machine sentence into `### Who filed it`, with the statement that no code checks it and that the false positive it produces is one `/fusion:next` cannot tell from a real collision.
 
-**Two things this line does not claim.** It does not claim the registry was reconsidered: nothing in the range adds one, and `bin/fusion-identity` reads no shared file. And it does not claim the halt rule covers a tree that is not a git work tree at all, which is a separate question answered in this Circle's own store by `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.
+**Two things this line does not claim.** It does not claim the registry was reconsidered: nothing in the range adds one, and `bin/fusion-identity` reads no shared file. And it does not claim the halt rule covers a tree that is not a git work tree at all, which is a separate question answered in this Circle's own store by `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.

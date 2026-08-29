@@ -8,9 +8,9 @@
 **Affects:** `hooks/lib/bash-mutation-guard.ts:1794-1819` (the `DirStack` docstring, specifically `:1812-1813`), and the parallel claim at `:2360-2375` (`applyDirEffect`'s "carried by the TYPES instead")
 **Kind:** NEW in `048f3db`. The type change is right; the sentence wrapped around it claims more than the type buys.
 **Cross-references:**
-`issues/260803-2237_c_…` (the defect the sum type closed — closure is correct, no reopen),
-`issues/260803-2039_c_…` (bare `pushd`, the OTHER depth defect, which the sum type does not address),
-`issues/260804-1027_o_…` (the stale audit recipe — same paragraph family, close together).
+`260803-2237_*_…` (the defect the sum type closed — closure is correct, no reopen),
+`260803-2039_*_…` (bare `pushd`, the OTHER depth defect, which the sum type does not address),
+`260804-1027_*_…` (the stale audit recipe — same paragraph family, close together).
 
 ---
 
@@ -27,7 +27,7 @@ The sum type buys one of the two facts the invariant needs, and the sentence cla
 **What the compiler does prove.** A give-up is a total assignment — `unmodelled` sets
 `state.dirStack = STACK_UNKNOWN` (`:1981`), and the `unknown` arm has no `entries` field, so
 `.map()`-style zeroing cannot be written back and `popd` cannot read the model's emptiness as
-bash's (`:2492-2496`). That closes `260803-2237` and it closes it properly.
+bash's (`:2492-2496`). That closes `260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md` and it closes it properly.
 
 **What the compiler does not prove.** That the model's depth equals bash's *while the stack
 is `known`*. Nothing in the type stops `{ kind: "known", entries: [...] }` from holding the
@@ -40,8 +40,8 @@ two mutation sites:
 - `:2497` — `popd` pops on `known` only.
 
 That argument is correct today. It is also **exactly the kind of argument that was wrong
-twice in this Circle**: `260803-2039` (bare `pushd` reaches `firstDirArg`, is correctly told
-there is no operand, and was pushed onto the model's stack anyway) and `260803-2237` (the
+twice in this Circle**: `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md` (bare `pushd` reaches `firstDirArg`, is correctly told
+there is no operand, and was pushed onto the model's stack anyway) and `260803-2237_*_unmodelled-zeroes-the-stack-values-but-not-its-depth-so-an-absolute-cd-re-proves-a-shifted-stack.md` (the
 give-up was stated over values while depth survived). Both were reachability, not typing.
 
 The same over-reach appears in `applyDirEffect`'s docstring at `:2360-2375`, which lists
@@ -79,7 +79,7 @@ the list above it.
 
 The property is not testable through the classifier's public surface, because a wrong depth
 only shows up as a wrong `cwd` several segments later. What *is* pinnable, and what would have
-caught `260803-2039` earlier, is a depth-parity fixture: for a set of `pushd` / `popd` /
+caught `260803-2039_*_a-bare-pushd-pushes-onto-the-model-stack-where-bash-only-rotates-so-every-later-popd-is-off-by-one.md` earlier, is a depth-parity fixture: for a set of `pushd` / `popd` /
 `cd -` sequences, assert the classifier's resolved directory against the directory the real
 shell reports (`dirs` / `pwd`), in bash and zsh. `guard-bash-integration.test.ts` already has
 the shell-effect machinery for it.
@@ -101,7 +101,7 @@ Branch A in kind: a sentence claims more than it earns. It is a docstring in
 One of the six findings whose shape the plan's rule has no branch for; reported to the
 orchestrator as such.
 
-**Where it is answered.** `circles/260804-1205-shell-reachability-model` restructures the
+**Where it is answered.** `260804-1205-shell-reachability-model` restructures the
 directory model, and both docstrings are that model's. This issue's § Recommendation gives
 the replacement wording verbatim, so the fix is a paste rather than a re-derivation, and its
 § "Test coverage this needs" proposes a depth-parity fixture against the real shell that the

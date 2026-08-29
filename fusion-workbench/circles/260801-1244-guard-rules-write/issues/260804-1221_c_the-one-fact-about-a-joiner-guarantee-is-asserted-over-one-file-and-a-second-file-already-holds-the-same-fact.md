@@ -6,14 +6,14 @@
 **Domain:** code
 **Filed by:** coderev, incremental review of `4f1007f`
 **Affects:** `hooks/lib/__tests__/bash-mutation-guard.test.ts` (`the joiner table > keeps one fact about a joiner in one place`); `hooks/lib/bash-mutation-guard.ts:1706-1730` (the `JoinerFacts` docstring); `hooks/lib/shell-parse.ts:678-686`
-**Kind:** NEW in `4f1007f` as a *claim*. The second home for the fact is pre-existing (`0f9…`/`cc012fc` era, the `260804-0838` newline work).
-**Cross-references:** `decisions/260804-0947_i_…` option 4 (the mitigation this guarantee IS); `260803-2237_c_…` and `260803-2039_c_…` (the two defects the guarantee exists to prevent recurring); `circles/260804-1205-shell-reachability-model` (the Circle that restructures the second file).
+**Kind:** NEW in `4f1007f` as a *claim*. The second home for the fact is pre-existing (`0f9…`/`cc012fc` era, the `260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md` newline work).
+**Cross-references:** `260804-0947_*_…` option 4 (the mitigation this guarantee IS); `260803-2237_*_…` and `260803-2039_*_…` (the two defects the guarantee exists to prevent recurring); `260804-1205-shell-reachability-model` (the Circle that restructures the second file).
 
 ---
 
 ## What is wrong
 
-`decisions/260804-0947_i_…` chose option 4 over option 1-alone, and the stated con it
+`260804-0947_*_…` chose option 4 over option 1-alone, and the stated con it
 accepted is that the module would hold **two facts about a joiner in two places** until the
 reachability model lands. The mitigation is that both facts became rows in one table and
 that no give-up compares a joiner to anything. The test that pins it:
@@ -61,7 +61,7 @@ reader is safe.
 
 ## Why now rather than later
 
-`circles/260804-1205-shell-reachability-model` restructures `hooks/lib/shell-parse.ts` from
+`260804-1205-shell-reachability-model` restructures `hooks/lib/shell-parse.ts` from
 a segmenter into a parser, by its own Directive. That is the file holding the second copy,
 and it is the next thing to be edited. A guarantee scoped to the *other* file is at its
 least useful precisely then.
@@ -79,7 +79,7 @@ one of them being the line that states the recipe. The parenthetical "(in code)"
 whole claim and no command is given that does the stripping — the test does it in
 TypeScript. A reader who runs the documented check gets a number that contradicts the
 comment two lines above it. This is the third generation of an audit recipe in this module
-that is wrong as written (`260804-1027_o_…` is the second), and the fix is to quote a
+that is wrong as written (`260804-1027_*_…` is the second), and the fix is to quote a
 command that actually returns 1, or to point at the test and drop the recipe.
 
 ## Recommended fix
@@ -125,7 +125,7 @@ One of the six findings whose shape the plan's rule has no branch for; reported 
 orchestrator as such.
 
 **Where it is answered, and why waiting is the worse of two costs.** This issue's own
-§ "Why now rather than later" is the argument: `circles/260804-1205-shell-reachability-model`
+§ "Why now rather than later" is the argument: `260804-1205-shell-reachability-model`
 restructures `hooks/lib/shell-parse.ts` from a segmenter into a parser, which is the file
 holding the second copy of the fact. A guarantee scoped to the other file is at its least
 useful precisely then. That is a reason to route this finding **into** that Circle's opening

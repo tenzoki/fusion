@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 2 of `circles/260801-1244-guard-rules-write` (`bf75941..HEAD`)
+**Filed by:** coderev, reviewing Turn 2 of `260801-1244-guard-rules-write` (`bf75941..HEAD`)
 **Affects:** `events.jsonl`, the monitor, and anyone reading back why a session stalled
 **Cross-references:** `hooks/guard.ts:343-348` (the new halt event),
 `hooks/guard.ts:368-373` (the sibling protected-path deny, which does record it),
@@ -59,7 +59,7 @@ surface halted.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while reading STEP 2a for the halt-above-
+Found in `260801-1244-guard-rules-write` while reading STEP 2a for the halt-above-
 exemption ordering, which is correct.
 
 ---

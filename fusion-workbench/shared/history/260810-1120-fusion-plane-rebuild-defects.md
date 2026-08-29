@@ -3,7 +3,7 @@
 **Agent:** coder
 **Status:** Complete
 **Baseline:** HEAD `7ddacbc`
-**Sources:** `shared/issues/260810-1032_o_push-rebuild-map-swallows-a-failed-rebuild-…`,
+**Sources:** `260810-1032_*_push-rebuild-map-swallows-a-failed-rebuild-…`,
 `…_o_map-rebuild-has-a-third-outcome-…`, `…_o_the-new-skipped-guard-makes-one-entry-report-twice-…`,
 `…_o_map-rebuild-silently-ignores-a-positional-key-…`
 

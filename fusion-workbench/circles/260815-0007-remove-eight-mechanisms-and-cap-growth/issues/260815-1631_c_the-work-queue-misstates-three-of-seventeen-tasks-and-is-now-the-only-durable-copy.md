@@ -33,9 +33,9 @@ Three entries carry one summary. P-12's is correct; P-7's and P-8's are not.
 | P-12 | 12, *Collapse the administrative surface* | `task_start` turn 4 | `1e29572` landed | running |
 
 Corroborated three further ways: the plan carries `[DONE]` on steps 7 and 8 at
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md:241` and `:255`; `_t_circle.md:217` records
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md:241` and `:255`; `_t_circle.md:217` records
 Turn 3 as "steps P-7 to P-9 (conceptrev removed, investigator folded into analyst, …)"; and
-`shared/history/260814-2306-orchestrator-session.md:239-240` lists the same three commits.
+`260814-2306-orchestrator-session.md:239-240` lists the same three commits.
 
 ## Why this is not cosmetic
 
@@ -60,7 +60,7 @@ step 11 landed. This is the traded-away risk materialising inside the Turn that 
 
 The counters in the same file (`tasks_done: 13` against 9 entries marked `done`) are a separate
 record — they are the retired `progress:` block, filed as
-`260815-1631_o_the-live-agentstate-yaml-still-carries-the-progress-block-the-commit-that-renamed-it-retired.md`.
+`260815-1631_*_the-live-agentstate-yaml-still-carries-the-progress-block-the-commit-that-renamed-it-retired.md`.
 
 ## Suggested fix
 

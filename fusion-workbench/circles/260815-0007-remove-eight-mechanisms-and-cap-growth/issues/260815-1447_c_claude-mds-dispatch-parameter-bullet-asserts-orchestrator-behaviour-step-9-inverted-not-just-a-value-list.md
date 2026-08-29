@@ -9,9 +9,9 @@ narrower description than it deserves.
 **Owner:** the curator, at gate G1 (after step 12)
 **Affects:** `CLAUDE.md:59`
 **Cross-references:**
-`planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md` step 9, the
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md` step 9, the
 `**CLAUDE.md** carries no gate-forced edit for this step` bullet;
-`decisions/260815-0029_i_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`
+`260815-0029_*_what-triggers-the-analyst-executor-set-once-strategic-and-knowledge-are-gone.md`
 
 ---
 
@@ -49,4 +49,4 @@ value list to `code | data`.
 ---
 Resolved: Both edits landed in e8052e7: CLAUDE.md now says the orchestrator passes all three executors on every planner dispatch with no condition, and the domain value list reads code | data.
 
-Closed as part of the Turn-1 housekeeping batch of session 260815-2147, after a re-verification pass against HEAD confirmed the condition no longer holds.
+Closed as part of the Turn-1 housekeeping batch of session 260815-2147-orchestrator-session.md, after a re-verification pass against HEAD confirmed the condition no longer holds.

@@ -4,9 +4,9 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** `bin/fusion-plane:671-729`, `:764-781`
-**Cross-references:** commit `c923935`; `shared/issues/260810-0456_c_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md` (the fix that introduced this)
+**Cross-references:** commit `c923935`; `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md` (the fix that introduced this)
 
 ---
 
@@ -44,7 +44,7 @@ with `TMPDIR` pointed at an empty directory:
 
 | Binary | temp files left in `$TMPDIR` | fold-report lines on stderr |
 |---|---|---|
-| `ff70d3a` (before the fix) | 0 | 0 (it wrote the map instead — issue `260810-0456`) |
+| `ff70d3a` (before the fix) | 0 | 0 (it wrote the map instead — issue `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`) |
 | `c923935` (HEAD) | **24** | **24** |
 
 Control, same binary against an already-folded map: 0 files, 0 reports.
@@ -80,4 +80,4 @@ Every getter invoked `map_view` as `$(…)`, so its cache and its cleanup died w
 
 One detail worth keeping: `map_put` sets the view to what it just wrote rather than clearing it, because what it wrote is already the folded form. That removes the invalidate-and-rebuild dance instead of adding a step to it.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (Turn 3, task R4). Executor log: `shared/history/260810-0805-coder-plane-discarded-write-status.md`.
+Session: `260810-0241-orchestrator-session.md` (Turn 3, task R4). Executor log: `260810-0805-coder-plane-discarded-write-status.md`.

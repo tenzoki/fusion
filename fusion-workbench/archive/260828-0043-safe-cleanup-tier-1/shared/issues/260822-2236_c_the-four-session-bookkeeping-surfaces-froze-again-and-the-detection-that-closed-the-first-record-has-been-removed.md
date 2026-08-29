@@ -4,10 +4,10 @@ The four session-bookkeeping surfaces froze again, and the detection that closed
 
 `agentstate.yaml`, `orchestrator-live.md`, the active Circle record's `## Turn log` and the session
 history file's `## Session log` all still describe the state before Turn 1 of session
-`circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md`, while
+`260822-2204-orchestrator-session.md`, while
 that Turn ran two tasks to completion and produced two commits. `orchestrator-events.jsonl` is current, as
 it was in all four previous instances. This is the failure of
-`shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`, which was
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`, which was
 closed on 260811 by a detection mechanism that was deleted on 2026-08-15. Nothing measures the condition
 any more, so the fifth instance was found by a reconciliation reading the files, exactly as the first four
 were.
@@ -21,9 +21,9 @@ what happened in it.
 **Affects:** `agents/orchestrator.md` (the Turn-boundary write, and the two places at `:109` and `:238`
 that now state the absence of detection as a fact the orchestrator must compensate for by care)
 **Cross-references:**
-`shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the closed
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the closed
 predecessor, now carrying a `Revised by:` line pointing here);
-`shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` (the Turn-log half of the
+`260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md` (the Turn-log half of the
 same failure, open since 260801, whose part 2 asks for exactly the detection that has since been removed)
 
 ## What was measured, at HEAD `b938f68`
@@ -32,7 +32,7 @@ same failure, open since 260801, whose part 2 asks for exactly the detection tha
 |---|---|---|
 | `fusion-workbench/agentstate.yaml` | `# Updated: 260822-2210`; `current_task.id: T-1`, `status: running`; `work_queue` holds T-1 `running` and T-2 `queued` | `orchestrator-events.jsonl` carries `task_done` for T-1 and for T-2, both at `2026-08-22T20:28:48`, and `turn_end` for Turn 1 at the same second |
 | `fusion-workbench/orchestrator-live.md` | `**Tasks:** 0/2 \| **Commits:** 0`; `## Current` shows T-1 `[RUNNING]`; `## Up Next` shows T-2 `[QUEUED]`; `## Blocked` shows T-2 blocked on T-1 | 2 of 2 tasks resolved, 2 commits (`06d1bd1`, `b938f68`) |
-| `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md` | `## Turn log` is empty: the section header with nothing under it | one Turn ran, converged, and produced the Circle's only two artifacts |
+| `260822-1921-measure-what-two-checkouts-share` | `## Turn log` is empty: the section header with nothing under it | one Turn ran, converged, and produced the Circle's only two artifacts |
 | the session history file | `**Mode:** (not yet resolved — Phase 0 pending)`; `**Status:** In progress`; `## Session log` → `(Turn entries appended as the session runs.)` | `scope_resolved` at `20:10:01` records `mode=custom`; the Turn loop exited at `20:28:48` |
 | `fusion-workbench/orchestrator-events.jsonl` | `session_start`, `scope_resolved`, `queue_built`, `turn_start`, `task_start`, two `task_done`, `turn_end` | current |
 
@@ -103,7 +103,7 @@ the class `260801-1020` is filed on, arriving inside the record that reports the
 
 **Also seen: 260823-1446 by reconciler — sixth instance, in the very next session, and the diagnostic
 holds exactly.** Measured at HEAD `7cd79f1` for session
-`circles/260823-0023-settle-what-travels-between-checkouts/history/260823-0721-orchestrator-session.md`,
+`260823-0721-orchestrator-session.md`,
 which ran three Turns and produced 19 commits.
 
 | Surface | Says | Reality |
@@ -121,7 +121,7 @@ are end-of-Turn writes a session can skip with nothing breaking.
 **Two things are new in this instance and neither weakens the record.** The history file froze harder than
 in the fifth: it never received a Directive at all, so a reader with no `agentstate.yaml` could not
 recover what this session was for. That is a live instance of
-`shared/issues/260817-1836_o_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`,
+`260817-1836_*_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`,
 and this pass could compute its Artifact↔Directive edge only because `agentstate.yaml` survived — a file
 that is class L and is deleted on a clean exit. And the fifth instance's follow-up said the four surfaces
 were written at Phase 4 "because this record was filed"; one session later they froze again, which is the
@@ -133,4 +133,4 @@ Marker stays `_o_`. Nothing in this range builds any of the three options under 
 Resolved: referred (backlog) — a freeze detection over the surviving surfaces (`work_queue` statuses, the Circle record's Turn-log entries, the `turn_end` events) is the idea, one with part 2 of 260801-1020, and nothing this Circle can build without re-adding a removed mechanism; backlog entry to be filed by the user
 
 ---
-Revised by: `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md` — the referral above names `turn_end` events among the surviving surfaces a freeze detection would read, and in session `260825-0858` the `turn_end` event is precisely what did not fire while the dashboard stayed correct; the marker stays `_c_` and the `Resolved:` note stands as written.
+Revised by: `260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md` — the referral above names `turn_end` events among the surviving surfaces a freeze detection would read, and in session `260825-0858-orchestrator-session.md` the `turn_end` event is precisely what did not fire while the dashboard stayed correct; the marker stays `_c_` and the `Resolved:` note stands as written.

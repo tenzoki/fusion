@@ -44,7 +44,7 @@ Roughly:
 > rule, path resolution, state markers, issue and decision filing, inline tracking,
 > history logging, timestamps, and provenance headers on rule files.
 
-Note for whoever picks this up: `circles/260801-1244-curator` C9 partitions this file
+Note for whoever picks this up: `260801-1244-curator` C9 partitions this file
 into shards. If the partition is close, the lede is rewritten there anyway and this fix
 should be folded into it rather than applied twice.
 

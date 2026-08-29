@@ -3,8 +3,8 @@
 **Status:** Complete
 **Date:** 2026-08-13
 **Agent:** coder
-**Circle:** circles/260813-0910-documentation-matches-shipped-plugin
-**Plan:** `circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_p_documentation-matches-shipped-plugin.md`, step 5
+**Circle:** 260813-0910-documentation-matches-shipped-plugin
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, step 5
 **Files changed:** `README.md` (only)
 
 ## What the step asked

@@ -75,7 +75,7 @@ So the state changes prove the code path, and their **absence at the live moment
 non-invocation.)
 
 The absence of guard events for *allowed* Bash calls is **not** evidence either way — the
-allow path is deliberately silent (`guard.ts:161-175`, issues 260707-0750/0751). The proof of
+allow path is deliberately silent (`guard.ts:161-175`, issues 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md/0751). The proof of
 non-firing rests solely on the missing *deny-path* traces for a command that must deny.
 
 ### 4. Asymmetry: PostToolUse Bash fired, PreToolUse Bash (for this call) did not

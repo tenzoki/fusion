@@ -8,7 +8,7 @@ in one report. No code changed.
 
 ## What was done
 
-Read `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` in
+Read `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md` in
 full, then answered its four unanswered questions:
 
 1. The churn and counter apparatus — origin, intent, and why nothing acts on the output.
@@ -34,14 +34,14 @@ self-bookkeeping archaeology. Findings 2 and 4 were measured directly.
 
 ## Output
 
-- `shared/analyses/260812-0251-four-mechanisms-purpose-bindingness-and-cost.md` — the report.
+- `260812-0251-four-mechanisms-purpose-bindingness-and-cost.md` — the report.
   Three Mermaid diagrams, four verdicts, all four **change**.
 
 ## Issues filed
 
 None, deliberately. Six of the seven proposed changes are user decisions rather than executor
-defects, and two existing open records (`260811-1143`, `260811-1145`) already carry parts of the
-work. Decision `260810-1544` parts (b) and (c) are the prerequisite for Finding 4 and are already
+defects, and two existing open records (`260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`, `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`) already carry parts of the
+work. Decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` parts (b) and (c) are the prerequisite for Finding 4 and are already
 open.
 
 ## Files read, not modified

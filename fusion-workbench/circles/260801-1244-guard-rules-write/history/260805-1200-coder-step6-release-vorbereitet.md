@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md` → Schritt 6
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md` → Schritt 6
 **Auftrag:** Orchestrator-Dispatch, 2026-08-05. Ausdrücklich **bis unmittelbar vor den Push**:
 kein Push, kein Tag, kein Marketplace-Repo, kein Commit.
 
@@ -25,7 +25,7 @@ hat, und vier Agenten stehen über dem Deckel.
 Zwei Dinge, die der Guard-Halt dem Vorgänger blockiert hatte.
 
 **Die fehlende Session-Historie zu A5a und A5** ist als
-`history/260805-1054-coder-rollendeckel-und-dist-build.md` nachgetragen, rekonstruiert aus
+`260805-1054-coder-rollendeckel-und-dist-build.md` nachgetragen, rekonstruiert aus
 den Commit-Nachrichten `f41c1f6` und `199ef22` und aus dem heutigen Code. Sie ist im Kopf als
 nachgetragen gekennzeichnet, nennt den Grund (Halt) und trennt Referiertes sauber von neu
 Gemessenem — die dort behaupteten Falsifikationen sind **nicht** neu ausgeführt worden, die
@@ -192,7 +192,7 @@ Manifest-Verhalten bei `./rules/context-manifest.yaml`. Die offene Planfrage, ob
 
 ## Befunde, abgelegt und nicht behoben
 
-**`260805-1145`, Medium.** Fünf Stellen in ausgelieferten Dateien
+**`260805-1145_*_der-forensik-zeiger-im-ausgelieferten-regeltext-zeigt-auf-eine-datei-die-der-installer-nie-mitnimmt.md`, Medium.** Fünf Stellen in ausgelieferten Dateien
 (`rules/protected-path-discipline.md` 2×, `rules/protected-path-internals.md`,
 `README-hooks.md` 2×) nennen die Forensik-Analyse bei einem Pfad unterhalb von
 `fusion-workbench/`. `install.sh` kopiert `fusion-workbench` nicht und darf es nicht — es ist
@@ -200,7 +200,7 @@ das Laufzeitartefakt des Konsumenten. Der Pfad trägt zusätzlich den Namen *die
 und löste beim Konsumenten auch dann nicht auf, wenn er mitkäme. Das ist die Fehlerklasse,
 gegen die Schritt 3 geschrieben wurde: ein ausgelieferter Satz, der beim Leser falsch ist.
 
-**`260805-1150`, Low.** `README.md:26` gibt als Pin-Beispiel `FUSION_REF=tags/v5.3.0`. Tags
+**`260805-1150_*_readme-nennt-als-pin-beispiel-eine-version-die-nie-getaggt-wurde.md`, Low.** `README.md:26` gibt als Pin-Beispiel `FUSION_REF=tags/v5.3.0`. Tags
 existieren erst ab `v5.5.0`; `v5.3.0` hat es nie gegeben. Damit sind es **vier**
 Versionsflächen, nicht die drei, die `CLAUDE.md` aufzählt — und `README.md` ist die, die ein
 Nutzer zuerst liest.

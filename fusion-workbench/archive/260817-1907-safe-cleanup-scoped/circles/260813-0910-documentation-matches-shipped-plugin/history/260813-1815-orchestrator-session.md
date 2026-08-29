@@ -1,4 +1,4 @@
-# Orchestrator Session — 260813-1815
+# Orchestrator Session — 260813-1815-orchestrator-session.md
 
 **Directive:** fusion's user-facing documentation agrees with the plugin at v8.1.0 (Circle 260813-0910-documentation-matches-shipped-plugin)
 **Mode:** plan
@@ -21,7 +21,7 @@
 
 ## Session log
 
-- 260813-1815 Circle activated from anticipated to active; .active-circle written; playmaker portfolio regenerated.
+- 260813-1815-orchestrator-session.md Circle activated from anticipated to active; .active-circle written; playmaker portfolio regenerated.
 
 ## Per-Turn Log
 
@@ -74,9 +74,9 @@
 
 **Edges:**
 
-- **Artifact↔Grounding:** 9 of 10 plan steps verified landed against the artifact at HEAD `c0e4219` (per-step evidence in the plan's `## Reconciliation Log`); the suite is green, run rather than cited (`cd hooks && npx vitest run` — 49 files, 1022 tests). 25 defect records in the Circle store: 16 closed, each re-checked against its artifact and all 16 holding; 9 open, each re-verified as still present. **Four drift items**, none of them in shipped files: the residual issue the plan's risk table requires for a deferred step 10 does not exist in either issue store; step 6's completion note says "twelve corrected, four left standing" where the diff `22f892e..8d87192` shows fifteen rows changed and `bugfixer` alone unchanged (open issue `260813-2052_o_the-step-6-completion-note-…`); both conceptrev recommendations are unapplied, one of which is the risk row now justifying the deferral that happened; and three records still cite the plan under its pre-rename `_o_` filename, `_t_circle.md`'s `**Active spec/plan:**` among them. Reviewer coverage: `bin/fusion-review-coverage` reports 6 of 15 commits uncovered, of which only `c0e4219` (Turn 5) touches shipped files — stated in the Turn-5 log rather than hidden.
+- **Artifact↔Grounding:** 9 of 10 plan steps verified landed against the artifact at HEAD `c0e4219` (per-step evidence in the plan's `## Reconciliation Log`); the suite is green, run rather than cited (`cd hooks && npx vitest run` — 49 files, 1022 tests). 25 defect records in the Circle store: 16 closed, each re-checked against its artifact and all 16 holding; 9 open, each re-verified as still present. **Four drift items**, none of them in shipped files: the residual issue the plan's risk table requires for a deferred step 10 does not exist in either issue store; step 6's completion note says "twelve corrected, four left standing" where the diff `22f892e..8d87192` shows fifteen rows changed and `bugfixer` alone unchanged (open issue `260813-2052_*_the-step-6-completion-note-…`); both conceptrev recommendations are unapplied, one of which is the risk row now justifying the deferral that happened; and three records still cite the plan under its pre-rename `_o_` filename, `_t_circle.md`'s `**Active spec/plan:**` among them. Reviewer coverage: `bin/fusion-review-coverage` reports 6 of 15 commits uncovered, of which only `c0e4219` (Turn 5) touches shipped files — stated in the Turn-5 log rather than hidden.
 - **Artifact↔Directive:** the commits move **toward** the Directive, with one named promise unmet. All 15 commits land inside the surfaces the Directive names, and the shipped-file diffstat is exactly the union of steps 1 to 9's declared file lists — nothing orthogonal, nothing outside scope. `90037eb`, `0b20859`, `79ec7bb`, `9a11254`, `5d51abd`, `8d87192`, `a489966`, `27af85a`, `c663a1f`, `c0e4219` carry the content; the remaining five are the activation and the four review-artifact commits. The unmet clause is the Directive's own: *"`docs/plane-setup.md` has its command forms and configuration fields verified against `bin/fusion-plane`"*. `git log 267a65c..HEAD -- docs/plane-setup.md` returns nothing. Deferred by the user at the Turn 4 gate in favour of five open review findings, so this is a scope choice on the record, not drift — but it is unrecorded outside prose, which is what flags the edge.
-- **Grounding↔Directive:** 21 active decision records read across both stores (2 open in this Circle, 7 open + 12 answered in `shared/`); **0 conflict with the Directive**, and 2 actively support it. `shared/decisions/260813-0826_a_should-fusion-help-become-a-self-knowledge-skill-…` answers that option 1's prose work happens "inside the documentation Circle", which is what step 9 did; `shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-…` answers by re-cutting the question toward stating a claim once and citing it elsewhere, which is the form several closures took. The Circle's own two open records (the planner's domain parameter, the treatment of a decaying hand-measured number) are both consequences of the work rather than blocks on it, and both remain unanswered. One adjacent open record, `shared/decisions/260812-0254_o_should-a-cited-artifact-path-be-absolute-…`, was exercised heavily by this Circle without being answered — not a conflict, but the convention behind the three stale plan citations above.
+- **Grounding↔Directive:** 21 active decision records read across both stores (2 open in this Circle, 7 open + 12 answered in `shared/`); **0 conflict with the Directive**, and 2 actively support it. `260813-0826_*_should-fusion-help-become-a-self-knowledge-skill-…` answers that option 1's prose work happens "inside the documentation Circle", which is what step 9 did; `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-…` answers by re-cutting the question toward stating a claim once and citing it elsewhere, which is the form several closures took. The Circle's own two open records (the planner's domain parameter, the treatment of a decaying hand-measured number) are both consequences of the work rather than blocks on it, and both remain unanswered. One adjacent open record, `260812-0254_*_should-a-cited-artifact-path-be-absolute-…`, was exercised heavily by this Circle without being answered — not a conflict, but the convention behind the three stale plan citations above.
 
 **Rebalance recommendation:** revise Artifact
 
@@ -103,10 +103,10 @@ turned out to be unreachable.
 | Human gates hit | 7 |
 
 The four record counts are read off the Circle's own stores rather than tallied. They
-are taken from `circles/260813-0910-documentation-matches-shipped-plugin/{issues,decisions}/`
+are taken from `260813-0910-documentation-matches-shipped-plugin{issues,decisions}/`
 directly, because the Circle closed before this read and the resolver therefore no longer
 scans it: `bin/fusion-paths orchestrator` now returns the shared stores alone. A record was
-filed this session when its filename stamp is at or after `260813-1815`, and reached its
+filed this session when its filename stamp is at or after `260813-1815-orchestrator-session.md`, and reached its
 marker this session when that name did not exist at `267a65c`. Two decision records were
 filed and both remain open. Nothing was filed into the shared stores.
 

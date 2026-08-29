@@ -21,7 +21,7 @@
  * to have thrown in the first place. With that directory unwritable the emit
  * threw again inside the handler, `allow()` never ran, and the process exited 1
  * with empty stdout: measured at `exit=1, STDOUT: []` on both hooks
- * (`shared/issues/260809-1109_*_both-hooks-fail-silent-instead-of-open-….md`).
+ * (`260809-1109_*_both-hooks-fail-silent-instead-of-open-….md`).
  * The recovery path depended on the resource whose failure it was recovering
  * from, so the one error class most likely to occur was the one class it could
  * not survive. What Claude Code makes of a hook that exits non-zero saying
@@ -42,15 +42,15 @@
  * `.guard-state/` at mode `0555` or with `churn.json` replaced by a directory:
  *
  *   - the protected-path deny and the decision-governed deny
- *     (`shared/issues/260809-1825_*_an-unwritable-guard-state-directory-….md`),
+ *     (`260809-1825_*_an-unwritable-guard-state-directory-….md`),
  *   - the halt refusing a write, which fails through `emitEvent` rather than
  *     through `saveEscalation` — the same class reached by a different call,
  *   - and the protected-path halt's explanation, which the churn heatmap
  *     discarded on its way out
- *     (`shared/issues/260809-2045_*_the-churn-half-still-runs-before-the-reply-….md`).
+ *     (`260809-2045_*_the-churn-half-still-runs-before-the-reply-….md`).
  *
  * A fourth site sat on the git branch deny
- * (`shared/issues/260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-….md`);
+ * (`260809-2046_*_the-git-branch-deny-is-a-fourth-fail-open-site-….md`);
  * it went with that policy rather than being fixed, but it is named here because
  * it is the one that showed the class was not four sites but a shape.
  *
@@ -199,7 +199,7 @@ export function failOpen(
  * that failed or exited first turned the write into an unhandled `'error'`
  * event — a node stack trace from a helper whose contract is that stderr
  * carries reasons and the exit code says which figure was missing (measured:
- * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0906_*_the-event-query-program-dies-with-an-unhandled-epipe-when-its-reader-closes-stdout-first.md`).
+ * `260826-0906_*_the-event-query-program-dies-with-an-unhandled-epipe-when-its-reader-closes-stdout-first.md`).
  * A reader that stops listening is not the program's fault and carries no
  * information the program should re-raise; every other stream error still
  * throws. Register once, before the first write.

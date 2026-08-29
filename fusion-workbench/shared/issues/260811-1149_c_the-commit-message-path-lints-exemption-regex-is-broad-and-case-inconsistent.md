@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, review of `7785330..cac41ef` (Turn 1)
 **Affects:** `hooks/lib/__tests__/commit-message-path.test.ts:141`
-**Cross-references:** commit `cac41ef`; issue `260811-1141` (the same over-broad name pattern, reached through `classify`)
+**Cross-references:** commit `cac41ef`; issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md` (the same over-broad name pattern, reached through `classify`)
 
 ---
 

@@ -3,9 +3,9 @@
 ---
 **Severity:** Medium
 **Domain:** code
-**Filed by:** orchestrator, session 260811-0752, realising an answered decision
+**Filed by:** orchestrator, session 260811-0752-orchestrator-session.md, realising an answered decision
 **Affects:** four skill bodies carrying the executable snippet; a new `bin/fusion-source-root`
-**Cross-references:** `shared/decisions/260810-2145_a_should-a-repeated-skill-body-snippet-become-a-bin-helper...md` — the answer this realises; `shared/issues/260811-0109_o_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md` — the instance that was paid for
+**Cross-references:** `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper...md` — the answer this realises; `260811-0109_*_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md` — the instance that was paid for
 
 ---
 
@@ -17,7 +17,7 @@ left two standing, which is the cited open record. An executable duplicate can d
 behaviour without anyone reading the files.
 
 The helper is called from skill bodies, so it meets the convention answered at
-`shared/decisions/260810-1544_a_...`: the call is guarded and reports absence in the fixed
+`260810-1544_*_...`: the call is guarded and reports absence in the fixed
 vocabulary, because the installed copy of the plugin need not carry a helper added between
 releases. Write the guard at all four call sites.
 
@@ -61,7 +61,7 @@ brought onto the new list — `bin/fusion-plugin-cwd`'s own `Consumers:` header,
 `hooks/session-start.ts`'s no-upward-walk comment, and `CLAUDE.md` in two places (the Layout
 table gained a `bin/fusion-source-root` row; the Release-process paragraph now says the
 preference covers three helpers and that the third roots *documents*, never helper resolution,
-because part (c) of `260810-1544` is unanswered).
+because part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` is unanswered).
 
 Out of scope and untouched, per the answer: the domain-capture snippet.
 

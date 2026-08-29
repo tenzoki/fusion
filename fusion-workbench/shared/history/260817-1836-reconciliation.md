@@ -4,7 +4,7 @@
 **Domain:** `code`
 **HEAD at pass:** `2552586` (session-start anchor `83a18a5`)
 **Active Circle:** none, so every store resolved to `shared/`
-**Session being closed:** `shared/history/260817-1821-orchestrator-session.md`, which stated no
+**Session being closed:** `260817-1821-orchestrator-session.md`, which stated no
 Directive and produced one commit carrying only its own setup record.
 
 ## What this pass was for
@@ -29,14 +29,14 @@ Store state after the pass: 84 open defects (was 93), 255 closed; decisions 2 op
 
 ## The plan: closed on an answer that had been sitting unapplied
 
-`shared/planning/260801-1122_*_spec-normative-consolidation.md` moved `_o_` → `_c_` and its
+`260801-1122_*_spec-normative-consolidation.md` moved `_o_` → `_c_` and its
 `**Status:**` moved to Complete, with the authoring status text preserved verbatim beside it.
 
 The marker did not move because this pass judged the work done. It moved because the user already
 decided it and nobody had carried it out. Decision
 `260814-2017_*_does-a-parent-spec-close-when-its-last-circle-does-if-three-of-its-capabilities-were-retired-rather-than-delivered.md`
 was answered on 2026-08-16 with option 1, close `_c_` with a mandatory closing note naming the three
-retirements, recorded in `shared/history/260816-1500-orchestrator-session.md`. The plan stayed `_o_`
+retirements, recorded in `260816-1500-orchestrator-session.md`. The plan stayed `_o_`
 for a further day. Four earlier reconciliation entries on that same file had each re-derived the same
 judgement and declined to act on their own authority, which was correct at the time and is what the
 decision record was filed to end.
@@ -52,7 +52,7 @@ Verified in the tree before moving the marker:
 The closing note written into the file also records something the user's answer did not cover,
 because it is a fourth case rather than a fourth retirement: C5a and C5b were **delivered and then
 removed**. The rules-write exemption and its project-level guard configuration landed in
-`circles/260801-1244-guard-rules-write` and were deleted with the protected-path half on 2026-08-12.
+`260801-1244-guard-rules-write` and were deleted with the protected-path half on 2026-08-12.
 `FUSION_ALLOW_RULES_WRITE` survives only in comments recording its retirement and in test fixtures.
 Read `Complete` on this file as "nothing further is expected from it", never as "delivered as
 specified".
@@ -67,30 +67,30 @@ removed rather than repaired.
 
 **Fixed:**
 
-- `260809-2258` — `README-hooks.md:185` dropped the stale count instead of correcting it, which was
+- `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md` — `README-hooks.md:185` dropped the stale count instead of correcting it, which was
   the record's own second fix direction.
-- `260811-2239` — `CLAUDE.md` now carries one Layout row per `bin/` helper, twelve against twelve,
+- `260811-2239_*_five-shipped-bin-helpers-have-no-claude-md-layout-row-and-the-table-says-nothing-about-being-a-selection.md` — `CLAUDE.md` now carries one Layout row per `bin/` helper, twelve against twelve,
   and the enumeration lint gates it in both directions.
-- `260811-2304`, `260811-2305` (two records) — all three are consequences of one change: the Turn
+- `260811-2304_*_the-revise-artifact-path-exits-a-turn-at-step-3c-bis-so-the-unresolved-budget-check-in-it-is-said-to-meet-never-runs.md`, `260811-2305` (two records) — all three are consequences of one change: the Turn
   check-in moved from the end of a Turn to the start of one (`agents/orchestrator.md:470`, `:655`,
   `:915`). The path that exited before the gate now meets it on re-entry, the converging Turn is no
   longer asked a question whose answer is discarded, and the unbounded-loop exception is stated
   rather than described away.
 - `260813-0825` — every one of the seven surfaces the record named now carries the v8.1.0 feature,
   and the three stale claims it cited are gone from `README-agents.md` and `CLAUDE.md`.
-- `260816-0141` — the plugin manifest's own description was brought up to date in `a7f70b9`.
+- `260816-0141_*_the-plugin-manifests-own-description-was-not-brought-to-v9-when-the-marketplace-entry-was.md` — the plugin manifest's own description was brought up to date in `a7f70b9`.
 
 **Moot:**
 
-- `260812-0758` and `260812-0843` — both are about the guard's configuration surface. There is no
+- `260812-0758` and `260812-0843_*_the-guard-and-its-configuration-must-be-simplified-project-settable-and-defaulted-to-fit-or-not-shipped-to-consumers-at-all.md` — both are about the guard's configuration surface. There is no
   inherited protected-path list left to go stale, and the second record's stronger branch ("or not
   shipped to consumers at all") is what actually happened.
 - `260812-1232` — a correction to a claim about how many inputs the escalation counter has. The
   counter, the halt and CHECK 3 were all deleted on 2026-08-16.
 
 **Twelve records are partly settled** and keep their `_o_` marker with the split recorded on the
-record itself: `260801-1410`, `260810-0510`, `260810-0819`, `260810-2025`, `260810-2110`,
-`260811-1734`, `260811-2146`, `260812-0253` (two of the five), `260814-1001`, `260814-2118`,
+record itself: `260801-1410_*_unattributed-edit-to-ontocoder-prompt-during-session.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`, `260810-0819`, `260810-2025_*_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`, `260810-2110`,
+`260811-1734`, `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`, `260812-0253` (two of the five), `260814-1001`, `260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`,
 `260816-0740`. The recurring shape is that the mechanism half was removed while the text half was
 not, or that one named instance closed while the class stayed open.
 
@@ -103,10 +103,10 @@ the record.
 Two records are defects by filing and decisions by content. Both say so in their own text, and both
 need a user choice rather than a fix, so neither can be closed by an executor:
 
-- `shared/issues/260812-2136_o_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`
+- `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`
   — its conclusion is that the choice is between a parser that reads a retired spelling and a corpus
   that keeps one.
-- `shared/issues/260816-0025_o_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`
+- `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md`
   — "fixing it changes shipped behaviour, so it is a decision to take on its own merits".
 
 To relocate either, move the file from `shared/issues/` to `shared/decisions/` by hand and translate
@@ -115,7 +115,7 @@ stores.
 
 ### One record is a candidate for closing that only the user can close
 
-`260814-2258_o_a-tracked-install-sh-vanished-from-the-working-tree-mid-task-with-no-cause-established.md`
+`260814-2258_*_a-tracked-install-sh-vanished-from-the-working-tree-mid-task-with-no-cause-established.md`
 states its own closing condition: a second occurrence, or an explicit close as not reproducible.
 `install.sh` is intact at HEAD and no second instance appears anywhere in the workbench. The
 condition for closing it is met; the act is the user's.
@@ -131,8 +131,8 @@ was checked against the tree in this pass and each is annotated on its own recor
 | `260812-0254` (plugin defects) | a `plugin-issues/` store plus a skill | neither exists anywhere in the tree |
 | `260812-0254` (cited paths) | render absolute paths in chat | no such rule in `rules/user-facing-output.md` |
 | `260815-2109` | filter the uncovered set to commits touching shipped files | `hooks/lib/review-coverage.ts` has no shipped-file predicate |
-| `260815-2312` | drop the Circle record's `Status` field | `rules/circle-records.md:70` still carries it |
-| `260815-2322` | the golden's failure text carries the green-unit sentence | the sentence is in neither the golden nor its helper |
+| `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` | drop the Circle record's `Status` field | `rules/circle-records.md:70` still carries it |
+| `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md` | the golden's failure text carries the green-unit sentence | the sentence is in neither the golden nor its helper |
 | `260816-0711` (tracked split) | move the subsection to `rules/workbench-tracking.md` | the file does not exist |
 | `260816-0719` | a test comparing committed `dist` with committed source | no such test among 37 test files |
 | `260816-1707` | `heads/main` is the standard, tags an opt-in pin | the policy is still only a default, which is what the record said is not the same thing |
@@ -143,7 +143,7 @@ indistinguishable, six weeks later, from a mechanism that exists, and the marker
 thing carrying the difference.
 
 Two of them are a **blocking pair** and should be read together: `260816-0711` cannot be realised
-until the open record `260816-1707_o_to-whom-is-the-new-workbench-tracking-rule-emitted...` is
+until the open record `260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted...` is
 answered, and that record says so in its own constraints.
 
 ## Decision-record hygiene, measured rather than asserted
@@ -151,14 +151,14 @@ answered, and that record says so in its own constraints.
 Over the 56 records in `shared/decisions/`, **18 carry a `**Status:**` header that disagrees with
 their filename marker** and 5 still carry an unfilled template stub. Counting every decision store
 including the Circles, the figure is 37 of 106. Two open records track this
-(`260811-2146`, `260812-1232`) and both were re-measured rather than re-asserted. No lint reads the
+(`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`, `260812-1232`) and both were re-measured rather than re-asserted. No lint reads the
 workbench: `hooks/lib/__tests__/marker-format-lint.test.ts` scopes to `agents/*.md` and
 `skills/*/SKILL.md` only. This pass corrected exactly one instance, as a side effect of the
 `260814-2017` marker walk.
 
 ## Reviews
 
-Four review files were annotated, none rewritten. `260716-1853`, `260722-1947`, `260722-2026` and
+Four review files were annotated, none rewritten. `260716-1853-conceptrev-spec-plane-integration-und-workbench-struktur.md`, `260722-1947-conceptrev-spec-plane-spec-comment.md`, `260722-2026-conceptrev-plan-plane-spec-comment.md` and
 `260813-1051` all review the Plane bridge, which was removed on 2026-08-15: `bin/fusion-plane` is
 gone, `templates/` holds one file, and the only surviving mention of the bridge in shipped text is
 `docs/upgrading-to-v9.md`. Their findings are preserved and are no longer actionable, and each file
@@ -166,7 +166,7 @@ now says so.
 
 ## New record filed by this pass
 
-`shared/issues/260817-1836_o_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`
+`260817-1836_*_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`
 
 The session under reconciliation stated no Directive. Two of the three Coherence edges ask about
 "the stated Directive" and are unevaluable in that state, while the three aggregate verdict values
@@ -182,13 +182,13 @@ Nothing in this pass was committed. Two marker renames appear in `git status` as
 untracked file rather than as renames, which is the failure mode open record `260810-0819` describes
 and which no convention prevents:
 
-- `shared/planning/260801-1122_o_…` → `…_c_spec-normative-consolidation.md`
-- `shared/decisions/260814-2017_a_…` → `…_i_does-a-parent-spec-close…`
+- `260801-1122_*_…` → `…_c_spec-normative-consolidation.md`
+- `260814-2017_*_…` → `…_i_does-a-parent-spec-close…`
 
 plus eight further issue renames from `_o_` to `_c_`, the new defect record, and appended
 annotations across 83 open defects, 12 decisions and 4 reviews. Stage both halves of every rename.
 
 ## Verdict
 
-Written to `shared/history/260817-1821-orchestrator-session.md` `## Coherence`. Aggregate:
+Written to `260817-1821-orchestrator-session.md` `## Coherence`. Aggregate:
 `review-needed`, driven by the one edge that was measurable.

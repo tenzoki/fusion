@@ -2,7 +2,7 @@
 
 **Reviewer:** coderev
 **Scope:** the six commits `36d9a30`, `9a96466`, `fae818b`, `a1b7872`, `843239c`, `b37f13e` — concentrated per the dispatch on (1) the holder-less stale-lock aging in `bin/fusion-commit-lock` + its new test file, (2) the two new lints, (3) the `/fusion:commit` restructure, (4) the hooks/lib comment-only changes + dist rebuild, (5) five behavioral doc-correction spot-checks.
-**Plan context:** `planning/260805-2353_c_plan-textschicht-gegen-code.md`
+**Plan context:** `260805-2353_*_plan-textschicht-gegen-code.md`
 **Verdict:** sound. The dist is byte-identical to a fresh build, the four lib changes are comment-only citation rewrites whose cited records all resolve, all 1608 hooks tests pass, and every behavioral doc claim spot-checked (six, not five) matches the code. Four issues filed, all Low: one real (demonstrated) race residual in the new holder-less reap, one doc drift the fixing commit itself created, and two honesty gaps in the lints' own exemption machinery.
 
 ---
@@ -24,11 +24,11 @@
 
 ## 3. `/fusion:commit` restructure (`b37f13e`) — flow walks clean end-to-end
 
-Steps 1→7 are consistent: nothing stages before step 6; step 3's analysis sources (`--cached` for pre-staged, `git diff -- <selected>` + untracked content for the rest) cover exactly what step 6 commits; the locked pair `with commit -- bash -c 'git add … && git commit -F …'` holds stage+commit together; the bare form is correctly restricted to the nothing-to-stage case; the `--all` bullet repeats the staged-inside-the-lock rule. This closes the Turn-2 Medium (`260806-0852`, marked `_c_`) as specified. One residual, noted not filed: content **already staged when the skill starts** (step 2: "part of the commit; note it") still sits exposed across the confirmation window — a parallel locked committer can absorb it, and step 6 would then commit less than the user confirmed. The skill cannot protect what was exposed before it ran; a cheap in-lock `git diff --cached --stat` sanity check before the commit would at least detect the absorption. Enhancement, not a defect of this restructure.
+Steps 1→7 are consistent: nothing stages before step 6; step 3's analysis sources (`--cached` for pre-staged, `git diff -- <selected>` + untracked content for the rest) cover exactly what step 6 commits; the locked pair `with commit -- bash -c 'git add … && git commit -F …'` holds stage+commit together; the bare form is correctly restricted to the nothing-to-stage case; the `--all` bullet repeats the staged-inside-the-lock rule. This closes the Turn-2 Medium (`260806-0852_*_commit-skill-haelt-stage-und-commit-nicht-als-paar-unter-dem-lock.md`, marked `_c_`) as specified. One residual, noted not filed: content **already staged when the skill starts** (step 2: "part of the commit; note it") still sits exposed across the confirmation window — a parallel locked committer can absorb it, and step 6 would then commit less than the user confirmed. The skill cannot protect what was exposed before it ran; a cheap in-lock `git diff --cached --stat` sanity check before the commit would at least detect the absorption. Enhancement, not a defect of this restructure.
 
 ## 4. hooks/lib comment-only changes + dist — verified
 
-- All four source diffs (`bash-mutation-guard.ts`, `config.ts`, `paths.ts`, `shell-parse.ts`) are docstring-only: wildcard-form citation rewrites (`_a_`/`_o_` → `_*_`) plus the `paths.ts` deferral-status text. All five cited decision records resolve in the workbench, and `260804-1632` is indeed `_d_` — matching the new "raised and DEFERRED by the user" wording exactly.
+- All four source diffs (`bash-mutation-guard.ts`, `config.ts`, `paths.ts`, `shell-parse.ts`) are docstring-only: wildcard-form citation rewrites (`_a_`/`_o_` → `_*_`) plus the `paths.ts` deferral-status text. All five cited decision records resolve in the workbench, and `260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md` is indeed `_d_` — matching the new "raised and DEFERRED by the user" wording exactly.
 - **Dist byte-identical: verified**, not taken on faith — ran `npm run build` (tsc) and `diff -r` against the committed `dist/`; zero differences.
 - Full suite: **1608 tests, 30 files, all pass** (run this session, 116 s).
 

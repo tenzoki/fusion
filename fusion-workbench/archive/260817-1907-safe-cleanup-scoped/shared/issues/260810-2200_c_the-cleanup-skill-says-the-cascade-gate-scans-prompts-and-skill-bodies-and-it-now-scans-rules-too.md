@@ -27,7 +27,7 @@ again on the next change to the file set.
 executor held `skills/cleanup/SKILL.md` in the same Turn. That restraint is why this is filed rather
 than fixed.
 
-**Filed by:** orchestrator, session `260810-1646`, on the cascade-reach executor's report.
+**Filed by:** orchestrator, session `260810-1646-orchestrator-session.md`, on the cascade-reach executor's report.
 
 ---
 Resolved: `skills/cleanup/SKILL.md:125` no longer restates the reach (260811). It now cites it — the sentence names `REACH.fileSet` in `hooks/lib/domain-cascade.ts` as the file set, points at the `describeReach()` rendering the suite compares byte-for-byte against `README-hooks.md`, and tells the reader to read the reach off that block rather than off a copy in the skill. That is the option this record asked to be considered: a citation cannot go one file set short of the gate the way the removed restatement did. No glob is repeated in the skill body, so a fourth entry in `fileSet` needs no edit here.

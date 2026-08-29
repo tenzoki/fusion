@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** claude-code (conditioning-load work, the orchestrator partition round), Kai Stalmann <ks@qantr.com>
-**Cross-references:** `agents/orchestrator.md` (the prompt the flows leave; the stubs and the retained invariants) · `rules/orchestrator-resume.md` and `rules/orchestrator-rebalance.md` (the authoring homes) · `shared/decisions/260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md` (the partition criterion's rule-side precedent)
+**Cross-references:** `agents/orchestrator.md` (the prompt the flows leave; the stubs and the retained invariants) · `rules/orchestrator-resume.md` and `rules/orchestrator-rebalance.md` (the authoring homes) · `260827-1056_*_which-parts-of-the-language-and-backlog-rules-does-every-dispatch-still-carry.md` (the partition criterion's rule-side precedent)
 
 ---
 

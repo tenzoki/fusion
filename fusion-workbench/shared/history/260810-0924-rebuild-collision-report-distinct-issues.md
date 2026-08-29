@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Source record:** `shared/issues/260810-0748_o_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md`
+**Source record:** `260810-0748_*_the-rebuild-collision-report-tells-a-human-to-close-the-plane-issue-it-kept.md`
 
 ---
 
@@ -78,6 +78,6 @@ the two new tests).
 ## Not touched
 
 `cmd_push`'s dry-run gate and the header/usage text (`4bf509e`), and `stable_basename` /
-`JQ_STABLE_KEY` (owned by record `260810-0458`). `JQ_MIGRATE_MAP`'s fold path was checked for the
+`JQ_STABLE_KEY` (owned by record `260810-0458_*_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md`). `JQ_MIGRATE_MAP`'s fold path was checked for the
 same defect and does not carry it: `JQ_FOLD_LOSERS` selects on `plane_id != plane_id`, so two old
 keys resolving to one UUID are already filtered out rather than reported as a loser.

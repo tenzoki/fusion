@@ -1,9 +1,9 @@
-# Reconciliation 260822-2239
+# Reconciliation 260822-2239-reconciliation.md
 
 **Agent:** reconciler
 **Domain:** code
-**Circle:** `circles/260822-1921-measure-what-two-checkouts-share/_*_circle.md`
-**Session:** `circles/260822-1921-measure-what-two-checkouts-share/history/260822-2204-orchestrator-session.md`
+**Circle:** `260822-1921-measure-what-two-checkouts-share`
+**Session:** `260822-2204-orchestrator-session.md`
 **Range:** `f90de0c..b938f68`, 2 commits
 **Aggregate verdict:** coherent
 
@@ -19,7 +19,7 @@ Both stores, per the two-store rule for every `SCAN_*` key.
 | Reviews | 0 | none | 0 |
 | History | 5 files including this one | none | 1 written |
 
-Counts taken at 260822-2239, after this pass's own filing. The open-issue figure includes the defect
+Counts taken at 260822-2239-reconciliation.md, after this pass's own filing. The open-issue figure includes the defect
 filed below.
 
 ## Discrepancies: 11 found
@@ -30,13 +30,13 @@ Phase-4 work it alone may write, two annotated where they stand.
 ### Corrected
 
 1. **All six met acceptance criteria of `### C1` were unticked.** Ticked in
-   `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md:134-139`, with the
+   `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md:134-139`, with the
    evidence for each recorded in that file's `## Reconciliation Log`. Criterion 7 deliberately left
    unticked: it is a conditional whose antecedent is false.
 2. **The spec carried no reconciliation entry for this session.** Appended. `**Status:**` stays
    `Partially Complete` and the marker stays `_o_`: two of five capabilities are delivered and C2
    through C4 are untouched.
-3. **`shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` was
+3. **`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` was
    closed on a mechanism that no longer exists.** Its `Resolved 260811-1005` note rests on
    `hooks/lib/state-drift.ts` and three callers. None of the four is at HEAD, verified by file:
    `hooks/lib/state-drift.ts`, `hooks/lib/__tests__/state-drift.test.ts` and
@@ -46,10 +46,10 @@ Phase-4 work it alone may write, two annotated where they stand.
    names this record by number. A `Revised by:` line was appended; the marker stays `_c_` and the
    `Resolved:` note is left unedited, per `rules/fusion-workbench-conventions.md`
    `### Issue files`.
-4. **`shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md` had no record of
-   the current instance.** One `Also seen: 260822-2236` line appended. Its part 2, making the
+4. **`260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md` had no record of
+   the current instance.** One `Also seen: 260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md` line appended. Its part 2, making the
    omission detectable, is further from existing than when it was written.
-5. **`shared/decisions/260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
+5. **`260822-1136_*_how-does-the-tracked-event-log-behave-when-two-checkouts-both-appended-to-it.md`
    carried no pointer to the measurement that settles its option 1.** The report's `## Findings`
    section 7 measured both the benefit and the ordering cost, and its own recommendation 2 says it was
    deliberately not appended to the record. Appended here as reconciliation evidence. Marker unchanged
@@ -64,7 +64,7 @@ Phase-4 work it alone may write, two annotated where they stand.
    the session history's `**Mode:**` reads `(not yet resolved — Phase 0 pending)` and its
    `## Session log` holds no entry. `orchestrator-events.jsonl` carries `task_done` for both tasks and
    `turn_end` for Turn 1, all at `2026-08-22T20:28:48`, and two commits landed. Filed as
-   `shared/issues/260822-2236_o_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
+   `260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`,
    in the shared store per the Origin Rule: this is a property of how a session runs, not of the
    measurement this Circle was executing. The four surfaces count as four discrepancies and as one
    defect: a reader checking any one of them should find the record, and the fix is one fix.
@@ -73,14 +73,14 @@ Phase-4 work it alone may write, two annotated where they stand.
 
 10. **Criterion 5 of `### C1` says the new record "is filed in the same Circle", and it is filed in
     `shared/decisions/`.** It was written at the Rebalance gate of session
-    `shared/history/260822-1009-orchestrator-session.md`, when no Circle was active, so the Origin
+    `260822-1009-orchestrator-session.md`, when no Circle was active, so the Origin
     Rule's "unknown origin means `shared/`" gives that placement. The substance is met; the literal
     placement clause is not. Ticked with the deviation stated in the spec's reconciliation entry.
     Nothing is moved: reach is cited, never re-placed.
 11. **The report's verdict table scopes the isolation failure to nesting; its own `## Implications`
     states the general form.** The table's third row reads "placed **inside** a directory that already
     holds a workbench", while `## Implications` states the precondition correctly as "each tree carries
-    its own `.fusion-setup`". The general form is what the addendum to `260822-1610` carries, so the
+    its own `.fusion-setup`". The general form is what the addendum to `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` carries, so the
     durable record is the accurate one and nothing propagates the narrower reading. Not filed: the
     narrower row is a summary of the case that actually occurred, not a false claim.
 
@@ -123,7 +123,7 @@ project; what is reproducible are the four mechanism claims above, and all four 
 under `fusion-workbench/`. Zero shipped files changed. Two records were filed into the Circle, both
 correctly `_o_` and both correctly Circle-scoped: the defect arose from the Directive's own measurement
 and the decision from its own finding. One addendum was appended in `shared/`, to
-`260822-1610_a_how-does-fusion-support-several-people-working-one-project-at-once.md`, which correctly
+`260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md`, which correctly
 stays `_a_`: no commit realises the answer, and the addendum says so itself. `260719-2141_s_` is
 terminal and carries its `Superseded by:` line. `cd hooks && npm test` exits 0 (41 files, 724 tests),
 which is what carries `workbench-citation-lint.test.ts` over every citation added this session.
@@ -133,21 +133,21 @@ Setup in the same command that created it. `**Active spec/plan:**` reads `(none 
 the account: `skills/next/SKILL.md:220` says the field "is left exactly as it stands" and that the skill
 "must not guess", while `agents/orchestrator.md:275` would have written it on the same act. The
 divergence is filed as
-`shared/issues/260822-2045_o_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`,
+`260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`,
 still open. The knock-on the issue predicts also holds and is correct as it stands: because no path was
 written, the record's `## Directive` still carries prose rather than the pointer literal, which is
 exactly what `rules/circle-records.md:173` requires while the field reads the sentinel.
 
 **Review coverage.** `bin/fusion-review-coverage --since f90de0c` reports `commits=2 reviews=0
 uncovered=2 verdict=uncovered`. Both commits touch only `fusion-workbench/`, so no reviewer had a
-shipped file to open. `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+shipped file to open. `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 settles that coverage is advisory and its own 260819-1400 note names precisely this padding: the
 uncovered count includes tracking-file commits a reviewer has nothing to open in. The gap is named
 here so the closure note can carry it, and it does not flag the Artifact edge.
 
 ## Markers moved
 
-None. Every marker in scope is already right: `260822-1610` stays `_a_` because its realisation is C2
+None. Every marker in scope is already right: `260822-1610_*_how-does-fusion-support-several-people-working-one-project-at-once.md` stays `_a_` because its realisation is C2
 through C4 and none of it is on disk; `260719-2141` stays `_s_`; the two records filed this session stay
 `_o_`; `260801-2038` stays `_c_` under a `Revised by:` line rather than reopening, per the conventions;
 the spec stays `_o_` with `Partially Complete`.

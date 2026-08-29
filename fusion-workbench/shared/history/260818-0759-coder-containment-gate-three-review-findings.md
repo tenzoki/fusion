@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-18 07:59
 **Agent:** coder
-**Task:** T2 — close `260818-0745`, `260818-0746` and `260818-0747` from review `260818-0748`
+**Task:** T2 — close `260818-0745_*_the-registry-completeness-parse-misses-an-aliased-and-a-namespace-import-so-a-named-builder-still-escapes.md`, `260818-0746_*_the-containment-headers-nothing-authored-in-the-source-claim-is-wider-than-the-relation-it-enforces.md` and `260818-0747_*_the-hex-exclusions-stated-miss-rate-is-1-in-700-and-the-arithmetic-gives-1-in-960.md` from review `260818-0748-coderev-turn-1-range-1dc062d-33645a2.md`
 **Status:** Complete
 
 ## What changed
@@ -11,7 +11,7 @@ One shipped file, `hooks/lib/__tests__/sentence-identifier-containment.test.ts`,
 plus the regenerated growth golden. `hooks/tracker.ts`, `hooks/lib/review-coverage.ts` and
 `hooks/lib/staging-drift.ts` were read and left byte-identical.
 
-### Finding 1 — the registry-completeness parse (`260818-0745`)
+### Finding 1 — the registry-completeness parse (`260818-0745_*_the-registry-completeness-parse-misses-an-aliased-and-a-namespace-import-so-a-named-builder-still-escapes.md`)
 
 The parse split an import specifier on ` as ` and kept the LOCAL alias, so `budgetSentence as
 budgetLine` erased the symbol from the set, and a namespace import contains no braces and was never
@@ -26,7 +26,7 @@ builtin can export a fusion builder. Two named functions carry it — `importedS
 and `completenessFault(source, registry)` — with the source as a parameter, so the new cases drive the
 real assertion rather than a copy of it. No allowlist.
 
-### Finding 2 — the line-14 claim (`260818-0746`)
+### Finding 2 — the line-14 claim (`260818-0746_*_the-containment-headers-nothing-authored-in-the-source-claim-is-wider-than-the-relation-it-enforces.md`)
 
 "Nothing authored in the source may contribute an identifier" was wider than
 `identifiers(builder(report)) ⊆ identifiers(report)`. The sentence was corrected and the relation was
@@ -36,7 +36,7 @@ construction and passes, that this is latent because no `why` literal carries an
 neither builder emits the field, and why `supplied()` is not narrowed — the per-field allowlist the
 design refused.
 
-### Finding 3 — the stated miss rate (`260818-0747`)
+### Finding 3 — the stated miss rate (`260818-0747_*_the-hex-exclusions-stated-miss-rate-is-1-in-700-and-the-arithmetic-gives-1-in-960.md`)
 
 "about 1 in 700" → "0.375^7, about 1 in 960 for the seven-character short hash", with the arithmetic
 beside the figure so it can be checked against the pattern rather than re-derived.
@@ -83,6 +83,6 @@ diff is two lines, this file's count and the surface total.
 
 ## Records
 
-- `shared/issues/260818-0745_*_…` — closed, with the before/after measurement table.
-- `shared/issues/260818-0746_*_…` — closed.
-- `shared/issues/260818-0747_*_…` — closed.
+- `260818-0745_*_…` — closed, with the before/after measurement table.
+- `260818-0746_*_…` — closed.
+- `260818-0747_*_…` — closed.

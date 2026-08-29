@@ -10,11 +10,11 @@ reverses both, which falsifies the premise the whole record family reasons from 
 premise the referral that closed it rests on.
 ---
 **Filed by:** reconciler, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the original, closed then revised); `shared/issues/260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md` (the re-filing, closed as referred, whose referral this contradicts); `shared/history/260825-0858-orchestrator-session.md` (the session measured)
+**Cross-references:** `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the original, closed then revised); `260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md` (the re-filing, closed as referred, whose referral this contradicts); `260825-0858-orchestrator-session.md` (the session measured)
 
 ## What was measured
 
-At HEAD `3d4b181`, session `shared/history/260825-0858-orchestrator-session.md`, range
+At HEAD `3d4b181`, session `260825-0858-orchestrator-session.md`, range
 `a99e680..3d4b181`, three commits. Events counted from the last `session_start` in the log,
 which is line 2311 of 2327:
 
@@ -53,7 +53,7 @@ that event emission "cannot be forgotten without the action failing" is now fals
 commit succeeded, the task completed, the Turn ended, and none of the three emitted.
 
 **The referral that closed the class names the missing surface as an input.**
-`260822-2236`'s `Resolved:` note refers the work to the backlog as *"a freeze detection over
+`260822-2236_*_the-four-session-bookkeeping-surfaces-froze-again-and-the-detection-that-closed-the-first-record-has-been-removed.md`'s `Resolved:` note refers the work to the backlog as *"a freeze detection over
 the surviving surfaces (`work_queue` statuses, the Circle record's Turn-log entries, the
 `turn_end` events)"*. Two of those three are unavailable in this session, because
 `agentstate.yaml` is deleted and no Circle is active. The third, `turn_end`, is exactly the
@@ -123,14 +123,14 @@ what the instance adds is that it recurred inside the very Circle that repaired 
 reading faults. `bin/monitor` and `bin/fusion-events` both now scope the file by checkout, and
 scoping a file that stopped being written repairs nothing about this.
 
-**Not discharged by `circles/260825-2023-presence-travels-monitor-filters-own-checkout`.** Its
+**Not discharged by `260825-2023-presence-travels-monitor-filters-own-checkout`.** Its
 Directive is per-checkout attribution and reading, which is orthogonal to whether a line is emitted
 at all; nothing in its range makes an emit durable across an interruption, and both items under
 `## What to consider` are untaken, the second of them explicitly a decision for whoever picks up the
 referral. The marker stays `_o_`. This note records a sighting, not a closure.
 
 ---
-Reconciliation 260827-1528: still open, and the ground has moved under it since filing. v10.8.0 made two of the three missing row kinds machine-written: the `task_start`/`task_done` pair is written by the PreToolUse/PostToolUse hooks (`hooks/lib/orchestrator-events.ts`, commits `94ad2f4` and `d7cdfa7`), and the `commit` row by `bin/fusion-commit-lock with` (`2bea3ac`; `hooks/lib/orchestrator-events.ts:23-24`). `turn_start`/`turn_end` stay prompt-emitted (`hooks/lib/orchestrator-events.ts:28`), so the freeze mode this record measured is repaired for tasks and commits and still reachable for Turn boundaries. The record's diagnostic-inversion argument is untouched by the repair.
+Reconciliation 260827-1528-reconciliation.md: still open, and the ground has moved under it since filing. v10.8.0 made two of the three missing row kinds machine-written: the `task_start`/`task_done` pair is written by the PreToolUse/PostToolUse hooks (`hooks/lib/orchestrator-events.ts`, commits `94ad2f4` and `d7cdfa7`), and the `commit` row by `bin/fusion-commit-lock with` (`2bea3ac`; `hooks/lib/orchestrator-events.ts:23-24`). `turn_start`/`turn_end` stay prompt-emitted (`hooks/lib/orchestrator-events.ts:28`), so the freeze mode this record measured is repaired for tasks and commits and still reachable for Turn boundaries. The record's diagnostic-inversion argument is untouched by the repair.
 
 ---
-Resolved: closed on the v10.8.0 repair. `task_start`/`task_done` are written by the hooks (`hooks/lib/orchestrator-events.ts`, commits `94ad2f4`, `d7cdfa7`) and the `commit` row by `bin/fusion-commit-lock with` (`2bea3ac`); the three row kinds this record measured as missing are no longer prompt-emitted. `turn_start`/`turn_end` remain prompt-emitted by construction, since no hook sees a Turn, so the freeze mode stays reachable at Turn boundaries and this note does not claim otherwise. The diagnostic the record family reasoned from is restated here as an observed frequency, not a law: six sessions saw the event log keep up while the other surfaces froze, and this session is the one counter-example in which the log froze and the dashboard stayed current. Item 2 of `## What to consider` is filed as decision R3, `circles/260826-1613-cardinality-answered-cut-once-nineteen-cleared/decisions/260827-1756_*_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.md`. Plan `260827-1756_*`, step 11.
+Resolved: closed on the v10.8.0 repair. `task_start`/`task_done` are written by the hooks (`hooks/lib/orchestrator-events.ts`, commits `94ad2f4`, `d7cdfa7`) and the `commit` row by `bin/fusion-commit-lock with` (`2bea3ac`); the three row kinds this record measured as missing are no longer prompt-emitted. `turn_start`/`turn_end` remain prompt-emitted by construction, since no hook sees a Turn, so the freeze mode stays reachable at Turn boundaries and this note does not claim otherwise. The diagnostic the record family reasoned from is restated here as an observed frequency, not a law: six sessions saw the event log keep up while the other surfaces froze, and this session is the one counter-example in which the log froze and the dashboard stayed current. Item 2 of `## What to consider` is filed as decision R3, `260827-1756_*_which-surface-is-authoritative-when-the-event-log-and-the-dashboard-disagree.md`. Plan `260827-1756_*`, step 11.

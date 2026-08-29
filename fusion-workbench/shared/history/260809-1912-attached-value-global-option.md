@@ -7,7 +7,7 @@
 ## What was asked
 
 Task 6 of `fusion-workbench/tasklist.md` (`I:260809-1548-attached-option`), from
-`shared/issues/260809-1548_p_an-unknown-global-option-carrying-its-own-value-should-not-also-consume-the-next-word.md`.
+`260809-1548_*_an-unknown-global-option-carrying-its-own-value-should-not-also-consume-the-next-word.md`.
 The resumed global-option walk in `classifySegment` set `unknownOption = true` for every
 unrecognised `-`-prefixed token, so it skipped the following token as a possible value. For
 the attached form (`--exec-path=/x`) the value is already inside the token, so the skip was
@@ -89,10 +89,10 @@ attached-value unknown option, so no corpus verdict moves and all four describes
 including the two anti-vacuity ones.
 
 **New tests.** One describe block, five cases
-(`an attached-value global option does not also consume the next word (260809-1548)`): the
+(`an attached-value global option does not also consume the next word (260809-1548_*_an-unknown-global-option-carrying-its-own-value-should-not-also-consume-the-next-word.md)`): the
 three rows that flip; the same option in front of a real subcommand, which must still deny
 and is the block's anti-vacuity; the separated form (`--namespace ns switch main`), which
-must not move or the walk is back at `260809-1106`; the four named options, with the
+must not move or the walk is back at `260809-1106_*_the-unknown-global-option-fix-was-deleted-with-the-mutation-classifier-and-the-branch-guard-never-had-it.md`; the four named options, with the
 `--git-dir=` fail-closed path checked against a resolver that would otherwise allow; and
 the `-C`-hint collection with an attached option standing in front of it.
 

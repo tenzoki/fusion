@@ -1,6 +1,6 @@
-# Orchestrator Session — 260805-0638
+# Orchestrator Session — 260805-0638-orchestrator-session.md
 
-**Directive:** Ausstieg. Die Kontextsteuer pro Dispatch senken und ausliefern, statt den Shell-Klassifizierer weiter zu härten. Sechs Schritte nach `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Erfolgsmaß ist Byte pro Dispatch pro Agent.
+**Directive:** Ausstieg. Die Kontextsteuer pro Dispatch senken und ausliefern, statt den Shell-Klassifizierer weiter zu härten. Sechs Schritte nach `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`, Erfolgsmaß ist Byte pro Dispatch pro Agent.
 **Mode:** plan
 **Status:** In progress
 **Git HEAD at start:** `49a1c48`
@@ -68,10 +68,10 @@ gesündeste.
 
 **Was er belastet:** in krk gab es in vier Tagen 17 Bash-Blockierungen, davon null echte
 Treffer. Alle Fail-closed-Fehlalarme, häufigster Fall fusions eigene Marker-Umbenennung in
-Schleifenform. Diese Bilanz gehört als Grounding in `circles/260804-1205-shell-reachability-model`,
+Schleifenform. Diese Bilanz gehört als Grounding in `260804-1205-shell-reachability-model`,
 bevor dort eine Zeile entsteht.
 
-**Nachfolger:** `circles/260805-2005-textschicht-gegen-code-nachziehen`, anticipated, fünf
+**Nachfolger:** `260805-2005-textschicht-gegen-code-nachziehen`, anticipated, fünf
 Gruppen. Der Nutzer setzt nach einem `fusion --update` mit `/fusion:next` dort an.
 
 **Status:** Complete.

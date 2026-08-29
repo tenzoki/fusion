@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
 **Active spec/plan:** (none yet)
-**Active session history:** circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md
+**Active session history:** 260822-0019-orchestrator-session.md
 
 ---
 
@@ -21,7 +21,7 @@ for a count that is real, one statement given again in a second and a third form
 agent's account of its own work delivered at the length of the work. All of it arrives by
 rewriting what the corpus already says rather than by adding to it, because a text that says
 "say less" in more words teaches the register it forbids, which is the mechanism
-`shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` finding 10 measured.
+`260816-0740-rhetorical-register-of-agent-output.md` finding 10 measured.
 
 ## Grounding snapshot
 
@@ -31,11 +31,11 @@ such and are not restated as this Circle's own measurements.
 
 ### What the previous Circle settled, and what it left standing
 
-`circles/260820-2051-style-rules-arrive-and-get-measured` closed in Bounded Closure. It brought
+`260820-2051-style-rules-arrive-and-get-measured` closed in Bounded Closure. It brought
 the always-on rule corpus to its stated em-dash ceiling and gave the fact-first requirement in
 `rules/user-facing-output.md` `## Self-review before sending: the readability gate` a failure
 condition. Its own final measurement,
-`circles/260820-2051-style-rules-arrive-and-get-measured/history/260821-0350-coder-the-final-state-is-measured.md`,
+`260821-0350-coder-the-final-state-is-measured.md`,
 reports the six emitted files at 8 prose em-dashes over 13 292 prose words, a rate of 0.6 per
 1000 against a ceiling of 1.0.
 
@@ -57,7 +57,7 @@ to any length.
 **No rule requires the answer to match the question.** `## Questions and gates` governs what an
 agent asks the user. `## Information architecture` orders the parts of a reply. `## Length` caps
 its pieces. Nothing states that the reply answers what was asked, which is the structural half of
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`.
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`.
 That record carries a worked specimen in which every sentence of a sixty-line reply is true and
 the reply is still the wrong answer to a two-line lookup.
 
@@ -90,7 +90,7 @@ this Circle wrote three, of 44, 15 and 17 lines. Every substantive reply in all 
 cap that is loaded into the agent writing it.
 
 **One correction to the record that prompted this Circle.**
-`shared/history/260820-2103-orchestrator-session.md` `## What this session got wrong` was cited
+`260820-2103-orchestrator-session.md` `## What this session got wrong` was cited
 as recording the over-length pattern. It does not. It records four faults of a different kind,
 all of them claims that came apart from what they described. The length pattern is real and the
 transcripts above are its evidence; that history file is not.
@@ -134,13 +134,13 @@ imitates.
 ### Two constraints that bind before the work starts
 
 **No prose gate may be built.**
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 is answered at option 4, chosen by the user: repair the corpus, then measure, then re-open the
 gate question with a number. Its reconciliation of 2026-08-19 states the consequence directly,
 that no gate is authorised until the measurement runs. That measurement is registered and
 deferred, with the threshold fixed at 5.0 prose em-dashes per 1000 prose words and the pre-repair
 window frozen by path in
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`.
+`260820-2354-prose-register-measurement-protocol.md`.
 
 **This Circle does not deliver that measurement either, and the reason is its subject.** The
 protocol excludes from both windows any history file written by a session primed on the subject
@@ -152,7 +152,7 @@ previous Circle rather than by anything this one does.
 
 ### The decision this Circle overturns
 
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`
+`260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`
 answered option 2, leave the verbosity record whole and record the reason. It was filed open and
 answered by the orchestrator during an unattended run, and its own closing paragraph says it is
 not the user's answer. **The user has now overturned it.** This Circle takes both halves of that
@@ -160,7 +160,7 @@ record together with the register patterns underneath them. A later reader meeti
 should read it as reversed rather than as forgotten, and the reversal is dated 2026-08-21.
 
 The reconciliation appended to
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 on 2026-08-21 anticipated exactly this branch: it kept the record open rather than deferred,
 naming the two outcomes as the user confirming the deferral or overturning it. The second
 happened.
@@ -173,22 +173,22 @@ verified by reading the marker off each `circles/*/*_circle.md`.
 Artifacts in other Circles and in `shared/` that bind this one, cited rather than copied per the
 Origin Rule:
 
-- `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+- `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
   is the record this Circle closes. Both halves.
-- `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   forbids a prose gate until its measurement runs.
-- `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`
+- `260820-2354-prose-register-measurement-protocol.md`
   is read and never amended.
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`
+- `260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`
   is open and asks precisely what this Circle's own new clauses may spend. It is question 1 of
   the batch this Circle was filed with, and its answer sets the arithmetic the Directive states
   only as a shape.
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+- `260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
   parked the register repair of `CLAUDE.md` for the Circle that runs the measurement. This Circle
   does not run it, so whether that repair belongs here is open and is question 3 of the batch.
-- `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` is the inventory of the
+- `260816-0740-rhetorical-register-of-agent-output.md` is the inventory of the
   thirteen figures and the source of the imitation mechanism the Directive rests on.
-- `shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` is adjacent and
+- `260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` is adjacent and
   is not taken here. A rule that decays over a long dispatch and a rule that was never stated are
   different faults with different fixes.
 
@@ -198,28 +198,28 @@ Seven Turns across two sessions. The first session's entries are aggregate: it r
 commit boundaries at the time, and inventing them now from the log would be a reconstruction dressed
 as a record.
 
-- Turns 1-3 (session 260821-1642): commits `2907907`..`084c626`, 15 in all, beginning with this
+- Turns 1-3 (session 260821-1642-orchestrator-session.md): commits `2907907`..`084c626`, 15 in all, beginning with this
   Circle's own activation. Coherence verdict `review-needed` with a Bounded-Closure recommendation,
   on the ground that one stopping criterion was unmet and unmeetable. That recommendation was not
   acted on and is superseded by the second session's verdict. Session history:
-  `circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md`
-- Turn 1 (session 260822-0019): commits `e202016`..`63e5ad5`, six. The commissioned measurement, two
+  `260821-1642-orchestrator-session.md`
+- Turn 1 (session 260822-0019-orchestrator-session.md): commits `e202016`..`63e5ad5`, six. The commissioned measurement, two
   defect closures, the unreleased-manifest filing, and two reviews returning twelve findings.
   Coherence gate not run separately; the Turn ended into the review pass.
-- Turn 2 (session 260822-0019): commit `53ff99f`. Nineteen marker-literal citations repaired and the
+- Turn 2 (session 260822-0019-orchestrator-session.md): commit `53ff99f`. Nineteen marker-literal citations repaired and the
   plan closed.
-- Turn 3 (session 260822-0019): commits `c964062`, `746ae4d`, `055585f`. Five of the twelve review
+- Turn 3 (session 260822-0019-orchestrator-session.md): commits `c964062`, `746ae4d`, `055585f`. Five of the twelve review
   findings closed, including the one rated High.
-- Turn 4 (session 260822-0019): commit `05b46f2`. The briefing's broken contamination test warned
+- Turn 4 (session 260822-0019-orchestrator-session.md): commit `05b46f2`. The briefing's broken contamination test warned
   off, a scratch directory cleared.
-- Final reconciliation (session 260822-0019): verdict `coherent` with residuals named, superseding
+- Final reconciliation (session 260822-0019-orchestrator-session.md): verdict `coherent` with residuals named, superseding
   the first session's Bounded-Closure recommendation. Session history:
-  `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`
+  `260822-0019-orchestrator-session.md`
 
 ## Activation proposal
 
-**Proposed by playmaker run `260821-1536-playmaker-direct-dispatch`, 260821-1536, domain bias
-`code`.** Proposed activation timestamp: 260821-1536. This is a proposal and nothing more. The
+**Proposed by playmaker run `260821-1536-playmaker-direct-dispatch`, 260821-1536-playmaker-direct-dispatch.md, domain bias
+`code`.** Proposed activation timestamp: 260821-1536-playmaker-direct-dispatch.md. This is a proposal and nothing more. The
 record's marker is untouched, and `.active-circle` is untouched. The rename is the user's, through
 `/fusion:next`, or the orchestrator's.
 
@@ -243,9 +243,9 @@ method writes into all four. Whoever activates it should read those four figures
 than reading the table in the Grounding, which is nine hours old and was correct when written.
 
 **Three decisions its Grounding cites still read as open.** All three sit in the closed style-rules
-Circle: `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`,
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md` and
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`.
+Circle: `260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`,
+`260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md` and
+`260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`.
 This Circle's own answered records settle the substance of the second and the third, and its
 Grounding states that the user overturned the first. The records themselves were never transitioned,
 so a later reader meets three open questions that are answered elsewhere. Recorded here as an
@@ -254,16 +254,16 @@ observation; moving a decision marker is not this agent's act.
 ## Closure note
 
 **Closed coherent on 2026-08-22**, after seven Turns across two sessions. Session history:
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0019-orchestrator-session.md`.
+`260822-0019-orchestrator-session.md`.
 Final reconciliation:
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0234-reconciliation.md`,
+`260822-0234-reconciliation.md`,
 verdict `review-needed` on the Circle's account of itself rather than on its work, with the four
 writes it prescribed made before this note was written.
 
 **The plan this Circle ran on** is
-`circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_c_plan-reply-bounded-whole-question-answered.md`.
+`260821-1805_*_plan-reply-bounded-whole-question-answered.md`.
 It is named here because the record's `**Active spec/plan:**` field could not carry it: the decision
-governing that field, `260821-2004`, is deliberately left open, so the field stays at `(none yet)`
+governing that field, `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, is deliberately left open, so the field stays at `(none yet)`
 and this note is where a reader finds the plan.
 
 **Why closed-coherent and not Bounded Closure.** The first session's reconciliation recommended
@@ -272,7 +272,7 @@ Closure means the Directive was judged unreachable, and it was reached: the rule
 whole reply, requires the answer to address the question put, and names all three register habits
 with their shorter forms, each verified line by line at HEAD. Spending `_b_` on a self-imposed budget
 condition is the reading
-`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 rejected as devaluing the marker, and option 1 of that record says what to do with a residual of this
 kind: name it here.
 
@@ -283,16 +283,16 @@ kind: name it here.
    against 21 at that anchor. No commit in either session touched a file under `hooks/`; the six
    lines went to an attribution comment the pinning file's own convention asks for, and a note
    costing zero lines is no note. Recorded in
-   `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
+   `260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
    which stays open because what it now holds is a judgement for a later Circle, not an unapplied fix.
 2. **One commit in the range carries no review, and structurally cannot.** It is the commit that adds
    the last review file; a review cannot cover the commit that introduces it. Every other commit in
    `084c626..HEAD` is tiled by four review files that declare their ranges.
 3. **The Directive was reached and its effect is unobserved.** The rule text landed and nobody has
    seen whether a reply changed. That is why
-   `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+   `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
    stays open, and why the after-measurement defined in
-   `circles/260821-1042-reply-bounded-whole-question-answered/analyses/260822-0035-three-before-figures-and-the-after-measurement-defined.md`
+   `260822-0035-three-before-figures-and-the-after-measurement-defined.md`
    is defined and deliberately not run. It needs twenty unprimed sessions before a difference means
    anything. **A later reader should not mistake a landed clause for a changed reply.**
 
@@ -305,7 +305,7 @@ states for itself, and 17.9 per cent of replies exceed a cap that is loaded into
 them.
 
 **Two questions left for the user, both recorded rather than answered in an unattended run.**
-Decision `260821-2004` binds every future Circle and was not answered here, because a decision of
+Decision `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md` binds every future Circle and was not answered here, because a decision of
 exactly this class was answered by an orchestrator in an unattended run and overturned by the user on
 2026-08-21; that reversal is in this record's own Grounding snapshot. And whether the verbosity record
 above may be called closed at all is the user's, on the same reasoning the first session gave.

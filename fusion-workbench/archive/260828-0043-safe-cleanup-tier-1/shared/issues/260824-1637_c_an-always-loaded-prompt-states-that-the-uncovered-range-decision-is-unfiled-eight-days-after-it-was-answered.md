@@ -5,7 +5,7 @@ An always-loaded prompt states that the uncovered-range decision is unfiled, eig
 
 ---
 **Filed by:** reconciler
-**Attribution backfilled 260825 (not written by the filing agent):** `reconciler` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+**Attribution backfilled 260825 (not written by the filing agent):** `reconciler` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 **Found by:** Phase 3 reconciliation of session `260824-0539`, while establishing which rule governs this Circle's uncovered commit.
 
@@ -13,11 +13,11 @@ An always-loaded prompt states that the uncovered-range decision is unfiled, eig
 
 ## What is true
 
-`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` stands `_a_`, answered as option 1: coverage is advisory, the Circle closes on its other evidence, and the closure note carries the gap as a named residual. Its own body records four consecutive reconciliations applying that answer, and this pass is the fifth. Option 3, filtering the uncovered set to commits touching a shipped file, remains absent from `hooks/lib/review-coverage.ts`.
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` stands `_a_`, answered as option 1: coverage is advisory, the Circle closes on its other evidence, and the closure note carries the gap as a named residual. Its own body records four consecutive reconciliations applying that answer, and this pass is the fifth. Option 3, filtering the uncovered set to commits touching a shipped file, remains absent from `hooks/lib/review-coverage.ts`.
 
 ## Where it was already noticed and not filed
 
-`circles/260801-1244-curator/issues/260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md` records in its 260819-1453 reconciliation note that the sentence "was true when written and is false now". That note is a reconciliation annotation on a record about a different subject, so nothing owns the repair and nothing schedules it. Five days later the sentence is unchanged. This is the shape the reviewer of this session's Circle named twice: a fact established and then filed where the next reader is not looking.
+`260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md` records in its 260819-1453 reconciliation note that the sentence "was true when written and is false now". That note is a reconciliation annotation on a record about a different subject, so nothing owns the repair and nothing schedules it. Five days later the sentence is unchanged. This is the shape the reviewer of this session's Circle named twice: a fact established and then filed where the next reader is not looking.
 
 ## What the same file says two sections later
 
@@ -28,4 +28,4 @@ An always-loaded prompt states that the uncovered-range decision is unfiled, eig
 Replace the clause with what the record now says: a Circle may close over an uncovered range, coverage is advisory and never a blocker, and the closure note names the gap. Cite `260815-2109` rather than restating its reasoning. The `never a blocker` half of the sentence is correct as it stands and should survive the edit; only the claim about the decision being unfiled is false. `agents/*.md` head-room should be re-measured afterwards, though the edit is expected to be net negative.
 
 ---
-Resolved: fixed — Step 3c states the answered position (a Circle may close over an uncovered range, coverage advisory, closure note names the gap) and cites `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`; residual: `bin/fusion-review-coverage` line 58 still says "unfiled decision" and is outside this step's file set (`bin/` is step 7's); agents/orchestrator.md:655
+Resolved: fixed — Step 3c states the answered position (a Circle may close over an uncovered range, coverage advisory, closure note names the gap) and cites `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`; residual: `bin/fusion-review-coverage` line 58 still says "unfiled decision" and is outside this step's file set (`bin/` is step 7's); agents/orchestrator.md:655

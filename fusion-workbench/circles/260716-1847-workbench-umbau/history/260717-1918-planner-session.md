@@ -3,7 +3,7 @@
 **Date:** 2026-07-17 19:18
 **Agent:** planner (Executors: coder)
 **Circle:** 260716-1847-workbench-umbau (active)
-**Input:** defect issue `fusion-workbench/shared/issues/260717-1903[o]-skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
+**Input:** defect issue `260717-1903[o]-skill-shell-scripts-assume-bash-glob-abort-under-zsh.md`
 
 ## What I did
 
@@ -28,7 +28,7 @@ Recommended the narrow regression lint (reject raw `.[!.]*`), recommended agains
 
 ## Output
 
-- Plan: `circles/260716-1847-workbench-umbau/planning/260717-1918[o]-skill-glob-nomatch-zsh-hardening.md` (6 steps, all coder, dependency-ordered; 2 Mermaid diagrams)
+- Plan: `260717-1918[o]-skill-glob-nomatch-zsh-hardening.md` (6 steps, all coder, dependency-ordered; 2 Mermaid diagrams)
 - This history log
 
 ## Handoff

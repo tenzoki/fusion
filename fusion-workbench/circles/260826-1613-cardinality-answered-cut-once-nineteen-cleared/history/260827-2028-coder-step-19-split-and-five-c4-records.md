@@ -14,8 +14,8 @@ Spend the 240 hook-test lines the cut (`440cad5`) freed: the three `fusion-commi
 |---|---|---|
 | Step 19, three commit-lock cases | `hooks/lib/__tests__/fusion-commit-lock.test.ts` | +53 |
 | Citation star at `hooks-wiring.test.ts:75` | `hooks/lib/__tests__/hooks-wiring.test.ts` | 0 |
-| `260826-0847` move | `guard-state-shape.test.ts` -35, `guard-bash-integration.test.ts` +30 | -5 net |
-| `260826-0848` fourth SessionStart command | `hooks/lib/__tests__/hooks-wiring.test.ts` | +23 |
+| `260826-0847_*_the-session-id-row-assertion-sits-in-the-state-load-suite-because-that-was-the-only-permitted-file.md` move | `guard-state-shape.test.ts` -35, `guard-bash-integration.test.ts` +30 | -5 net |
+| `260826-0848_*_the-fourth-sessionstart-command-is-asserted-by-nothing-and-its-own-suite-warns-about-exactly-that.md` fourth SessionStart command | `hooks/lib/__tests__/hooks-wiring.test.ts` | +23 |
 | `260826-0906` harness replace | `guard-bash-integration.test.ts` +4, `guard-project-config-integration.test.ts` +1 | +5 |
 | `260826-0906` events-query entry point | `hooks/lib/__tests__/fusion-events.test.ts` | +85 |
 | `260826-0906` monitor whole-file parse | `hooks/lib/__tests__/monitor-warnings-panel.test.ts` | +17 |

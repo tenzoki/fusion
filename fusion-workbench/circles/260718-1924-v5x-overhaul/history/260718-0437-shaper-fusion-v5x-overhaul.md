@@ -13,7 +13,7 @@ A top-level framing spec recommending the overhaul be cut into **five sequenced 
 - Circle D — agent-prompt revision
 - Circle E — circle-centric working-model doc + docs cleanup (v5.0 gate)
 
-Spec: `shared/planning/260718-0437_o_spec-fusion-v5x-overhaul.md`.
+Spec: `260718-0437_*_spec-fusion-v5x-overhaul.md`.
 
 ## Grounding gathered
 

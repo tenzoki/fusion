@@ -3,9 +3,9 @@
 **Date:** 2026-08-22
 **Agent:** coder
 **Status:** Complete
-**Source:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 4
-**Ledger:** `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`, its `skills/` section
-**Correction the step ran under:** `shared/issues/260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`
+**Source:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, step 4
+**Ledger:** `260822-1226-cut-ledger-for-three-bounded-surfaces.md`, its `skills/` section
+**Correction the step ran under:** `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`
 
 ## What changed
 
@@ -67,7 +67,7 @@ requires. Step 7 needs up to 200 of the remaining 464.
 
 `BASELINE` moved `paths: 1277 → 1269`, `records: 117 → 115`, `anchors` unmoved. The four removed S1
 paragraphs together carried three `bin/…` spellings and one `$FUSION_SRC/skills/…` that the pointer
-does not, and two of them cited decision `260810-2145`. The S2 bullets name no path, so they move
+does not, and two of them cited decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`. The S2 bullets name no path, so they move
 nothing. No baseline map moved: `SKILL_BASELINE`, `AGENT_BASELINE`, `TEST_LINE_BASELINE` and
 `RULE_BASELINE` are byte-identical to HEAD `181dd8a`, confirmed by hashing each map's text out of
 `git show HEAD:<path>` and out of the working tree.
@@ -76,19 +76,19 @@ nothing. No baseline map moved: `SKILL_BASELINE`, `AGENT_BASELINE`, `TEST_LINE_B
 
 **None closed.** All three the plan named stay as they are, and each for its own reason.
 
-- `shared/issues/260816-0133_*_the-setup-and-migrate-probes-are-byte-identical-in-three-copies…` —
+- `260816-0133_*_the-setup-and-migrate-probes-are-byte-identical-in-three-copies…` —
   left open deliberately. Its own fix direction forbids factoring and prescribes a test; discharging
   it yields zero `skills/` bytes and costs hook-test lines. That is
-  `shared/issues/260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`,
+  `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`,
   and this step did not attempt the row.
-- `shared/issues/260810-2110_o_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body…` —
+- `260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body…` —
   left open. Its fix direction is a new `bin/` helper, which is a mechanism change outside this
   step's Files list.
 - The `bin/fusion-source-root` instance has no open record to close:
-  `shared/issues/260811-0109_c_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`
+  `260811-0109_*_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`
   closed on the helper landing. Row S1 is a further cut on the same subject, not a reopening of it.
 
-The umbrella `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
+The umbrella `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
 stays open: its acceptance is per instance, and its one remaining named instance is the routing
 table, which this step does not touch.
 

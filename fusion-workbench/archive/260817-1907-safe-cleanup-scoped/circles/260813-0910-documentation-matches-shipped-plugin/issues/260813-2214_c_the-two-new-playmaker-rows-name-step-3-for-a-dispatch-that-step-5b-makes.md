@@ -54,7 +54,7 @@ whole mechanism "this relay" under the Step 5b heading.
 ## Why it matters
 
 These two rows were added this Turn to close
-`260813-2052_c_the-dispatch-parameter-roster-omits-the-two-lines-the-playmaker-relay-carries.md`,
+`260813-2052_*_the-dispatch-parameter-roster-omits-the-two-lines-the-playmaker-relay-carries.md`,
 whose point was that a dispatcher reading the roster could not find the mechanism that authorises
 the four destructive backlog operations. The rows now exist, and the coordinate they hand that
 dispatcher is off by four sections into the one dispatch that must not carry these lines. The prose

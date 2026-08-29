@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Date:** 2026-08-09
-**Source record:** `shared/issues/260809-2044_p_a-false-heredoc-opener-blanks-real-commands-so-a-branch-switch-in-the-blanked-region-is-allowed.md`
-**Review that filed it:** `shared/reviews/260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md` (H1, release blocker)
+**Source record:** `260809-2044_*_a-false-heredoc-opener-blanks-real-commands-so-a-branch-switch-in-the-blanked-region-is-allowed.md`
+**Review that filed it:** `260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md` (H1, release blocker)
 **Regression from:** `69a2d00`
 
 ---
@@ -54,7 +54,7 @@ word is a glob, not a subscript.
 ## Verified
 
 - **End to end through the built `PreToolUse` hook**, not by reading: all six
-  false openers BLOCK; both `260809-1111` cases behave (plain body line allows,
+  false openers BLOCK; both `260809-1111_*_a-plain-line-in-an-unquoted-heredoc-body-is-classified-as-a-command.md` cases behave (plain body line allows,
   `$(…)` and backtick in the body deny); both quoted-delimiter cases allow.
 - **Differential against the `dist` committed at HEAD**, 690 commands harvested
   from both suites plus a hand-built set aimed at the new spans: exactly 6

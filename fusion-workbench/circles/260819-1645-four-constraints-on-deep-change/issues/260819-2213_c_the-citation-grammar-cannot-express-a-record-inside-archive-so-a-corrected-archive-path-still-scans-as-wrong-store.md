@@ -3,7 +3,7 @@ The citation grammar cannot express a record inside `archive/`, so a corrected a
 ---
 
 Filed by `coder` during step 6 of
-`circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`,
+`260819-2016_*_four-constraints-on-deep-change.md`,
 which repairs the `wrong-store` class. Measured at HEAD `ad7ffed`.
 
 ---

@@ -30,9 +30,9 @@ which is input to a live decision
 `templates/fusion-guard.json` `_gitTracked` and by the `README-hooks.md` per-project configuration
 section, both rewritten from the same argument in steps 8 and 9
 **Cross-references:**
-`shared/decisions/260812-1232_o_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`,
-`circles/260801-1244-guard-rules-write/decisions/260802-1912_i_does-the-self-protection-floor-apply-before-the-config-file-exists.md`,
-`shared/history/260812-1546-coder-acceptance-run-against-a-project-that-is-not-this-repository.md`
+`260812-1232_*_does-the-escalation-counter-survive-a-block-source-that-ships-inert.md`,
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`,
+`260812-1546-coder-acceptance-run-against-a-project-that-is-not-this-repository.md`
 
 ## Why a defect rather than a note
 
@@ -47,4 +47,4 @@ The fix is prose in three places, not code. Whether the floor should come back f
 different question and is not asked here.
 
 ---
-Resolved: the understated reach no longer exists, in both halves. The file arms nothing: `2f624ca` (plan step P-2) removed CHECK 3, so no configuration can produce a block. And the file itself is retired: `fab8a4b` (P-7a) turned `fusion-guard.json` into a retired project file that is probed and never parsed, and `6890ea2` (P-7b) replaced it with `fusion.json`, which carries `orchestrator.maxTurns` and nothing else. Editing the project's configuration now costs a project its Turn budget, which is a loss worth naming and is named — the retired-file advisory in `hooks/lib/config.ts` says a budget left behind is not read and the orchestrator falls back silently — but it cannot switch off a check, because there is none. Of the three surfaces this record named, one was deleted with the passage it quotes (`hooks/lib/config.ts:125-133`, gone in `fab8a4b`) and two now state the bound correctly and without the understatement, because there is nothing left to understate: `README-hooks.md:311` and `templates/fusion.json` `_gitTracked`, both of which describe the guard's former defence in the past tense and name the git diff as the only bound. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
+Resolved: the understated reach no longer exists, in both halves. The file arms nothing: `2f624ca` (plan step P-2) removed CHECK 3, so no configuration can produce a block. And the file itself is retired: `fab8a4b` (P-7a) turned `fusion-guard.json` into a retired project file that is probed and never parsed, and `6890ea2` (P-7b) replaced it with `fusion.json`, which carries `orchestrator.maxTurns` and nothing else. Editing the project's configuration now costs a project its Turn budget, which is a loss worth naming and is named — the retired-file advisory in `hooks/lib/config.ts` says a budget left behind is not read and the orchestrator falls back silently — but it cannot switch off a check, because there is none. Of the three surfaces this record named, one was deleted with the passage it quotes (`hooks/lib/config.ts:125-133`, gone in `fab8a4b`) and two now state the bound correctly and without the understatement, because there is nothing left to understate: `README-hooks.md:311` and `templates/fusion.json` `_gitTracked`, both of which describe the guard's former defence in the past tense and name the git diff as the only bound. Plan: `260816-1915_*_the-compliance-guard-becomes-observation-only.md`.

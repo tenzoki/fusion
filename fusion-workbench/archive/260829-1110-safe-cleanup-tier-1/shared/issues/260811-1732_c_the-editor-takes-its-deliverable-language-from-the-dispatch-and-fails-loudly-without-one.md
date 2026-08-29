@@ -3,9 +3,9 @@
 ---
 **Severity:** Medium
 **Domain:** code
-**Filed by:** orchestrator, session 260811-0752, realising an answered decision
+**Filed by:** orchestrator, session 260811-0752-orchestrator-session.md, realising an answered decision
 **Affects:** `agents/editor.md:16,62`; `rules/fusion-workbench-conventions.md` `## Project language`
-**Cross-references:** `shared/decisions/260807-2131_a_which-language-governs-a-customer-deliverable.md` — the answer this realises
+**Cross-references:** `260807-2131_*_which-language-governs-a-customer-deliverable.md` — the answer this realises
 
 ---
 

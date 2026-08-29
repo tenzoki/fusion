@@ -1,7 +1,7 @@
 # Concept Evaluation: Implementation Plan — state markers bracket → underscore
 
 **Date:** 2026-07-17 20:03
-**Target:** `circles/260717-1638-marker-format-ohne-glob-metazeichen/planning/260717-1959[o]-plan-marker-format-underscore.md`
+**Target:** `260717-1959[o]-plan-marker-format-underscore.md`
 **Verdict:** clean
 **Diagrams evaluated:** 2  |  **Validation:** by-tool (mmdc)
 

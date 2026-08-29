@@ -52,7 +52,7 @@ so "the wrapper exists" and "the wrapper can run" are the same question there. F
 
 Low. Churn is advisory, the failure is loud on stderr, and nothing downstream reads the
 ranking. What it costs is one non-zero exit at the orchestrator's own Setup in vocabulary
-the prompt has not taught the cascade to read — the same complaint decision `260810-0921`
+the prompt has not taught the cascade to read — the same complaint decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
 filed against the bare exit 127, arriving one step later.
 
 ## Scope
@@ -66,17 +66,17 @@ Add one sentence to the same paragraph that covers exit 2: exit 3 means the plug
 compiled hooks are missing, the remedy is `fusion --update` (installed copy) or
 `cd hooks && npm run build` (work tree), and the ranking is skipped exactly as in the
 absent-helper branch. Do not add a cascade branch — the outcome is identical to the two
-branches already there, and decision `260810-0921` settles that the reason is reported
+branches already there, and decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` settles that the reason is reported
 rather than branched on.
 
 ## Cross-references
 
-- `fusion-workbench/shared/decisions/260810-0921_i_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
-- `fusion-workbench/shared/decisions/260810-1544_o_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` — the open general form of this question
-- Filed by `coderev`, review `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md`
+- `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
+- `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` — the open general form of this question
+- Filed by `coderev`, review `260810-1632-coderev-turn-1-range-430d73a-to-head.md`
 
 ---
-Resolved: `agents/orchestrator.md` Setup Step 5 now documents both non-zero exits in the paragraph that already covered the guard, with no cascade branch added — the outcome stays the absent-helper branch's (no ranking reaches the user, the reason is named in the Setup-complete summary), per decision `260810-0921`. Exit 3 means the plugin's compiled hooks are missing: the wrapper passes `[ -x ]` because what is absent is `hooks/dist/churn-rank.js` one directory over, and the remedy is `fusion --update` for an installed copy or `cd hooks && npm run build` in the work tree, which is where the build cycle reaches it. `skills/setup/SKILL.md:252` inherits it unchanged through its existing pointer at this block.
+Resolved: `agents/orchestrator.md` Setup Step 5 now documents both non-zero exits in the paragraph that already covered the guard, with no cascade branch added — the outcome stays the absent-helper branch's (no ranking reaches the user, the reason is named in the Setup-complete summary), per decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`. Exit 3 means the plugin's compiled hooks are missing: the wrapper passes `[ -x ]` because what is absent is `hooks/dist/churn-rank.js` one directory over, and the remedy is `fusion --update` for an installed copy or `cd hooks && npm run build` in the work tree, which is where the build cycle reaches it. `skills/setup/SKILL.md:252` inherits it unchanged through its existing pointer at this block.
 
 **A second defect at the same site, found by reading the authoritative table and fixed with it.** The paragraph said *"Exit 2 is the same silence for a different reason — the project has no churn state yet."* That is wrong on both halves of `bin/fusion-churn-rank`'s own table (`bin/fusion-churn-rank:19-25`, `hooks/churn-rank.ts:33-36`): exit 2 is **no workbench above the working directory**, and a project with no churn yet is **exit 0** with `ranked=0`, because an empty ranking is a ranking. The prompt now says both, and notes that Setup Step 0 has already `cd`-ed to the workbench root, so meeting exit 2 here says the ground moved under the session.
 

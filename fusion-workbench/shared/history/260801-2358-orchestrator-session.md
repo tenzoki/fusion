@@ -1,4 +1,4 @@
-# Orchestrator Session — 260801-2358
+# Orchestrator Session — 260801-2358-orchestrator-session.md
 
 **Directive:** (not yet stated — Setup ran on `/fusion:setup` with no task attached)
 **Mode:** (unresolved — awaiting user directive)
@@ -15,7 +15,7 @@
 | Active Circle | none (`.active-circle` absent) |
 | Circles | 3 anticipated, 6 closed |
 | Open issues (shared) | 18 (`_o_`), 0 in progress |
-| Open plans (shared) | 1 (`260801-1122_o_spec-normative-consolidation.md`) |
+| Open plans (shared) | 1 (`260801-1122_*_spec-normative-consolidation.md`) |
 | Open decisions | 0 open, 4 answered, 9 total |
 | Analyses | 7 |
 | Guard | not halted; 2 consecutive blocks recorded (both `git_branch_switch`, from earlier sessions today) |
@@ -46,10 +46,10 @@ Anticipated Circles:
 
 18 open, none in progress. Full list in `fusion-workbench/shared/issues/`. The four most recent:
 
-- `260801-2352_o_plugin-settings-json-has-no-agent-allow-entries.md`
-- `260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
-- `260801-2038_o_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`
-- `260801-1410_o_unattributed-edit-to-ontocoder-prompt-during-session.md`
+- `260801-2352_*_plugin-settings-json-has-no-agent-allow-entries.md`
+- `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+- `260801-2038_*_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`
+- `260801-1410_*_unattributed-edit-to-ontocoder-prompt-during-session.md`
 
 ## Per-Turn Log
 

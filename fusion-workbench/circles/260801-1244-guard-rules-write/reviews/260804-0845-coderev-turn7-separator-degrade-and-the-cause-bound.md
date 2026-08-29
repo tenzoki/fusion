@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-04 08:45
 **Agent:** coderev
-**Circle:** `circles/260801-1244-guard-rules-write`, Turn 7
+**Circle:** `260801-1244-guard-rules-write`, Turn 7
 **Scope:** `048f3db..c9c44a3`, excluding `fusion-workbench/` — 9 files, 3,855 added lines
 **Suite at review time:** `npm test` — 1235 passed, 24 files, green
 **Shells measured:** bash 3.2.57 and zsh 5.9. The `Bash` tool's shell in this session is
@@ -98,7 +98,7 @@ runs in a subshell:
 a pipeline in the current shell, so the `cd` moves it and the model happens to be right
 there. bash subshells it, and bash is where the protected file is written.
 
-Both filed: `260804-0836` (`||`), `260804-0837` (pipeline). **High**, pre-existing.
+Both filed: `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` (`||`), `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` (pipeline). **High**, pre-existing.
 
 The shipped sentence that is now false as written, in every consuming project
 (`rules/protected-path-discipline.md:152-158`, and again in `README-hooks.md`, the module
@@ -132,7 +132,7 @@ through both classifiers: **zero differences**. And both segmenters produce byte
 output over 222,319 commands in both quoting modes, so the `&&`/`||` pair-consumption
 really did not change the segmentation.
 
-Filed `260804-0842`, **Low** — a fixture-quality issue, not a behavioural one.
+Filed `260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md`, **Low** — a fixture-quality issue, not a behavioural one.
 
 ### 3. Did the fail-closed bound survive at its stated width? — Yes, exactly, and the boundary is where the record says
 
@@ -203,12 +203,12 @@ Three families are in **neither** shipped cost table:
    The resulting deny reads *"Join the `cd` to what follows it with `&&`"* — which the
    agent already did. That is the unfollowable deny `rules/protected-path-discipline.md`
    exists to prevent, on one of the most common shapes an agent writes.
-   Filed `260804-0838`, **High**, a regression of this commit.
+   Filed `260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md`, **High**, a regression of this commit.
 
 2. **A conditional body or a pipeline inside an `&&` chain.** `if cd X; then W; fi`,
    `while cd X; do W; done`, `{ cd X; } && W` and `cd X && Y | tee log` all degrade
    although the shell guarantees the `cd`. (`until cd X; do W; done` degrades correctly —
-   its body runs when the `cd` failed — so the family is not uniform.) Filed `260804-0839`,
+   its body runs when the `cd` failed — so the family is not uniform.) Filed `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`,
    **Medium**, a regression of this commit.
 
 3. **A redirection to a literal relative target after an unproven `cd`.** This is the
@@ -219,14 +219,14 @@ Three families are in **neither** shipped cost table:
 
 The shipped sentence "The cost is these five shapes, and nothing else measured moved"
 (`rules/protected-path-discipline.md:168`) is therefore false in the context an agent
-reads it in. Filed `260804-0840`, **Medium**.
+reads it in. Filed `260804-0840_*_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md`, **Medium**.
 
 The implementer's own instinct here was right — they corrected their count from two to
 three this Turn after finding their harvest regex read only double-quoted literals. The
 correction fixed the regex. The remaining error is one level up: **a corpus harvested
 from the tests cannot measure a cost, only reproduce one.**
 
-### 5. Was the supersession of `260801-1859` handled honestly? — The shape is fair. The central fact is inverted
+### 5. Was the supersession of `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` handled honestly? — The shape is fair. The central fact is inverted
 
 **What is right.** The record that should have existed now exists, is filed `_i_`, states
 both readings, costs each, and names the superseded record in both directions. Option 1
@@ -256,11 +256,11 @@ and HEAD agree.
 
 The same docstring contradicts itself seven lines apart: `bash-mutation-guard.ts:167` says
 it denies, `:174` lists it as a residual that "still writes it". And the supersession note
-inverts the `Resolved:` line of the very file it is appended to — `260801-1859` says *"the
+inverts the `Resolved:` line of the very file it is appended to — `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` says *"the
 table already **allows** `curl -o rules/x.md`"*, and the note three paragraphs below says
-*"`curl -o rules/x.md`, which **still denies** on pass 1"*. `260801-1859` was right.
+*"`curl -o rules/x.md`, which **still denies** on pass 1"*. `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was right.
 
-The consequence is that `decisions/260804-0106`'s **constraint 3** was never met, and
+The consequence is that `260804-0106`'s **constraint 3** was never met, and
 after the change the guard is looser on that visible case than on the invisible one by a
 wider margin than before:
 
@@ -272,7 +272,7 @@ wider margin than before:
 This does not overturn the decision. `260803-1835` — an agent prompt overwritten with no
 flag — is real, measured and now closed, and carries the decision on its own. What is
 wrong is that a constraint and a Pro were argued from a fact that is false and checkable
-in one command. Filed `260804-0841`, **High**, on record integrity.
+in one command. Filed `260804-0841_*_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md`, **High**, on record integrity.
 
 ---
 
@@ -284,8 +284,8 @@ The Circle's recurring class. Both rows are pre-existing and both are live.
 
 | # | Severity | Kind | Finding |
 |---|---|---|---|
-| `260804-0836` | High | pre-existing | `&&` guarantees the and-or list to its left, not the previous segment; a `cd` skipped by an earlier `||` is modelled as made, and eight measured commands reach `rules/**`, `agents/**` and `skills/**` |
-| `260804-0837` | High | pre-existing | a `cd` in a pipeline runs in a bash subshell and does not move the calling shell; the model follows it, and four measured commands write the protected file in bash |
+| `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` | High | pre-existing | `&&` guarantees the and-or list to its left, not the previous segment; a `cd` skipped by an earlier `||` is modelled as made, and eight measured commands reach `rules/**`, `agents/**` and `skills/**` |
+| `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` | High | pre-existing | a `cd` in a pipeline runs in a bash subshell and does not move the calling shell; the model follows it, and four measured commands write the protected file in bash |
 
 ### Theme: the joiner is a separator list, and the shell's reachability is not
 
@@ -294,16 +294,16 @@ already applied.
 
 | # | Severity | Kind | Finding |
 |---|---|---|---|
-| `260804-0838` | High | regression | `flush` downgrades a pending `&&` on a newline, so a multi-line `&&` chain denies; bash's grammar puts a `newline_list` inside the operator, and `||` is not downgraded by the same code |
-| `260804-0839` | Medium | regression | `|` binds tighter than `&&` and a conditional body is reached on a condition; `cd X && Y \| tee log`, `if cd X; then W; fi`, `while cd X; do W; done` and `{ cd X; } && W` all degrade although the shell guarantees the `cd` |
+| `260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md` | High | regression | `flush` downgrades a pending `&&` on a newline, so a multi-line `&&` chain denies; bash's grammar puts a `newline_list` inside the operator, and `||` is not downgraded by the same code |
+| `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` | Medium | regression | `|` binds tighter than `&&` and a conditional body is reached on a condition; `cd X && Y \| tee log`, `if cd X; then W; fi`, `while cd X; do W; done` and `{ cd X; } && W` all degrade although the shell guarantees the `cd` |
 
 ### Theme: what was measured, and what the measurement was said to be
 
 | # | Severity | Kind | Finding |
 |---|---|---|---|
-| `260804-0841` | High | regression (record) | `curl -o rules/x.md` allows; three code comments, the decision's constraint 3 and the supersession note say it denies, and the note contradicts the `Resolved:` line of its own host file |
-| `260804-0840` | Medium | regression (docs) | "The cost is these five shapes, and nothing else measured moved" ships into every agent's context; 10 of 30 ordinary shapes moved, and three families are in neither cost table |
-| `260804-0842` | Low | new | the git gold fixture carries no `\|\|`, `\|` or `&` joiner and no allow-only row; its provenance is genuine and the source check is what carries the weight |
+| `260804-0841_*_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md` | High | regression (record) | `curl -o rules/x.md` allows; three code comments, the decision's constraint 3 and the supersession note say it denies, and the note contradicts the `Resolved:` line of its own host file |
+| `260804-0840_*_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md` | Medium | regression (docs) | "The cost is these five shapes, and nothing else measured moved" ships into every agent's context; 10 of 30 ordinary shapes moved, and three families are in neither cost table |
+| `260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md` | Low | new | the git gold fixture carries no `\|\|`, `\|` or `&` joiner and no allow-only row; its provenance is genuine and the source check is what carries the weight |
 
 ---
 
@@ -326,8 +326,8 @@ not in a review.
 
 **Both halves of a directory model are needed for one command to come out right.** `cd
 hooks && npx tsc | tee typecheck.log` needs `|` to stop meaning "reached unconditionally"
-(for the write) *and* to start meaning "does not move the shell" (for a `cd`). `260804-0837`
-and `260804-0839` are the two halves; fixing either alone leaves the other wrong in the
+(for the write) *and* to start meaning "does not move the shell" (for a `cd`). `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`
+and `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` are the two halves; fixing either alone leaves the other wrong in the
 opposite direction. That is the generalisable lesson of this Circle: every joiner carries
 two independent facts, and the module has so far modelled one of them.
 
@@ -350,24 +350,24 @@ is a build of the same tree.)
 
 ## Recommended sequencing
 
-**Release blocker for any claim about the boundary:** `260804-0836` and `260804-0837`.
+**Release blocker for any claim about the boundary:** `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` and `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`.
 They are the class this Circle exists to close, they are live in both shells, and they
 need one design decision between them — whether a `cd` must be *proven-reached* before it
 may set a directory. That decision closes both. It should get a record before code moves,
-the way `260803-2238` did.
+the way `260803-2238_*_the-directory-model-assumes-every-cd-succeeds-so-a-cd-to-a-nonexistent-directory-is-a-one-segment-bypass.md` did.
 
-**Same commit, cheap, and it is a regression:** `260804-0838`. One condition in `flush`.
+**Same commit, cheap, and it is a regression:** `260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md`. One condition in `flush`.
 It is the finding most likely to be met by an agent tomorrow, and the deny it produces is
 unfollowable.
 
-**Same commit, free:** `260804-0841`. Three comment lines, one constraint annotation, one
+**Same commit, free:** `260804-0841_*_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md`. Three comment lines, one constraint annotation, one
 supersession paragraph. Nothing behavioural. Leaving a false fact in `bash-mutation-guard.ts`
 seven lines from its own correction is how the next reader inherits it.
 
-**Next:** `260804-0840` — the cost statement an agent reads. Best done together with
-`260804-0839`, since fixing the pipeline row shrinks the table it has to state.
+**Next:** `260804-0840_*_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md` — the cost statement an agent reads. Best done together with
+`260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`, since fixing the pipeline row shrinks the table it has to state.
 
-**Whenever the fixture is next touched:** `260804-0842`.
+**Whenever the fixture is next touched:** `260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md`.
 
 ---
 
@@ -412,9 +412,9 @@ Measured at HEAD, not claimed.
 **Not closed, live, and reachable with no flag:**
 
 - a `cd` reached through a joiner that may have skipped it — `X || cd DIR && <write>`
-  (`260804-0836`);
+  (`260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md`);
 - a `cd` inside a pipeline, which bash subshells — `X | cd DIR && <write>`
-  (`260804-0837`).
+  (`260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md`).
 
 Both are one fact: **the joiner is consulted for the segment that writes and never for
 the segment that moves.** One decision closes both.
@@ -433,7 +433,7 @@ them:**
   unknowable.
 
 No enumeration closes that last group, and the value of saying so is that the day
-`260804-0836` and `260804-0837` are shut, this sentence becomes true, checkable, and
+`260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` and `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` are shut, this sentence becomes true, checkable, and
 worth putting in front of the user:
 
 > The guard's model of where the shell is standing is exact for every `cd` written in the
@@ -445,22 +445,22 @@ say that plainly rather than to round up.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — every finding re-checked at HEAD `cc012fc`. The review holds; three of its seven findings closed in `cc012fc` and four are open. One thing it missed.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — every finding re-checked at HEAD `cc012fc`. The review holds; three of its seven findings closed in `cc012fc` and four are open. One thing it missed.**
 
 | Finding | State at HEAD | Evidence |
 |---|---|---|
-| `260804-0836` `\|\|` skips the `cd` | **open, live** | `true \|\| cd build && rm rules/x.md` allows |
-| `260804-0837` pipeline subshells the `cd` | **open, live** | `echo hi \| cd build && rm rules/x.md` allows |
-| `260804-0838` newline after `&&` | closed `cc012fc` | pinned in `shell-parse.test.ts` and both integration suites |
-| `260804-0839` flat joiner over-denies | **open** | `if cd hooks; then rm -rf dist; fi` still denies |
-| `260804-0840` the false cost statement | closed `cc012fc` | replaced by a rule, not a list |
-| `260804-0841` the inverted fact | closed `cc012fc` | `curl -o rules/x.md` re-measured, allows; the correction is right |
-| `260804-0842` git gold fixture | **open** | fixture unchanged |
+| `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` `\|\|` skips the `cd` | **open, live** | `true \|\| cd build && rm rules/x.md` allows |
+| `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` pipeline subshells the `cd` | **open, live** | `echo hi \| cd build && rm rules/x.md` allows |
+| `260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md` newline after `&&` | closed `cc012fc` | pinned in `shell-parse.test.ts` and both integration suites |
+| `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md` flat joiner over-denies | **open** | `if cd hooks; then rm -rf dist; fi` still denies |
+| `260804-0840_*_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md` the false cost statement | closed `cc012fc` | replaced by a rule, not a list |
+| `260804-0841_*_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md` the inverted fact | closed `cc012fc` | `curl -o rules/x.md` re-measured, allows; the correction is right |
+| `260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md` git gold fixture | **open** | fixture unchanged |
 
-**The review's headline measurement is confirmed and is worth restating precisely, because it has been repeated in a stronger form than it supports.** Zero commands allow at HEAD that denied at `048f3db`, across 222,319 generated commands: true, and it is a statement about the **security** direction only. In the cost and accuracy directions `c9c44a3` introduced four regressions (`260804-0838`, `260804-0839`, `260804-0840`, `260804-0841`) plus one new coverage gap (`260804-0842`). Turn 7 opened no hole and did cost accuracy. Both halves are true; the second is the one that gets dropped.
+**The review's headline measurement is confirmed and is worth restating precisely, because it has been repeated in a stronger form than it supports.** Zero commands allow at HEAD that denied at `048f3db`, across 222,319 generated commands: true, and it is a statement about the **security** direction only. In the cost and accuracy directions `c9c44a3` introduced four regressions (`260804-0838_*_a-newline-after-and-is-downgraded-to-newline-so-a-multi-line-and-chain-denies-with-an-unactionable-reason.md`, `260804-0839_*_the-flat-joiner-model-ignores-shell-precedence-so-a-pipeline-and-an-if-body-degrade-a-cd-the-shell-guarantees.md`, `260804-0840_*_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md`, `260804-0841_*_the-supersession-inverts-the-fact-the-original-argument-rested-on-curl-o-rules-x-md-allows.md`) plus one new coverage gap (`260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md`). Turn 7 opened no hole and did cost accuracy. Both halves are true; the second is the one that gets dropped.
 
-**What this review did not reach, found in the reconciler's own pass.** The review answered five questions about the joiner and the fail-closed bound, thoroughly. It did not sweep the `git` verb's own directory handling, and there is a live no-flag route there in the same family: `git -C rules rm x.md` allows and deletes the file, because `resolveGit` (`hooks/lib/bash-mutation-guard.ts:1084-1087`) skips `-C` **and its value** to find the subcommand and never applies the directory. It has no joiner in it, so no option of `decisions/260804-0947_o_` touches it. Filed as `issues/260804-1024_o_`; `git checkout <treeish> --` as `issues/260804-1026_o_`.
+**What this review did not reach, found in the reconciler's own pass.** The review answered five questions about the joiner and the fail-closed bound, thoroughly. It did not sweep the `git` verb's own directory handling, and there is a live no-flag route there in the same family: `git -C rules rm x.md` allows and deletes the file, because `resolveGit` (`hooks/lib/bash-mutation-guard.ts:1084-1087`) skips `-C` **and its value** to find the subcommand and never applies the directory. It has no joiner in it, so no option of `260804-0947_*_` touches it. Filed as `260804-1024_*_`; `git checkout <treeish> --` as `260804-1026_*_`.
 
-That matters for this review's `### The boundary, by coverage` section, which is otherwise the most useful thing written in this Circle. Its "Not closed, live, and reachable with no flag" list has two entries and should have three, and the sentence it offers as the prize — *"The guard's model of where the shell is standing is exact for every `cd` written in the command text and reached by a path the shell guarantees"* — is still not reachable by closing `260804-0836` and `260804-0837` alone.
+That matters for this review's `### The boundary, by coverage` section, which is otherwise the most useful thing written in this Circle. Its "Not closed, live, and reachable with no flag" list has two entries and should have three, and the sentence it offers as the prize — *"The guard's model of where the shell is standing is exact for every `cd` written in the command text and reached by a path the shell guarantees"* — is still not reachable by closing `260804-0836_*_a-cd-skipped-by-an-earlier-double-pipe-is-still-modelled-as-made-so-the-and-guarantee-leaks.md` and `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md` alone.
 
-**And one finding inside the review's own subject that it read past.** `rules/protected-path-discipline.md:172`, in the section this Turn added, tells an agent that when every joiner between the builtin and the write is `&&`, "the model stays exact". Run that on `true || cd build && rm rules/x.md`: question 2 answers yes. The document's decision procedure returns the safe answer for the two commands this review rates as the release blocker. Filed as `issues/260804-1025_o_`.
+**And one finding inside the review's own subject that it read past.** `rules/protected-path-discipline.md:172`, in the section this Turn added, tells an agent that when every joiner between the builtin and the write is `&&`, "the model stays exact". Run that on `true || cd build && rm rules/x.md`: question 2 answers yes. The document's decision procedure returns the safe answer for the two commands this review rates as the release blocker. Filed as `260804-1025_*_`.

@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 260810
-**Source:** `shared/issues/260810-0939_o_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md`
+**Source:** `260810-0939_*_the-declared-but-not-parsed-guard-is-anchored-like-the-regex-so-two-drift-shapes-still-cover-less.md`
 **Files changed:** `hooks/lib/__tests__/fusion-count-sources.test.ts` (only)
 
 ## What the task asked

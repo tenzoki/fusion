@@ -5,8 +5,8 @@ The corpus decision's `## Measured` block declares an anchor whose tree gives di
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 4 (`a2a18f9..2ec2bc2`)
-**Affects:** `shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`, `## Measured` (the anchor line and the `Files` column) and `## Question` (the closing sentence)
-**Cross-references:** `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, the user answer this record would amend
+**Affects:** `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`, `## Measured` (the anchor line and the `Files` column) and `## Question` (the closing sentence)
+**Cross-references:** `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`, the user answer this record would amend
 
 ---
 
@@ -24,7 +24,7 @@ Its `Files` column does not hold at that anchor.
 | `shared/reviews/` alone | 34 | 34 | 34 |
 | reviews of a non-terminal Circle | **3** | 2 | 3 |
 
-The third review of the active Circle, `circles/260823-0023-settle-what-travels-between-checkouts/reviews/260823-1410-coderev-c2-turn-3.md`, was added by `1544224`, one commit *after* the declared anchor. The `## Question` section carries the same figure — "the cost of the widest answer grows with every review file written: 90 exist today."
+The third review of the active Circle, `260823-1410-coderev-c2-turn-3.md`, was added by `1544224`, one commit *after* the declared anchor. The `## Question` section carries the same figure — "the cost of the widest answer grows with every review file written: 90 exist today."
 
 So the file counts are the tree at `1544224` or `7cd79f1` — the latter being the commit that filed this record — and the anchor names the last commit of the range the filing pass had been reviewing.
 
@@ -60,4 +60,4 @@ Then reconcile "90 exist today" in `## Question` with whatever the table ends up
 Separately and not part of this record: option 3's "the repair debt is **zero today**" is no longer true at HEAD. That is filed as `260823-1639_*_the-reconcilers-review-annotation-wrote-two-hard-marker-citations-and-one-died-one-commit-later.md`.
 
 ---
-Resolved: fixed — the anchor is the filing commit `7cd79f1` and the 90 in `## Question` reconciles with the table at that anchor; shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md:107 and shared/decisions/260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md:130
+Resolved: fixed — the anchor is the filing commit `7cd79f1` and the 90 in `## Question` reconciles with the table at that anchor; 260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md:107 and 260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md:130

@@ -8,9 +8,9 @@
 **Affects:** `hooks/tracker.ts:92-94`, and its compiled twin `hooks/dist/tracker.js:71-73`
 **Cross-references:**
 `c353196` (removed the cross-file ping-back tracker and left this comment standing);
-`shared/decisions/260809-2004_i_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (the decision that removed it);
-`shared/issues/260809-2047_c_three-shipped-documents-still-describe-ping-back-detection-as-a-live-guard-feature.md` (the same drift in three shipped documents, closed by `97d5846` — this is the fourth site, in code rather than prose);
-`shared/reviews/260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md` ("`c353196` is the clean counter-example … a removal checklist that ends at `grep` ends one step early" — this record is that observation holding one step further than the review took it)
+`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` (the decision that removed it);
+`260809-2047_*_three-shipped-documents-still-describe-ping-back-detection-as-a-live-guard-feature.md` (the same drift in three shipped documents, closed by `97d5846` — this is the fourth site, in code rather than prose);
+`260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md` ("`c353196` is the clean counter-example … a removal checklist that ends at `grep` ends one step early" — this record is that observation holding one step further than the review took it)
 
 ---
 
@@ -30,7 +30,7 @@ shape it had before.
 
 This is not a search miss of the kind an identifier grep would have caught: the
 comment says "ping-back", not "cross-file", which is exactly the class of drift
-`260809-2047` was filed for — three shipped *documents* describing a removed feature
+`260809-2047_*_three-shipped-documents-still-describe-ping-back-detection-as-a-live-guard-feature.md` was filed for — three shipped *documents* describing a removed feature
 in prose. This is the same drift one layer down, in the source file the removal
 itself edited.
 
@@ -53,7 +53,7 @@ the reason given for it.
 - [ ] `hooks/dist/tracker.js` is rebuilt from that source (the committed `dist/`
       is byte-identical to a fresh `tsc` today; keep it so).
 - [ ] `git grep -in 'ping-back\|pingback' -- hooks/ bin/ rules/ agents/ skills/ docs/ README*.md`
-      returns only past-tense mentions that name decision `260809-2004`.
+      returns only past-tense mentions that name decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`.
 
 ---
 Resolved: The header now names one metric and the word "ping-back" does not appear in it. The
@@ -65,4 +65,4 @@ the queue entry asked. The header now reads "One metric, two readers" and says w
 protection statement" argument below it is intact, with only "(step 1 of this Circle)" dropped
 as unresolvable from its new home. `hooks/dist/` rebuilt with `npm run build`, not hand-edited.
 `git grep -in 'ping-back\|pingback' -- hooks/ bin/ rules/ agents/ skills/ docs/ README*.md`
-returns three past-tense mentions naming decision `260809-2004` and nothing else.
+returns three past-tense mentions naming decision `260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` and nothing else.

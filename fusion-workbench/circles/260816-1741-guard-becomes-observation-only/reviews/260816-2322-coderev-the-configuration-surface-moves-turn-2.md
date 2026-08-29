@@ -5,7 +5,7 @@
 **Reviewed-range:** `3c2e1c6..1d1d3a3`
 **Not-opened:** none
 **Circle:** `260816-1741-guard-becomes-observation-only`
-**Plan under review:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, steps 5b, 7a, 7b, 8 and 9
+**Plan under review:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, steps 5b, 7a, 7b, 8 and 9
 
 ## Summary
 
@@ -97,7 +97,7 @@ golden and five stale hook-test entries). No file outside those three is red.
 
 **A. Medium — `hooks-wiring.test.ts` was in step 9's Files list, was not edited, and its comment
 justifies the Bash matcher by a mechanism removed on 2026-08-12.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2315_o_hooks-wiring-test-was-in-step-9s-list-was-not-edited-and-justifies-bash-by-a-mechanism-removed-on-260812.md`
+`260816-2315_*_hooks-wiring-test-was-in-step-9s-list-was-not-edited-and-justifies-bash-by-a-mechanism-removed-on-260812.md`
 
 Step 9 says the file "keeps its Bash assertion and gains the current reason for it, the
 configuration diagnostic loop". It is not in the Turn's diff at all, and step 9's execution note
@@ -110,27 +110,27 @@ that wiring is a mechanism they can verify does not exist.
 
 **B. Medium — step 13's `Retired:` list is wrong in three of its four entries, and its `_i_` scope
 cannot reach the one record whose question this plan deletes.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2316_o_step-13s-retired-line-list-is-wrong-in-three-of-its-four-entries-and-its-marker-scope-misses-a-fifth-record.md`
+`260816-2316_*_step-13s-retired-line-list-is-wrong-in-three-of-its-four-entries-and-its-marker-scope-misses-a-fifth-record.md`
 
 **This is the dispatch's question 7, and it is the same shape as Turn 1's two — an assertion about
 what a removal orphans, made without grepping where the subject actually lives.** Of the four
 records step 13 names, two already carry `Retired: 60c9cd8` lines added on 2026-08-12
-(`260803-1419_i_*:123`, `260802-1912_i_*:95`), one is right (`260804-1631`, `guard.enabled`), and
-one **must not** get the line: `260804-1630`'s answer is the per-leaf merge and the
+(`260803-1419_i_*:123`, `260802-1912_i_*:95`), one is right (`260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md`, `guard.enabled`), and
+one **must not** get the line: `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`'s answer is the per-leaf merge and the
 drop-equals-absent equivalence, which is live code at `hooks/lib/config.ts:479-486` and is cited
 three times in that file's own comments as the obligation the surviving shape rests on (`:46-49`,
 `:70-73`, `:363-367`). The step's safeguard makes it worse rather than better: "re-derive the list
-… `grep` the decision stores for the identifiers this plan deletes" returns `260804-1630` with the
+… `grep` the decision stores for the identifiers this plan deletes" returns `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` with the
 highest hit count in the store, because its `## Question` names five deleted identifiers.
 
 A fifth record falls outside the step's three transitions entirely.
-`260804-1632_d_should-findrelevantdecisions-fold-case-…` is `_d_`, its question was deleted with
+`260804-1632_*_should-findrelevantdecisions-fold-case-…` is `_d_`, its question was deleted with
 `findRelevantDecisions` at 7a, and `hooks/lib/paths.ts:36-41` already says the question "can no
 longer be decided either way". The information is in the tree; the step's marker scope cannot see
 it.
 
 **G. Low — step 11's line-scoped Changes text misses two stale lines in files it already opens.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2321_o_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
+`260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md`
 
 `agents/orchestrator.md:122` is scoped to "(filename)" and carries three errors, not one — the
 filename, a three-layer merge that is now two, and "exactly as every guard setting is" naming a
@@ -144,7 +144,7 @@ reachable by `reference-resolution-lint` — a bare filename is not a path and a
 
 **C. Medium — the retired-file diagnostic's one chat-visible channel is a repeat mandate scoped to
 dropped keys, and a retired file is not a drop.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2318_o_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
+`260816-2318_*_the-retired-file-diagnostics-one-chat-visible-channel-is-a-repeat-mandate-scoped-to-dropped-keys.md`
 
 The text is right (point 1 above). What is unsettled is who reads it. `guard_advisory` has exactly
 one consumer in the tree — `bin/monitor`'s warnings panel — and nothing in any agent prompt or
@@ -165,7 +165,7 @@ for it to be answered rather than for a channel to be built.
 
 **D. Medium — the `answer`-site case in `hook-fail-open.test.ts` cannot fail on the violation its
 describe block names.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2319_o_the-answer-site-case-in-hook-fail-open-cannot-fail-on-the-violation-its-describe-block-names.md`
+`260816-2319_*_the-answer-site-case-in-hook-fail-open-cannot-fail-on-the-violation-its-describe-block-names.md`
 
 **On the dispatch's question 5, split two ways.** The executor's own catch — the second case,
 asserting two `[guard] Error:` markers rather than one — **is verified and its reasoning holds
@@ -195,21 +195,21 @@ fail-open marker and on unparseable stdout, so "the hook ran" is genuinely check
 
 **E. Medium — `CLAUDE.md`'s dangling-citation set grew from two to four at 7b, and the row that
 carries the two new ones is now false in its entirety.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2317_o_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`
+`260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md`
 
 Measured by running the gate: `CLAUDE.md:29`, `:30` (twice), `:129`. The two new ones are on the
 `fusion-guard.json` Layout row, whose subject no longer exists and whose prose is false in four
 further places no lint can see — "the per-project guard configuration", the three-layer merge, and
-both of the `guard.enabled` / `guard.protectedPaths` accounts. `260816-2123` and step 16's Scope
+both of the `guard.enabled` / `guard.protectedPaths` accounts. `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md` and step 16's Scope
 paragraph both say "two". Step 16's *bound* is fine — the amendment says the two citations are the
 reason for the step, not its limit — so what this changes is what the curator's survey has to find
-on its own. `260816-2123` has been given an `Also seen:` line pointing at the new record.
+on its own. `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md` has been given an `Also seen:` line pointing at the new record.
 
 ### Theme 5 — coverage (1 finding)
 
 **F. Low — the write trace is now the guard's only product, and two of its four tools reach no
 integration case.**
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2320_o_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
+`260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
 
 `extractFilePath`'s `notebook_path` branch has no case, and `MultiEdit`/`NotebookEdit` never reach
 the hook in any test — `runWrite` defaults to `Edit` and is called with an explicit tool name once,
@@ -297,15 +297,15 @@ answers are cheap; the gap is that neither was chosen.
    one-sentence question while the file is open. Add `:122`'s merge account and `bin/monitor:188`
    (finding G) in the same pass — three sentences across two files it already opens.
 2. **Before step 13 runs:** correct the list, and correct it in the step rather than in a note,
-   because there is no execution note to correct yet. Two entries drop, `260804-1630` drops with a
-   sentence saying why, and `260804-1632_d_` needs a decision about whether a deferred question
+   because there is no execution note to correct yet. Two entries drop, `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` drops with a
+   sentence saying why, and `260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md` needs a decision about whether a deferred question
    whose subject is gone gets a marker move at all — that is a decision record, not an edit.
    Finding B.
 3. **Any time before the release:** finding A, wherever the hook tests are next opened. It is two
    sentences and it protects the wiring that carries the whole v10 migration.
 4. **Any time:** findings D and F, both in the hook test surface, both cheap, neither blocking.
 5. **Step 16's survey:** finding E is information for the curator, not work for a coder. The count
-   in `260816-2123` and in the amendment is two; it is four.
+   in `260816-2123_*_claude-mds-two-dangling-citations-keep-the-citation-lint-red-and-no-step-in-this-plan-may-fix-them.md` and in the amendment is two; it is four.
 
 Nothing in this review asks for a change to the code this Turn wrote. The configuration move is
 correct, the migration works when followed, the compiled tree is clean, and the reduction of the
@@ -317,8 +317,8 @@ test surface lost no coverage of a surviving subject.
 
 Findings not rewritten. Their disposition at HEAD, each verified against the tree:
 
-**Four of the seven defects are closed**, on evidence in their own footers: `260816-2315`,
-`260816-2316`, `260816-2321` (all landed with plan step 11) and `260816-2317` (landed with the
+**Four of the seven defects are closed**, on evidence in their own footers: `260816-2315_*_hooks-wiring-test-was-in-step-9s-list-was-not-edited-and-justifies-bash-by-a-mechanism-removed-on-260812.md`,
+`260816-2316_*_step-13s-retired-line-list-is-wrong-in-three-of-its-four-entries-and-its-marker-scope-misses-a-fifth-record.md`, `260816-2321_*_step-11s-line-scoped-changes-text-misses-two-stale-lines-in-files-it-already-opens.md` (all landed with plan step 11) and `260816-2317_*_claude-mds-dangling-citation-set-grew-from-two-to-four-at-7b-and-one-whole-layout-row-is-now-false.md` (landed with the
 curator pass, `5763550`).
 
 **Three remain open and are the whole of this Circle's open code-surface residue.** Theme 2's
@@ -333,10 +333,10 @@ and only as matcher entries.
 **Theme 5's coverage finding widened rather than closed.** Turn 3 received no review pass at all,
 so `bin/fusion-review-coverage --since 3d41d4a` now reports `uncovered=9`, six of them touching
 shipped files, and the tag `v10.0.0` points at one of the six. Recorded as
-`circles/260816-1741-guard-becomes-observation-only/issues/260817-1417_o_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`.
+`260817-1417_*_the-release-went-out-over-a-turn-whose-six-shipped-file-commits-no-review-opened.md`.
 
 **The migration verification this pass performed against a scratch project was repeated
 independently** at plan step 15, against a real consuming project (`krk`), and passed. It surfaced
 one pre-existing defect in `bin/monitor`, filed as
-`shared/issues/260817-1217_o_the-monitors-dismiss-keys-are-html-escaped-as-text-so-a-quote-in-a-warning-truncates-the-attribute.md`
+`260817-1217_*_the-monitors-dismiss-keys-are-html-escaped-as-text-so-a-quote-in-a-warning-truncates-the-attribute.md`
 and verified still open at `bin/monitor:527-531` and `:621`.

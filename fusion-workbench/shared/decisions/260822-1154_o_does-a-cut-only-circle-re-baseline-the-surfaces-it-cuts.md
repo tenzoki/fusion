@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner
-**Cross-references:** `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` `## Current State` (the arithmetic below); `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md` `### C0` (the acceptance criterion that permits the re-baseline); `shared/decisions/260822-1102_a_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` (the user rejected declaring a third re-baselining moment); `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` (the authoring home of the two events)
+**Cross-references:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md` `## Current State` (the arithmetic below); `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `### C0` (the acceptance criterion that permits the re-baseline); `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` (the user rejected declaring a third re-baselining moment); `hooks/lib/__tests__/helpers/growth-bound.ts` `## Re-baselining` (the authoring home of the two events)
 
 ---
 
@@ -31,7 +31,7 @@ The 2026-08-17 precedent went the other way and is not a counter-example. There 
 
 ## Constraints
 
-- The user has already rejected declaring a third re-baselining moment (`260822-1102`, option 3). Any answer works inside the two events that exist, or changes one of them.
+- The user has already rejected declaring a third re-baselining moment (`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, option 3). Any answer works inside the two events that exist, or changes one of them.
 - Whatever is answered has to survive the numbers moving. The arithmetic above is a fact about the four surfaces on 2026-08-22; the answer must state a rule, not a number.
 - `hooks/lib/__tests__/helpers/growth-bound.ts` is the authoring home for the re-baselining rule. An answer that changes the rule changes that file and nothing else, and the change costs lines on the hook test surface.
 
@@ -62,4 +62,4 @@ still reads the way this record says invites the raise. One Circle's practice is
 the record binds the next cut-only Circle and nothing on disk settles it.
 
 ---
-Also seen: 260824-2022 by ontocoder — `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1942_*_nothing-detects-a-raised-growth-baseline-and-the-only-bound-on-one-is-a-comment.md` asks the neighbouring question, whether a baseline *raise* is meant to be detectable by anything other than a human reading a diff: the doctrine names two events at which a baseline moves and nothing asserts that a third has not happened. Referred here at its closure.
+Also seen: 260824-2022-ontocoder-close-the-32-referred-records.md by ontocoder — `260815-1942_*_nothing-detects-a-raised-growth-baseline-and-the-only-bound-on-one-is-a-comment.md` asks the neighbouring question, whether a baseline *raise* is meant to be detectable by anything other than a human reading a diff: the doctrine names two events at which a baseline moves and nothing asserts that a third has not happened. Referred here at its closure.

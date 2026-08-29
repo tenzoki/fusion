@@ -51,4 +51,4 @@ So the four growth bounds this Circle armed are enforced against *growth* and no
 **Why it binds a deep change.** The bounds are the one mechanism this project built to price additions to its shipped text, and they were built after eight mechanisms were removed for never having caught anything. A bound whose baseline can be raised undetectably is that same class of mechanism.
 
 ---
-Resolved: referred (decision) — whether a baseline raise is meant to be detectable by anything other than a human reading a diff is put onto the re-baselining decision as an `Also seen:` line; shared/decisions/260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md
+Resolved: referred (decision) — whether a baseline raise is meant to be detectable by anything other than a human reading a diff is put onto the re-baselining decision as an `Also seen:` line; 260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md

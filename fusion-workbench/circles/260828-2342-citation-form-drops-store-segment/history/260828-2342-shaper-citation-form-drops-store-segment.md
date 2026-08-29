@@ -19,4 +19,4 @@ No decision was deferred; no decision record filed. The draft was not a backlog 
 
 ## Result
 
-Circle `circles/260828-2342-citation-form-drops-store-segment/`, record `_a_circle.md`. The Grounding snapshot carries the corrected count of `$SCAN_*` self-citations (twenty-one at HEAD `7bc0e78e`, after two undercounts) and names the growth bounds and the one-release-behind helper cost as constraints for the planner.
+Circle `260828-2342-citation-form-drops-store-segment`, record `_a_circle.md`. The Grounding snapshot carries the corrected count of `$SCAN_*` self-citations (twenty-one at HEAD `7bc0e78e`, after two undercounts) and names the growth bounds and the one-release-behind helper cost as constraints for the planner.

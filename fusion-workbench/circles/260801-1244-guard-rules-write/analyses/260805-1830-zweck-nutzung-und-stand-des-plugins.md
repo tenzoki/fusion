@@ -13,7 +13,7 @@ Der Nutzer will wissen, ob das Plugin nach den massiven Änderungen der letzten 
 
 ## Umfang
 
-Gelesen: die Spec `shared/planning/260801-1122_o_spec-normative-consolidation.md` vollständig, `docs/philosophy.md`, `docs/working-model.md` (Kopf), `README.md`-Familie (Umfänge), der Ausstiegsplan `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md` vollständig, der Circle-Datensatz und Stichproben aus den 57 History-Dateien dieses Circles, die Wurzelursachen-Analyse `analyses/260803-1803-guard-path-model-root-cause.md`, die C5b-Bewertung `analyses/260804-1600-c5b-independent-assessment.md`, der Datensatz des abgespaltenen Circles `260804-1205-shell-reachability-model`. Im konsumierenden Projekt krk: Workbench-Struktur, beide Circles, Issue- und Decision-Stores, `portfolio.md`, `orchestrator-events.jsonl` (142 Zeilen), `.guard-state/` (14 599 Events), `agentstate.yaml`, `CLAUDE.md`, eine Orchestrator-History. Aus cocreator: alle sechs Dateien unter `fusion-plugin-findings/` (nur gelesen). Gemessen: Regelemission pro Agent an HEAD über `bin/fusion-rules`, Dateigrößen über die Commit-Historie, Commit-Verteilung `e8988d9..HEAD`.
+Gelesen: die Spec `260801-1122_*_spec-normative-consolidation.md` vollständig, `docs/philosophy.md`, `docs/working-model.md` (Kopf), `README.md`-Familie (Umfänge), der Ausstiegsplan `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md` vollständig, der Circle-Datensatz und Stichproben aus den 57 History-Dateien dieses Circles, die Wurzelursachen-Analyse `260803-1803-guard-path-model-root-cause.md`, die C5b-Bewertung `260804-1600-c5b-independent-assessment.md`, der Datensatz des abgespaltenen Circles `260804-1205-shell-reachability-model`. Im konsumierenden Projekt krk: Workbench-Struktur, beide Circles, Issue- und Decision-Stores, `portfolio.md`, `orchestrator-events.jsonl` (142 Zeilen), `.guard-state/` (14 599 Events), `agentstate.yaml`, `CLAUDE.md`, eine Orchestrator-History. Aus cocreator: alle sechs Dateien unter `fusion-plugin-findings/` (nur gelesen). Gemessen: Regelemission pro Agent an HEAD über `bin/fusion-rules`, Dateigrößen über die Commit-Historie, Commit-Verteilung `e8988d9..HEAD`.
 
 Nicht geprüft: der Lauf auf der cocreator-Maschine selbst (nicht erreichbar), das Verhalten des kompilierten Hooks unter Claude Codes eigenem Dispatch.
 
@@ -122,9 +122,9 @@ Die eine strukturelle Schwäche des Bilds: die Zielgruppe von `protected-path-in
 
 ### 7. Kleinere Befunde am Rande
 
-- Der Circle-Datensatz dieses Circles (`_t_circle.md`) blieb über die gesamte Laufzeit unberührt: `**Status:** anticipated` auf einem `_t_`-Record, leerer Turn log, `Active session history: (none yet)` neben 57 History-Dateien. In krk wurde dieselbe Defektklasse binnen Stunden gefilt und behoben (`260802-1417_c_circle-datensatz-status-widerspricht-dem-marker.md`); im eigenen Haus, wo der Guard stillsteht und der Druck hoch war, hielt die Konvention nicht. Als Issue gefilt.
-- `README.md:26` nennt als Pin-Beispiel ein nie getaggtes `v5.3.0`: bereits gefilt als `issues/260805-1150_o_...`, hier nur zitiert.
-- Beim Filen prüft niemand auf Duplikate im Store: bereits gefilt als `issues/260805-1548_o_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`; cocreators Duplikat-Merge durch den reconciler ist der lebende Beleg für den Bedarf.
+- Der Circle-Datensatz dieses Circles (`_t_circle.md`) blieb über die gesamte Laufzeit unberührt: `**Status:** anticipated` auf einem `_t_`-Record, leerer Turn log, `Active session history: (none yet)` neben 57 History-Dateien. In krk wurde dieselbe Defektklasse binnen Stunden gefilt und behoben (`260802-1417_*_circle-datensatz-status-widerspricht-dem-marker.md`); im eigenen Haus, wo der Guard stillsteht und der Druck hoch war, hielt die Konvention nicht. Als Issue gefilt.
+- `README.md:26` nennt als Pin-Beispiel ein nie getaggtes `v5.3.0`: bereits gefilt als `260805-1150_*_...`, hier nur zitiert.
+- Beim Filen prüft niemand auf Duplikate im Store: bereits gefilt als `260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`; cocreators Duplikat-Merge durch den reconciler ist der lebende Beleg für den Bedarf.
 
 ---
 
@@ -142,16 +142,16 @@ Fusion erfüllt seinen Kernzweck im echten Einsatz: krk ist ein durchlaufender B
 
 ## Gefilte Issues
 
-- `issues/260805-1830_o_protected-path-internals-erreicht-in-konsumprojekten-einen-adressaten-den-es-dort-nicht-gibt.md`
-- `issues/260805-1830_o_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`
-- `issues/260805-1830_o_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`
-- `issues/260805-1830_o_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md`
-- `issues/260805-1830_o_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`
+- `260805-1830_*_protected-path-internals-erreicht-in-konsumprojekten-einen-adressaten-den-es-dort-nicht-gibt.md`
+- `260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md`
+- `260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md`
+- `260805-1830_*_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md`
+- `260805-1830_*_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`
 
 ## Quellen
 
-- Spec: `shared/planning/260801-1122_o_spec-normative-consolidation.md`; Ausstiegsplan: `planning/260804-2356_o_plan-ausstieg-kontextsteuer-und-auslieferung.md`
-- Analysen: `analyses/260803-1803-guard-path-model-root-cause.md`, `analyses/260804-1600-c5b-independent-assessment.md`
+- Spec: `260801-1122_*_spec-normative-consolidation.md`; Ausstiegsplan: `260804-2356_*_plan-ausstieg-kontextsteuer-und-auslieferung.md`
+- Analysen: `260803-1803-guard-path-model-root-cause.md`, `260804-1600-c5b-independent-assessment.md`
 - Messungen dieses Laufs: `bin/fusion-rules <agent>` je 16 Agenten an HEAD; `git show <commit>:rules/protected-path-discipline.md | wc -c` über 15 Commits; `git log --oneline e8988d9..HEAD` (68 Commits); `~/.fusion/.claude-plugin/plugin.json` (5.8.0)
 - krk: `fusion-workbench/{agentstate.yaml, portfolio.md, orchestrator-events.jsonl, .guard-state/{events.jsonl,escalation.json}}`, Circle `260802-0842-krk-mac-dateimanager-editor-git` (Issues, Decisions, Histories), `CLAUDE.md`
 - cocreator: sechs Dateien unter `.../shared/fusion-plugin-findings/` (Setup-Deadlock zweifach, Plane-Marker, Shaper-Wegwerf-Circle, zwei playmaker-Läufe)

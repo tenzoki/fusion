@@ -60,7 +60,7 @@ Add both types to `WARNING_EVENT_TYPES` and give each its own subset budget and 
 `bin/monitor` is on `guard.protectedPaths`, so this is a change a human makes or approves.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:170-175` `WARNING_EVENT_TYPES` still omits `review_coverage` and `staging_drift`, while `hooks/tracker.ts:333` and `:415` still emit both. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `bin/monitor:170-175` `WARNING_EVENT_TYPES` still omits `review_coverage` and `staging_drift`, while `hooks/tracker.ts:333` and `:415` still emit both. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — `review_coverage` and `staging_drift` join `WARNING_EVENT_TYPES` with their own 8-row caps and the labels `Review gap` and `Unstaged record`; served against this workbench the panel returns the eight most recent `staging_drift` rows (the log holds no `review_coverage` row yet); `bin/monitor` `WARNING_EVENT_TYPES`, `SUBSET_BUDGETS`, `renderWarnings()`

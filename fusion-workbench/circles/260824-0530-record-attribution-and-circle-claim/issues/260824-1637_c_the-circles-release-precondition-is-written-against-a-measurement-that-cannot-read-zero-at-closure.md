@@ -1,11 +1,11 @@
 The Circle's release precondition is written against a measurement that cannot read zero at closure
 
 ---
-`circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` `## Where this Circle stops` states, as a precondition on any release or tag carrying this work, that `bin/fusion-review-coverage` "must name no uncovered commit in that range". At HEAD `cf7a5b0` it names one, and the one it names is the review file's own commit. A review pass that lands in its own commit can never be covered by itself, so the precondition as written is unsatisfiable at the moment it is meant to be read.
+`260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` `## Where this Circle stops` states, as a precondition on any release or tag carrying this work, that `bin/fusion-review-coverage` "must name no uncovered commit in that range". At HEAD `cf7a5b0` it names one, and the one it names is the review file's own commit. A review pass that lands in its own commit can never be covered by itself, so the precondition as written is unsatisfiable at the moment it is meant to be read.
 
 ---
 **Filed by:** reconciler
-**Attribution backfilled 260825 (not written by the filing agent):** `reconciler` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `shared/issues/260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
+**Attribution backfilled 260825 (not written by the filing agent):** `reconciler` filed this record; the person half of `**Filed by:**` is absent because the installed plugin at `$FUSION_PLUGIN_ROOT` carried no `bin/fusion-identity` at that time. See `260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`.
 
 **Found by:** Phase 3 reconciliation of session `260824-0539`, checking the plan's own precondition rather than accepting the dispatch's statement of it.
 
@@ -30,7 +30,7 @@ commits=18  reviews=2  unusable=0  uncovered=1  verdict=uncovered
 
 ## Why this is filed and not appended
 
-`circles/260801-1244-curator/issues/260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md` names the cadence: the commit that discharges a review's findings is the one commit no review opens. That record has this pass's `Also seen:` line and is the right home for the cadence question. This record's subject is different: a *plan* wrote a release gate in the letter of an instrument the project had already decided is advisory, and a commit message quoted that gate as met. `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` was answered as option 1 on 2026-08-16 — coverage is advisory, the gap is a named residual in the closure note — so the clause was already inconsistent with the project's own answer on the day it was written.
+`260814-2153_*_the-commit-that-closes-the-last-reviews-own-high-finding-is-the-one-commit-no-review-opens.md` names the cadence: the commit that discharges a review's findings is the one commit no review opens. That record has this pass's `Also seen:` line and is the right home for the cadence question. This record's subject is different: a *plan* wrote a release gate in the letter of an instrument the project had already decided is advisory, and a commit message quoted that gate as met. `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` was answered as option 1 on 2026-08-16 — coverage is advisory, the gap is a named residual in the closure note — so the clause was already inconsistent with the project's own answer on the day it was written.
 
 ## Fix direction
 
@@ -39,7 +39,7 @@ Two candidates, and this record picks neither.
 1. **Amend the clause to the substance the answered decision already carries**: no uncovered commit in the range may touch a shipped file. Under that reading the precondition is met at HEAD, since the one uncovered commit touches only `fusion-workbench/`. This is option 3 of `260815-2109`, which that record has now recorded as absent from `hooks/lib/review-coverage.ts` across five consecutive checks; writing it into a plan clause before it is in the helper means the split stays a hand operation.
 2. **Drop the precondition and rely on the closure note**, which is what option 1 of that decision prescribes and what four previous Coherence verdicts have applied.
 
-Choosing between them is a decision about what a plan-stated precondition may assert, adjacent to `shared/decisions/260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`, which this plan's clause cites as its own binding record.
+Choosing between them is a decision about what a plan-stated precondition may assert, adjacent to `260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`, which this plan's clause cites as its own binding record.
 
 ---
-Resolved: fixed — the clause is amended to the answered decision's substance (option 1 of `260815-2109`: coverage is advisory, an uncovered commit is a named residual in the closure note); circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md:517
+Resolved: fixed — the clause is amended to the answered decision's substance (option 1 of `260815-2109`: coverage is advisory, an uncovered commit is a named residual in the closure note); 260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md:517

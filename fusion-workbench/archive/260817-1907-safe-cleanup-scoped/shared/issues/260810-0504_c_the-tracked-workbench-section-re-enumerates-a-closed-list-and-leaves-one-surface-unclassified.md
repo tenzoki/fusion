@@ -4,9 +4,9 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks`
-**Cross-references:** commit `65f7c3b`; `shared/issues/260810-0410_o_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` (already open — cross-referenced, not refiled); `shared/issues/260810-0455_o_npm-test-is-red-…` (the byte cost)
+**Cross-references:** commit `65f7c3b`; `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` (already open — cross-referenced, not refiled); `260810-0455_*_npm-test-is-red-…` (the byte cost)
 
 ---
 
@@ -43,9 +43,9 @@ file, and a `bin/` helper that adds a root-anchored surface has two places to la
 which is the failure the paragraph above was written to prevent, arriving from inside the same
 document.
 
-The cost is already concrete: `260810-0410` records that the tree omits `.plane-map.json` and
+The cost is already concrete: `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` records that the tree omits `.plane-map.json` and
 `.plane-outbox.jsonl`. The new section omits them too, so that open issue now has two sites to fix.
-(Do not refile `260810-0410` — this record exists because the second site is new.)
+(Do not refile `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` — this record exists because the second site is new.)
 
 ### 3. The audience does not match the content
 
@@ -61,7 +61,7 @@ section belongs.
 
 Judged against the byte cost the same session stated: the two new paragraphs together added 2 151
 bytes to a file loaded sixteen times per dispatch, and left `npm test` red because the golden that
-measures exactly this was not regenerated (`260810-0455`). The **empty-resolver-key** paragraph from
+measures exactly this was not regenerated (`260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`). The **empty-resolver-key** paragraph from
 `e99f0ef` earns its place — every agent holds resolver keys, so every agent needs the rule. This
 section does not.
 
@@ -72,7 +72,7 @@ section does not.
 2. Move the section to `rules/workbench-stash-and-lock.md` and leave a one-line pointer, matching the
    four partitions the header table already records. Cite it from the `.gitignore` comment, which is
    where the decision is actually applied.
-3. Whatever is decided, add the two Plane runtime files once, in the tree, per `260810-0410` — not
+3. Whatever is decided, add the two Plane runtime files once, in the tree, per `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` — not
    twice.
 
 ---
@@ -95,7 +95,7 @@ unaddressed by design: the section is still emitted to every agent. Cost of the 
 `hooks/lib/__tests__/rules-emission-golden.test.ts` passes and no baseline moved.
 
 ---
-**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — parts 1 and 2 verified; part 3 stands and
+**Reconciliation 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`) — parts 1 and 2 verified; part 3 stands and
 now has a tracker. Marker unchanged.**
 
 Parts 1 and 2 re-checked rather than read off the note: `rules/fusion-workbench-conventions.md:76`
@@ -108,6 +108,6 @@ rules, so every agent loads it on every dispatch. The closure's reason for leavi
 true: `ls rules/` carries `commit-lock.md` and no `workbench-stash-and-lock.md`.
 
 **The residual was disclosed but untracked, which is why the marker was not moved and a decision was
-filed instead.** `shared/decisions/260816-0711_o_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`
+filed instead.** `260816-0711_*_where-does-the-tracked-workbench-split-live-now-that-the-home-it-was-meant-to-move-to-is-gone.md`
 carries the audience question. Part 3 is a "decide and record" item, not a "go fix it" one — no home
 exists to move the section to, so there is nothing an executor could do with a reopened defect.

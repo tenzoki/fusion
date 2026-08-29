@@ -2,7 +2,7 @@
 
 ---
 
-`circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`
+`260819-2016_*_four-constraints-on-deep-change.md`
 carries `**Status:** Draft` in its head. It was approved by the user at a gate on 2026-08-19, nine of
 its ten steps are marked `[DONE]` in its own body, and the tenth is struck by an answered decision.
 Its filename marker has never moved off the open one either.
@@ -55,7 +55,7 @@ the front of its line while there.
 Resolved: the plan is `_c_` and reads `**Status:** Complete`. Step 10 carries a struck marker naming the decision that removed it, so a later reader does not read an unmarked step as pending work.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **closure confirmed on
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **closure confirmed on
 two of its three items; the third was outstanding and has been done by this pass.** The plan is
 `_c_`, reads `**Status:** Complete`, and step 10 carries the struck marker naming the decision that
 removed it. The fix direction's third item — "Move step 5's `[DONE]` to the front of its line while

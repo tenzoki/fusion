@@ -3,8 +3,8 @@
 **Date:** 2026-08-19
 **Agent:** coder
 **Circle:** 260819-1645-four-constraints-on-deep-change
-**Plan:** `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`, step 4
-**Source decision:** `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+**Plan:** `260819-2016_*_four-constraints-on-deep-change.md`, step 4
+**Source decision:** `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
 **Status:** Complete
 
 ## What was done
@@ -51,7 +51,7 @@ reverting it alone and rerunning the gate, which was green at 1178/155/102 both 
 with the edit reverted. Per token:
 
 - paths +1: `bin/fusion-rules`, in the residual paragraph naming the three emitted-to agents.
-- records +1: `shared/history/260819-1400-reconciliation-circles.md`, the measured six broken
+- records +1: `260819-1400-reconciliation-circles.md`, the measured six broken
   citations from the `260817-1907` archive sweep.
 - records +1: the binding-decision citation of `260805-1548` at the section's foot.
 

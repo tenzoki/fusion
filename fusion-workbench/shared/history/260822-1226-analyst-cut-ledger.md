@@ -3,7 +3,7 @@
 **Date:** 2026-08-22 12:26
 **Status:** Complete
 **Agent:** analyst
-**Dispatched by:** orchestrator, step 1 of `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
+**Dispatched by:** orchestrator, step 1 of `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`
 **HEAD:** `370bfc5`
 
 ## What was asked
@@ -15,9 +15,9 @@ there as optional. Report the hook test surface first.
 
 ## What was produced
 
-- `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`
-- Three issues: `shared/issues/260822-1226_o_…`, `260822-1227_o_…`, `260822-1228_o_…`
-- One decision: `shared/decisions/260822-1229_o_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`
+- `260822-1226-cut-ledger-for-three-bounded-surfaces.md`
+- Three issues: `260822-1226_*_…`, `260822-1227_*_…`, `260822-1228_*_…`
+- One decision: `260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`
 
 Nothing outside `fusion-workbench/` was changed.
 

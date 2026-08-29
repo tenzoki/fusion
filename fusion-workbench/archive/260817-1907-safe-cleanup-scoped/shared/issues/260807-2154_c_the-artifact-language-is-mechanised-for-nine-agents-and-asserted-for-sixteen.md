@@ -6,7 +6,7 @@ The artifact language is mechanised for the nine prose agents and merely asserte
 **Domain:** code
 **Filed by:** coderev, review of `b246996..HEAD` (the two-language declaration split)
 **Affects:** `bin/fusion-rules:401` and `:409-411` (the two emission call sites), `rules/agent-setup.md:52-56` (`## Voice profiles`), `rules/fusion-workbench-conventions.md:180-181` (the persisted-output clause)
-**Cross-references:** `fusion-workbench/shared/planning/260807-2024_c_two-language-declarations.md`; `fusion-workbench/shared/decisions/260807-1515_i_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+**Cross-references:** `260807-2024_*_two-language-declarations.md`; `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
 
 ---
 
@@ -93,7 +93,7 @@ signal by breaking the style one.
 every agent provably reads before it writes anything.
 
 ---
-Resolved: Fixed in Turn 2 of session 260807-2020 as a rule-text change, per the recommendation.
+Resolved: Fixed in Turn 2 of session 260807-2020-orchestrator-session.md as a rule-text change, per the recommendation.
 `rules/agent-setup.md` `## Voice profiles` now tells an agent holding only the chat path that this
 does not exempt it from the artifact language: the files it writes persist, no profile it holds
 names their language, and the declarations in `CLAUDE.md` are where it resolves that. The paragraph

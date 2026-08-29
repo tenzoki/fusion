@@ -4,7 +4,7 @@
 **Domain:** code
 **Date:** 2026-08-07 00:10
 **Status:** Complete
-**Wrote:** `fusion-workbench/tasklist.md` (full rebuild), and closed `shared/issues/260801-2038_*_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`
+**Wrote:** `fusion-workbench/tasklist.md` (full rebuild), and closed `260801-2038_*_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`
 
 ---
 
@@ -35,18 +35,18 @@ The active Circle's own issue and decision stores are empty. Every open issue th
 
 The plan adopted them, so listing them twice would produce duplicate work:
 
-- `circles/260801-1244-guard-rules-write/issues/260803-1352_*_two-guard-advisory-details-skip-the-200-char-clamp...` is `P:S9`.
-- `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` is `P:S10`.
+- `260803-1352_*_two-guard-advisory-details-skip-the-200-char-clamp...` is `P:S9`.
+- `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` is `P:S10`.
 
 Both are cited where they sit and not moved into the active Circle, per the Origin Rule's second corollary. Each carries the instruction to append its resolution note and rename its marker on completion.
 
 ## Changes from the previous tasklist
 
-All 11 prior entries removed. They were the v4.0.0 workbench-restructure queue generated 260716-1920 for `circles/260716-1847-workbench-umbau`, closed 260716. Nine entries were done and two deferred, so nothing carried forward and no status marker had to be preserved. The header's dead `**Source plan:**` path (pre-v4, root-relative, bracket-marker form) and its `**Circle:** 1 of 2` free-text line are gone.
+All 11 prior entries removed. They were the v4.0.0 workbench-restructure queue generated 260716-1920 for `260716-1847-workbench-umbau`, closed 260716. Nine entries were done and two deferred, so nothing carried forward and no status marker had to be preserved. The header's dead `**Source plan:**` path (pre-v4, root-relative, bracket-marker form) and its `**Circle:** 1 of 2` free-text line are gone.
 
 ## Citation form
 
-All 51 workbench-record citations in the new tasklist use the wildcard form `YYMMDD-HHMM_*_<slug>`, per decision `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`, answered as option (a) and implemented in `a1b7872`. The queue is the artifact most exposed to marker drift, because working its tasks is what moves the markers. `reference-resolution-lint.test.ts` does not cover workbench artifacts, so nothing enforces this here; it was applied because the rationale applies, not because a gate demanded it.
+All 51 workbench-record citations in the new tasklist use the wildcard form `YYMMDD-HHMM_*_<slug>`, per decision `260806-0015_*_zitierform-fuer-workbench-records.md`, answered as option (a) and implemented in `a1b7872`. The queue is the artifact most exposed to marker drift, because working its tasks is what moves the markers. `reference-resolution-lint.test.ts` does not cover workbench artifacts, so nothing enforces this here; it was applied because the rationale applies, not because a gate demanded it.
 
 ## Observations worth a reader's attention
 
@@ -56,6 +56,6 @@ All 51 workbench-record citations in the new tasklist use the wildcard form `YYM
 
 **Nine open issues sit in the files the Circle is about to edit.** That concentration is why the second diagram exists. The risk is not that they get forgotten, it is that an executor fixes one in passing during S3 or S4 and the S5 differential then measures two changes at once, which is the exact failure S1 was sequenced first to prevent.
 
-**One backlog item is a higher-severity guard defect than anything in the Circle.** `circles/260801-1244-guard-rules-write/issues/260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` is filed Severity High against a security control and describes a real bypass. It is unowned and outside the active Directive, so it was queued as backlog rather than pulled in. Worth the user's notice at the next portfolio pass.
+**One backlog item is a higher-severity guard defect than anything in the Circle.** `260804-1332_*_git-work-tree-in-the-environment-relocates-the-write-and-the-classifier-reads-no-variable.md` is filed Severity High against a security control and describes a real bypass. It is unowned and outside the active Directive, so it was queued as backlog rather than pulled in. Worth the user's notice at the next portfolio pass.
 
-**The 17 measured guard blocks are a different over-deny from the one this Circle fixes.** `circles/260801-1244-guard-rules-write/issues/260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md` records a 100% false-positive rate on the Bash surface in a live consuming project. All 17 were unresolvable-operand denials, which the active plan explicitly leaves untouched. Closing the reachability over-deny will not move that number.
+**The 17 measured guard blocks are a different over-deny from the one this Circle fixes.** `260805-1830_*_alle-17-guard-blocks-im-beobachteten-konsumprojekt-waren-fail-closed-fehlalarme.md` records a 100% false-positive rate on the Bash surface in a live consuming project. All 17 were unresolvable-operand denials, which the active plan explicitly leaves untouched. Closing the reachability over-deny will not move that number.

@@ -5,11 +5,11 @@
 **Status:** implemented
 **Filed by:** coder, Turn 10 task T10-1
 **Cross-references:**
-`issues/260804-1024_c_…` (the defect this answers, and the three candidate directions),
-`issues/260804-1026_c_…` (its sibling, answered in `## The second question` below),
-`reviews/260804-1224-coderev-turn9-joiner-for-the-moving-segment.md:218` (the remaining ledger that ordered the two),
-`decisions/260803-2338_i_…` and `decisions/260804-0947_i_…` (the give-up stance this question tests against),
-`decisions/260804-0106_i_…` (the fail-closed bound the give-up option leans on),
+`260804-1024_*_…` (the defect this answers, and the three candidate directions),
+`260804-1026_*_…` (its sibling, answered in `## The second question` below),
+`260804-1224-coderev-turn9-joiner-for-the-moving-segment.md:218` (the remaining ledger that ordered the two),
+`260803-2338_*_…` and `260804-0947_*_…` (the give-up stance this question tests against),
+`260804-0106_*_…` (the fail-closed bound the give-up option leans on),
 `hooks/lib/__tests__/bash-mutation-guard.test.ts:196` (the one `-C` row in the suite, which pins the opposite direction).
 
 ---
@@ -29,7 +29,7 @@ cannot model degrades to `CWD_UNKNOWN` and denies; `git -C` does not degrade at 
 
 The choice has to be made now because the boundary sentence this Circle wants —
 "an agent cannot write a protected path through a shell without a human decision" — is
-false while it is open, and because `git checkout` (`260804-1026`) lives in the same
+false while it is open, and because `git checkout` (`260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md`) lives in the same
 function and cannot be closed without touching this walk.
 
 ## Options
@@ -144,7 +144,7 @@ Three facts fell out of the same walk and are answered here rather than left imp
 
 ## The second question — `git checkout`, and the promise it collides with
 
-`260804-1026` is answered here because it is the same walk and the same Turn.
+`260804-1026_*_git-checkout-treeish-overwrites-a-protected-path-and-is-in-neither-the-verb-table-nor-the-residual-list.md` is answered here because it is the same walk and the same Turn.
 `rules/protected-path-discipline.md` promises, in every agent's context in every consuming
 project, that `git checkout HEAD -- rules/x.md` is fusion's own revert strategy and is
 always allowed. Adding `checkout` to the table unconditionally would deny exactly the
@@ -192,4 +192,4 @@ the orchestrator commits this Turn and owns filling it in here.
 Implemented: `613d6fd` — the union rule shipped as described above; measured 0 newly allowing out of 1,622,420 evaluations, and structurally so, because a directory fact only ever adds a candidate resolution.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the union rule `613d6fd` shipped lived in `hooks/lib/bash-mutation-guard.ts` and was deleted with the classifier. The guard models no working directory, git's or the shell's, because it reads no command text at all.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md) — the union rule `613d6fd` shipped lived in `hooks/lib/bash-mutation-guard.ts` and was deleted with the classifier. The guard models no working directory, git's or the shell's, because it reads no command text at all.

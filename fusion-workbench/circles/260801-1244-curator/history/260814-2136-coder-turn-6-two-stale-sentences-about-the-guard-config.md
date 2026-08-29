@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-curator`
+**Circle:** `260801-1244-curator`
 **Task:** T13, Turn 6 — one High finding and one Low, both single-clause corrections.
 
 ---
@@ -17,7 +17,7 @@ the time the commit landed.
 ## The High finding — `CLAUDE.md:30`
 
 Record:
-`circles/260801-1244-curator/issues/260814-2128_*_claude-md-still-calls-the-root-guard-config-byte-identical-to-the-template-after-the-same-turn-made-it-false.md`.
+`260814-2128_*_claude-md-still-calls-the-root-guard-config-byte-identical-to-the-template-after-the-same-turn-made-it-false.md`.
 
 The `fusion-guard.json` row of the Layout table said the root copy was "byte-identical to
 the template (pinned by `config.test.ts`)". Both halves had been falsified: the root copy
@@ -57,7 +57,7 @@ Record:
 `circles/260801-1244-curator/issues/260814-2128_*_the-turn-budget-records-closing-footer-says-fusion-guard-json-was-not-edited-in-the-commit-that-commits-it.md`.
 
 The `Resolved:` footer of
-`shared/issues/260814-2022_c_this-repository-cannot-set-its-own-turn-budget-…` closed with
+`260814-2022_*_this-repository-cannot-set-its-own-turn-budget-…` closed with
 "`fusion-guard.json` and `templates/fusion-guard.json` were not edited." That was exact
 about the Turn-6 task's own working scope and false about the commit that carries the
 footer.
@@ -75,7 +75,7 @@ differs from the template it is supposed to copy.
 
 ## Out of scope, and left open
 
-`260814-2128_o_the-drift-checks-cut-helper-is-exercised-by-one-input-shape-and-its-last-entry-branch-by-none.md`
+`260814-2128_*_the-drift-checks-cut-helper-is-exercised-by-one-input-shape-and-its-last-entry-branch-by-none.md`
 asks for test coverage of the JSON cut helper that `f0d9d60` added. The task named it out of
 scope. It stays `_o_`.
 
@@ -83,7 +83,7 @@ scope. It stays `_o_`.
 
 `cd hooks && npm test` — exit 0. Run twice in full: 49 files, 1030 tests, green both times.
 The suite is known to fail non-deterministically on repeated full runs, including on clean
-HEAD (`shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`);
+HEAD (`260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md`);
 neither run met it, in the lock and halt-reaping harnesses or anywhere else.
 
 Neither edit in this task touches code, so a green suite is a statement about the tree the
@@ -96,5 +96,5 @@ sentence describes is the divergence that exists.
 ## Files changed
 
 - `/Users/k1/Projects/productive/fusion/CLAUDE.md` — the `fusion-guard.json` row's identity clause.
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260814-2022_c_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md` — closing footer.
+- `/Users/k1/Projects/productive/fusion/260814-2022_*_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md` — closing footer.
 - Both Turn-6 records above: `Resolved:` note appended, `_o_` → `_c_`.

@@ -1,11 +1,11 @@
 # coder — Step 7 remainder: the three-file documentation pass (narrow scope)
 
-**Date:** 260805-2233
+**Date:** 260805-2233-coder-step7-remainder-documentation.md
 **Status:** Complete
 **Task:** T2 — plan `260804-1633` Step 7, reduced to what was still open: obligation 10
-(close `260804-1427`), the one-pass consistency re-read against the landed Step 6
+(close `260804-1427_*_the-accepted-floor-residual-reaches-the-guards-own-state-directory-not-only-protectedpaths.md`), the one-pass consistency re-read against the landed Step 6
 template, and the plan's five verification greps.
-**Plan:** `planning/260804-1633_p_plan-c5b-remediation-and-ship.md` § Step 7
+**Plan:** `260804-1633_*_plan-c5b-remediation-and-ship.md` § Step 7
 **Not committed** — the orchestrator commits after validation.
 
 ## What was found open, measured by grep before editing
@@ -63,7 +63,7 @@ template, and the plan's five verification greps.
 
 ### Issue closed
 
-11. `issues/260804-1427_c_the-accepted-floor-residual-…` — Resolved footer appended
+11. `260804-1427_*_the-accepted-floor-residual-…` — Resolved footer appended
     (the "leave it" arm per obligation 10; floor stays one entry), renamed `_o_` → `_c_`.
 
 ### Plan updated
@@ -89,7 +89,7 @@ template, and the plan's five verification greps.
 
 - **Obligation 5 is the one item between Step 7 and [DONE]** — one sentence in
   `CLAUDE.md`'s release checklist; deliberately not written here (out of scope).
-- Decision record `260802-1912_a_` still carries the narrower residual bound; the
+- Decision record `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` still carries the narrower residual bound; the
   shipped docs now carry the measured one. Whether the record gets a correcting
   appendix is a Circle-owner call ("not both, and not neither" is satisfied by the
   documentation leg).

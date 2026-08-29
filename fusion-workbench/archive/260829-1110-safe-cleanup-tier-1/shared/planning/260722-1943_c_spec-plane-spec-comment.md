@@ -14,7 +14,7 @@ The push writes a deliberately thin description body: `Mirrored fusion <kind>.\n
 
 The capability was scaffolded but withheld: `push --closure` is already accepted as a no-op placeholder (`bin/fusion-plane:882-885`), whose block comment records that the Step-6 comment hook was "intentionally NOT implemented here (its comments-endpoint body shape is unverified in MARTIN.md)." That unverified body shape was the sole blocker, and it is now verified: the comments endpoint takes `{"comment_html": <html>}`, and an idempotent upsert keyed on an HTML-comment marker in the comment body was confirmed against real ticket #66 and survives re-push.
 
-Decision `circles/260719-1536-plane-mirror-integration/decisions/260719-2313_i_round-trip-write-overwrites-origin-story-description.md` chose Option 1 (seed-origin issues get state-only description writes; fusion never overwrites a human's story) and explicitly named this spec-comment as Option 3's planned continuation "once the comments body is verified." This spec is that continuation, and it respects Option 1: a comment never touches the description, so it applies to seed-origin and fusion-owned issues alike without reopening that decision.
+Decision `260719-2313_*_round-trip-write-overwrites-origin-story-description.md` chose Option 1 (seed-origin issues get state-only description writes; fusion never overwrites a human's story) and explicitly named this spec-comment as Option 3's planned continuation "once the comments body is verified." This spec is that continuation, and it respects Option 1: a comment never touches the description, so it applies to seed-origin and fusion-owned issues alike without reopening that decision.
 
 ## Capabilities
 
@@ -41,7 +41,7 @@ Decision `circles/260719-1536-plane-mirror-integration/decisions/260719-2313_i_r
 - [ ] On a second enabled push of the same Circle, the bridge finds the marker-bearing comment and PATCHes it (updates in place); no second comment is created.
 - [ ] The upsert decision is by marker match only: a comment is treated as fusion's spec-comment if and only if its body carries this Circle's exact `<!-- fusion-spec-comment:<key> -->` marker. A comment for a different Circle's key is never matched.
 - [ ] The comment body is `{"comment_html": <html>}` — no other fields sent.
-- [ ] The spec-comment is attached regardless of the issue's origin: a seed-origin Circle (whose description write is state-only) still receives the comment, because a comment never overwrites the description (fork 5; respects decision 260719-2313).
+- [ ] The spec-comment is attached regardless of the issue's origin: a seed-origin Circle (whose description write is state-only) still receives the comment, because a comment never overwrites the description (fork 5; respects decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md).
 - [ ] The description write is unchanged — the thin `Mirrored fusion …` body (`bin/fusion-plane:726`) and the state-only branch for seed-origin issues both remain exactly as they are; the comment is purely additive.
 
 **Decisions made:**
@@ -115,7 +115,7 @@ flowchart TD
 
 - Bridge stack stays bash + jq + curl. No external Markdown renderer, no new binary dependency (fork 3).
 - Every Plane call continues to run through the existing `plane_curl` wrapper (the `zsh -ic` key-handling path); the API key is never read from a file, echoed, or persisted.
-- The comment path must not alter the description write, the seed-origin state-only branch (decision 260719-2313), or any existing exit-code semantics.
+- The comment path must not alter the description write, the seed-origin state-only branch (decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md), or any existing exit-code semantics.
 - The C4 offline doctrine holds unchanged: outages/rate-limits on the *state* path still defer to `.plane-outbox.jsonl` and exit 10; the comment path never defers.
 - Config field lives only in the workbench copy of `plane.config.yaml`; the template documents it but ships it commented/absent so existing filled-in configs keep today's behaviour.
 - No state UUID or label UUID literal may appear in the source (the existing lint invariant).
@@ -144,7 +144,7 @@ flowchart TD
 2. **vitest coverage** in `hooks/lib/__tests__/fusion-plane.test.ts` (plus any new fixtures under `hooks/lib/__tests__/fixtures/plane/`) against the dry-run/mock seam: `comment_html` shape, HTML-escaping of `& < >`, exact marker string, marker-match selection, PATCH-vs-POST branch, and the `spec_comment`-off no-regression case.
 3. **`docs/plane-setup.md`** — document the `spec_comment` opt-in field and the "thin mirror vs. comment-borne full spec" model (description stays a thin stub by design; the full brief rides in an idempotent comment; seed-origin stories keep their description untouched).
 4. **`.claude-plugin/plugin.json`** — version bump (per the release convention: every change bumps the version).
-5. **A decision record** capturing the architectural choice: "thin mirror description vs. comment-borne full spec" — why the full brief lives in a comment (survives re-push, no description contention, respects decision 260719-2313), filed into the plane-mirror-integration Circle's decisions (or `shared/decisions/` if no Circle is active at implementation time — the Origin Rule decides).
+5. **A decision record** capturing the architectural choice: "thin mirror description vs. comment-borne full spec" — why the full brief lives in a comment (survives re-push, no description contention, respects decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md), filed into the plane-mirror-integration Circle's decisions (or `shared/decisions/` if no Circle is active at implementation time — the Origin Rule decides).
 
 Also update `templates/plane.config.yaml` to document the `spec_comment` field (shipped absent/commented so existing configs are unchanged).
 
@@ -156,16 +156,16 @@ Also update `templates/plane.config.yaml` to document the `spec_comment` field (
 
 ## Reconciliation Log
 
-**260731-2324 (reconciler, domain `code`)** — spec is **Complete**; all five deliverables plus the template update shipped in v5.6.0. Marker `_o_` → `_c_`, Status Draft → Complete.
+**260731-2324-reconciliation.md (reconciler, domain `code`)** — spec is **Complete**; all five deliverables plus the template update shipped in v5.6.0. Marker `_o_` → `_c_`, Status Draft → Complete.
 
 | Deliverable | Evidence |
 |---|---|
 | 1. `bin/fusion-plane` — opt-in field, upsert helper, wired into `process_artifact`, non-blocking failure, dry-run op | `4d95a91` (primitives), `bf5dc5e` (wiring), `47c4398` (jq `.results? // .` bare-array fix). 10 `spec_comment` occurrences in `bin/fusion-plane`. |
 | 1b. Stale `--closure` placeholder comment reconciled | `bin/fusion-plane:1021-1027` — the block now explains the accepted-no-op forward-compat reality; the "intentionally NOT implemented" text is gone. |
-| 2. vitest coverage + fixtures | `d75afed`. Fixtures `hooks/lib/__tests__/fixtures/plane/comments-with-marker.json`, `comments-other-key.json`, `comments-with-marker-bare-array.json`. Suite green: 316/316, 12 files (run 260731-2324). Four `spec-comment` cases present incl. the gate-off no-regression case (8 ops unchanged). |
+| 2. vitest coverage + fixtures | `d75afed`. Fixtures `hooks/lib/__tests__/fixtures/plane/comments-with-marker.json`, `comments-other-key.json`, `comments-with-marker-bare-array.json`. Suite green: 316/316, 12 files (run 260731-2324-reconciliation.md). Four `spec-comment` cases present incl. the gate-off no-regression case (8 ops unchanged). |
 | 3. `docs/plane-setup.md` | `dd6b092`. 3 `spec_comment` occurrences. |
 | 4. `.claude-plugin/plugin.json` version bump | `dd6b092` — 5.5.1 → 5.6.0. |
-| 5. Decision record "thin mirror vs comment-borne full spec" | `shared/decisions/260722-2230_i_thin-mirror-vs-comment-borne-full-spec.md`, marker `_i_`. Filed to `shared/` rather than the Circle — correct, the parent Circle was already `_c_` and no Circle was active (Origin Rule + invariant 1). |
+| 5. Decision record "thin mirror vs comment-borne full spec" | `260722-2230_*_thin-mirror-vs-comment-borne-full-spec.md`, marker `_i_`. Filed to `shared/` rather than the Circle — correct, the parent Circle was already `_c_` and no Circle was active (Origin Rule + invariant 1). |
 | 6. `templates/plane.config.yaml` documents the field | `dd6b092`. 1 `spec_comment` occurrence. |
 
-Drift note: the plan (`shared/planning/260722-2021_c_plan-plane-spec-comment.md`) was closed by the 260723-0712 reconciliation pass, but this spec was left `_o_` — the pass reconciled the plan only. No implementation gap; a tracking miss, corrected here.
+Drift note: the plan (`260722-2021_*_plan-plane-spec-comment.md`) was closed by the 260723-0712-reconciliation.md reconciliation pass, but this spec was left `_o_` — the pass reconciled the plan only. No implementation gap; a tracking miss, corrected here.

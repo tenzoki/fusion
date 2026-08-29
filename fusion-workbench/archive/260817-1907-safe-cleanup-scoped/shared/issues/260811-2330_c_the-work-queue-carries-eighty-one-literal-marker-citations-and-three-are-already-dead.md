@@ -4,12 +4,12 @@
 
 **Severity:** Medium — the queue is the document a session reads to decide what to do next, and no gate reads its citations; three are dead today and one of the three points at the record that ratified the form it violates
 **Domain:** code
-**Filed by:** reconciler (final reconciliation of session `260811-0752`)
+**Filed by:** reconciler (final reconciliation of session `260811-0752-orchestrator-session.md`)
 **Affects:** `fusion-workbench/tasklist.md`, `agents/taskplanner.md` (the producer), `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the gate that does not reach it)
 **Cross-references:**
-`circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the ratified wildcard form);
-`shared/issues/260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` (the same class in shipped sources);
-`shared/issues/260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md` (the same class in Circle records)
+`260806-0015_*_zitierform-fuer-workbench-records.md` (the ratified wildcard form);
+`260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md` (the same class in shipped sources);
+`260811-2105_*_circle-records-carry-the-same-silent-citation-form-and-a-third-of-their-citations-are-stale.md` (the same class in Circle records)
 
 ---
 
@@ -31,9 +31,9 @@ Measured at HEAD `31746d1` over every backticked path of the shape
 
 | Cited as | On disk now |
 |---|---|
-| `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md` | `…/260807-0945_a_…` |
-| `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` | `…/260810-0710_d_…` |
-| `shared/decisions/260806-0015_i_zitierform-fuer-workbench-records.md` (task 1's governing rule) | **no such file** — the record lives in `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/` and never lived in `shared/` |
+| `260807-0945_*_integritaet-des-eskalationsspeichers.md` | `…/260807-0945_a_…` |
+| `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` | `…/260810-0710_d_…` |
+| `260806-0015_*_zitierform-fuer-workbench-records.md` (task 1's governing rule) | **no such file** — the record lives in `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/` and never lived in `shared/` |
 
 None of the 7 wildcard citations is dead.
 
@@ -88,4 +88,4 @@ under it, so this is not a one-line widening.
   the three dead citations recorded above.
 
 ---
-Resolved: moot, not fixed. `fusion-workbench/tasklist.md` was deleted in `dd312eb` (step 10) and the persisted queue retired with it; the file was moved to `shared/planning/260815-1524_c_retired-tasklist.md` as a record. The eighty-one literal marker citations are therefore no longer live text any agent reads. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913. The underlying class — that `reference-resolution-lint` does not scan `fusion-workbench/` — is not closed by this and stands as `shared/issues/260812-1720_o_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`.
+Resolved: moot, not fixed. `fusion-workbench/tasklist.md` was deleted in `dd312eb` (step 10) and the persisted queue retired with it; the file was moved to `260815-1524_*_retired-tasklist.md` as a record. The eighty-one literal marker citations are therefore no longer live text any agent reads. Verified at HEAD `9306f0a` by the reconciliation pass of 260815-1913. The underlying class — that `reference-resolution-lint` does not scan `fusion-workbench/` — is not closed by this and stands as `260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`.

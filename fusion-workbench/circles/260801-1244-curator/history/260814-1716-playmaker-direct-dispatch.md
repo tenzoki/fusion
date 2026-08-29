@@ -1,4 +1,4 @@
-# Playmaker run 260814-1716 — direct dispatch
+# Playmaker run 260814-1716-playmaker-direct-dispatch.md — direct dispatch
 
 **Status:** Complete
 **Trigger:** direct-dispatch
@@ -47,7 +47,7 @@ Read from `shared/backlog/`: 1 entry, carrying the open marker
   exists on disk only as a witness line inside a Setup-scoped defect record).
 - Not ideas at all, named so they are not counted as any: 2.
 
-**Top-ranked entry:** `shared/backlog/260811-0826_*_observations.md`, recommended for splitting
+**Top-ranked entry:** `260811-0826_*_observations.md`, recommended for splitting
 rather than for shaping, because `/fusion:direct` promotes an entry whole and would make one Circle
 of all thirteen ideas. Its top idea is `radical-simplification`, ranked first because two analyses
 already on disk answer it with measurements, so it can be shaped with no new analysis.
@@ -58,7 +58,7 @@ autonomous rename was warranted either.
 
 **Confirmed operations proposed and not performed: 1.**
 
-- `split shared/backlog/260811-0826_*_observations.md into: radical-simplification; bounded-executor-dispatches; attach-the-rule-to-the-act`
+- `split 260811-0826_*_observations.md into: radical-simplification; bounded-executor-dispatches; attach-the-rule-to-the-act`
   — not performed because this run holds no confirmation naming it. The dispatch prompt carried no
   `**Confirmed operations:**` block, and the run has no channel to put the question to the user, so
   neither of the two channels a confirmation can arrive through was available.

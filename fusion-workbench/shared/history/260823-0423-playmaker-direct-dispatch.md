@@ -1,4 +1,4 @@
-# Playmaker run 260823-0423 — direct dispatch
+# Playmaker run 260823-0423-playmaker-direct-dispatch.md — direct dispatch
 
 **Status:** Complete
 **Trigger:** direct-dispatch
@@ -17,7 +17,7 @@ backlog entries and one activation-proposal append are the whole of its writes.
 
 Sixteen Circle records, one more than the previous run.
 
-- `_a_` anticipated: 1 — `260823-0023-settle-what-travels-between-checkouts` (new since 260822-2253)
+- `_a_` anticipated: 1 — `260823-0023-settle-what-travels-between-checkouts` (new since 260822-2253-playmaker-orchestrator-phase4.md)
 - `_t_` active: 0
 - `_c_` closed-coherent: 12
 - `_b_` bounded: 2
@@ -36,7 +36,7 @@ as deliberately held out of scope by the user and placed before C3. Its single d
 `260822-1921-measure-what-two-checkouts-share`, is `_c_`, so the dependencies-closed flag is clear.
 
 `## Activation proposal` appended to
-`circles/260823-0023-settle-what-travels-between-checkouts/_a_circle.md`. No marker renamed,
+`260823-0023-settle-what-travels-between-checkouts`. No marker renamed,
 `.active-circle` not written.
 
 ## Cycle detection
@@ -56,7 +56,7 @@ and no `parent-grounding-stale` event.
 - Distinct ideas inside the two live entries: 2, one per entry. Neither needs splitting.
 - Duplicate groups: none.
 - Handed to `## Warnings` as defect- or decision-shaped: none this run.
-- Top-ranked entry: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md` — the only live
+- Top-ranked entry: `260814-1733_*_bounded-executor-dispatches.md` — the only live
   idea whose evidence is on disk and which needs no user act before it can be shaped.
 
 **Backlog writes performed: none.** Both live markers already matched this run's ranking, so no
@@ -64,7 +64,7 @@ rename was made and no other operation was available to this run.
 
 **Proposed and not performed (1):**
 
-- `defer shared/backlog/260814-1733_*_attach-the-rule-to-the-act.md until shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
+- `defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`
   — no confirmation held. Carried forward verbatim from the previous two runs. The entry has now
   stood second across twelve consecutive refreshes on an obstruction no ranking pass can clear.
 

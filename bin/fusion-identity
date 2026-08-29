@@ -30,7 +30,7 @@
 #      cannot be run at all (not on PATH, or failing to execute): then the
 #      program cannot tell whether an identity is owed, and a run that cannot
 #      ask about identity stops rather than filing silently. That is a choice
-#      and not a correction, and it was the user's (issue 260824-1538): the
+#      and not a correction, and it was the user's (issue 260824-1538_*_the-identity-helpers-exit-4-message-names-a-cause-it-never-established.md): the
 #      alternative, exit 4, would report a broken environment as an answer
 #      about the project, which "Exit 3 names an outcome" below rules out.
 #   2  usage error: an argument was given, or -h/--help.
@@ -60,7 +60,7 @@
 # (`skills/setup/SKILL.md` Step 0h, `bin/fusion-count-sources`, neither of which
 # treats the absence of git as a fault). Folding 4 into 1 would withdraw that
 # support as a side effect of a field on a template. Binding record:
-# `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
+# `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
 # option 2.
 #
 # The halt condition is evaluated **here and nowhere else**. No agent prompt

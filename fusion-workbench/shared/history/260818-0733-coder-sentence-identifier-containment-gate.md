@@ -54,11 +54,11 @@ one added line and the changed total.
 ## Out of scope, deliberately
 
 Recommendation 3 (the convention in a rule file) was not chosen by the user. No gate over `rules/`,
-`agents/` or `skills/`, and no shape blacklist anywhere. `260807-2153` stays open.
+`agents/` or `skills/`, and no shape blacklist anywhere. `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` stays open.
 
 ## Record
 
-`260817-2131` closed: the shape-blacklist wording in `## What the gate should be` was corrected in
+`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` closed: the shape-blacklist wording in `## What the gate should be` was corrected in
 place first (the record was still open, so the body was edited rather than footnoted), then the
 `Resolved:` note appended and the marker renamed `_o_` → `_c_`.
 

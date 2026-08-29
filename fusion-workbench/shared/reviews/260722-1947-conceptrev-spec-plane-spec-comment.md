@@ -1,7 +1,7 @@
 # Concept Evaluation: Spec — Plane bridge spec-comment (opt-in)
 
 **Date:** 2026-07-22 19:47
-**Target:** `fusion-workbench/shared/planning/260722-1943_o_spec-plane-spec-comment.md`
+**Target:** `260722-1943_*_spec-plane-spec-comment.md`
 **Verdict:** clean
 **Diagrams evaluated:** 1  |  **Validation:** by-tool (mmdc)
 
@@ -32,7 +32,7 @@ One cosmetic observation, not a defect: `getC` (GET issue comments) is drawn as 
 
 **Reconciliation annotation — 260817-1836, reconciler, domain `code`.** The subject of this review
 no longer exists. The Plane mirror was removed on 2026-08-15 in Circle
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
+`260815-0007-remove-eight-mechanisms-and-cap-growth`: `bin/fusion-plane` is gone from
 `bin/` (`ls bin/` at HEAD `2552586` lists twelve helpers and none of them is it), the
 `plane.config.yaml` template left `templates/`, and the only surviving mention of the bridge in
 shipped text is the migration note `docs/upgrading-to-v9.md`. The findings below are preserved as

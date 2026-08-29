@@ -11,10 +11,10 @@ Related, same file: `.gitignore:51` has a comment describing "the project-local 
 Cosmetic, no functional impact — a negation for a non-existent path is a no-op. Filed rather than fixed inline because it is unrelated to the Circle's Directive (workbench restructure): per the origin rule now in `rules/fusion-workbench-conventions.md`, a defect found next to the work rather than arising from it belongs to the shared store, not to the Circle.
 
 Found by `coder` during task P-2 (`bin/fusion-paths`), while adding the `!bin/fusion-paths` exception two lines below.
-Source: fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md
+Source: 260716-1910[p]-plan-workbench-umbau-circle-container.md
 
 ---
-Reconciliation 260731-2324 (reconciler, domain `code`) — **confirmed still live, stays `_o_`.** `.gitignore:23` still carries `!bin/fu`, and `bin/` holds no such file: `fusion-commit-lock`, `fusion-paths`, `fusion-plane`, `fusion-rules`, `fusion-session-mark`, `fusion-workbench-root`, `monitor`. The launcher was removed in v3.20.0 and the un-ignore rule outlived it. Untouched by the v5.7.0 release, which changed no packaging file except `install.sh`'s pin-example comment.
+Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **confirmed still live, stays `_o_`.** `.gitignore:23` still carries `!bin/fu`, and `bin/` holds no such file: `fusion-commit-lock`, `fusion-paths`, `fusion-plane`, `fusion-rules`, `fusion-session-mark`, `fusion-workbench-root`, `monitor`. The launcher was removed in v3.20.0 and the un-ignore rule outlived it. Untouched by the v5.7.0 release, which changed no packaging file except `install.sh`'s pin-example comment.
 
 ---
 Resolved: The dead `!bin/fu` exception is removed, and the stale comment naming the same launcher

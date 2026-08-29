@@ -13,15 +13,15 @@ Einen neuen `_a_`-Circle anlegen, der die 66 Befunde der drei Prüfdurchgänge v
 
 ## Ergebnis
 
-Circle-Verzeichnis: `circles/260805-2005-textschicht-gegen-code-nachziehen/`
-Record: `circles/260805-2005-textschicht-gegen-code-nachziehen/_a_circle.md`
+Circle-Verzeichnis: `260805-2005-textschicht-gegen-code-nachziehen`
+Record: `260805-2005-textschicht-gegen-code-nachziehen`
 Sechs Artefakt-Unterverzeichnisse angelegt (`planning/`, `issues/`, `decisions/`, `history/`, `reviews/`, `analyses/`).
 
 Kein Spec geschrieben — im anticipated-circle-Modus ist der Record das Artefakt.
 
 ## Grounding
 
-Vollständig gelesen: die drei Berichte (`analyses/260805-1830-zweck-nutzung-und-stand-des-plugins.md`, `analyses/260805-1840-doku-gesamtpruefung-gegen-code.md`, `reviews/260805-1905-coderev-gesamtreview-plugin-v5-9-1.md`), der zu korrigierende High-Befund-Record `issues/260805-1859_o_im-eigenen-repo-…`, die Dateinamen aller 66 Issue-Records, und die Records der beiden anderen `_a_`-Circles (`260804-1205-shell-reachability-model`, `260801-1244-curator`).
+Vollständig gelesen: die drei Berichte (`260805-1830-zweck-nutzung-und-stand-des-plugins.md`, `260805-1840-doku-gesamtpruefung-gegen-code.md`, `260805-1905-coderev-gesamtreview-plugin-v5-9-1.md`), der zu korrigierende High-Befund-Record `260805-1859_*_im-eigenen-repo-…`, die Dateinamen aller 66 Issue-Records, und die Records der beiden anderen `_a_`-Circles (`260804-1205-shell-reachability-model`, `260801-1244-curator`).
 
 ## In dieser Sitzung selbst nachgemessen
 

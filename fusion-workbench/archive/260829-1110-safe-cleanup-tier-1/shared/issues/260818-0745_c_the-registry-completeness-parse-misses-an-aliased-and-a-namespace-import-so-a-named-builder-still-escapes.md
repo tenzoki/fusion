@@ -31,7 +31,7 @@ all and the regex never sees it.
 ## Why it matters, and why it is Low rather than higher
 
 The header at `:26-28` lists this residual as closed: "builders the registry does not name, hence the
-completeness assertion at the foot". The analysis was more careful — `shared/analyses/260818-0715-…`
+completeness assertion at the foot". The analysis was more careful — `260818-0715-…`
 finding 5 says the assertion "rests on a naming convention, so a builder named otherwise still
 escapes". What is new here is that a builder named BY the convention also escapes, through a form
 nobody would read as evasive.
@@ -56,8 +56,8 @@ Neither changes the containment relation and neither adds an allowlist.
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review `260818-0748` (range `1dc062d..33645a2`)
-**Cross-references:** `shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 5, `shared/issues/260817-2131_c_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`
+**Filed by:** coderev, review `260818-0748-coderev-turn-1-range-1dc062d-33645a2.md` (range `1dc062d..33645a2`)
+**Cross-references:** `260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md` finding 5, `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`
 
 ---
 Resolved: the parse now reads the IMPORTED half of an import specifier

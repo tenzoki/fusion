@@ -2,7 +2,7 @@ A closed record's resolution note states a judgement HEAD reversed, and every ci
 
 ---
 
-`260817-2130_c_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`
+`260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md`
 closes with a `Resolved:` note whose final sentence is false of HEAD:
 
 > The quoted git pathspec glob is not named separately: it behaves as the directory argument
@@ -32,18 +32,18 @@ reviews/260817-2130, 2147 ┘
 ```
 
 The two entrances that a later reader is most likely to use are the worst placed.
-`260817-2132_c_`'s `Cross-references:` names `260817-2130` and does not name `260817-2147`, and
-the same holds for the wrapper-header record `260817-2147_c_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md`.
+`260817-2132_*_the-staging-sentences-source-comment-attributes-f38f37d-to-git-add-a-while-the-same-file-attributes-it-to-u.md`'s `Cross-references:` names `260817-2130` and does not name `260817-2147`, and
+the same holds for the wrapper-header record `260817-2147_*_the-staging-drift-wrapper-header-still-carries-the-re-opens-f38f37d-wording-corrected-twice-in-the-typescript.md`.
 Both were written before the reversal or without it in view. A reader entering from either lands
 on the withdrawn judgement and stops.
 
-`shared/history/260817-2138-coder-staging-sentence-per-shape-justification.md` §1 carries the
+`260817-2138-coder-staging-sentence-per-shape-justification.md` §1 carries the
 same withdrawn paragraph ("**The quoted git pathspec glob is deliberately not named
 separately.**") under its own heading, also with no forward pointer.
 
 ## What is already in place, and why it is not enough
 
-`shared/history/260817-2155-coder-quoted-glob-clause-and-wrapper-header.md` states the
+`260817-2155-coder-quoted-glob-clause-and-wrapper-header.md` states the
 supersession plainly and explains the non-edit:
 
 > Neither of those two earlier files was edited: they are the record of what was decided then,
@@ -51,7 +51,7 @@ supersession plainly and explains the non-edit:
 > reader meets it.
 
 That reasoning is sound about **preserving** the earlier judgement and wrong about **reaching**
-it. A cross-reference is directional. `260817-2147_c_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md`
+it. A cross-reference is directional. `260817-2147_*_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md`
 does name the disagreement, in full and accurately, but only a reader who is already holding
 `260817-2147` ever sees it. The reader the note is written for is the one holding `260817-2130`.
 
@@ -66,7 +66,7 @@ with no rename), because a decision's answer was always expected to be revisited
 and as a growing number do — has the same failure mode a decision record has, with none of the
 vocabulary.
 
-This is the same shape as `shared/issues/260813-0913_o_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`
+This is the same shape as `260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md`
 one layer down: a relation between two records that only one side is able to state.
 
 ## Fix direction
@@ -80,7 +80,7 @@ Two coherent answers, and the choice is a decision rather than a repair to start
 - **Leave it.** Accept that a `Resolved:` note is a statement about the moment it was written and
   is not maintained, and say so in `rules/fusion-workbench-conventions.md` where the annotation is
   defined, so a reader knows not to read one as current. That costs one sentence and no mechanism,
-  and it is consistent with `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
+  and it is consistent with `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`,
   which was answered "nothing new" for the adjacent class.
 
 Do not hand-fix the two instances before the question is answered under the first option, and
@@ -88,17 +88,17 @@ under the second there is nothing to fix.
 
 ## Acceptance criteria
 
-- A reader who opens `260817-2130_c_…` learns that its closing judgement was withdrawn, or
+- A reader who opens `260817-2130_*_…` learns that its closing judgement was withdrawn, or
   `rules/fusion-workbench-conventions.md` states that a `Resolved:` note is not maintained.
-- The same holds for `shared/history/260817-2138-coder-staging-sentence-per-shape-justification.md` §1.
+- The same holds for `260817-2138-coder-staging-sentence-per-shape-justification.md` §1.
 - Whichever answer lands is written where the `Resolved:` annotation is defined, not only in a
   history file.
 
 **Severity:** Low — no shipped text is wrong, and `hooks/` is correct at HEAD. The cost is a
 reader-facing one, and it falls on exactly the audience the two records were written for.
 **Domain:** code
-**Filed by:** reconciler, final reconciliation of session `260817-2037`
-**Cross-references:** `shared/issues/260817-2130_c_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` (the reversed record); `shared/issues/260817-2147_c_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md` (the record that reversed it, and the only place the disagreement is stated); `shared/history/260817-2155-coder-quoted-glob-clause-and-wrapper-header.md` (where the non-edit was decided and explained); `shared/issues/260813-0913_o_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md` (the same one-sided-relation shape, one layer up); `shared/decisions/260816-0119_a_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` (the adjacent class, answered "nothing new")
+**Filed by:** reconciler, final reconciliation of session `260817-2037-orchestrator-session.md`
+**Cross-references:** `260817-2130_*_the-git-add-prohibition-s-restated-justification-holds-for-u-alone-and-is-false-for-the-other-three-shapes.md` (the reversed record); `260817-2147_*_the-staging-sentences-completeness-claim-leaves-the-quoted-pathspec-glob-unaccounted-for.md` (the record that reversed it, and the only place the disagreement is stated); `260817-2155-coder-quoted-glob-clause-and-wrapper-header.md` (where the non-edit was decided and explained); `260813-0913_*_a-dependency-between-two-circles-can-only-be-recorded-on-one-side-because-nobody-may-write-the-other.md` (the same one-sided-relation shape, one layer up); `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md` (the adjacent class, answered "nothing new")
 
 ---
-Resolved: the first of the two fix directions, chosen at a user gate — decision `shared/decisions/260817-2215_*_how-does-a-closed-defect-record-point-at-a-later-reversal-of-the-judgement-in-its-resolution-note.md`, option 1, with the footer named `Revised by:` and no rename. `rules/fusion-workbench-conventions.md` `## Inline State Tracking` now defines it in the issue half beside `Resolved:`, and `## State Markers — issues and planning` points at it from the `_c_` row, so a reader meets it where they look for the marker. `Superseded by:` is stated to keep its decision-record meaning and never to be used on an issue file. The measured instance is annotated: `260817-2130_c_…` carries the footer citing `307a696` and `260817-2147_c_…`, its `Resolved:` note is unedited and its filename unchanged. `shared/history/260817-2138-coder-staging-sentence-per-shape-justification.md` §1 is deliberately not annotated — history files carry no state vocabulary and are not maintained, and the annotation this record asked for is defined for issue files only. That leg of the acceptance criteria is therefore not met and is not going to be met by this footer; a reader entering §1 still meets the withdrawn paragraph, and closing that entrance needs its own decision about whether history files gain a forward pointer at all.
+Resolved: the first of the two fix directions, chosen at a user gate — decision `260817-2215_*_how-does-a-closed-defect-record-point-at-a-later-reversal-of-the-judgement-in-its-resolution-note.md`, option 1, with the footer named `Revised by:` and no rename. `rules/fusion-workbench-conventions.md` `## Inline State Tracking` now defines it in the issue half beside `Resolved:`, and `## State Markers — issues and planning` points at it from the `_c_` row, so a reader meets it where they look for the marker. `Superseded by:` is stated to keep its decision-record meaning and never to be used on an issue file. The measured instance is annotated: `260817-2130_*_…` carries the footer citing `307a696` and `260817-2147_*_…`, its `Resolved:` note is unedited and its filename unchanged. `260817-2138-coder-staging-sentence-per-shape-justification.md` §1 is deliberately not annotated — history files carry no state vocabulary and are not maintained, and the annotation this record asked for is defined for issue files only. That leg of the acceptance criteria is therefore not met and is not going to be met by this footer; a reader entering §1 still meets the withdrawn paragraph, and closing that entrance needs its own decision about whether history files gain a forward pointer at all.

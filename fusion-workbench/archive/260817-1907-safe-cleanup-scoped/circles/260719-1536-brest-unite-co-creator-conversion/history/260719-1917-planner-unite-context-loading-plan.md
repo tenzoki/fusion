@@ -6,8 +6,8 @@
 
 ## What I produced
 
-- Plan: `planning/260719-1917_o_unite-context-loading-conversion.md` — 6 steps (with 2a/2b extraction sub-steps), dependency-ordered, two Mermaid diagrams (before→after loading mechanism; step DAG).
-- Decision: `decisions/260719-1917_o_coding-frontend-pattern-collision.md` (`_o_`, open) — the one genuine user-owned fork.
+- Plan: `260719-1917_*_unite-context-loading-conversion.md` — 6 steps (with 2a/2b extraction sub-steps), dependency-ordered, two Mermaid diagrams (before→after loading mechanism; step DAG).
+- Decision: `260719-1917_*_coding-frontend-pattern-collision.md` (`_o_`, open) — the one genuine user-owned fork.
 
 ## Ground truth verified (not re-derived from the dispatch)
 

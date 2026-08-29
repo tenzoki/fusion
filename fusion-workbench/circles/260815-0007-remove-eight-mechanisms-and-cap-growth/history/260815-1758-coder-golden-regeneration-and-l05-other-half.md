@@ -43,7 +43,7 @@ today. The corpus is `10 655` bytes from the gate, which is not close.
 
 ## 2. `README-agents.md:79` — L05's other half
 
-Record `260815-1706_c_readme-agents-closing-paragraph-contradicts-its-own-table-row-about-the-executor-derivation.md`.
+Record `260815-1706_*_readme-agents-closing-paragraph-contradicts-its-own-table-row-about-the-executor-derivation.md`.
 
 The closing paragraph of `## Dispatch parameters` said the orchestrator derives the executor set
 *from* the detected domain. Step 9 (`0894d0d`) deleted that derivation, and the paragraph's own
@@ -54,7 +54,7 @@ Two judgement calls, both deliberate:
 
 - **The paragraph's last sentence was left standing.** It says whether the planner *should* take a
   domain parameter is an open design question filed as a decision record. That is still true:
-  `260813-1820_o_should-the-planner-accept-a-domain-parameter-that-three-documented-surfaces-already-promise.md`
+  `260813-1820_*_should-the-planner-accept-a-domain-parameter-that-three-documented-surfaces-already-promise.md`
   is open. It is a different question from the one `260815-0029` answered.
 - **The record's citation of the table row is off by four.** It cites `README-agents.md:66`; the
   `planner` / `**Executors:**` row is at `:62`. The quoted text is correct and nothing was decided

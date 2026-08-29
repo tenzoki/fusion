@@ -1,9 +1,9 @@
 # coder — session-state drift: the enforcement half
 
-**Date:** 260811-1010
+**Date:** 260811-1010-coder-state-drift-enforcement.md
 **Agent:** coder
 **Task:** `I:260801-2038-frozen-state` (task 2 of `fusion-workbench/tasklist.md`)
-**Source record:** `shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
+**Source record:** `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
 **Status:** Complete
 **HEAD at start:** `d8e38d5`
 
@@ -98,7 +98,7 @@ new cases are the 22 in `state-drift.test.ts` and 2 in the existing lint.
   first.
 - **`additionalContext` reaching the model rests on a prior measurement** (`hooks/tracker.ts`'s
   header, Claude Code 2.1.224), not on one taken today. This task asserts the hook's envelope.
-- **Decision `260810-2032_a_should-the-drift-checks-four-sentences-be-pinned…` is now unblocked.**
+- **Decision `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned…` is now unblocked.**
   It sequenced its own implementation explicitly after this task, and this task left the four
   call-point sentences untouched. Not implemented here — it sat outside the acceptance clause.
 - **`.claude-plugin/plugin.json` was not bumped** and `CLAUDE.md`'s `bin/` table does not yet list

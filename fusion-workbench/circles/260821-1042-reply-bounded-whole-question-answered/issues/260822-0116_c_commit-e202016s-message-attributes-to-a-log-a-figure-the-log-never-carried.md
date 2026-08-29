@@ -6,7 +6,7 @@ Commit `e202016`'s message attributes to a log a figure the log never carried
 **Domain:** code
 **Filed by:** coderev, reviewing `084c626..dbf259a`
 **Affects:** the commit message of `e202016`
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`, which keeps the two figures apart correctly; `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2214_c_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`
+**Cross-references:** `260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`, which keeps the two figures apart correctly; `260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md`
 
 ---
 
@@ -48,7 +48,7 @@ Nothing is rewritable: the commit is pushed and rewriting history for one digit 
 What is available is a note in the Circle's session history saying that the message's opening
 figure is the post-fix re-measurement rather than the log's own, so a later reader who chases the
 discrepancy finds the answer instead of the question. The correct pairing is already written down
-in `circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`,
+in `260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`,
 which needs no change.
 
 **Verified at HEAD `dbf259a`** by `git show e202016`, reading the message and the diff of the same
@@ -77,5 +77,5 @@ the message — the 20 360, the label and the 15 lines of head-room — was re-c
 **So the disposition is the record.** A reader who chases the discrepancy from the commit message
 now lands on a workbench record that names both figures, says which is which and says why they
 differ. The pairing itself was already kept correctly in
-`circles/260821-1042-reply-bounded-whole-question-answered/history/260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`,
+`260822-0027-coder-the-bounds-own-figure-replaces-the-wrong-one.md`,
 which needed no change and got none.

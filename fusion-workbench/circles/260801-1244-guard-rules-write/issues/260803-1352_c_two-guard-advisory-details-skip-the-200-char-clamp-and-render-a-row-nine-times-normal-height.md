@@ -4,7 +4,7 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coder, closing T3-6 in `circles/260801-1244-guard-rules-write`
+**Filed by:** coder, closing T3-6 in `260801-1244-guard-rules-write`
 **Affects:** `hooks/guard.ts:532`, `hooks/guard.ts:560`
 **Cross-references:** `hooks/guard.ts:214` (`EVENT_DETAIL_MAX = 200`),
 `hooks/guard.ts:225-230` (`forEvent`),
@@ -73,7 +73,7 @@ entries and appending `(+N more)` reads better than a mid-token ellipsis. That i
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while closing T3-6 (the warnings-panel
+Found in `260801-1244-guard-rules-write` while closing T3-6 (the warnings-panel
 capacity fix). T3-6's scope was `bin/monitor`; this is `hooks/`, so it was reported rather
 than reached across into.
 
@@ -91,13 +91,13 @@ than reached across into.
 | `guard.ts:560` | **`guard.ts:548`** | `` `Override ${envVar} allowed normally-denied git op: ${verdict.overrideSegment ?? command}` `` — the git override note |
 | `guard.ts:795` | **`guard.ts:786`** | `const detail = rulesWriteDetail([filePath]);` — the write-tool site, the one that is fine |
 
-`hooks/lib/rules-write-exemption.ts:503` (`rulesWriteDetail`) is correct as cited. `reviews/260803-1431-coderev-turn3-guard-boundary.md` independently reports the first two as `:519` and `:548`, which agrees with this correction.
+`hooks/lib/rules-write-exemption.ts:503` (`rulesWriteDetail`) is correct as cited. `260803-1431-coderev-turn3-guard-boundary.md` independently reports the first two as `:519` and `:548`, which agrees with this correction.
 
 **The measurement is not affected.** The rendered-height table was produced through `bin/monitor`'s own stylesheet and does not depend on these line numbers.
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — stays `_o_`. Verified live at HEAD; the two cited line numbers have drifted.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — stays `_o_`. Verified live at HEAD; the two cited line numbers have drifted.**
 
 Both unclamped sites are still unclamped at HEAD `cc012fc`, verified in code rather than inferred:
 
@@ -116,7 +116,7 @@ No delivered sentence is false and the classifier needs no new capability. It is
 code defect in `hooks/guard.ts`, and step 3 changes no code.
 
 **It does not move to the shared store, and the plan's reason for moving it does not
-hold.** Step 3 of `planning/260804-2356_o_…ausstieg…` names this issue as an example of a
+hold.** Step 3 of `260804-2356_*_…ausstieg…` names this issue as an example of a
 finding that "does not belong to this Circle's Directive". Both unclamped sites are C5a's:
 `rulesWriteDetail(mutation.exempted)` is the rules-write exemption's own advisory, and the
 Directive says in so many words that each exempted write "emits a `guard_advisory` event …
@@ -133,7 +133,7 @@ better than a mid-token ellipsis, and that is a `rulesWriteDetail` change rather
 
 ---
 
-**Reconciliation 260806-1152 (reconciler, workbench-wide pass) — stays `_o_`, and is now unowned.** The Circle that priced this deferral ("after the ship, or a later one") closed coherent on 260805-2359; no successor Circle's Grounding claims it. Verified at HEAD `cde5319`: the two advisory emissions at `hooks/guard.ts:565` (`rulesWriteDetail` path list) and `:593` (override note interpolating the command) still bypass the `forEvent()` clamp (`EVENT_DETAIL_MAX = 200`, `hooks/guard.ts:235,246`). Candidate for the same follow-up batch as `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (the portfolio's other unowned residual).
+**Reconciliation 260806-1152 (reconciler, workbench-wide pass) — stays `_o_`, and is now unowned.** The Circle that priced this deferral ("after the ship, or a later one") closed coherent on 260805-2359-conceptrev-plan-textschicht-gegen-code.md; no successor Circle's Grounding claims it. Verified at HEAD `cde5319`: the two advisory emissions at `hooks/guard.ts:565` (`rulesWriteDetail` path list) and `:593` (override note interpolating the command) still bypass the `forEvent()` clamp (`EVENT_DETAIL_MAX = 200`, `hooks/guard.ts:235,246`). Candidate for the same follow-up batch as `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` (the portfolio's other unowned residual).
 
 ---
 

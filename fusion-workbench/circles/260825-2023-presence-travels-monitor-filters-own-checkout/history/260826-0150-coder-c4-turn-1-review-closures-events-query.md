@@ -4,8 +4,8 @@
 **Agent:** coder
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>
 **Checkout:** 5e8248d7
-**Review:** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-0141-coderev-c4-the-event-log-reader-and-the-writer-on-every-line.md`
-**Records closed:** seven, in this Circle's issue store — `260826-0131` (High), `0132`, `0133`, `0134`, `0135`, `0137`, `0138`, each cited in full below
+**Review:** `260826-0141-coderev-c4-the-event-log-reader-and-the-writer-on-every-line.md`
+**Records closed:** seven, in this Circle's issue store — `260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md` (High), `0132`, `0133`, `0134`, `0135`, `0137`, `0138`, each cited in full below
 
 ## Scope, and what was left alone
 
@@ -25,19 +25,19 @@ The reason for the single point is written at the function and again in the `bin
 
 ## The seven, and the judgement each needed
 
-**`260826-0131` (High) — `turns` widened its scope silently.** `turns` now prints `scope=checkout` or `scope=all-checkouts` on stdout, in the shape the helper already uses, on the exit-4 branch as well as on success. Two decisions inside it. The exit stays **0**, per the dispatch and now per the header: the count was taken, over a scope the key names, and a sixth exit code would change what every existing caller does in order to say what a key says without changing anything. And the key is printed **last**, so the two lines a caller was written against are byte-identical to before — which is the concrete reading of "a caller that ignores the new key must not silently change behaviour".
+**`260826-0131_*_turns-returns-exit-0-and-a-whole-file-count-when-the-checkout-is-unresolved-and-stdout-says-nothing.md` (High) — `turns` widened its scope silently.** `turns` now prints `scope=checkout` or `scope=all-checkouts` on stdout, in the shape the helper already uses, on the exit-4 branch as well as on success. Two decisions inside it. The exit stays **0**, per the dispatch and now per the header: the count was taken, over a scope the key names, and a sixth exit code would change what every existing caller does in order to say what a key says without changing anything. And the key is printed **last**, so the two lines a caller was written against are byte-identical to before — which is the concrete reading of "a caller that ignores the new key must not silently change behaviour".
 
-**`260826-0132` — the exit-4 row named one of two causes.** Header only, no code change; the record's own reading, that the header rather than the program is short, holds. One residual is named in the closure and not fixed: the plan's `## API Changes` table carries the same omission, and `planning/` was outside this task's scope.
+**`260826-0132_*_the-turns-exit-4-has-two-causes-and-the-authoritative-header-names-one.md` — the exit-4 row named one of two causes.** Header only, no code change; the record's own reading, that the header rather than the program is short, holds. One residual is named in the closure and not fixed: the plan's `## API Changes` table carries the same omission, and `planning/` was outside this task's scope.
 
-**`260826-0133` — an unstamped `turn_start` vanished.** `countTurns` returns `unstamped` on its ok branch; `noteUnstamped` names it on stderr, separately from `noteMalformed`. Kept on stderr rather than promoted to stdout, which is the record's own fix direction: neither count is a figure taken from the log, each says how far the log fell short of letting one be taken, and splitting the two across streams would have bought a reader nothing the header does not now give.
+**`260826-0133_*_a-turn-start-line-with-no-readable-timestamp-is-dropped-from-the-count-and-reported-nowhere.md` — an unstamped `turn_start` vanished.** `countTurns` returns `unstamped` on its ok branch; `noteUnstamped` names it on stderr, separately from `noteMalformed`. Kept on stderr rather than promoted to stdout, which is the record's own fix direction: neither count is a figure taken from the log, each says how far the log fell short of letting one be taken, and splitting the two across streams would have bought a reader nothing the header does not now give.
 
-**`260826-0134` — one key, two denotations.** The `otherCheckouts` comment now says what is counted and names `otherPeople === null` as when the wider reading applies; the header's exit-4 row carries the same clause. No code change.
+**`260826-0134_*_other-checkouts-counts-two-different-sets-depending-on-the-exit-code-and-its-comment-describes-one.md` — one key, two denotations.** The `otherCheckouts` comment now says what is counted and names `otherPeople === null` as when the wider reading applies; the header's exit-4 row carries the same clause. No code change.
 
-**`260826-0135` — a tree that owes nothing read as one that could not be read.** The wording follows the distinction now, and the note is no longer printed beside the sentence that already names the cause, so the two contradicting lines are one coherent line. **The exit stays 4** and the header says why: what a caller does is identical in both states, and exit 0 would promise an `other_people` this run did not take. Plan step 6's collision resolves the way step 6 already resolves it — a non-git project's counts are zero and the surface prints nothing.
+**`260826-0135_*_a-tree-that-owes-no-git-identity-is-read-as-one-whose-identity-could-not-be-read.md` — a tree that owes nothing read as one that could not be read.** The wording follows the distinction now, and the note is no longer printed beside the sentence that already names the cause, so the two contradicting lines are one coherent line. **The exit stays 4** and the header says why: what a caller does is identical in both states, and exit 0 would promise an `other_people` this run did not take. Plan step 6's collision resolves the way step 6 already resolves it — a non-git project's counts are zero and the surface prints nothing.
 
-**`260826-0137` — a sort that was not total.** The tie-break falls through to `person` after `checkout`, which is the pair the map is keyed on. The comment was rewritten to name the key rather than to claim the property.
+**`260826-0137_*_the-party-sort-is-not-total-and-the-comment-beside-it-claims-it-is.md` — a sort that was not total.** The tie-break falls through to `person` after `checkout`, which is the pair the map is keyed on. The comment was rewritten to name the key rather than to claim the property.
 
-**`260826-0138` — an unescaped tab-separated record.** Every field is flattened through `flattenField` before the join. Two deliberate widenings of the record's fix direction, both argued in the closure: all five fields rather than `person` alone, because they arrive by the same route and carry the same bytes; and the whole C0 range plus DEL rather than TAB, CR and LF by name, because that costs nothing and needs no argument about the other thirty.
+**`260826-0138_*_the-party-line-is-unescaped-tab-separated-and-a-tab-or-newline-in-a-person-value-breaks-it.md` — an unescaped tab-separated record.** Every field is flattened through `flattenField` before the join. Two deliberate widenings of the record's fix direction, both argued in the closure: all five fields rather than `person` alone, because they arrive by the same route and carry the same bytes; and the whole C0 range plus DEL rather than TAB, CR and LF by name, because that costs nothing and needs no argument about the other thirty.
 
 ## Verification
 

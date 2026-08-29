@@ -27,7 +27,7 @@ and confirmed here: a spawn pinned to `MONITOR_BIND=127.0.0.1` never reaches the
 and a fetch to a literal address never asks the resolver anything. The family mismatch was invisible
 to it by construction, and still is.
 
-**Where the residual currently lives.** `shared/issues/260812-0253_c_the-monitor-is-no-longer-
+**Where the residual currently lives.** `260812-0253_*_the-monitor-is-no-longer-
 reachable-on-localhost.md`, final paragraph — inside a record whose marker is `_c_`. A closed
 record is not a work item, and no scan for open work will return it. That is the filing reason for
 this record: the observation was made correctly and put somewhere it cannot be picked up.
@@ -52,7 +52,7 @@ enough to pin the property. Three constraints the author will meet:
 - `bin/monitor:1263-1266` says a non-loopback listener may be parked in `CLOSED` on a macOS host
   without Local Network permission, which is why the harness pins loopback in the first place. If
   that claim holds, a wildcard case is flaky on exactly the developer machines it matters on. It is
-  under investigation in the sibling record `260815-2326_o_the-monitors-listen-only-port-clearing-
+  under investigation in the sibling record `260815-2326_*_the-monitors-listen-only-port-clearing-
   cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`, and this case should not be
   written until that question is answered — the answer decides whether the case is possible at all.
 - Node's `fetch` does its own happy-eyeballs, so a request to `localhost` succeeds against an

@@ -42,10 +42,10 @@ skills both call at Setup, and two call sites is a thin case for one on its own.
 is not the count but the class: this is the second duplicated-criterion finding in one session, and
 the first one shipped a false claim that no second copy could exist.
 
-**Filed by:** orchestrator, session `260810-1646`, on the rooted-citations executor's proposal.
+**Filed by:** orchestrator, session `260810-1646-orchestrator-session.md`, on the rooted-citations executor's proposal.
 
 ---
 Resolved: the single home is `bin/fusion-source-root`. The criterion is stated once, in that
 script's header and body; every consumer calls it under the `[ -x ]` guard convention. Closed
-together with `260811-1733`, which realised decision `260810-2145` option 1 — see that record's
+together with `260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md`, which realised decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` option 1 — see that record's
 `Resolved:` note for the call-site count and the siblings that moved with it.

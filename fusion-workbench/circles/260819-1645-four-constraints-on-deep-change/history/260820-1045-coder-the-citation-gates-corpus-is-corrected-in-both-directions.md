@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260819-1645-four-constraints-on-deep-change`
+**Circle:** `260819-1645-four-constraints-on-deep-change`
 **Task:** Turn 2, task F2 — the two corpus defects filed against
 `hooks/lib/__tests__/workbench-citation-lint.test.ts`
 **HEAD at start:** `8e7cae7`
@@ -51,7 +51,7 @@ Both readings, whole workbench, `scanRecordCitations`:
 | had the clause taken `_c_` too | 223 | 157 |
 
 **No file newly enters, and the gate stays green.** Every plan outside `archive/` carries `_c_`,
-including this Circle's own (`…/planning/260819-2016_c_four-constraints-on-deep-change.md`), and the
+including this Circle's own (`…/260819-2016_*_four-constraints-on-deep-change.md`), and the
 tree's single `_p_` plan sits inside `archive/`, where the frozen-store exclusion takes it. The
 clause is armed for the next plan somebody writes; it admits nothing today. Admitting `_c_` would
 have added 24 files and reddened the gate with 157 findings — the outcome the report says to stop at
@@ -64,14 +64,14 @@ this task. Both figures are the same fact.
 
 Detached worktree at `8e7cae7`, this file copied in, two demo plans written into
 `shared/planning/` carrying the same broken citation
-(`shared/issues/260101-0000_o_this-record-was-never-filed.md`):
+(`260101-0000_*_this-record-was-never-filed.md`):
 
-- `260820-1100_o_demo-live-plan.md` — gate **red**, exit 1, one finding, naming file, line 3 and
+- `260820-1100_*_demo-live-plan.md` — gate **red**, exit 1, one finding, naming file, line 3 and
   token, with `no record in the workbench matches this citation`.
-- `260820-1101_c_demo-closed-plan.md` — **no finding**. The identical citation in a closed plan does
+- `260820-1101_*_demo-closed-plan.md` — **no finding**. The identical citation in a closed plan does
   not enter.
 
-Then the plan was removed and `.migration-v2-backup/shared/issues/260101-0000_o_frozen-copy.md`
+Then the plan was removed and `.migration-v2-backup/260101-0000_*_frozen-copy.md`
 written with the same broken citation: **green (exit 0)** with this file, **red (exit 1)** with the
 `8e7cae7` version of it, naming the backup path. Worktree removed.
 

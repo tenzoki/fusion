@@ -4,14 +4,14 @@
 
 **Severity:** High (record integrity; the decision's own constraint 3 is unmet)
 **Domain:** code
-**Filed by:** coderev, Turn 7 review of `circles/260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
+**Filed by:** coderev, Turn 7 review of `260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
 **Affects:**
 `hooks/lib/bash-mutation-guard.ts:167` and `:2350` (module docstring and `classifyWords`
 pass 3 comment),
-`decisions/260804-0106_i_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`
+`260804-0106_*_should-the-fail-closed-bound-be-drawn-around-the-program-or-around-the-cause.md`
 lines 100-101 (option 2's Pro) and 136-138 (constraint 3),
-`circles/260801-1244-guard-bash-inspection/issues/260801-1859_c_…` (the supersession note),
-`history/260804-0140-turn7-…:192`
+`260801-1859_*_…` (the supersession note),
+`260804-0140-turn7-…:192`
 **Kind:** REGRESSION of accuracy introduced by `c9c44a3`. The pre-change comment at
 `048f3db` stated the fact correctly.
 
@@ -42,7 +42,7 @@ says it denies; `:174`, inside the "accepted residual" paragraph of the same com
 block, lists `curl -o rules/x.md …` as a program that "writes a protected path [and]
 still writes it".
 
-**The supersession note inverts the record it is attached to.** `260801-1859`'s own
+**The supersession note inverts the record it is attached to.** `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`'s own
 `Resolved:` line reads:
 
 > The deciding argument for narrowing rather than documenting: the table already
@@ -56,17 +56,17 @@ The note appended below it on 2026-08-04 reads:
 > visible case (`curl -o rules/x.md`, which **still denies on pass 1**) than on the
 > invisible one.
 
-Same file, same example, opposite fact. `260801-1859` was right.
+Same file, same example, opposite fact. `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was right.
 
 ## The consequence for the decision
 
-`decisions/260804-0106` lists as **constraint 3**: "The visible/invisible consistency
+`260804-0106` lists as **constraint 3**: "The visible/invisible consistency
 must hold. `curl -o rules/x.md` denies, so a rule that allowed its invisible sibling
-would be the inconsistency `260801-1859` named." That constraint is not met by the
+would be the inconsistency `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` named." That constraint is not met by the
 implementation, and it could not have been — it is unmet at `048f3db` too.
 
 After the change the guard is looser on the visible case than on the invisible one in
-exactly the direction `260801-1859` complained about, and by a wider margin than before:
+exactly the direction `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` complained about, and by a wider margin than before:
 
 ```
   allow   curl -o rules/x.md https://x            # visible, literal, PROTECTED path
@@ -84,10 +84,10 @@ fact that is false and checkable in one command.
 1. Correct `bash-mutation-guard.ts:167` and `:2350`. The honest sentence is the narrow
    one `README-hooks.md` already uses: *a redirect target that resolves is checked
    whatever the program is*. Drop the `curl -o` clause from the consistency claim.
-2. Amend `decisions/260804-0106`: mark constraint 3 as stated on a false premise, keep
+2. Amend `260804-0106`: mark constraint 3 as stated on a false premise, keep
    the record `_i_`, and re-anchor the answer on `260803-1835` alone — which it can
    carry.
-3. Correct the supersession note on `260801-1859` so it does not contradict the
+3. Correct the supersession note on `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` so it does not contradict the
    `Resolved:` line three paragraphs above it.
 4. Either accept `curl -o <protected>` as a residual and say so once, in one place (the
    residual lists in `rules/protected-path-discipline.md:435` and `README-hooks.md`
@@ -112,14 +112,14 @@ corrected:
 2. `hooks/lib/bash-mutation-guard.ts` pass-3 comment — same, and it now says explicitly
    that an earlier comment asserted the opposite seven lines from its own correction.
 3. `README-hooks.md` — the fail-closed redirection paragraph.
-4. `decisions/260804-0106` — the Pro under option 2 and constraint 3 are **struck** rather
+4. `260804-0106` — the Pro under option 2 and constraint 3 are **struck** rather
    than edited, with the strike dated, and a new `## The argument, corrected` section
    carries the measurement and the rebuilt argument.
-5. `circles/260801-1244-guard-bash-inspection/issues/260801-1859_c_…` — the supersession
+5. `260801-1859_*_…` — the supersession
    note quotes its own false sentence, says it inverted the `Resolved:` line three
    paragraphs above it, and states that the consistency argument survives *against* the
    reversal rather than for it.
-6. `history/260804-0140-turn7-…` — the sentence is struck in place with a dated correction
+6. `260804-0140-turn7-…` — the sentence is struck in place with a dated correction
    block, so a reader of the history inherits the correction with the claim.
 
 **The argument, rebuilt.** The decision's answer does not move — `260803-1835`, a measured

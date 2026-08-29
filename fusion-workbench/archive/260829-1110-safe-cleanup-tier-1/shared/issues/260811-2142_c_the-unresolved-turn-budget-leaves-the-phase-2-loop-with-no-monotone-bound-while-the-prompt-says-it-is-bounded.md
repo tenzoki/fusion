@@ -7,7 +7,7 @@
 **Filed by:** coderev (Turn 4 review, range `b261d83..951c809`)
 **Affects:** `agents/orchestrator.md:127` (the unresolved-budget bullet), `agents/orchestrator.md:436` (the Phase-2 head), `agents/orchestrator.md:591` (the circuit-breaker row), `agents/orchestrator.md:938` (the Rebalance re-entry bound)
 **Cross-references:**
-`shared/issues/260811-1712_c_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md` (the record this branch was built under);
+`260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md` (the record this branch was built under);
 `hooks/lib/__tests__/turn-budget-lint.test.ts:182-200` (the case that pins the unresolved branch exists, but not what it claims)
 
 ---
@@ -44,7 +44,7 @@ The unresolved branch is reachable three ways the prompt itself enumerates at `a
 Two parts, and the second is the substance.
 
 1. **Correct the claim.** Say what is true: the count-based bound was the only one that fires from the passage of Turns, so an unresolved budget leaves the loop bounded only by conditions that may never be met.
-2. **Give the branch a bound of its own.** An unresolved budget is a fact the session knows at Setup; it can carry a fallback *stop-and-ask* count without inventing a *budget*. The distinction matters and is the reason the branch refuses a substituted number: a budget silently exits the loop and reports remaining work, whereas a stop-and-ask hands the decision to the user. "At Turn N with no resolved budget, stop and ask the user whether to continue" is not a Turn budget the prompt invented — it is the human gate that already exists for every other undecidable case, applied at a fixed interval. That keeps `260811-1712`'s answer intact (no number is the bound) and restores termination.
+2. **Give the branch a bound of its own.** An unresolved budget is a fact the session knows at Setup; it can carry a fallback *stop-and-ask* count without inventing a *budget*. The distinction matters and is the reason the branch refuses a substituted number: a budget silently exits the loop and reports remaining work, whereas a stop-and-ask hands the decision to the user. "At Turn N with no resolved budget, stop and ask the user whether to continue" is not a Turn budget the prompt invented — it is the human gate that already exists for every other undecidable case, applied at a fixed interval. That keeps `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`'s answer intact (no number is the bound) and restores termination.
 
 If the user prefers to accept an unterminating loop in this branch, that is a legitimate call — but it should be *stated* as accepted, not described as bounded.
 
@@ -56,7 +56,7 @@ If the user prefers to accept an unterminating loop in this branch, that is a le
 
 ---
 
-**Resolved:** 260811-2205 — `agents/orchestrator.md` no longer claims the loop is bounded when
+**Resolved:** 260811-2205-coder-unresolved-turn-budget-check-in.md — `agents/orchestrator.md` no longer claims the loop is bounded when
 the budget is unresolved. Step 3d gained the **Unresolved-budget check-in**: at each Turn
 boundary the session emits `gate_hit`, asks with `AskUserQuestion` (Continue / Stop here /
 Continue without check-ins), and emits `gate_response`. The interval is one Turn and is
@@ -72,4 +72,4 @@ anchor was absent before and is named 6 times after, and the ninth `BUDGET_LITER
 (a check-in interval written as a figure) is measured on its own exemplars because it correctly
 finds nothing in either prompt.
 
-History: `shared/history/260811-2205-coder-unresolved-turn-budget-check-in.md`
+History: `260811-2205-coder-unresolved-turn-budget-check-in.md`

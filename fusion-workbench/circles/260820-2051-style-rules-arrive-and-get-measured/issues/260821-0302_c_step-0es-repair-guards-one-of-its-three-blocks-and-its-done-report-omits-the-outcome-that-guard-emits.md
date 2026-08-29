@@ -3,8 +3,8 @@ Step 0e's repair guards one of its three blocks, and its Done-report contract om
 ---
 
 `3464575` closed both Turn-1 defects in `/fusion:setup` Step 0e. `$FUSION_SRC` is gone from the step
-(`260821-0140`), and `absent` became `case5-missing-local` and `case6-missing-shipped`, both named in
-the enumeration and both routed into the Done report (`260821-0141`). Read as a reader who pastes the
+(`260821-0140_*_setup-step-0e-reads-fusion-src-which-does-not-survive-the-fresh-shell-every-bash-call-gets.md`), and `absent` became `case5-missing-local` and `case6-missing-shipped`, both named in
+the enumeration and both routed into the Done report (`260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md`). Read as a reader who pastes the
 three blocks, two things did not come across with the repair.
 
 ## Part 1 — the skip is not in the Done-report contract
@@ -17,7 +17,7 @@ three blocks, two things did not come across with the repair.
 
 It is not silent: `:181` says "**A root that resolves to nothing skips the step**: ask nothing,
 change nothing, and say in the Done report that the assets were not compared." So this is not a
-recurrence of `260821-0141`, where nothing anywhere covered the sixth token.
+recurrence of `260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md`, where nothing anywhere covered the sixth token.
 
 What is missing is the other end. `:240` is the step's Done-report contract and it enumerates four
 outcome classes:
@@ -49,7 +49,7 @@ match, and the block appends a line whose checksum field is empty. On the next r
 `R="$(grep "  $rel$" "$PROV" | tail -1 | cut -c1-64)"` reads that line back as a non-empty string
 that is not a checksum, so the file classifies `case4-conflict` — which `:207` says is "named again
 on every run until a human resolves it by hand", on a surface whose only reader and writer is Setup
-itself. That is the identical end state as part 2 of the open `260821-0148`, reached by a different
+itself. That is the identical end state as part 2 of the open `260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md`, reached by a different
 door.
 
 **Reachability, honestly.** Following the prose, an agent that saw `source-root-unresolved` skips the
@@ -59,16 +59,16 @@ shell and cannot see what the previous one decided. `:26` states that property o
 own words.
 
 ---
-**Found by:** coderev, review gate R1 of `circles/260820-2051-style-rules-arrive-and-get-measured`,
-review file `circles/260820-2051-style-rules-arrive-and-get-measured/reviews/260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
+**Found by:** coderev, review gate R1 of `260820-2051-style-rules-arrive-and-get-measured`,
+review file `260821-0257-coderev-turn-2-the-repunctuation-and-the-repaired-step-0e.md`.
 **Owner:** `coder`.
 **Severity:** Medium for part 1, Low for part 2.
 **Filed in the Circle store** per the Origin Rule.
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0141_c_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md`
+`260821-0141_*_setup-step-0e-has-a-sixth-outcome-absent-that-none-of-its-five-documented-cases-covers.md`
 (closed by the commit this reviews; part 1 is the same shape at the reporting end rather than the
 classification end);
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md`
+`260821-0148_*_step-0e-stamps-a-replace-that-may-have-failed-and-a-declined-offer-becomes-a-permanent-conflict.md`
 (same end state, still open, and the unguarded `cp` at `:223` it names is unchanged at HEAD).
 
 **Verified at HEAD `c226949`** by reading `skills/setup/SKILL.md:177-240` and by tracing the empty-`h`
@@ -100,11 +100,11 @@ The way out is stated once, in `hooks/lib/__tests__/helpers/growth-bound.ts`, an
 than an edit to the baseline. So this fix is blocked behind a `skills/` reduction, and that ordering
 should be decided rather than discovered when the executor's first write turns the suite red. The
 session record for this Circle already names the 30 bytes
-(`shared/history/260820-2103-orchestrator-session.md`, Turn 2).
+(`260820-2103-orchestrator-session.md`, Turn 2).
 
 ---
 Resolved: both parts applied to `skills/setup/SKILL.md` Step 0e at step 5 of the C0 plan
-(`shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`).
+(`260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`).
 
 Part 1, the reporting end. The Done-report contract now names the skip as a fifth reported outcome:
 "…and, when the block printed `source-root-unresolved`, that the assets were not compared at all."

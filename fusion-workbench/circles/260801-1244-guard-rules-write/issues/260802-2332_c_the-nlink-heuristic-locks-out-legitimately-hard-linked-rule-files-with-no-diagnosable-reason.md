@@ -4,7 +4,7 @@
 
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coderev, reviewing Turn 2 of `circles/260801-1244-guard-rules-write` (`bf75941..HEAD`)
+**Filed by:** coderev, reviewing Turn 2 of `260801-1244-guard-rules-write` (`bf75941..HEAD`)
 **Affects:** the rules-write exemption on both surfaces
 **Cross-references:** `hooks/lib/fs-locator.ts:137-150` (`hasHardLinks`),
 `hooks/lib/rules-write-exemption.ts:152-158` and `:80-85` (the interface and its rationale),
@@ -23,7 +23,7 @@ two-sided test used one-sidedly, and both sides are worth stating.
 **Does a protected file with one link still get a grant?** Yes, and it is not a hard-link
 problem: any file reachable through `rules/<symlink>/../…` gets one, because the lexical
 `..` collapse means `hasHardLinks` is asked about a *different, non-existent* path. Filed
-separately at `260802-2330`. So the hard-link gate is not the weak point; it is a correct
+separately at `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`. So the hard-link gate is not the weak point; it is a correct
 gate applied to the wrong string.
 
 **What legitimate case does it break?** Any rule file with a second name, whoever made it —
@@ -113,7 +113,7 @@ the behaviour a decision on the record rather than a discovery.
 
 ## Origin
 
-Found in `circles/260801-1244-guard-rules-write` while judging `nlink > 1` as a defence, at
+Found in `260801-1244-guard-rules-write` while judging `nlink > 1` as a defence, at
 the reviewer's specific request. The measurement above also demonstrated the vacuity
 mechanism first-hand: the third and fourth denials in a single project came back `[HALTED]`,
 not from the gate under test.
@@ -163,4 +163,4 @@ on both surfaces, labelled as the accepted cost.
 Suite 1009 -> 1047. With the note suppressed, 9 of the new cases fail; with gate 0 moved above
 gate 1's membership test, the 2 cases pinning the report order fail.
 
-Session: `history/260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`
+Session: `260803-1314-turn3-t3-2-exemption-prose-and-refusal-diagnostics.md`

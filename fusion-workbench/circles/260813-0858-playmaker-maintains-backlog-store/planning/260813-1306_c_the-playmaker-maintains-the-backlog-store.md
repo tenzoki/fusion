@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-13
 **Status:** Partially Complete — steps 1–8 landed in `b995049`, step 9 deferred by the user at the Turn-3 release gate. Closed at the user's decision rather than on completion; see `## Reconciliation Log`. (Was: Approved, revised at the approval gate on 2026-08-13 after the `conceptrev` diagram verdict and the user's two answers.)
-**Spec:** none — planned from the Circle's Directive in `circles/260813-0858-playmaker-maintains-backlog-store/_t_circle.md`, which is settled
+**Spec:** none — planned from the Circle's Directive in `260813-0858-playmaker-maintains-backlog-store`, which is settled
 **Decidability:** The load-bearing question is *may this run perform a confirm-gated backlog operation, meaning a split, a merge, a close or a deferral?* It is decidable from an input the mechanism holds directly: whether the run has a user confirmation for that specific operation, either obtained inside the run through a question channel the run actually has, or carried into the run by its own dispatch prompt. It is not decided by predicting which dispatcher called the agent. The mandate stated by dispatch path is the reader-facing half; the mechanical gate is confirmation-in-hand, which the run observes rather than infers. The two cannot disagree in the unsafe direction, because a run with neither channel holds no confirmation and performs nothing.
 
 ## Directive
@@ -11,8 +11,8 @@ The Circle's `## Directive` is the authority and is not restated here. In one li
 
 Two answered decisions bind this plan and neither is reopened:
 
-- `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` — option 2, widened to full maintenance by the user, over that record's own recommendation to decline it.
-- `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` — option 3. The Phase 4 mandate is ranking, portfolio regeneration and marker renames, stated in the prompt as a deliberate rule. **No proposal-return path from a Phase 4 orchestrator dispatch is built.** Step 4 of this plan builds something else, and `## Approach` says in detail why the two are not the same thing.
+- `260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` — option 2, widened to full maintenance by the user, over that record's own recommendation to decline it.
+- `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` — option 3. The Phase 4 mandate is ranking, portfolio regeneration and marker renames, stated in the prompt as a deliberate rule. **No proposal-return path from a Phase 4 orchestrator dispatch is built.** Step 4 of this plan builds something else, and `## Approach` says in detail why the two are not the same thing.
 
 ## Current State
 
@@ -38,7 +38,7 @@ What is **reported** by the orchestrator that commissioned this revision, and is
 
 The consequence for this Circle is the same on either level of evidence. Without a relay, three of the four confirm-gated operations are unreachable on the `/fusion:next` path, and the interactive mandate the whole Circle rests on would exist only under direct dispatch. The user chose the relay, and step 4 builds it.
 
-The documentation contradiction is a defect in a different skill and a different agent, found nearby rather than caused by this Directive, so it is filed at `shared/issues/260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md` and is not folded into this plan.
+The documentation contradiction is a defect in a different skill and a different agent, found nearby rather than caused by this Directive, so it is filed at `260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md` and is not folded into this plan.
 
 ### The prompt states the old boundary in ten places
 
@@ -46,7 +46,7 @@ The documentation contradiction is a defect in a different skill and a different
 
 ### Three surfaces the issue's list does not carry
 
-The authoritative list is `shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md` `## Surfaces the fix has to reach`. Reading the shipped text against it turns up three more, and one deletion:
+The authoritative list is `260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md` `## Surfaces the fix has to reach`. Reading the shipped text against it turns up three more, and one deletion:
 
 - `skills/memo/SKILL.md:152` enumerates who moves a backlog marker — "the user … by hand, or … the shaper" — and that enumeration becomes incomplete the moment the playmaker holds the write.
 - `skills/direct/SKILL.md:77` reasons that no key into the store is "the same omission that keeps every other consumer of the backlog inside its scope". After this change the playmaker's scope is bounded by prose rather than by a missing key, so the sentence overclaims.
@@ -54,7 +54,7 @@ The authoritative list is `shared/issues/260813-0825_*_the-playmaker-is-charged-
 
 `skills/next/SKILL.md` is a fourth file this plan touches, and it is not on that list for a good reason: it states nothing false today. Step 4 gives it a capability it never had, rather than correcting a claim it makes.
 
-The deletion is surface 4 of the issue's list, `CLAUDE.md`'s inventory line. It is **out of scope here**: `circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md` names `CLAUDE.md:51`, `README-agents.md:40`, `docs/working-model.md` and `skills/help/SKILL.md` as four passages that wait on this Circle and are picked up when it closes. Both records agree on the direction. The issue's list predates that Circle; this plan follows the Circle.
+The deletion is surface 4 of the issue's list, `CLAUDE.md`'s inventory line. It is **out of scope here**: `260813-0910-documentation-matches-shipped-plugin` names `CLAUDE.md:51`, `README-agents.md:40`, `docs/working-model.md` and `skills/help/SKILL.md` as four passages that wait on this Circle and are picked up when it closes. Both records agree on the direction. The issue's list predates that Circle; this plan follows the Circle.
 
 One surface needs no change and is named so nobody edits it: `skills/archive/SKILL.md:102` already reads `_p_` as "an idea the playmaker has recommended for promotion and the user has not yet acted on". It anticipated this change and stays true through it.
 
@@ -194,7 +194,7 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
 1. [DONE] **State the filing/maintenance boundary in the conventions file**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md` (`## Backlog entries`, lines 194–207)
-   - Source: `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`
+   - Source: `260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`
    - Changes: rewrite the first of the two bounds and add the marker-writer table. The bound becomes *no agent originates a backlog entry*, with the filing-versus-maintenance distinction of `## Approach` above stated in the section's own vocabulary and at its own register, as a short paragraph and not an essay. Name the four maintenance operations, name the confirmation gate on all four, and state which markers are autonomous and which are confirmed. Add a table naming, for each of `_o_`, `_p_`, `_c_`, `_d_`, who writes it and under what gate; the table's `_d_` row carries the two absent transitions from `## Approach` so the restriction is stated where a reader looks it up. Leave the second bound (the backlog is not the work queue) untouched, and leave the minimum-content paragraph untouched. Extend the `Binding decisions:` line with the two records above.
    - Acceptance: (a) the section states that filing is originating an idea and maintenance is reshaping ideas already in the store, in one sentence a reader can quote; (b) it names the playmaker as the writer of `_p_`, and that is the only writer named for it; (c) the confirm-gated operations are named as four, and a reader who has just read the merge behaviour in `agents/playmaker.md` finds no statement here it contradicts; (d) the section still fits its neighbours in length and register, because the file is loaded into every agent on every dispatch and step 8 measures what this costs.
    - Dependencies: none
@@ -273,7 +273,7 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
 7. [DONE] **Add the lint that keeps the mandate stated on both surfaces**
    - Executor: `coder`
    - Files: `hooks/lib/__tests__/playmaker-backlog-mandate-lint.test.ts` (new)
-   - Source: `circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`, which accepts "two mandates for one agent, kept true in several places" as a cost rather than avoiding it. This step is what makes that cost payable.
+   - Source: `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`, which accepts "two mandates for one agent, kept true in several places" as a cost rather than avoiding it. This step is what makes that cost payable.
    - Changes: five cases over `agents/playmaker.md` and `rules/fusion-workbench-conventions.md`.
      1. The prompt names `$OUT_BACKLOG` at least once, the mechanical precondition for the resolver emitting the key.
      2. The frontmatter description and the body's mandate section both carry the canonical mandate clause.
@@ -294,7 +294,7 @@ Every step is assigned to `coder`. The routing was run per file rather than assu
 9. **[DEFERRED] Bump the plugin version**
 
    **Deferred by the user at the Turn-3 release gate, 260813.** Not skipped and not dropped:
-   the bump happens once, for this Circle and `circles/260813-0910-documentation-matches-shipped-plugin/`
+   the bump happens once, for this Circle and `260813-0910-documentation-matches-shipped-plugin`
    together, when that Circle lands. Its four waiting passages in `README-agents.md`,
    `CLAUDE.md`, `docs/working-model.md` and `skills/help/SKILL.md` describe the behaviour this
    Circle just replaced, so a release now would ship a plugin whose own documentation
@@ -405,8 +405,8 @@ A run that stops at checklist item 1 because it holds no confirmation channel is
 
 ## Open Questions
 
-- [x] **Release timing.** `CLAUDE.md` `## Release process` names four version surfaces plus a tag and a marketplace bump. Step 9 moves one of them. Whether this Circle ships on its own or waits for `circles/260813-0910-documentation-matches-shipped-plugin/`, which is queued directly behind it and rewrites four passages about this behaviour, is the user's call at closure. **Answered 260813 at the Turn-3 release gate: it waits.** One release carries both Circles; step 9 is marked `[DEFERRED]` above with the reason. Recorded in `2a029eb` and in `shared/issues/260813-0825_*` `## Update 260813-1500`.
-- [ ] **The same relay is owed to `/fusion:direct`, and this plan does not build it.** The evidence that settled step 4 also shows that `skills/direct/SKILL.md` documents a shaper clarification flow its own dispatch cannot run, and that skill has no relay step. Filed as `shared/issues/260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`. It is a different skill and a different agent, found nearby rather than caused by this Directive, so it belongs to a later Circle. Step 4's shape is the template for fixing it.
+- [x] **Release timing.** `CLAUDE.md` `## Release process` names four version surfaces plus a tag and a marketplace bump. Step 9 moves one of them. Whether this Circle ships on its own or waits for `260813-0910-documentation-matches-shipped-plugin`, which is queued directly behind it and rewrites four passages about this behaviour, is the user's call at closure. **Answered 260813 at the Turn-3 release gate: it waits.** One release carries both Circles; step 9 is marked `[DEFERRED]` above with the reason. Recorded in `2a029eb` and in `shared/issues/260813-0825_*` `## Update 260813-1500`.
+- [ ] **The same relay is owed to `/fusion:direct`, and this plan does not build it.** The evidence that settled step 4 also shows that `skills/direct/SKILL.md` documents a shaper clarification flow its own dispatch cannot run, and that skill has no relay step. Filed as `260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`. It is a different skill and a different agent, found nearby rather than caused by this Directive, so it belongs to a later Circle. Step 4's shape is the template for fixing it.
 
 ## Resolved at the approval gate
 
@@ -440,7 +440,7 @@ not on completion.**
 **The end-to-end acceptance run was never performed, and that is consistent with this plan rather
 than a deviation from it.** `## Testing Strategy` schedules the run for the user at a Turn boundary
 *after step 9 lands*; step 9 was deferred, so the run went with it. `shared/backlog/` still holds
-exactly one entry, `260811-0826_o_observations.md`, unchanged since `dec40bb` (12 380 bytes,
+exactly one entry, `260811-0826_*_observations.md`, unchanged since `dec40bb` (12 380 bytes,
 last modified 260812-1951). None of the eight checklist items in `## Testing Strategy` has been
 exercised. What is proven is the mechanism — the resolver emits the key, the two mandates are
 stated on both surfaces and pinned by a lint, and the suite is green. What is unproven is the
@@ -449,11 +449,11 @@ capability end to end: no playmaker run has ever written into the backlog store.
 **Step 9 had no carrier outside this file, and now has one.** The bump to `8.2.0` is named in
 exactly two places on disk: step 9 above, and one context paragraph in
 `shared/issues/260813-0825_*` `:142` that states the deferral without carrying it as an acceptance
-item. `circles/260813-0910-documentation-matches-shipped-plugin/_a_circle.md` does **not** carry it
+item. `260813-0910-documentation-matches-shipped-plugin` does **not** carry it
 — its `## Directive` says under *What this Circle is not* that "the four version surfaces all read
 8.1.0" is one of three leads that came back clean and that "no step re-verifies them". So closing
 this plan would have retired the only live statement of the obligation. Filed as
-`circles/260813-0858-playmaker-maintains-backlog-store/issues/260813-1545_o_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
+`260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
 
 **Marker: `_p_` → `_c_`.** Not "all steps done" — the convention's second reading, *user decided to
 close*. Leaving it `_p_` would assert an agent is actively working on this plan inside a Circle

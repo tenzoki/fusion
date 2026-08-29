@@ -3,9 +3,9 @@
 ---
 **Severity:** Medium
 **Domain:** code
-**Filed by:** coder, session 260811-1752, task 1 of the rebuilt queue
+**Filed by:** coder, session 260811-1752-coder-task1-stale-marker-citations.md, task 1 of the rebuilt queue
 **Affects:** `hooks/lib/__tests__/reference-resolution-lint.test.ts` (its scanned surface), `hooks/*.ts` (the CLI/hook entrypoints), and every agent or skill that renames a record marker
-**Cross-references:** `shared/decisions/260806-0015_*_zitierform-fuer-workbench-records.md` (the wildcard form this class is supposed to be closed by); `shared/issues/260805-1839_*_acht-zitate-tragen-verfallene-decision-marker…` (the first measured cohort, closed); `shared/issues/260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` (the surface-reduction answer this is an instance of)
+**Cross-references:** `260806-0015_*_zitierform-fuer-workbench-records.md` (the wildcard form this class is supposed to be closed by); `260805-1839_*_acht-zitate-tragen-verfallene-decision-marker…` (the first measured cohort, closed); `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` (the surface-reduction answer this is an instance of)
 
 ---
 
@@ -29,14 +29,14 @@ failures were citations written in the literal form **after** the wildcard form 
 The cost is disproportionate to the defect. A one-character mismatch in a comment reddens a
 1284-test suite, and because `agents/coder.md`'s report shape derives `Result` from the suite's
 exit code, every executor dispatched behind it reports `blocked` regardless of what it achieved
-(that consequence has its own record, `shared/issues/260810-0703_*_…`).
+(that consequence has its own record, `260810-0703_*_…`).
 
 ## The measured gap, found while sweeping for more of the same
 
 Sweeping the whole shipped surface for literal-marker citations turned up exactly one more, and
 where it was is the point:
 
-- `hooks/review-coverage.ts:52` cited `shared/decisions/260810-0710_o_…`. That record moved to
+- `hooks/review-coverage.ts:52` cited `260810-0710_*_…`. That record moved to
   `_d_` **before** this session. The citation was already stale and the gate was green.
 
 It was green because the lint's `surface()` walks `hooks/lib/` and stops there
@@ -89,7 +89,7 @@ expectation that it would "find more than the one this sweep found by hand" did 
 one of the 8 resolves at HEAD. Nothing in a shipped file needed changing, and none was.
 
 **One thing worth naming, since the dispatch expected a defect there.** `hooks/guard.ts:307` cites
-`shared/decisions/260812-1232_o_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
+`260812-1232_*_does-the-write-guards-fusion-repo-stand-down-survive-the-loss-of-its-subject.md`
 in the **literal-marker** form. It resolves — the record is still `_o_` — so the gate passes it, by
 design: an exact-marker citation fails only when the record has moved on. It is a live instance of
 exactly the coupling `260806-0015` eliminated, and it will redden the suite the day that decision is

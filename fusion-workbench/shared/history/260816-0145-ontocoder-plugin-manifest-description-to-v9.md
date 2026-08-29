@@ -4,7 +4,7 @@
 **Agent:** ontocoder
 **Domain:** data
 **Date:** 2026-08-16
-**Source record:** `fusion-workbench/shared/issues/260816-0141_o_the-plugin-manifests-own-description-was-not-brought-to-v9-when-the-marketplace-entry-was.md`
+**Source record:** `260816-0141_*_the-plugin-manifests-own-description-was-not-brought-to-v9-when-the-marketplace-entry-was.md`
 
 ## What changed
 

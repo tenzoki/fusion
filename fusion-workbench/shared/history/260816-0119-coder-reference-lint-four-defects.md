@@ -14,7 +14,7 @@ Four defect records, all landing in the same gate file, fixed in one pass withou
 
 ## What was done
 
-**1 — the `lib/…` spelling** (`shared/issues/260812-1407_*_…`). `lib` joined the directory
+**1 — the `lib/…` spelling** (`260812-1407_*_…`). `lib` joined the directory
 alternation in `PLUGIN_PATH_BODY`; a new `resolveToken()` maps a `lib/…` token to `hooks/lib/…` for
 the existence check, written once and used by both the scanner and the EXAMPLE_PATHS-is-fabricated
 guard. **34 citations entered the examined set** — 27 that resolve (`counts.paths` 1095 → 1122) and
@@ -26,20 +26,20 @@ the seven the dispatch expected: `lib/bash-mutation-guard.ts`, `lib/protected-sn
 `lib/state-drift.ts` cited twice (`README-hooks.md:183` and `:185`). Each gained an `EXAMPLE_PATHS`
 entry naming its removal date and the section that names it, same shape as `bin/fu`.
 
-**3 — the top-level hook entrypoints** (`shared/issues/260811-1755_*_…`). `surface()` gained a
+**3 — the top-level hook entrypoints** (`260811-1755_*_…`). `surface()` gained a
 second loop over `hooks/*.ts` on the same terms as `hooks/lib/*.ts` — comment lines, `recordsOnly`.
 **8 record citations entered scope** (`counts.records` 87 → 95), across `guard.ts`,
 `review-coverage.ts`, `session-start.ts` and `tracker.ts`. **All 8 resolve**; the expectation that
 this would surface more dangling citations did not hold, and **no shipped file was changed**.
 
-**4a — the deleted behavioural case** (`circles/260815-0007-…/issues/260815-1251_*_…`).
+**4a — the deleted behavioural case** (`circles/260815-0007-…/260815-1251_*_…`).
 `scanPluginPaths` now takes `rootVars` as a defaulted third parameter, so the restored case
 *"skips a variable declared as naming something other than the plugin tree"* declares its own
 `STASH_DIR` entry rather than needing a real inhabitant. It asserts the skip **and** that the same
 token under an undeclared variable still fires, so it is a demonstration rather than an assertion of
 absence.
 
-**4b — the coverage floors** (`shared/issues/260810-2149_*_…`). The three floors are replaced by
+**4b — the coverage floors** (`260810-2149_*_…`). The three floors are replaced by
 `BASELINE = { paths: 1122, anchors: 139, records: 95 }`, asserted with `toEqual` in one comparison
 over all three. The failure message states in full sentences that re-approving the baseline is the
 expected response to a legitimate change, says to write the received numbers into `BASELINE` in the
@@ -64,9 +64,9 @@ own line bound passed.
 
 ## Also filed
 
-- `shared/decisions/260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
-  — item 2 of `260811-1755`, which that record explicitly reserved for a decision record.
-- `shared/issues/260816-0119_*_the-lints-newly-widened-surface-still-stops-at-hooks-lib-tests-where-real-citations-have-gone-stale.md`
+- `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation-when-a-record-marker-moves.md`
+  — item 2 of `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md`, which that record explicitly reserved for a decision record.
+- `260816-0119_*_the-lints-newly-widened-surface-still-stops-at-hooks-lib-tests-where-real-citations-have-gone-stale.md`
   — six real stale citations measured in `hooks/lib/__tests__/`, and why widening there is not
   mechanical.
 

@@ -1,9 +1,9 @@
 # Coder — the net-negative breaker compares like with like
 
-**Stamp:** 260815-2259
+**Stamp:** 260815-2259-coder-net-negative-breaker-units.md
 **Agent:** coder
 **Status:** Complete
-**Source record:** `shared/issues/260814-1430_c_the-net-negative-breaker-compares-a-per-finding-count-against-a-per-batch-count.md`
+**Source record:** `260814-1430_*_the-net-negative-breaker-compares-a-per-finding-count-against-a-per-batch-count.md`
 **Files changed:** `agents/orchestrator.md`
 
 ## What the defect was

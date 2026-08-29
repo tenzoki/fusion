@@ -7,7 +7,7 @@
 **Filed by:** coderev (incremental review of `6b94e17..HEAD`)
 **Affects:** `hooks/lib/escalation.ts:287` (`haltActive: state.haltActive || (onDisk.haltActive && !baseline.haltActive)`), reached from `hooks/clear-halt.ts:87-88`
 **Cross-references:**
-`fusion-workbench/shared/issues/260809-1101_c_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md` (the record `5f2cd56` closes),
+`260809-1101_*_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md` (the record `5f2cd56` closes),
 `hooks/lib/escalation.ts:236-242` (where the trade is stated)
 
 ---
@@ -55,7 +55,7 @@ Not a merge change — the current rule is the right default. The cheap fix is i
 against the ones it printed, and if a `halt`-level entry arrived that the human
 did not see, say so and exit non-zero rather than printing the success line. A
 tool reporting normal operation while a halt it never showed was discarded is
-the same failure class `260805-1134` closed for this script.
+the same failure class `260805-1134_*_clear-halt-meldet-erfolg-wenn-es-die-workbench-nicht-findet.md` closed for this script.
 
 A narrower alternative: have `clear-halt` re-read and refuse when the disk halt
 is not the one it loaded. That needs a halt identity the state does not carry

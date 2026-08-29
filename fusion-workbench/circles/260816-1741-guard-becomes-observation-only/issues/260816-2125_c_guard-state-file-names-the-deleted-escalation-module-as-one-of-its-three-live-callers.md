@@ -33,7 +33,7 @@ this Turn rewrote (`hooks/guard.ts`, `hooks/lib/events.ts`, `hooks/session-start
 the tree and each holds. This one was not rewritten because no step names the file.
 
 Note that this file's own test, `guard-state-shape.test.ts`, is the file
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-1917_o_the-groundings-test-list-names-a-test-whose-subject-survives-the-removal.md`
+`260816-1917_*_the-groundings-test-list-names-a-test-whose-subject-survives-the-removal.md`
 argues must survive the removal. That argument stands and is not affected here: the seam is live
 and tested, and only its header's account of who uses it has gone stale.
 

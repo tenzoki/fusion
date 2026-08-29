@@ -6,11 +6,11 @@
 
 ## What was done
 
-Planned the active Circle `260805-2005-textschicht-gegen-code-nachziehen` against its own record as the spec (Directive + full Grounding snapshot; no separate spec file). Read the three source reports in the neighbour Circle `260801-1244-guard-rules-write` (purpose/usage analysis 260805-1830, doc-vs-code audit 260805-1840, full plugin review 260805-1905) and verified the key code locations in the working tree before writing steps: `bin/fusion-rules` (`set -eu` + `emit_if_exists`, always-on block 328–334, awk escapes ~452, `IS_GUARD_INTERNALS_AGENT` 365–367), `skills/archive/SKILL.md:48` (`shared_of`), `skills/setup/SKILL.md:41` (bracket probe), `hooks/lib/self-detect.ts`, `hooks/lib/paths.ts:72`, the four precedent lints and the emission golden's header (regeneration procedure, `RELEASE_CAP = 105 354`).
+Planned the active Circle `260805-2005-textschicht-gegen-code-nachziehen` against its own record as the spec (Directive + full Grounding snapshot; no separate spec file). Read the three source reports in the neighbour Circle `260801-1244-guard-rules-write` (purpose/usage analysis 260805-1830, doc-vs-code audit 260805-1840, full plugin review 260805-1905-coderev-gesamtreview-plugin-v5-9-1.md) and verified the key code locations in the working tree before writing steps: `bin/fusion-rules` (`set -eu` + `emit_if_exists`, always-on block 328–334, awk escapes ~452, `IS_GUARD_INTERNALS_AGENT` 365–367), `skills/archive/SKILL.md:48` (`shared_of`), `skills/setup/SKILL.md:41` (bracket probe), `hooks/lib/self-detect.ts`, `hooks/lib/paths.ts:72`, the four precedent lints and the emission golden's header (regeneration procedure, `RELEASE_CAP = 105 354`).
 
 ## Output
 
-`circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_o_plan-textschicht-gegen-code.md` — 17 steps in three tracks:
+`260805-2353_*_plan-textschicht-gegen-code.md` — 17 steps in three tracks:
 
 - Track 2 (steps 1–3): file the three decision records (citation form D1, activation ownership + lock rule D2, self-detect staleness D3) in the Circle's decision store; one user gate answers all three. D1 blocks the reference lint and every citation correction, per the review's ordering argument.
 - Track 1 (steps 4–7): the four code fixes, decision-independent, `shared_of` zsh fix first (silent data loss, inherited ungated by cleanup).

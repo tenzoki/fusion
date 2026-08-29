@@ -6,7 +6,7 @@ The dashboard poll swallows every failure, so a page that stopped polling keeps 
 **Domain:** code
 **Filed by:** orchestrator, from a user report
 **Affects:** `bin/monitor`, the `pollDashboard()` fetch chain and its `.catch`
-**Cross-references:** `shared/issues/260817-1217_*_the-monitors-dismiss-keys-are-html-escaped-as-text-so-a-quote-in-a-warning-truncates-the-attribute.md` — the other half of why a stale row cannot be got rid of; the user meets both faults as one symptom
+**Cross-references:** `260817-1217_*_the-monitors-dismiss-keys-are-html-escaped-as-text-so-a-quote-in-a-warning-truncates-the-attribute.md` — the other half of why a stale row cannot be got rid of; the user meets both faults as one symptom
 
 ---
 

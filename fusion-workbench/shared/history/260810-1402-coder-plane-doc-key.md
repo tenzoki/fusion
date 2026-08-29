@@ -4,7 +4,7 @@
 **Session:** 260810-1402, Turn 1
 **Agent:** coder
 **Task:** tasklist.md task 27
-**Origin:** `shared/issues/260810-0507_o_plane-setup-doc-still-documents-the-marker-bearing-key-so-map-forget-fails-as-written.md`
+**Origin:** `260810-0507_*_plane-setup-doc-still-documents-the-marker-bearing-key-so-map-forget-fails-as-written.md`
 
 ## What changed
 

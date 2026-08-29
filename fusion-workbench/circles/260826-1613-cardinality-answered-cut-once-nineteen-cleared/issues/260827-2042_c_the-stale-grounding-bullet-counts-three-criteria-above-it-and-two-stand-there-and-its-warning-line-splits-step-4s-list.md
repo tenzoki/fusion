@@ -4,7 +4,7 @@ The stale-Grounding bullet counts "the three criteria above" and two stand there
 `agents/playmaker.md:125` says "the three criteria above score a finished Circle as a ready one". The bullets above it are Unresolved-decision count and Dependencies-closed flag; the Domain-specific signal sits below. A bare cardinality, wrong on the day it landed, in the Circle whose subject is `rules/critical-stance.md` §5. At `:136` the new `stale-grounding` paragraph is inserted between the two bullets of "For each cycle found:", so the second bullet (append `## Dependency warning`) now reads as a consequence of the stale-Grounding count rather than of a cycle.
 ---
 **Filed by:** coderev, Kai Stalmann <ks@qantr.com>
-**Cross-references:** `shared/issues/260826-1445_*_the-playmakers-ranking-rewards-a-stale-grounding-because-no-criterion-asks-whether-the-directive-is-still-true.md` (closed by this step); commit `e7c0440`
+**Cross-references:** `260826-1445_*_the-playmakers-ranking-rewards-a-stale-grounding-because-no-criterion-asks-whether-the-directive-is-still-true.md` (closed by this step); commit `e7c0440`
 
 ## Fix direction
 
@@ -14,4 +14,4 @@ The stale-Grounding bullet counts "the three criteria above" and two stand there
 
 `grep -c "three criteria above" agents/playmaker.md` is 0; Step 4's cycle bullets are adjacent.
 
-**Resolved:** 260827-2102, coder. `agents/playmaker.md`: the stale-Grounding bullet now names the two criteria it means (Unresolved-decision count, Dependencies-closed flag); the stale-grounding warning paragraph moved below the two contiguous "For each cycle found" bullets under its own lead-in. `grep -c 'three criteria above'` is 0. `wc -c` 41034 -> 41168 (+134 bytes on `agents/`); citation-token count 9 -> 9 by single-file revert.
+**Resolved:** 260827-2102-coder-turn2-three-review-findings.md, coder. `agents/playmaker.md`: the stale-Grounding bullet now names the two criteria it means (Unresolved-decision count, Dependencies-closed flag); the stale-grounding warning paragraph moved below the two contiguous "For each cycle found" bullets under its own lead-in. `grep -c 'three criteria above'` is 0. `wc -c` 41034 -> 41168 (+134 bytes on `agents/`); citation-token count 9 -> 9 by single-file revert.

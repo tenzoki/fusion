@@ -2,12 +2,12 @@ The decision record the measurement reports on does not cite the protocol that d
 
 ---
 The Circle's plan states, in `## Where this Circle stops` clause 5, that
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 "stays answered and gains the protocol's path and the pre-repair number". It gained neither pointer.
 The protocol names the decision record; the decision record does not name the protocol.
 
 ---
-**Found by:** reconciler, final reconciliation of `circles/260820-2051-style-rules-arrive-and-get-measured`, 260821-0413.
+**Found by:** reconciler, final reconciliation of `260820-2051-style-rules-arrive-and-get-measured`, 260821-0413.
 **Owner:** `coder`, or the reconciler on its next pass. One appended block on an existing record.
 **Severity:** Medium. Nothing is wrong in any shipped file. The cost is that the Circle's fourth
 Directive outcome is deferred to a later session, and the artifact that later session needs is
@@ -15,11 +15,11 @@ reachable only from inside the Circle that is about to close.
 **Filed in the active Circle** per the Origin Rule: this Circle's Directive is what caused the
 protocol to be written and the clause to be stated.
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`
+`260820-2354-prose-register-measurement-protocol.md`
 (the unreferenced artifact);
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 (the record that should carry the pointer);
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
 `## Where this Circle stops` clause 5.
 
 ## Verified at HEAD `247abfe`
@@ -38,7 +38,7 @@ Every citation of the protocol is inside the Circle. Three of the four are histo
 which no later pass reads as a starting state.
 
 The protocol itself states the reverse direction explicitly, at its section
-*The measurement will be reported on* : "`shared/decisions/260816-0740_a_…`". So the author knew
+*The measurement will be reported on* : "`260816-0740_*_…`". So the author knew
 the pairing and wrote one half of it.
 
 ## Why the direction that is missing is the one that matters
@@ -64,4 +64,4 @@ corollary 2 is explicit that reach is cited and never placed, and a second copy 
 pre-registered protocol is how a pre-registration stops being one.
 
 ---
-Resolved: fixed — the decision record carries the protocol path, the pre-repair row, the threshold and the window condition, marker unchanged at `_a_`; shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:173
+Resolved: fixed — the decision record carries the protocol path, the pre-repair row, the threshold and the window condition, marker unchanged at `_a_`; 260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md:173

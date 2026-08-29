@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-24
 **Status:** Complete
-**Spec:** `shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, capability `### C3`, read under the binding correction in `circles/260824-0530-record-attribution-and-circle-claim/_t_circle.md` `## Grounding snapshot`
-**Decidability:** The load-bearing question is whether a fusion run can name the person who wrote a record and the checkout that holds a Circle, from inputs the run can obtain where it stands. It splits in two, and the two halves have different answers. **The person is decidable**: `git config user.name` and `user.email` are readable in every tree that takes part in the git transport, and they are the same identity that transport already carries on every commit, so nothing is inferred. Where they are unset the question is not decidable from any input the run holds, and the mechanism does not approximate: it halts and says which value is missing. **The checkout is not decidable from any travelling input, and not reliably decidable from a derived one either.** Two checkouts of one person carry one git identity, which is the collision the field exists to prevent; and hostname plus workbench path, the obvious derivation, is not unique by construction, because two machines carrying a default hostname with the same clone path produce one value (`inference:`, not measured). So what changes is the mechanism rather than the precision of an estimate, which is what `rules/critical-stance.md` §4 asks for: the identifier is **minted locally once and stored where git never reaches**, and a created value is decidable by construction because nothing has to be read back out of ambiguous inputs. One residual case is genuinely open and is filed rather than assumed, namely a tree that is not a git work tree at all: `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.
+**Spec:** `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, capability `### C3`, read under the binding correction in `260824-0530-record-attribution-and-circle-claim` `## Grounding snapshot`
+**Decidability:** The load-bearing question is whether a fusion run can name the person who wrote a record and the checkout that holds a Circle, from inputs the run can obtain where it stands. It splits in two, and the two halves have different answers. **The person is decidable**: `git config user.name` and `user.email` are readable in every tree that takes part in the git transport, and they are the same identity that transport already carries on every commit, so nothing is inferred. Where they are unset the question is not decidable from any input the run holds, and the mechanism does not approximate: it halts and says which value is missing. **The checkout is not decidable from any travelling input, and not reliably decidable from a derived one either.** Two checkouts of one person carry one git identity, which is the collision the field exists to prevent; and hostname plus workbench path, the obvious derivation, is not unique by construction, because two machines carrying a default hostname with the same clone path produce one value (`inference:`, not measured). So what changes is the mechanism rather than the precision of an estimate, which is what `rules/critical-stance.md` §4 asks for: the identifier is **minted locally once and stored where git never reaches**, and a created value is decidable by construction because nothing has to be read back out of ambiguous inputs. One residual case is genuinely open and is filed rather than assumed, namely a tree that is not a git work tree at all: `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.
 
 ## Directive
 
@@ -20,7 +20,7 @@ as a deviation.** That criterion reads: the value "is read from the environment 
 user superseded it on 260824, on a measurement of his own working arrangement: `$USER` is not
 unique across several instances on one machine, and an operating-system account name such as `k1`
 or `ubuntu` is close to anonymous in a history read by somebody else. The Grounding snapshot in
-`circles/260824-0530-record-attribution-and-circle-claim/_t_circle.md` carries the replacement and
+`260824-0530-record-attribution-and-circle-claim` carries the replacement and
 is binding over the spec wherever the two disagree. `/fusion:memo`'s `$USER` filenames stay exactly
 as they are, which the spec's condition 1 already required; the consequence the user accepted is
 that fusion names a person two ways, by account name in the memo store and by git identity in the
@@ -104,7 +104,7 @@ distinguish. This is the Research Gate discharged rather than skipped, and the r
 named so a later reader knows it was weighed.
 
 **Why the claim does not inherit the activation-route divergence.**
-`shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
+`260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
 records that the orchestrator and `/fusion:next` write `**Active spec/plan:**` differently. Its own
 260823 correction narrowed it: both routes agree on both Circles measured, and the divergence now
 stands with no measured instance. It is used here in that narrowed form. The claim rides the same
@@ -115,18 +115,18 @@ route can run. The plan therefore writes the claim as an unconditional row in th
 home both routes already cite, and the defect stays open on its own subject.
 
 **Why the filename convention does not change, and what does.** The plan is built on option 2 of
-`shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`:
+`260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`:
 write the citation form down as normative and leave every filename alone. Option 3, a per-author
 filename component, is foreclosed by the user's own condition. Option 1, change nothing, is what
 the project does today and is defensible, but the failure it tolerates has already been observed
 once under the easiest possible conditions, with one writer, in
-`shared/issues/260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`,
+`260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`,
 and the corpus holds 84 stamps carried by two or more files. Several writers raise the rate of a
 known failure, and the cheapest response to a higher rate is to make the mitigation normative
 rather than habitual. **Approving this plan is the answer to that decision**, which is what the
 spec and the record both mean by "C3's planning gate"; step 2 writes the answer into the record.
 Taking option 2 also discharges the condition
-`shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` set for itself in
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md` set for itself in
 2026-08-07 and has been waiting on since, so one paragraph of rule text closes two records.
 
 ### The identity mechanism
@@ -206,7 +206,7 @@ flowchart TD
 
 1. [DONE] **Record the identity answer, superseding the option set**
    - Executor: `analyst`
-   - Files: `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
+   - Files: `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`
    - Changes: add an `## Answer (user, 260824)` section stating that none of the three options is
      taken and why the question was cut wrong: attribution and claim are different questions and do
      not need the same identity. Attribution is the git identity alone. The claim is the git
@@ -221,12 +221,12 @@ flowchart TD
 
 2. [DONE] **Record the filename answer**
    - Executor: `analyst`
-   - Files: `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
+   - Files: `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
    - Changes: add an `## Answer (user, 260824)` section taking option 2, citing this plan as the
      gate at which it was taken. State that option 3 is foreclosed by the user's round-3 condition
      and was listed only to record that it was weighed, and that option 1 is what the project does
      today and is defensible on its own terms. Note that taking option 2 satisfies the condition
-     `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` set for itself,
+     `260807-0158_*_how-is-a-unique-record-filename-obtained.md` set for itself,
      so that record moves at step 12. Rename `_o_` to `_a_`.
    - Dependencies: none
    - Acceptance: the record carries an `Answered:` line and the `_a_` marker; the answer names
@@ -388,7 +388,7 @@ flowchart TD
      in the same command that deletes `.active-circle`. The paragraph states why this row carries no
      condition and the neighbouring `**Active spec/plan:**` row does: the claim's value is one
      command's output that either performer can run, so the route-dependence recorded in
-     `shared/issues/260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
+     `260822-2045_*_a-circles-head-fields-end-up-in-different-states-depending-on-which-of-the-two-activation-routes-ran.md`
      cannot reach it. Cite that defect in its **narrowed** 260823 form, in which both routes agree
      on both Circles measured and the divergence stands with no measured instance, and do not
      restate the filed wording. `agents/shaper.md:93`'s frontmatter fill gains the person in
@@ -469,10 +469,10 @@ flowchart TD
 
 12. [DONE] **Close the three decisions and write the Turn log**
     - Executor: `analyst`
-    - Files: `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
-      `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`,
-      `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md`,
-      `circles/260824-0530-record-attribution-and-circle-claim/_t_circle.md`
+    - Files: `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md`,
+      `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`,
+      `260807-0158_*_how-is-a-unique-record-filename-obtained.md`,
+      `260824-0530-record-attribution-and-circle-claim`
     - Changes: fill each record's `Implemented:` line with the commits that realised it and rename
       `_a_` to `_i_`. The third is the record that has been waiting since 2026-08-07 for the
       citation rule to land in `## Filename Patterns`; its own reconciliation notes state that
@@ -504,7 +504,7 @@ its extension.
 - A run with no git identity halts and reports which value is missing, and no run anywhere
   substitutes one.
 - The two decisions the Grounding named as this Circle's work carry an answer on disk, and the
-  third, `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md`, has the
+  third, `260807-0158_*_how-is-a-unique-record-filename-obtained.md`, has the
   condition it set for itself met.
 - All four growth bounds pass with no baseline having moved, and every cut made is named in its own
   commit message. *(Amended 260824: the clause named one cut and two landed, `5b88eb9` and `8092c11`;
@@ -516,27 +516,27 @@ its extension.
 over the full commit range before a tag is pushed; `bin/fusion-review-coverage` is run over that range,
 and any commit it names as uncovered is a named residual in the closure note, since coverage is
 advisory and the closure note is where the gap is recorded
-(`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+(`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
 option 1). *(Amended 260824: the clause read "must name no uncovered commit", which a review that
 lands in its own commit can never satisfy; see the note under this section.)* This clause exists because a Circle whose review was made a
 precondition of its tag was tagged and pushed without the pass, and only a post-release
 reconciliation noticed. Binding decision:
-`shared/decisions/260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`.
+`260817-1613_*_does-a-plan-stated-precondition-get-any-mechanism-or-is-it-read-by-a-human-or-not-at-all.md`.
 
 **One condition this Circle does not close.** The open decision this plan filed,
-`circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
+`260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`,
 must be answered before step 6 writes the halt rule, because that rule is the answer written down.
 It is answerable at this plan's gate.
 
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Two clauses above were amended in place, each marked where it stands. The growth-bound clause
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). Two clauses above were amended in place, each marked where it stands. The growth-bound clause
 named one cut where two landed: `5b88eb9` in `skills/setup/SKILL.md` (step 3) and `8092c11`, 44 lines of
 comment prose across three hook test files (task S8b), the response the plan's own risk table prescribes.
 The release precondition was written as "must name no uncovered commit", against an instrument the project
 had already decided is advisory (option 1 of `260815-2109`), and at closure it named exactly one commit,
 `cf7a5b0`, the review file's own, which touches no shipped file. Filed as
-`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1538_*_the-plans-stopping-clause-names-one-cut-and-two-landed.md`
+`260824-1538_*_the-plans-stopping-clause-names-one-cut-and-two-landed.md`
 and
-`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
+`260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
 
 ## Data Structures
 
@@ -598,7 +598,7 @@ for a rule that lives in prose.
 |---|---|
 | **A step trips a growth bound.** The three most likely are step 5 against 188 hook-test lines, step 6 against 3 321 always-on bytes, and steps 9 and 10 against whatever step 3 freed. | The executor **stops and reports**; it does not edit a baseline. The way out is a cut, in a commit that names it, exactly as step 3 does. Each step above carries its own byte or line cap so the overage is caught by the executor's own measurement rather than by a red suite at step 11. |
 | **Step 3 cuts substance rather than restatement**, and a Setup behaviour is quietly lost. | The step's acceptance criterion names the property: no behaviour removed, only restated text, and `npm test` green. `skills/setup/SKILL.md` stands at +13 860 bytes over baseline, so restatement is available in quantity and substance need not be touched. |
-| **The halt withdraws a supported case.** A single user in a directory that was never a git repository can no longer file a defect. | Filed as a decision, not assumed: `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`. Step 6 writes whichever rule the user's answer gives, and step 5 tests that branch. The plan does not proceed past step 6 with the question open. |
+| **The halt withdraws a supported case.** A single user in a directory that was never a git repository can no longer file a defect. | Filed as a decision, not assumed: `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`. Step 6 writes whichever rule the user's answer gives, and step 5 tests that branch. The plan does not proceed past step 6 with the question open. |
 | **A checkout that loses `.checkout-id` no longer recognises its own claim** and is refused by `/fusion:next` against a Circle it holds. | The override path is the recovery, and it is a user gate rather than a failure. The claim then records both identities, which is the correct history: the checkout genuinely is not the one that wrote the claim. The `.active-circle` pointer already covers the ordinary case, since `/fusion:next` short-circuits when a Circle is active in this checkout. |
 | **Two agents mint two identifiers concurrently.** | The mint is an atomic create in step 4, so the second writer loses and reads the first value. `bin/fusion-commit-lock` is the precedent in this repository for exactly that idiom. |
 | **The claim silently diverges between the two activation routes**, which is the shape of the defect this Circle inherits. | Step 8 puts the claim's row in the one authoring home both routes already cite, and writes down why this row carries no condition where the neighbouring one does. The divergence is structural in the other field and structurally absent in this one. |
@@ -609,21 +609,21 @@ for a rule that lives in prose.
 
 - [ ] **Does a filing agent halt in a tree that is not a git work tree at all, or only in a git tree
       whose identity is unset?** Filed as
-      `circles/260824-0530-record-attribution-and-circle-claim/decisions/260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.
+      `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`.
       It blocks step 6, whose rule text is the answer written down, and step 5, which tests that
       branch. The recommendation there is to halt only inside a git work tree, so that the
       obligation and the transport share one boundary; the user's call, because what is at stake is
       which users fusion serves.
 - [ ] **Approving this plan answers
-      `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
+      `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`
       as option 2.** If the user prefers option 1, change nothing, then step 2 records that instead,
       step 6 drops its `## Filename Patterns` edit and gains roughly 450 bytes of head-room, and
-      `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` stays `_a_`
+      `260807-0158_*_how-is-a-unique-record-filename-obtained.md` stays `_a_`
       rather than moving at step 12. Nothing else in this plan changes.
 
 ## Reconciliation Log
 
-**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, range `e209011..cf7a5b0`). Marker stays `_o_`; `**Status:**` moved from `Ready for Review` to `Partially Complete`; step 12 marked `[IN PROGRESS]`. Log: `circles/260824-0530-record-attribution-and-circle-claim/history/260824-1637-reconciliation.md`.
+**Reconciliation 260824-1637** (reconciler, domain `code`, Phase 3 of session `260824-0539`, range `e209011..cf7a5b0`). Marker stays `_o_`; `**Status:**` moved from `Ready for Review` to `Partially Complete`; step 12 marked `[IN PROGRESS]`. Log: `260824-1637-reconciliation.md`.
 
 **Eleven of twelve steps verified complete against the tree.** Steps 1 through 11 were checked against the files and commits they name, not against their own `[DONE]` markers. Step 12 is half done: its decision half landed at `0f5889e`, where all three named records reached `_i_` with an `Implemented:` line citing commits that exist, and its Turn-log half is unwritten, so `_t_circle.md` `## Turn log` still carries only the template placeholder. The plan cannot reach `_c_` until that entry is appended, which is the orchestrator's Phase 4 act, not this pass's.
 
@@ -631,14 +631,14 @@ for a rule that lives in prose.
 
 1. **Holds, with an exception in the exhibit.** All three templates carry `**Filed by:** <agent name or "user">, <person>`: the defect format at `rules/fusion-workbench-conventions.md:484`, the decision template at `:513`, the Circle record at `rules/circle-records.md:134`. The form is defined once, in `### Who filed it` at `:492`. The exception is that the corpus's only worked example, `rules/decision-record-examples.md:20`, carries a hand-composed address the helper does not print, which is what the rule directly under it forbids. Filed: `260824-1538_*_an-always-on-rule-files-worked-example-carries-a-real-address-composed-by-hand.md` under `$SCAN_ISSUES`.
 2. **Holds, with an exception at the authoring home.** `rules/circle-records.md` `### The claim field` defines the two literal openings and the override sentence; `agents/orchestrator.md:282-286` carries both claim rows and states that the two rows and the paragraph beneath them are the authoring home for both performers; `agents/shaper.md:93` writes `**Claim:** Unclaimed` at creation. The exception is that the authoring home itself names the helper bare, with no root and no guard, so the row is not runnable as written from a consuming project. Filed: `260824-1622_*_a-fourth-bare-call-of-the-identity-helper-sits-in-the-orchestrator-and-the-repair-did-not-reach-it.md`.
-3. **Holds, with an exception in the gate it uses.** `skills/next/SKILL.md:207` reads the claim, refuses in the claim's terms where it names another identity, states the holder and the time, and offers exactly one override that appends rather than replaces; `## Boundaries` at `:262` lists the claim write and the override sentence. The exception is that the override gate is an `AskUserQuestion`, and whether the dialog ban of `0db1fbb` reaches skill bodies is an unrecorded design fork. Filed: `shared/issues/260824-1538_*_two-design-forks-from-the-dialog-ban-were-put-to-the-user-in-chat-and-recorded-only-in-a-history-log.md`.
+3. **Holds, with an exception in the gate it uses.** `skills/next/SKILL.md:207` reads the claim, refuses in the claim's terms where it names another identity, states the holder and the time, and offers exactly one override that appends rather than replaces; `## Boundaries` at `:262` lists the claim write and the override sentence. The exception is that the override gate is an `AskUserQuestion`, and whether the dialog ban of `0db1fbb` reaches skill bodies is an unrecorded design fork. Filed: `260824-1538_*_two-design-forks-from-the-dialog-ban-were-put-to-the-user-in-chat-and-recorded-only-in-a-history-log.md`.
 4. **Holds.** `rules/circle-records.md` states **"The collision is detected, not prevented."** in bold, with the race described in full beneath it. No shipped surface promises more.
 5. **Holds, with two exceptions.** Verified by live probe rather than by reading: inside a git work tree with both identity values unset, `bin/fusion-identity` printed nothing on stdout, named both missing values on stderr and exited 1. The first exception is deliberate and is the answered decision `260824-0613_*_does-a-filing-agent-halt-in-a-tree-that-is-not-a-git-work-tree-at-all.md`: outside a git work tree there is no halt, because no identity is owed there. The second is not deliberate and is transient: in this repository no agent can reach the halt at all, because `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ]` is false and the absent-helper branch fires before any exit code is read.
-6. **Holds.** All three records carry `_i_` and an `Implemented:` line naming commits that exist: `shared/decisions/260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` cites six, `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md` cites `2b055a0`, and `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` cites `2b055a0` as the condition it set for itself and restated in three reconciliations.
+6. **Holds.** All three records carry `_i_` and an `Implemented:` line naming commits that exist: `260822-1136_*_which-identity-does-an-attributed-record-carry-when-the-transport-is-git.md` cites six, `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md` cites `2b055a0`, and `260807-0158_*_how-is-a-unique-record-filename-obtained.md` cites `2b055a0` as the condition it set for itself and restated in three reconciliations.
 7. **False as written, on its second clause.** The first clause holds and was measured, not taken: `git diff e209011..HEAD` over `hooks/lib/__tests__/surface-growth-bound.test.ts` and `hooks/lib/__tests__/rules-emission-golden.test.ts` is empty, so no baseline map moved, and both files' tests pass at HEAD. The second clause names one cut and two landed: `5b88eb9` cut the setup skill and `8092c11` cut 44 lines of comment prose from three hook test files. Both name their cut in their own commit message, and the second is exactly what this plan's own risk table prescribes, so the clause contradicts the risk table rather than the work. Filed: `260824-1538_*_the-plans-stopping-clause-names-one-cut-and-two-landed.md`.
-8. **Holds, with an exception on the first clause.** The second clause holds absolutely: the `## Filename Patterns` table is byte-identical across the range and the section states "No pattern above changes." On the first clause, two records written before this Circle were touched, neither for a reason of its own. `shared/issues/260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` had two citations normalised from `_a_` to `_*_` at `6d439ba`, which the Circle's own move of `260807-0158` from `_a_` to `_i_` would otherwise have staled. `shared/issues/260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md` gained one `Also seen:` line, which is what the filing convention prescribes on a duplicate hit. Neither record's substance and neither record's marker moved.
+8. **Holds, with an exception on the first clause.** The second clause holds absolutely: the `## Filename Patterns` table is byte-identical across the range and the section states "No pattern above changes." On the first clause, two records written before this Circle were touched, neither for a reason of its own. `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` had two citations normalised from `_a_` to `_*_` at `6d439ba`, which the Circle's own move of `260807-0158` from `_a_` to `_i_` would otherwise have staled. `260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs-and-does-so-on-clean-head.md` gained one `Also seen:` line, which is what the filing convention prescribes on a duplicate hit. Neither record's substance and neither record's marker moved.
 
-**The release precondition is met in substance and not in the letter of its own instrument.** The plan requires that `bin/fusion-review-coverage` name no uncovered commit in the range before a tag is pushed. Measured at HEAD: `commits=18 reviews=2 unusable=0 uncovered=1 verdict=uncovered`, and the uncovered commit is `cf7a5b0`, the second review's own commit, which touches four workbench records and no shipped file. `cf7a5b0`'s own message asserts `uncovered=0 verdict=covered`, which was true when measured and false the moment the commit landed. The governing rule is `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`, answered as option 1: coverage is advisory, and the gap is carried as a named residual in the closure note rather than gating the marker. Filed: `260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
+**The release precondition is met in substance and not in the letter of its own instrument.** The plan requires that `bin/fusion-review-coverage` name no uncovered commit in the range before a tag is pushed. Measured at HEAD: `commits=18 reviews=2 unusable=0 uncovered=1 verdict=uncovered`, and the uncovered commit is `cf7a5b0`, the second review's own commit, which touches four workbench records and no shipped file. `cf7a5b0`'s own message asserts `uncovered=0 verdict=covered`, which was true when measured and false the moment the commit landed. The governing rule is `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`, answered as option 1: coverage is advisory, and the gap is carried as a named residual in the closure note rather than gating the marker. Filed: `260824-1637_*_the-circles-release-precondition-is-written-against-a-measurement-that-cannot-read-zero-at-closure.md`.
 
 **Verification performed by this pass.** `cd hooks && npm test` at HEAD `cf7a5b0`: 42 files, 732 tests, exit 0. `bin/fusion-review-coverage --since e209011`, output above. `bin/fusion-identity` driven by hand for exits 0, 1 and 5, for the exit-4 cause claim inside this repository with `git` removed from `PATH`, and for the refusal to overwrite a `.checkout-id` it cannot parse. The two growth-bound test files run alone, both passing, with the role rule-text report firing for `playmaker` and `shaper` and blocking nothing.
 

@@ -1,4 +1,4 @@
-# Playmaker Session — 260805-2128
+# Playmaker Session — 260805-2128-playmaker-direct-dispatch.md
 
 **Trigger:** direct-dispatch
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:** code` line)
@@ -17,7 +17,7 @@ Rank 2: `260804-1205-shell-reachability-model` (same blocker; must confirm the p
 
 ## Warnings emitted to portfolio
 
-- Active record contradicts its own marker: `_t_circle.md` body says `**Status:** anticipated`, empty Turn log, stale history field. Already filed as issue `260805-1830_o_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md` in the active Circle.
+- Active record contradicts its own marker: `_t_circle.md` body says `**Status:** anticipated`, empty Turn log, stale history field. Already filed as issue `260805-1830_*_der-circle-datensatz-dieses-circles-widerspricht-seinem-eigenen-marker-und-fuehrt-keinen-turn-log.md` in the active Circle.
 
 ## Dependency warnings appended
 
@@ -29,6 +29,6 @@ None. No Circle carries the bounded (`_b_`) marker.
 
 ## Writes
 
-- `circles/260805-2005-textschicht-gegen-code-nachziehen/_a_circle.md` — appended `## Activation proposal`.
+- `260805-2005-textschicht-gegen-code-nachziehen` — appended `## Activation proposal`.
 - `portfolio.md` — regenerated in full.
 - This history file.

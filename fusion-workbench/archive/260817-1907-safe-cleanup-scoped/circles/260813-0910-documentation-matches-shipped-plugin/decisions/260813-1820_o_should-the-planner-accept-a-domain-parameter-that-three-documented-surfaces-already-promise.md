@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** planner
-**Cross-references:** `circles/260813-0910-documentation-matches-shipped-plugin/planning/260813-1820_o_documentation-matches-shipped-plugin.md` step 6; `shared/analyses/260813-0828-documentation-staleness-survey.md` finding 8; `circles/260813-0910-documentation-matches-shipped-plugin/_t_circle.md` `## Grounding snapshot`
+**Cross-references:** `260813-1820_*_documentation-matches-shipped-plugin.md` step 6; `260813-0828-documentation-staleness-survey.md` finding 8; `260813-0910-documentation-matches-shipped-plugin` `## Grounding snapshot`
 
 ---
 
@@ -54,4 +54,4 @@ Implemented:
 Deferred:
 Superseded by:
 
-Reconciled: 260813-2258 — still open, and the marker is correct. Searched for an answer across this Circle's analyses (none exist), `shared/analyses/` (the staleness survey and the seam analysis, neither of which answers it), the plan (which states explicitly that it does not answer it), the session history `260813-1815-orchestrator-session.md`, and the fifteen commits of range `267a65c..HEAD`. Nothing answers the design question. What *did* move is the documentation half: `agents/planner.md` is untouched in the range and still parses no `**Domain:**`, while `CLAUDE.md:16` and `docs/philosophy.md:19` now read `taskplanner, reconciler, playmaker`, and `README-agents.md` `## Dispatch parameters` lists the planner's two real parameters. `.claude-plugin/plugin.json` was deliberately not edited: its claim is a bare count of three that survives the membership change. A fifth carrier, `agents/orchestrator.md`, is still wrong and is tracked as `issues/260813-2045_o_…`. Note: this record's `Cross-references:` names the plan under its old `_o_` filename; the file is now `planning/260813-1820_p_documentation-matches-shipped-plugin.md`.
+Reconciled: 260813-2258-reconciliation.md — still open, and the marker is correct. Searched for an answer across this Circle's analyses (none exist), `shared/analyses/` (the staleness survey and the seam analysis, neither of which answers it), the plan (which states explicitly that it does not answer it), the session history `260813-1815-orchestrator-session.md`, and the fifteen commits of range `267a65c..HEAD`. Nothing answers the design question. What *did* move is the documentation half: `agents/planner.md` is untouched in the range and still parses no `**Domain:**`, while `CLAUDE.md:16` and `docs/philosophy.md:19` now read `taskplanner, reconciler, playmaker`, and `README-agents.md` `## Dispatch parameters` lists the planner's two real parameters. `.claude-plugin/plugin.json` was deliberately not edited: its claim is a bare count of three that survives the membership change. A fifth carrier, `agents/orchestrator.md`, is still wrong and is tracked as `260813-2045_*_…`. Note: this record's `Cross-references:` names the plan under its old `_o_` filename; the file is now `260813-1820_*_documentation-matches-shipped-plugin.md`.

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-21
 **Agent:** coder
-**Circle:** circles/260821-1042-reply-bounded-whole-question-answered
+**Circle:** 260821-1042-reply-bounded-whole-question-answered
 **Turn:** 2
 **Status:** Complete
 
@@ -12,11 +12,11 @@ Fix two findings from Turn 1's review, both in `rules/user-facing-output.md`, in
 bytes of credit against the anchor `e764637` and without spending the hook test suite's
 11 remaining lines of head-room.
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2203_*_a-fourth-route-out-of-the-length-cap-stands-and-the-file-names-it-as-the-remedy.md`
+- `260821-2203_*_a-fourth-route-out-of-the-length-cap-stands-and-the-file-names-it-as-the-remedy.md`
   (High): line 95 sent a writer over the eight-line gate cap into `AskUserQuestion`,
   "which is not line-capped this way", and `## Length` capped that surface's parts
   without ever capping their sum.
-- `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2212_*_the-new-information-architecture-clause-ends-in-a-fragment-in-the-file-that-forbids-fragments.md`
+- `260821-2212_*_the-new-information-architecture-clause-ends-in-a-fragment-in-the-file-that-forbids-fragments.md`
   (Medium): the clause step 3 added at line 53 ended in a verbless fragment and
   garden-pathed on a conjunction.
 
@@ -86,7 +86,7 @@ towards") restates line 93, which already names the field, so it went as a dupli
 was kept, because removing a sentence that is not the defect is outside what was asked.
 
 **What this step does not claim.** The plan's closure note says
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 is closed "both halves". This step closed the route that made that claim false. Whether
 the record may now be called closed is not asserted here, and the plan text was not
 rewritten.
@@ -125,12 +125,12 @@ adjacent heading anchor and no record citation: `` `AskUserQuestion` `` and
 **So no attribution comment was owed and none was written.** The hook test suite still
 measures **18 314 lines** across `lib/__tests__/*.test.ts`, unchanged, and all 11 lines of
 head-room named in the dispatch survive this Turn. That head-room is itself the subject of
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
+`260821-2204_*_a-growth-bound-lost-half-its-head-room-against-a-stated-stopping-criterion-and-the-finding-lives-only-in-a-history-log.md`,
 which this step neither closes nor worsens.
 
 ## Constraints held
 
-- **No test was added and no gate was built.** `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- **No test was added and no gate was built.** `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   authorises none until its own measurement runs, and this Turn did not run it.
 - **No heading was renamed, added or removed.** Verified:
   `diff <(git show e764637:rules/user-facing-output.md | grep '^#') <(grep '^#' rules/user-facing-output.md)`
@@ -180,5 +180,5 @@ instruction placed at the writer is overridable under task pressure.
 
 - `/Users/k1/Projects/productive/fusion/rules/user-facing-output.md`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/rules-emission.golden`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2203_c_a-fourth-route-out-of-the-length-cap-stands-and-the-file-names-it-as-the-remedy.md`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2212_c_the-new-information-architecture-clause-ends-in-a-fragment-in-the-file-that-forbids-fragments.md`
+- `/Users/k1/Projects/productive/fusion/260821-2203_*_a-fourth-route-out-of-the-length-cap-stands-and-the-file-names-it-as-the-remedy.md`
+- `/Users/k1/Projects/productive/fusion/260821-2212_*_the-new-information-architecture-clause-ends-in-a-fragment-in-the-file-that-forbids-fragments.md`

@@ -3,8 +3,8 @@
 **Date:** 2026-08-21
 **Agent:** coder
 **Status:** Complete
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
-**Plan step:** none. A deliberate departure from step 6 of `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md`, decided by the user at a gate.
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
+**Plan step:** none. A deliberate departure from step 6 of `260821-1805_*_plan-reply-bounded-whole-question-answered.md`, decided by the user at a gate.
 **Base commit:** `58aae9b`
 
 ## Why this ran outside the plan
@@ -63,7 +63,7 @@ The task named the `hook-tests` surface as 20 354 -> 20 363 lines, `+9`. **The t
 deletion, the deletion being the `BASELINE` line it replaces.
 
 The error is in step 2's own history log
-(`history/260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md`, `## Measurements`),
+(`260821-2035-coder-close-the-three-routes-out-of-the-length-cap.md`, `## Measurements`),
 which reports "20 354 -> **20 363 lines**, the six-line attribution comment plus its blank
 neighbours". The comment is there and is six lines; the blank neighbours are not. The tree and
 the regenerated golden agree at 20 360. **That log was left as written**, because this task's

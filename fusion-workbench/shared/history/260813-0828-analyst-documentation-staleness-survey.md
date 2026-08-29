@@ -41,8 +41,8 @@ inventory).
 
 ## Outputs
 
-- `shared/analyses/260813-0828-documentation-staleness-survey.md` — the report
-- `shared/issues/260813-0828_o_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md` — the one out-of-scope defect found
+- `260813-0828-documentation-staleness-survey.md` — the report
+- `260813-0828_*_three-tests-fail-at-head-in-two-files-and-no-open-record-names-them.md` — the one out-of-scope defect found
 
 ## Worth carrying forward
 

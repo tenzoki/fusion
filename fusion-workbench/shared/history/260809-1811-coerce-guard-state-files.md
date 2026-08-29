@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 **Task:** `I:260809-1101-coerce` — task 1 of `fusion-workbench/tasklist.md`
-**Source record:** `fusion-workbench/shared/issues/260809-1101_p_churn-and-cross-file-state-are-cast-not-coerced-so-a-shape-valid-file-swallows-the-halt-message.md`
+**Source record:** `260809-1101_*_churn-and-cross-file-state-are-cast-not-coerced-so-a-shape-valid-file-swallows-the-halt-message.md`
 **Tree state at start:** HEAD `6b94e17`
 
 ## What was wrong
@@ -21,12 +21,12 @@ clears the halt did not. Nothing repaired the state file either, because the sav
 sits after the throw.
 
 `hooks/lib/escalation.ts` already carried the fix for this exact defect
-(`260802-2334`), applied to one of the three state modules.
+(`260802-2334_*_a-shape-valid-escalation-json-makes-the-whole-guard-fail-open-on-both-surfaces.md`), applied to one of the three state modules.
 
 ## What was done
 
 The shared route recommended as target C2 in
-`shared/analyses/260809-1101-guard-support-layer.md`, rather than two more
+`260809-1101-guard-support-layer.md`, rather than two more
 private copies of the escalation coercion.
 
 **New — `hooks/lib/guard-state-file.ts`.** The resolve-read-coerce-write seam for
@@ -76,7 +76,7 @@ in that table, which is how the omission surfaced.
   finding rather than a scope line.** C2 counts it as the fourth call site of the
   same twelve-line pattern. It is not: its load answers `null` rather than an
   empty state (no before-picture must never read as an empty one), its save
-  removes the stale file when its own write fails (`260809-1108`), and its read
+  removes the stale file when its own write fails (`260809-1108_*_a-failed-snapshot-save-leaves-the-previous-one-in-place-so-the-next-call-reverts-to-an-older-state.md`), and its read
   unlinks the file as it goes so one picture cannot serve two measurements. Three
   deliberate differences, each with a measured issue behind it. Folding it into
   this seam would either flatten them or grow the seam options until it is a
@@ -125,6 +125,6 @@ in that table, which is how the omission surfaced.
 | `README-hooks.md` | one row in the files table |
 | `hooks/dist/**` | rebuilt (committed build artifact) |
 | `fusion-workbench/tasklist.md` | task 1 marked done |
-| `fusion-workbench/shared/issues/260809-1101_p_…` | `Resolved:` note appended; marker left at `_p_` as instructed |
+| `260809-1101_*_…` | `Resolved:` note appended; marker left at `_p_` as instructed |
 
 Not committed — the orchestrator commits under the commit lock.

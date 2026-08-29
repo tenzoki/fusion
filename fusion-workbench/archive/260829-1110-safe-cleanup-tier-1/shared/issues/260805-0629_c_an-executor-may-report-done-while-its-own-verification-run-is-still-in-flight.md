@@ -115,4 +115,4 @@ A real enforcement would need the verification observable outside the executor's
 
 The lint (`hooks/lib/__tests__/executor-verification-report-lint.test.ts`, 13 tests) enforces nothing at run time either. It keeps the contract from quietly leaving the three prompts or drifting into two divergent shapes across the executors: a maintenance guarantee. Its two negative cases feed it the pre-fix coder process and a half-fixed shape whose `done` is stated independently of the field, so it is shown to fail on the defect rather than only to pass on the fix.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (task T8). Executor log: `shared/history/260810-0400-executor-verification-report-contract.md`.
+Session: `260810-0241-orchestrator-session.md` (task T8). Executor log: `260810-0400-executor-verification-report-contract.md`.

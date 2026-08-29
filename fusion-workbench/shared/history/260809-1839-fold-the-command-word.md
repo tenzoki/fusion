@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** tasklist task 3, `I:260809-1110-casefold`
-**Source record:** `fusion-workbench/shared/issues/260809-1110_p_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md`
+**Source record:** `260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md`
 
 ---
 
@@ -53,7 +53,7 @@ the locale-sensitive one is not — under a Turkish locale `GIT` lowers to a
 dotless `gıt`. A security boundary must not move with `LANG`.
 
 Unconditional on every platform, matching the user's decision for the path side
-(`decisions/260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`):
+(`260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`):
 a boundary that differs by filesystem has to be re-stated in every document that
 describes it and is discovered rather than known. The over-deny it accepts costs
 close to nothing here — on a case-sensitive volume `GIT` resolves to no binary at
@@ -136,7 +136,7 @@ is self-contained, so it should not collide with either.
 
 ## Consequence for task 10
 
-`rules/git-branch-discipline.md` `## Why` names `260809-1110` as a measured defect
+`rules/git-branch-discipline.md` `## Why` names `260809-1110_*_the-command-word-comparison-is-case-sensitive-while-the-protected-path-match-folds.md` as a measured defect
 standing open. That sentence is now false. The file was NOT edited here — task 10
 rewrites it last, against the finished classifier.
 

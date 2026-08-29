@@ -104,12 +104,12 @@ files that need a new paragraph.
 
 One routable task is blocked on an unanswered decision: the `**Initiated by:**` termination
 rule cannot be written until the shaper's audit-line self-test question
-(`circles/260801-1244-curator/decisions/260814-1915_o_…`) is answered, because option 1 of
+(`260814-1915_*_…`) is answered, because option 1 of
 that decision rewrites the same row.
 
 ## Note for whoever runs the queue
 
-`shared/issues/260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs…` is
+`260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs…` is
 routable and unfixed: the suite still loses a whole test file at roughly 1 in 12 concurrent
 runs. `agents/coder.md` requires a clean exit from the whole suite before an executor may
 report "done", so that flake will produce false "blocked" reports during a long session. It

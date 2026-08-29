@@ -8,8 +8,8 @@
 **Affects:** `skills/setup/SKILL.md` Schritt 0, dritte Sonde des Pre-v4-Blocks
 **Herkunft:** Extern gemeldet. Quelldateien liegen ausserhalb dieses Repositories unter
 `.../shared/fusion-plugin-findings/`:
-`260801-0113_o_setup-pre-v4-detector-scans-archive-and-migration-backup.md`
-(der ueberlebende Record) und `260801-2257_c_fusion-setup-pre-v4-check-false-positive-on-archive.md`
+`260801-0113_*_setup-pre-v4-detector-scans-archive-and-migration-backup.md`
+(der ueberlebende Record) und `260801-2257_*_fusion-setup-pre-v4-check-false-positive-on-archive.md`
 (als Duplikat geschlossen, Inhalt in den ersten eingefaltet).
 **Cross-references:** `skills/log-activity/SKILL.md:79` (Praezedenz der Ausschlussmenge),
 `skills/migrate/SKILL.md:52,85` (bereits korrekt auf `shared/` und `circles/` begrenzt)

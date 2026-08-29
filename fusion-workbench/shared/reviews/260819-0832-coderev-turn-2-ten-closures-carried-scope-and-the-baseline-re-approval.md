@@ -1,4 +1,4 @@
-# Code review — session 260818-2301, Turn 2
+# Code review — session 260818-2301-orchestrator-session.md, Turn 2
 
 **Reviewed-range:** `b54ace5..83488e9`
 **Not-opened:** none
@@ -34,7 +34,7 @@ one, and a new shell call site that departs from the shape four siblings share.
 | Medium | 3 |
 | Low | 5 |
 
-All eight are filed under `shared/issues/` as `260819-0821` … `260819-0828`.
+All eight are filed under `shared/issues/` as `260819-0821_*_the-status-qualifier-closure-names-one-remaining-site-and-a-shipped-agent-prompt-still-carries-it.md` … `260819-0828_*_the-stopping-section-is-made-mandatory-for-plans-whose-only-stated-reader-never-runs.md`.
 
 ## What was verified and holds
 
@@ -104,28 +104,28 @@ outcomes.
 ### Closures that state more than the edit delivers
 
 **M1 — the `Status:` qualifier closure names one remaining site; a shipped agent prompt carries a
-second.** `260819-0041_c_…-transitioning…`'s own fix direction was "Drop the qualifier in **all three
+second.** `260819-0041_*_…-transitioning…`'s own fix direction was "Drop the qualifier in **all three
 places** … One clause, three files". `rules/fusion-workbench-conventions.md:525-527` was fixed;
 `agents/orchestrator.md:302-303` still reads "hand-correcting it on a record you are not
 transitioning destroys the evidence the removal was decided on", which is the clause the record
 identified as the *origin* of the phrasing. The follow-up record filed in `83488e9`
-(`260819-0756_o_…`) names `docs/upgrading-to-v10-2.md` only. So one of the two shipped surfaces that
-carried the qualifier is now recorded nowhere. `260819-0821_o_…`
+(`260819-0756_*_…`) names `docs/upgrading-to-v10-2.md` only. So one of the two shipped surfaces that
+carried the qualifier is now recorded nowhere. `260819-0821_*_…`
 
 **M2 — the fifth `fusion-source-root` call site drops the diagnostic its four siblings carry.**
 `skills/archive/SKILL.md:39` is a one-liner where `skills/{next,setup,cleanup,help}/SKILL.md` all use
 the same five-line `if`/`else`. It omits `${FUSION_PLUGIN_ROOT:-}`, so an unset root yields
 `FUSION_SRC=""` and a `cat "/rules/workbench-tracking.md"`; and it prints nothing, so the two causes
 that reach the same branch are indistinguishable again. Both properties are what
-`260810-2110_c_fusion-src-resolves-to-the-empty-string-with-no-report-…` was filed about and what its
+`260810-2110_*_fusion-src-resolves-to-the-empty-string-with-no-report-…` was filed about and what its
 `Resolved:` note settled. The prose under the block also says "if neither root yields the file" for a
-block that tries one. `260819-0822_o_…`
+block that tries one. `260819-0822_*_…`
 
 **L1 — "a stub is never read aloud as a clause" holds only for a section that is nothing but the
 stub.** The added clause is a whole-section test ("empty or still holds **only** its angle-bracket
 placeholder"). A section with one real clause plus the leftover placeholder falls to *Otherwise*, and
 the placeholder is put to the user. The split is fine; the closure sentence is a universal the test
-does not support. `260819-0824_o_…`
+does not support. `260819-0824_*_…`
 
 **L2 — the fold note credits the header table with carrying "verbatim" what the rule file's own lede
 carries.** The removed paragraph's exact words, reason clause included, are at
@@ -133,7 +133,7 @@ carries.** The removed paragraph's exact words, reason clause included, are at
 `rules/fusion-workbench-conventions.md:16` is a compressed cell that omits the reason. And the
 paragraph was merged into the sentence above it rather than folded out, so the conventions file still
 states the audience. Nothing normative was lost — the attribution is wrong, not the fold.
-`260819-0827_o_…`
+`260819-0827_*_…`
 
 ### What the fold cost
 
@@ -143,7 +143,7 @@ states the audience. Nothing normative was lost — the attribution is wrong, no
 archive step" and `stilwerk/` "stylometric profiles", neither of which is an artifact store by the
 tree's own words. Mitigated, and stated as such in the record: the split's two groups tile the tree's
 root entries exactly, so the excluded four are recoverable as the residual — what was lost is reading
-the scope forward instead of inferring it backward. `260819-0826_o_…`
+the scope forward instead of inferring it backward. `260819-0826_*_…`
 
 ### Measurement surfaces
 
@@ -153,7 +153,7 @@ the `gate_hit` row at `:1235` still reads "Gate reason" and names no reserved va
 `gate_response` row was updated. The measurement `260817-1613` reserves is a rate, and its numerator
 is recoverable only from the reason string. The closure is honest about this — it claims only the
 second row — so it is an omission, and the exposure is drift: one surface can be reworded with
-nothing to contradict it. `260819-0825_o_…`
+nothing to contradict it. `260819-0825_*_…`
 
 **M3 — the recorded reason for leaving `260819-0041` open is contradicted by `install.sh`'s default
 ref.** The tag half checks out: `v10.2.0` is `e14b6ca`, an ancestor, and `b54ace5` is after it, so no
@@ -163,7 +163,7 @@ one — so an install or `fusion --update` today carries the removal while `plug
 `10.2.0`. "A v10.2 note tells an installed base it carries a change it does not" is false for that
 population, and `docs/upgrading-to-v10-2.md` is the document they would consult. Leaving the record
 open is still right — its own fix direction already argues the release-time case — but on a different
-reason than the one recorded. `260819-0823_o_…`
+reason than the one recorded. `260819-0823_*_…`
 
 ### The mandate that outran its reader
 
@@ -173,7 +173,7 @@ reason than the one recorded. `260819-0823_o_…`
 only when a Circle is being closed (`agents/orchestrator.md:856`). The wording half of the Turn-1
 rider was answered; the enforcement half was not, and the paragraph now contradicts itself for the
 population it just added. Not an argument for building a reader — an argument for one clause saying
-there is none. `260819-0828_o_…`
+there is none. `260819-0828_*_…`
 
 ## Cross-cutting observations
 
@@ -205,7 +205,7 @@ L4 (one table cell). L1 and L2 (correct two `Resolved:` sentences; no code).
 
 **Wants a shape decision, not a wording fix** — M2. Either the one-liner adopts the four-line shape,
 or somebody decides the guarded one-liner is the new convention and the other four follow; leaving
-five sites in two shapes is the condition `260816-0133_o_…` already stands open on.
+five sites in two shapes is the condition `260816-0133_*_…` already stands open on.
 
 **Before the next release** — M3, and with it the version bump. Twelve commits now sit on `main` past
 `v10.2.0` with `plugin.json` unmoved, which is what makes two populations share a version string.
@@ -230,6 +230,6 @@ will see them.
 
 ---
 
-**Reconciliation 260819-0840** (reconciler, domain `code`, HEAD `83488e9`). Every claim in `## What was verified and holds` was re-checked independently and reproduces: `cd hooks && npx vitest run` is green at 36 files / 672 tests; `npm run build` leaves `git status -- hooks/dist` empty, so the committed `dist/` is the compilation of the committed source; the always-on floor is 98 733 bytes at HEAD and 98 796 at `5ec26b2`. All eight findings stand as filed and open.
+**Reconciliation 260819-0840-reconciliation.md** (reconciler, domain `code`, HEAD `83488e9`). Every claim in `## What was verified and holds` was re-checked independently and reproduces: `cd hooks && npx vitest run` is green at 36 files / 672 tests; `npm run build` leaves `git status -- hooks/dist` empty, so the committed `dist/` is the compilation of the committed source; the always-on floor is 98 733 bytes at HEAD and 98 796 at `5ec26b2`. All eight findings stand as filed and open.
 
 Two items this pass adds to the ones above. **A fourth overstated closure**, on the same pattern as M1, L1 and L2 and outside this review's range: `260811-2146_c_*` states two defects and was closed on the first, leaving its own `## The second half` — the unfilled footer stub the decision-record template still prescribes — untouched. Filed as `shared/issues/260819-0836_o_*`, with a `Revised by:` line on the closed record. **The stray `Test.txt`** recorded under `## Two working-tree observations, filed nowhere` now has a filing home, `shared/issues/260819-0837_o_*`: `git check-ignore` returns nothing for it, so any pass reaching for `git add -A` at the repository root commits it. The second observation, the detached worktree under another session's scratchpad, is correctly left where it is.

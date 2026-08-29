@@ -2,8 +2,8 @@
 
 **Date:** 2026-08-01 11:54
 **Agent:** shaper (user-direct mode, revision of a prior shaper output)
-**Output:** `shared/planning/260801-1122_o_spec-normative-consolidation.md` (revised in place)
-**Prior run:** `shared/history/260801-1122-shaper-normative-consolidation.md`
+**Output:** `260801-1122_*_spec-normative-consolidation.md` (revised in place)
+**Prior run:** `260801-1122-shaper-normative-consolidation.md`
 
 ## Request
 
@@ -12,8 +12,8 @@ Revise the spec after the user answered all eight decisions that the first pass 
 ## What was read
 
 - The spec and the prior shaper history in full.
-- `shared/history/260801-0936-orchestrator-session.md` `## Design decisions (session, 260801)` and `## Spec decisions (D-a through D-h)`.
-- `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md` (D3, now walked to anticipated and carrying its `Answered:` line).
+- `260801-0936-orchestrator-session.md` `## Design decisions (session, 260801)` and `## Spec decisions (D-a through D-h)`.
+- `260801-1020_*_provenance-header-on-rule-files.md` (D3, now walked to anticipated and carrying its `Answered:` line).
 - `bin/fusion-rules` emission block (lines 150-170, 255-300), `hooks/guard.ts` tool-interception block, `hooks/lib/config.ts`, `hooks/config.json`, `hooks/lib/__tests__/path-literal-lint.test.ts` header, `skills/setup/SKILL.md:141-144`, `.gitignore`.
 
 ## Verifications performed during this pass

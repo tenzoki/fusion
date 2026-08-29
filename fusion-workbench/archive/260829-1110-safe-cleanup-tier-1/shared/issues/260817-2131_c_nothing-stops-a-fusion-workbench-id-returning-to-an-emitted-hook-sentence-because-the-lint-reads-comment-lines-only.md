@@ -41,7 +41,7 @@ blacklist on identifier *shape* — that the returned string carry "no workbench
 and no bare short hash", by the two patterns `/\b\d{6}-\d{4}\b/` and `/\b[0-9a-f]{7,40}\b/`. **That
 is the wrong criterion and a gate written to it cannot be run**, for the reason the reconciliation
 note below states and the analysis
-`shared/analyses/260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md`
+`260818-0715-preventing-fusion-internal-identifiers-from-reaching-a-consuming-project.md`
 then measured: the uncovered branch of `coverageSentence()` legitimately emits four or more of the
 *consuming project's own* commit hashes, so the second pattern reddens on its first run against
 real data. The wording is corrected here rather than left standing with a note, so that nobody
@@ -81,13 +81,13 @@ whoever writes the gate, not as a defect against that file.
 
 **Severity:** Medium
 **Filed by:** coderev, review of `82a860d..bd2db5c`
-**Cross-references:** `shared/issues/260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the defect this would gate against), `shared/issues/260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (same class, one layer up)
+**Cross-references:** `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md` (the defect this would gate against), `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` (same class, one layer up)
 
 ---
 
 ## Reconciliation 260817-2207 — still open, verified against HEAD `307a696`
 
-Reconciler, final pass of session `260817-2037` (log `shared/history/260817-2207-reconciliation.md`).
+Reconciler, final pass of session `260817-2037-orchestrator-session.md` (log `260817-2207-reconciliation.md`).
 Re-measured rather than re-asserted. Three findings.
 
 **1. The record is genuinely open, and the gate does not exist.** No test in
@@ -100,9 +100,9 @@ reference to a sentence builder outside its own test file is a comment in
 `commentRe: TS_COMMENT_RE, recordsOnly: true`, so it still reads comment lines only.
 
 **2. Why it was left open is recorded nowhere in this file.** The two session records carry it and
-this record does not: `agentstate.yaml` `plan_context` ("Gate 2: Turn 2 covers M1+L1; 260817-2131
+this record does not: `agentstate.yaml` `plan_context` ("Gate 2: Turn 2 covers M1+L1; 260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md
 (M2) stays open"), `orchestrator-events.jsonl` (`gate_response`, turn 1, "user scoped Turn 2 to
-M1+L1; M2 stays open"), and both coder history files ("`260817-2131` (the lint gate) was out of
+M1+L1; M2 stays open"), and both coder history files ("`260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the lint gate) was out of
 scope and stays open"). Stated here so the record itself says why it survived a session that closed
 the five defects around it: **user decision at the Turn 1 gate, 2026-08-17, not oversight and not a
 missed dispatch.**
@@ -149,7 +149,7 @@ builders are untouched by this change.
 The shape-blacklist wording in `## What the gate should be` was corrected in place first (this
 record was still open, so the body was edited rather than footnoted). Recommendation 3 of the
 analysis — the convention in a rule file — was not chosen by the user and is out of scope here;
-`260807-2153` stays open. The static shipped surface is deliberately ungated and must not be swept.
+`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` stays open. The static shipped surface is deliberately ungated and must not be swept.
 
 ---
-Revised by: `f3a3565` (via `shared/issues/260818-0745_c_the-registry-completeness-parse-misses-an-aliased-and-a-namespace-import-so-a-named-builder-still-escapes.md`) — the `Resolved:` note's companion-assertion guarantee, "a third builder wired into the funnel fails the suite until it is registered", did not hold as written: the parse kept the local alias and discarded the imported name, so `import { budgetSentence as budgetLine }` and `import * as rc from "./lib/…"` both left the suite green with an unregistered builder in place. The defect stays closed — the gate itself was never in question — and the guarantee is true at HEAD, where the parse reads the imported half and refuses a relative namespace import outright. Also stale rather than reversed: the note's "273 lines" is the file at `33645a2`; it is 425 at `f3a3565`.
+Revised by: `f3a3565` (via `260818-0745_*_the-registry-completeness-parse-misses-an-aliased-and-a-namespace-import-so-a-named-builder-still-escapes.md`) — the `Resolved:` note's companion-assertion guarantee, "a third builder wired into the funnel fails the suite until it is registered", did not hold as written: the parse kept the local alias and discarded the imported name, so `import { budgetSentence as budgetLine }` and `import * as rc from "./lib/…"` both left the suite green with an unregistered builder in place. The defect stays closed — the gate itself was never in question — and the guarantee is true at HEAD, where the parse reads the imported half and refuses a relative namespace import outright. Also stale rather than reversed: the note's "273 lines" is the file at `33645a2`; it is 425 at `f3a3565`.

@@ -24,17 +24,17 @@ bestehen kann — und die Fehlermeldung, die dann entsteht, nennt "unreachable" 
 ---
 
 **Welche Seite weicht: der Code.** Der Kommentar beschreibt, was die Funktion tun muss,
-damit der Vorfall aus `260805-1436` nicht passiert. Dort hielten zwei Agenten eine
+damit der Vorfall aus `260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md` nicht passiert. Dort hielten zwei Agenten eine
 ausgefüllte Konfiguration für eine leere, weil sie die `← REPLACE`-Kommentare in der Datei
 lasen statt `doctor` zu fragen; einmal mit manueller Umgehung an einer echten Story.
-`260805-1436` hat die Marker entfernt und die Vorlage darauf umgestellt, ihre eigenen
+`260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md` hat die Marker entfernt und die Vorlage darauf umgestellt, ihre eigenen
 Auslieferungswerte zu benennen — damit steht jetzt fest, welche drei Zeichenketten eine
 unausgefüllte Vorlage trägt, und der Kommentar wird erfüllbar.
 
 **Die Prüfung ist ein Gleichheitstest, keine Heuristik.** Das ist der Kern, und die
 Verwechslung wäre der teure Fehler: `http://localhost:9999` und ein vierbuchstabiger
 Workspace-Slug *sehen aus* wie Platzhalter und sind eine echte, laufende Konfiguration.
-Genau diese Lesart hat `260805-1436` Geld gekostet. Der Test vergleicht deshalb gegen die
+Genau diese Lesart hat `260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md` Geld gekostet. Der Test vergleicht deshalb gegen die
 drei bekannten Zeichenketten der Vorlage und gegen nichts sonst.
 
 Geprüft: die drei Auslieferungswerte stehen seit `eb9cf59` (Anlage der Vorlage)
@@ -71,7 +71,7 @@ abgelehnt — vier Live-Pfad-Tests kippten von Exit 10 (deferred) auf Exit 1 (co
 Fixture ist eine `.yaml` und gehört `ontocoder`; es wurde nicht angefasst. Stattdessen
 füllt `freshWorkbench()` in der Test-Datei das Feld in der tmp-Kopie. Der Ersatz für die
 richtige Behebung steht als eigener Befund derselben Charge
-(`260805-1548_o_der-plane-testfixture-traegt-den-platzhalter-den-config-valid-jetzt-ablehnt.md`).
+(`260805-1548_*_der-plane-testfixture-traegt-den-platzhalter-den-config-valid-jetzt-ablehnt.md`).
 
 **Gemessen nach der Änderung**, dieselbe Wegwerf-workbench:
 
@@ -90,7 +90,7 @@ config valid:     yes (base=http://localhost:9999 ws=fusion-local project=8f0fc1
 
 ---
 
-**Herkunft.** Aufgenommen aus der Arbeit an `260805-1436` in einem konsumierenden
+**Herkunft.** Aufgenommen aus der Arbeit an `260805-1436_*_die-replace-marker-im-plane-template-behaupten-nach-dem-ausfuellen-das-gegenteil.md` in einem konsumierenden
 Kontext; der Punkt stand als Beobachtung ohne eigenen Record im Protokoll
-`circles/260801-1244-guard-rules-write/history/260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
+`260805-1440-coder-zwei-nachgeschobene-befunde-aus-einem-konsumierenden-projekt.md`
 (Abschnitt "Beobachtungen aus den Protokollen, ohne eigenen Record", letzter Absatz).

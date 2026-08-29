@@ -110,11 +110,11 @@ were left. `CLAUDE.md:21` and `README-agents.md:239-246` also name all three and
 correct as they stand — the first is required by `derivable-enumerations-lint` to name every
 skill directory, and both already present the names as pipeline steps.
 
-Session history: `shared/history/260815-2330-coder-demoted-skill-names-in-shipped-prose.md`.
+Session history: `260815-2330-coder-demoted-skill-names-in-shipped-prose.md`.
 
 ---
 
-**Reconciliation 260816-0713 (reconciler, HEAD `f77633f`) — the residual table above is empty,
+**Reconciliation 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`) — the residual table above is empty,
 and the record does not close. It is rewritten here around the sites that actually stand.**
 
 The table under *"What is left, and why this record does not close"* named two sites. Both are
@@ -159,7 +159,7 @@ in scope for a *presentational* collapse is a question this record does not answ
 up decides that first; if the answer is no, the record closes on that ground rather than on a sweep.
 
 `.gitignore:69` sits four lines from `.gitignore:67`, the other half of open record
-`shared/issues/260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`.
+`260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`.
 One pass over that comment block discharges both.
 
 **Cross-reference:** `shared/issues/260816-0139_*` filed the empty-table observation and its own
@@ -168,7 +168,7 @@ One pass over that comment block discharges both.
 **Partial 260816 (coder) — the `.gitignore` half is done.** `.gitignore:69` no longer writes
 `/fusion:archive`: the sentence now reads "what preserves it is the archive step of
 `/fusion:cleanup`, which rolls it into `fusion-workbench/archive/` under a dated name", matching
-`rules/fusion-workbench-conventions.md:81`. The other two sources named in the 260816-0713 table
+`rules/fusion-workbench-conventions.md:81`. The other two sources named in the 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md table
 (`hooks/lib/events.ts:70` with its two compiled mirrors, and
 `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`) still write the old form, so the marker
 stays `_o_`.
@@ -179,7 +179,7 @@ of `/fusion:cleanup`, which rolls it into `fusion-workbench/archive/` under a da
 `grep -rn -E '/fusion:(archive|log-activity|curate)'` over the tree, excluding `.git/`,
 `node_modules/` and `fusion-workbench/`, returns eight hits: four are the deliberately-correct
 listings in `CLAUDE.md:21` and `README-agents.md:239,240,246`, and four are the residual code
-comments this record's 260816-0713 note named, `hooks/lib/events.ts:70` with its two compiled
+comments this record's 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md note named, `hooks/lib/events.ts:70` with its two compiled
 mirrors and `hooks/lib/__tests__/monitor-warnings-panel.test.ts:508`. The `.gitignore` hit is gone.
 Closing would be wrong while those three sources stand, and the record is right that whether a code
 comment is in scope for a presentational collapse is the question to answer first.

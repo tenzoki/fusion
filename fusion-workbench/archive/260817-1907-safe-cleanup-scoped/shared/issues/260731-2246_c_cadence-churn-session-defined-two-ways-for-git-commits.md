@@ -54,7 +54,7 @@ git-source legend at `skills/cadence/SKILL.md:82` and the ordering rule at `:127
 read against the same unit while making the change.
 
 ---
-Reconciliation 260731-2324 (reconciler, domain `code`) — **confirmed, stays `_o_`.** Both halves of the contradiction re-read at `17730b8`: `skills/cadence/SKILL.md:103` says a log unit is "one git commit"; `:136` says a session is "one git-commit day" while citing step 4 as its authority. The disagreement is real and is confined to the git source — the session-history and activity-log units are stated identically in both places. The knock-on to the ordering rule at `:127` is also as described.
+Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **confirmed, stays `_o_`.** Both halves of the contradiction re-read at `17730b8`: `skills/cadence/SKILL.md:103` says a log unit is "one git commit"; `:136` says a session is "one git-commit day" while citing step 4 as its authority. The disagreement is real and is confined to the git source — the session-history and activity-log units are stated identically in both places. The knock-on to the ordering rule at `:127` is also as described.
 
 Unresolved by the release. This is the one of the three new findings with a user-visible consequence (it decides list 3's ranking), so it is the natural first fix when the cadence follow-up is picked up.
 
@@ -63,4 +63,4 @@ Resolved: the git-commit day is now the single unit, defined once in step 4 and 
 
 The direction was chosen for a reason rather than by coin flip: churn measures how many separate times a theme was returned to, and a run of commits in one sitting is one return; and it makes the git unit dimensionally consistent with the other two sources, so none of the three counts at a finer grain and silently dominates the ranking.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (task T9). Executor log: `shared/history/260810-0323-coder-cadence-churn-unit.md`.
+Session: `260810-0241-orchestrator-session.md` (task T9). Executor log: `260810-0323-coder-cadence-churn-unit.md`.

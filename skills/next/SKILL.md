@@ -164,7 +164,7 @@ Report in one line what its `Performed this run:` lines say. If an approved oper
 
 Then proceed to Step 6, unchanged.
 
-**Why this relay exists and what it is not.** It is not the proposal-return protocol that decision `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` (under `$SCAN_DECISIONS`) declined. That was a return path out of an orchestrator's Phase 4 dispatch, with no user present and a Circle closing. This is `/fusion:next`, where the user is already here confirming an activation, and nothing about the Phase 4 path changes. The comparison is drawn once, in that Circle's plan `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` `## Approach`; do not re-argue it here.
+**Why this relay exists and what it is not.** It is not the proposal-return protocol that fusion's own record `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` declined. That was a return path out of an orchestrator's Phase 4 dispatch, with no user present and a Circle closing. This is `/fusion:next`, where the user is already here confirming an activation, and nothing about the Phase 4 path changes. The comparison is drawn once, in that Circle's plan `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` `## Approach`; do not re-argue it here.
 
 ## Step 6 — Interactive activation
 
@@ -216,7 +216,7 @@ Both names are literal arguments to `mv`, not globs — the underscore marker ne
 
 - There is no `**Status:**` field to set. It was dropped from the record template, because it duplicated the marker and drifted from it; the marker on the filename is the state. A record written before the removal still carries the field — leave it exactly as it stands rather than correcting it.
 - `**Active session history:**` stays `(none yet)`. No session is running this Circle yet — the one that will starts at Step 6.5 — so any path written here would name a file that is not on disk, which the field's readers handle worse than the empty value. The orchestrator sets it at its Setup step 6, when it creates the file.
-- `**Active spec/plan:**` is left exactly as it stands. If shaper's portfolio-activation mode already pointed it at a spec, that citation is current; if it reads `(none yet)`, this skill has no way to find the right file and must not guess one. And because it writes no path here, it never replaces the record's `## Directive` either: the pointer literal rides a write of that field and nothing else (`$FUSION_SRC/rules/circle-records.md` `### The Directive is a pointer once a spec exists`).
+- `**Active spec/plan:**` is left exactly as it stands. If shaper's portfolio-activation mode already pointed it at a spec (a storeless basename), that citation is current; if it reads `(none yet)`, this skill has no way to find the right file and must not guess one. And because it writes no path here, it never replaces the record's `## Directive` either: the pointer literal rides a write of that field and nothing else (`$FUSION_SRC/rules/circle-records.md` `### The Directive is a pointer once a spec exists`).
 
 ### 6.3 — Write `.active-circle`
 

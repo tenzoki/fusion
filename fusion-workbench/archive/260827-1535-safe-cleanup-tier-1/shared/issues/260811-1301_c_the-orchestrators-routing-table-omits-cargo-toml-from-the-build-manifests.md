@@ -12,14 +12,14 @@ Since 260811 `agents/coder.md:2` and the `## Scope` section of that same file st
 
 **Proposal.** Add `Cargo.toml` to the coder row at `:346`, beside `go.mod` and `package.json`. Alternatively give it a row of its own in the shape of the existing `tsconfig.json` row at `:352`, which already settled exactly this case: a build configuration carrying another layer's extension.
 
-**Why this is a record rather than a passing edit.** `agents/orchestrator.md` was outside the file set of the task this was found under (Task 35, the coder-Rust task on `circles/260801-1244-guard-rules-write/issues/260805-1830_*_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`, whose files are `agents/coder.md` and `README-agents.md`). The four tasks in that batch were dispatched on explicitly disjoint file sets, and editing the orchestrator prompt would have broken that guarantee.
+**Why this is a record rather than a passing edit.** `agents/orchestrator.md` was outside the file set of the task this was found under (Task 35, the coder-Rust task on `260805-1830_*_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`, whose files are `agents/coder.md` and `README-agents.md`). The four tasks in that batch were dispatched on explicitly disjoint file sets, and editing the orchestrator prompt would have broken that guarantee.
 
 **Severity:** Low. No routing failure is observed or predicted; the tiebreaker covers the case.
 
-**Filed by:** coder, while closing `circles/260801-1244-guard-rules-write/issues/260805-1830_c_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`.
+**Filed by:** coder, while closing `260805-1830_*_die-coder-beschreibung-nennt-rust-nicht-die-sprache-des-groessten-beobachteten-einsatzes.md`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The coder row of `agents/orchestrator.md` `## Agent Routing Table` still lists build manifests without `Cargo.toml`, and no dedicated row exists beside the `tsconfig.json` one. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The coder row of `agents/orchestrator.md` `## Agent Routing Table` still lists build manifests without `Cargo.toml`, and no dedicated row exists beside the `tsconfig.json` one. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — `Cargo.toml` is in the coder row of the routing table; agents/orchestrator.md:525

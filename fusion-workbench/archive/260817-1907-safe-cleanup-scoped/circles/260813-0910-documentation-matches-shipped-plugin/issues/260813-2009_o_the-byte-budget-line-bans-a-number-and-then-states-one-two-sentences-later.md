@@ -23,7 +23,7 @@ Measured here at `5d51abd`, so the figure is correct today. It is correct on the
 
 ## Why it matters
 
-This line is the *replacement* for two stale numbers. Its whole value is that it tells the reader how to obtain a current figure rather than handing them one that rots. Re-introducing a rotting figure in the same breath weakens the rule it states, and the next reader who checks the 30 588 against `wc -c` finds the counter-example without leaving the line — the same shape as the `fusion-count-sources` self-falsifying claim closed earlier in this Circle (`260813-1929_c_the-count-sources-layout-row-says-no-markdown-describes-it-while-being-that-markdown.md`).
+This line is the *replacement* for two stale numbers. Its whole value is that it tells the reader how to obtain a current figure rather than handing them one that rots. Re-introducing a rotting figure in the same breath weakens the rule it states, and the next reader who checks the 30 588 against `wc -c` finds the counter-example without leaving the line — the same shape as the `fusion-count-sources` self-falsifying claim closed earlier in this Circle (`260813-1929_*_the-count-sources-layout-row-says-no-markdown-describes-it-while-being-that-markdown.md`).
 
 The "about a third" that follows the figure is the part that carries the meaning, and it is the part that survives a rule edit.
 
@@ -38,4 +38,4 @@ Drop the byte figure and keep the proportion — the indented lines are conditio
 Filed by: coderev (review of Circle Turn 2, range `28f3029..5d51abd`, commit `9a11254`).
 
 ---
-Reconciled: 260813-2258 — Still open, re-verified at HEAD `c0e4219`: `CLAUDE.md:65` (the line moved from `:64` when the five `bin/` rows landed) still reads "counting them too adds 30 588 bytes, about a third", undated, two sentences after the line that bans a stated number.
+Reconciled: 260813-2258-reconciliation.md — Still open, re-verified at HEAD `c0e4219`: `CLAUDE.md:65` (the line moved from `:64` when the five `bin/` rows landed) still reads "counting them too adds 30 588 bytes, about a third", undated, two sentences after the line that bans a stated number.

@@ -3,9 +3,9 @@
 ---
 **Severity:** Medium
 **Domain:** code
-**Filed by:** orchestrator, session 260811-0752, realising an answered decision
+**Filed by:** orchestrator, session 260811-0752-orchestrator-session.md, realising an answered decision
 **Affects:** `hooks/lib/state-drift.ts:512-531`, `hooks/lib/review-coverage.ts:560-579`, `hooks/lib/staging-drift.ts:449-466` (the three throttle copies); `hooks/lib/review-coverage.ts:315-326`, `hooks/lib/staging-drift.ts:260-271`, `hooks/lib/state-drift.ts:280-288` (the git wrapper, twice verbatim and once inline); `hooks/lib/guard-state-file.ts` (the seam all three bypassed)
-**Cross-references:** `shared/decisions/260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md` — the answer this realises
+**Cross-references:** `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md` — the answer this realises
 
 ---
 
@@ -27,7 +27,7 @@ tracker, CLIs and wrappers are untouched; suite green.
 
 ---
 
-**Resolved:** coder, session 260811-0752, task 2 of the queue. Both pieces landed, the bound held.
+**Resolved:** coder, session 260811-0752-orchestrator-session.md, task 2 of the queue. Both pieces landed, the bound held.
 
 - **The throttle.** `hooks/lib/guard-state-file.ts` widened by one optional `root?: string` on
   `guardStatePath` / `loadGuardState` / `saveGuardState`; the walk still runs when no root is
@@ -71,4 +71,4 @@ tracker exit 0 and each measurement re-reporting once, and the three `bin/` wrap
 unchanged. `hooks/dist/**` rebuilt and re-checked self-contained — every import is relative or a
 `node:` builtin. `dist/lib/git.js` and `dist/lib/git.d.ts` are new and must be staged.
 
-**History:** `shared/history/260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`
+**History:** `260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`

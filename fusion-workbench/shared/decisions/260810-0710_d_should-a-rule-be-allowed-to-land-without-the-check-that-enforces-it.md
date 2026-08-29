@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator
-**Cross-references:** `shared/reviews/260810-0512-coderev-turn-1-range-8960e1a-to-head.md` § "Theme C — The empty-expansion class, established and then re-introduced"; `shared/issues/260810-0500_c_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md` (the instance); `shared/issues/260810-0502_o_…`, `shared/issues/260810-0503_o_…`, `shared/issues/260810-0510_o_…` (the counter-evidence: three lints of doubtful value from the same Turn); `shared/history/260810-0241-orchestrator-session.md`
+**Cross-references:** `260810-0512-coderev-turn-1-range-8960e1a-to-head.md` § "Theme C — The empty-expansion class, established and then re-introduced"; `260810-0500_*_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md` (the instance); `260810-0502_*_…`, `260810-0503_*_…`, `260810-0510_*_…` (the counter-evidence: three lints of doubtful value from the same Turn); `260810-0241-orchestrator-session.md`
 
 ---
 
@@ -46,11 +46,11 @@ The same Turn produced the counter-argument. Four tasks each added a lint over p
 
 ## Recommendation
 
-None yet, deliberately. The instance is fixed (`3df0c17`); this record exists so the pattern is not re-derived from scratch the next time it happens, and so the answer is chosen rather than defaulted into. It should be answered with the lint cohort's own fate (`260810-0502`, `260810-0503`, `260810-0510`) in view, because option 1 is only worth taking if this project can tell a real gate from a decorative one — and tonight it produced four and got two right.
+None yet, deliberately. The instance is fixed (`3df0c17`); this record exists so the pattern is not re-derived from scratch the next time it happens, and so the answer is chosen rather than defaulted into. It should be answered with the lint cohort's own fate (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`) in view, because option 1 is only worth taking if this project can tell a real gate from a decorative one — and tonight it produced four and got two right.
 
 ---
-Deferred: until the lint cohort's own fate is settled — `shared/issues/260810-0502`, `260810-0503`
-and `260810-0510`. User, session 260811-0752 (chat). The record's own closing paragraph asks for
+Deferred: until the lint cohort's own fate is settled — `260810-0502`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`
+and `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`. User, session 260811-0752-orchestrator-session.md (chat). The record's own closing paragraph asks for
 exactly this ordering: option 1 is worth taking only if this project can tell a real gate from a
 decorative one, and on the day this record was filed it produced four lints and got two right.
 Re-open when those three are answered; the instance that motivated the record is already fixed at

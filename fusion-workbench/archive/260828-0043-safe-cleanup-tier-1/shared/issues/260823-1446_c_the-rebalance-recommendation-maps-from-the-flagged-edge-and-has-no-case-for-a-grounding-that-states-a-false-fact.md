@@ -4,7 +4,7 @@ The Rebalance recommendation maps from the flagged edge and has no case for a Gr
 
 `agents/reconciler.md` `## Step 4` maps a `review-needed` verdict to a Rebalance recommendation by keying
 on **which edge is flagged**, not on which vertex is wrong. For the case met at
-`circles/260823-0023-settle-what-travels-between-checkouts/` the two come apart, and the mapping produces
+`260823-0023-settle-what-travels-between-checkouts` the two come apart, and the mapping produces
 the wrong advice.
 
 ---
@@ -18,9 +18,9 @@ buy: an orchestrator or a user reading it goes to the wrong option first.
 **Affects:** `agents/reconciler.md` `## Step 4` (the mapping table and the priority-order paragraph
 beneath it)
 **Cross-references:**
-`shared/issues/260817-1836_*_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`
+`260817-1836_*_the-three-edge-verdict-has-no-case-for-a-session-that-stated-no-directive-and-two-of-its-three-edges-are-then-unevaluable.md`
 and
-`shared/issues/260817-1613_*_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md`,
+`260817-1613_*_the-reconcilers-verdict-vocabulary-has-no-case-for-a-directive-that-is-reachable-but-deliberately-not-reached.md`,
 the two siblings of this class. Both are about the **verdict** vocabulary being incomplete; this one is
 about the **recommendation** mapping under a verdict that is computed correctly.
 

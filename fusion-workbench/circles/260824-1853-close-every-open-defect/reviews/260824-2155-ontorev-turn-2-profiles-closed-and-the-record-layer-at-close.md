@@ -4,9 +4,9 @@
 **Reviewed-range:** `01964e4..13aaa85`
 **Not-opened:** `CLAUDE.md`, `README-agents.md`, `agents/orchestrator.md`, `agents/reconciler.md`, `bin/fusion-paths`, `bin/fusion-session-domain`, `docs/upgrading-to-v10.md`, `hooks/lib/__tests__/fixtures/rules-emission.golden`, `hooks/lib/__tests__/fixtures/surface-growth.golden`, `hooks/lib/__tests__/fusion-identity.test.ts`, `hooks/lib/__tests__/fusion-paths.test.ts`, `hooks/lib/__tests__/fusion-session-domain.test.ts`, `hooks/lib/__tests__/reference-resolution-lint.test.ts`, `hooks/lib/__tests__/workbench-citation-lint.test.ts`, `rules/fusion-workbench-conventions.md`
 **Scope as dispatched:** the three changed profiles and their workbench copies (commit `6b26e2c`), and every record change in the range: 17 closures inside this Circle's `issues/` (16 renamed `_o_`→`_c_`, one filed and closed in-range at `260824-2136`), the two umbrella closures, the new analysis under `shared/analyses/`, three appended `Corrected:` lines, the two starred histories, the plan and the session log. The 15 files above are code, prompt and doc surfaces assigned to coderev; I opened `README-agents.md` and `skills/next/SKILL.md` for the lines a closure note cites and for nothing else.
-**Circle:** `circles/260824-1853-close-every-open-defect/`
-**Plan:** `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`
-**Prior pass:** `circles/260824-1853-close-every-open-defect/reviews/260824-2102-ontorev-turn-1-profiles-and-record-closures.md`. Its two profile findings and its five record findings are all `_c_` in this range; each closure was checked against the tree below.
+**Circle:** `260824-1853-close-every-open-defect`
+**Plan:** `260824-1905_*_plan-close-every-open-defect.md`
+**Prior pass:** `260824-2102-ontorev-turn-1-profiles-and-record-closures.md`. Its two profile findings and its five record findings are all `_c_` in this range; each closure was checked against the tree below.
 **Attribution:** filed with the person half absent. `$FUSION_PLUGIN_ROOT/bin/fusion-identity` is not in the installed copy, so the guarded call failed and the filing rule's third branch applies.
 
 ## Summary
@@ -33,11 +33,11 @@ Critical 0, High 0, Medium 0, Low 3.
 | `2100` referral note's seven ideas | every `_c_` record outside `archive/` whose note reads `referred (backlog)`: nine; two cite existing backlog entries (`260812-0253_*_rules-lose-*` two, `260812-0253_*_agents-answer-*` one) | the remaining seven are exactly the seven paths the note lists; `shared/backlog/` unchanged in the range (three entries), so all seven still await the user's filing |
 | The kind-less note | `shared/issues/260816-0740_c_*:245-246` | `Corrected:` line names `referred (decision)` and the `260820-2314_*` record, which exists |
 | Umbrella `260811-1734` | triage row 25 (`fixed`, S14) and rows 21, 23 | closes on the step-14 figures; finding 3 on the step pointer |
-| Umbrella `260824-1538` | note against `history/260824-2059-coder-step-13-rules.md:13` | the orchestrator crossing (30 760 against 30 552) is named there, so "step 13 named it" holds; row 210 said two crossings, the note reports three, and the note is the truer one |
+| Umbrella `260824-1538` | note against `260824-2059-coder-step-13-rules.md:13` | the orchestrator crossing (30 760 against 30 552) is named there, so "step 13 named it" holds; row 210 said two crossings, the note reports three, and the note is the truer one |
 | `2136` record | filed and closed in one range; `Resolved: fixed` names `workbench-citation-lint.test.ts:293` | file carries the fixture form per the P-14b log; the test file itself is coderev's |
-| The analysis roll | `shared/analyses/260824-2121-*` header and the test's pointer | header names the first roll and decision `260822-1229`; `reference-resolution-lint.test.ts:457` points at it, `:479` accounts the count move on the constant's line |
+| The analysis roll | `shared/analyses/260824-2121-*` header and the test's pointer | header names the first roll and decision `260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`; `reference-resolution-lint.test.ts:457` points at it, `:479` accounts the count move on the constant's line |
 | Plan `[DONE]` marks against history | steps 1-15 all `[DONE]`; each has a Complete log in `history/` | holds, except the step-14 progress text (finding 1) |
-| Session log | `shared/history/260824-1750-orchestrator-session.md` names `e7fc2a1` and `f0b07b6` for the two Turn 1 reviews | both commits exist and are the review commits |
+| Session log | `260824-1750-orchestrator-session.md` names `e7fc2a1` and `f0b07b6` for the two Turn 1 reviews | both commits exist and are the review commits |
 | Open issues at HEAD | `find fusion-workbench -path '*/issues/*' -name '*_[op]_*' -not -path '*/archive/*'` before my filing | empty |
 
 ## Findings by theme
@@ -64,4 +64,4 @@ Critical 0, High 0, Medium 0, Low 3.
 Nothing blocks. One ontocoder pass, one commit: finding 1 (a progress line under step 14), then findings 2 and 3 (one `Corrected:` line each), then re-run the open-issue `find` so the closure measurement's last line is true again.
 
 ---
-Reconciled: 260824-2159 (reconciler) — all three findings closed in `3b0dc93` (records `260824-2155_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.
+Reconciled: 260824-2159-reconciliation.md (reconciler) — all three findings closed in `3b0dc93` (records `260824-2155_c_*`); no `_o_` record remains in this Circle's `issues/` at `5ad6185`.

@@ -27,11 +27,11 @@ This applies to every entry in the shipped list at `hooks/config.json:8-18`: `ag
 
 ## Context
 
-Found while specifying the `curator` agent (`shared/planning/260801-1122_o_spec-normative-consolidation.md`). Surfaced by the shaper as a scope question about the curator; it is not curator-specific. The bypass exists today for all sixteen agents.
+Found while specifying the `curator` agent (`260801-1122_*_spec-normative-consolidation.md`). Surfaced by the shaper as a scope question about the curator; it is not curator-specific. The bypass exists today for all sixteen agents.
 
-**It may be deliberate scoping rather than an oversight.** The comment at `hooks/guard.ts:201-213` states plainly that "The Bash path is NOT a write-guard concern", and gives sound reasons for that: an innocuous `Bash` call must not reset the consecutive-block counter (issue 260707-0750) and must not emit a `guard_allow` event (issue 260707-0751). Both of those are about *bookkeeping*, and both are correct. What appears not to have been traced through is that returning early to avoid the bookkeeping also skips the path check.
+**It may be deliberate scoping rather than an oversight.** The comment at `hooks/guard.ts:201-213` states plainly that "The Bash path is NOT a write-guard concern", and gives sound reasons for that: an innocuous `Bash` call must not reset the consecutive-block counter (issue 260707-0750_*_bash-allow-resets-block-counter-defeats-halt-escalation.md) and must not emit a `guard_allow` event (issue 260707-0751_*_guard-allow-bash-events-flood-events-jsonl.md). Both of those are about *bookkeeping*, and both are correct. What appears not to have been traced through is that returning early to avoid the bookkeeping also skips the path check.
 
-**It directly undercuts a decision taken today.** `shared/decisions/260801-1020_a_may-any-fusion-writer-touch-rules.md` records the user's choice to gate rule-file writes behind a new `FUSION_ALLOW_RULES_WRITE` environment flag. A flag on the `Edit` path is worth little while `mv` is unguarded: the curator, or any other agent, can retire a rule file with the flag unset. The flag should not be built as specified until this is resolved, or it will provide the appearance of a control rather than a control.
+**It directly undercuts a decision taken today.** `260801-1020_*_may-any-fusion-writer-touch-rules.md` records the user's choice to gate rule-file writes behind a new `FUSION_ALLOW_RULES_WRITE` environment flag. A flag on the `Edit` path is worth little while `mv` is unguarded: the curator, or any other agent, can retire a rule file with the flag unset. The flag should not be built as specified until this is resolved, or it will provide the appearance of a control rather than a control.
 
 **Two fixes, with different costs.**
 
@@ -43,7 +43,7 @@ Note that a full fix is hard in the general case: a shell command can construct 
 **Not reproducible in this repo.** The write guard stands down when cwd is the fusion plugin's own source tree (`hooks/lib/self-detect.ts:18-33`), so both the `Edit` block and this bypass are invisible here. Any test must run against a consuming project or a fixture.
 
 ---
-Resolved: Fixed by Circle `circles/260801-1244-guard-bash-inspection`, option 2 of the two the issue named — widen the guard's Bash inspection rather than constrain one agent. Verified by the reconciler at HEAD `9ab5a2a`, from the code and the suite rather than from the Circle's own reports.
+Resolved: Fixed by Circle `260801-1244-guard-bash-inspection`, option 2 of the two the issue named — widen the guard's Bash inspection rather than constrain one agent. Verified by the reconciler at HEAD `9ab5a2a`, from the code and the suite rather than from the Circle's own reports.
 
 The control flow the issue documented is changed at the point it named: `hooks/guard.ts:249` now runs `classifyBashMutation` (imported at `:59`) inside `guardBashCommand`, gated on `!isFusionPluginCwd()`, above the unconditional `allow()` and below the git verdict. A deny goes through `recordBlock` with trigger `"protected_path"` (`:267`) — the same trigger the write-tool path uses, so the escalation counter, the monitor and the three-block halt treat both paths identically.
 
@@ -53,6 +53,6 @@ The bookkeeping the issue correctly identified as deliberate is preserved and no
 
 **The residual is real and is stated in the shipped documentation**, per the issue's own "a full fix is hard in the general case": an unrecognised program that writes a protected path still writes it. `rules/protected-path-discipline.md`, `README-hooks.md` and the module docstrings carry it. C5c raises the cost of the bypass from zero to deliberate; it does not eliminate it, and no claim that `protectedPaths` is enforced should be made without that qualification.
 
-**One consequence the issue drew is NOT yet discharged.** Its paragraph "It directly undercuts a decision taken today" concerns `FUSION_ALLOW_RULES_WRITE`. The flag still does not exist; this Circle shipped only the `exempt` seam it plugs into (`hooks/lib/bash-mutation-guard.ts:168,1243,1252`). The issue's advice that the flag should not be built as specified until the bypass is resolved is now satisfied — the bypass is resolved, so `circles/260801-1244-guard-rules-write` is unblocked.
+**One consequence the issue drew is NOT yet discharged.** Its paragraph "It directly undercuts a decision taken today" concerns `FUSION_ALLOW_RULES_WRITE`. The flag still does not exist; this Circle shipped only the `exempt` seam it plugs into (`hooks/lib/bash-mutation-guard.ts:168,1243,1252`). The issue's advice that the flag should not be built as specified until the bypass is resolved is now satisfied — the bypass is resolved, so `260801-1244-guard-rules-write` is unblocked.
 
 Evidence: commits `9a35b8e`, `7105f21`, `59a1cd9`, `5b8430c`, `85c043c`, `3806a49`, `e31c0f3`, plus the eight defect-fix commits in the same range. `npm test` in `hooks/`: 753 passed. Closed by reconciler 260801-2029.

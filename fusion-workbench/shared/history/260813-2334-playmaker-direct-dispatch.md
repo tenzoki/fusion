@@ -1,4 +1,4 @@
-# Playmaker run 260813-2334 — direct dispatch
+# Playmaker run 260813-2334-playmaker-direct-dispatch.md — direct dispatch
 
 **Status:** Complete
 **Trigger:** direct-dispatch (user asked for a portfolio refresh after writing the missing closure note)
@@ -8,8 +8,8 @@
 
 ## What this run was for
 
-The previous run, 260813-2326, reported that
-`circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md` carried no `## Closure
+The previous run, 260813-2326-playmaker-direct-dispatch.md, reported that
+`260813-0910-documentation-matches-shipped-plugin` carried no `## Closure
 note`. The note has since been written. This run re-reads the record and regenerates
 `portfolio.md` against it.
 
@@ -32,7 +32,7 @@ raised.
 ## The closure note, verified
 
 `## Closure note` sits at line 173 of
-`circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`, between `## Turn log` and
+`260813-0910-documentation-matches-shipped-plugin`, between `## Turn log` and
 the two activation-proposal sections. Verified by listing the record's headings, not by a match
 count. The note names the Bounded-Closure Artifact that a `_b_` record requires (step 10, the
 `docs/plane-setup.md` verification), states why the user closed bounded over a `review-needed`
@@ -48,7 +48,7 @@ this run at 51 920 bytes across 24. Seventh consecutive run reporting the same f
 shaper pass in portfolio-activation mode is the sanctioned repair.
 
 No `## Activation proposal` section was appended. The record already carries three, the newest from
-run 260813-2326, and nothing in this Circle's inputs moved in the 26 minutes between the runs.
+run 260813-2326-playmaker-direct-dispatch.md, and nothing in this Circle's inputs moved in the 26 minutes between the runs.
 
 ## Backlog
 
@@ -57,7 +57,7 @@ run 260813-2326, and nothing in this Circle's inputs moved in the 26 minutes bet
 - Duplicate groups named: 3.
 - Handed to `## Warnings` as defect-shaped: 1 (`operations-take-unbearably-long`).
 - Fragments excluded from the count of 13: 2.
-- Top-ranked entry: `shared/backlog/260811-0826_*_observations.md`, recommended for **splitting
+- Top-ranked entry: `260811-0826_*_observations.md`, recommended for **splitting
   first** rather than shaping, because `/fusion:direct` would promote all 13 ideas as one Circle.
 
 No backlog write was performed. The prompt behind this run came from the installed plugin copy,
@@ -92,7 +92,7 @@ Carried, each re-verified against disk this run:
 New this run:
 
 - `the-bounded-circles-own-acceptance-record-is-still-open` —
-  `shared/issues/260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
+  `260813-0825_*_the-v8-1-0-documentation-step-reached-three-files-and-the-feature-reached-seven-surfaces.md`
   holds the bounded Circle's acceptance conditions and still carries the open marker. It sits in
   `shared/`, so a reconciler can still reach it.
 

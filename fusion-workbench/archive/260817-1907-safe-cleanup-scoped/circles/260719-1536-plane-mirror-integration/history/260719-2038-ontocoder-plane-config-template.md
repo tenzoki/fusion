@@ -3,7 +3,7 @@
 **Date:** 2026-07-19T20:38Z
 **Agent:** ontocoder
 **Circle:** 260719-1536-plane-mirror-integration
-**Plan:** planning/260719-2223_p_plan-plane-bounded-bridge.md — Step 1
+**Plan:** 260719-2223_*_plan-plane-bounded-bridge.md — Step 1
 **Status:** Complete
 
 ## Task

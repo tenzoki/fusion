@@ -1,4 +1,4 @@
-# Orchestrator Session — 260814-2225 — release v8.2.0
+# Orchestrator Session — 260814-2225-orchestrator-release.md — release v8.2.0
 
 **Directive:** Release a new version of the fusion plugin.
 **Mode:** custom (the release procedure in `CLAUDE.md` `## Release process`)
@@ -80,7 +80,7 @@ against HEAD was exactly the one intended line, `git ls-files -s` showed mode `1
 `bash -n` parsed clean. The committed blob and the published tarball both carry the executable bit,
 which is the property the tarball install depends on.
 
-Filed as `shared/issues/260814-2258_o_a-tracked-install-sh-vanished-from-the-working-tree-mid-task-with-no-cause-established.md`,
+Filed as `260814-2258_*_a-tracked-install-sh-vanished-from-the-working-tree-mid-task-with-no-cause-established.md`,
 against the executing agent's own judgement that the record was too thin to be worth filing. The
 reasoning for overriding that is in the record: alone it is worthless, as a prior for a second
 occurrence it is cheap, and the two measurements already ruled out are the work a later

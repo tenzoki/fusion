@@ -11,7 +11,7 @@ them is a file the step was scoped to touch.
 **Severity:** Low
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`,
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`,
 step 11, first branch.
 
 ## The four sites

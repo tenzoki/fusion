@@ -52,7 +52,7 @@ anticipated Circle from a Plane issue".
 passages — to name `/fusion:seed-from-plane` as a passer of `**Mode:**` (`:65`), `**Draft:**`
 (`:67`) and `**Domain:**` (`:68`), each cited to `skills/seed-from-plane/SKILL.md:92`, `:93`,
 `:94`, `:97`. That correction closed
-`260813-2052_c_the-passed-by-column-was-read-against-the-agent-prompts-only-so-two-skills-that-pass-parameters-are-missing.md`,
+`260813-2052_*_the-passed-by-column-was-read-against-the-agent-prompts-only-so-two-skills-that-pass-parameters-are-missing.md`,
 whose diagnosis was: "The `Passed by` column is the one column whose ground truth lives outside
 the agent prompts, and it was populated from the prompts anyway."
 
@@ -87,7 +87,7 @@ are" and drop the number — the same treatment `README-agents.md:54` gives the 
 where the count is carried by a table that is checked rather than by a digit in prose.
 
 Related: entrance 1 of the same list describes a mechanism no prompt has
-(`260813-2214_o_the-first-of-three-entrances-…`).
+(`260813-2214_*_the-first-of-three-entrances-…`).
 
 Filed by: coderev (review of Circle Turn 4, range `93388bc..c663a1f`, commit `a489966`).
 

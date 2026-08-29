@@ -28,7 +28,7 @@ Either way the current state teaches the wrong pattern.
 **Filed in the shared store** rather than in the Circle, per the Origin Rule: found next to this
 Circle's work, not caused by its Directive.
 
-**Filed by:** orchestrator, session `shared/history/260813-2345-orchestrator-session.md`.
+**Filed by:** orchestrator, session `260813-2345-orchestrator-session.md`.
 
 ---
 **Resolved:** 2026-08-16. It is a violation, not a deliberate exception — the exempt-surfaces
@@ -43,4 +43,4 @@ English and states that they render in the project's chat language, per the shap
 rather than kept under criterion 1's illustration clause, so the rule is now checkable by
 grep over `skills/*/SKILL.md`. `skills/memo/SKILL.md`'s German strings stay: they are input
 patterns the skill recognises, never text it prints. History:
-`shared/history/260816-0031-coder-german-literals-out-of-skill-bodies.md`.
+`260816-0031-coder-german-literals-out-of-skill-bodies.md`.

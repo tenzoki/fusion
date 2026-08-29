@@ -24,7 +24,7 @@ is that its figures were measured.
 **Domain:** code
 **Filed by:** `coderev`, reviewing `b91c01c..bbfc912`
 **Owner:** `coder`
-**Affects:** `circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`
+**Affects:** `260819-2016_*_four-constraints-on-deep-change.md`
 — `## Current State`, the paragraph beginning "The compiler is pinned in one of the two places", and
 the `## Risks & Mitigations` row beginning "Declaration emit could in principle depend on"
 **Cross-references:** `rules/critical-stance.md` `## 3. Calibrated certainty`
@@ -44,7 +44,7 @@ carries an `import(` type, and that every `node:` occurrence is a runtime import
 `.js` rather than a type reference. Keep the conclusion; it is sound.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
 reproduces, and the counter-measurement in the review does not reproduce either.** Re-run here:
 `git grep -c 'node:' b91c01c -- hooks/dist` returns **18 hits across 11 files** (`config.js`,
 `events.js`, `git.js` and eight more). The review states 17 across 10. The plan's claim that a grep

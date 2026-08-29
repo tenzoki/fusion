@@ -1,7 +1,7 @@
 # Coder — closing the five review findings this Circle's own Turn 3 and 4 prose introduced
 
 **Agent:** coder
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
 **Status:** Complete
 **Started:** 260813-2245
 **Finished:** 260813-2255

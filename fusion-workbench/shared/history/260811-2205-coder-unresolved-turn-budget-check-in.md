@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Task:** Turn 5, first task
-**Closes:** `shared/issues/260811-2142_c_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md`
+**Closes:** `260811-2142_*_the-unresolved-turn-budget-leaves-the-phase-2-loop-with-no-monotone-bound-while-the-prompt-says-it-is-bounded.md`
 **Baseline:** `e3da397`
 
 ## What was wrong
@@ -77,10 +77,10 @@ filed separately; a second one was not added beside it.
 
 ## Not done here
 
-- `260811-2150` (`/fusion:circle-stash` renders an empty right-hand side for an absent
+- `260811-2150_*_circle-stash-does-not-handle-an-absent-max-turns-it-renders-an-empty-right-hand-side-and-the-prompt-says-otherwise.md` (`/fusion:circle-stash` renders an empty right-hand side for an absent
   `max_turns`) is untouched. It is a defect in the stash skill's rendering, not in the
   orchestrator's branch, and nothing here makes it closable.
-- `260811-2149` (record-counts halves gated together on a missing `session.started`) shares the
+- `260811-2149_*_the-record-counts-block-still-gates-both-halves-together-when-session-started-is-missing-and-a-test-pins-it.md` (record-counts halves gated together on a missing `session.started`) shares the
   absent-value *shape* only; different surface, different value.
 
 ## Verification

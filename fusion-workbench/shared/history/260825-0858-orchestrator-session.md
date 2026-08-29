@@ -1,8 +1,8 @@
-# Orchestrator Session — 260825-0858
+# Orchestrator Session — 260825-0858-orchestrator-session.md
 
 **Directive:** (none survives in writing; see the note below) reconcile the multi-user spec
 against the tree, and act on what the reconciliation finds
-**Mode:** custom (`scope_resolved`, 260825-1241 local: 1 task, reconciler, domain code)
+**Mode:** custom (`scope_resolved`, 260825-1241-reconciliation.md local: 1 task, reconciler, domain code)
 **Status:** Turn loop converged after 2 Turns; cleanup running
 
 **The Directive line above is a reconstruction, written by the reconciler on 260825-1430 and
@@ -47,12 +47,12 @@ below records that edge as not evaluable for exactly this reason.
 
 Circles: 15 closed-coherent, 2 bounded, 1 superseded, 0 anticipated, 0 active.
 
-Open plan: `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md` (Status: Partially Complete).
+Open plan: `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` (Status: Partially Complete).
 
 Open decisions:
-- `shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`
-- `shared/decisions/260822-1154_o_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
-- `shared/decisions/260823-1414_o_does-the-workbench-citation-gates-corpus-cover-review-files.md`
+- `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`
+- `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
+- `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md`
 
 ## Ad hoc: a consuming project's `.gitignore`
 
@@ -78,9 +78,9 @@ this tracked* have opposite answers on exactly these two files, and only the fir
 
 **Filed.**
 
-- Defect: `shared/issues/260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md`
-- The user's decision, answered: `shared/decisions/260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`. Setup repairs rather than reports, and the check lives in Setup rather than in the archive step. The user's ground: collaboration otherwise fails.
-- Raised by it: `shared/decisions/260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`.
+- Defect: `260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md`
+- The user's decision, answered: `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md`. Setup repairs rather than reports, and the check lives in Setup rather than in the archive step. The user's ground: collaboration otherwise fails.
+- Raised by it: `260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md`.
 
 ### The follow-on question is answered
 
@@ -102,7 +102,7 @@ One residual is recorded in the decision instead of in a special rule: a project
 excludes `circles/` while tracking `shared/` gets no warning. Whether Setup should at least
 report an R1 exclusion was raised there and deliberately not decided with it.
 
-Both decision records now carry the answered marker. Defect `260825-1019` stays open: it is
+Both decision records now carry the answered marker. Defect `260825-1019_*_nothing-checks-that-a-tracked-workbenchs-gitignore-matches-the-four-class-partition.md` stays open: it is
 the work that follows.
 
 ## Session log
@@ -118,7 +118,7 @@ at a user gate in the same exchange.
 built with one task and nothing blocked.
 
 **Turn 1, task R1: reconcile the multi-user spec (12:41 to 13:35).** The reconciler opened
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` against the tree and
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` against the tree and
 found nine drift items. Six were corrected in place: six C3 acceptance criteria ticked at
 their own sites, a pending-decision checkbox that stood unticked against an implemented
 record, two style-Circle decisions transitioned to implemented citing `3464575` and `dc78da2`,
@@ -134,18 +134,18 @@ retrospective attribution line each, in a single form, marked in its own opening
 written by the filing agent. The defect record was corrected from 28 to the predicate's
 current answer of 31 and gained a section on why three passes counted one unchanged set three
 ways. Committed as `3d4b181`. The pass wrote no history record of its own; one was written
-retrospectively at `shared/history/260825-1430-reconciler-attribution-backfill.md`, which also
+retrospectively at `260825-1430-reconciler-attribution-backfill.md`, which also
 records why the pass's reason for omitting it does not hold.
 
 **Phase 3 (14:23 onward).** `/fusion:cleanup`, whose reconcile step produced the second
 `## Coherence` section below and the corrections named in
-`shared/history/260825-1430-reconciliation.md`.
+`260825-1430-reconciliation.md`.
 
 **Two bookkeeping surfaces did not keep up with the above.** `orchestrator-events.jsonl` ends
 at Turn 2's `task_start` and carries no `task_done`, no `commit` and no `turn_end` for that
 Turn, while `orchestrator-live.md` is correct on every field. That pairing is the reverse of
 the six previously measured instances of this class and is filed as
-`shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`.
+`260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`.
 
 ## Coherence
 
@@ -154,8 +154,8 @@ the six previously measured instances of this class and is filed as
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: 15 acceptance criteria opened at their own sites (C3's 7, C4's 7, C0's fifth) plus 24 decision records and 2 plans checked against the mechanism each names / 9 drift items, 6 corrected in this pass and 3 filed / 0 open coderev or ontorev issues anywhere in the workbench. **Flagged, Artifact at fault.** The six corrected items were all Grounding lagging a tree that had moved past it — six C3 ticks, a pending-decision box against an `_i_` record, two style-Circle decisions implemented in `3464575` and `dc78da2` with empty annotation stubs, a spec header reading `Draft` against a Circle that closed bounded. The two that stand are the reverse and are the reason for the flag: `rules/fusion-workbench-conventions.md` `### Who filed it` obliges every filing agent to name the person, and 28 of the 63 records filed since it landed carry neither the field nor a reason for its absence (`shared/issues/260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`); and `## Project language` puts session histories in the artifact language while this file's third section is German (`shared/issues/260825-1250_*_a-session-history-section-is-written-in-german-on-a-surface-the-language-rule-assigns-to-the-artifact-language.md`). In both the rule is right and the work departs from it.
-- Artifact↔Directive: not evaluable: the range `a99e680..cfab17e` holds one commit and it predates the Directive. `cfab17e` records the ad-hoc `.gitignore` exchange, and the Directive was written into `agentstate.yaml` at `Updated: 260825-1241`, after it — this file's own `**Directive:**` field still reads "(not yet stated — Setup only; awaiting the user's task)", which is what fixes the order. The Directive was taken from `agentstate.yaml` `session.directive` per the anchor rule, and the work it names is this pass's writes, which are in the working tree and in no commit at measurement time. Nothing here is drift; there is simply nothing in the range made under the Directive to judge.
+- Artifact↔Grounding: 15 acceptance criteria opened at their own sites (C3's 7, C4's 7, C0's fifth) plus 24 decision records and 2 plans checked against the mechanism each names / 9 drift items, 6 corrected in this pass and 3 filed / 0 open coderev or ontorev issues anywhere in the workbench. **Flagged, Artifact at fault.** The six corrected items were all Grounding lagging a tree that had moved past it — six C3 ticks, a pending-decision box against an `_i_` record, two style-Circle decisions implemented in `3464575` and `dc78da2` with empty annotation stubs, a spec header reading `Draft` against a Circle that closed bounded. The two that stand are the reverse and are the reason for the flag: `rules/fusion-workbench-conventions.md` `### Who filed it` obliges every filing agent to name the person, and 28 of the 63 records filed since it landed carry neither the field nor a reason for its absence (`260825-1250_*_twenty-eight-records-filed-since-the-attribution-rule-landed-carry-no-person-half-and-no-stated-reason.md`); and `## Project language` puts session histories in the artifact language while this file's third section is German (`260825-1250_*_a-session-history-section-is-written-in-german-on-a-surface-the-language-rule-assigns-to-the-artifact-language.md`). In both the rule is right and the work departs from it.
+- Artifact↔Directive: not evaluable: the range `a99e680..cfab17e` holds one commit and it predates the Directive. `cfab17e` records the ad-hoc `.gitignore` exchange, and the Directive was written into `agentstate.yaml` at `Updated: 260825-1241-reconciliation.md`, after it — this file's own `**Directive:**` field still reads "(not yet stated — Setup only; awaiting the user's task)", which is what fixes the order. The Directive was taken from `agentstate.yaml` `session.directive` per the anchor rule, and the work it names is this pass's writes, which are in the working tree and in no commit at measurement time. Nothing here is drift; there is simply nothing in the range made under the Directive to judge.
 - Grounding↔Directive: 23 active decisions consistent (`shared/decisions/`, 3 `_o_` and 20 `_a_`; no Circle is active, so the Circle half of `SCAN_DECISIONS` is empty) / 0 conflicting. The three `_o_` records were each re-checked against the mechanism they ask about and are genuinely open at HEAD. One pair is worth naming without being a conflict: `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md` and its sibling commit Setup to repairing a consuming project's `.gitignore`, which no capability of the spec under reconciliation covers. That is a scope finding about the spec, recorded on `shared/issues/260825-1019_*`, and not a decision pulling against the Directive.
 
 **Rebalance recommendation:** revise Artifact
@@ -187,11 +187,11 @@ carries the range because two sections in one file cannot share an anchor.
   `commit` and no `turn_end` for a Turn that ended and committed 55 minutes earlier, while
   `orchestrator-live.md` is correct on every field. The orchestrator's own prompt requires
   those emissions, so the rule is right and the work departed from it. Filed as
-  `shared/issues/260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`,
+  `260825-1430_*_the-event-log-froze-at-turn-2-while-the-dashboard-stayed-current-inverting-the-diagnostic-six-instances-rest-on.md`,
   and not repairable by me: the event log has one writer by design and it is not the
   reconciler.
 - Artifact↔Directive: not evaluable: no Directive text survives at HEAD. The Directive was
-  stated, into `agentstate.yaml` at `Updated: 260825-1241`, which the Turn 1 verdict above
+  stated, into `agentstate.yaml` at `Updated: 260825-1241-reconciliation.md`, which the Turn 1 verdict above
   records; that file is class L in `rules/workbench-tracking.md`, never travels, and is gone.
   This file's head now carries a reconstruction of the *scope* from `orchestrator-events.jsonl`,
   and it is marked as a reconstruction because it cannot stand in for the Directive here: it
@@ -211,7 +211,7 @@ returns `uncovered=3`, `verdict=uncovered`. Every changed file is Markdown under
 `fusion-workbench/` plus `.asset-provenance`, `.fusion-setup` and the event log, with zero
 files outside the workbench, so neither reviewer routes here under the orchestrator's own
 routing rules. An uncovered range does not block a closure
-(`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
+(`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`,
 option 1). The gap is recorded because it is real, not because it is a fault.
 
 **Rebalance recommendation:** state Directive

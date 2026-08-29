@@ -1,6 +1,6 @@
 # Reconciliation — 260816-1345
 
-**Scope:** session `260816-0804`, range `433e206..dd560ab`, five commits.
+**Scope:** session `260816-0804-orchestrator-session.md`, range `433e206..dd560ab`, five commits.
 **Domain:** code. **Circle:** none active; every store resolved to `shared/`.
 **Status:** Complete.
 
@@ -50,7 +50,7 @@ the review file.
 
 **No content was lost.** `git diff 4921026 HEAD -- fusion-workbench/shared/` shows only additions and
 one rename; every one of the ten ends mid-argument nowhere and carries its closing section. The
-decision record's `Answered:` note cites `shared/history/260816-0804-orchestrator-session.md`, which
+decision record's `Answered:` note cites `260816-0804-orchestrator-session.md`, which
 exists and records the option-4 choice at line 88. The citation was real and is now precise.
 
 ### The repunctuation, third pass
@@ -88,7 +88,7 @@ carries is **22 959 words, 326 em-dashes, 14.1 per 1000**, not 22 871 / 340 / 14
 
 The direction of the register finding is unaffected; the denominator a later pass compares against
 is not, and there is a later pass by construction. Filed as
-`shared/issues/260816-1345_o_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
+`260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`.
 
 ### 2. Fourteen line citations into one file, nine of them wrong
 
@@ -97,7 +97,7 @@ byte-identical to the one it reviewed. Nine are off by one to three lines: the t
 (`:87`/`:95` for `:89`/`:96`), the three pronoun-opener sites (`:22`/`:57`/`:83` for `:19`/`:56`/`:85`),
 the `see` sites (`:14` for `:12`), the option-label cap (`:103` for `:102`), and "four lines above"
 for one line above. Five hold. This is the class
-`shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+`260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
 already tracks, and the instance was appended there rather than filed again. Corrections were written
 onto the two records where a fixer would act on the number.
 
@@ -105,19 +105,19 @@ onto the two records where a fixer would act on the number.
 
 `shared/decisions/260816-0740_a_*.md:5` read `**Status:** open` under an `_a_` filename marker. The
 Turn 2 review named it the 40th instance of
-`shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`.
+`260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md`.
 Corrected here, since it is this session's own. An independent audit across all decision stores puts
 the standing population at **39 of 100 records** after that correction, one fewer than before it:
 13 read `answered` under an `_i_` marker, 12 read `open` under `_i_`, 8 read `open` under `_a_`, 4
 read `open` under `_d_`, 1 reads `open` under `_s_`, and 1 carries the marker glyph itself where the
-word belongs (`circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_reviewers-history-log-step.md:5`
+word belongs (`260718-2150_*_reviewers-history-log-step.md:5`
 reads `**Status:** _i_`). Of those, 17 are in `shared/` and the rest sit in Circles outside this
 session's scan scope. None was swept: they are the subject of that open record, and whether a gate
 should read the pair is a decision, not a reconciliation.
 
 ### 4. The session history file is incomplete
 
-`shared/history/260816-0804-orchestrator-session.md` still carries `**Directive:** (not yet stated)`,
+`260816-0804-orchestrator-session.md` still carries `**Directive:** (not yet stated)`,
 `**Mode:** (unresolved)` and `**Status:** In progress`, and its `## Turns` section stops at Turn 1.
 Turn 2 landed three commits (`52b8665`, `6049d3e`, `dd560ab`) that the file does not describe. Not
 corrected: the reconciler appends `## Coherence` to that file and owns nothing else in it.
@@ -139,14 +139,14 @@ which is the review commit itself. Two reviews tile `433e206..b18a8cf` and `b18a
 | `shared/issues/260816-1330_o_the-repunctuation-replaced-three-em-dashes-*.md` | corrected line numbers |
 | `shared/issues/260816-1330_o_the-foreclosure-clause-*.md` | corrected line numbers |
 | `shared/issues/260808-0030_o_line-number-citations-*.md` | appended instance: nine miscitations in one review pass |
-| `shared/reviews/260816-1330-coderev-repunctuation-and-gate-contract.md` | reconciler annotation confirming the five findings |
+| `260816-1330-coderev-repunctuation-and-gate-contract.md` | reconciler annotation confirming the five findings |
 | `circles/260815-0007-*/issues/260815-1633_o_*.md` | reconciliation note confirming the discharge and the three standing sources |
 | `shared/issues/260816-1345_o_the-register-defects-corpus-table-*.md` | **new** |
-| `shared/history/260816-0804-orchestrator-session.md` | `## Coherence` appended (reconciler-owned section only) |
+| `260816-0804-orchestrator-session.md` | `## Coherence` appended (reconciler-owned section only) |
 
 No code, data, or shipped prose was modified.
 
 ## Coherence verdict
 
 `review-needed`. Recommendation: revise Artifact. The full three-edge statement is in
-`shared/history/260816-0804-orchestrator-session.md` `## Coherence`.
+`260816-0804-orchestrator-session.md` `## Coherence`.

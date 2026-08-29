@@ -1,4 +1,4 @@
-# Orchestrator Session — 260810-0844
+# Orchestrator Session — 260810-0844-orchestrator-session.md
 
 **Directive:** Fix the open defects. Scope narrowed by the user to the real code defects in `bin/` and `hooks/` first, plus the release question; one commit per defect.
 **Mode:** issues
@@ -44,7 +44,7 @@ measured them — I said eighteen and thirteen.** The error was symmetric, so `4
 is worth recording: five records were filed by the Turn 3 review and closed again before
 anything was committed, so git shows additions rather than renames, and a count kept by
 watching renames misses them on both sides. Filed as
-`shared/issues/260810-1205_o_the-session-closure-and-filing-counts-…-drifted-by-two….md`.
+`260810-1205_*_the-session-closure-and-filing-counts-…-drifted-by-two….md`.
 
 ## Per-Turn Log
 
@@ -84,13 +84,13 @@ watching renames misses them on both sides. Filed as
 
 **Edges:**
 
-- Artifact↔Grounding: **flagged.** 20 closures verified against disk and git — every one carries a `Resolved:` line, and all 12 distinct cited hashes exist and fall inside `18b6094..HEAD`; 0 reviewer findings left open, both passes' findings fixed within the session. But only 9 of 16 commits reached a reviewer: `0939` covers `18b6094..a7c2b03` (Turn 1), `1032` covers `7f617b1..7ddacbc` (Turn 3), leaving `ac68437`, `72b798e` (Turn 2), `df75004`, `8796ade`, `49e5b1d`, `205ae06` (Turn 4) and `ed87d87` (release) unread. Turn 2's exclusion was *declared* — the `0939` header names the three files it did not open, exactly the files those two commits changed — and nothing re-queued them; the one defect found in that range (`260810-0947`) came from an executor, not a reviewer. 4 drift items corrected by this pass: `260810-0508` closed with no commit citation (now `ed87d87`), `260809-2310` left at `_a_` while `7598073` had already realised it (now `_i_`), and two decision cross-references pointing at markers that had moved (wildcarded). Filed: `shared/issues/260810-1205_o_seven-of-sixteen-commits-…-no-review-pass….md`, `shared/issues/260810-1205_o_the-session-closure-and-filing-counts-…-drifted-by-two….md`.
+- Artifact↔Grounding: **flagged.** 20 closures verified against disk and git — every one carries a `Resolved:` line, and all 12 distinct cited hashes exist and fall inside `18b6094..HEAD`; 0 reviewer findings left open, both passes' findings fixed within the session. But only 9 of 16 commits reached a reviewer: `0939` covers `18b6094..a7c2b03` (Turn 1), `1032` covers `7f617b1..7ddacbc` (Turn 3), leaving `ac68437`, `72b798e` (Turn 2), `df75004`, `8796ade`, `49e5b1d`, `205ae06` (Turn 4) and `ed87d87` (release) unread. Turn 2's exclusion was *declared* — the `0939` header names the three files it did not open, exactly the files those two commits changed — and nothing re-queued them; the one defect found in that range (`260810-0947_*_the-circle-stash-exclusion-test-describes-a-mechanism-and-a-code-shape-that-no-longer-exist.md`) came from an executor, not a reviewer. 4 drift items corrected by this pass: `260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` closed with no commit citation (now `ed87d87`), `260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell.md` left at `_a_` while `7598073` had already realised it (now `_i_`), and two decision cross-references pointing at markers that had moved (wildcarded). Filed: `260810-1205_*_seven-of-sixteen-commits-…-no-review-pass….md`, `260810-1205_*_the-session-closure-and-filing-counts-…-drifted-by-two….md`.
 - Artifact↔Directive: **clear.** Against *"Behebung der offenen Defekte — Zuschnitt: echte Codefehler in `bin/` und `hooks/` zuerst, plus Version-Bump; ein Commit pro Defekt"*, all 16 commits move toward the Directive and none is orthogonal to it: 12 defect fixes in `bin/fusion-plane`, `hooks/` and the two prompt surfaces, 3 workbench-record commits, 1 release (`ed87d87`, tag `v7.1.0`, `plugin.json` / `install.sh:27` / `README.md:26` all at 7.1.0). Two literal readings did not hold and both are the better reading: the scope reached `skills/` and `agents/` (`ac68437`, `72b798e`) because the defect class lived there, and "one commit per defect" was executed as one commit per *class* (`4bf509e`→2 records, `ac68437`→2, `98c8b3f`→3, `df75004`→4), each stated in the `Resolved:` line, with `260810-0710` having explicitly asked for that grouping.
-- Grounding↔Directive: **flagged.** 11 active decisions (8 `_o_` + 3 `_a_`), 0 conflicting with the Directive — the flag is insufficiency, not contradiction. Three of the eight open decisions (`260810-0920`, `260810-0921`, `260810-1010`) were filed *because* a defect record inside the Directive's own scope states that a decision precedes its fix, so three in-scope defects (`260809-2023`, `260810-0352`, and the third round on the extension-parse surface) cannot be executed until the user answers. The Directive is reachable; it cannot be completed on this Grounding. Separately, `fusion-workbench/tasklist.md` — the queue the Directive draws from — was built at `8960e1a`, 41 commits back: 12 of its 36 cited records are now `_c_`, 1 resolves to a decision under a stale marker, and it is blind to the 15 records filed since. Not rewritten; it is taskplanner's file.
+- Grounding↔Directive: **flagged.** 11 active decisions (8 `_o_` + 3 `_a_`), 0 conflicting with the Directive — the flag is insufficiency, not contradiction. Three of the eight open decisions (`260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`, `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`, `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`) were filed *because* a defect record inside the Directive's own scope states that a decision precedes its fix, so three in-scope defects (`260809-2023`, `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md`, and the third round on the extension-parse surface) cannot be executed until the user answers. The Directive is reachable; it cannot be completed on this Grounding. Separately, `fusion-workbench/tasklist.md` — the queue the Directive draws from — was built at `8960e1a`, 41 commits back: 12 of its 36 cited records are now `_c_`, 1 resolves to a decision under a stale marker, and it is blind to the 15 records filed since. Not rewritten; it is taskplanner's file.
 
 **Rebalance recommendation:** revise Grounding
 
-Both flagged edges point at the same missing input rather than at wrong work. Grounding is named first per the priority order: three answers unblock three defects that are already in scope and already queued, whereas the Artifact-side gap (the unreviewed range) is a coverage measurement to add, not work to redo — nothing in the unreviewed commits is known to be wrong, and the two passes that did run found every finding they raised fixed. Full detail and the open-decision surface: `shared/history/260810-1205-reconciliation.md`.
+Both flagged edges point at the same missing input rather than at wrong work. Grounding is named first per the priority order: three answers unblock three defects that are already in scope and already queued, whereas the Artifact-side gap (the unreviewed range) is a coverage measurement to add, not work to redo — nothing in the unreviewed commits is known to be wrong, and the two passes that did run found every finding they raised fixed. Full detail and the open-decision surface: `260810-1205-reconciliation.md`.
 
 ## What this session is actually about
 
@@ -124,7 +124,7 @@ breaker. The user chose to answer the open decisions instead, which does not con
 Three decisions moved `_o_` → `_a_`. None is implemented; each unblocks a defect record that
 stays open until a commit realises it.
 
-**`260810-0920` — the churn key.** Anchored to the workbench root, reusing the two helpers the
+**`260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` — the churn key.** Anchored to the workbench root, reusing the two helpers the
 guard already has. The rewritable entries are migrated and the ones naming other roots dropped,
 because clearing the map would have destroyed the evidence for the defect along with the ranking.
 Every entry is kept, and absent files are excluded at the *read* path rather than dropped at the
@@ -133,13 +133,13 @@ can open. Cost accepted: one `stat` per entry per Setup, and unbounded growth, w
 separate question. The migration must be written against a rule and not a count — the record's
 title says 535, the file held 588 at `ed87d87`.
 
-**`260810-0921` — the absent helper.** The immediate case only: Setup Step 5 reports the absence
+**`260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` — the absent helper.** The immediate case only: Setup Step 5 reports the absence
 in the vocabulary the cascade already has (`counted_by=none`, domain falls back to `code`, reason
 stated) instead of emitting the shell's 127. The two class questions stay open, deliberately,
 because both change a documented convention and a defect-fixing session is the wrong place to
 settle that.
 
-**`260810-1010` — the extension set.** The script emits its own list and the text parsing goes
+**`260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md` — the extension set.** The script emits its own list and the text parsing goes
 away. This is the mechanism change rather than a fourth anchor: three rounds of tighter regex
 landed in one day and the fourth was measured before the third was committed. Sourcing the script
 was rejected for the record's reason — running the assignments without the script's work
@@ -152,12 +152,12 @@ times.
 
 | Record | Why it is still open |
 |---|---|
-| `260809-2023` churn key | A decision precedes the fix — filed as `260810-0920` |
-| `260810-0352` helper absent from the installed copy | The instance is closed by the release; the class question outlives it — filed as `260810-0921` |
+| `260809-2023` churn key | A decision precedes the fix — filed as `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` |
+| `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` helper absent from the installed copy | The instance is closed by the release; the class question outlives it — filed as `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` |
 | `260810-0918` suite total moves between runs | Found mid-session, not yet diagnosed; nobody has diffed the collected test *names* |
-| `260810-1158` third derivation site | Closing it changes the wire format, which is larger than the parent record settled |
+| `260810-1158_*_a-third-derivation-site-reads-the-key-back-out-of-a-plane-issue-body-which-carries-no-format.md` third derivation site | Closing it changes the wire format, which is larger than the parent record settled |
 
-On `260810-0352` my stated reason for leaving it open was wrong, and the reconciler measured
+On `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` my stated reason for leaving it open was wrong, and the reconciler measured
 the correction. I said the release closed the instance. The record's workaround is
 `fusion --update`, not a release, and it had already been taken by hand **before this session
 began**: `~/.fusion` reports `7.0.0` yet already held `fusion-count-sources` at mtime 08:43, one
@@ -171,12 +171,12 @@ helper reproduces it exactly.
 (the release). Turn 2's omission was *declared rather than overlooked* — the Turn 3 review's own
 header names the three files it did not open, which are exactly the files those two commits
 changed — and nothing re-queued them. That the range needed a second look is not hypothetical:
-`260810-0947` was a real defect in `72b798e`, and it was found by an executor reporting outside
+`260810-0947_*_the-circle-stash-exclusion-test-describes-a-mechanism-and-a-code-shape-that-no-longer-exist.md` was a real defect in `72b798e`, and it was found by an executor reporting outside
 its scope rather than by a reviewer. Filed as
-`shared/issues/260810-1205_o_seven-of-sixteen-commits-…-no-review-pass….md`.
+`260810-1205_*_seven-of-sixteen-commits-…-no-review-pass….md`.
 
-Three decisions await the user: `260810-0920` (churn key), `260810-0921` (helper resolution),
-`260810-1010` (whether a test can learn a script's extension set from its text).
+Three decisions await the user: `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` (churn key), `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` (helper resolution),
+`260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md` (whether a test can learn a script's extension set from its text).
 
 `fusion-workbench/tasklist.md` was not touched. It is an unaffiliated backlog written before this
 session and is stale against the 18 closures. Rebuilding it is `taskplanner`'s.

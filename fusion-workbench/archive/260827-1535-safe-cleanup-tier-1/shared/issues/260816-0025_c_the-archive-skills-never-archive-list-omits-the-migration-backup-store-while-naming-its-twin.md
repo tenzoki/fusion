@@ -2,7 +2,7 @@ The archive skill's never-archive list omits the migration backup store while na
 ---
 Safety filter 1 in `skills/archive/SKILL.md:96` reserves `$WORKBENCH/stashes/` from archiving but does not name `$WORKBENCH/.migration-v2-backup/`. The two are the same class of store — frozen legacy content left behind by a removed mechanism — and every other shipped consumer that excludes one excludes both. Fixing it changes shipped behaviour, so it is a decision to take on its own merits, not a correction.
 ---
-**Found while** fixing `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1938_*_the-always-on-conventions-file-says-four-consumers-exclude-two-stores-and-one-of-them-excludes-one.md`. That defect was in the *sentence* in `rules/fusion-workbench-conventions.md:64`, and it has been corrected there to state the measured split. This record carries the other half: whether the archive skill's list is right as it stands.
+**Found while** fixing `260815-1938_*_the-always-on-conventions-file-says-four-consumers-exclude-two-stores-and-one-of-them-excludes-one.md`. That defect was in the *sentence* in `rules/fusion-workbench-conventions.md:64`, and it has been corrected there to state the measured split. This record carries the other half: whether the archive skill's list is right as it stands.
 
 **Measured at HEAD**, the four consumers the conventions file names:
 
@@ -24,7 +24,7 @@ Safety filter 1 in `skills/archive/SKILL.md:96` reserves `$WORKBENCH/stashes/` f
 **Found by:** coder, while fixing the conventions sentence. `git:d33cd22` plus the working-tree correction to `rules/fusion-workbench-conventions.md:64`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `shared/history/260817-1836-reconciliation.md`). Filed as a defect and reading as a decision, by its own words: "fixing it changes shipped behaviour, so it is a decision to take on its own merits, not a correction". The asymmetry is unchanged at HEAD (`skills/archive/SKILL.md:96` lists the stash store only) and is now documented rather than hidden (`rules/fusion-workbench-conventions.md:64` names the archive skill as the exception). Surfaced in this pass under "Misfiled — should be a decision". Marker stays open.
+**Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`; log `260817-1836-reconciliation.md`). Filed as a defect and reading as a decision, by its own words: "fixing it changes shipped behaviour, so it is a decision to take on its own merits, not a correction". The asymmetry is unchanged at HEAD (`skills/archive/SKILL.md:96` lists the stash store only) and is now documented rather than hidden (`rules/fusion-workbench-conventions.md:64` names the archive skill as the exception). Surfaced in this pass under "Misfiled — should be a decision". Marker stays open.
 
 ---
 Resolved: fixed — safety filter 1 names `.migration-v2-backup/` beside `stashes/`, as every other consumer does; the conventions sentence naming the archive skill as the exception is plan step 13's; `skills/archive/SKILL.md:107`

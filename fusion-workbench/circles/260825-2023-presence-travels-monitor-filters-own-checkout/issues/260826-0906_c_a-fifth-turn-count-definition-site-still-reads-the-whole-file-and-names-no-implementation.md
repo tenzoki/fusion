@@ -14,9 +14,9 @@ anything, so a wrong number misinforms a report; but it is the same defect the C
 one prompt over, and `agents/orchestrator.md:558` now instructs against it in as many words.
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
+`260825-2140_*_the-turn-count-defect-names-three-sites-and-a-fourth-carries-the-identical-whole-file-count.md`
 (the record whose enumeration is short, closed on `dad5042`);
-`shared/issues/260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
+`260822-1136_*_two-definitions-of-the-turn-count-disagree-and-the-resume-snippet-counts-every-session-in-the-log.md`
 (the record before it, whose reach was short by one and which was closed `referred (C4)`).
 
 ## What is there

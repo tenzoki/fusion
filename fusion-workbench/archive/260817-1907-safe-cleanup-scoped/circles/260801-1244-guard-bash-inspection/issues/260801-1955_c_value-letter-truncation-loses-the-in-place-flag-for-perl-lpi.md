@@ -51,7 +51,7 @@ it is the canonical perl one-liner form alongside `-pi`.
 `-Fi`, `-mi` and `-Mi` are arguably right (those values are mandatory, so `i` really is part of the
 value). `-l`, `-C`, `-D`, `-x`, `-V` are the wrong ones, and `-l` is the one people type.
 
-## The closing note on `260801-1903` is wrong on this point
+## The closing note on `260801-1903_*_perl-include-flag-glued-to-its-value-is-misread-as-the-in-place-flag.md` is wrong on this point
 
 > "Given up on the deny side: nothing the tools would honour — in `-Ilib` the `lib` is the include
 > directory, not `-l -i -b`, so the truncation matches perl's and sed's own parsing."

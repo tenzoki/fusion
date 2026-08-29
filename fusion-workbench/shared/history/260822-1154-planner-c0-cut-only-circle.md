@@ -9,7 +9,7 @@
 
 ## What was asked
 
-Plan capability C0 of the approved spec `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md`, and nothing else. C0 is the cut-only Circle that buys head-room on the plugin's four growth-bounded surfaces so the multi-user rebuild has room to write into. C1 through C4 were out of scope.
+Plan capability C0 of the approved spec `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, and nothing else. C0 is the cut-only Circle that buys head-room on the plugin's four growth-bounded surfaces so the multi-user rebuild has room to write into. C1 through C4 were out of scope.
 
 ## What was measured, before anything was planned
 
@@ -34,16 +34,16 @@ Four further measurements were taken because the plan's central question is whet
 
 ## What was produced
 
-**Plan:** `shared/planning/260822-1154_o_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`. Nine steps and two user gates. Step 1 routes to `analyst` and produces the cut ledger; steps 2 through 9 route to `coder`. No step routes to `ontocoder`, and the plan says why rather than inventing one for symmetry.
+**Plan:** `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`. Nine steps and two user gates. Step 1 routes to `analyst` and produces the cut ledger; steps 2 through 9 route to `coder`. No step routes to `ontocoder`, and the plan says why rather than inventing one for symmetry.
 
-The plan's approach is not a new cut policy. `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` is the standing umbrella record for exactly this work, and three further open records name concrete instances in `skills/`. C0 executes what is already filed.
+The plan's approach is not a new cut policy. `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` is the standing umbrella record for exactly this work, and three further open records name concrete instances in `skills/`. C0 executes what is already filed.
 
 **Decision records, both open:**
 
-- `shared/decisions/260822-1154_o_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`. Three options with the arithmetic; the recommendation is that it never re-baselines. The plan proceeds on that answer and is not blocked on the record.
-- `shared/decisions/260822-1154_o_does-the-hook-test-line-budget-cover-comment-prose.md`. Raised twice already and answered nowhere. Filed with no recommendation, because every option that changes what the surface counts needs a baseline recomputation C0 is forbidden to make and the user has rejected declaring a third re-baselining moment.
+- `260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`. Three options with the arithmetic; the recommendation is that it never re-baselines. The plan proceeds on that answer and is not blocked on the record.
+- `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md`. Raised twice already and answered nowhere. Filed with no recommendation, because every option that changes what the surface counts needs a baseline recomputation C0 is forbidden to make and the user has rejected declaring a third re-baselining moment.
 
-**Defect:** `shared/issues/260822-1154_o_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`. `shared/issues/260810-0510` names `hooks/lib/__tests__/queue-ground-lint.test.ts:222-256`, deleted in `dd312eb`. Part 1 of that record is unfixable; part 2 stands. The record also notes a second finding worth measuring: `workbench-citation-lint` did not redden on that dangling path, and establishing why belongs in its own record.
+**Defect:** `260822-1154_*_an-open-defect-cites-a-test-file-deleted-eleven-days-ago-and-half-of-it-is-unfixable.md`. `260810-0510` names `hooks/lib/__tests__/queue-ground-lint.test.ts:222-256`, deleted in `dd312eb`. Part 1 of that record is unfixable; part 2 stands. The record also notes a second finding worth measuring: `workbench-citation-lint` did not redden on that dangling path, and establishing why belongs in its own record.
 
 ## What was deliberately not done
 

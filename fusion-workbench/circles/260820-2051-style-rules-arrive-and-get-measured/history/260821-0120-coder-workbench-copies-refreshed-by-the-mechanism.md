@@ -3,7 +3,7 @@
 **Agent:** coder
 **Date:** 2026-08-21 01:20
 **Status:** Complete
-**Plan:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md`, step 8
+**Plan:** `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`, step 8
 
 ## What this step was
 

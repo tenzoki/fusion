@@ -4,13 +4,13 @@
 
 **Severity:** Low
 **Domain:** code (security control) / documentation accuracy
-**Filed by:** coderev, Turn 4 incremental review of `circles/260801-1244-guard-rules-write`
+**Filed by:** coderev, Turn 4 incremental review of `260801-1244-guard-rules-write`
 **Affects:** `hooks/lib/bash-mutation-guard.ts`, `hooks/guard.ts`
 **Cross-references:**
 `hooks/lib/bash-mutation-guard.ts:1618-1647` (`ambientCdpathIsSet` and its docstring),
 `hooks/guard.ts:386-392` (`env: process.env`),
-`decisions/260803-1803_a_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`,
-`history/260803-2023-turn4-t4-5-ambient-cdpath.md`
+`260803-1803_*_should-the-guard-degrade-its-working-directory-model-when-cdpath-is-set-in-the-ambient-environment.md`,
+`260803-2023-turn4-t4-5-ambient-cdpath.md`
 
 ---
 
@@ -114,6 +114,6 @@ degrade one Turn ago and it still fires on exactly the same condition.
    errs toward ALLOW (the guard may not see a `CDPATH` that is in force). `README-hooks.md`
    gains the same statement in its `CDPATH` section.
 3. The decision record
-   (`decisions/260803-1803_i_should-the-guard-degrade-…-ambient-environment.md`) gains a
+   (`260803-1803_*_should-the-guard-degrade-…-ambient-environment.md`) gains a
    trailing `Bound recorded` note. Its marker does not move: the answer stands, option 1 is
    still right, and what is added is how far it reaches.

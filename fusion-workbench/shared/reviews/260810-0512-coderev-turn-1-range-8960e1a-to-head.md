@@ -1,4 +1,4 @@
-# Code review — `8960e1a..HEAD`, session `260810-0241` Turn 1
+# Code review — `8960e1a..HEAD`, session `260810-0241-orchestrator-session.md` Turn 1
 
 **Sender:** coderev
 **Range:** `8960e1a..HEAD`, 15 commits, 23 non-workbench files
@@ -10,7 +10,7 @@
 ## Part 1 — The diagnosis asked for before any finding
 
 The user's question, deferred from the human gate on
-`shared/issues/260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md`: reading
+`260808-0030_*_the-coderev-pass-filed-four-issues-and-left-no-review-file.md`: reading
 `agents/coderev.md` at HEAD, is the obligation to write the review file unambiguous, could a dispatch
 suppress it, and does it survive a pass that finds nothing?
 
@@ -66,7 +66,7 @@ files are transient, the durable artefact is the consolidated review, and the co
 gated on *"when the user asks for the final review"*. If the dispatch asked for findings rather than
 for "the final review", nothing in the prompt is violated by filing four issues and stopping.
 
-That is consistent with what the record documents about `260807-2020`: four issues, well-evidenced,
+That is consistent with what the record documents about `260807-2020-orchestrator-session.md`: four issues, well-evidenced,
 correctly routed, and no review file. It is the behaviour of an agent following the conditional rather
 than an agent skipping a step.
 
@@ -95,7 +95,7 @@ states they are all the findings."* In the clean case there is not even that.
 
 ### 4. What I cannot reconstruct, stated plainly
 
-I cannot determine which of these routes the `260807-2020` pass actually took. I have the four issues
+I cannot determine which of these routes the `260807-2020-orchestrator-session.md` pass actually took. I have the four issues
 and git's confirmation that no file was written; I do not have that session's dispatch prompt, and the
 pass wrote no history entry to say. So the honest position is: **the prompt admits at least two routes
 to a review-less pass, both without violating anything written down, and I cannot say which one
@@ -174,14 +174,14 @@ spellings; `npm test` in full and the seven new test files in isolation.
 | Low | 5 |
 | **Total filed** | **14** |
 
-All fourteen are in `shared/issues/` with `_o_` markers, timestamps `260810-0455` … `260810-0511`.
+All fourteen are in `shared/issues/` with `_o_` markers, timestamps `260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md` … `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`.
 
 ---
 
 ### Theme A — Release readiness
 
 **F1 · High · `npm test` is red at HEAD.**
-`260810-0455_o_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`
+`260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`
 
 `rules-emission-golden.test.ts:704` fails: `fusion-workbench-conventions.md` grew 39 529 → 41 680
 bytes across `65f7c3b` and `e99f0ef`, and the golden was never regenerated. The golden was correct at
@@ -190,10 +190,10 @@ per-dispatch byte cost of the always-on rule set to be re-approved; both authori
 byte cost in their messages and neither carried it here.
 
 **F14 · Low · no version bump across fifteen commits.**
-`260810-0508_o_fifteen-commits-landed-with-no-plugin-version-bump.md`
+`260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md`
 
 `plugin.json` reads `7.0.0` and `v7.0.0` points at `8960e1a`, the range's own base. Not urgent on its
-own; it is the other half of the already-open `260810-0352` (Setup calls a helper the installed copy
+own; it is the other half of the already-open `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (Setup calls a helper the installed copy
 does not have).
 
 ---
@@ -203,7 +203,7 @@ does not have).
 Three findings, one shape: a failure is converted into a plausible-looking success.
 
 **F2 · High · `fusion-plane` dry runs rewrite the map, and can destroy a mapping.**
-`260810-0456_o_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`
+`260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md`
 
 `cmd_push` calls `map_ensure` at `bin/fusion-plane:1179`, before the dry-run gate at `:1190`.
 `map_ensure` → `map_migrate_keys` → `mv "$tmp" "$MAP"`. So `push --plan`, `plan`, and the read-only
@@ -211,7 +211,7 @@ Three findings, one shape: a failure is converted into a plausible-looking succe
 exists to repair, the migration's collision rule discards a Plane UUID permanently.
 
 **F3 · High · `push --rebuild-map` drops a colliding UUID silently.**
-`260810-0457_o_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md`
+`260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md`
 
 `JQ_REBUILD_MAP` (`:1112`) assigns without the `has()` guard that `JQ_MIGRATE_MAP` (`:610`) carries,
 and without the caller-side report. Winner decided by API result order; every rebuilt entry gets
@@ -219,7 +219,7 @@ and without the caller-side report. Winner decided by API result order; every re
 rebuild "normalises the same way" — false at the one place a maintainer would check.
 
 **F5 · Medium · `fusion-count-sources` reports a measured zero over a git failure.**
-`260810-0459_o_fusion-count-sources-reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md`
+`260810-0459_*_fusion-count-sources-reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md`
 
 `listing="$(git ls-files … | sort -u)"` — the pipe masks git's exit status and `2>/dev/null` removes
 the trace. Reproduced against a corrupt index: `code_files=0 data_files=0 counted_by=git-ls-files`,
@@ -232,7 +232,7 @@ argues at length that a silent zero is worse than no number; this path produces 
 ### Theme C — The empty-expansion class, established and then re-introduced
 
 **F6 · Medium · the queue retirement writes through unchecked resolver values.**
-`260810-0500_o_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md`
+`260810-0500_*_the-queue-retirement-writes-through-unchecked-resolver-values-and-can-move-the-queue-to-the-workbench-root.md`
 
 The clearest cross-cutting finding in the range. Within one session:
 
@@ -249,7 +249,7 @@ it aims at `/`. And this consumer **moves** the one artefact the same section ar
 re-derivable from the records.
 
 **F12 · Low · `/fusion:next` 6.3's activation write exits 1 when no queue exists.**
-`260810-0506_o_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`
+`260810-0506_*_the-activation-pointer-write-in-next-6-3-exits-non-zero-when-no-queue-exists.md`
 
 `[ -f … ] && echo …` short-circuits to status 1, and the failing command is the one that wrote
 `.active-circle`. Same site also bypasses `$TASKLIST` — the class `fb0a5c6` closed four commits
@@ -272,7 +272,7 @@ verified rather than taken from the commit messages.
 | `state-drift-detection-lint` | **Weakest** (F8). |
 
 **F8 · Medium · the state-drift lint anchors on the phrase it checks.**
-`260810-0502_o_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
+`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`
 
 Its header states the design rule — *"The anchor is the EMISSION … never the drift check"* — and two of
 its four anchors are the drift-check sentence itself. One negative control is a renamed duplicate of
@@ -282,7 +282,7 @@ against `git show 9bad4d6^`, which contains no occurrence of "drift check" at al
 *"the drift check is deferred to Cleanup"* passes every assertion.
 
 **F9 · Medium · the domain-cascade lint is defeated by a decoy branch.**
-`260810-0503_o_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`
+`260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md`
 
 `firstIndex` asks whether a branch *mentions* `code_files`, never whether it can fire. An unsatisfiable
 `elif code_files < 0` as the second branch, with the entire pre-fix order restored beneath it, passes
@@ -292,7 +292,7 @@ assertion. Its fixture claim, unlike the state-drift one, is **true**.
 
 **F11 · Low · two queue-ground controls re-implement the logic; one executor fixture claim is
 overstated.**
-`260810-0510_o_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
+`260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 
 `queue-ground-lint.test.ts:223-234` asserts that a string it just built lacks a substring —
 `assertRidesTheAct` is never called. `:236-256` copies the table-splitting logic inline rather than
@@ -305,7 +305,7 @@ without which the parser, not the assertion under test, would have thrown.
 ### Theme E — Canonical-source discipline
 
 **F7 · Medium · two skills cite a prompt section they have no route to read.**
-`260810-0501_o_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`
+`260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`
 
 `skills/setup/SKILL.md:242` and `skills/next/SKILL.md:104` delegate the whole check to
 `agents/orchestrator.md` `### The queue's ground` by bare relative path, and both forbid restating the
@@ -313,12 +313,12 @@ branches — removing the inline fallback that made the older bare citations (`s
 `cleanup:114`) survivable. `skills/cleanup/SKILL.md:11` sets the correct precedent
 (`$FUSION_PLUGIN_ROOT/skills/<name>/SKILL.md`). Verified: the installed copy at `$FUSION_PLUGIN_ROOT`
 contains **zero** occurrences of `The queue's ground` or `Drift check`, so today the citation resolves
-to a file that lacks the section — and unlike the already-filed `260810-0352` (exit 127), this one
+to a file that lacks the section — and unlike the already-filed `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (exit 127), this one
 fails silently.
 
 **F10 · Medium · the tracked-workbench section re-enumerates a closed list and leaves one surface
 unclassified.**
-`260810-0504_o_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
+`260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
 
 Direct answer to the user's byte-cost question. Of the two new conventions sections:
 
@@ -332,13 +332,13 @@ Direct answer to the user's byte-cost question. Of the two new conventions secti
 
 It is also a **second enumeration** of a closed list stated ten lines above, in the file whose own
 paragraph warns that an incomplete list "invites exactly the reasoning-by-omission it exists to
-prevent". The cost is already real: `260810-0410` (already open) records two Plane files missing from
+prevent". The cost is already real: `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` (already open) records two Plane files missing from
 the tree; they are missing from the new section too, so that issue now has two sites. And the split is
 incomplete — `fusion-workbench/.fusion-setup` is in neither bucket, against
 `rules/critical-stance.md` §4.
 
 **F13 · Low · the queue-head parser is written twice inside the canonical file.**
-`260810-0511_o_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`
+`260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`
 
 The eight-stage extraction pipeline appears in Phase 4 step 4 and again in `#### Reading a queue`, and
 already differs (`2>/dev/null` on one). `queue-ground-lint.test.ts:187-199` enforces "one canonical
@@ -350,7 +350,7 @@ was applied outward and not inward.
 ### Theme F — Correctness residuals
 
 **F4 · Medium · the natural key has two derivations that disagree.**
-`260810-0458_o_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md`
+`260810-0458_*_the-natural-key-has-two-derivations-and-they-disagree-on-a-second-marker-shaped-segment.md`
 
 `stable_basename` (sed, file side, `:574`) and `JQ_STABLE_KEY` (jq, map side, `:602`) both strip one
 marker, but the jq runs once per invocation over keys the sed already produced. On
@@ -360,7 +360,7 @@ were checked and none has the shape. Nothing enforces that. The header's idempot
 is false as stated.
 
 **F15 · Low · `circle-stash` 7.6 still swallows the push exit code.**
-`260810-0505_o_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md`
+`260810-0505_*_circle-stash-step-7-6-still-swallows-the-push-exit-code-the-branch-exists-to-avoid.md`
 
 Both branches end in `|| true`, so the defence against the failure the branch exists to avoid is
 entirely the probe's accuracy — and the `STASH_COUNT` check cannot catch that failure mode, because in
@@ -369,10 +369,10 @@ it the entry *is* created while the tree is not freed. The probe is faithful tod
 `git stash push --include-untracked` runs `git add`, not `git add --all`, and `git add -n -u` exits 0.
 
 **F16 · Low · `docs/plane-setup.md:251` documents the old key form.**
-`260810-0507_o_plane-setup-doc-still-documents-the-marker-bearing-key-so-map-forget-fails-as-written.md`
+`260810-0507_*_plane-setup-doc-still-documents-the-marker-bearing-key-so-map-forget-fails-as-written.md`
 
 **F17 · Low · the Cleanup drift bullet contradicts Phase 2.**
-`260810-0509_o_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md`
+`260810-0509_*_the-cleanup-drift-call-point-claims-a-single-turn-session-reaches-no-other-which-phase-2-contradicts.md`
 
 ---
 
@@ -440,10 +440,10 @@ procedure that several consumers must run verbatim: a rule file with a derived a
 **Do not sequence F14 (version bump) ahead of F1.** Release step 0 is "Validate first."
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). The `### Totals` table and the sentence beneath it are left as
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). The `### Totals` table and the sentence beneath it are left as
 written. Tallied from the seventeen finding headings this file carries (`grep -cE '^\*\*F[0-9]+ · '`
 returns 17), the counts are High 3, Medium 7, Low 7, seventeen in all, and the sentence should read
-seventeen; the stamp range `260810-0455` to `260810-0511` is right and every record in it is real.
+seventeen; the stamp range `260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md` to `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md` is right and every record in it is real.
 The totals stay typed rather than derived: no gate reads a review's count, and a reader who needs the
 number recounts the `**F<n> ·` headings. Filed as
-`shared/issues/260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`.
+`260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`.

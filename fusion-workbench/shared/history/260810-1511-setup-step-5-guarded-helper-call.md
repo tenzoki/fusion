@@ -9,9 +9,9 @@
 
 ## What was asked
 
-Realise decision `shared/decisions/260810-0921_a_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
+Realise decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`
 option **(a1) tolerate and report**, against defect record
-`shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md`.
+`260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md`.
 
 `agents/orchestrator.md` Setup Step 5 called `"$FUSION_PLUGIN_ROOT/bin/fusion-count-sources"` bare.
 `$FUSION_PLUGIN_ROOT` is exported by the SessionStart hook, points at the installed copy of the
@@ -76,4 +76,4 @@ that the test polls with a wall-clock threshold, so it will keep failing under a
 ## Files changed
 
 - `/Users/k1/Projects/productive/fusion/agents/orchestrator.md`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260810-0352_o_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (`Resolved:` note appended; marker left `_o_` for the orchestrator to rename after the commit)
+- `/Users/k1/Projects/productive/fusion/260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` (`Resolved:` note appended; marker left `_o_` for the orchestrator to rename after the commit)

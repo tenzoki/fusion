@@ -45,9 +45,9 @@ current behaviour is undocumented in `rules/workbench-stash-and-lock.md` `## Com
 
 **Cross-references.** `agents/orchestrator.md:419-431`; `bin/fusion-commit-lock:307-332`;
 `rules/workbench-stash-and-lock.md` `## Commit lock`;
-`shared/issues/260810-2025_o_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`.
+`260810-2025_*_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 
@@ -109,4 +109,4 @@ than the reasoning.
   one command two working directories. Making the *payload* directory explicit in the rule file is
   cheaper than splitting them, and no behaviour changes.
 
-**Resolved by:** coder, session `260810-1646`, Turn 3.
+**Resolved by:** coder, session `260810-1646-orchestrator-session.md`, Turn 3.

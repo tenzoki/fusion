@@ -4,9 +4,9 @@ The rule's blacklist gloss still names three-part lists while AI04 now governs e
 
 **Severity:** Low
 **Domain:** data
-**Filed by:** ontocoder, repairing AI04 per `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`
+**Filed by:** ontocoder, repairing AI04 per `260821-2203_*_ai04s-remedy-change-the-item-count-does-not-answer-its-new-fault-using-a-list-at-all.md`
 **Affects:** `rules/user-facing-output.md:18`
-**Cross-references:** `shared/issues/260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
+**Cross-references:** `260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`
 
 ---
 
@@ -47,11 +47,11 @@ The saving is 5 bytes, not the 12 this record estimated. "mechanical three-part 
 The record's arithmetic is the only thing it got wrong.
 
 Not taken here: the cross-referenced record's three missing entry names. It is
-`shared/issues/260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`,
+`260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md`,
 it was outside this task's scope, and it stays open. This record's advice to take both in
 one pass stands for whoever takes that one.
 
 The 5 bytes were spent inside the same pass, on the bullet that closes
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`.
+`260821-2201_*_the-new-c06-clause-lives-only-in-a-profile-a-project-may-not-have.md`.
 The file's net against the anchor `e764637` is minus 2, measured with
 `wc -c rules/user-facing-output.md` at 20 142 against 20 144.

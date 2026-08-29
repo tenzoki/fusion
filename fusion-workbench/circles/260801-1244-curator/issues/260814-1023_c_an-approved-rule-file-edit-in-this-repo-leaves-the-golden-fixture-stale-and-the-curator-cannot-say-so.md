@@ -3,7 +3,7 @@ An approved rule-file edit in this repo leaves the golden fixture stale, and the
 ---
 In the fusion plugin's own repository the curator's rule-file surface is the shipped `rules/`
 directory — the spec states this deliberately
-(`circles/260801-1244-curator/planning/260814-0738_o_spec-curator.md:74`). Every one of those files
+(`260814-0738_*_spec-curator.md:74`). Every one of those files
 has its byte size pinned in `hooks/lib/__tests__/fixtures/rules-emission.golden`, which the golden
 test compares in both directions. So an applied curator edit to any rule file here turns
 `cd hooks && npm test` red, the regeneration lives under `hooks/` where exclusion 6 forbids the

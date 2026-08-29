@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** analyst
-**Cross-references:** `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/shared/issues/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `shared/analyses/260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
+**Cross-references:** `260816-0740-rhetorical-register-of-agent-output.md` findings 10 and 11; `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`; `archive/260817-1907-safe-cleanup-scoped/260816-0740_*_the-gate-contract-never-requires-an-option-to-state-what-it-forecloses.md`; `260706-1902-user-facing-agents-garbled-language-rootcause.md`; `hooks/lib/__tests__/helpers/growth-bound.ts`
 
 ---
 
@@ -90,7 +90,7 @@ with every other addition to the hook test surface, so option 3's two mechanisms
 expensive than they look.
 
 ---
-Answered: `shared/history/260816-0804-orchestrator-session.md:88` — **Option 4**, chosen by the user
+Answered: `260816-0804-orchestrator-session.md:88` — **Option 4**, chosen by the user
 at an orchestrator gate on 2026-08-16. No gate is built now. The corpus is repunctuated first,
 the falsification measurement from recommendation 4 of the analysis runs against a later
 session's output, and this record is re-opened with a number rather than an inference.
@@ -133,8 +133,8 @@ question ahead of the evidence the user's own choice made a precondition. A chan
 to the always-on set makes the pending measurement weaker and should say so.
 
 ---
-**Correction appended 260821-0322** (coder, plan step 15 of
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
+**Correction appended 260821-0322-coder-records-state-the-always-on-set-as-a-derivation.md** (coder, plan step 15 of
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`).
 Three corrections, appended beneath the statements they correct and overwriting none of them.
 
 **1. The always-on set is a derivation, not a list.** It is the unindented `emit_if_exists` calls
@@ -149,15 +149,15 @@ has **grown**, `rules/workbench-tracking.md` was added in `b200902` and `bin/fus
 it". It does not. `grep -c workbench-tracking bin/fusion-rules` returns 0 at HEAD `86edaac`, and
 `b200902` moved text **out** of the emitted set rather than into it: its own commit message records
 the always-on set falling from 98 874 to 95 458 bytes per dispatch. The audience was settled by
-`shared/decisions/260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`,
+`260816-1707_*_to-whom-is-the-new-workbench-tracking-rule-emitted-when-its-consumers-are-a-human-and-a-skill.md`,
 whose answer is no agent, and the condition is filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
+`260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`.
 
 **3. The dose caution survives the correction and rests on a different fact.** The corpus did not
 grow. What makes the dose weak is that `CLAUDE.md` is always-on prose an agent holds while no
 helper emits it, so no repair scoped to the emitted set reaches it, and its prose was not repaired
 in this Circle by
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+`260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
 option 3. Measured at HEAD `86edaac` with `bin/fusion-prose-metric`, the authoritative counter
 since plan step 1 of the Circle above: the six emitted files now carry 8 prose em-dashes over
 13 292 prose words, 0.6 per 1000 and under the stated ceiling; `CLAUDE.md` carries 126 over 8 892,
@@ -170,9 +170,9 @@ conditioned by.
 that has not run, and no correction to a denominator runs it.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). **The protocol this record's measurement runs under**, cited here
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). **The protocol this record's measurement runs under**, cited here
 so the link runs both ways:
-`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`.
+`260820-2354-prose-register-measurement-protocol.md`.
 **The pre-repair window, its total row:** five files frozen by path, measured at `fac97f4` with
 `bin/fusion-prose-metric`, 54 prose em-dashes over 5 219 prose words, 10.3 per 1000; lowest per-file
 rate 5.0, highest 18.8; author mix coder three, playmaker one, orchestrator one (protocol section 8).
@@ -182,4 +182,4 @@ post-repair window opens at the commit that closed that Circle, holds the five m
 history files written after it by a session that read neither that Circle's own history files nor
 this one's, and is usable only at five files; fewer than five leaves this marker at `_a_` (sections 4
 to 6 and 12). The marker stays `_a_`: a pointer is not a measurement. Filed as
-`circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0413_*_the-decision-record-the-measurement-reports-on-does-not-cite-the-protocol-that-defines-it.md`.
+`260821-0413_*_the-decision-record-the-measurement-reports-on-does-not-cite-the-protocol-that-defines-it.md`.

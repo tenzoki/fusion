@@ -5,11 +5,11 @@
 **Status:** implemented
 **Filed by:** planner
 **Cross-references:**
-`circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_o_the-compliance-guard-becomes-observation-only.md` step 7a (the step this blocks),
-`circles/260816-1741-guard-becomes-observation-only/decisions/260816-1742_a_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` (the answer this question follows from, option 1),
+`260816-1915_*_the-compliance-guard-becomes-observation-only.md` step 7a (the step this blocks),
+`260816-1742_*_where-does-the-orchestrators-turn-budget-live-once-the-guard-configuration-file-is-gone.md` (the answer this question follows from, option 1),
 `hooks/lib/config.ts:1-150` (the three-layer merge and its stated reasons), `:254-272` (`DEFAULTS`), `:503-508` (`RETIRED_CONTAINER_LEAVES`), `:686-687` (the `guard.enabled` resolution the project layer is excluded from),
 `hooks/config.json`, `hooks/config.example.json` (the plugin layer's two files),
-`circles/260801-1244-guard-rules-write/decisions/260804-1631_i_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` (the decision `guard.enabled` implements)
+`260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` (the decision `guard.enabled` implements)
 
 ---
 
@@ -42,7 +42,7 @@ The two are one question rather than two, because `guard.enabled` has no home ou
 - **The default stays defined in exactly one place.** `DEFAULTS` in `hooks/lib/config.ts` today. Any answer keeps it there, and none may restate it in a shipped JSON file.
 - **The retired-key announcement must keep a reader.** The Turn-budget decision's own constraint: something has to read a project's leftover `fusion-guard.json` in order to name it. Every option here keeps the project layer and the diagnostics channel, so all three satisfy it, but an answer that trimmed further would not.
 - **The unresolved-budget branch must keep working.** `agents/orchestrator.md` Setup Step 2 and Step 3d specify what the orchestrator does when the budget does not resolve. Whatever reads the budget must still be able to fail in a way the orchestrator can detect.
-- **`guard.enabled` is not free to keep quietly.** It is implemented by decision `260804-1631` and described in `README.md`, `README-hooks.md`, `CLAUDE.md` and `templates/fusion-guard.json`. Options 1 and 3 retire it and must add the `Retired:` line to that record; option 2 redefines it and needs a record of its own.
+- **`guard.enabled` is not free to keep quietly.** It is implemented by decision `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` and described in `README.md`, `README-hooks.md`, `CLAUDE.md` and `templates/fusion-guard.json`. Options 1 and 3 retire it and must add the `Retired:` line to that record; option 2 redefines it and needs a record of its own.
 
 ## Recommendation
 
@@ -51,5 +51,5 @@ Option 1. The loader's whole reason for three layers was that guard settings nee
 Option 2 is the one to rule out first. Redefining a key whose current meaning is written into three decision records and four documents costs more to explain than the switch is worth, and nobody has asked to switch the write trace off.
 
 ---
-Answered: circles/260816-1741-guard-becomes-observation-only/history/260816-1841-orchestrator-session.md — user chose option 1 at the plan gate on 2026-08-16. Two merge layers, not three: `hooks/config.json` and `hooks/config.example.json` go, and `guard.enabled` is retired with the rest of the guard settings. `DEFAULTS` in `hooks/lib/config.ts` stays the single definition site. Realised by plan step 7a in `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_o_the-compliance-guard-becomes-observation-only.md`.
-Implemented: `fab8a4b` (plan step P-7a) and `6890ea2` (P-7b) — option 1. Two merge layers, not three: `hooks/config.json` and `hooks/config.example.json` are deleted with the plugin layer, and `DEFAULTS` in `hooks/lib/config.ts` stays the single definition site. `guard.enabled` is retired inside its container — `RETIRED_TOP_LEVEL_KEYS` names `guard`, `decisions` and `escalation`, and the leaf-scoped retirement table folded away because `guard.protectedPaths` now sits inside a retired container. `validateLayer` no longer takes a layer kind, since the two behaviours that distinguished the layers — the plugin file's missing-file diagnostic and the project-only refusal of `guard.enabled` — both went with them. This record's own constraint on `guard.enabled` is discharged in the same pass: `circles/260801-1244-guard-rules-write/decisions/260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` now carries a `Retired:` line citing `fab8a4b`. Plan: `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
+Answered: 260816-1841-orchestrator-session.md — user chose option 1 at the plan gate on 2026-08-16. Two merge layers, not three: `hooks/config.json` and `hooks/config.example.json` go, and `guard.enabled` is retired with the rest of the guard settings. `DEFAULTS` in `hooks/lib/config.ts` stays the single definition site. Realised by plan step 7a in `260816-1915_*_the-compliance-guard-becomes-observation-only.md`.
+Implemented: `fab8a4b` (plan step P-7a) and `6890ea2` (P-7b) — option 1. Two merge layers, not three: `hooks/config.json` and `hooks/config.example.json` are deleted with the plugin layer, and `DEFAULTS` in `hooks/lib/config.ts` stays the single definition site. `guard.enabled` is retired inside its container — `RETIRED_TOP_LEVEL_KEYS` names `guard`, `decisions` and `escalation`, and the leaf-scoped retirement table folded away because `guard.protectedPaths` now sits inside a retired container. `validateLayer` no longer takes a layer kind, since the two behaviours that distinguished the layers — the plugin file's missing-file diagnostic and the project-only refusal of `guard.enabled` — both went with them. This record's own constraint on `guard.enabled` is discharged in the same pass: `260804-1631_*_may-a-project-file-set-guard-enabled-and-switch-the-whole-guard-off.md` now carries a `Retired:` line citing `fab8a4b`. Plan: `260816-1915_*_the-compliance-guard-becomes-observation-only.md`.

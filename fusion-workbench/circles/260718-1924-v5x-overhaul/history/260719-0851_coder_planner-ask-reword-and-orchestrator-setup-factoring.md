@@ -4,7 +4,7 @@
 **Agent:** coder
 **Status:** Complete
 
-## Edit 1 — planner.md:55 residual ask (issue 260718-2353)
+## Edit 1 — planner.md:55 residual ask (issue 260718-2353_*_planner-residual-unconditional-ask-line55.md)
 
 Reworded the `_o_` decision-marker instruction in `agents/planner.md` `## Open decisions as planning input` to route the blocking-question path through the `## Tool Discipline` channel (fix direction 1 from the issue). Primary "surface in Open Questions" path unchanged. Closed the issue: appended `Resolved:` note and renamed marker `_o_` → `_c_`.
 

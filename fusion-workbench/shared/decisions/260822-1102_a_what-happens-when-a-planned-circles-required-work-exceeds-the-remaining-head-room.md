@@ -4,11 +4,11 @@
 **Domain:** code
 **Filed by:** shaper
 **Cross-references:**
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`
+`260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md`
 (the sibling question, still open, and the reason this one is filed separately rather than folded in);
 `hooks/lib/__tests__/helpers/growth-bound.ts` (the instrument and the two re-baselining moments);
 `hooks/lib/__tests__/surface-growth-bound.test.ts` (the three surface budgets and their head-room figures);
-`shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`
+`260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`
 (the standing answer the multi-user work would overturn, and the work this question was raised by).
 
 ---
@@ -28,7 +28,7 @@ the first step. Any spec that promises this work without saying how the room is 
 promising something the suite refuses on arrival, and the four defects already open against
 `skills/setup/SKILL.md` and the hook tests are the standing evidence that this is not hypothetical.
 
-The sibling record `260821-0414` asks whether a Circle carries a budget for what its own new clauses
+The sibling record `260821-0414_*_does-a-corpus-repair-circle-carry-a-budget-for-what-its-own-new-clauses-may-spend.md` asks whether a Circle carries a budget for what its own new clauses
 may spend. That question presumes room exists and asks how much of it a Circle may take. This one
 asks what a project does when the room is gone and the required work is not optional. Answering the
 sibling one way or the other leaves this open, which is why it is filed rather than folded in.
@@ -78,7 +78,7 @@ question: this rebuild cannot begin on any of the three bounded surfaces at the 
 so the answer has to precede the first implementation step rather than follow it.
 
 ---
-Answered: shared/history/260822-1009-orchestrator-session.md — user decision at the Phase-0b
+Answered: 260822-1009-orchestrator-session.md — user decision at the Phase-0b
 shaping gate, 260822: **Option 1, a cut-only Circle runs first.** The multi-user rebuild starts
 against the room that Circle produces, and its own test is the four defects already open against
 `skills/setup/SKILL.md` and the hook tests: it has produced enough room when those four can be

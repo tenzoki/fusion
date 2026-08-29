@@ -24,7 +24,7 @@ Verified at HEAD `370bfc5` by reading `.gitignore`, `rules/workbench-tracking.md
 `git ls-files fusion-workbench/`.
 
 ---
-**Resolved 260823-0841** (coder, Circle `circles/260823-0023-settle-what-travels-between-checkouts`, plan step 2).
+**Resolved 260823-0841-coder-portfolio-leaves-tracking.md** (coder, Circle `260823-0023-settle-what-travels-between-checkouts`, plan step 2).
 The `KEPT:` line now reads `orchestrator-events.jsonl, .fusion-setup, .asset-provenance`, and those
 are exactly the three entries `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns. The
 omission this record names is repaired by the third of them.
@@ -32,7 +32,7 @@ omission this record names is repaired by the third of them.
 **The count moved from four to three, and the enumeration is not the whole reason.** This record was
 written against the two-group split, under which `portfolio.md` was a record and the corrected list
 would have named four. Step 1 of this Circle replaced that split with the four-class partition of
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `## The state partition`,
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` `## The state partition`,
 which puts `portfolio.md` in class L: it is regenerated in full on every playmaker run, so a
 committed copy is a briefing about what one checkout had pulled at the moment it ran. So this step
 did both halves at once — `git rm --cached fusion-workbench/portfolio.md` took it out of the index

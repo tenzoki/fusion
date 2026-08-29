@@ -4,9 +4,9 @@
 
 **Severity:** Low — no product defect is implied, but a suite that fails for reasons unrelated to the change under test erodes the one gate this session commits on
 **Domain:** code
-**Filed by:** orchestrator, from an observation the T16 executor reported alongside its own work (session `260810-0844`, Turn 4)
+**Filed by:** orchestrator, from an observation the T16 executor reported alongside its own work (session `260810-0844-orchestrator-session.md`, Turn 4)
 **Affects:** `hooks/lib/__tests__/fusion-commit-lock.test.ts` — one timing case
-**Cross-references:** `shared/issues/260810-0918_o_the-suite-total-moves-between-runs-and-the-variance-is-entirely-in-one-file.md` (a different instability in the same suite); `bin/fusion-commit-lock`; `rules/workbench-stash-and-lock.md` `## Commit lock`
+**Cross-references:** `260810-0918_*_the-suite-total-moves-between-runs-and-the-variance-is-entirely-in-one-file.md` (a different instability in the same suite); `bin/fusion-commit-lock`; `rules/workbench-stash-and-lock.md` `## Commit lock`
 
 ---
 
@@ -52,7 +52,7 @@ with a longer fuse. If it depends on the stale-lock threshold, that threshold is
 test could be given rather than sharing with production.
 
 ---
-**Third observation, session `260810-1646`, Turn 2.** The failing case named itself this time: it is
+**Third observation, session `260810-1646-orchestrator-session.md`, Turn 2.** The failing case named itself this time: it is
 the "creator reaped between mkdir and its holder write" race in
 `hooks/lib/__tests__/fusion-commit-lock.test.ts`. Conditions were five executors running in parallel
 against one machine, which is the heaviest load this test has been observed under. It failed in one
@@ -75,7 +75,7 @@ Four observations now, all under parallel load, none in isolation.
 
 ---
 
-Resolved: `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/history/260815-1133-coder-hooks-suite-concurrency-safety.md`
+Resolved: `260815-1133-coder-hooks-suite-concurrency-safety.md`
 — the case waits on the lock's own output instead of on a clock, and one run no longer
 claims every core.
 
@@ -99,7 +99,7 @@ take 9.5 s to reach its first `mkdir` even in a run that passed.
 three rounds — this case failed in **6 of 6 runs**. After: 2 concurrent × 6 rounds, **12 of
 12 exit 0**; 3 concurrent × 4 rounds, **12 of 12 green on this case**. The file also passes
 under 32 spin loops saturating all 16 cores, the condition under which the bugfix dispatch
-of 260815-0850 reproduced it 4 of 4.
+of 260815-0850-bugfix-legacy-halt-clearing-flake.md reproduced it 4 of 4.
 
 **Checked for vacuity rather than assumed.** With `set -C` removed from the patched copy the
 case still fails, naming the creator that never reported losing the acquisition. It still

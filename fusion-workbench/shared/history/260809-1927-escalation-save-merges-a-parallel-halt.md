@@ -7,7 +7,7 @@
 ## What was asked
 
 Task 7 of `fusion-workbench/tasklist.md` (`I:260809-1101-escalation`), from
-`shared/issues/260809-1101_*_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md`.
+`260809-1101_*_escalation-json-read-modify-write-can-lose-a-halt-raised-by-a-parallel-tool-call.md`.
 `escalation.json` is loaded, mutated in memory and written back through an atomic
 rename with no lock. The rename prevents a torn file; it does not prevent a lost
 update, because the save serialises the whole state object the caller is holding, so
@@ -109,7 +109,7 @@ declined for a smaller reason: it keeps `haltActive` safe and still loses the
 
 ## How it sits with the open decision
 
-`circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_*_integritaet-des-eskalationsspeichers.md`
+`260807-0945_*_integritaet-des-eskalationsspeichers.md`
 stays open and is not answered here. It asks how the store survives an agent that
 deliberately clears it — an adversary, where this was an accident — and none of its four
 options is foreclosed: the merge asks `guard-state-file.ts` where the file is, so moving
@@ -128,7 +128,7 @@ at the re-read exactly where it verifies at the load.
   module held back from this seam)
 - `hooks/lib/__tests__/escalation.test.ts` — the six interleaving cases
 - `hooks/dist/**` — rebuilt (compiled hooks are committed)
-- `fusion-workbench/shared/issues/260809-1101_p_…` — resolution note appended; marker
+- `260809-1101_*_…` — resolution note appended; marker
   left at `_p_` as the dispatch instructed
 - `fusion-workbench/tasklist.md` — task 7 status
 

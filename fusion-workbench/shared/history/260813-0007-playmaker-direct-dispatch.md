@@ -1,4 +1,4 @@
-# Playmaker Session — 260813-0007
+# Playmaker Session — 260813-0007-playmaker-direct-dispatch.md
 
 **Trigger:** direct-dispatch (no skill; the dispatch prompt carried only the domain line)
 **Domain bias:** `code`, parsed from `**Domain:** code` on the first content line
@@ -29,7 +29,7 @@ Grounding snapshot rests on measurements that have now been falsified twice.
 
 The one precondition the previous run named has been discharged: the decision on how far the
 project language reaches into the rule corpus,
-`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, now
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`, now
 carries the implemented marker.
 
 New measurement taken this run, against the tree at `1c2d555`. The partition that cut
@@ -43,7 +43,7 @@ rate-bounding component.
 
 | Measure | Value |
 |---|---|
-| Entries read | 1, `shared/backlog/260811-0826_*_observations.md` (`_o_`; no `_p_` entries exist) |
+| Entries read | 1, `260811-0826_*_observations.md` (`_o_`; no `_p_` entries exist) |
 | Distinct ideas named inside it | 13 |
 | Non-idea fragments excluded from the count | 2 (a bare path, a churn-ranking note) |
 | Evidence transcripts excluded from the count | 5 |
@@ -53,10 +53,10 @@ rate-bounding component.
 | Live and shapeable ideas remaining | 3 |
 
 **Top-ranked backlog idea:** `bounded-dispatches-and-re-injected-context`, inside
-`shared/backlog/260811-0826_*_observations.md`. It rests entirely on records already on disk, so it
+`260811-0826_*_observations.md`. It rests entirely on records already on disk, so it
 can be shaped today: the defect record
-`shared/issues/260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` names four competing
-remedies, and `shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures
+`260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md` names four competing
+remedies, and `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measures
 that handoff between dispatches costs nothing and that shorter dispatches would cut cost roughly
 fourfold.
 
@@ -67,19 +67,19 @@ lot. No `/fusion:direct` line was written into the portfolio for it.
 Duplicate groups named: `self-repair-crowds-out-project-work` duplicates
 `radical-simplification-of-fusion`, fullest statement in the entry's three closing questions;
 `unverified-claims-relayed-upward` duplicates the filed record
-`shared/issues/260812-0253_*_the-orchestrators-instructions-to-sub-agents-are-often-wrong.md`.
+`260812-0253_*_the-orchestrators-instructions-to-sub-agents-are-often-wrong.md`.
 
 Nothing was written into the backlog store. No entry was created, renamed or edited, and no
 recommended marker was set, which the open decision
-`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` records as
+`260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` records as
 having no writer today.
 
 ## Warnings emitted to the portfolio
 
-- `curator-circle-missing-artifact-subdirectories` — `circles/260801-1244-curator/` holds only its
+- `curator-circle-missing-artifact-subdirectories` — `260801-1244-curator` holds only its
   record; the six required artifact subdirectories are absent.
 - `curator-grounding-measurements-falsified` — five measured claims in the Grounding snapshot of
-  `circles/260801-1244-curator/_a_circle.md` no longer hold, three of them for the second time.
+  `260801-1244-curator` no longer hold, three of them for the second time.
 - `claude-md-always-on-figure-is-four-kilobytes-stale` — `CLAUDE.md` states 88 023 bytes of
   always-on rules per dispatch and 80 670 bytes of shipped rule text; measured today, 91 891 and
   84 538. True when written on 260812, overtaken within a day.
@@ -105,8 +105,8 @@ reported as an ordinary warning, not as this event.
 | Path | Write |
 |---|---|
 | `fusion-workbench/portfolio.md` | full regeneration (overwrite) |
-| `circles/260801-1244-curator/_a_circle.md` | appended `## Activation proposal (playmaker run 260813-0007)` |
-| `shared/history/260813-0007-playmaker-direct-dispatch.md` | this file |
+| `260801-1244-curator` | appended `## Activation proposal (playmaker run 260813-0007-playmaker-direct-dispatch.md)` |
+| `260813-0007-playmaker-direct-dispatch.md` | this file |
 
 No marker was renamed, `.active-circle` was not touched, and no plan, queue, decision, issue,
 backlog entry, code or data file was modified.
@@ -115,5 +115,5 @@ backlog entry, code or data file was modified.
 
 The activation proposal was appended in English. A Circle record is a persisted file for the
 project's own use, so it follows the artifact language declared in `CLAUDE.md`, which is `en`. The
-proposal from run 260807-1646 sitting above it is German; it predates the implementation of the
+proposal from run 260807-1646-playmaker-direct-dispatch.md sitting above it is German; it predates the implementation of the
 project-language decision and was left untouched, since playmaker appends and never rewrites.

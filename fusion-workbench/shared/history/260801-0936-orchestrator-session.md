@@ -1,4 +1,4 @@
-# Orchestrator Session — 260801-0936
+# Orchestrator Session — 260801-0936-orchestrator-session.md
 
 **Directive:** Tackle drift and bloat across decision records, rule files and `CLAUDE.md`, which accumulate contradictions and consume context budget as a project proceeds. Design a capability to handle it; build the prerequisite the design identifies.
 **Mode:** custom → shaped to spec → plan (Circle `260801-1244-guard-bash-inspection`)
@@ -42,7 +42,7 @@ Three anticipated Circles carry the actual Directive; the one that closed was th
 | `260801-1244-guard-rules-write` | anticipated | nothing (unblocked by this Circle) |
 | `260801-1244-curator` | anticipated | `-rule-provenance-header` |
 
-Open issues: the Low review finding (`260801-1904`), parts 1 and 3 of the ontocoder-edit issue (`260801-1410`), the stale `tasklist.md`, and the session-bookkeeping freeze. The spec stays `_o_` — three of its four Circles are unbuilt.
+Open issues: the Low review finding (`260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md`), parts 1 and 3 of the ontocoder-edit issue (`260801-1410_*_unattributed-edit-to-ontocoder-prompt-during-session.md`), the stale `tasklist.md`, and the session-bookkeeping freeze. The spec stays `_o_` — three of its four Circles are unbuilt.
 
 Release actions outstanding: no `v5.8.0` tag, `install.sh:27` still names v5.7.0, and the marketplace entry is unbumped.
 
@@ -193,16 +193,16 @@ No anticipated (`_a_`) or active (`_t_`) Circles exist, so no `/fusion:next` hin
 
 Ten open defects in the shared store:
 
-1. `260707-1006_o_pin-bash-allow-path-no-writeguard-side-effects-with-test.md`
-2. `260716-1940_o_stale-bin-fu-exception-in-gitignore.md`
-3. `260717-0030_o_git-stash-include-untracked-can-sweep-the-stash-directory.md`
-4. `260717-0031_o_p8-lint-gate-scope-open-questions-from-conversions.md`
-5. `260717-0032_o_stash-manifest-field-count-says-nine-lists-ten.md`
-6. `260717-0107_o_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
-7. `260717-0115_o_live-workbench-split-across-two-layouts-during-conversion.md`
-8. `260731-2246_o_cadence-churn-session-defined-two-ways-for-git-commits.md`
-9. `260731-2246_o_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`
-10. `260731-2246_o_cadence-frontmatter-unused-tools-and-oversized-description.md`
+1. `260707-1006_*_pin-bash-allow-path-no-writeguard-side-effects-with-test.md`
+2. `260716-1940_*_stale-bin-fu-exception-in-gitignore.md`
+3. `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md`
+4. `260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md`
+5. `260717-0032_*_stash-manifest-field-count-says-nine-lists-ten.md`
+6. `260717-0107_*_prompt-gaps-surfaced-by-fusion-paths-key-set-derivation.md`
+7. `260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md`
+8. `260731-2246_*_cadence-churn-session-defined-two-ways-for-git-commits.md`
+9. `260731-2246_*_cadence-empty-key-expansion-writes-a-silently-empty-digest.md`
+10. `260731-2246_*_cadence-frontmatter-unused-tools-and-oversized-description.md`
 
 ## Notes
 
@@ -213,7 +213,7 @@ Ten open defects in the shared store:
 
 ## Design decisions (session, 260801)
 
-The user raised the normative-surface drift problem: decision records, rule files and `CLAUDE.md` accumulate contradictions and bulk as a project proceeds, and the always-loaded ones consume context budget. An analyst gap analysis was run (`shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`), which filed three decision records. Two are answered here.
+The user raised the normative-surface drift problem: decision records, rule files and `CLAUDE.md` accumulate contradictions and bulk as a project proceeds, and the always-loaded ones consume context budget. An analyst gap analysis was run (`260801-1020-normative-surface-drift-gap-analysis.md`), which filed three decision records. Two are answered here.
 
 ### D1 — Where the normative-consistency capability lives
 
@@ -234,11 +234,11 @@ Chosen over the analyst's recommendation of Option 1 (keep the block absolute). 
 
 ### D3 — Provenance header on rule files
 
-**Answered as D-e below: full adoption now.** Rule files carry a provenance header, all nine plugin rule files are backfilled, and a lint gate fails a rule file that lacks one. Record walked to `_a_` at `shared/decisions/260801-1020_a_provenance-header-on-rule-files.md`.
+**Answered as D-e below: full adoption now.** Rule files carry a provenance header, all nine plugin rule files are backfilled, and a lint gate fails a rule file that lacks one. Record walked to `_a_` at `260801-1020_*_provenance-header-on-rule-files.md`.
 
 ## Spec decisions (D-a through D-h)
 
-A shaper produced `shared/planning/260801-1122_o_spec-normative-consolidation.md` (seven capabilities) with eight decisions pending, having had no interactive channel on its run. All eight are now answered. The agent is named **`curator`**.
+A shaper produced `260801-1122_*_spec-normative-consolidation.md` (seven capabilities) with eight decisions pending, having had no interactive channel on its run. All eight are now answered. The agent is named **`curator`**.
 
 | | Decision | Answer |
 |---|---|---|
@@ -275,7 +275,7 @@ The scoping step (4) carries the sharpest residual risk in the whole spec. Parti
 
 ### Guard defect found during specification
 
-`shared/issues/260801-1156_o_bash-bypasses-the-protected-path-check-entirely.md`, filed this session. In any consuming project, every path in `guard.protectedPaths` is writable through `Bash`. Verified at `hooks/guard.ts:265-268`: a `Bash` call is sent to the git branch check and returns unconditionally, never reaching the protected-path check at line 309. `guardBashCommand` ends in `allow()` at line 214 for anything that is not a branch or worktree operation.
+`260801-1156_*_bash-bypasses-the-protected-path-check-entirely.md`, filed this session. In any consuming project, every path in `guard.protectedPaths` is writable through `Bash`. Verified at `hooks/guard.ts:265-268`: a `Bash` call is sent to the git branch check and returns unconditionally, never reaching the protected-path check at line 309. `guardBashCommand` ends in `allow()` at line 214 for anything that is not a branch or worktree operation.
 
 This affects all nine protected entries at `hooks/config.json:8-18`, including `fusion-workbench/.guard-state/**`, so an agent can edit the escalation counter meant to halt it. The early return appears deliberate (`hooks/guard.ts:201-213` documents sound reasons about not resetting the block counter and not flooding the event log), but the consequence of skipping the path check alongside the bookkeeping was seemingly not traced.
 
@@ -310,9 +310,9 @@ Confirmed with the user: `.claude/rules/` is expected to be empty by convention,
 
 **Edges:**
 
-- **Artifact↔Grounding:** 31 claims verified against the code and the suite (8 plan steps, 9 of 10 C5c spec criteria, 14 issue resolution notes spot-checked for the claim each makes) — 8 drift items, every one of them in a tracking marker rather than in the work, 6 corrected and 2 filed as issues — 1 open reviewer issue, Low severity, `circles/260801-1244-guard-bash-inspection/issues/260801-1904_o_four-classifier-behaviours-are-deletable-with-a-green-suite.md`, re-verified as genuinely open rather than trusted. Every one of the sixteen commits traces to a plan step, a filed issue, or a recorded user gate; none is ungrounded. `npm test` 753 passed, `git status --short hooks/dist` empty after the build.
+- **Artifact↔Grounding:** 31 claims verified against the code and the suite (8 plan steps, 9 of 10 C5c spec criteria, 14 issue resolution notes spot-checked for the claim each makes) — 8 drift items, every one of them in a tracking marker rather than in the work, 6 corrected and 2 filed as issues — 1 open reviewer issue, Low severity, `260801-1904_*_four-classifier-behaviours-are-deletable-with-a-green-suite.md`, re-verified as genuinely open rather than trusted. Every one of the sixteen commits traces to a plan step, a filed issue, or a recorded user gate; none is ungrounded. `npm test` 753 passed, `git status --short hooks/dist` empty after the build.
 - **Artifact↔Directive:** the commits move **toward** the Directive along the path the Grounding itself specified, and do not reach it. `17730b8..9ab5a2a` delivers the Directive's second clause ("build the guard shell-inspection fix first") in full and its first clause ("tackle drift and bloat across decision records, rule files and `CLAUDE.md`") only incidentally — four falsified claims were corrected in always-loaded surfaces along the way (`3806a49` in `CLAUDE.md`, `README-hooks.md` and `rules/git-branch-discipline.md`; `a342e9b` in `agents/ontocoder.md`). Not orthogonal: the spec's own dependency graph places C5c upstream of the curator, and C5c is what turns `FUSION_ALLOW_RULES_WRITE` from a decoration into a control. Not away: nothing built contradicts the Directive or forecloses any of it.
-- **Grounding↔Directive:** 4 active decisions consistent, 0 conflicting. `shared/decisions/260801-1020_a_where-does-normative-consistency-live` (a writing curator), `_a_may-any-fusion-writer-touch-rules` (the permission it needs), and `_a_provenance-header-on-rule-files` (the evidence surface it prunes on) form one coherent chain aimed at the Directive — D2's answer departs from its own recommendation *because* D1 chose an editing agent, which is dependency, not contradiction. The fourth, `260719-2141_a_concurrency-worktree-slots-vs-single-active-circle`, concerns concurrency and neither supports nor conflicts with this Directive. No `_o_` decision exists in either store.
+- **Grounding↔Directive:** 4 active decisions consistent, 0 conflicting. `260801-1020_*_where-does-normative-consistency-live` (a writing curator), `_a_may-any-fusion-writer-touch-rules` (the permission it needs), and `_a_provenance-header-on-rule-files` (the evidence surface it prunes on) form one coherent chain aimed at the Directive — D2's answer departs from its own recommendation *because* D1 chose an editing agent, which is dependency, not contradiction. The fourth, `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle`, concerns concurrency and neither supports nor conflicts with this Directive. No `_o_` decision exists in either store.
 
 **Rebalance recommendation:** none
 
@@ -334,7 +334,7 @@ Second, the first rule file authored after `_a_provenance-header-on-rule-files` 
 
 ### Two things the orchestrator must not carry into Phase 4 unnoticed
 
-- `circles/260801-1244-guard-bash-inspection/_t_circle.md` still reads `**Status:** anticipated`, with `**Active session history:** (none yet)` and an empty `## Turn log`. These are outside the reconciler's write scope. **If the record is renamed `_c_` in this state, the Circle's Turn log is permanently blank** — three Turns and sixteen commits with no durable record on the Circle itself.
-- `agentstate.yaml` is frozen at `turn: 1 / tasks_done: 4 / commits: 4` and this file's own header still reads `**Directive:** (not yet set)` with `(no Turns yet)`. Filed as `shared/issues/260801-2038_o_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`.
+- `260801-1244-guard-bash-inspection` still reads `**Status:** anticipated`, with `**Active session history:** (none yet)` and an empty `## Turn log`. These are outside the reconciler's write scope. **If the record is renamed `_c_` in this state, the Circle's Turn log is permanently blank** — three Turns and sixteen commits with no durable record on the Circle itself.
+- `agentstate.yaml` is frozen at `turn: 1 / tasks_done: 4 / commits: 4` and this file's own header still reads `**Directive:** (not yet set)` with `(no Turns yet)`. Filed as `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`.
 
-Full evidence: `circles/260801-1244-guard-bash-inspection/history/260801-2038-reconciliation.md`.
+Full evidence: `260801-2038-reconciliation.md`.

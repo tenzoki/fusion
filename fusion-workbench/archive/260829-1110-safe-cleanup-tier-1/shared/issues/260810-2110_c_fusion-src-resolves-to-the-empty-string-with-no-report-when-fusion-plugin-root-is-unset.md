@@ -38,7 +38,7 @@ glob or a path join and can go missing long after the resolver exited 0"* — is
 
 **And which convention it departs from, from the same session.** Commit `26ea3c3` established the
 `[ -x ]` guard for prompt-called `bin/` helpers, with a stderr line naming the gap, and
-`agents/orchestrator.md:142` argues it at length (decision `260810-0921`, option a1: tolerate and
+`agents/orchestrator.md:142` argues it at length (decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`, option a1: tolerate and
 report). The new branch calls `bin/fusion-plugin-cwd` bare and reports nothing — neither when the
 helper is missing (an install that predates it, which the prose explicitly anticipates) nor when the
 root variable is unset.
@@ -62,16 +62,16 @@ fi
 and state at the citation sites that an empty `$FUSION_SRC` halts rather than resolving to `/`.
 
 Whoever takes this should read
-`shared/issues/260810-2030_o_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
+`260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`
 first: if the resolution moves into a `bin/` helper, the guard belongs there once instead of in each
 body, and the two changes are one change.
 
 **Cross-references.** `skills/setup/SKILL.md:14-17, 238-239, 259-262`;
 `skills/next/SKILL.md:15-18, 120-123`; `agents/orchestrator.md:119-124, 132-142`;
 `rules/fusion-workbench-conventions.md` `## Path Resolution`;
-`shared/decisions/260810-1544_o_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`.
+`260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`.
 
-**Filed by:** coderev, review of session `260810-1646` Turn 2, range `da8c9db..b3cc034`.
+**Filed by:** coderev, review of session `260810-1646-orchestrator-session.md` Turn 2, range `da8c9db..b3cc034`.
 
 ---
 
@@ -108,4 +108,4 @@ usable). The two branches the record said were indistinguishable now differ in t
 `bin/` helper is `260810-2030` and was out of scope for this Turn; if that decision lands, the guard
 above moves with it and these four sites collapse to one.
 
-**Resolved by:** coder, session `260810-1646`, Turn 3.
+**Resolved by:** coder, session `260810-1646-orchestrator-session.md`, Turn 3.

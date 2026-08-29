@@ -24,10 +24,10 @@ looking of the two.
 **Affects:** `hooks/lib/__tests__/committed-dist.test.ts:217-220` (the third case, and the two guards it does carry),
 `hooks/lib/__tests__/committed-dist.test.ts:238-243` (the `FIX` text)
 **Cross-references:**
-`shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
+`260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
 (the answering decision, whose named risk is exactly a compiler bump reddening the suite for no
 artifact defect);
-`circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md`
+`260819-2016_*_four-constraints-on-deep-change.md`
 `**Decidability:**` and the step-1 risk row
 
 ## What is claimed and what holds
@@ -78,7 +78,7 @@ not evaluable until the toolchain is the pinned one. That is one field and two l
 the three cases a chain rather than three independent assertions over one shared compile.
 
 ---
-**Reconciliation 260820-0830** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
+**Reconciliation 260820-0830-reconciliation.md** (reconciler, domain `code`, HEAD `04db0b0`) — **still open,
 reproduces.** `hooks/lib/__tests__/committed-dist.test.ts` carries three `it()` cases — the toolchain
 assertion at `:177`, the compile at `:209` and the artifact comparison at `:217` — and the compile
 itself runs in `beforeAll` at `:100`. Neither of the last two consults the toolchain result, so a

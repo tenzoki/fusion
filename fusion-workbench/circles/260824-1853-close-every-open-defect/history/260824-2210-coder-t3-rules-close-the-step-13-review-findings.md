@@ -3,11 +3,11 @@
 **Sender:** coder
 **Date:** 2026-08-24
 **Status:** Complete
-**Circle:** circles/260824-1853-close-every-open-defect
+**Circle:** 260824-1853-close-every-open-defect
 
 ## Task
 
-Close issues `260824-2151`, `260824-2152`, `260824-2153` filed by `reviews/260824-2154-coderev-step-13-rules-commit.md`.
+Close issues `260824-2151_*_twenty-four-closure-notes-and-two-annotation-rows-cite-rule-files-by-line-number-in-the-commit-that-forbids-it.md`, `260824-2152_*_two-agent-prompts-still-carry-the-form-step-13-changed-and-only-a-history-file-records-it.md`, `260824-2153_*_the-commit-lock-header-does-not-carry-the-cd-the-rule-now-states-as-part-of-its-contract.md` filed by `260824-2154-coderev-step-13-rules-commit.md`.
 
 ## What changed
 

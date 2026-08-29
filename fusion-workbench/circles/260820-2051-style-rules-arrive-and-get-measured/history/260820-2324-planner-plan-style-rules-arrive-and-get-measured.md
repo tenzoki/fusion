@@ -2,20 +2,20 @@
 
 **Date:** 2026-08-20
 **Agent:** planner (dispatched by the orchestrator)
-**Circle:** `circles/260820-2051-style-rules-arrive-and-get-measured`
+**Circle:** `260820-2051-style-rules-arrive-and-get-measured`
 **Status:** Complete
 **Executors passed:** coder, ontocoder, analyst
 
 ## What was produced
 
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_*_plan-style-rules-arrive-and-get-measured.md`,
+`260820-2324_*_plan-style-rules-arrive-and-get-measured.md`,
 18 steps plus one review gate. Executor mix: 14 coder, 3 ontocoder, 1 analyst.
 
 Two decision records were filed open, both stamped `260820-2324`, because each is a mechanism choice
 that binds work beyond this plan:
 
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_where-does-the-copied-asset-provenance-record-live.md`
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
+- `260820-2324_*_where-does-the-copied-asset-provenance-record-live.md`
+- `260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
 
 ## Inputs read
 
@@ -23,7 +23,7 @@ The spec's appended binding section first, then its body; the assessment's ten f
 decision records stamped `260820-2314`; the Circle record; the always-on rule set; `bin/fusion-rules`;
 `skills/setup/SKILL.md`; the growth-bound helper and the surface bound test; the citation-scan helper and
 the two lint gates that read live plans; `rules/workbench-tracking.md`; and
-`shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`.
+`260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`.
 
 ## Measurements taken while planning
 
@@ -51,7 +51,7 @@ Four things, reported to the orchestrator in the same terms.
    for exactly the reason binding correction 5 gives for dropping C1's criterion 7. The plan reads it down
    to source and workbench copy.
 2. Binding correction 5 changes what `CLAUDE.md` states about copied assets, and that statement is the one
-   place part (c) of `260810-1544` is currently visible. The plan carries the correction in the same commit
+   place part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` is currently visible. The plan carries the correction in the same commit
    as the mechanism and files the question.
 3. The assessment recommended an executor set including `curator`; the dispatch named coder, ontocoder and
    analyst. Rule prose and record corrections are routed to coder under the routing rules.

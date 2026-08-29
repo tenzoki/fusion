@@ -38,7 +38,7 @@ assertions are hollow.
 (`"agents/coder.md:5"`, `"fusion-workbench/planning/"`, `"bin/fusion-paths"`),
 `marker-format-lint.test.ts:182-184` (`"agents/coder.md:5"`, `"[c]"`, `"_c_"`),
 `glob-nomatch-lint.test.ts:136` (`"find"`). None interpolates a constant it is testing.
-The plan (`260802-1131_o_plan-rule-provenance-header.md`, "The shape reference") required
+The plan (`260802-1131_*_plan-rule-provenance-header.md`, "The shape reference") required
 this gate to follow their shape.
 
 The literal-string assertions in the same tests are sound and should stay:
@@ -55,7 +55,7 @@ which is exactly what a message test is for.
    makes the identical assertion where it belongs.
 
 ---
-Resolved — `hooks/lib/__tests__/provenance-header-lint.test.ts`, session `260811-1315`.
+Resolved — `hooks/lib/__tests__/provenance-header-lint.test.ts`, session `260811-1315-coder-three-test-file-corrections.md`.
 Closed in place: this Circle is closed, and the Origin Rule places the record where the Directive
 that caused it ran.
 

@@ -3,8 +3,8 @@
 **Status:** Complete
 **Agent:** analyst
 **Domain:** code
-**Trigger:** orchestrator dispatch, following `shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
-**Report:** `fusion-workbench/shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md`
+**Trigger:** orchestrator dispatch, following `260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+**Report:** `260812-0303-the-largest-consumer-read-for-the-first-time.md`
 
 ## What was asked
 
@@ -69,5 +69,5 @@ recommends a Directive instead.
 
 ## Written
 
-- `fusion-workbench/shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md`
+- `260812-0303-the-largest-consumer-read-for-the-first-time.md`
 - this file

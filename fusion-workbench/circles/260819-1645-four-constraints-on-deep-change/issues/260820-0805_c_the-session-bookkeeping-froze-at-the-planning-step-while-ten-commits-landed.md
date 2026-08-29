@@ -25,9 +25,9 @@ history log, so the session is reconstructible. What is lost is the resume path:
 **Domain:** code
 **Filed by:** `coderev`, reviewing `b91c01c..bbfc912`
 **Owner:** `orchestrator`
-**Cross-references:** `shared/issues/260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`
+**Cross-references:** `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`
 (the Turn-log half, previously observed on a different Circle);
-`shared/issues/260819-1511_*_a-session-history-file-is-left-at-status-in-progress-after-its-session-ended.md`
+`260819-1511_*_a-session-history-file-is-left-at-status-in-progress-after-its-session-ended.md`
 (the session-history half, previously observed on a different session)
 
 **Two of the five are not yet due, and saying so is part of the finding.** The Circle's `## Turn log`

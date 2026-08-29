@@ -1,7 +1,7 @@
 # The doc comment for `shippedPrompts` is stranded above `agentNames`
 
 **Status:** open
-**Filed by:** coderev, review `shared/reviews/260822-1421-coderev-c0-cut-only-circle.md`
+**Filed by:** coderev, review `260822-1421-coderev-c0-cut-only-circle.md`
 **Severity:** Low
 **Scope:** `hooks/lib/__tests__/helpers/citation-scan.ts`
 **Commit:** `5afb910` (row H5)

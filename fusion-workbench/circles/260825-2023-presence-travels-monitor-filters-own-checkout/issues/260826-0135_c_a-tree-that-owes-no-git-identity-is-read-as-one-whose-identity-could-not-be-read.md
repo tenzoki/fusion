@@ -63,4 +63,4 @@ fusion-events: the reading person could not be read, so another person cannot be
 EXIT=4
 ```
 
-**Not closed by this.** `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0140_*_the-new-setup-step-2-identity-call-moves-a-halt-from-first-filing-to-setup-and-nothing-says-so.md`, the other visible end of the same vocabulary, is a statement owed in `agents/orchestrator.md` about exit 1 moving a halt to Setup. That file belongs to a later wave and no part of it was touched here.
+**Not closed by this.** `260826-0140_*_the-new-setup-step-2-identity-call-moves-a-halt-from-first-filing-to-setup-and-nothing-says-so.md`, the other visible end of the same vocabulary, is a statement owed in `agents/orchestrator.md` about exit 1 moving a halt to Setup. That file belongs to a later wave and no part of it was touched here.

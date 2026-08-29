@@ -1,7 +1,7 @@
 # A1 — independent assessment of C5b
 
 **Agent:** analyst
-**Circle:** `circles/260801-1244-guard-rules-write` — task A1, dispatched by the orchestrator
+**Circle:** `260801-1244-guard-rules-write` — task A1, dispatched by the orchestrator
 **Date:** 260804, 15:35–16:10
 **Status:** Complete
 **Outcome:** C5b meets five of its six spec criteria; the sixth is outstanding with Step 9. Three High, two Medium and three Low defects filed, none of them previously known. Recommendation: do not run plan Step 10 yet.
@@ -11,10 +11,10 @@
 ## What was assessed
 
 Commits `46d8333` (the loader), `557340d` (template plus root copy) and `7f3d789` (setup
-seeding), against `shared/planning/260801-1122_o_spec-normative-consolidation.md` `### C5`
-and `planning/260802-1856_o_plan-guard-rules-write.md` Steps 6, 7 and 8.
+seeding), against `260801-1122_*_spec-normative-consolidation.md` `### C5`
+and `260802-1856_*_plan-guard-rules-write.md` Steps 6, 7 and 8.
 
-Report: `analyses/260804-1600-c5b-independent-assessment.md`.
+Report: `260804-1600-c5b-independent-assessment.md`.
 
 ## Method
 
@@ -64,7 +64,7 @@ Three High findings, all measured, none adversarial:
 Plus a Medium on the floor being matched cwd-relative while the file is read root-relative, a
 Medium on two false sentences in the seeded template, and three Lows.
 
-The prior instance of finding 3 is `issues/260802-2334_c_`, closed in this Circle, for
+The prior instance of finding 3 is `260802-2334_*_`, closed in this Circle, for
 `escalation.json`. The lesson was not carried to the new file.
 
 ## Repository state
@@ -79,6 +79,6 @@ them, and Step 10's rebuild will replace them).
 
 ## Filed
 
-Eight issues, `issues/260804-1601_o_` through `260804-1608_o_`. No decision record filed:
+Eight issues, `260804-1601_*_` through `260804-1608_*_plan-step-7-is-unmarked-and-the-plan-header-contradicts-its-own-step-markers.md`. No decision record filed:
 each of the three High findings names its options inside its own issue, and filing three
 decisions for one theme would fragment a conversation the user should have once.

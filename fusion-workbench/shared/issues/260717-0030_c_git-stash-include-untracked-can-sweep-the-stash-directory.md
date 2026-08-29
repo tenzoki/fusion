@@ -24,5 +24,5 @@ Resolved: the workbench is excluded from the git stash entirely, which is the us
 
 ---
 Found by `coder` during task P-4 (structure-skill conversion), reported to the orchestrator as out-of-scope.
-Source: fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md
+Source: 260716-1910[p]-plan-workbench-umbau-circle-container.md
 Related: `skills/circle-stash/SKILL.md` (steps 7.5, 7.11), `rules/fusion-workbench-conventions.md` `## Stashes`

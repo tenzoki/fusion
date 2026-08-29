@@ -46,7 +46,7 @@ pins the awk, because there is nothing in the header to pin.
 ---
 
 **Found by:** coderev, reviewing `c2ad89c..6781814`, review file
-`shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
+`260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Low.
 **Affects:** `bin/fusion-prose-metric` (the output-column table in its header),

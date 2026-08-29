@@ -1,6 +1,6 @@
 # Provenance Headers on Rule Files
 
-**Provenance:** circles/260801-1244-guard-rules-write
+**Provenance:** 260801-1244-guard-rules-write
 
 **This document is the definition** of the provenance header: where it sits, which three
 citation forms are legitimate, what the lint gate checks and what it does not, and who
@@ -30,8 +30,8 @@ Canonical placement is directly under the file's H1 title, on line 3. The ten-li
 
 **Three citation forms.** Which one a file uses is decided by what its history supports, not by the author's preference.
 
-1. **A decision record.** A workbench-relative path to a record under a decisions store, with the marker position wildcarded — `YYMMDD-HHMM_*_<slug>.md` — for example `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`. Prefer this form whenever a record exists. The wildcard is load-bearing: a record's marker moves with its life (`_o_→_a_→_i_`, later perhaps `_s_`), so a citation carrying a literal marker dies at the record's first transition — this file's own binding-decision line did exactly that. The wildcarded citation survives every transition and still delivers the header's real payoff: the reader resolves it against the store and reads the current marker off the resolved filename, so a rule citing a record that has moved to `_s_` is a retirement candidate any reader can spot. (Citation form decided in `circles/260805-2005-textschicht-gegen-code-nachziehen/decisions/260806-0015_*_zitierform-fuer-workbench-records.md`.)
-2. **A Circle.** A Circle **directory** name, for example `circles/260718-1924-v5x-overhaul`. The directory name is used rather than the record filename, because the directory is stable across the Circle's whole lifecycle while the record filename carries a marker that changes. A reader follows the citation, reads whichever `*_circle.md` is present, and takes the state from its name.
+1. **A decision record.** A workbench-relative path to a record under a decisions store, with the marker position wildcarded — `YYMMDD-HHMM_*_<slug>.md` — for example `260801-1020_*_provenance-header-on-rule-files.md`. Prefer this form whenever a record exists. The wildcard is load-bearing: a record's marker moves with its life (`_o_→_a_→_i_`, later perhaps `_s_`), so a citation carrying a literal marker dies at the record's first transition — this file's own binding-decision line did exactly that. The wildcarded citation survives every transition and still delivers the header's real payoff: the reader resolves it against the store and reads the current marker off the resolved filename, so a rule citing a record that has moved to `_s_` is a retirement candidate any reader can spot. (Citation form decided in `260806-0015_*_zitierform-fuer-workbench-records.md`.)
+2. **A Circle.** A Circle **directory** name, for example `260718-1924-v5x-overhaul`. The directory name is used rather than the record filename, because the directory is stable across the Circle's whole lifecycle while the record filename carries a marker that changes. A reader follows the citation, reads whichever `*_circle.md` is present, and takes the state from its name.
 3. **The admission plus the introducing commit.** For a file with no recoverable motivating record, written exactly like this:
 
 ```
@@ -46,4 +46,4 @@ The commit is admission-scoped and nothing more. Git is not the provenance mecha
 
 **Whoever writes a rule file writes its header.** An agent that creates a rule file gives it a header in the same edit, choosing the form its history supports. An agent that edits an existing rule file preserves the header, and updates it when the edit is substantial enough that a different record has become the file's reason for existing. This obligation falls first on the curator, whose work is writing and consolidating normative text; in the plugin's own repository the lint gate backs it, and everywhere else the discipline stands alone.
 
-Binding decision: `shared/decisions/260801-1020_*_provenance-header-on-rule-files.md`.
+Binding decision: `260801-1020_*_provenance-header-on-rule-files.md`.

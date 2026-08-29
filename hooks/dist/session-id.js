@@ -17,7 +17,7 @@
  * `history_file` and nothing in the log tells them apart. Claude Code's own
  * `--resume` and `--continue` are a different operation and preserve the
  * identifier; conflating the two is the defect recorded in
- * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-0805_*_the-resumption-measurement-answers-for-claude-codes-resume-and-the-plan-asked-about-fusions.md`.
+ * `260826-0805_*_the-resumption-measurement-answers-for-claude-codes-resume-and-the-plan-asked-about-fusions.md`.
  *
  * ## Channel: plain stdout, and it was MEASURED
  *
@@ -26,7 +26,7 @@
  * model. Both halves were measured against Claude Code 2.1.245, in a throwaway
  * project outside every git tree, and read from the transcript's `hook_success`
  * attachments rather than from the model's testimony about its own context:
- * `circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`,
+ * `260825-2214-can-a-hook-obtain-the-session-identifier.md`,
  * finding (b). The payload's `session_id` was measured non-empty in the same
  * report, finding (a).
  *

@@ -68,9 +68,9 @@ A second, smaller drift in the same commit, recorded here rather than filed: its
 
 | Record | State |
 |---|---|
-| `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd…` | **Fully resolved** by commit `1d5eed6`. `hooks/tracker.ts:1079` now reads `isFusionPluginRoot(workbenchRoot)`, and the comment at `:1043-1077` was rewritten — it names the record, cites `25c5454` as what falsified the old premise, and covers the null-root case. |
-| `shared/issues/260810-0819_o_head-carries-six-records-twice…` | **Criterion 1 met, measured now:** git and disk both count 62 `_o_` records and the duplicate-stem probe returns nothing. **Criterion 2 met by a different mechanism** than the record asked for — a measurement (`hooks/lib/staging-drift.ts`) plus a staging-shape rule and gate, rather than the convention-plus-decision it specified. **Criterion 3 unmet:** `260807-1941_c_`'s deferral is still unanswered. Queued as task 34. |
-| `shared/issues/260809-2255_o_the-branch-policy-verification-left-an-active-halt…` | **Criterion 1 met:** `escalation.json` reads `haltActive: false, consecutiveBlocks: 0` and the human clearing is recorded. **Criterion 2 arguably moot** — it asks for a rule naming the branch policy, and that policy was deleted in `7598073`. Queued as task 47 for the user's call. |
+| `260810-1632_*_the-churn-stand-down-still-asks-cwd…` | **Fully resolved** by commit `1d5eed6`. `hooks/tracker.ts:1079` now reads `isFusionPluginRoot(workbenchRoot)`, and the comment at `:1043-1077` was rewritten — it names the record, cites `25c5454` as what falsified the old premise, and covers the null-root case. |
+| `260810-0819_*_head-carries-six-records-twice…` | **Criterion 1 met, measured now:** git and disk both count 62 `_o_` records and the duplicate-stem probe returns nothing. **Criterion 2 met by a different mechanism** than the record asked for — a measurement (`hooks/lib/staging-drift.ts`) plus a staging-shape rule and gate, rather than the convention-plus-decision it specified. **Criterion 3 unmet:** `260807-1941_c_`'s deferral is still unanswered. Queued as task 34. |
+| `260809-2255_*_the-branch-policy-verification-left-an-active-halt…` | **Criterion 1 met:** `escalation.json` reads `haltActive: false, consecutiveBlocks: 0` and the human clearing is recorded. **Criterion 2 arguably moot** — it asks for a rule naming the branch policy, and that policy was deleted in `7598073`. Queued as task 47 for the user's call. |
 
 ## What the decision sweep changed
 
@@ -79,7 +79,7 @@ the queue separates the two cases rather than carrying the old classification fo
 
 **Released — previously blocked, now buildable:**
 
-- The baseline pin for the drift check (`260810-2032_a_`) was bound to land after
+- The baseline pin for the drift check (`260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`) was bound to land after
   `I:260801-2038-frozen-state`; that record is now `_c_`, so the sequencing constraint is
   discharged. Queued as task 25, and it closes the open skip-licence record beside it.
 - The duplicate-filing check (`circles/…/260805-1548_o_`) was held open by the rule-text ratchet
@@ -87,22 +87,22 @@ the queue separates the two cases rather than carrying the old classification fo
   floor — and the ~430-byte paragraph the record already drafted fits. Queued as task 27.
 - The domain-capture record (`260810-2110_o_`) was waiting on a `bin/` helper decision that is now
   answered. Queued as task 41, behind task 4.
-- The five realisation records `260811-1730` … `260811-1734` exist because their decisions were
+- The five realisation records `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md` … `260811-1734` exist because their decisions were
   answered today.
 
 **Genuinely parked, with the trigger named:**
 
-- `260810-0710_d` re-opens when the lint cohort's fate is settled — records `260810-0502`,
-  `260810-0503` and `260810-0510`. **The first two are now `_c_`; only `260810-0510` is left, and it
+- `260810-0710_d` re-opens when the lint cohort's fate is settled — records `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`,
+  `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` and `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`. **The first two are now `_c_`; only `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` is left, and it
   is task 30.** Landing task 30 fires this trigger, and the answer then governs tasks 46 and 47.
-- `260810-0718_d` re-opens at the first real `push --rebuild-map` recovery against a workbench that
+- `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md_d` re-opens at the first real `push --rebuild-map` recovery against a workbench that
   has seeded from Plane.
-- `260809-1224_d` re-opens when someone measures whether any reachable consuming project populates
+- `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md_d` re-opens when someone measures whether any reachable consuming project populates
   CHECK 3's configuration surface — machine-bound, `unite` first.
 
 ## How the five realisation records were handled
 
-Each of `260811-1730` … `260811-1734` cites its decision and states what the chosen answer
+Each of `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md` … `260811-1734` cites its decision and states what the chosen answer
 **excludes**. Every one of those exclusions was carried into the queue entry verbatim in substance,
 because a later executor reading only the queue must not be able to widen the work:
 
@@ -117,9 +117,9 @@ because a later executor reading only the queue must not be able to widen the wo
 
 **`260811-1734` was split, as its own text invites.** It says it should not be attempted in one
 dispatch and offers per-surface records. The four instances it names as measured were pulled out as
-tasks 7 (the churn-rank contract, closing `260811-1612`), 8 (the routing table, closing
-`260811-1301` and `260811-1613`), 9 (the hooks README table, realising decision `260811-1522`) and
-10 (`max_turns`, closing `260811-1712`). Task 11 is the residual parent: the sweep for instances
+tasks 7 (the churn-rank contract, closing `260811-1612_*_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md`), 8 (the routing table, closing
+`260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` and `260811-1613_*_four-prompts-now-defer-to-a-routing-table-that-still-carries-the-gap-260811-1301-names.md`), 9 (the hooks README table, realising decision `260811-1522`) and
+10 (`max_turns`, closing `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`). Task 11 is the residual parent: the sweep for instances
 nobody has enumerated yet, depending on the four and explicitly not a licence to redo them.
 
 ## Re-verification, and where the records had drifted
@@ -133,22 +133,22 @@ to their own record's citation:
   `agents/orchestrator.md:703` against a single `sed -E` at `:745`. The defect is worse than filed.
 - Task 30: the re-implemented control asserts `.not.toBe(3)`, not `.not.toBe(5)`. Same shape.
 
-Seven Turn-1 review findings (`260811-1142` … `260811-1149`) were each confirmed live by reading the
+Seven Turn-1 review findings (`260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` … `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`) were each confirmed live by reading the
 cited line, not by trusting the review. All seven still stand.
 
 ## Out of scope, stated so its absence says nothing
 
-`shared/planning/260801-1122_o_spec-normative-consolidation.md` is the one open plan and was **not**
+`260801-1122_*_spec-normative-consolidation.md` is the one open plan and was **not**
 inventoried. The Directive is open defect records only — no plan steps, no new capability work, no
-Circle activation. The portfolio's one anticipated Circle, `circles/260801-1244-curator`, was not
-touched; decision `260801-1020_a_where-does-normative-consistency-live` realises there, which is why
+Circle activation. The portfolio's one anticipated Circle, `260801-1244-curator`, was not
+touched; decision `260801-1020_*_where-does-normative-consistency-live` realises there, which is why
 it is reported rather than queued.
 
 ## Changes against the previous queue
 
 - **Added:** 24 entries with no counterpart, plus task 1.
 - **Removed:** every entry whose source now carries `_c_` — 31 records, including the whole
-  `260811-14xx` cohort and `260810-0455`, the red-suite task the previous queue led with.
+  `260811-14xx` cohort and `260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md`, the red-suite task the previous queue led with.
 - **Moved out of the task list:** the three resolved and partially-resolved records above.
 - **Re-classified:** four previously "needs a human answer" entries are now unblocked; task 30 is now
   a deferred decision's trigger rather than an ordinary finding.
@@ -159,7 +159,7 @@ Rendered as a Mermaid `flowchart TD` in the queue, with five subgraphs and one g
 is real rather than drawn for tidiness — a red suite makes every executor report `blocked` — so it
 feeds the cluster heads instead of carrying 74 edges. Inside the clusters only genuine orderings are
 drawn: the source-root convention before its helper; the four surface instances before the residual
-sweep; `260811-1610` before `260811-1616` (same paragraph); `260811-1149` before `260811-1611`
-(answering the first may close the second); `260811-1147` before `260811-1148` (same parser);
-`260811-1617` before `260811-1547` (the amendment is what makes the lint buildable). The remaining
+sweep; `260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md` before `260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md` (same paragraph); `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md` before `260811-1611_*_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md`
+(answering the first may close the second); `260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md` before `260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md` (same parser);
+`260811-1617_*_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md` before `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` (the amendment is what makes the lint buildable). The remaining
 50 tasks are independent and ordered by priority alone.

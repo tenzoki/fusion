@@ -8,7 +8,7 @@
 **Domain:** code
 **Task:** Regenerate `rules-emission.golden` and re-approve `BASELINE.paths` in
 `reference-resolution-lint.test.ts`, both red as a consequence of the curator run logged at
-`shared/history/260817-1925-curator-run.md`. No commit; leave the tree for the cleanup pipeline.
+`260817-1925-curator-run.md`. No commit; leave the tree for the cleanup pipeline.
 
 ---
 

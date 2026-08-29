@@ -1,4 +1,4 @@
-# Orchestrator Session — 260817-2037
+# Orchestrator Session — 260817-2037-orchestrator-session.md
 
 **Directive:** Stop the hooks from citing fusion's own workbench ids and commit hash into a consuming project's session
 **Mode:** custom
@@ -47,9 +47,9 @@ dispatches this session.
 **Verdict:** review-needed
 
 **Edges:**
-- Artifact↔Grounding: 6 records verified against disk and HEAD `307a696`, 1 drift item, 1 open coderev issue. Every code claim holds — `stagingSentence()` rendered from the committed `hooks/dist/` carries no `YYMMDD-HHMM` stamp and no git hash, all four forbidden staging shapes reach a clause, `bin/fusion-staging-drift:51-54` is in line, `npm test` in `hooks/` green (35 files, 653 tests, exit 0). The drift is in the record trail, not in the code: `260817-2130_c_`'s `Resolved:` note states a judgement `307a696` reversed and carries no pointer to the reversal, filed as `shared/issues/260817-2207_o_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`. The open issue is `260817-2131_o_` (the output gate), left open by user decision at the Turn 1 gate rather than by oversight, now annotated with that reason and with a defect in its own proposed gate.
-- Artifact↔Directive: commits move toward the Directive, which is reached for the three emission sites in scope. `bd2db5c` removes the four foreign identifiers; `6b6436d` and `307a696` repair regressions that `bd2db5c`'s rewrite introduced into the same sentence, so all three serve "stop the hooks from citing fusion's own workbench ids and commit hash into a consuming project's session" (Directive read from `agentstate.yaml` `session.directive`; the history head above still says "not yet stated"). `hooks/lib/domain-cascade.ts:528` remains out of scope by the user's gate decision, and no gate prevents recurrence, which is the accepted residual `260817-2131_o_` names.
-- Grounding↔Directive: 28 active decisions consistent (24 in `shared/decisions/`, 4 in Circle stores), 0 conflicting. One carries an unmet obligation rather than a conflict: `shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` was answered "keep coverage advisory with the gap named in the closure note", so the Phase 4 summary has to name `307a696` as uncovered and record that the user chose it at the Turn 2 gate. Two further answered-but-unimplemented decisions bear on this session's artifact without contradicting it: `260816-0719_a_` (a test asserting the committed `hooks/dist` is the compilation of the committed source, hand-rebuilt three times this session) and `260816-0119_a_` (answered "nothing new", the adjacent class to the drift item above).
+- Artifact↔Grounding: 6 records verified against disk and HEAD `307a696`, 1 drift item, 1 open coderev issue. Every code claim holds — `stagingSentence()` rendered from the committed `hooks/dist/` carries no `YYMMDD-HHMM` stamp and no git hash, all four forbidden staging shapes reach a clause, `bin/fusion-staging-drift:51-54` is in line, `npm test` in `hooks/` green (35 files, 653 tests, exit 0). The drift is in the record trail, not in the code: `260817-2130_c_`'s `Resolved:` note states a judgement `307a696` reversed and carries no pointer to the reversal, filed as `260817-2207_*_a-closed-records-resolution-note-states-a-judgement-head-reversed-and-every-citation-points-backward.md`. The open issue is `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` (the output gate), left open by user decision at the Turn 1 gate rather than by oversight, now annotated with that reason and with a defect in its own proposed gate.
+- Artifact↔Directive: commits move toward the Directive, which is reached for the three emission sites in scope. `bd2db5c` removes the four foreign identifiers; `6b6436d` and `307a696` repair regressions that `bd2db5c`'s rewrite introduced into the same sentence, so all three serve "stop the hooks from citing fusion's own workbench ids and commit hash into a consuming project's session" (Directive read from `agentstate.yaml` `session.directive`; the history head above still says "not yet stated"). `hooks/lib/domain-cascade.ts:528` remains out of scope by the user's gate decision, and no gate prevents recurrence, which is the accepted residual `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md` names.
+- Grounding↔Directive: 28 active decisions consistent (24 in `shared/decisions/`, 4 in Circle stores), 0 conflicting. One carries an unmet obligation rather than a conflict: `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` was answered "keep coverage advisory with the gap named in the closure note", so the Phase 4 summary has to name `307a696` as uncovered and record that the user chose it at the Turn 2 gate. Two further answered-but-unimplemented decisions bear on this session's artifact without contradicting it: `260816-0719_a_` (a test asserting the committed `hooks/dist` is the compilation of the committed source, hand-rebuilt three times this session) and `260816-0119_a_` (answered "nothing new", the adjacent class to the drift item above).
 
 **Rebalance recommendation:** revise Artifact
 
@@ -59,7 +59,7 @@ trail: a reader entering at `260817-2130` reaches the withdrawn judgement and ha
 The new defect carries the fork (give the issue vocabulary a supersession annotation, or state in
 `rules/fusion-workbench-conventions.md` that a `Resolved:` note is not maintained) and says not to
 hand-fix the two instances before that question is answered. Full pass:
-`shared/history/260817-2207-reconciliation.md`.
+`260817-2207-reconciliation.md`.
 
 ## Budget
 
@@ -78,7 +78,7 @@ hand-fix the two instances before that question is answered. Full pass:
 
 All four record counts are derived from the stores at write time, not tallied across Turns.
 `Decisions answered` reads 0 because the derived count asks which marker a record carries
-now against which names existed at the session anchor: `260817-2215` was filed, answered and
+now against which names existed at the session anchor: `260817-2215_*_how-does-a-closed-defect-record-point-at-a-later-reversal-of-the-judgement-in-its-resolution-note.md` was filed, answered and
 implemented inside this session, so only its `_i_` name is visible to the read. One decision
 was answered.
 
@@ -121,8 +121,8 @@ was answered.
 
 **Range:** `82a860d..HEAD` — 3 commits at the time of the reading, 4 with this commit
 **Covered by:**
-- `shared/reviews/260817-2130-coderev-turn-1-range-82a860d-bd2db5c.md` — `**Reviewed-range:** 82a860d..bd2db5c`, `**Not-opened:** none`, covers 1
-- `shared/reviews/260817-2147-coderev-turn-2-range-bd2db5c-6b6436d.md` — `**Reviewed-range:** bd2db5c..6b6436d`, `**Not-opened:** none`, covers 1
+- `260817-2130-coderev-turn-1-range-82a860d-bd2db5c.md` — `**Reviewed-range:** 82a860d..bd2db5c`, `**Not-opened:** none`, covers 1
+- `260817-2147-coderev-turn-2-range-bd2db5c-6b6436d.md` — `**Reviewed-range:** bd2db5c..6b6436d`, `**Not-opened:** none`, covers 1
 
 **Not covered:**
 - `307a696 fix(hooks): the fourth forbidden staging shape reaches a clause, and the wrapper header follows`
@@ -135,12 +135,12 @@ the gate after Turn 2 and chose to fix the two remaining low findings without a 
 pass, accepting that the last commit would go out unread. Turn 4 then followed the same shape:
 it changes record vocabulary and no shipped behaviour, and no review was dispatched for it.
 Two commits of four are unreviewed, named here individually. This is the closure obligation
-`shared/decisions/260815-2109_a_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 carries.
 
 ## Remaining Work
 
-- `shared/issues/260817-2131_o_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`
+- `260817-2131_*_nothing-stops-a-fusion-workbench-id-returning-to-an-emitted-hook-sentence-because-the-lint-reads-comment-lines-only.md`
   — the reference lint reads comment lines only in these modules, and even there it asks
   whether a citation resolves here rather than whether it fails elsewhere. Nothing prevents a
   fusion-internal identifier returning to an emitted sentence. Left open by user decision at

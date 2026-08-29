@@ -17,7 +17,7 @@ returns nothing, so HEAD is clean. `git status --short` shows ` M fusion-guard.j
 suite run against the golden test alone passes 15 of 15, so nothing else is affected.
 
 **Why the edit was made.** `agentstate.yaml` records `progress.max_turns: 12` while this session's
-own Setup snapshot in `shared/history/260813-2345-orchestrator-session.md` records a Turn budget of
+own Setup snapshot in `260813-2345-orchestrator-session.md` records a Turn budget of
 5. `bin/fusion-turn-budget` reads the budget from `fusion-guard.json` and from nowhere else, and
 `CLAUDE.md` states that this file is where a project sets it. So raising the budget mid-session for
 this Circle is the documented way to do it, and doing it is what broke the pin.
@@ -47,14 +47,14 @@ because it scans `fusion-workbench/` only and this file sits at the project root
 `bin/fusion-review-coverage` tiles commits, of which this change is not one. It was found by running
 the suite.
 
-**Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
+**Filed by:** reconciler, session `260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the edit was made to run
 this Circle past its 5-Turn budget.
 
 ---
 Resolved: duplicate. A `coderev` Turn-5 review pass was running concurrently with this
 reconciliation and filed the same defect at 20:24 as
-`shared/issues/260814-2022_o_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`.
+`260814-2022_*_this-repository-cannot-set-its-own-turn-budget-because-a-test-pins-fusion-guard-json-to-the-template.md`.
 That record is the fuller one — it carries the mtime of the edit (2026-08-14 19:35:20, after the
 Turn-5 task reported a green suite at 19:12), the default at `hooks/lib/config.ts:277`, the
 `_turnBudget` note in `templates/fusion-guard.json:6` that tells every project this file is where

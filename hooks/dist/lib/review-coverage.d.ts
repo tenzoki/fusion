@@ -1,5 +1,5 @@
 /**
- * Review coverage — the measurement behind issue `260810-1205`.
+ * Review coverage — the measurement behind issue `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md`.
  *
  * ## The defect this answers
  *
@@ -60,7 +60,7 @@
  * segment — see `REVIEW_SENDERS` below for the set, for why a file with no
  * recognisable sender is nonetheless kept and named, and for the `conceptrev`
  * files that were reported `UNUSABLE` forever because no mandate could ever
- * cover them (issue `260811-1145`).
+ * cover them (issue `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`).
  *
  * ## What it computes
  *
@@ -77,7 +77,7 @@
  * It never writes a review file, `agentstate.yaml`, a Circle record or a
  * history file, and it adds no `reviewed_through` field to the session state.
  * That last one is deliberate and is the point: `agentstate.yaml` is a surface
- * a session can pass a boundary without writing, and issue `260801-2038`
+ * a session can pass a boundary without writing, and issue `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md`
  * measured six sessions in which exactly that happened. A reviewed-through
  * marker kept there would be a fifth freezable surface answering a question the
  * review files already answer unfreezably — writing the review file *is* the
@@ -85,7 +85,7 @@
  *
  * It is also not a release gate. Whether a release may go out over an
  * uncovered range is a decision and is not filed; it belongs beside
- * `shared/decisions/260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
+ * `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`.
  * This module reports; nothing here blocks anything.
  *
  * ## Its callers, and the one it deliberately is not on
@@ -103,7 +103,7 @@
  * oversight. An uncovered range mid-Turn is the *normal and correct* state —
  * the review pass runs once per Circle, at closure — so a per-call report would
  * fire on the commonest path, and a check that cries wolf on its commonest path
- * teaches its reader to ignore it. That is issue `260810-0710` arriving one
+ * teaches its reader to ignore it. That is issue `260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md` arriving one
  * level up, and it is why this measurement's verdict is a line of output rather
  * than an exit code. Until 2026-08-15 a third measurement DID sit on the
  * every-call path — session-state drift, whose subject was a stale
@@ -123,7 +123,7 @@ export declare const NOT_OPENED_FIELD = "**Not-opened:**";
  * The senders whose prompts carry the header mandate, and therefore the only
  * senders whose files this can measure.
  *
- * Issue `260811-1145`: three agents wrote into the reviews stores and only two
+ * Issue `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`: three agents wrote into the reviews stores and only two
  * were ever mandated. `conceptrev` evaluated a document's diagrams, carried no
  * commit range and correctly never claimed one — so every `conceptrev` file was
  * scanned, found rangeless and reported `UNUSABLE` forever, and one landing at
@@ -250,7 +250,7 @@ export interface NotOpened {
  * a recorded absence can be compared, a missing line can only be guessed at
  * (`rules/critical-stance.md` §4).
  *
- * Issue `260811-1148` — the two readings this used to get wrong, in opposite
+ * Issue `260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md` — the two readings this used to get wrong, in opposite
  * directions. `none of the prompt files` matched `/^none\b/i` and was read as
  * *nothing was excluded*, so a declared exclusion reached the reader as an
  * absent one. And `nothing left unopened` fell through to a comma-split and
@@ -294,7 +294,7 @@ export declare function renderUncovered(c: Commit): string;
  *
  * An uninterpretable value is printed verbatim behind `(unparsed)`, so the
  * reviewer's sentence reaches the reader as a sentence. It used to be split on
- * commas into filenames nobody had written (issue `260811-1148`).
+ * commas into filenames nobody had written (issue `260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md`).
  */
 export declare function renderReview(r: ReviewRow): string;
 /**
@@ -302,7 +302,7 @@ export declare function renderReview(r: ReviewRow): string;
  * that is not yet tiled, or over a predecessor that declared exclusions.
  *
  * It names the commits rather than counting them, because counting them is the
- * defect: the session that produced issue `260810-1205` reported one unreviewed
+ * defect: the session that produced issue `260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md` reported one unreviewed
  * commit where there were seven.
  */
 export declare function coverageSentence(report: CoverageReport): string;

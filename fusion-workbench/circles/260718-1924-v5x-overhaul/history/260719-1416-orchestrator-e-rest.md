@@ -58,7 +58,7 @@ Scoped to E-rest's Directive (finish the fusion-side docs cleanup + v5 milestone
 
 **Rebalance recommendation:** none
 
-_Publish (marketplace.json bump + push) is user-gated and held — an expected deferral, not an incoherence. Reconciliation: circles/260718-1924-v5x-overhaul/history/260719-1455-reconciliation.md._
+_Publish (marketplace.json bump + push) is user-gated and held — an expected deferral, not an incoherence. Reconciliation: 260719-1455-reconciliation.md._
 
 ## Session Flow
 

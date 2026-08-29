@@ -37,7 +37,7 @@ Every plan claim checked by direct `git`/`ls`/`grep` inspection, not from header
 
 ## Coherence verdict (three-edge)
 
-Appended to the orchestrator session history file `shared/history/260719-1632-orchestrator-session.md` under `## Coherence`.
+Appended to the orchestrator session history file `260719-1632-orchestrator-session.md` under `## Coherence`.
 
 - **Verdict:** coherent
 - Artifact↔Grounding: 8/8 steps verified / 0 drift / 0 open reviewer issues.

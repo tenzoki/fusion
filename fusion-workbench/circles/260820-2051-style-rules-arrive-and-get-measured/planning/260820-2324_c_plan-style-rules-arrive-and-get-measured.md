@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-20
 **Status:** Complete
-**Spec:** `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, read with its appended binding section governing wherever it and the body disagree
+**Spec:** `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, read with its appended binding section governing wherever it and the body disagree
 **Decidability:** Three load-bearing questions, two of them already judged under `rules/critical-stance.md` §4 and one raised by this plan. (1) "Is a project's copy of a shipped asset stale, or has the project adapted it" is not decidable from the two files Setup holds, and becomes decidable from a third input, the checksum recorded at the moment of copying; the mechanism changes accordingly and step 3 builds it. (2) "Did the output register improve because the corpus register improved" is not decidable from the inputs available at all, so the mechanism changes to a pre-registered rate over two fixed windows, and this Circle delivers only the registration half, because the post-repair window has no members while the Circle runs. (3) "How many prose em-dashes does a file carry" is decidable only once prose is separated from exhibits, which no committed program in this repository does today; step 1 makes it decidable by writing the counting rule down as an executable.
 
 ## Directive
@@ -12,10 +12,10 @@ in the plugin's source reaches a project that was set up before the change, the 
 sits at or under the em-dash ceiling it states under a metric that does not count a file's own
 anti-examples, and the rule that owns the fact-first requirement states the condition under which an
 opening sentence fails. The fourth, a measured number on
-`shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
 is delivered in half: the protocol and the pre-repair window are captured before the repair lands, and
 the measurement itself is deferred. That reduction is decided in
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_can-this-circle-close-coherent-when-its-fourth-outcome-has-no-measurement-window.md`
+`260820-2314_*_can-this-circle-close-coherent-when-its-fourth-outcome-has-no-measurement-window.md`
 and is what makes this Circle end in Bounded Closure.
 
 ## Current State
@@ -34,7 +34,7 @@ comparison goes inline into the skill body.
 **The corpus.** Six files reach every agent: the five rule files `bin/fusion-rules` emits from
 unindented `emit_if_exists` lines, plus the project's chat voice profile. Their prose em-dash rates at
 HEAD are 29.9, 14.7, 29.3, 0.4, 18.6 and 2.3 per 1000 prose words. Read per file, which is what
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`
+`260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`
 decided, `rules/agent-setup.md` at 502 prose words permits zero and carries fifteen.
 
 **The distribution path.** `emit_voice_profile` in `bin/fusion-rules` reads
@@ -170,7 +170,7 @@ and no step performs it.
 - **Files:** one new analysis document in this Circle's analysis store,
   `YYMMDD-HHMM-prose-register-measurement-protocol.md`
 - **Source:** spec C10 as reduced by binding correction 1; the threshold and marker scheme from
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_what-threshold-does-the-registered-measurement-use-and-which-marker-does-each-outcome-earn.md`
+  `260820-2314_*_what-threshold-does-the-registered-measurement-use-and-which-marker-does-each-outcome-earn.md`
 - **Changes:** Write the protocol and run its pre-repair half. The document states, in this order: the
   output file set (session history files under the workbench, by store and by author); the counting
   command, which is step 1's program by name; the exclusion rules; both window boundaries, the
@@ -204,9 +204,9 @@ and no step performs it.
   `rules/workbench-tracking.md` (the new surface classified as a record), `CLAUDE.md` (the
   `bin/fusion-source-root` row's clause about copied assets)
 - **Source:** spec C1 as corrected by binding corrections 5 and 6; the location question is
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_where-does-the-copied-asset-provenance-record-live.md`
+  `260820-2324_*_where-does-the-copied-asset-provenance-record-live.md`
   and the source question is
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
+  `260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`
 - **Changes:** Step 0d keeps its guarded copy unchanged and gains one clause: when it copies an asset, it
   appends that asset's checksum to `fusion-workbench/.asset-provenance`. A new Step 0e compares every
   asset Setup copies into the workbench against the shipped copy, resolving the shipped root through
@@ -236,9 +236,9 @@ and no step performs it.
   7. `npx vitest run` is green, including `path-literal-lint` and `derivable-enumerations-lint`.
   8. The `skills/` bound is green and the byte cost is reported against 8 547.
 - **Dependencies:** none. It is independent of the corpus work and can run in parallel with steps 1 and 2.
-- **Closes:** `shared/issues/260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md`
+- **Closes:** `260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md`
   and the distribution half of
-  `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
+  `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
 
 ### 4. [DONE] The voice-profile fallback becomes visible to the agent told to record it
 
@@ -246,7 +246,7 @@ and no step performs it.
 - **Files:** `bin/fusion-rules` (`emit_voice_profile`), `hooks/lib/__tests__/rules-voice-profile.test.ts`
   (cases appended to the existing file, no new file)
 - **Source:** spec C7;
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-voice-profile-fallback-capability-in-scope-given-116-lines-of-hook-test-head-room.md`
+  `260820-2314_*_is-the-voice-profile-fallback-capability-in-scope-given-116-lines-of-hook-test-head-room.md`
 - **Changes:** When `emit_voice_profile` resolves a profile by falling back to the English variant, it
   writes one line to standard error naming the family, the requested variant and the resolved one.
   Standard output is untouched in every case. `rules/fusion-workbench-conventions.md` `## Project
@@ -263,7 +263,7 @@ and no step performs it.
   4. The hook test tree grows by fewer than 40 lines, verified with `wc -l`, and
      `npx vitest run lib/__tests__/surface-growth-bound.test.ts` is green.
 - **Dependencies:** none
-- **Closes:** `circles/260801-1244-curator/issues/260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`
+- **Closes:** `260814-1332_*_the-voice-profile-fallback-is-performed-by-the-helper-so-the-agent-cannot-record-it.md`
 
 ### 5. [DONE] The chat profiles stop restating what the rule owns
 
@@ -284,14 +284,14 @@ and no step performs it.
   3. `grep -n '[[:space:]]$'` finds nothing in either file.
   4. Both files parse as YAML.
 - **Dependencies:** none
-- **Closes:** `shared/issues/260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`
+- **Closes:** `260814-1419_*_the-tightened-chat-profile-caps-contradict-the-length-section-of-the-rule-that-owns-them.md`
 
 ### 6. [DONE] The writing profiles carry the handle their siblings point at
 
 - **Executor:** ontocoder
 - **Files:** `stilwerk/default-voice-de.yaml`, `stilwerk/default-voice-en.yaml`
 - **Source:** spec C9;
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`
+  `260820-2314_*_does-the-scope-key-go-into-the-two-long-form-writing-profiles.md`
 - **Changes:** Each writing profile names its own role in text, so that a plain search for the phrase the
   chat profiles use, "the long-form writing profile", finds it. The wording is language-neutral in the
   sense that the German file says the same thing in German and neither file names the other's language.
@@ -301,7 +301,7 @@ and no step performs it.
   2. Neither writing profile gains a `scope:` key.
   3. Both files parse as YAML.
 - **Dependencies:** none
-- **Closes:** item 2 of `shared/issues/260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`; item 1 stays open under the decision above.
+- **Closes:** item 2 of `260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`; item 1 stays open under the decision above.
 - **Acceptance observed (reconciler 260821-0408, marked here rather than by the executor):** the
   ontocoder left this step unmarked at `403b91a` and was right to: criterion 1 asks all four profiles
   to carry the phrase and the fourth file, `stilwerk/chat-voice-de.yaml`, was in no step's file list.
@@ -313,7 +313,7 @@ and no step performs it.
   `scope:` key was added. (3) Both files load. The step's work is complete; the plan defect the
   ontocoder surfaced is not repaired here, because repairing it means editing the step's `**Files:**`
   list, which is a plan description and outside a reconciliation pass. It stays filed as
-  `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`.
+  `260821-0205_*_step-6s-acceptance-criterion-names-a-file-the-step-does-not-touch-and-is-unreachable-from-inside-it.md`.
 
 ### 7. [DONE] The four profiles are repunctuated
 
@@ -333,7 +333,7 @@ and no step performs it.
      clause.
   4. Both languages still say the same thing.
 - **Dependencies:** steps 1, 2, 5 and 6
-- **Closes:** the profile share of `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+- **Closes:** the profile share of `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
 
 ### 8. [DONE] The workbench copies are refreshed by the mechanism, not by hand
 
@@ -384,7 +384,7 @@ and no step performs it.
 - **Executor:** coder
 - **Files:** `rules/agent-setup.md`
 - **Source:** spec C3;
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`
+  `260820-2314_*_is-the-em-dash-ceiling-read-per-file-or-across-the-always-on-corpus.md`
 - **Changes:** Replace all fifteen prose em-dashes. At 502 prose words the file's allowance is zero, so
   none may remain outside an excluded region. No word changes.
 - **Acceptance:**
@@ -489,7 +489,7 @@ and no step performs it.
   marks are inside table cells, so the frozen-table floor is 21 against a fixed permit of 7. The step
   was implemented under the structural reading of "unchanged", which is what its own "114
   replacements" implies. See
-  `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260821-0242_*_step-12s-two-acceptance-criteria-cannot-both-hold-because-21-of-the-115-em-dashes-are-in-table-cells.md`.
+  `260821-0242_*_step-12s-two-acceptance-criteria-cannot-both-hold-because-21-of-the-115-em-dashes-are-in-table-cells.md`.
 
 ### Review gate R1
 
@@ -523,16 +523,16 @@ deferred before the Circle's marker moves.
      against the remaining always-on head-room.
 - **Dependencies:** review gate R1
 - **Closes:** the opening-sentence half of the Circle's Directive. It does not close
-  `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`,
+  `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`,
   which is deferred whole per
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`.
+  `260820-2314_*_does-this-circle-take-the-structural-half-of-the-verbosity-record.md`.
 
 ### 14. [DONE] The gate clauses state their cost and cap the field they steer writers towards
 
 - **Executor:** coder
 - **Files:** `rules/user-facing-output.md`
 - **Source:** spec C5;
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_does-a-foreclosure-clause-cost-its-own-line-and-what-caps-the-description-field.md`
+  `260820-2314_*_does-a-foreclosure-clause-cost-its-own-line-and-what-caps-the-description-field.md`
 - **Changes:** State that a foreclosure takes its own line, that a plain-text gate carries at most three
   options, and that the `AskUserQuestion` `description` field is capped at 2 lines. State the arithmetic
   of the worst case the clauses permit: one line of question stem, three option lines, three foreclosure
@@ -543,17 +543,17 @@ deferred before the Circle's marker moves.
   3. Neither clause carries a prose em-dash.
   4. `npx vitest run lib/__tests__/rules-emission-golden.test.ts` is green and the byte cost is reported.
 - **Dependencies:** step 13
-- **Closes:** `shared/issues/260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md`
+- **Closes:** `260816-1330_*_the-foreclosure-clause-does-not-say-whether-it-costs-a-line-per-option-and-the-cap-two-sections-below-forbids-relaxing.md`
 
 ### 15. [DONE] Every live record states the always-on set as its derivation
 
 - **Executor:** coder
-- **Files:** `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`,
-  `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
-  `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
-  `circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md` (the Grounding snapshot only)
+- **Files:** `260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`,
+  `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`,
+  `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`,
+  `260820-2051-style-rules-arrive-and-get-measured` (the Grounding snapshot only)
 - **Source:** spec C6;
-  `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+  `260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
 - **Changes:** Each live record that names the always-on set states it as its derivation: the unindented
   `emit_if_exists` calls in `bin/fusion-rules`, plus the unconditional `emit_voice_profile` call for the
   chat profile. No record keeps a hand-written list. The corrected statement names `CLAUDE.md` as
@@ -571,15 +571,15 @@ deferred before the Circle's marker moves.
   4. `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` is green, so no correction introduced
      a dangling citation.
 - **Dependencies:** none, though it reads better after step 12 has landed the repair it describes.
-- **Closes:** `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
-  and `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`
+- **Closes:** `260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
+  and `260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`
 
 ### 16. [DONE] Three record annotations that must not become rewrites
 
 - **Executor:** coder
-- **Files:** `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`,
-  `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
-  `shared/history/260816-1251-curator-run.md`
+- **Files:** `260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`,
+  `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`,
+  `260816-1251-curator-run.md`
 - **Source:** spec C6
 - **Changes:** Three appended notes and nothing else. The unreproducible token count in the progress note
   is corrected by stating the identity without a total, or with the tokenisation that produces one, and
@@ -587,7 +587,7 @@ deferred before the Circle's marker moves.
   capital and none losing one. The 260814 claim that a forced copy would not help, because
   `$FUSION_PLUGIN_ROOT` points at an older tarball, is annotated as expired, with today's measurement
   named. The curator run file gains an appended note recording that the cap it names is superseded by the
-  rule's numbers; the file itself is not rewritten. `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`
+  rule's numbers; the file itself is not rewritten. `260816-0740-rhetorical-register-of-agent-output.md`
   is not edited at all.
 - **Acceptance:**
   1. Each of the three files gained an appended note and no existing sentence in them was altered,
@@ -595,8 +595,8 @@ deferred before the Circle's marker moves.
   2. The completed analysis is untouched, verifiable from the diff.
   3. `npx vitest run lib/__tests__/workbench-citation-lint.test.ts` is green.
 - **Dependencies:** none
-- **Closes:** `shared/issues/260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
-  and `shared/issues/260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
+- **Closes:** `260816-1330_*_the-repunctuations-evidence-paragraph-carries-a-token-count-nobody-can-reproduce-and-an-inverted-capitalisation-claim.md`
+  and `260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap-and-the-copy-every-agent-loads-says-otherwise.md`
 
 ### 17. [DONE] The curator prompt enumerates its long-form outputs
 
@@ -615,7 +615,7 @@ deferred before the Circle's marker moves.
      against 2 259.
   3. The block carries no prose em-dash.
 - **Dependencies:** none
-- **Closes:** `circles/260801-1244-curator/issues/260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md`
+- **Closes:** `260814-1332_*_the-curator-prompt-is-the-one-prose-agent-that-does-not-enumerate-its-long-form-outputs.md`
 
 ### 18. [DONE] The final state is measured and reported
 
@@ -650,7 +650,7 @@ Each clause is answerable yes or no by reading a file or running a command.
    pre-repair per-file table over at least five usable files, the exact threshold, both window
    boundaries, the three-outcome marker scheme and the untreated confounds.
 5. The measurement itself does not run in this Circle.
-   `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+   `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
    stays answered and gains the protocol's path and the pre-repair number, and nothing moves it to a
    terminal marker here.
 6. A `coderev` pass has read the repair commits and every finding it filed is closed or deferred.
@@ -735,11 +735,11 @@ The hook-test surface has 116 lines and one claim on it, so the strategy is deli
 ## Open Questions
 
 - [ ] Where the copied-asset provenance record lives:
-      `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_where-does-the-copied-asset-provenance-record-live.md`.
+      `260820-2324_*_where-does-the-copied-asset-provenance-record-live.md`.
       Step 3 is written against option 1 and step 3's fallback is option 2.
 - [ ] Whether the refresh source is the work tree in this repository, and whether that answers part (c)
-      of `shared/decisions/260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`:
-      `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`.
+      of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`:
+      `260820-2324_*_is-the-work-tree-the-refresh-source-when-setup-runs-in-the-plugins-own-repository.md`.
       Steps 3 and 8 assume the narrow answer.
 - [ ] The eight decisions stamped `260820-2314` are filed open and were answered by the orchestrator
       while the user was away. Their blast radius, if any is reversed: the per-file ceiling governs steps
@@ -773,7 +773,7 @@ Fifteen steps hold in full, re-measured at HEAD:
 - **Step 1.** `bin/fusion-prose-metric $(bin/fusion-rules coder)` prints six rows and a total; a file
   with no em-dash prints a zero row; exits are 0 on a report, 1 on usage, 2 on an unreadable input,
   matching `## API Changes`. The hand-count comparison is recorded at
-  `history/260820-2345-coder-prose-metric-becomes-a-program.md:47`.
+  `260820-2345-coder-prose-metric-becomes-a-program.md:47`.
 - **Steps 3 and 8.** Step 0e exists in `skills/setup/SKILL.md:177` and resolves its own root in each
   of its three blocks. `diff -r stilwerk fusion-workbench/stilwerk` exits 0 with no output, and
   `shasum -a 256 -c .asset-provenance` run inside the workbench reports `OK` on all four lines.
@@ -812,20 +812,20 @@ Fifteen steps hold in full, re-measured at HEAD:
   that moved it. No **growth-bound** baseline moved: the diff of the three baseline-declaring files
   over `7135a19..HEAD` is empty, and the two `.golden` files that did change are per-file
   inventories, which is what
-  `shared/decisions/260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`
+  `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`
   settles. The criterion should have said "no growth-bound baseline".
 
 ### What the plan claimed and the tree does not carry
 
 - **Step 16's `Closes:` over-reaches on one of its two records.** The record asks for the progress
-  note on `shared/issues/260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+  note on `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
   to be corrected. The correction was written onto the reporting record instead, and its own closing
   paragraph says so. The unreproducible `2733` and the inverted capitalisation claim still stand at
-  `shared/issues/260816-0740_*_…:82`. That record stays `_o_`.
+  `260816-0740_*_…:82`. That record stays `_o_`.
 - **`## Where this Circle stops` clause 5 is not met.** The clause requires
-  `shared/decisions/260816-0740_*_…` to gain "the protocol's path". It does not carry it: nothing
+  `260816-0740_*_…` to gain "the protocol's path". It does not carry it: nothing
   outside this Circle cites
-  `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2354-prose-register-measurement-protocol.md`.
+  `260820-2354-prose-register-measurement-protocol.md`.
   The link runs one way only, protocol to decision, and the direction that fails is the one a later
   session needs. Filed.
 - **`## Where this Circle stops` clause 6 is not met.** Eighteen of the Circle's twenty issues are

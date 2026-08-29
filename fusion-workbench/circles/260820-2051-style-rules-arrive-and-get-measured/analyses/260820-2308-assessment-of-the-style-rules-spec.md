@@ -9,7 +9,7 @@
 ## Question
 
 Is the spec at
-`circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_o_spec-style-rules-arrive-and-get-measured.md`
+`260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
 sound enough to hand to a planner? Specifically: does its three-cause cut satisfy
 `rules/critical-stance.md` §4, are its two decidability answers honest, does its record-coverage
 table hold, do the four growth budgets survive its mechanism set, and which of its six open
@@ -49,13 +49,13 @@ The prose above the table is not. It states counts that its own table refutes, i
 
 The prose totals fourteen against sixteen records to place. Two records assigned to RC1 in the
 table appear in none of the five conditions RC1's prose enumerates: the token-count record
-(`260816-1330_o_the-repunctuations-evidence-paragraph…`) and the override record
-(`260816-1330_o_the-override-record-names-the-shipped-chat-profiles-cap…`). A cut whose headline is
+(`260816-1330_*_the-repunctuations-evidence-paragraph…`) and the override record
+(`260816-1330_*_the-override-record-names-the-shipped-chat-profiles-cap…`). A cut whose headline is
 "seventeen records are seventeen appearances of three" (spec:24) has to be able to count the
 appearances.
 
 **One assignment is wrong on the merits.**
-`shared/issues/260812-0253_o_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 is placed in RC2, "a clause states a requirement and not the test that decides a case" (spec:513).
 That record's principal fault is neither a missing test nor an untestable clause. Its own text says
 so: "the fix is not another rule about length… Something in the corpus rewards thoroughness on a
@@ -129,7 +129,7 @@ the user chose is what makes the measurement able to carry a result"
 (`_t_circle.md`:136-137), and it weakens the dose the answered decision already warned about.
 
 It also puts C6 in conflict with a record C6 claims to close.
-`shared/issues/260816-1345_o_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
+`260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
 states its fix direction as: "State the set as the unindented `emit_if_exists` lines of
 `bin/fusion-rules` plus the unconditional `emit_voice_profile` call **plus `CLAUDE.md`**". C6's
 acceptance criterion states the derivation without `CLAUDE.md` (spec:278-281). So C6 as written
@@ -216,7 +216,7 @@ implementations and neither will be reproducible in six weeks.
 
 ### F7. The concurrent Circle is closed, so both budget contingencies keyed to it are void
 
-`circles/260819-1645-four-constraints-on-deep-change/_c_circle.md` carries the closed marker, set in
+`260819-1645-four-constraints-on-deep-change` carries the closed marker, set in
 commit `5faed26`, three commits before the HEAD the spec measured. The spec calls it "the concurrent
 Circle" and warns that "Both Circles draw on this one budget" (spec:421-425), and question 6's
 fallback reads "If the concurrent Circle spends those lines first, C7 drops out" (spec:566-567).
@@ -282,12 +282,12 @@ Twelve of the seventeen rows hold. Three do not.
 
 | Row | Spec claim | Verdict |
 |---|---|---|
-| `260812-0253_o_agents-answer-a-question…` | "C4 closes the opener half" (spec:513) | **Does not hold.** The record has no opener half. Its two halves are answering the unasked question and the missing total budget. C4 addresses neither. The opening-sentence material comes from the user's two samples in the Circle record, not from this record. |
-| `260816-1345_o_the-register-defects-corpus-table…` | Resolved by C6 (spec:504) | **Holds only if the `CLAUDE.md` question is settled.** The record's stated fix direction includes `CLAUDE.md` in the derivation and C6's acceptance criterion excludes it. See F3. |
-| `260816-0740_o_the-always-on-rule-corpus…` | "Closes when the corpus is at the ceiling under the stated metric" (spec:500) | **Holds with the same caveat.** The record's table measures seven files including `CLAUDE.md`; closing it against a six-file corpus is a redefinition that C6 has to state, not assume. |
-| `260807-2154_o_corrected-sibling-wording…` | "Its candidate 1 is a narrower version of what C1 does generally" (spec:506) | **Holds.** Verified against the record: candidate 1 is a Setup-side detection with an opt-in overwrite, and C1's case 0 delivers exactly that for a workbench with no provenance. |
-| `260816-1330_o_the-repunctuations-evidence-paragraph…` | "The progress note is corrected; the commit message stands" (spec:503) | **Holds.** The record's own fix direction says the same, and its third point about the semicolon is confined to the commit message, which it declares immutable. |
-| `260814-1332_o_the-curator-prompt…` | Resolved by C8 (spec:510) | **Holds, on a wrong count.** The spec says "Eight of the nine do" (spec:327). Measured: the prose set is eight agents (`bin/fusion-rules:193`) and seven carry the enumeration. Seven of eight, not eight of nine. The record's own 260819 reconciliation already states the set is eight. |
+| `260812-0253_*_agents-answer-a-question…` | "C4 closes the opener half" (spec:513) | **Does not hold.** The record has no opener half. Its two halves are answering the unasked question and the missing total budget. C4 addresses neither. The opening-sentence material comes from the user's two samples in the Circle record, not from this record. |
+| `260816-1345_*_the-register-defects-corpus-table…` | Resolved by C6 (spec:504) | **Holds only if the `CLAUDE.md` question is settled.** The record's stated fix direction includes `CLAUDE.md` in the derivation and C6's acceptance criterion excludes it. See F3. |
+| `260816-0740_*_the-always-on-rule-corpus…` | "Closes when the corpus is at the ceiling under the stated metric" (spec:500) | **Holds with the same caveat.** The record's table measures seven files including `CLAUDE.md`; closing it against a six-file corpus is a redefinition that C6 has to state, not assume. |
+| `260807-2154_*_corrected-sibling-wording…` | "Its candidate 1 is a narrower version of what C1 does generally" (spec:506) | **Holds.** Verified against the record: candidate 1 is a Setup-side detection with an opt-in overwrite, and C1's case 0 delivers exactly that for a workbench with no provenance. |
+| `260816-1330_*_the-repunctuations-evidence-paragraph…` | "The progress note is corrected; the commit message stands" (spec:503) | **Holds.** The record's own fix direction says the same, and its third point about the semicolon is confined to the commit message, which it declares immutable. |
+| `260814-1332_*_the-curator-prompt…` | Resolved by C8 (spec:510) | **Holds, on a wrong count.** The spec says "Eight of the nine do" (spec:327). Measured: the prose set is eight agents (`bin/fusion-rules:193`) and seven carry the enumeration. Seven of eight, not eight of nine. The record's own 260819 reconciliation already states the set is eight. |
 
 Corrected arithmetic for `## Record coverage`: eleven resolved outright, one in part (the foreclosure
 record), two left open with reasons (the rules-decay record and the verbosity record), one already
@@ -315,7 +315,7 @@ window. Excluding it from the repair is coherent as a corpus definition and inco
 Either include it in C3 or name it in C10's protocol as an untreated confound.
 
 **C1 puts a gate on Setup.** The reconciliation of
-`shared/issues/260812-0253_o_setup-takes-far-too-long-and-nothing-measures-it.md` measured Setup's own
+`260812-0253_*_setup-takes-far-too-long-and-nothing-measures-it.md` measured Setup's own
 shell cost at 593 ms and attributed the felt duration to human gate waits. C1 adds a gate to Setup.
 The mitigation is already half in the design, since cases 1 and 3 are silent, and it should be
 completed: one question covering all differing assets, never one per file, and no question at all when
@@ -372,7 +372,7 @@ rate observed in the pre-repair window, with a stated minimum window size.
 | # | Question | Settled by evidence? | What I would take, and what it forecloses |
 |---|---|---|---|
 | 1 | Ceiling corpus-level or per-file | **Leans settled.** `stilwerk/default-voice-en.yaml:140` (AI02) states "Maximum one per 1000 words" as an instruction to a writer of one document, and `rules/user-facing-output.md`'s readability gate states the same of "your draft". Both authored surfaces are per-document. The cost of the stricter reading is three marks: per-file permits 10 across the six files against 13 corpus-wide. | **Per-file**, with the corpus total reported beside it. It forecloses a future short always-on rule file carrying any em-dash at all, since a 500-word file's allowance rounds to zero. That is the rule as written and I would accept it. |
-| 2 | What a foreclosure costs, and the `description` cap | **Genuinely open, and the spec's recommendation reverses the recorded basis of the approval.** `shared/history/260816-1251-curator-run.md` records that the user was shown "roughly one line per option" before approving the clause, which is reading (b). The spec acknowledges this and recommends (a) anyway (spec:538-541). | **(b) plus (c): a foreclosure takes its own line, and a plain-text gate carries at most three options.** That is 1 + 3 + 3 = 7 lines against the cap of 8, it preserves what the user approved, and it does not satisfy a line cap by making lines longer, which is what (a) does. A 2-line cap on the `AskUserQuestion` `description` field is a free choice with no evidence either way and I would take it. Choosing (b) forecloses four-option plain-text gates; such a gate goes through `AskUserQuestion` or gets split. **This is the one where deciding for the user carries real risk**, because the record itself says the numbers are a judgement no evidence tier reaches. |
+| 2 | What a foreclosure costs, and the `description` cap | **Genuinely open, and the spec's recommendation reverses the recorded basis of the approval.** `260816-1251-curator-run.md` records that the user was shown "roughly one line per option" before approving the clause, which is reading (b). The spec acknowledges this and recommends (a) anyway (spec:538-541). | **(b) plus (c): a foreclosure takes its own line, and a plain-text gate carries at most three options.** That is 1 + 3 + 3 = 7 lines against the cap of 8, it preserves what the user approved, and it does not satisfy a line cap by making lines longer, which is what (a) does. A 2-line cap on the `AskUserQuestion` `description` field is a free choice with no evidence either way and I would take it. Choosing (b) forecloses four-option plain-text gates; such a gate goes through `AskUserQuestion` or gets split. **This is the one where deciding for the user carries real risk**, because the record itself says the numbers are a judgement no evidence tier reaches. |
 | 3 | Does `scope: long-form` go into the writing profiles | **Genuinely open, with a lean.** Verified: `scope:` appears in exactly two files, the two chat profiles, and nothing reads it. `agents/`, `rules/`, `hooks/lib/` and `bin/` contain no consumer. The record's own text says item 2 alone closes the dangling-reference half. | **Item 2 only**, the text handle, and file item 1 as a deferred decision. C1 removes the reach objection but not the case against adding a key with no consumer to a file every project holds. Taking item 2 alone forecloses nothing: C1 is exactly what makes item 1 cheap to add later. |
 | 4 | Threshold and the three marker outcomes | **Half settled.** The marker scheme follows from the decision record's own closing text and from `rules/decision-record-examples.md` on terminal states. The threshold does not, and the spec's phrasing is ambiguous (see above). | Take the marker scheme, with the added requirement that the implemented record carries its confounds in its own text. Restate the threshold exactly: **below the lowest per-file rate in the pre-repair window**, with a minimum of five usable files per window. Safe to decide. |
 | 5 | The verbosity record's remaining half | **Settled against taking it**, and for a reason the spec does not give. Its C10-contamination argument is sound. The stronger reason is that a total reply budget changes every agent's output across the fleet and is not one of the Directive's four outcomes. | **No**, and additionally correct the coverage table: the record is not half-closed by C4, it is deferred whole. Deferring forecloses nothing; the record stays open at severity high with the reason recorded. |
@@ -415,21 +415,21 @@ record in one place.
 
 ## Sources
 
-- `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_o_spec-style-rules-arrive-and-get-measured.md`, read in full
-- `circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md:136-137`, :212-216
-- `circles/260820-2051-style-rules-arrive-and-get-measured/history/260820-2249-shaper-spec-style-rules-arrive-and-get-measured.md`
-- `circles/260820-2051-style-rules-arrive-and-get-measured/issues/260820-2249_o_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`
-- `circles/260819-1645-four-constraints-on-deep-change/_c_circle.md`, closed in `5faed26`
-- `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
-- `shared/issues/260816-0740_o_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
-- `shared/issues/260816-1345_o_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
+- `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`, read in full
+- `260820-2051-style-rules-arrive-and-get-measured:136-137`, :212-216
+- `260820-2249-shaper-spec-style-rules-arrive-and-get-measured.md`
+- `260820-2249_*_the-always-on-corpus-is-said-to-have-grown-by-a-file-that-is-emitted-to-no-agent.md`
+- `260819-1645-four-constraints-on-deep-change`, closed in `5faed26`
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- `260816-0740_*_the-always-on-rule-corpus-runs-at-sixteen-times-the-em-dash-ceiling-it-states.md`
+- `260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`
 - `shared/issues/260816-1330_o_*` (four records)
 - `shared/issues/260814-1419_o_*` (two records)
 - `shared/issues/260807-2154_o_*` (two records)
-- `shared/issues/260812-0253_o_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
-- `shared/issues/260812-0253_o_rules-lose-their-effect-during-a-long-dispatch.md`
-- `shared/issues/260812-0253_o_setup-takes-far-too-long-and-nothing-measures-it.md`
-- `shared/issues/260818-1452_c_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md`
+- `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+- `260812-0253_*_rules-lose-their-effect-during-a-long-dispatch.md`
+- `260812-0253_*_setup-takes-far-too-long-and-nothing-measures-it.md`
+- `260818-1452_*_gate-options-name-the-category-of-what-is-being-decided-instead-of-stating-its-content.md`
 - `circles/260801-1244-curator/issues/260814-1332_o_*` (two records)
 - `bin/fusion-rules:193` (prose-agent set), `:300-328` (`emit_voice_profile`), `:383-429` (the emission block)
 - `skills/setup/SKILL.md:119-127` (Step 0b), `:150-167` (Step 0d), `:169-192` (Step 0f)

@@ -3,8 +3,8 @@ The deletion annotation form was not applied to the surviving reference of the C
 ---
 
 **Domain:** code
-**Filed by:** reconciler (reconciliation 260820-0830, HEAD `04db0b0`)
-**Related:** `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`; `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
+**Filed by:** reconciler (reconciliation 260820-0830-reconciliation.md, HEAD `04db0b0`)
+**Related:** `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`; `260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
 
 ---
 
@@ -69,7 +69,7 @@ two sit on the same two lines of the same file and whoever opens it will meet bo
 Progress 260820 (`coder`, Circle Turn 2) — **item 1 done, item 2 untouched. Not closable.**
 
 Item 1 is applied. The line 14 token in
-`circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+`260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
 is gone and the annotation form from `rules/circle-records.md` stands in its place, in the literal
 English opening the rule makes the recognition test, inside the record's German prose — the form is
 template text and an exempt surface under `rules/fusion-workbench-conventions.md` `## Project
@@ -90,4 +90,4 @@ on item 2, and the two violations stay visible; they redden nothing today, becau
 record carries `_i_` and the gate's corpus is `_o_` and `_a_` decisions only.
 
 ---
-Resolved: moot — item 1 is applied, and the two remaining tokens name a consuming project's files that no convention fences; `circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`.
+Resolved: moot — item 1 is applied, and the two remaining tokens name a consuming project's files that no convention fences; `260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`.

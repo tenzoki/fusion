@@ -3,8 +3,8 @@
 **Date:** 2026-08-23
 **Agent:** coder
 **Domain:** code
-**Circle:** `circles/260823-0023-settle-what-travels-between-checkouts`
-**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 2
+**Circle:** `260823-0023-settle-what-travels-between-checkouts`
+**Plan:** `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 2
 **Status:** Complete
 
 ## What was done
@@ -28,7 +28,7 @@ Three changes, in the order the step names them.
    `git ls-files fusion-workbench | awk -F/ 'NF==2'` returns. The paragraph beneath it, explaining
    why `.guard-state/events.jsonl` is deliberately absent from the list, is unedited.
 
-The defect `shared/issues/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
+The defect `260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
 is closed with a `Resolved:` note and renamed `_c_`. The note states why the corrected count is three
 rather than the four the record itself expected: the record was written against the two-group split,
 and step 1 of this Circle moved `portfolio.md` to class L before this step untracked it.
@@ -36,7 +36,7 @@ and step 1 of this Circle moved `portfolio.md` to class L before this step untra
 ## Files changed
 
 - `/Users/k1/Projects/productive/fusion/.gitignore`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/shared/issues/260822-1028_c_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md` (renamed from `_o_`)
+- `/Users/k1/Projects/productive/fusion/260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md` (renamed from `_o_`)
 - the git index, for the one authorised `git rm --cached`
 
 No file outside the step's list was touched. No lint baseline and no golden moved.

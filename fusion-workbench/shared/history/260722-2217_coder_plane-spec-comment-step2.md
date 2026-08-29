@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Date:** 2026-07-22
-**Plan:** `shared/planning/260722-2021_p_plan-plane-spec-comment.md` (Step 2)
+**Plan:** `260722-2021_*_plan-plane-spec-comment.md` (Step 2)
 **File touched:** `bin/fusion-plane` (only)
 
 ## What was implemented
@@ -26,7 +26,7 @@ Wired the Step-1 spec-comment primitives into `process_artifact`, dry-run and li
    Single tail after the wrapper:
    `if [ "$state_ok" -eq 1 ] && [ "$kind" = circle ] && spec_comment_enabled; then upsert_spec_comment "$file" "$nk" "$existing_id" || true; fi`.
    Gate is kind+enabled+state_ok — NOT write_scope, so seed-origin Circles still get the
-   comment while their description stays untouched (decision 260719-2313).
+   comment while their description stays untouched (decision 260719-2313_*_round-trip-write-overwrites-origin-story-description.md).
 
 4. **STATUS summary:** `COMMENTS_SKIPPED > 0` appends an "N spec-comment(s) skipped" clause
    to the existing label/STATUS note.

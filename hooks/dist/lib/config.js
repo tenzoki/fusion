@@ -15,7 +15,7 @@
  * place, so restating it in a shipped JSON file is the thing this module has
  * always refused to do. A layer that carries nothing is a claim rather than a
  * capability, which is what the protected list and the escalation counter were
- * each removed for. Decision `260816-1915`, answered option 1 at the plan gate.
+ * each removed for. Decision `260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, answered option 1 at the plan gate.
  *
  * ## The one leaf
  *
@@ -27,7 +27,7 @@
  * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
  * seven places and four spellings, with one of them already calling it a
  * "default" — a word that was false, because no source could override it
- * (issue `260811-1712`).
+ * (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
  *
  * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below. A project that wants a
  * different budget declares `{"orchestrator":{"maxTurns":12}}` in its own
@@ -46,13 +46,13 @@
  * value replaces rather than merges. What the leaf walk changed, when it was
  * written for a loader with six guard leaves, was the granularity at which
  * "declared" is read, from the whole top-level object down to the leaf.
- * Decision `260804-1630`, answered option 1 at the plan gate on 2026-08-04.
+ * Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, answered option 1 at the plan gate on 2026-08-04.
  *
  * With one leaf the walk has nothing to disagree with itself about, and it is
  * kept as the shape rather than collapsed into a single `??`, because the next
  * setting to land here inherits the rule instead of re-deriving it. The leaves
  * it was written for have all gone: `crossFile` with the ping-back tracker
- * (`260809-2004`), `guard.protectedPaths` with the mechanism it configured
+ * (`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`), `guard.protectedPaths` with the mechanism it configured
  * (2026-08-12), `churn` with the heatmap (2026-08-15), and the four remaining
  * guard leaves with the guard's verdict (2026-08-16).
  *
@@ -61,7 +61,7 @@
  * `readLayer` used to cast the parsed JSON to `RawConfig` and check nothing
  * inside it, so `{"guard":{"protectedPaths":123}}` crashed the guard into its
  * fail-open branch on every call, and the subtler `"rules/**"` spread into eight
- * single characters and protected nothing, silently (`260804-1603`). Both that
+ * single characters and protected nothing, silently (`260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md`). Both that
  * leaf and the mechanism behind it are gone; the defect they measured is why
  * this table exists, so the example is kept as the history it is.
  *
@@ -69,7 +69,7 @@
  * whose value does not have that type is DROPPED and NAMED, and the leaf walk
  * then finds it absent and inherits — so a dropped key, an omitted key and a key
  * the project never wrote are three spellings of one behaviour. That equivalence
- * is an obligation of `260804-1630`, not an implementation convenience: it is
+ * is an obligation of `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, not an implementation convenience: it is
  * what keeps the whole seam expressible as one sentence.
  *
  * Two things the validator deliberately does NOT do. It does not reject unknown
@@ -105,7 +105,7 @@
  *
  * THE RETIRED-FILE DIAGNOSTIC IS THE WHOLE OF THE v10 MIGRATION, and it is
  * written that way on purpose. `/fusion:setup` MOVING THE BUDGET was the
- * alternative and the user chose against it (`260816-1916`, option 1), on the
+ * alternative and the user chose against it (`260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`, option 1), on the
  * ground that this channel runs on every guarded tool call while Setup runs
  * once per session and only for a project that runs Setup at all. That names
  * which channel CARRIES the migration; it is not the complete list of places
@@ -131,7 +131,7 @@
  * project that has configured nothing, and nagging it would put an advisory on
  * every guarded call of a correctly-behaving project. The one absence that used
  * to be reported was the plugin layer's, where absence meant a broken install
- * (`260809-1101`); that diagnostic went with the file it was about.
+ * (`260809-1101_*_an-absent-plugin-config-layer-yields-an-empty-protected-list-with-no-diagnostic.md`); that diagnostic went with the file it was about.
  *
  * Uses native JSON.parse — zero external dependencies.
  */
@@ -214,7 +214,7 @@ function isPlainObject(value) {
  * There is no upper bound, deliberately: a project that wants 60 Turns has said
  * so in a git-tracked file, and inventing a ceiling here would be a policy
  * nobody asked for. The shape was first argued for the escalation threshold
- * (`260804-1606`), whose `0` halted on the first denied call; that setting went
+ * (`260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md`), whose `0` halted on the first denied call; that setting went
  * with the counter on 2026-08-16 and the argument transferred intact.
  */
 function isPositiveInteger(value) {
@@ -273,7 +273,7 @@ const RETIRED_TOP_LEVEL_KEYS = {
     escalation: "the consecutive-block counter and the halt it raised were removed with the guard's verdict.",
     // Retired on 2026-08-24, nine days after the heatmap it configured left: a
     // copy of the plugin's old `hooks/config.json` carried the block, so a
-    // project may well still declare it (issue 260815-1247).
+    // project may well still declare it (issue 260815-1247_*_the-churn-leaves-were-removed-without-a-retirement-entry-and-the-retirement-table-could-not-have-held-one.md).
     churn: "the per-file churn heatmap and its warning thresholds were removed on 2026-08-15.",
 };
 /** A type name for a diagnostic, short enough to read in a dashboard row. */
@@ -291,14 +291,14 @@ function describeValue(value) {
  *
  * A dropped key behaves exactly like an omitted one — the leaf walk in
  * `loadConfig` then finds it absent and inherits from `DEFAULTS`. Decision
- * `260804-1630` requires that equivalence rather than merely permitting it: two
+ * `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md` requires that equivalence rather than merely permitting it: two
  * ways of arriving at "absent" that behave differently would be two rules where
  * the answer is one.
  *
  * It no longer takes a layer kind. There is one layer, and the two behaviours
  * that used to distinguish them are gone with it: the plugin file's
  * missing-file diagnostic, and the project-only refusal of `guard.enabled`,
- * which is retired inside its container (`260816-1915`, option 1).
+ * which is retired inside its container (`260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, option 1).
  */
 function validateLayer(parsed, source) {
     const raw = {};

@@ -1,19 +1,19 @@
-# `260804-1025`'s reproduction is stale but its clause still overclaims — the replacement commands
+# `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`'s reproduction is stale but its clause still overclaims — the replacement commands
 
 ---
 
-**Severity:** High (inherited — this is `260804-1025`'s evidence, not a second defect)
+**Severity:** High (inherited — this is `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`'s evidence, not a second defect)
 **Domain:** code (documentation of a security control)
 **Filed by:** coderev, incremental review of `4f1007f`
 **Affects:** `rules/protected-path-discipline.md:189-190` (question 3, formerly question 2 at `:172`)
-**Kind:** `260804-1025_o_…` stays open. Its two reproduction commands stopped reproducing in `4f1007f`; five others take their place and the recommended fix is unchanged.
-**Cross-references:** `260804-1025_o_…` (**close these two together — this is not a separate defect**); `260804-1220_o_…` (the same section, the stale count).
+**Kind:** `260804-1025_*_…` stays open. Its two reproduction commands stopped reproducing in `4f1007f`; five others take their place and the recommended fix is unchanged.
+**Cross-references:** `260804-1025_*_…` (**close these two together — this is not a separate defect**); `260804-1220_*_…` (the same section, the stale count).
 
 ---
 
 ## Why this record exists
 
-`4f1007f` inserted a new question 2 in front of the question `260804-1025` names. Run the
+`4f1007f` inserted a new question 2 in front of the question `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` names. Run the
 procedure now on that issue's two commands:
 
 ```
@@ -21,13 +21,13 @@ true || cd build && rm rules/x.md      Q1 yes → Q2 "the joiner in front of the
 echo hi | cd build && rm rules/x.md         own segment" is `||` / `|` → STOP, unknown.
 ```
 
-The procedure returns the correct answer for both, and both now DENY. So `260804-1025`'s
+The procedure returns the correct answer for both, and both now DENY. So `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`'s
 `## Measured` block no longer reproduces by its own steps.
 
 **It must not be closed on that basis.** The clause the issue asks to delete — *"the model
 stays exact"* — is still there, still unscoped, and still returns the reassuring answer for
 commands that deny. Only the example set changed. Filed as its own record so that whoever
-picks up `260804-1025` finds the corrected evidence attached to a live file rather than
+picks up `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` finds the corrected evidence attached to a live file rather than
 discovering the staleness by trying the old steps and concluding the issue is fixed.
 
 ## Measured, at HEAD `4f1007f`
@@ -63,7 +63,7 @@ Question 3 makes **two** claims and only one of them is scoped:
 - *"the model stays exact…"* — false in all six. It is a claim about the whole directory
   model, made inside a section scoped to one rule, and it is the half that tells the reader
   the outcome is *safe* rather than merely un-denied. That is precisely the reading
-  `260804-1025` objects to.
+  `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` objects to.
 
 So the defect is unchanged in kind and unchanged in fix; only the commands moved from a
 leak-shaped set to a give-up-shaped one. It got milder — nothing in the replacement set
@@ -71,29 +71,29 @@ deletes a file — and it did not go away.
 
 ## Recommended fix
 
-Unchanged from `260804-1025 § Recommended fix`: delete "the model stays exact and" from
+Unchanged from `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md § Recommended fix`: delete "the model stays exact and" from
 question 3. The remainder is true, sufficient, and is what the question is about. Then add
 the pointer that a "yes" at question 3 means *this rule* is silent, not that the command is
 safe.
 
-Close this record with `260804-1025`. One clause, one edit.
+Close this record with `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`. One clause, one edit.
 
 ## Anti-vacuity
 
 The check that would have caught both generations: run the document's own numbered procedure
 against every DENY row in its own illustration block. Six of those rows reach the end of the
 procedure today. That is a review instruction for the Step 9 documentation task, not a test,
-and `260804-1025 § Anti-vacuity` already asks for its narrower form.
+and `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md § Anti-vacuity` already asks for its narrower form.
 
 ## Origin
 
 Found by running the four-question procedure against the module's give-up families during
 the incremental review of `4f1007f`, after the Turn 9 implementer reported that
-`260804-1025` was "no longer reproducible by its own steps".
+`260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md` was "no longer reproducible by its own steps".
 
 ---
 
-**Step 3 disposition (coder, 2026-08-05) — branch A, text corrected. CLOSING with `260804-1025`, as this record asks.**
+**Step 3 disposition (coder, 2026-08-05) — branch A, text corrected. CLOSING with `260804-1025_*_the-decision-procedure-tells-an-agent-the-model-stays-exact-for-the-two-commands-that-delete-a-rule-file.md`, as this record asks.**
 
 One clause, one edit, as this record predicted. `rules/protected-path-discipline.md`
 question 3 now says "Yes → **this rule** denies nothing. That is the whole of what a 'yes'

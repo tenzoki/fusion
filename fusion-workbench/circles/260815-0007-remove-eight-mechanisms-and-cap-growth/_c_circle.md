@@ -4,8 +4,8 @@
 **Domain:** code
 **Status:** closed
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_c_plan-remove-eight-mechanisms-and-cap-growth.md
-**Active session history:** shared/history/260814-2306-orchestrator-session.md
+**Active spec/plan:** 260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md
+**Active session history:** 260814-2306-orchestrator-session.md
 
 ---
 
@@ -35,7 +35,7 @@ and line counts.
 
 ### What the three analyses establish
 
-`shared/analyses/260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
+`260812-0022-where-the-complexity-comes-from-and-what-would-have-to-go.md`
 measured 443 defect records, 540 commits and every shipped surface against a control project,
 `krk`, built with fusion and carrying none of fusion's complexity. Its central finding is that
 the defect rate is not deteriorating. fusion files 1.37 records per commit, krk files 1.10,
@@ -45,7 +45,7 @@ classifier deletion of 7 August removed 3,597 lines of hook source and 7,475 of 
 and a half days later the source stood 969 lines above its pre-deletion peak and the test
 corpus 4,981 above it. Removal works and does not hold unless something bounds the refill.
 
-`shared/analyses/260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measured where the
+`260812-0303-simplify-speed-and-why-rules-do-not-hold.md` measured where the
 time goes: bookkeeping between steps costs up to 28 percent of session time, 76.5 hours of the
 277.5 measured across both projects. Its single first move, had only one thing been done, is
 to delete the hand-maintained session counters and derive them from git and the event log at
@@ -53,7 +53,7 @@ read time. That one change removes the largest measured cost, takes 43,130 token
 orchestrator Setup, and deletes roughly 5,400 lines of drift machinery whose only subject is
 those counters.
 
-`shared/analyses/260812-0303-the-largest-consumer-read-for-the-first-time.md` read the largest
+`260812-0303-the-largest-consumer-read-for-the-first-time.md` read the largest
 consuming project, 1,689 sessions and 2,759 commits, which the first analysis could not reach.
 It revised four of the eight removal candidates. **Where the two contradict, the field
 measurement wins**, and the user settled each of the four on that basis.
@@ -134,7 +134,7 @@ the one surface the old cap covered, shrank.
 2026-08-14, commit `5c843e6` armed a failing bound over the always-on rule corpus in
 `hooks/lib/__tests__/rules-emission-golden.test.ts`, re-baselining the five core entries once
 at the arming and writing the overshoot into the file as text. The binding decision is
-`circles/260801-1244-curator/decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`.
+`260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`.
 `RELEASE_CAP` at 105,354 and `DRIFT_CEILING` at 145,144 are historical facts in that file and
 are never raised. The work here is to bring three uncovered surfaces under the same
 instrument, with the arming precedent already established.
@@ -145,7 +145,7 @@ Eight names are two entry points and six components. `skills/cleanup/SKILL.md` S
 already read and execute `archive` (tier-1), `revise-claude-md` (full three-pass) and
 `log-activity` inline, so a user who types `/fusion:cleanup` never types those three.
 `skills/setup/SKILL.md` mentions `unlock` nowhere, while
-`shared/issues/260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
+`260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
 already asks Setup to seed the file `unlock` writes. `cadence` is read-only on every input and
 writes only its own digest, which makes it a reading command mis-grouped with the other seven.
 Three visible names remain: `setup`, `cleanup`, `cadence`.
@@ -192,37 +192,37 @@ offered and both declined.
 No other Circle. The portfolio is empty: all fourteen existing Circles carry a terminal marker
 and `.active-circle` is absent. Five artifacts bind this one and are cited rather than copied.
 
-- `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
+- `260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
   — the armed growth bound and the re-baselining rule the cap work extends. Binding.
-- `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`
+- `260815-0007_*_does-fusion-cleanup-block-at-the-claude-md-gate-or-leave-the-ledger.md`
   — the one residual this Circle deliberately left open, in this Circle's own decision store.
   Answer it before planning the `CLAUDE.md` step.
-- `archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`
+- `archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin`
   (`_b_`, Bounded Closure; archived by the 260817-1907 sweep, live under `circles/` when this was
   written) — every removal here re-opens the surface that Circle worked on, and its own Bounded-Closure Artifact
   is the finding that a pass over sixteen agent prompts is not a pass over the plugin. Its
   step 10, verifying `docs/plane-setup.md` against `bin/fusion-plane`, is now moot if the Plane
   mirror goes; check its open record before starting that work.
-- `archive/260817-1907-safe-cleanup-scoped/circles/260719-1536-plane-mirror-integration/_c_circle.md`
+- `archive/260817-1907-safe-cleanup-scoped/260719-1536-plane-mirror-integration`
   (`_c_`; archived by the 260817-1907 sweep) — the Circle that built the mirror
   this Circle removes. Read its closure note before deleting, so the removal records what was
   built rather than only that it went.
-- `shared/issues/260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
+- `260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
   — the open defect that folding `unlock` into Setup closes.
-- `shared/decisions/260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
+- `260812-0254_*_should-the-investigator-get-case-folders-with-a-status-per-case.md`
   — retired by the investigator fold rather than answered; close it with the fold.
 
 ## Turn log
 
-- Turn 1 (session 260814-2306): commits 348f6db..c4761dc; steps P-1 to P-3 done (before-measurement, Plane mirror removed in two halves); suite 1030 tests/76.6s -> 903 tests/~30s; reviewed over the whole session range 9a7da8e..HEAD by coderev and ontorev, coverage now covered; 10 defect records filed, 3 closed; Coherence verdict: pending gate; session history: shared/history/260814-2306-orchestrator-session.md
-- Turn 2 (session 260814-2306): commits c4761dc..b70097f; plan correction of the false lint premise (8 of 11 remaining steps carried it, not the 2 reported); the legacy-halt-clearing flake diagnosed and deliberately not patched, its cause being two concurrent npm test runs racing on hooks/dist; **inserted step P-3b**, not in the plan, which made the suite safe to run concurrently (332267a, 6/6 red before and 12/12 green after) and which the Circle grew by, since the closure criterion rests on the suite meaning something; then steps P-4 to P-6 (churn heatmap, churn configuration leaves, stash/pop pair with the commit-lock rule rehomed); session history: shared/history/260814-2306-orchestrator-session.md
-- Turn 3 (session 260814-2306): commits 6350854..518926d; steps P-7 to P-9 (conceptrev removed, investigator folded into analyst, the strategic and knowledge domain values); session history: shared/history/260814-2306-orchestrator-session.md
-- Turn 4 (session 260814-2306): commits 9955e8f..9306f0a; steps P-10 to P-12 (the persisted tasklist and its queue-ground apparatus, the hand-maintained session counters and the drift machinery, the administrative surface down to three names), then gate G1; session history: shared/history/260814-2306-orchestrator-session.md
+- Turn 1 (session 260814-2306-orchestrator-session.md): commits 348f6db..c4761dc; steps P-1 to P-3 done (before-measurement, Plane mirror removed in two halves); suite 1030 tests/76.6s -> 903 tests/~30s; reviewed over the whole session range 9a7da8e..HEAD by coderev and ontorev, coverage now covered; 10 defect records filed, 3 closed; Coherence verdict: pending gate; session history: 260814-2306-orchestrator-session.md
+- Turn 2 (session 260814-2306-orchestrator-session.md): commits c4761dc..b70097f; plan correction of the false lint premise (8 of 11 remaining steps carried it, not the 2 reported); the legacy-halt-clearing flake diagnosed and deliberately not patched, its cause being two concurrent npm test runs racing on hooks/dist; **inserted step P-3b**, not in the plan, which made the suite safe to run concurrently (332267a, 6/6 red before and 12/12 green after) and which the Circle grew by, since the closure criterion rests on the suite meaning something; then steps P-4 to P-6 (churn heatmap, churn configuration leaves, stash/pop pair with the commit-lock rule rehomed); session history: 260814-2306-orchestrator-session.md
+- Turn 3 (session 260814-2306-orchestrator-session.md): commits 6350854..518926d; steps P-7 to P-9 (conceptrev removed, investigator folded into analyst, the strategic and knowledge domain values); session history: 260814-2306-orchestrator-session.md
+- Turn 4 (session 260814-2306-orchestrator-session.md): commits 9955e8f..9306f0a; steps P-10 to P-12 (the persisted tasklist and its queue-ground apparatus, the hand-maintained session counters and the drift machinery, the administrative surface down to three names), then gate G1; session history: 260814-2306-orchestrator-session.md
 
 ## Closure note
 
 Closed coherent at 260815-2115, after a Rebalance gate at which the user revised the Grounding.
-Session history: `shared/history/260814-2306-orchestrator-session.md`. 36 commits from `9a7da8e`.
+Session history: `260814-2306-orchestrator-session.md`. 36 commits from `9a7da8e`.
 
 ### What the Directive asked, and what it got
 

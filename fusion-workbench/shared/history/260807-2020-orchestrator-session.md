@@ -1,4 +1,4 @@
-# Orchestrator Session — 260807-2020
+# Orchestrator Session — 260807-2020-orchestrator-session.md
 
 **Directive:** Split fusion's single language declaration into two, so chat language and persisted-artifact language resolve independently, and make `bin/fusion-rules` honour the split.
 **Mode:** custom (planned, then executed)
@@ -6,7 +6,7 @@
 
 ## Why this session existed
 
-An earlier session the same evening (`shared/history/260807-1917-orchestrator-session.md`) answered
+An earlier session the same evening (`260807-1917-orchestrator-session.md`) answered
 decision `260807-1515`: the language declaration reaches direct user interaction only, and every
 artifact that persists as a file is English. Recording that answer exposed a mechanism problem the
 answer could not solve on its own.
@@ -125,39 +125,39 @@ Five tasks, five commits (`4992ffb..c54ead9`).
 **Verdict:** coherent
 
 **Edges:**
-- Artifact↔Grounding: 12 of 12 plan steps verified against the tree, 0 false `[DONE]`; 1030 tests green across 33 files; two steps re-executed independently (the S2 backwards-compatibility lock against `73c52b4~1`, and the split behaviour against `4992ffb~1`); 4 version surfaces coherent at `6.1.0`; 2 marker renames both staged with their deletions and no path duplicated at HEAD; 3 of 7 reviewer findings open, all three re-verified as accurately stated and all three open by deliberate choice. Drift: 3 stale line citations inside otherwise-accurate records (`260807-2153_o_` ×2, `260807-0158_a_` ×1) and 1 range-notation defect in the `Implemented:` line of `260807-1515_i_`. All four are citation precision inside tracking records, repaired or annotated in this pass; none contradicts an artifact.
+- Artifact↔Grounding: 12 of 12 plan steps verified against the tree, 0 false `[DONE]`; 1030 tests green across 33 files; two steps re-executed independently (the S2 backwards-compatibility lock against `73c52b4~1`, and the split behaviour against `4992ffb~1`); 4 version surfaces coherent at `6.1.0`; 2 marker renames both staged with their deletions and no path duplicated at HEAD; 3 of 7 reviewer findings open, all three re-verified as accurately stated and all three open by deliberate choice. Drift: 3 stale line citations inside otherwise-accurate records (`260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` ×2, `260807-0158_a_` ×1) and 1 range-notation defect in the `Implemented:` line of `260807-1515_i_`. All four are citation precision inside tracking records, repaired or annotated in this pass; none contradicts an artifact.
 - Artifact↔Directive: all 14 commits in `b246996..c54ead9` move toward the stated Directive, none orthogonal, none away. Turn 1 (`c1b72fc..0e9e39f`) establishes the split — the rule text (`def9d13`), the two-code resolution with its regression lock (`73c52b4`), the declaration itself (`3c77e33`), the golden (`cd48540`), the release and the decision transition (`0e9e39f`). Turn 2 (`4992ffb..c54ead9`) corrects and completes it — the prefix-match fix (`4992ffb`), the three stale claims and the chat-only-profile exemption (`22b0ba8`), the golden again (`fd74b89`), the bookkeeping (`c54ead9`). The one commit that could read as off-Directive, `4d9ecd5`, files the customer-deliverable question as an open decision instead of answering it inside the Directive's scope, which is the Directive respected rather than exceeded.
-- Grounding↔Directive: 5 active decisions across `shared/decisions/` (2 `_o_`, 3 `_a_`), 5 consistent with the Directive, 0 conflicting. `260807-2131_o_` is a gap the Directive opened and deliberately left open rather than a contradiction of it; the other four are unrelated to the language boundary. `260807-1515_i_`, the decision the Directive existed to realise, is now implemented and its own stated condition is met.
+- Grounding↔Directive: 5 active decisions across `shared/decisions/` (2 `_o_`, 3 `_a_`), 5 consistent with the Directive, 0 conflicting. `260807-2131_*_which-language-governs-a-customer-deliverable.md` is a gap the Directive opened and deliberately left open rather than a contradiction of it; the other four are unrelated to the language boundary. `260807-1515_i_`, the decision the Directive existed to realise, is now implemented and its own stated condition is met.
 
 **Rebalance recommendation:** none
 
-**Reconciliation log:** `shared/history/260808-0030-reconciliation.md`
+**Reconciliation log:** `260808-0030-reconciliation.md`
 
 ## Remaining Work
 
 **Five open defects touching this work**, none blocking:
 
-1. `260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` — the
+1. `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md` — the
    list declares `rules/`, `agents/`, `skills/`, `README.md` and `docs/` English "in every project" on
    the ground that they ship to consumers of every language. In a consuming project they ship nowhere,
    so a German consumer is told its own README must be English for a reason that does not hold there.
    Decision `260807-1515` asked the answer to name this repository's double role; the text universalises
    its exemptions instead. This is the substantive one.
-2. `260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md` — `/fusion:setup`
+2. `260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md` — `/fusion:setup`
    copies a profile only when absent, so a pre-6.1.0 project adopting the second declaration keeps a
    chat profile naming the file the split stopped emitting.
-3. `260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` —
+3. `260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md` —
    the chat profiles now reference the long-form profile by role, and the long-form profile declares no
    `scope:` to answer to. Closing it means a schema change to a file every consumer holds.
-4. `260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` — three
+4. `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md` — three
    live instances, two staled by this session's own second Turn within about two hours.
    `reference-resolution-lint` reads paths, headings and record citations, never a line number.
-5. `260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md` — the review file is
+5. `260808-0030_*_the-coderev-pass-filed-four-issues-and-left-no-review-file.md` — the review file is
    the durable record that `agents/coderev.md` waives the history entry for, and this pass wrote
    neither.
 
 **One open decision this Directive opened:**
-`260807-2131_o_which-language-governs-a-customer-deliverable.md`. `agents/editor.md` reads the chat
+`260807-2131_*_which-language-governs-a-customer-deliverable.md`. `agents/editor.md` reads the chat
 declaration to set the language of a customer deliverable. Under the new boundary a deliverable is a
 file that persists, so the artifact language would govern and make deliverables English here, which is
 consistent and quite possibly useless. Four options, no recommendation, because the choice turns on how
@@ -165,7 +165,7 @@ the user actually uses `editor` and no agent here has evidence about that.
 
 **Inherited from the earlier session, untouched by this Directive:** the `## Filename Patterns`
 citation rule (cite a record by its full filename, never by the bare timestamp), the stash-manifest
-duplication decision, and the anticipated Circle `circles/260801-1244-curator`, which remains unblocked
+duplication decision, and the anticipated Circle `260801-1244-curator`, which remains unblocked
 and whose remit covers the conventions file this session grew by roughly 3.9 kB.
 
 **Local state:** `origin/main` is at `fd74b89`; HEAD carries the bookkeeping commits that landed after

@@ -4,7 +4,7 @@
 **Agent:** reconciler
 **Domain:** `code`
 **Status:** Complete
-**Circle:** `circles/260821-1042-reply-bounded-whole-question-answered`
+**Circle:** `260821-1042-reply-bounded-whole-question-answered`
 **HEAD:** `9a68760`. **Session anchor:** `e764637`. Working tree clean at start and at end.
 **Verification:** `cd hooks && npm test` — exit 0, 40 files, 718 tests.
 
@@ -37,13 +37,13 @@ was performed in the working tree, the gate was run, and it failed with `stale m
 exactly those five; the rename was then reverted and the tree left clean. So the correct sequence is
 to repair the citations into the `_*_` wildcard form first and rename second, and the repair reaches
 records this pass has no standing to rewrite. Filed as
-`circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
+`260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`,
 with the same class already on record at
-`circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md`.
+`260815-1913_*_closing-the-plan-dangles-thirty-four-workbench-citations-that-spell-its-open-marker.md`.
 
 ### 2. The verbosity record: the rule-text half is closed, the marker is the user's call
 
-`shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+`260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 was read in full against the current `rules/user-facing-output.md`. Both halves are answered in
 shipped rule text and each answer was verified by line.
 
@@ -81,7 +81,7 @@ them, rather than inheriting a marker somebody moved.
 
 Each was re-verified against the tree rather than read.
 
-- `260821-2202` — AI04 now reads `name: "Mechanical enumeration"` and C06 still reads
+- `260821-2202_*_two-entry-names-no-longer-cover-their-instructions-and-ai04s-only-example-is-not-a-triad.md` — AI04 now reads `name: "Mechanical enumeration"` and C06 still reads
   `"One name per thing"` while its instruction carries the restatement clause. Open for the C06
   half, as its own note says. The reason it gave for waiting has expired: its companion decided the
   clause stays in the profile, so the rename is now unblocked.
@@ -90,7 +90,7 @@ Each was re-verified against the tree rather than read.
   The golden agrees at `total 20360` and the two attribution blocks are one.
 - `260821-2204` (the C05 pointers) — unchanged in all four profile copies; `surface()` still walks
   no `.yaml`.
-- `260821-2214` — the 18 314 figure is still in the step log, unfixed, and now understates the gap
+- `260821-2214_*_a-step-log-defends-a-bounded-surface-with-a-count-taken-over-a-different-file-set-than-the-bound.md` — the 18 314 figure is still in the step log, unfixed, and now understates the gap
   by more than when it was filed.
 - `shared/260821-2206` — U+2013 still in both German profiles; Turn 3 rewrote AI04 in the same file
   and did not reach AI02.
@@ -103,7 +103,7 @@ Each was re-verified against the tree rather than read.
 
 The record's `**Active spec/plan:**` reads `(none yet)` while the Circle ran on a plan. That is
 option 3 of
-`circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`,
+`260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`,
 held pending an answer, and the decision itself is what makes it coherent rather than an omission.
 The record states the Directive in full; the plan's `## Directive` points back at the record and
 restates nothing. So exactly one document states the Directive, which is the invariant the head-field
@@ -125,13 +125,13 @@ concurrently into one store. The filename pattern in `rules/fusion-workbench-con
 sharing a stamp are well-formed. Every citation of all four in the workbench carries the slug, so no
 pointer is ambiguous, and the citation gate resolves all of them.
 
-Two residues, neither of them the collision. Two citations spell `260821-2203_o_ai04s-remedy…`
+Two residues, neither of them the collision. Two citations spell `260821-2203_*_ai04s-remedy…`
 where that record now carries `_c_`; both sit in a closed issue and a review, which are outside the
 gate's corpus, so nothing is red and both are stale for a reader. And the concurrent filing produced
 a real fault of a different kind, which `coderev` disclosed against itself: a `sed -i` over the
 whole issues directory rewrote five files another reviewer was writing. That is recorded on its
 class record at
-`shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
+`260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
 and needs nothing further here.
 
 ## Drift between what the plan says and what landed
@@ -168,14 +168,14 @@ met without borrowing from each other.
 
 ## Decision transitions
 
-`260821-1801` moved `_a_` → `_i_`. Its answer, a 25-line total for a session summary with the
+`260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md` moved `_a_` → `_i_`. Its answer, a 25-line total for a session summary with the
 ten-line header kept, is realised at `rules/user-facing-output.md:103` in commit `9aa8ecf`, and the
 record is cited on the line it governs. Checked before renaming: every citation of it in the gate's
 corpus uses the `_*_` wildcard form, so the transition dangles nothing.
 
 The four `260821-1108` scoping records stay `_a_`. Three of them constrain how the Circle worked
 rather than name something to build, and the fourth parks a repair for a later Circle; none has an
-implementation to cite. The one open decision, `260821-2004`, stays open and is discussed above.
+implementation to cite. The one open decision, `260821-2004_*_what-happens-to-the-directive-when-the-plan-a-circle-runs-on-deliberately-does-not-state-one.md`, stays open and is discussed above.
 
 Three decisions in `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/` still read
 open while their substance is settled in this Circle's own records. The playmaker recorded this at
@@ -186,7 +186,7 @@ reconciler should not write on somebody else's behalf.
 
 ## New records filed by this pass
 
-- `circles/260821-1042-reply-bounded-whole-question-answered/issues/260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`
+- `260821-2349_*_closing-the-plan-and-the-verbosity-record-dangles-seventeen-marker-literal-citations.md`
 
 ## Misfiled — should be a decision
 
@@ -200,5 +200,5 @@ has to carry.
 `a5e2cc5`, `1daf063`, `c8f0c74`, `9a68760`. Both reviews declare `**Reviewed-range:**
 e764637..de0c6f6` and between them carry fifteen `**Not-opened:**` paths that no later pass picked
 up. The user chose to close without a second review pass, knowingly, which
-`shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`
 makes the user's call to make.

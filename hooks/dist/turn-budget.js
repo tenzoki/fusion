@@ -9,7 +9,7 @@
  * 5-Turn circuit breaker", "`max_turns` (default 5)", a circuit-breaker table
  * row, a YAML schema line, a dashboard example). No project could change it, and
  * one of the seven already called it a "default", which implied a source that
- * could override it. None existed, so the word was false (issue `260811-1712`).
+ * could override it. None existed, so the word was false (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
  *
  * A prompt cannot merge configuration layers, so the budget had to become
  * something the prompt READS. This is that read: one call at Setup, one line of
@@ -33,7 +33,7 @@
  * one setting the file carries. A project upgrading over that release still has
  * the old file on disk and hears about it from the loader, on every guarded
  * tool call and on this program's stderr, until it copies the budget across
- * and deletes it (`260816-1915`, `260816-1916`).
+ * and deletes it (`260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`).
  *
  * A project declares a different budget with:
  *

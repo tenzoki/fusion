@@ -31,7 +31,7 @@ countTurns('{"event":"session_start","checkout":"aaaa1111","history_file":"H"}',
 -> {"ok":false,"why":"anchor-without-timestamp","historyFile":"H","malformed":0}
 ```
 
-**Why the header rather than the code is the defect.** `hooks/events-query.ts:5-9` and the `CLAUDE.md` row for this helper both say the script's own header is where the exit table lives, which is the convention `bin/fusion-turn-budget`, `bin/fusion-identity` and `bin/fusion-session-domain` each carry. A reader who goes to the one authoritative place gets an incomplete table. The same omission stands in the plan's `## API Changes` exit table (`planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`), so the two agree with each other and both are short of the code.
+**Why the header rather than the code is the defect.** `hooks/events-query.ts:5-9` and the `CLAUDE.md` row for this helper both say the script's own header is where the exit table lives, which is the convention `bin/fusion-turn-budget`, `bin/fusion-identity` and `bin/fusion-session-domain` each carry. A reader who goes to the one authoritative place gets an incomplete table. The same omission stands in the plan's `## API Changes` exit table (`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`), so the two agree with each other and both are short of the code.
 
 **Fix direction.** Add the second cause to the exit-4 row in `bin/fusion-events`: the `session_start` naming that history file carries no readable `ts`, so no window can be opened. Both causes share what the caller does, which is the reasoning the header already gives for exit 3 naming an outcome rather than a cause, so one code for two causes is right and only the table is short.
 
@@ -42,4 +42,4 @@ Resolved: the exit-4 row of the `bin/fusion-events` header now names both causes
 
 No code change, per the record: the two causes are correctly one code, and the header rather than the program was the defect.
 
-**One residual, named rather than fixed.** The same omission stands in the plan's `## API Changes` exit table (`planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`). `planning/` was outside this task's file scope, and the record's own `**Scope.**` line names only the header. The header is the authoritative surface and is now complete; the plan's table is a description of the header and is one row short of it.
+**One residual, named rather than fixed.** The same omission stands in the plan's `## API Changes` exit table (`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`). `planning/` was outside this task's file scope, and the record's own `**Scope.**` line names only the header. The header is the authoritative surface and is now complete; the plan's table is a description of the header and is one row short of it.

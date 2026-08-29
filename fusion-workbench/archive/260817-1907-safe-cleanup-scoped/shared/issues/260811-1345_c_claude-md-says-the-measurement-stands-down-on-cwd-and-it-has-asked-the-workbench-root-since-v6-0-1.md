@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** orchestrator, on a finding reported by coder during task 36 (Turn 2)
 **Affects:** `CLAUDE.md:127`
-**Cross-references:** `fusion-workbench/circles/260801-1244-guard-rules-write/issues/260805-1839_c_der-tracker-steht-im-plugin-repo-nur-dann-still-wenn-cwd-exakt-die-repo-wurzel-ist.md` (closed by commit `1d5eed6`)
+**Cross-references:** `260805-1839_*_der-tracker-steht-im-plugin-repo-nur-dann-still-wenn-cwd-exakt-die-repo-wurzel-ist.md` (closed by commit `1d5eed6`)
 
 ---
 

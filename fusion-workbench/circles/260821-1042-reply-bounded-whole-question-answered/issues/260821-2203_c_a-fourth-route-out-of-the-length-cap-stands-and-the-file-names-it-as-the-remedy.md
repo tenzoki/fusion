@@ -27,19 +27,19 @@ A fourth route out of the length cap stands, and `## Questions and gates` names 
 
 **The arithmetic.** A plain-text gate is permitted eight lines. The same content routed through `AskUserQuestion` with four options is permitted 6 + 4 × (4 + 2) = **30 lines**, and the file states no total against which those 30 are counted. The user reads one output either way. Line 108's claim that every cap is "the budget for the whole output it names" is false for the two `AskUserQuestion` entries: they name parts of an output, not an output.
 
-**Why it survived the Circle.** The plan surveyed for exactly this and stopped one clause short. `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md:22`:
+**Why it survived the Circle.** The plan surveyed for exactly this and stopped one clause short. `260821-1805_*_plan-reply-bounded-whole-question-answered.md:22`:
 
 > I read `## Length`, `## Information architecture`, `## Questions and gates` and `## Sketch structure instead of narrating it` for any further exemption or relocation clause and found none: `## Questions and gates` line 105 already writes its arithmetic as a total.
 
 Line 105 at the anchor is the bullet quoted above. Its arithmetic *is* written as a total, for the three-option plain-text case. The escape clause is the second sentence of the same bullet, and the survey did not reach it.
 
-**It is also the second half of the record the Circle claims to close.** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md:185` says `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` "is closed by steps 2, 3 and 5 together, both halves". That record's own reconciliation of 260821-0412 already observed that the `AskUserQuestion` caps are per-field. With this route standing, the second half is not closed and the closure note should not say it is.
+**It is also the second half of the record the Circle claims to close.** `260821-1805_*_plan-reply-bounded-whole-question-answered.md:185` says `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` "is closed by steps 2, 3 and 5 together, both halves". That record's own reconciliation of 260821-0412 already observed that the `AskUserQuestion` caps are per-field. With this route standing, the second half is not closed and the closure note should not say it is.
 
 **The neighbouring half of the same sentence.** "or it splits into two gates" has the same shape: two gates carry two eight-line budgets for one decision. It is weaker than the `AskUserQuestion` route, because splitting a decision usually does reduce what each gate carries, but the clause as written offers the split as a way to fit a cap rather than as a way to make a decision smaller.
 
 **A fix direction, not a prescription.** The smallest repair consistent with what the Circle already did is one entry in `## Length` giving `AskUserQuestion` a whole-output total the way the session-summary entry now reads ("≤ N lines in total, ≤ M of them ..."), and a rewrite of `:95` so that the fourth option is a reason to make the decision smaller rather than a reason to change the surface. Whether the number is measured or recommended is the same question `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md` answered for the summary, and it is a decision record rather than a coder's judgement.
 
-**Cross-references:** `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`; `circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md` `## Directive`; `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`.
+**Cross-references:** `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`; `260821-1042-reply-bounded-whole-question-answered` `## Directive`; `260821-1801_*_what-total-caps-a-session-summary-now-that-no-reply-has-an-uncapped-tail.md`.
 
 ---
 Resolved: Turn 2, `rules/user-facing-output.md`. The route is closed at both ends and no new number was invented for it.
@@ -49,4 +49,4 @@ Resolved: Turn 2, `rules/user-facing-output.md`. The route is closed at both end
 - **The eight is derived, not chosen.** The bullet's own arithmetic already computes the worst case as 1 stem + 3 option lines + 3 foreclosure lines = 7 against 8, and that arithmetic holds unchanged on `AskUserQuestion` when each `description` is one line. So no decision record was needed for a magnitude: the number is the gate cap the file already carried, applied to the surface it had exempted.
 - Cost: the file stands at 20 062 bytes against the anchor `e764637`'s 20 144, 82 under. No further cut was taken and no candidate from step 5's pool was spent.
 
-Not claimed: the plan's closure note for `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is not rewritten here. This step closed the fourth route; whether that record's length half may now be called closed is the orchestrator's to state.
+Not claimed: the plan's closure note for `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md` is not rewritten here. This step closed the fourth route; whether that record's length half may now be called closed is the orchestrator's to state.

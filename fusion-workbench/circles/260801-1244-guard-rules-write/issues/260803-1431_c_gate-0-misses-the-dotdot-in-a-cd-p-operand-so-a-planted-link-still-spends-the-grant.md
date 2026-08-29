@@ -8,11 +8,11 @@
 **Affects:** `hooks/lib/bash-mutation-guard.ts` (Bash surface only; the write-tool
 surface is unaffected)
 **Cross-references:**
-`issues/260802-2229_c_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md`
+`260802-2229_*_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md`
 (the class, closed by gate 2),
-`issues/260802-2330_c_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`
+`260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md`
 (the same class one layer down, closed by gate 0 in `3b0f9e7`),
-`history/260803-1251-turn3-t3-1-gate-0-dotdot-spelling-refusal.md`
+`260803-1251-turn3-t3-1-gate-0-dotdot-spelling-refusal.md`
 
 ---
 
@@ -91,7 +91,7 @@ logical `cd` and wrong only once `-P` or `set -P` puts bash into physical mode.
 
 ## Why this is High and not Critical
 
-The reach is the whole protected list, which is the reach of `260802-2229` (Critical).
+The reach is the whole protected list, which is the reach of `260802-2229_*_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md` (Critical).
 Two things argue it down one step, and they should be visible to whoever triages it:
 
 - The exploit needs the flag twice — once to plant inside `rules/`, once to spend the
@@ -137,7 +137,7 @@ because each of them is currently the reason a later reader would not look here.
 
 ## Origin
 
-`circles/260801-1244-guard-rules-write`, Turn 3 incremental review, while checking whether
+`260801-1244-guard-rules-write`, Turn 3 incremental review, while checking whether
 gate 0 is complete against its class.
 
 ---
@@ -156,13 +156,13 @@ The three docstrings that assert the closed form are unamended:
 - `hooks/lib/rules-write-exemption.ts:69-71` — gate 0 "is also complete against the class BY INSPECTION"
 - `hooks/lib/bash-mutation-guard.ts:215` — `spelled` described as "that operand BEFORE `normalize`", silent about the base
 
-**Reachability of the neighbouring open issue, checked so the two are not confused.** This route does not make `issues/260803-1251_o_fs-locator-collapses-dotdot-lexically-…` reachable. `resolveDir` consumes the `..` before `Target.spelled` exists, so `realFsLocator.absolute()` never receives one. Same class, different defect, and each needs its own fix.
+**Reachability of the neighbouring open issue, checked so the two are not confused.** This route does not make `260803-1251_*_fs-locator-collapses-dotdot-lexically-…` reachable. `resolveDir` consumes the `..` before `Target.spelled` exists, so `realFsLocator.absolute()` never receives one. Same class, different defect, and each needs its own fix.
 
-**Fourth instance of one class in this Circle.** `260802-2229` (planted symlink, closed by gate 2), `260802-2230` (un-collapsed protected match, closed by `collapseSegments`), `260802-2330` (lexical `..` collapse, closed by gate 0 in `3b0f9e7`), and now this one, entered through the `cd` rather than the operand. `260802-2320` (case folding) is the same shape on the protection side. Whoever picks this up should weigh the review's own framing — narrow the grant, do not widen the resolver — against the fact that the narrowing has now been done three times and the class keeps returning through a new entrance.
+**Fourth instance of one class in this Circle.** `260802-2229_*_rules-write-flag-is-a-write-anywhere-primitive-via-a-symlink-planted-in-rules.md` (planted symlink, closed by gate 2), `260802-2230_*_check-2-matches-the-protected-list-un-canonicalised-so-dot-slash-agents-coder-md-is-not-protected.md` (un-collapsed protected match, closed by `collapseSegments`), `260802-2330_*_the-lexical-dotdot-collapse-erases-the-symlink-gate-2-was-added-to-resolve.md` (lexical `..` collapse, closed by gate 0 in `3b0f9e7`), and now this one, entered through the `cd` rather than the operand. `260802-2320_*_case-folding-bypasses-the-entire-protected-list-on-a-case-insensitive-filesystem.md` (case folding) is the same shape on the protection side. Whoever picks this up should weigh the review's own framing — narrow the grant, do not widen the resolver — against the fact that the narrowing has now been done three times and the class keeps returning through a new entrance.
 
 ---
 
-## Resolved — reconstructed by reconciliation 260804-1021, because the closing commit left no note
+## Resolved — reconstructed by reconciliation 260804-1021-reconciliation.md, because the closing commit left no note
 
 Renamed `_o_` → `_c_` in `a79ff1a` with **zero content change** (`R100`). The closure holds, but the file carried no evidence of it and its `## What is wrong` section still reads as live. Recorded here.
 

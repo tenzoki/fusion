@@ -159,7 +159,7 @@ describe("citation scanner: the gate sees the exemption", () => {
   it.skipIf(!WORKBENCH_PRESENT)("does not count a fenced citation as resolved either", () => {
     // An exempt token is not judged, in either direction: it must not inflate
     // the resolved count that the sibling lint pins a baseline on.
-    const live = "circles/260819-1645-four-constraints-on-deep-change";
+    const live = "260819-1645-four-constraints-on-deep-change";
     const prose = scanRecordCitations("fixture.md", doc(`see ${live}`));
     expect(prose).toEqual({ violations: [], resolved: 1 });
     const fenced = scanRecordCitations("fixture.md", doc("```", `see ${live}`, "```"));

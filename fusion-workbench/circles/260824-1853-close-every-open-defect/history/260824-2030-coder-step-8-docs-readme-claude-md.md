@@ -1,7 +1,7 @@
 # Coder, plan step 8: `docs/`, `README*`, `CLAUDE.md`
 
 **Status:** Complete
-**Plan:** `circles/260824-1853-close-every-open-defect/planning/260824-1905_p_plan-close-every-open-defect.md` step 8, triage rows 14, 54, 56, 107, 110, 120, 129, 140, 160.
+**Plan:** `260824-1905_*_plan-close-every-open-defect.md` step 8, triage rows 14, 54, 56, 107, 110, 120, 129, 140, 160.
 
 ## What changed
 

@@ -4,11 +4,11 @@
 **Domain:** code
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`;
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1132-reconciliation.md`;
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260826-1219-reconciliation-confirmation.md`;
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/issues/260826-1219_*_the-event-line-contracts-own-rule-sentence-says-a-half-of-a-set-this-circle-grew-to-three.md`;
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/reviews/260826-1116-coderev-turn-3-the-count-corrections.md`
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`;
+`260826-1132-reconciliation.md`;
+`260826-1219-reconciliation-confirmation.md`;
+`260826-1219_*_the-event-line-contracts-own-rule-sentence-says-a-half-of-a-set-this-circle-grew-to-three.md`;
+`260826-1116-coderev-turn-3-the-count-corrections.md`
 
 ---
 
@@ -68,7 +68,7 @@ them. **A cardinality can be carried by `half`, `pair`, `both`, `either`, `the
 other`, or by a bare enumeration**, and a count-word sweep is blind to all of it.
 
 **The cost is real and it is not the wrong number.** A reader who follows "three
-readers" looks for three and stops. `260826-0136` was closed on "all three emit
+readers" looks for three and stops. `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md` was closed on "all three emit
 sites" while a fourth stood, so a wrong count closed a defect that was not fixed.
 
 ## Options
@@ -106,7 +106,7 @@ sites" while a fourth stood, so a wrong count closed a defect that was not fixed
 4. **Accept the residual and say so.** State cardinalities, correct them when a
    later pass finds them, and record that this class of drift is expected here.
    - Pros: honest, costs nothing, and matches what actually happened seven times.
-   - Cons: `260826-0136` shows the cost is not cosmetic. And "a later pass finds
+   - Cons: `260826-0136_*_the-absent-rather-than-empty-rule-has-no-expression-in-any-of-the-three-emit-templates.md` shows the cost is not cosmetic. And "a later pass finds
      it" is the assumption this Circle falsified: six passes ran and the seventh
      found one inside the sixth's declared scope.
 

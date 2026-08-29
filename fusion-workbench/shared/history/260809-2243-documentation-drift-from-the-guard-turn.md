@@ -3,7 +3,7 @@
 **Agent:** coder
 **Status:** Complete
 **Date:** 2026-08-09
-**Source:** review `shared/reviews/260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md`
+**Source:** review `260809-2050-coderev-guard-and-hooks-turn-6b94e17-to-head.md`
 (findings M3, L1) plus the two branch-rule sentences `6fae676` deferred to a
 documentation task
 
@@ -14,7 +14,7 @@ documentation task
 Five documents, no code. `hooks/dist/` is untouched: `npm test` rebuilt it and the
 result is byte-identical, so it does not appear in `git status`.
 
-### Obligation 1 — ping-back described as live (`260809-2047`)
+### Obligation 1 — ping-back described as live (`260809-2047_*_three-shipped-documents-still-describe-ping-back-detection-as-a-live-guard-feature.md`)
 
 `c353196` removed the cross-file ping-back tracker; three documents still promised it.
 
@@ -33,10 +33,10 @@ result is byte-identical, so it does not appear in `git status`.
 
 Acceptance criteria of the record: `grep -ri "ping-back\|pingback" docs/ skills/
 agents/ README*.md` now returns one line, `README-hooks.md:25`, which names decision
-`260809-2004` retrospectively. `docs/philosophy.md` no longer attributes a halt to
+`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md` retrospectively. `docs/philosophy.md` no longer attributes a halt to
 churn.
 
-### Obligation 2 — the seam's callers, two commits stale (`260809-2048`)
+### Obligation 2 — the seam's callers, two commits stale (`260809-2048_*_readme-hooks-says-escalation-keeps-its-own-load-and-save-two-commits-after-it-stopped.md`)
 
 - `README-hooks.md:176` — `escalation.ts` now uses the seam (`loadGuardState` at
   `lib/escalation.ts:202` and `:284`, `saveGuardState` at `:296`) and wraps it with the
@@ -93,7 +93,7 @@ what caught it.
 
 `docs/philosophy.md` ends with a stray `</content>` tag (line 52), introduced by
 `43ee3b5` and shipped in every release since. Filed as
-`shared/issues/260809-2243_o_docs-philosophy-md-ends-with-a-stray-content-tag-…` rather
+`260809-2243_*_docs-philosophy-md-ends-with-a-stray-content-tag-…` rather
 than fixed inside this commit, so an unrelated edit does not hide in it.
 
 The `.claude/rules/**` addition (`b2e3d12`) is documented correctly in
@@ -112,5 +112,5 @@ sites.
 `cd hooks && npm test` — 34 files, **1154 tests, all passing**, the same count the
 Turn's last commit reported. The golden was the only fixture to move.
 
-The two issue records `260809-2047` and `260809-2048` were left in progress and were
+The two issue records `260809-2047_*_three-shipped-documents-still-describe-ping-back-detection-as-a-live-guard-feature.md` and `260809-2048_*_readme-hooks-says-escalation-keeps-its-own-load-and-save-two-commits-after-it-stopped.md` were left in progress and were
 not renamed, as instructed.

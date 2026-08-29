@@ -150,10 +150,10 @@ Vier Entscheidungen sind als Entscheidungssätze abgelegt. D1 ist die wichtigste
 
 | Nr. | Frage | Datei | Unsere Empfehlung |
 |---|---|---|---|
-| D1 | Ist Plane Spiegel, führendes System oder beidseitiger Abgleich? | `decisions/260716-1847[o]-plane-rolle-source-of-truth.md` | Spiegel, unter Vorbehalt |
-| D2 | Circle-Verzeichnis oder Typ-Ordner? | `decisions/260716-1847[o]-workbench-struktur-circle-container-vs-typ-ordner.md` | Circle-Verzeichnis plus gemeinsame Ablage |
-| D3 | Was tut fusion, wenn Plane nicht erreichbar ist? | `decisions/260716-1847[o]-offline-verhalten-bei-plane-ausfall.md` | Weiterarbeiten, Plane später neu aufbauen |
-| D4 | Ein Circle oder zwei? | `decisions/260716-1847[o]-zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` | Zwei, Umbau zuerst |
+| D1 | Ist Plane Spiegel, führendes System oder beidseitiger Abgleich? | `260716-1847[o]-plane-rolle-source-of-truth.md` | Spiegel, unter Vorbehalt |
+| D2 | Circle-Verzeichnis oder Typ-Ordner? | `260716-1847[o]-workbench-struktur-circle-container-vs-typ-ordner.md` | Circle-Verzeichnis plus gemeinsame Ablage |
+| D3 | Was tut fusion, wenn Plane nicht erreichbar ist? | `260716-1847[o]-offline-verhalten-bei-plane-ausfall.md` | Weiterarbeiten, Plane später neu aufbauen |
+| D4 | Ein Circle oder zwei? | `260716-1847[o]-zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md` | Zwei, Umbau zuerst |
 
 Der Vorbehalt bei D1: unsere Empfehlung trägt nur, wenn der Nutzer Plane zum Mitlesen und zur Abstimmung nutzen will. Erwartet er, in Plane selbst Status zu ziehen und zu kommentieren, und dass fusion das aufnimmt, dann lautet die Frage Option 3 oder gar nicht.
 
@@ -181,4 +181,4 @@ D4: 2 Circles.
 
 ## Reconciliation Log
 
-**260806-1152 (reconciler, workbench-wide pass)** — Marker `_o_` → `_c_`, rückwirkend. Alle vier offenen Entscheidungen sind seit langem entschieden: D1 Plane-Rolle (`decisions/260716-1847_*_plane-rolle-source-of-truth.md`, `_i_`), der Zuschnitt (`decisions/260716-1847_*_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md`, Option 1 „zwei Circles", mit diesem Durchgang auf `_i_` gewandert), Offline-Verhalten (`decisions/260716-1847_*_offline-verhalten-bei-plane-ausfall.md`, `_i_`); die verbleibenden Plane-Detailfragen wurden im Plane-Circle selbst entschieden (`circles/260719-1536-plane-mirror-integration/decisions/`, drei `_i_`-Records). Realisierung: C1+C2 durch `planning/260716-1910_c_plan-workbench-umbau-circle-container.md` (v4.0.0, Reconciliation `history/260717-1945-reconciliation.md`); C3+C4 in bewusst neu zugeschnittener, begrenzter Form durch `circles/260719-1536-plane-mirror-integration` (`_c_`, Plan `260719-2223_c_plan-plane-bounded-bridge.md`, plus Nachfolger `shared/planning/260722-2021_c_plan-plane-spec-comment.md`). Der Neuzuschnitt ist im Bridge-Plan begründet und ersetzt die hier skizzierte breitere Integration; kein offener Rest verbleibt in dieser Spec.
+**260806-1152 (reconciler, workbench-wide pass)** — Marker `_o_` → `_c_`, rückwirkend. Alle vier offenen Entscheidungen sind seit langem entschieden: D1 Plane-Rolle (`260716-1847_*_plane-rolle-source-of-truth.md`, `_i_`), der Zuschnitt (`260716-1847_*_zuschnitt-umbau-und-plane-ein-oder-zwei-circles.md`, Option 1 „zwei Circles", mit diesem Durchgang auf `_i_` gewandert), Offline-Verhalten (`260716-1847_*_offline-verhalten-bei-plane-ausfall.md`, `_i_`); die verbleibenden Plane-Detailfragen wurden im Plane-Circle selbst entschieden (`circles/260719-1536-plane-mirror-integration/decisions/`, drei `_i_`-Records). Realisierung: C1+C2 durch `260716-1910_*_plan-workbench-umbau-circle-container.md` (v4.0.0, Reconciliation `260717-1945-reconciliation.md`); C3+C4 in bewusst neu zugeschnittener, begrenzter Form durch `260719-1536-plane-mirror-integration` (`_c_`, Plan `260719-2223_*_plan-plane-bounded-bridge.md`, plus Nachfolger `260722-2021_*_plan-plane-spec-comment.md`). Der Neuzuschnitt ist im Bridge-Plan begründet und ersetzt die hier skizzierte breitere Integration; kein offener Rest verbleibt in dieser Spec.

@@ -1,4 +1,4 @@
-# Orchestrator Session — 260822-1009
+# Orchestrator Session — 260822-1009-orchestrator-session.md
 
 **Directive:** Rebuild fusion into a multi-user tool: lift and reframe the single-active-orchestrator decision so several users can work on one workbench (and possibly several instances on one machine), and move the workbench and session state that is currently gitignored into the repository.
 **Mode:** custom (Phase 0b shaping)
@@ -39,7 +39,7 @@
 
 The user stated the Directive and cited "an extensive backlog entry" for it. **No such entry
 exists.** `shared/backlog/` holds three files and none is about multi-user work; a playmaker run
-four hours earlier (260822-0319) had grepped `shared/` and `circles/` for multi-user, multi-tenant,
+four hours earlier (260822-0319-playmaker-orchestrator-phase4.md) had grepped `shared/` and `circles/` for multi-user, multi-tenant,
 concurrency, parallel-session and worktree-slot wording and recorded the same absence in
 `portfolio.md`. The orchestrator put the discrepancy to the user at a gate with three ways forward.
 The user chose to shape from the request text, accepting that any prior work in the entry is lost.
@@ -48,7 +48,7 @@ Mode resolved as `custom`, with no pre-existing plan, so Phase 0b applies.
 
 ### What the orchestrator measured before dispatching
 
-- **The blocking record** is `shared/decisions/260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md`,
+- **The blocking record** is `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`,
   answered by the user at Option 3: fusion stays single-active-Circle with no concurrency lock, and
   parallelism is out of scope. Its Option 2 sketches what is now being asked for and says it is
   "almost certainly a separate Circle of its own". Its second reconciliation note (260819-1400)
@@ -108,7 +108,7 @@ single-active-Circle model itself is in scope or only the advisory warning.
 
 ### Filed during shaping
 
-- `shared/issues/260822-1028_o_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
+- `260822-1028_*_the-gitignore-kept-list-names-three-tracked-records-and-the-rule-it-cites-names-four.md`
   — the `KEPT:` comment in `.gitignore` names three tracked records where the rule it cites names
   four; `.asset-provenance` is missing from the list. Nothing is broken, the enumeration is
   incomplete. Found while reading the very file this rebuild will rewrite.
@@ -150,7 +150,7 @@ active Circles per session means turning that file into session state, which is 
 
 ### The head-room decision, filed and answered in the same session
 
-The shaper filed `shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`
+The shaper filed `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`
 with no recommendation, on the ground that the trade is the user's. Re-measured at HEAD it found
 the hook-test head-room had moved from 15 lines to 12 since `655d976`, so 30 bytes on `skills/`
 and 12 lines on the hook tests are what the rebuild would start against.
@@ -165,7 +165,7 @@ and the changed sequencing.
 
 ### Round 3 — the spec, and the spec-review gate
 
-Spec written to `shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md` and
+Spec written to `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md` and
 **approved by the user** at the Phase-0b gate. What it settles, beyond the eight answers:
 
 - **Five Circles, not four.** C0 cut-only, C1 isolation proof plus supersession of the blocking
@@ -221,7 +221,7 @@ quoted assertion strings. Commit `aa44a8b`.
 **Gate A**, on totals of 83/500 lines, 6 665/10 362 bytes and 4 290/4 300 bytes. Two answers:
 
 - The pin's re-approval log: **option 2**. Rationale and newest entry stay; the other 25 move to an
-  analysis record with a citation line in their place. Recorded on `260822-1229`, now implemented.
+  analysis record with a citation line in their place. Recorded on `260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md`, now implemented.
 - The `agents/` shortfall: **relocate the reviewer contract** to a shared rule. Stated to the user
   as a relocation rather than a cut, and accepted on that statement.
 
@@ -244,7 +244,7 @@ and with one authoring home they run once. The coder also noticed that the Gate 
 authorising the relocation existed only in a dispatch prompt, and filed it as a decision record so
 the new rule file's provenance could cite something durable.
 
-`P-4` was dispatched with defect `260822-1227`, which the analyst filed **against the plan step
+`P-4` was dispatched with defect `260822-1227_*_plan-step-4-names-a-duplication-record-whose-own-fix-direction-forbids-the-cut-the-step-asks-for.md`, which the analyst filed **against the plan step
 itself**: one of the three duplication records the step names as a first candidate cannot be cut
 the way the step asks, yielding zero `skills/` bytes and costing about ten hook-test lines. The
 ledger and that defect supersede the step's candidate list.
@@ -265,11 +265,11 @@ HEAD `9f65463`.
 
 **Edges:**
 
-- **Artifact↔Grounding:** every figure the closure measurement reports was re-derived from the tree and matches to the byte and the line — head-room 16 601 / 4 661 bytes and 302 lines, four baseline maps identical to `370bfc5` by diff (413, 389, 1 554, 1 042 bytes), clause 5's failure exactly 206 bytes and 49 lines across `620e737`, `77b9a02`, `181dd8a` and `c2ad89c` — and the four decisions that authorised commits hold their citations (`260822-1229` → `hooks/lib/__tests__/reference-resolution-lint.test.ts:488-493`, `260822-1330` → `181dd8a`, `260822-1102` → the Gate answer, `260822-1154` ×2 → no baseline moved); against that, **three stated claims are false** (`shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md:54` names an anchor two commits behind where it ran; `shared/issues/260822-1228_*_…` reported step 8's own effect as a pre-existing state; the closure measurement assigns 610 bytes of the five-claim cut to the reviewer-contract relocation), **six tracking fields had drifted** (the plan's `**Status:**` and five unmarked steps, the spec's `**Status:**`), and **one shipped-text commit carries no review** — `bin/fusion-review-coverage --since 370bfc5` returns `verdict=uncovered` with `77b9a02` touching three skill bodies, which `shared/decisions/260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` permits but does not excuse. **Flagged.**
+- **Artifact↔Grounding:** every figure the closure measurement reports was re-derived from the tree and matches to the byte and the line — head-room 16 601 / 4 661 bytes and 302 lines, four baseline maps identical to `370bfc5` by diff (413, 389, 1 554, 1 042 bytes), clause 5's failure exactly 206 bytes and 49 lines across `620e737`, `77b9a02`, `181dd8a` and `c2ad89c` — and the four decisions that authorised commits hold their citations (`260822-1229_*_where-does-the-reference-resolution-pins-re-approval-attribution-log-live.md` → `hooks/lib/__tests__/reference-resolution-lint.test.ts:488-493`, `260822-1330_*_where-does-the-reviewer-contract-live-when-the-agents-surface-has-to-give-back-bytes.md` → `181dd8a`, `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md` → the Gate answer, `260822-1154` ×2 → no baseline moved); against that, **three stated claims are false** (`260822-1226-cut-ledger-for-three-bounded-surfaces.md:54` names an anchor two commits behind where it ran; `260822-1228_*_…` reported step 8's own effect as a pre-existing state; the closure measurement assigns 610 bytes of the five-claim cut to the reviewer-contract relocation), **six tracking fields had drifted** (the plan's `**Status:**` and five unmarked steps, the spec's `**Status:**`), and **one shipped-text commit carries no review** — `bin/fusion-review-coverage --since 370bfc5` returns `verdict=uncovered` with `77b9a02` touching three skill bodies, which `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` permits but does not excuse. **Flagged.**
 
-- **Artifact↔Directive:** the commits are **orthogonal to the stated Directive**, and that is the honest reading rather than a harsh one — eleven of the twelve contain no multi-user work of any kind (`4a58be1`, `aa44a8b`, `5afb910`, `181dd8a`, `c2ad89c`, `7c9e3f1`, `620e737`, `6781814`, `c600eb7`, `77b9a02`, `9f65463` are a cut, four defect fixes, two reviews and a measurement), no record template gained a person field, `.gitignore` is untouched, `orchestrator-events.jsonl` gained no presence line, and the decision the Directive requires overturned is still standing; the single commit that moves toward the Directive is `faac921`, which carries the spec and the plan. The orthogonality is **authorised and preparatory**: the user chose it at the Phase-0b gate (`shared/decisions/260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, option 1), the room it bought is real and measured, and the Directive is more reachable at HEAD than at `370bfc5`. It is still not movement toward the destination, and a closure gate that reads it as movement is reading it wrong. **Flagged.**
+- **Artifact↔Directive:** the commits are **orthogonal to the stated Directive**, and that is the honest reading rather than a harsh one — eleven of the twelve contain no multi-user work of any kind (`4a58be1`, `aa44a8b`, `5afb910`, `181dd8a`, `c2ad89c`, `7c9e3f1`, `620e737`, `6781814`, `c600eb7`, `77b9a02`, `9f65463` are a cut, four defect fixes, two reviews and a measurement), no record template gained a person field, `.gitignore` is untouched, `orchestrator-events.jsonl` gained no presence line, and the decision the Directive requires overturned is still standing; the single commit that moves toward the Directive is `faac921`, which carries the spec and the plan. The orthogonality is **authorised and preparatory**: the user chose it at the Phase-0b gate (`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, option 1), the room it bought is real and measured, and the Directive is more reachable at HEAD than at `370bfc5`. It is still not movement toward the destination, and a closure gate that reads it as movement is reading it wrong. **Flagged.**
 
-- **Grounding↔Directive:** 43 active decisions across the two stores at the end of this pass (24 shared, 19 in Circles; `_o_` + `_a_`, one of them filed by this pass), of which **42 are consistent with the Directive and one contradicts it outright** — `shared/decisions/260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`, `_a_`, whose answer is that fusion stays single-active-Circle with no concurrency lock and whose reconciliation note carries the sentence "nothing in fusion may assume two orchestrators can run safely against one workbench"; the spec schedules its supersession as C1's own work and the orchestrator deliberately sequenced the supersession after the spec was agreed, but the spec **is** agreed and no `Superseded by:` line was written, so the rule is still in force at HEAD. A second, softer item: `shared/decisions/260807-0158_*_how-is-a-unique-record-filename-obtained.md` is `_a_` and settled "no minting helper" on a collision measurement taken over a corpus one person wrote from one checkout, which is the input the Directive changes — filed as `shared/decisions/260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`. No decision-to-decision conflict was found. **Flagged.**
+- **Grounding↔Directive:** 43 active decisions across the two stores at the end of this pass (24 shared, 19 in Circles; `_o_` + `_a_`, one of them filed by this pass), of which **42 are consistent with the Directive and one contradicts it outright** — `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`, `_a_`, whose answer is that fusion stays single-active-Circle with no concurrency lock and whose reconciliation note carries the sentence "nothing in fusion may assume two orchestrators can run safely against one workbench"; the spec schedules its supersession as C1's own work and the orchestrator deliberately sequenced the supersession after the spec was agreed, but the spec **is** agreed and no `Superseded by:` line was written, so the rule is still in force at HEAD. A second, softer item: `260807-0158_*_how-is-a-unique-record-filename-obtained.md` is `_a_` and settled "no minting helper" on a collision measurement taken over a corpus one person wrote from one checkout, which is the input the Directive changes — filed as `260822-1556_*_does-the-record-filename-convention-hold-when-several-checkouts-file-into-one-store.md`. No decision-to-decision conflict was found. **Flagged.**
 
 **Rebalance recommendation:** revise Grounding
 
@@ -283,7 +283,7 @@ argument now permits, since the spec it was waiting on is agreed — is the one 
 removes a standing contradiction. Bounded Closure is not proposed: the Directive is reachable, and
 C0 made it more so.
 
-Reconciliation log for this pass: `shared/history/260822-1556-reconciliation.md`.
+Reconciliation log for this pass: `260822-1556-reconciliation.md`.
 
 ## Budget
 
@@ -309,8 +309,8 @@ Every record figure is derived from the stores at write time rather than tallied
 
 **Range:** `370bfc5..02dff51` — 14 commits
 **Covered by:**
-- `shared/reviews/260822-1421-coderev-c0-cut-only-circle.md`, range `370bfc5..c2ad89c`, covers 6
-- `shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`, range `c2ad89c..6781814`, covers 3
+- `260822-1421-coderev-c0-cut-only-circle.md`, range `370bfc5..c2ad89c`, covers 6
+- `260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`, range `c2ad89c..6781814`, covers 3
 
 **Not covered:** five commits.
 
@@ -330,7 +330,7 @@ to check. The other four change workbench records only.
 **Carried `**Not-opened:**`:** the second review's list, fourteen paths, every one verified against
 the disk before it was written. The first review's list is **not** carried, because five of its
 fifteen entries name records that do not exist — filed as
-`shared/issues/260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`,
+`260822-1510_*_five-of-fifteen-not-opened-entries-name-records-that-do-not-exist-and-no-gate-reads-that-field.md`,
 with the five real records they were paraphrases of named there.
 
 ## What C0 delivered
@@ -352,7 +352,7 @@ answer is recorded rather than reworded:
 - **Clause 5 — nothing added to a bounded surface beyond the four defect fixes: NO**, by 206 bytes
   and 49 lines. None of it is a feature; most is pin re-approval attributions the cuts themselves
   required. All four surfaces are net negative across the range. Filed as
-  `shared/issues/260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`,
+  `260822-1506_*_two-of-the-c0-plans-stopping-clauses-cannot-both-be-answered-yes-for-a-repair-the-first-one-demands.md`,
   whose finding is that clauses 4 and 5 cannot both be answered yes for a repair clause 4 demands.
 - **Clause 4 — every cut carries a home that holds its claim: holds at HEAD, did not hold
   throughout.** It was tripped by a cut in `c2ad89c`, caught by review, and repaired in `620e737`
@@ -363,10 +363,10 @@ answer is recorded rather than reworded:
 - **C1 through C4 of the specification are unstarted**, and the workbench holds no Circle for any of
   them. C0 itself ran without a Circle directory, so Phase 4 had nothing to transition and the
   portfolio cannot rank what comes next. Filed as
-  `shared/issues/260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
+  `260822-1556_*_the-spec-names-five-circles-and-the-workbench-holds-none-of-them-so-c0-closed-with-nothing-to-transition.md`.
 - **13 open defect records** and **6 open decision records** filed this session, listed in
-  `shared/history/260822-1540-coder-c0-step-9-closure-measurement.md` and
-  `shared/history/260822-1556-reconciliation.md`.
+  `260822-1540-coder-c0-step-9-closure-measurement.md` and
+  `260822-1556-reconciliation.md`.
 - The specification stays `_o_` at Partially Complete: one of five capabilities delivered.
 
 ## Session Flow

@@ -33,16 +33,16 @@ citing record does not know its target moved.
 **Scope:** `skills/archive/SKILL.md` (the filter), `hooks/lib/__tests__/helpers/citation-scan.ts` (the
 extracted scanner that has no second caller).
 
-Found by the Circle-store reconciliation of session `260818-2301`, which could not file it at the time:
+Found by the Circle-store reconciliation of session `260818-2301-orchestrator-session.md`, which could not file it at the time:
 its write scope was `circles/*/` and a sibling reconciler held `shared/issues/`. Stated in filable form
-in `shared/history/260819-1400-reconciliation-circles.md` and filed here afterwards.
+in `260819-1400-reconciliation-circles.md` and filed here afterwards.
 
 ---
-Revised by: `circles/260819-1645-four-constraints-on-deep-change/history/260819-1645-shaper-four-constraints-on-deep-change.md` — the description above is wider than the mechanism. The shipped filter checks **`CLAUDE.md` alone**, by `grep -F` on the basename and the workbench-relative path (`skills/archive/SKILL.md:112`, `:185-187`). It does not read "the shipped text"; the nine-root filter this record's wording implies was a one-off widening performed during the archive run of 2026-08-17 and stands in no shipped text at all.
+Revised by: `260819-1645-shaper-four-constraints-on-deep-change.md` — the description above is wider than the mechanism. The shipped filter checks **`CLAUDE.md` alone**, by `grep -F` on the basename and the workbench-relative path (`skills/archive/SKILL.md:112`, `:185-187`). It does not read "the shipped text"; the nine-root filter this record's wording implies was a one-off widening performed during the archive run of 2026-08-17 and stands in no shipped text at all.
 
 The finding is unchanged and if anything sharper: a filter that consults one file keeps even less than one that consults the shipped tree, so the six citations the sweep broke were broken by a narrower mechanism than the record described. The marker stays `_o_`; what moved is the account of what exists today, and a plan built on the wider description would have been planning against prose rather than against the code.
 
-Corrected by the orchestrator of session `260819-2006` before dispatching the planner that will build on it. The measurement that found it is the shaper's, in the run cited above.
+Corrected by the orchestrator of session `260819-2006-orchestrator-session.md` before dispatching the planner that will build on it. The measurement that found it is the shaper's, in the run cited above.
 
 ---
 Resolved: **the consequence in this record's own title is no longer true, and the cause was removed by

@@ -4,9 +4,9 @@
 
 **Severity:** High
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** `bin/fusion-plane:731-760`, and through it `:1039`, `:1043`, `:1514`, `:1533`, `:1569`, `:1778`
-**Cross-references:** commit `c923935`; `shared/issues/260810-0459_c_fusion-count-sources-reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md` (same shape, fixed one commit earlier in `ea492e6`)
+**Cross-references:** commit `c923935`; `260810-0459_*_fusion-count-sources-reports-a-measured-zero-when-git-fails-which-its-own-header-forbids.md` (same shape, fixed one commit earlier in `ea492e6`)
 
 ---
 
@@ -55,7 +55,7 @@ their `%s entries remain` count is read back out of the unchanged file.
 (after a create) and `:1043` (after an update). *Inference, from reading the call chain rather
 than from a live Plane run:* a lost write there means the freshly created issue's UUID never
 reaches the map, the next push's `map_get_id` returns empty, and fusion POSTs a **second** Plane
-issue for the same record — which is issue `260807-1939`, the defect this whole line of work
+issue for the same record — which is issue `260807-1939_*_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md`, the defect this whole line of work
 exists to close, re-entered from the write side.
 
 It is also the shape `ea492e6` had just removed from `bin/fusion-count-sources` twelve minutes
@@ -88,4 +88,4 @@ Two fixes are reasoned rather than executed and say so in place: the live `map_s
 
 Verified: 38 files, 1001 tests, 0 failures — 993 baseline plus 8 added.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (Turn 3, task R4). Executor log: `shared/history/260810-0805-coder-plane-discarded-write-status.md`.
+Session: `260810-0241-orchestrator-session.md` (Turn 3, task R4). Executor log: `260810-0805-coder-plane-discarded-write-status.md`.

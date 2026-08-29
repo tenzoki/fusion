@@ -1,4 +1,4 @@
-# Orchestrator Session — 260807-1917
+# Orchestrator Session — 260807-1917-orchestrator-session.md
 
 **Directive:** Record the user's answers to two open decisions (how far the project-language declaration reaches, and how a unique record filename is obtained), correct the mis-titled filename-collision defect with an actual measurement, and switch persisted artifacts to English.
 **Mode:** custom
@@ -67,7 +67,7 @@ are unchanged.
 
 ### D1 — How far does the project language reach into the rule corpus? (`260807-1515`)
 
-`shared/decisions/260807-1515_a_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`
 
 **Answer (user):** the declaration reaches direct user interaction and nothing else. German applies
 to the chat stream, gate prompts, `AskUserQuestion` text, and reports the user reads in the
@@ -87,7 +87,7 @@ always legitimate.
 
 ### D2 — How is a unique record filename obtained? (`260807-0158`)
 
-`shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md`
+`260807-0158_*_how-is-a-unique-record-filename-obtained.md`
 
 **Answer (user):** none of the three options. The existing pattern stands, `YYMMDD-HHMM` plus a
 topic slug. No minting helper, no second resolution, no ordinal suffix.
@@ -162,20 +162,20 @@ or name both the old and the new path. Nothing on disk was ever wrong; only the 
 
 **Edges:**
 
-- Artifact↔Grounding: 3 transitions and 4 measurement rows verified against the tree, all reproducing exactly (579 stamped record files, 0 basename duplicates by either definition, 84 multiply-occupied stamps, 22 open defects, 1 open decision); 1 drift item found — commit `1d6c8b3` staged the three renamed files as additions without staging the three deletions, so HEAD carries each of the three records under two markers at once (`shared/issues/260807-1941_o_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md`); plus 5 marker-carrying citations across live surfaces that the renames invalidated; 0 open reviewer findings, since no code or data changed and neither reviewer ran.
+- Artifact↔Grounding: 3 transitions and 4 measurement rows verified against the tree, all reproducing exactly (579 stamped record files, 0 basename duplicates by either definition, 84 multiply-occupied stamps, 22 open defects, 1 open decision); 1 drift item found — commit `1d6c8b3` staged the three renamed files as additions without staging the three deletions, so HEAD carries each of the three records under two markers at once (`260807-1941_*_marker-renames-landed-add-only-so-head-carries-each-of-three-records-twice.md`); plus 5 marker-carrying citations across live surfaces that the renames invalidated; 0 open reviewer findings, since no code or data changed and neither reviewer ran.
 - Artifact↔Directive: commit `1d6c8b3` moves toward the Directive and touches nothing outside it — the four files it changes are exactly the two decisions, the one defect and this history file the Directive names, plus root session state. One recorded and accepted deviation: the commit message is German while the answer it lands makes commit messages English; the user was shown this at the Coherence gate and declined to amend.
-- Grounding↔Directive: 5 active decisions in `shared/decisions` (4 answered, 1 open), all consistent with the Directive, 0 conflicting. The two answered in this session are the Directive's own subject; `260719-2141_a_concurrency-worktree-slots-vs-single-active-circle.md` and `260801-1020_a_where-does-normative-consistency-live.md` are unrelated to it and unaffected by it; `260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md` remains open by explicit user choice.
+- Grounding↔Directive: 5 active decisions in `shared/decisions` (4 answered, 1 open), all consistent with the Directive, 0 conflicting. The two answered in this session are the Directive's own subject; `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md` and `260801-1020_*_where-does-normative-consistency-live.md` are unrelated to it and unaffected by it; `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md` remains open by explicit user choice.
 
 **Rebalance recommendation:** revise Artifact
 
 The Directive was reached and the Grounding is sound. What is not durable is the commit: stage the three deletions, by amending `1d6c8b3` if it is still unpushed or by a follow-up commit if it is not. Nothing on disk changes either way. The three deferred rule-text edits are not part of this verdict — they were deferred by explicit user instruction and are listed under `## Remaining Work` below.
 
-**Reconciliation log:** `shared/history/260807-1941-reconciliation.md`
+**Reconciliation log:** `260807-1941-reconciliation.md`
 
 ## Remaining Work
 
 **One decision still open**, deliberately, because the user asked for the underlying mechanics
-before choosing: `shared/decisions/260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md`.
+before choosing: `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`.
 Do `original_circle_dirname` and `active_circle_content` both need to exist in the stash manifest,
 given that both hold the active Circle's directory name at stash time?
 
@@ -189,7 +189,7 @@ an answer recorded above:
 3. `rules/fusion-workbench-conventions.md` `## Filename Patterns` needs the citation rule: cite a
    record by its full filename, never by the timestamp alone.
 
-**Portfolio:** one anticipated Circle, `circles/260801-1244-curator`, whose three dependency
+**Portfolio:** one anticipated Circle, `260801-1244-curator`, whose three dependency
 Circles (`260801-1244-rule-provenance-header`, `260801-1244-guard-rules-write`,
 `260801-1244-guard-bash-inspection`) are all closed. It is unblocked and activatable via
 `/fusion:next`. Note that the three deferred rule-text edits above fall inside that Circle's own
@@ -198,13 +198,13 @@ remit, since its stated first job is reconciling this repository's conventions f
 **Three new defects filed by the Phase 3 reconciler**, none of them caused by this session's
 Directive and all left open:
 
-1. `shared/issues/260807-1939_o_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md`
+1. `260807-1939_*_plane-natural-key-carries-the-state-marker-and-breaks-on-every-transition.md`
    — the Plane mirror's per-Circle key carries the state marker, so it breaks on the transition the
    mirror exists to push.
-2. `shared/issues/260807-1942_o_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md`
+2. `260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md`
    — the domain-detection heuristic in `agents/orchestrator.md` Setup Step 5 tests its branches in
    an order that can classify a code project as `strategic`.
-3. `shared/issues/260807-1943_o_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md`
+3. `260807-1943_*_die-routing-tabelle-und-das-review-routing-kennen-rs-nicht.md`
    — the orchestrator's routing and review tables omit `.rs`, which `coder`, `ontocoder` and
    `planner` all carry.
 

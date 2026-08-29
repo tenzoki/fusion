@@ -36,7 +36,7 @@
  * The header also carried a DEFERRED question: whether the surviving
  * `categoryPaths` match should fold case, raised and deferred by the user on
  * 2026-08-04 in
- * `circles/260801-1244-guard-rules-write/decisions/260804-1632_d_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`.
+ * `260804-1632_*_should-findrelevantdecisions-fold-case-now-that-a-project-can-configure-categorypaths.md`.
  * Its subject was deleted with the match, so the question can no longer be
  * decided either way.
  */

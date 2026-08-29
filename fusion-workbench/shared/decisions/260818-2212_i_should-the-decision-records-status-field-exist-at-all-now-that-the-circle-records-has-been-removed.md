@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** open
 **Filed by:** orchestrator
-**Cross-references:** `shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` (the defect that reserves this question), `shared/decisions/260815-2312_i_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` (the same question for the Circle record, answered option 1 and implemented 2026-08-18), `shared/issues/260811-2146_o_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`, `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`, `shared/decisions/260810-1635_a_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`, `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `## State Markers — decisions`
+**Cross-references:** `260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` (the defect that reserves this question), `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` (the same question for the Circle record, answered option 1 and implemented 2026-08-18), `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`, `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`, `260810-1635_*_where-does-the-obligation-sit-to-update-the-artefact-that-explains-a-behaviour-when-the-behaviour-changes.md`, `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `## State Markers — decisions`
 
 ---
 
@@ -15,12 +15,12 @@ A decision record carries its state twice: as the marker on its filename (`_i_`)
 transition *is* the rename; the header is a hand-maintained second copy, edited separately or not at
 all.
 
-The identical construction was removed from the Circle record on 2026-08-18. `260815-2312` put the
+The identical construction was removed from the Circle record on 2026-08-18. `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` put the
 question, the user answered option 1 — drop the field, the marker is the only source — and the
 removal landed in commit `95bebe1`. What that decision settled for one record kind, it did not
 settle for this one. `260812-1232` has held the question for the decision store since 2026-08-12,
 naming two candidate answers and explicitly declining to choose between them, and the curator run of
-2026-08-18 (`shared/history/260818-2050-curator-run.md`) declined to propose a correction for
+2026-08-18 (`260818-2050-curator-run.md`) declined to propose a correction for
 exactly that reason: an open defect reserves the question.
 
 This record puts the question so it can be answered rather than reserved.
@@ -50,7 +50,7 @@ A naive comparison reports **44**, which is the figure the curator run carries, 
 reconcile exactly: 39 headers contradict their marker, and **5** more carry the right state in a form
 the template does not use. Four of those five hold the correct word followed by a parenthetical
 annotation an earlier reconciliation added, for example `260803-1803_i_*` reading "implemented
-(corrected from `open` by reconciliation 260804-1021; the filename marker `_i_` was already right)".
+(corrected from `open` by reconciliation 260804-1021-reconciliation.md; the filename marker `_i_` was already right)".
 The fifth, `circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_*`, leads with the marker itself:
 `**Status:** _i_ (implemented — …)`. None of the five misleads a reader about the state, so none is
 counted as drift here.
@@ -59,7 +59,7 @@ counted as drift here.
 its marker does not. It does not count as drift merely for departing from the template's wording. An
 earlier revision of this record used the first criterion in its prose and the second in its
 arithmetic, which is what put the `260718-2150` record among the 39; the correction is filed as
-`shared/issues/260818-2228_o_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
+`260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`.
 
 **The trend across five measurements of the same store, each re-derived rather than carried
 forward:** 34 of 74 (2026-08-12), 35 of 86 (2026-08-14), 39 of 100 (2026-08-16, coderev), 37 of 106
@@ -67,7 +67,7 @@ forward:** 34 of 74 (2026-08-12), 35 of 86 (2026-08-14), 39 of 100 (2026-08-16, 
 criterion, which was the whole-field comparison; on that criterion today's figure is 44. The population moves as records are archived and filed;
 the ratio has not improved in six days, across at least three hand corrections.
 
-**One instance is worth naming on its own.** `260815-2312`, the decision that removed this very
+**One instance is worth naming on its own.** `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`, the decision that removed this very
 field from the Circle record, carries `**Status:** answered` under a filename marked `_i_`. The
 record that argued the field cannot be kept in step is itself out of step.
 
@@ -109,7 +109,7 @@ files that mention a field of that name.
      clause is a second rule about the same field.
 3. **Keep the field and declare it decorative in the template.**
    - Pros: one paragraph, no migration.
-   - Cons: leaves a field that reads as authoritative and is not. `260815-2312` judged this the worst
+   - Cons: leaves a field that reads as authoritative and is not. `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` judged this the worst
      of the three for the Circle record, because a reader cannot tell a decorative field from a stale
      one.
 
@@ -127,7 +127,7 @@ files that mention a field of that name.
 
 ## Recommendation
 
-Option 1, and the timing argument that held the Circle version back is spent. `260815-2312` deferred
+Option 1, and the timing argument that held the Circle version back is spent. `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` deferred
 its own answer to "the next Circle that touches Circle records for another reason", which fired on
 2026-08-18. No comparable Circle is pending for the decision store, so waiting for one means waiting
 indefinitely while the ratio holds at roughly two in five.
@@ -150,10 +150,10 @@ Superseded by: <set when status moves to _s_>
 Retired: <set when the implementation is removed; the marker stays _i_>
 
 ---
-**Reconciliation 260818-2230** (reconciler, domain `code`). The measurement above was re-derived
+**Reconciliation 260818-2230-reconciliation.md** (reconciler, domain `code`). The measurement above was re-derived
 independently at HEAD `53b6862` and reproduces exactly — 94 records, 40, the 20/20 split, the naive
 44 and all six breakdown rows. Three counts *about* the measurement do not, and are filed as
-`shared/issues/260818-2228_o_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`:
+`260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`:
 the 40 includes one header that agrees with its marker in marker form, so the count of *disagreeing*
 headers is 39; "four measurements" is followed by five; "thirteen files" is fourteen in the grep
 scope this record states. None of them changes the finding, the options or the recommendation. Read
@@ -164,10 +164,10 @@ the open question about that field, and correcting its own header would remove o
 the population it measures.
 
 ---
-Answered: shared/history/260818-2301-orchestrator-session.md — user chose option 1 (2026-08-18): the `**Status:**` field leaves the decision-record template. The change surface is two rule files, `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `rules/decision-record-examples.md`; the filename marker becomes the only source of a decision record's state. The 94 records that carry the field today stay exactly as they stand, following the Circle precedent `260815-2312`, and all affected surfaces say so rather than correcting them. The four other artifact kinds sharing the field name are untouched.
+Answered: 260818-2301-orchestrator-session.md — user chose option 1 (2026-08-18): the `**Status:**` field leaves the decision-record template. The change surface is two rule files, `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `rules/decision-record-examples.md`; the filename marker becomes the only source of a decision record's state. The 94 records that carry the field today stay exactly as they stand, following the Circle precedent `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md`, and all affected surfaces say so rather than correcting them. The four other artifact kinds sharing the field name are untouched.
 
 ---
-Implemented: `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `rules/decision-record-examples.md` — the `**Status:**` line is out of both, and the conventions file carries the statement of why, with the measurement (39 of 94 records naming a state their marker does not, a ratio held for six days across three hand corrections) and the position on existing records: a record written before the removal keeps the field exactly as it stands, because hand-correcting one destroys the evidence the removal was decided on. `rules/decision-record-examples.md` carries the pointer rather than a second copy. The four other artifact kinds sharing the field name are untouched, and neither `## State Markers — decisions` nor `### Decision files` needed a change, both being about the marker vocabulary and the footers rather than the head field. The two open defects that had been measuring this drift, `260811-2146` and `260812-1232`, close on the cause being gone.
+Implemented: `rules/fusion-workbench-conventions.md` `## Decision Record Template` and `rules/decision-record-examples.md` — the `**Status:**` line is out of both, and the conventions file carries the statement of why, with the measurement (39 of 94 records naming a state their marker does not, a ratio held for six days across three hand corrections) and the position on existing records: a record written before the removal keeps the field exactly as it stands, because hand-correcting one destroys the evidence the removal was decided on. `rules/decision-record-examples.md` carries the pointer rather than a second copy. The four other artifact kinds sharing the field name are untouched, and neither `## State Markers — decisions` nor `### Decision files` needed a change, both being about the marker vocabulary and the footers rather than the head field. The two open defects that had been measuring this drift, `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md` and `260812-1232`, close on the cause being gone.
 
 ---
-**Reconciliation 260819-0840** (reconciler, domain `code`, HEAD `83488e9`). The removal verifies: no `**Status:**` line remains in `rules/fusion-workbench-conventions.md` `## Decision Record Template` or in the worked example of `rules/decision-record-examples.md`, and the position on existing records stands unconditionally at the former's `## Decision Record Template` closing paragraph after the qualifier fix in `06ab15b`. Two surfaces the closure did not reach are filed and open: `agents/orchestrator.md:303` still carries the old "on a record you are not transitioning" qualifier for the Circle-record twin (`shared/issues/260819-0821_o_*`), and `rules/fusion-workbench-conventions.md:259` still names "a record's `**Status:**`" as a shipped-template head label that no record kind now has (`shared/issues/260819-0028_o_*`). This record itself still carries `**Status:** open` in its head and the unfilled five-line footer stub at `:146-150`, both correctly left as they stand — it is a member of the population its own answer says not to hand-correct. That stub is the second half of `260811-2146`, which the closure did not address; carried forward as `shared/issues/260819-0836_o_*`. Marker stays `_i_`. Log: `shared/history/260819-0840-reconciliation.md`.
+**Reconciliation 260819-0840-reconciliation.md** (reconciler, domain `code`, HEAD `83488e9`). The removal verifies: no `**Status:**` line remains in `rules/fusion-workbench-conventions.md` `## Decision Record Template` or in the worked example of `rules/decision-record-examples.md`, and the position on existing records stands unconditionally at the former's `## Decision Record Template` closing paragraph after the qualifier fix in `06ab15b`. Two surfaces the closure did not reach are filed and open: `agents/orchestrator.md:303` still carries the old "on a record you are not transitioning" qualifier for the Circle-record twin (`shared/issues/260819-0821_o_*`), and `rules/fusion-workbench-conventions.md:259` still names "a record's `**Status:**`" as a shipped-template head label that no record kind now has (`shared/issues/260819-0028_o_*`). This record itself still carries `**Status:** open` in its head and the unfilled five-line footer stub at `:146-150`, both correctly left as they stand — it is a member of the population its own answer says not to hand-correct. That stub is the second half of `260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`, which the closure did not address; carried forward as `shared/issues/260819-0836_o_*`. Marker stays `_i_`. Log: `260819-0840-reconciliation.md`.

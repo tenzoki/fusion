@@ -3,11 +3,11 @@
 **Date:** 2026-08-20 23:54
 **Type:** Document Study
 **Status:** Complete
-**Requested by:** user, via plan step 2 of `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md`
+**Requested by:** user, via plan step 2 of `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
 
 ## Question
 
-The answered decision `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+The answered decision `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
 chose option 4: repair the corpus, measure the output, and re-open the record with a number instead of
 an inference. This document registers the protocol under which that number will be produced, and
 captures the half of it that cannot be captured later. Once a repair commit lands, the pre-repair
@@ -93,7 +93,7 @@ narrowing and not an oversight. The fault the corpus is measured for is the em-d
 en dash is a numeric range in this repository's prose. The project's chat language is German, where the
 en dash is the conventional Gedankenstrich, so a German profile forbidding it states a different rule
 with a different reading, and this metric does not serve that rule. The assessment
-(`circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`
+(`260820-2308-assessment-of-the-style-rules-spec.md`
 F10) asked for the decision to be stated here rather than left to the implementation, and this is it.
 
 ### 4. The two window boundaries
@@ -104,7 +104,7 @@ section 8 below, so the window cannot be re-picked after a result is known.
 
 **The post-repair window opens at the commit that closes this Circle**, meaning the `_t_` to `_b_`
 transition on
-`circles/260820-2051-style-rules-arrive-and-get-measured/_t_circle.md`. Every corpus repair in the
+`260820-2051-style-rules-arrive-and-get-measured`. Every corpus repair in the
 Circle lands before that commit, which is why the closing commit and not step 7's is the opening
 condition. Its first member is the first usable history file, in stamp order, written after it by a
 session excluded from neither window under section 5.
@@ -127,7 +127,7 @@ a demanding test, it is a guaranteed outcome 2, and outcome 2 is the branch that
 gate. The one-sided exclusion would have licensed the gate by construction.
 
 The exclusion is therefore symmetric: **a history file belonging to
-`circles/260820-2051-style-rules-arrive-and-get-measured/` is in neither window.** For the post-repair
+`260820-2051-style-rules-arrive-and-get-measured` is in neither window.** For the post-repair
 window the exclusion additionally reaches any history file written by a session that read this Circle's
 planning documents, which is decidable because a dispatch's inputs are recorded.
 
@@ -179,11 +179,11 @@ Five files, frozen by path. Measured at HEAD `fac97f4` with `bin/fusion-prose-me
 
 | File | Store | Author | Prose em-dash | Prose words | Rate /1000 |
 |---|---|---|---|---|---|
-| `circles/260819-1645-four-constraints-on-deep-change/history/260820-1120-coder-the-remaining-text-defects-and-the-turns-consolidation.md` | Circle | coder | 17 | 1509 | 11.3 |
-| `shared/history/260820-1126-playmaker-direct-dispatch.md` | shared | playmaker | 6 | 1194 | **5.0** |
-| `shared/history/260820-1747-coder-three-decisions-realised.md` | shared | coder | 16 | 853 | 18.8 |
-| `shared/history/260820-1810-coder-v10-4-release-material.md` | shared | coder | 7 | 838 | 8.4 |
-| `shared/history/260820-2103-orchestrator-session.md` | shared | orchestrator | 8 | 825 | 9.7 |
+| `260820-1120-coder-the-remaining-text-defects-and-the-turns-consolidation.md` | Circle | coder | 17 | 1509 | 11.3 |
+| `260820-1126-playmaker-direct-dispatch.md` | shared | playmaker | 6 | 1194 | **5.0** |
+| `260820-1747-coder-three-decisions-realised.md` | shared | coder | 16 | 853 | 18.8 |
+| `260820-1810-coder-v10-4-release-material.md` | shared | coder | 7 | 838 | 8.4 |
+| `260820-2103-orchestrator-session.md` | shared | orchestrator | 8 | 825 | 9.7 |
 | **total (5 files)** | | | **54** | **5219** | **10.3** |
 
 Lowest per-file rate: **5.0**. Highest: 18.8. Spread: 13.8. Author composition: coder three, playmaker
@@ -232,7 +232,7 @@ Named here rather than left implicit, because each of them weakens the dose the 
 
 1. **`CLAUDE.md` is not repaired in this Circle.** It is the largest single conditioning file, 40.3 per
    cent of an agent's always-on prose, and it runs at 14.2 per 1000. The decision
-   `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+   `260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
    places it in the corrected set statement and leaves its prose alone. Whenever the measurement runs,
    it runs against a corpus whose largest conditioning file was never repaired.
 2. **`rules/design-diagrams.md` is not repaired and reaches the likely writers.** It runs at 25.9 per
@@ -267,13 +267,13 @@ implemented to carry them in its own text.
 Confound 4 and untreated condition 4 are the same fact seen from two sides. There is one project, no
 control group, no randomisation, and five files per window. **The number this protocol produces is an
 observation of a rate over two fixed windows. It is not a controlled test of the causal claim in
-finding 10 of `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md`,** and it may not be
+finding 10 of `260816-0740-rhetorical-register-of-agent-output.md`,** and it may not be
 reported as one.
 
 ### 12. The three outcomes and the marker each earns
 
 The scheme is fixed by
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_what-threshold-does-the-registered-measurement-use-and-which-marker-does-each-outcome-earn.md`.
+`260820-2314_*_what-threshold-does-the-registered-measurement-use-and-which-marker-does-each-outcome-earn.md`.
 It covers three outcomes and no others. The two branches are deliberately asymmetric, because a rate
 that does not fall licenses a gate whatever the confounds, while a rate that does fall licenses nothing:
 every confound in section 11 pushes toward a fall.
@@ -300,13 +300,13 @@ repository are this Circle's own, and section 5 excludes those. The window is em
 no rearrangement inside this Circle fills it.
 
 The Circle therefore ends in **Bounded Closure**, decided in
-`circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_can-this-circle-close-coherent-when-its-fourth-outcome-has-no-measurement-window.md`.
+`260820-2314_*_can-this-circle-close-coherent-when-its-fourth-outcome-has-no-measurement-window.md`.
 What this document delivers is the half that had to precede the repair and that a later Circle cannot
 reconstruct once the repair is in history: the registered protocol, the exact threshold, and the
 pre-repair window frozen by path.
 
 **The measurement will be reported on
-`shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.**
+`260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`.**
 That record carries the number, this document's path, and the marker its outcome earns under section 12.
 
 **What opens the post-repair window** is the commit that closes this Circle, per section 4. Its first
@@ -381,21 +381,21 @@ again as issues would duplicate live records rather than add anything.
 
 ## Sources
 
-- `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2324_o_plan-style-rules-arrive-and-get-measured.md`
+- `260820-2324_*_plan-style-rules-arrive-and-get-measured.md`
   step 2, the authority for this document's required content and order
-- `circles/260820-2051-style-rules-arrive-and-get-measured/planning/260820-2249_o_spec-style-rules-arrive-and-get-measured.md`
+- `260820-2249_*_spec-style-rules-arrive-and-get-measured.md`
   `## The metric` and C10, with the binding orchestrator section appended 260820-2314
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_what-threshold-does-the-registered-measurement-use-and-which-marker-does-each-outcome-earn.md`
+- `260820-2314_*_what-threshold-does-the-registered-measurement-use-and-which-marker-does-each-outcome-earn.md`
   the threshold and the three-outcome marker scheme
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_can-this-circle-close-coherent-when-its-fourth-outcome-has-no-measurement-window.md`
+- `260820-2314_*_can-this-circle-close-coherent-when-its-fourth-outcome-has-no-measurement-window.md`
   Bounded Closure, and the count of live Circles
-- `circles/260820-2051-style-rules-arrive-and-get-measured/decisions/260820-2314_o_is-claude-md-inside-the-corpus-this-circle-repairs.md`
+- `260820-2314_*_is-claude-md-inside-the-corpus-this-circle-repairs.md`
   untreated condition 1
-- `circles/260820-2051-style-rules-arrive-and-get-measured/analyses/260820-2308-assessment-of-the-style-rules-spec.md`
+- `260820-2308-assessment-of-the-style-rules-spec.md`
   F2, F3 and F10
-- `shared/decisions/260816-0740_a_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+- `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   option 4, the reconciliation of 260819-1400, and the record this measurement is reported on
-- `shared/analyses/260816-0740-rhetorical-register-of-agent-output.md` finding 10 and recommendation 4
+- `260816-0740-rhetorical-register-of-agent-output.md` finding 10 and recommendation 4
 - `bin/fusion-prose-metric` header, the exclusion rules and the reports-never-gates property
 - `bin/fusion-rules` lines 202-206, the four diagram agents, and line 428, the emission
 - `rules/critical-stance.md` §4

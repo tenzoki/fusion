@@ -3,14 +3,14 @@
 **Date:** 2026-08-18
 **Agent:** planner (dispatched, executors `coder, ontocoder, analyst`)
 **HEAD at start:** `83d3b04`
-**Input:** answered decision `shared/decisions/260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1), defect `shared/issues/260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md`
+**Input:** answered decision `260818-1504_*_how-does-a-circle-record-carry-its-directive-once-a-spec-exists-and-who-may-correct-it-before-one-does.md` (option 1), defect `260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md`
 
 ## What was produced
 
-- Plan: `shared/planning/260818-1512_o_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`, seven steps, all `coder`, one of them optional.
-- Decision, open: `shared/decisions/260818-1512_o_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md`
-- Defect, open: `shared/issues/260818-1512_o_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md`
-- Defect, open: `shared/issues/260818-1512_o_the-dispatch-parameter-tables-prompt-line-citations-are-resolved-by-no-gate-and-two-are-already-ten-lines-off.md`
+- Plan: `260818-1512_*_the-circle-records-directive-becomes-a-pointer-and-gains-a-writer.md`, seven steps, all `coder`, one of them optional.
+- Decision, open: `260818-1512_*_does-the-shapers-third-mode-keep-the-name-portfolio-activation-once-it-also-corrects-an-active-circles-directive.md`
+- Defect, open: `260818-1512_*_the-next-skills-activation-handoff-tells-the-orchestrator-to-read-the-circle-records-directive-and-no-orchestrator-step-does.md`
+- Defect, open: `260818-1512_*_the-dispatch-parameter-tables-prompt-line-citations-are-resolved-by-no-gate-and-two-are-already-ten-lines-off.md`
 
 ## What the plan decided
 
@@ -46,7 +46,7 @@ directive-only | spec`.
   prominence suggests.
 - Eleven Circle records in this workbench, every one terminal. The migration set is empty here and
   is at most one record in any project.
-- Answered decision `260815-2312` (drop the `**Status:**` field) timed itself to "the next Circle
+- Answered decision `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` (drop the `**Status:**` field) timed itself to "the next Circle
   that touches Circle records for another reason". This plan is that Circle, so the realisation is
   offered as an optional step 6 and put to the user at the gate rather than folded in silently.
 

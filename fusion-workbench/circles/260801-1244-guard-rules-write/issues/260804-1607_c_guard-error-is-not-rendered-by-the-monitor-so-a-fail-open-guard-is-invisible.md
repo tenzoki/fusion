@@ -7,9 +7,9 @@
 **Filed by:** analyst, independent assessment A1 of C5b
 **Affects:** `bin/monitor:91-102` (`WARNING_EVENT_TYPES` and `ADVISORY_EVENT_TYPES`); emitters at `hooks/guard.ts:904` and `hooks/tracker.ts:202`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md`,
-`circles/260801-1244-guard-rules-write/issues/260804-1603_o_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` (which makes this state project-triggerable),
-plan `260802-1856_o_plan-guard-rules-write.md` Step 5 (which added `guard_advisory` to the same list)
+`260804-1600-c5b-independent-assessment.md`,
+`260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md` (which makes this state project-triggerable),
+plan `260802-1856_*_plan-guard-rules-write.md` Step 5 (which added `guard_advisory` to the same list)
 
 ---
 
@@ -30,7 +30,7 @@ event meaning "the guard is not running" is the one the dashboard does not show.
 This predates C5b. It is filed now because C5b changes who can cause it: before, a fail-open
 needed a bug or a corrupted `escalation.json` under a protected directory; now a project-root
 JSON file with one wrong-typed value produces a `guard_error` on **every** guarded tool call
-(`260804-1603_o_`), and the user watching the dashboard sees an empty warnings panel
+(`260804-1603_*_the-project-config-layer-is-not-type-validated-so-a-wrong-type-fails-the-guard-open.md`), and the user watching the dashboard sees an empty warnings panel
 throughout.
 
 ## Measured
@@ -59,8 +59,8 @@ block.
 Resolved: `guard_error` now reaches the warnings panel and renders at the halt level, labelled
 "Fail-open" — red border, red badge, background tint, distinct from the amber default and from
 the cyan advisory. Implemented in `bin/monitor` (Step 5 of
-`planning/260804-1633_o_plan-c5b-remediation-and-ship.md`), coder session
-`history/260804-2100-coder-step5-guard-error-on-the-dashboard.md`. Five cases added to
+`260804-1633_*_plan-c5b-remediation-and-ship.md`), coder session
+`260804-2100-coder-step5-guard-error-on-the-dashboard.md`. Five cases added to
 `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, every one driving the real binary over
 HTTP; `npx vitest run` 1537 passed, 26 files.
 

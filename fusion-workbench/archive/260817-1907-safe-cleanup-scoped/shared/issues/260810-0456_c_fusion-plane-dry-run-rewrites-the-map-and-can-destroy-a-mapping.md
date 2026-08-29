@@ -4,7 +4,7 @@
 
 **Severity:** High
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `bin/fusion-plane:649` (`map_ensure`), `:1179` (`cmd_push`), `:1394` (`cmd_map`), `:617-648` (`map_migrate_keys`)
 **Cross-references:** commit `f320db2`; `docs/plane-setup.md`
 
@@ -70,4 +70,4 @@ Instead the split is structural: `map_view` computes the fold in memory and prov
 
 Verified by reproducing the loss against a scratch fixture with the committed `HEAD` binary as the "before" column, then showing it gone. Eight probes flip cleanly. Full suite green: 993 passed, 0 failed, the plane suite 69 → 85 tests. Two existing tests changed because they asserted the destructive behaviour itself.
 
-Session: `shared/history/260810-0241-orchestrator-session.md` (Turn 2, task R1). Executor log: `shared/history/260810-0715-coder-plane-map-read-write-split.md`.
+Session: `260810-0241-orchestrator-session.md` (Turn 2, task R1). Executor log: `260810-0715-coder-plane-map-read-write-split.md`.

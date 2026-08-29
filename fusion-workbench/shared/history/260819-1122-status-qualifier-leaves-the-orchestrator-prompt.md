@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Circle:** none active (shared store, Origin Rule)
-**Issue:** `shared/issues/260819-0821_o_the-status-qualifier-closure-names-one-remaining-site-and-a-shipped-agent-prompt-still-carries-it.md`
+**Issue:** `260819-0821_*_the-status-qualifier-closure-names-one-remaining-site-and-a-shipped-agent-prompt-still-carries-it.md`
 
 ## What changed
 
@@ -27,7 +27,7 @@ After:
 > those drifted headers are the evidence the removal was decided on.
 
 The marker-is-the-state sentence, the "nothing writes it, nothing reads it" clause and the citation
-of decision `260815-2312` are untouched. The two paragraphs stay separate: they govern different
+of decision `260815-2312_*_should-the-circle-records-status-field-exist-at-all-now-that-both-transitions-maintain-it.md` are untouched. The two paragraphs stay separate: they govern different
 record kinds (Circle vs decision) for different readers, and neither became a pointer at the other.
 
 ## The third site, named and not edited
@@ -35,7 +35,7 @@ record kinds (Circle vs decision) for different readers, and neither became a po
 `grep -rn "not transitioning"` over the shipped tree (`agents/`, `skills/`, `rules/`, `docs/`,
 `hooks/`) returns exactly one remaining hit outside `fusion-workbench/`:
 `docs/upgrading-to-v10-2.md:88`. It is already recorded as
-`shared/issues/260819-0756_o_the-v10-2-migration-note-still-states-the-status-position-with-the-qualifier-the-rule-just-dropped.md`
+`260819-0756_*_the-v10-2-migration-note-still-states-the-status-position-with-the-qualifier-the-rule-just-dropped.md`
 and was out of scope for this task. Left as it stands.
 
 ## Growth bound

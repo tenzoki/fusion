@@ -19,7 +19,7 @@ Pointer checks all clean: `.active-circle` names an existing directory whose rec
 
 Open decision records in the workbench: 0 (no `_o_` decision files in any Circle store or in `shared/decisions/`). Both anticipated Circles therefore tie at zero unresolved decisions and both pass the dependencies-closed check, since every dependency edge points at a closed Circle.
 
-Top-ranked: **260804-1205-shell-reachability-model** — its hard dependency `260801-1244-guard-rules-write` closed today and its closure note confirms the ship step ran (v5.9.0–v5.9.2), which makes the flat-joiner over-deny (`.../issues/260804-0839_o_...md`) live in consuming projects and answers the sequencing question the record left open. `260801-1244-curator` ranks second: it needs a shaper re-shape before activation (closing work C9 partly done by hand) and benefits from the active text-layer Circle running first.
+Top-ranked: **260804-1205-shell-reachability-model** — its hard dependency `260801-1244-guard-rules-write` closed today and its closure note confirms the ship step ran (v5.9.0–v5.9.2), which makes the flat-joiner over-deny (`.../260804-0839_*_...md`) live in consuming projects and answers the sequencing question the record left open. `260801-1244-curator` ranks second: it needs a shaper re-shape before activation (closing work C9 partly done by hand) and benefits from the active text-layer Circle running first.
 
 ## Cycle detection
 
@@ -31,11 +31,11 @@ No Circle carries `_b_`; nothing to propagate. No `parent-grounding-stale` event
 
 ## Warnings emitted to the portfolio
 
-- Status-field lag on the active Circle's record (`**Status:** anticipated` under a `_t_` marker) — known shared issue `shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`; flagged, not fixed, per the dispatch instruction.
+- Status-field lag on the active Circle's record (`**Status:** anticipated` under a `_t_` marker) — known shared issue `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`; flagged, not fixed, per the dispatch instruction.
 
 ## Writes
 
-- `circles/260804-1205-shell-reachability-model/_a_circle.md` — appended `## Activation proposal` (run 260805-2342).
+- `260804-1205-shell-reachability-model` — appended `## Activation proposal` (run 260805-2342-playmaker-orchestrator-phase4.md).
 - `portfolio.md` — regenerated in full.
 - This history file.
 

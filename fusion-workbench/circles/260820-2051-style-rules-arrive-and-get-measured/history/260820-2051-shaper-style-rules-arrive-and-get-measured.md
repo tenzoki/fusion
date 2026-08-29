@@ -3,7 +3,7 @@
 **Date:** 2026-08-20
 **Agent:** shaper, anticipated-circle mode, run top-level by the user
 **Git HEAD at shaping:** `7135a19`
-**Product:** `circles/260820-2051-style-rules-arrive-and-get-measured/_a_circle.md` plus the six
+**Product:** `260820-2051-style-rules-arrive-and-get-measured` plus the six
 artifact subdirectories. No spec was written, which is what this mode does: the Circle record is
 the artifact.
 
@@ -13,7 +13,7 @@ The user supplied a written problem set rather than a one-line draft, and rather
 entry, so no backlog marker was renamed and no `Promoted:` line was appended. The draft covered
 three separable conditions and ended with a question about how to handle the fourth:
 
-1. `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+1. `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
    is answered as option 4 and stands at the answered marker because the second half of that
    option, the falsification measurement, never ran.
 2. The stylometric profile every agent loads in this repository is the workbench copy, and it has
@@ -34,7 +34,7 @@ Every load-bearing claim in the draft was checked against disk before it entered
   source in `ae21c87` (2026-08-14).
 - **The draft's correction to the open issue is confirmed.** All four files under
   `~/.fusion/stilwerk/` are byte-identical with the work tree today, so the obstacle
-  `shared/issues/260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
+  `260814-1419_*_the-shipped-chat-voice-profiles-changed-and-the-workbench-copies-agents-actually-load-did-not.md`
   names has gone and a copy from `$FUSION_PLUGIN_ROOT` now resolves the divergence.
 
 Three figures were measured that the draft did not carry, and each changed the shape of the
@@ -46,7 +46,7 @@ Circle.
 - **The always-on set is six files, not the seven the analysis tabulates.** `CLAUDE.md` is not
   emitted by `bin/fusion-rules`, and `design-diagrams.md` and `circle-records.md` are conditional
   emissions. That mislabelling is already filed as
-  `shared/issues/260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`,
+  `260816-1345_*_the-register-defects-corpus-table-is-labelled-always-on-and-is-not-the-always-on-set.md`,
   and it decides what surface the measurement covers, so it was pulled into scope.
 - **The always-on growth bound has roughly 5 700 bytes of head-room**, at 92 869 bytes against a
   baseline of 86 573 and a budget of 12 000.
@@ -96,7 +96,7 @@ should sequence the mechanism early enough that the second write becomes its out
 No spec, no plan, no dispatch. The Circle carries the anticipated marker and is not active.
 Activation is the user's separate step through `/fusion:next`, which performs the record rename
 and writes `.active-circle`. The active Circle
-`circles/260819-1645-four-constraints-on-deep-change` was not touched.
+`260819-1645-four-constraints-on-deep-change` was not touched.
 
 ## Voice profiles
 

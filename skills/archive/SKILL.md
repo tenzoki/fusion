@@ -139,7 +139,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 
 ### Rolling the guard event log
 
-`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record across every session, classified as evidence rather than telemetry (`rules/workbench-tracking.md`, read in full at Step 1, and decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` under `$SCAN_DECISIONS`). This roll is the only thing that bounds its size; no line or byte ceiling may be added anywhere.
+`$WORKBENCH/.guard-state/events.jsonl` is the guard's append-only record across every session, classified as evidence rather than telemetry (`rules/workbench-tracking.md`, read in full at Step 1, and fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`). This roll is the only thing that bounds its size; no line or byte ceiling may be added anywhere.
 
 **It is the one target that is rolled rather than selected.** It carries no marker and no age, so no tier survey finds it: it is included whenever the live log is non-empty, skipped silently otherwise, and still waits for confirmation where Step 6 asks. Safety filter 1's `.guard-state/` entry covers the state files beside it, not the log.
 
@@ -195,10 +195,10 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    FUSION_SRC="${FUSION_PLUGIN_ROOT:-}"; [ -x "$FUSION_SRC/bin/fusion-source-root" ] && FUSION_SRC="$("$FUSION_SRC/bin/fusion-source-root")"
    [ -n "$FUSION_SRC" ] || echo "  filter 3 skipped: source root unresolved (FUSION_PLUGIN_ROOT unset)"
    set --; for c in CLAUDE.md rules .claude/rules "$FUSION_SRC"/CLAUDE.md "$FUSION_SRC"/rules "$FUSION_SRC"/agents "$FUSION_SRC"/skills "$FUSION_SRC"/hooks/lib "$FUSION_SRC"/bin "$FUSION_SRC"/docs $({ find "$FUSION_SRC" -maxdepth 1 -name 'README*.md'; find "$FUSION_SRC/hooks" -maxdepth 1 -name '*.ts'; } 2>/dev/null); do [ -n "$FUSION_SRC" ] && [ -e "$c" ] && set -- "$@" "$c"; done
-   KEEP=""; for f in <candidates>; do bn="$(basename "$f")"; rel="${f#"$WORKBENCH"/}"; hit="$(grep -r -l -F -e "$bn" -e "$rel" "$@" 2>/dev/null | head -1)"; if [ -n "$hit" ]; then echo "  kept (cited in $hit): $rel"; else KEEP="$KEEP$f
+   KEEP=""; for f in <candidates>; do rel="${f#"$WORKBENCH"/}"; key="$(basename "$f" | sed -E 's/[][\\.^$*+?(){}|]/\\&/g; s/^([0-9]{6}-[0-9]{4})_[a-z]_/\1_[a-z*]_/')"; hit="$(grep -r -l -E -e "$key" "$@" 2>/dev/null | head -1)"; if [ -n "$hit" ]; then echo "  kept (cited in $hit): $rel"; else KEEP="$KEEP$f
    "; fi; done
    ```
-   `$KEEP` is the surviving candidate list; a cited file is dropped from the proposal and reported as kept, naming the citing file, never silently.
+   `$KEEP` is the surviving list; a cited file is reported as kept, naming the citing file, never dropped silently.
 
 5. **Propose.** Print to the user:
    - Mode (tier-N + threshold, or the natural-language description verbatim).
@@ -287,6 +287,6 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
 - **Never delete the archive folder.** This skill only creates and adds.
 - **Never touch git.** No `git add`, no `git commit`. The user decides whether to commit the archive.
 - **Never modify content of what's being archived.** Move only; do not rewrite, reformat, or "tidy".
-- **Never truncate the guard event log without archiving it first**, and never add a line or byte ceiling to it — not here, and not in `emitEvent` (`hooks/lib/events.ts`). The roll above is the only sanctioned way the file gets shorter. Any ceiling drops the oldest lines, which are the guard's block, halt and clear events (decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…` under `$SCAN_DECISIONS`).
+- **Never truncate the guard event log without archiving it first**, and never add a line or byte ceiling to it — not here, and not in `emitEvent` (`hooks/lib/events.ts`). The roll above is the only sanctioned way the file gets shorter. Any ceiling drops the oldest lines, which are the guard's block, halt and clear events (fusion's own record `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`).
 - **If the survey returns zero matches:** report that and stop. Do not invent candidates. Do not broaden the search without re-asking.
 - **The citation check is a hard exclusion** — do not surface cited files even with `[ACTIVE]` flags. To archive something the corpus cites, the user updates the citing file first.

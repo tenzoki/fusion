@@ -1,4 +1,4 @@
-# Orchestrator Session — 260719-0957 (partial Circle E — docs)
+# Orchestrator Session — 260719-0957-orchestrator-docs.md (partial Circle E — docs)
 
 **Directive:** Rewrite two plugin docs — strip docs/philosophy.md to a practical intro (purpose, pros, how-it-works), rewrite README.md as a lean hands-on guide (install, setup, best practice, configuration).
 **Mode:** custom (partial Circle E)

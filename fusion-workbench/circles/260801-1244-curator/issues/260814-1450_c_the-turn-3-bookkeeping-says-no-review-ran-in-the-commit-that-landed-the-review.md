@@ -2,7 +2,7 @@ The Turn-3 bookkeeping says no review ran, in the very commit that landed the re
 
 ---
 Commit `18173e1` added the Turn-3 review file, six defect records and the Turn-log entry for the
-Turn. The same commit wrote, into `shared/history/260813-2345-orchestrator-session.md`, the lines
+Turn. The same commit wrote, into `260813-2345-orchestrator-session.md`, the lines
 "Review findings: none yet — the incremental review for this Turn has not run" and "Coherence: not
 yet evaluated for this Turn". Both are false at the moment they were committed. Two neighbouring
 bookkeeping surfaces are stale in the same direction.
@@ -11,25 +11,25 @@ bookkeeping surfaces are stale in the same direction.
 **Verified 2026-08-14 at HEAD `18173e1`.**
 
 **1. The session history's `## Turns` section reads `(none yet)` after three Turns.**
-`shared/history/260813-2345-orchestrator-session.md:32-34`. Three Turns ran; `## Per-Turn Log`
+`260813-2345-orchestrator-session.md:32-34`. Three Turns ran; `## Per-Turn Log`
 below it carries all three plus the resumed continuation. The section has never been written to
 since Setup.
 
 **2. The Turn-3-continued block contradicts its own commit.**
-`shared/history/260813-2345-orchestrator-session.md`, `### Turn 3, continued (after the resume)`,
+`260813-2345-orchestrator-session.md`, `### Turn 3, continued (after the resume)`,
 the bullets "Review findings: none yet — the incremental review for this Turn has not run" and
 "Coherence: not yet evaluated for this Turn". `git show 18173e1 --` on that file shows both lines
 being *added* by the commit whose own message reads "Six findings, none in behaviour", and whose
-diff adds `circles/260801-1244-curator/reviews/260814-1419-coderev-curator-turn-3.md`.
+diff adds `260814-1419-coderev-curator-turn-3.md`.
 
 **3. The Circle's Turn-log entry for the same Turn names no review at all.**
-`circles/260801-1244-curator/_*_circle.md:107-118`, added by the same commit. Turn 1's and Turn 2's
+`260801-1244-curator:107-118`, added by the same commit. Turn 1's and Turn 2's
 entries each state what `coderev` filed and what it judged. The Turn-3-continued entry ends at the
 run file and says nothing about the six findings or the review's verdict on the Directive.
 
 **4. The Turn-3 entry above it cites a defect record by a stamp that does not exist.**
 `_t_circle.md:104` cites the proof-run defect record at the stamp `260814-1210`, which no file in
-the workbench has ever carried. The file is `issues/260814-1200_*_the-proof-run-…`. The wildcard is correct and the stamp is off by
+the workbench has ever carried. The file is `260814-1200_*_the-proof-run-…`. The wildcard is correct and the stamp is off by
 ten minutes, so the citation resolves to nothing under any marker. This one is not a staleness — it
 was wrong when written.
 
@@ -54,7 +54,7 @@ compares two records that cannot silently freeze. The gap is that the orchestrat
 block before the review and does not return to it; that is a sequencing fix in `agents/orchestrator.md`,
 not a measurement fix.
 
-**Filed by:** reconciler, session `shared/history/260813-2345-orchestrator-session.md`, Circle
+**Filed by:** reconciler, session `260813-2345-orchestrator-session.md`, Circle
 `260801-1244-curator`. Filed in the Circle's own store per the Origin Rule: the bookkeeping it
 describes is this Circle's Turn log and this session's record of running it.
 
@@ -63,15 +63,15 @@ describes is this Circle's Turn log and this session's record of running it.
 
 **Reconciliation 260819-1453 (reconciler, Domain `code`, Circle-store pass) — STAYS `_o_`. Re-measured at HEAD `e435f03` (v10.3.0). All four sub-claims unchanged.**
 
-`shared/history/260813-2345-orchestrator-session.md:32-34` — `## Turns` still reads `(none yet)`. `:191` still says "Review findings: none yet". `:193` still says "Coherence: not yet evaluated for this Turn". And the citation at `_c_circle.md:104` still resolves to nothing under any marker — no file carries the stamp `260814-1210`; the record is at `260814-1200`.
+`260813-2345-orchestrator-session.md:32-34` — `## Turns` still reads `(none yet)`. `:191` still says "Review findings: none yet". `:193` still says "Coherence: not yet evaluated for this Turn". And the citation at `_c_circle.md:104` still resolves to nothing under any marker — no file carries the stamp `260814-1210`; the record is at `260814-1200_*_the-proof-run-cannot-be-dispatched-from-the-session-that-built-the-agent.md`.
 
 The closure commit `4dcfff6` added the per-Turn sections that closed this record's neighbour (`260814-2017`) and touched none of these four.
 
 **Correction 260819-2250 (coder, plan step 7).** The dead citation in sub-claim 4 is gone:
-`_c_circle.md:104` now cites `issues/260814-1200_*_the-proof-run-…`, the record that was always
+`_c_circle.md:104` now cites `260814-1200_*_the-proof-run-…`, the record that was always
 meant. Sub-claim 4 is therefore historical and the record's other three sub-claims are untouched,
 which is why the marker does not move here. Log:
-`circles/260819-1645-four-constraints-on-deep-change/history/260819-2250-coder-resolve-the-citations-that-resolve-to-nothing.md`.
+`260819-2250-coder-resolve-the-citations-that-resolve-to-nothing.md`.
 
 ---
-Resolved: fixed — `## Turns` is filled from the per-Turn log and the two false bullets carry a dated correction beneath them; sub-claim 4 was closed on 260819; shared/history/260813-2345-orchestrator-session.md:34 and shared/history/260813-2345-orchestrator-session.md:207
+Resolved: fixed — `## Turns` is filled from the per-Turn log and the two false bullets carry a dated correction beneath them; sub-claim 4 was closed on 260819; 260813-2345-orchestrator-session.md:34 and 260813-2345-orchestrator-session.md:207

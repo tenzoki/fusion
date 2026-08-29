@@ -3,8 +3,8 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260819-1645-four-constraints-on-deep-change/planning/260819-2016_*_four-constraints-on-deep-change.md
-**Active session history:** circles/260819-1645-four-constraints-on-deep-change/history/260819-2006-orchestrator-session.md
+**Active spec/plan:** 260819-2016_*_four-constraints-on-deep-change.md
+**Active session history:** 260819-2006-orchestrator-session.md
 
 ---
 
@@ -19,19 +19,19 @@ more than once without moving.** What this Circle adds is the work, not the find
 below were measured at HEAD `b91c01c` during shaping.
 
 **Constraint 1, the compiled artifact.** Decision
-`shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
+`260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`
 was answered by the user as option 2 and stands unrealised through two reconciliation passes.
 `hooks/scripts/run-tests.mjs` compiles into a staging tree by design, so a green suite says
 nothing about the committed artifact and never will. Two facts bind the shape of the answer.
 `install.sh` defaults to `heads/main`, so every commit is installable, which is what eliminated
-a release-step check (decision `shared/decisions/260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md`).
+a release-step check (decision `260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md`).
 And `hooks/package.json` declares `typescript: ^5.6.0`, a caret range, beside a committed
 `hooks/package-lock.json`. Whether the lockfile satisfies the pinned-toolchain condition the
 user's answer attached, or whether the range must become exact, is unsettled and is the
 planner's to decide.
 
 **Constraint 2, the two untested write tools.** Issue
-`circles/260816-1741-guard-becomes-observation-only/issues/260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
+`260816-2320_*_the-write-trace-is-now-the-guards-only-product-and-two-of-its-four-tools-reach-no-integration-case.md`
 carries three reconciliation passes and the gap is unchanged. Verified during shaping:
 `grep -rn 'NotebookEdit\|MultiEdit\|notebook_path' hooks/lib/__tests__/` returns one hit,
 `hooks-wiring.test.ts:70`, which asserts the `hooks.json` matcher list rather than calling
@@ -41,9 +41,9 @@ cases in the existing describe in `guard-bash-integration.test.ts` cover all fou
 `notebook_path` branch with them.
 
 **Constraint 3, the whole-tree git command.** Issue
-`shared/issues/260819-0001_*_an-executor-reached-for-git-stash-while-two-were-dispatched-in-parallel.md`
+`260819-0001_*_an-executor-reached-for-git-stash-while-two-were-dispatched-in-parallel.md`
 records the measured case. It is the second of its class, not the first:
-`shared/issues/260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
+`260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
 records an executor mutating a file in the live tree while two others held it. The user placed
 the prohibition in the orchestrator's dispatch obligations rather than in the executor prompts,
 at every executor dispatch rather than only at a parallel one. There is text to build on:
@@ -54,7 +54,7 @@ prompt whether it runs alone, so the sentence also binds a solitary executor whe
 would have been harmless.
 
 **Constraint 4, the unresolved citations.** Issue
-`shared/issues/260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md`
+`260819-1511_*_the-archive-citation-filter-reads-shipped-text-and-never-the-workbench-so-archiving-dangles-citations-invisibly.md`
 states the mechanism. `scanRecordCitations` was extracted into
 `hooks/lib/__tests__/helpers/citation-scan.ts` for a second caller, and `grep -rn
 scanRecordCitations` returns the lint alone. **The archive filter is narrower than that record
@@ -78,12 +78,12 @@ for.
 citation carries no store, no kind and no slug, so nothing on disk says which artifact of that
 minute is meant. `citation-scan.ts` places such a token in `undecidable` whatever it resolves
 to, deliberately, and the question is held separately in
-`shared/issues/260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`.
+`260819-1511_*_a-bare-stamp-citation-is-ambiguous-when-two-records-share-it-and-one-turn-log-resolves-to-the-wrong-record.md`.
 A gate that tried to judge them would be approximating an undecidable question, which
 `rules/critical-stance.md` §4 forbids.
 
 **Constraint 4 has a second half, and it is a text change rather than a test.** Decision
-`circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+`260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
 was answered by the user on 2026-08-05: a deliberately deleted Circle vanishes entirely, and the
 obligation sits on the surviving references, which are annotated with the fact and the date. The
 reconciliation of 2026-08-19 measured that operative half as unwritten: `rules/circle-records.md`
@@ -106,9 +106,9 @@ never a baseline edit, authored in `hooks/lib/__tests__/helpers/growth-bound.ts`
 **One decision is open and blocks the test half of constraint 4.** What defines the gate's corpus,
 and what happens when an ordinary marker move puts a new record into it, is unanswered. The
 question and its options are filed at
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`.
 The same coupling is already a live defect for the existing lint
-(`shared/issues/260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`),
+(`260816-0725_*_the-citation-gates-new-exact-count-pin-is-coupled-to-workbench-contents-so-the-archive-step-can-turn-it-red.md`),
 so this Circle would otherwise reproduce a known failure in a second place.
 
 ## Dependencies
@@ -117,19 +117,19 @@ No Circle blocks this one: all eleven existing Circles carry a terminal marker a
 active. Three terminal Circles hold records this Circle reaches into, cited rather than copied
 per the Origin Rule:
 
-- `circles/260816-1741-guard-becomes-observation-only` (bounded) holds constraint 2's record, and
+- `260816-1741-guard-becomes-observation-only` (bounded) holds constraint 2's record, and
   is the Circle that made the write trace the guard's only product.
-- `circles/260801-1244-guard-rules-write` (closed) holds the Circle-deletion decision that
+- `260801-1244-guard-rules-write` (closed) holds the Circle-deletion decision that
   constraint 4's second half realises.
-- `circles/260805-2005-textschicht-gegen-code-nachziehen` (closed) is where the
+- `260805-2005-textschicht-gegen-code-nachziehen` (closed) is where the
   reference-resolution lint and its citation grammar were built.
 
 ## Turn log
 
 ## Activation proposal
 
-**Recommended for activation — playmaker run 260819-1732 (trigger: `direct-dispatch`, domain bias
-`code`, git HEAD `b91c01c`).** Proposed activation timestamp: **260819-1732**.
+**Recommended for activation — playmaker run 260819-1732-playmaker-direct-dispatch.md (trigger: `direct-dispatch`, domain bias
+`code`, git HEAD `b91c01c`).** Proposed activation timestamp: **260819-1732-playmaker-direct-dispatch.md**.
 
 This is the only Circle in the portfolio that is not terminal, and the store has stood empty of
 candidates since `260816-1741-guard-becomes-observation-only` reached Bounded Closure on 2026-08-17.
@@ -138,8 +138,8 @@ the record.
 
 **Dependencies: nothing blocks this Circle.** The `## Dependencies` section names no blocking Circle
 and cites three terminal Circles as lineage, each of which resolves to an existing directory:
-`circles/260816-1741-guard-becomes-observation-only` (bounded), `circles/260801-1244-guard-rules-write`
-(closed-coherent) and `circles/260805-2005-textschicht-gegen-code-nachziehen` (closed-coherent). One
+`260816-1741-guard-becomes-observation-only` (bounded), `260801-1244-guard-rules-write`
+(closed-coherent) and `260805-2005-textschicht-gegen-code-nachziehen` (closed-coherent). One
 of the three carries the bounded marker rather than closed-coherent, which the strict reading of the
 dependencies-closed heuristic would flag. It is not raised as a flag here, because the citation is
 reach under the Origin Rule rather than a precondition, and the bounded Circle's one unreached
@@ -147,12 +147,12 @@ Directive clause is unrelated to anything this Circle consumes from it.
 
 **Unresolved decisions cited in the Grounding snapshot: one, and the record declares it itself.**
 Every decision the Grounding cites was resolved against the store on this run.
-`shared/decisions/260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`,
-`shared/decisions/260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md` and
-`circles/260801-1244-guard-rules-write/decisions/260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
+`260816-0719_*_should-anything-assert-that-the-committed-hooks-dist-is-the-compilation-of-the-committed-source.md`,
+`260816-1707_*_which-install-path-is-the-authoritative-one-for-end-users.md` and
+`260805-1548_*_wie-soll-ein-circle-verschwinden-duerfen-den-jemand-absichtlich-loescht.md`
 all carry the answered marker. An answered-and-unrealised decision is the input this Circle consumes,
 not a block on it. The one open record is
-`circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
+`260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`,
 which the Grounding names under `### One decision is open` as the block on the test half of
 constraint 4.
 
@@ -182,10 +182,10 @@ orchestrator does at its own activation step.
 
 ## Parent grounding stale
 
-**Bounded-Closure propagation flag — playmaker run 260819-1732.**
+**Bounded-Closure propagation flag — playmaker run 260819-1732-playmaker-direct-dispatch.md.**
 
 This Circle's `## Grounding snapshot` cites the Circle
-`circles/260816-1741-guard-becomes-observation-only`, whose record carries the Bounded-Closure marker
+`260816-1741-guard-becomes-observation-only`, whose record carries the Bounded-Closure marker
 (`_b_`). A bounded Circle delivered less than its Directive asked, so any Grounding that reasons from
 it is flagged for a reading before the Circle runs. The citing line, under **Constraint 2**:
 
@@ -198,7 +198,7 @@ alone. The substantive question is whether the Grounding assumes the bounded Dir
 in full, and this one assumes the opposite: it cites an issue that is still open **inside** the
 bounded Circle's own store and proposes to close it. That is the correct way to reach into a bounded
 Circle. The bounded Circle's one deliberately unreached clause is
-`circles/260816-1741-guard-becomes-observation-only/issues/260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`,
+`260817-1505_*_the-curator-and-its-skill-still-say-a-projects-guard-configuration-can-deny-a-write.md`,
 which this Circle neither cites nor depends on.
 
 **Nothing is triggered by this flag.** No Rebalance is convened and no Grounding is revised. The user
@@ -208,13 +208,13 @@ automatic transition.
 
 ## Turn log
 
-- Turn 1 (session 260819-2006): commits `b6869aa`..`8e7cae7`; fourteen executor tasks over the plan's nine live steps plus five that the work opened; Coherence verdict `coherent`; session history: `circles/260819-1645-four-constraints-on-deep-change/history/260819-2006-orchestrator-session.md`
-- Turn 2 (session 260819-2006): commits `ac01c90`; four executor tasks closing twelve of the Circle's own fourteen open records; session history as above
+- Turn 1 (session 260819-2006-orchestrator-session.md): commits `b6869aa`..`8e7cae7`; fourteen executor tasks over the plan's nine live steps plus five that the work opened; Coherence verdict `coherent`; session history: `260819-2006-orchestrator-session.md`
+- Turn 2 (session 260819-2006-orchestrator-session.md): commits `ac01c90`; four executor tasks closing twelve of the Circle's own fourteen open records; session history as above
 
 ## Closure note
 
 **Closed coherent (`_c_`), 2026-08-20.** Reconciler verdict `coherent`, no Rebalance recommended
-(`circles/260819-1645-four-constraints-on-deep-change/history/260820-0830-reconciliation.md`).
+(`260820-0830-reconciliation.md`).
 
 **What the Directive asked and what it got.** Five constraints, all delivered and each verified
 against the tree rather than against its own account. The committed `hooks/dist` is asserted to be
@@ -246,7 +246,7 @@ measured set when step 4 transitioned it.
 **Its own Phase-4 gate had nothing to read on it.** `## Where this Circle stops` was made mandatory in
 the planner two days before this Circle's plan was written, and the plan does not carry it. The plan is
 deliberately not retrofitted: writing stopping conditions after the work is a fiction. The gate that
-prevents the next occurrence was built here (`260820-0917`), and its own live corpus is empty today, so
+prevents the next occurrence was built here (`260820-0917_*_the-first-plan-written-after-the-stopping-section-was-made-mandatory-does-not-carry-it.md`), and its own live corpus is empty today, so
 it is a trap set rather than a measurement taken.
 
 **Two records stay open, neither for want of effort.** `260819-2250` names a cross-reference to a defect

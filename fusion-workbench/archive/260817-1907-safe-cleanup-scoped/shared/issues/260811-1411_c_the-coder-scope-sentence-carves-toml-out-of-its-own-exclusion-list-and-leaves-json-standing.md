@@ -5,7 +5,7 @@
 **Domain:** code
 **Filed by:** coderev, reviewing Turn 2 range `270c566..1d5eed6` (commit `619dfb7`, task 35)
 **Affects:** `agents/coder.md:19-24`
-**Cross-references:** `shared/issues/260811-1408_o_the-ontocoder-prompt-still-claims-every-toml-…` ; `shared/issues/260811-1301_o_the-orchestrators-routing-table-omits-cargo-toml-…`
+**Cross-references:** `260811-1408_*_the-ontocoder-prompt-still-claims-every-toml-…` ; `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-…`
 
 ---
 

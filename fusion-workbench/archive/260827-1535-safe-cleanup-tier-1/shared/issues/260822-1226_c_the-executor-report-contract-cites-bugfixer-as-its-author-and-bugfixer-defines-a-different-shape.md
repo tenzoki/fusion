@@ -26,7 +26,7 @@ name it, in a sentence no gate reads.
 **Why it matters beyond the miscitation.** The sentence is the stated ground for not restating the
 contract: it says the reader should go to bugfixer for the definition. A reader who does gets the
 weaker shape. And the sentence is a duplication-reduction citation of exactly the kind
-`shared/issues/260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
+`260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
 asks for — a citation that points at the wrong file is worse than the restatement it replaced.
 
 **Fix direction, one of two, and the choice is not this record's to make.**
@@ -43,7 +43,7 @@ asks for — a citation that points at the wrong file is worse than the restatem
 **Severity:** Medium. Nothing is broken at run time; a citation is false and a third executor's
 report is outside the contract and outside the gate.
 
-**Found by:** analyst, step 1 of `shared/planning/260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, while measuring restatement across `agents/*.md`. Ledger: `shared/analyses/260822-1226-cut-ledger-for-three-bounded-surfaces.md`.
+**Found by:** analyst, step 1 of `260822-1154_*_plan-c0-cut-only-circle-buys-head-room-on-four-bounded-surfaces.md`, while measuring restatement across `agents/*.md`. Ledger: `260822-1226-cut-ledger-for-three-bounded-surfaces.md`.
 
 ---
 Resolved: fixed — option 2: both sentences name where the contract is authored (the two prompts and the lint) and describe bugfixer's Phase 6 report as the four-bullet prior art it extends, which is what it is; `agents/coder.md:73`, `agents/ontocoder.md:92`

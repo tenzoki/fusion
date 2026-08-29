@@ -32,18 +32,18 @@ handled this case by name: *"**Coming from a v10.0 or v10.1 install:** … Point
 **Scope, stated plainly.** This is a navigation defect in one sentence, not a lost document — all six
 notes are present and `ls docs/` finds them. `README.md:28-38` still carries all six per-release
 paragraphs, so the same user coming through the README is unaffected; the divergence between the two
-surfaces is already filed as `260822-1503`.
+surfaces is already filed as `260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`.
 
 ---
 
 **Found by:** coderev, reviewing `c2ad89c..6781814`, review file
-`shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
+`260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Low.
 **Affects:** `skills/help/SKILL.md:107`.
 **Filed in the shared store:** no Circle is active.
 **Cross-references:**
-`shared/issues/260822-1503_o_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
+`260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
 (the same cap's other consequence, filed by the commit itself); `CLAUDE.md`'s `docs/` row, which makes
 the same "one per release since v9" claim and is the curator's surface.
 
@@ -65,7 +65,7 @@ order, and says outright that not every release has one and that no filename is 
 version string. Nothing in the replacement goes stale when a release ships without a note.
 
 Repaired in the same edit as
-`shared/issues/260822-1506_*_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`,
+`260822-1506_*_the-help-caps-standing-line-names-one-silent-action-and-the-v9-note-holds-a-second.md`,
 which is a second defect in the same sentence. The reference-resolution pin did not move: the
 `$FUSION_SRC/docs/` token the old line carried is still there, and the first draft of this
 repair, which wrote `ls $FUSION_SRC/docs/upgrading-to-*`, was rejected by the citation gate as a

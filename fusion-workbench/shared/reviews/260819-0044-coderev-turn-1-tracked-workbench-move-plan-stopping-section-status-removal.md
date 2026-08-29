@@ -1,4 +1,4 @@
-# Code review — session 260818-2301, Turn 1
+# Code review — session 260818-2301-orchestrator-session.md, Turn 1
 
 **Reviewed-range:** `52b1d95..b54ace5`
 **Not-opened:** `hooks/dist/lib/staging-drift.js`, `hooks/dist/lib/staging-drift.d.ts`, `hooks/lib/__tests__/fixtures/rules-emission.golden`, `hooks/lib/__tests__/fixtures/surface-growth.golden`
@@ -44,14 +44,14 @@ the move that heading holds two sentences of pointer. The citation does not dang
 heading was deliberately kept, and that is precisely why no gate saw it: `reference-resolution-lint`
 asks whether an anchor exists, not whether it still holds the definition. This repository's
 `.gitignore` is the worked instance of the first of the two consumers the decision names.
-`260819-0038_o_the-gitignore-comment-still-says-…`
+`260819-0038_*_the-gitignore-comment-still-says-…`
 
 **M2 — two shipped surfaces still say "four topics".** The conventions file's own lead-in was
 correctly changed to five topics / six files. `CLAUDE.md:44` and `README-agents.md:271` were not, and
 the README copy enumerates the four by name, so the new file is absent from the one user-facing list
 of the partitioned rule files — and that sentence's closing clause, "each emitted only to the agents
 that apply it", is now false as a universal. No `derivable-enumerations-lint` case covers the
-partition table. `260819-0038_o_two-shipped-surfaces-still-say-four-topics-…`
+partition table. `260819-0038_*_two-shipped-surfaces-still-say-four-topics-…`
 
 **Everything else repointed correctly.** A tree-wide grep for the old anchor string returns only the
 retained heading itself, one test comment quoting it, and workbench records describing past state.
@@ -69,16 +69,16 @@ citing the file. Delete the rule file and the skill behaves identically. The dec
 column had named this risk; the realisation answered it with a claim rather than a mechanism. Two
 fix shapes, and they are not equivalent — one makes the sentence true, the other makes it accurate
 and weakens the distinction `260816-1707` drew against the two existing no-agent files.
-`260819-0039_o_the-archive-skill-says-it-reads-the-new-rule-…`
+`260819-0039_*_the-archive-skill-says-it-reads-the-new-rule-…`
 
 **M3 — the root-entry enumeration is now a cross-file duplicate.** The new rule re-lists the ten
 root entries the layout tree owns. They tile exactly at HEAD — checked — but the second landing site
 for a new root-anchored surface is now a different file, emitted to nobody, that a coder adding one
-has no reason to open. Closed defect `260810-0504` part 2 objected to this duplication when the two
+has no reason to open. Closed defect `260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md` part 2 objected to this duplication when the two
 sat ten lines apart; `260814-1419` is the recorded instance of the pair drifting. The move answers
 that record's audience objection and worsens its duplication objection. Filed with three fix shapes
 because the choice is a decision, not an edit.
-`260819-0042_o_the-move-turned-an-adjacent-duplicate-enumeration-…`
+`260819-0042_*_the-move-turned-an-adjacent-duplicate-enumeration-…`
 
 ### The plan-stopping section and its Phase-4 reader
 
@@ -96,7 +96,7 @@ aloud to the user as a clause. A MECE gap in the sense `rules/critical-stance.md
 of. The failure mode is measured in this repository: the defect closed in the same range is titled
 for twelve records keeping the unfilled template stub. A secondary scope question rides along — the
 heading says "this Circle" and the format is used for plans written with no Circle active.
-`260819-0039_o_the-new-plan-section-is-neither-mandatory-…`
+`260819-0039_*_the-new-plan-section-is-neither-mandatory-…`
 
 **M5 — `gate_hit` is emitted with no fixed reason.** The step says "with the reason" and names no
 string; the orchestrator's other explicit `gate_hit` names its reason verbatim. The consequence is
@@ -104,9 +104,9 @@ not cosmetic: `260817-1613` closes "Option 3 stays available if option 2 is meas
 a free-text reason in the one durable cross-session log makes that miss rate uncomputable. The
 per-clause answers also fall outside the documented `gate_response` vocabulary, which is the same
 class as open issue `260811-2306`.
-`260819-0040_o_phase-4-step-2b-emits-gate-hit-with-no-fixed-reason-…`
+`260819-0040_*_phase-4-step-2b-emits-gate-hit-with-no-fixed-reason-…`
 
-**Not a defect, but worth recording.** The user chose fork 1 of `260818-2343` — add the section so
+**Not a defect, but worth recording.** The user chose fork 1 of `260818-2343_*_the-answered-precondition-decision-names-a-planner-section-that-agents-planner-md-does-not-have.md` — add the section so
 every plan carries it — and step 2b nevertheless keeps fork 2's conditional for a plan that carries
 no such section. That is the right call for plans written before this commit, and it makes the
 decision's sentence "the Phase-4 step always has something to read" true only going forward. The
@@ -127,7 +127,7 @@ the reading that a record you are transitioning may be corrected — the only ca
 `skills/next/SKILL.md:224` states the same rule without the clause and is unambiguous; the clause is
 inherited from `agents/orchestrator.md:298-303`. Three shipped places, two of them always-on rule
 text, and dropping the qualifier shrinks two of them.
-`260819-0041_o_the-status-position-carves-an-exception-…`
+`260819-0041_*_the-status-position-carves-an-exception-…`
 
 **M6 — no migration surface, while the identical Circle-record removal got three.**
 `docs/upgrading-to-v10-2.md`, `README.md:28` and `skills/help/SKILL.md:101` all announce the Circle
@@ -136,11 +136,11 @@ tagged at `e14b6ca`, an ancestor of this range, so this change lands in a versio
 upgrades into with nothing telling it. The answering decision was right to state its change surface
 as two rule files; the gap is that nothing carries the release-time obligation forward, and it has no
 gate because it is triggered by a property of the diff rather than by a step.
-`260819-0041_o_the-decision-record-status-removal-got-none-of-the-three-…`
+`260819-0041_*_the-decision-record-status-removal-got-none-of-the-three-…`
 
 **L2 — the `## Project language` example is now the worst available one.** It offers "a record's
 `**Status:**`" as an example of a label defined in a shipped template; after this range no record
-kind carries the field. Already filed by a concurrent task as `260819-0028_o_…`; I reached it
+kind carries the field. Already filed by a concurrent task as `260819-0028_*_…`; I reached it
 independently and appended an `Also seen:` line adding only that the passage is in an always-on rule
 file, so it ships on every dispatch.
 
@@ -163,7 +163,7 @@ b54ace5    98 796     claimed  96 277
 the movement is −3 416 then **+819** — the second commit raised the floor — netting −2 597 off a base
 2 519 bytes higher than claimed. Same class as open issue `260816-1345`, with the same two
 memberships wrong in the same two directions, which makes it a property of the golden rather than of
-either author. `260819-0040_o_the-implemented-note-labels-the-analyst-dispatch-total-…`
+either author. `260819-0040_*_the-implemented-note-labels-the-analyst-dispatch-total-…`
 
 **The `reference-resolution-lint` baseline moves are sound.** Both re-approval notes follow the
 file's own convention — date, what changed, per-component movement, how measured — and both were
@@ -177,7 +177,7 @@ by the suite being green at HEAD.
 **L3 — the staging-drift comment repoint left two ragged lines** (`:85-88`, `:165-169`), four and
 three words wide in a file that otherwise runs to the column, and it reached the committed
 `dist/`. Content correct, purely cosmetic.
-`260819-0042_o_the-staging-drift-comment-repoint-left-two-ragged-lines-…`
+`260819-0042_*_the-staging-drift-comment-repoint-left-two-ragged-lines-…`
 
 ## Cross-cutting observations
 
@@ -221,4 +221,4 @@ decides. The suite is green and the three realisations do what their decisions a
 
 ---
 
-**Reconciliation 260819-0840** (reconciler, domain `code`, HEAD `83488e9`). Ten of the eleven findings are closed and verified against disk; the eleventh, the migration-surfaces question, is deliberately open as `shared/issues/260819-0041_o_the-decision-record-status-removal-got-none-of-the-three-migration-surfaces-the-circle-record-removal-got.md`, and the Turn-2 review found its recorded reason contradicted by `install.sh`'s default ref (`shared/issues/260819-0823_o_*`). The four files this review declared not-opened were opened by the Turn-2 pass, so `bin/fusion-review-coverage --since 52b1d95` now returns `verdict=covered, uncovered=0, carried=none` over all five commits. The always-on byte correction this review demanded was applied to the `260816-1707` footer and reproduces exactly: 101 393 → 97 977 at `b200902`, measured over the five unindented `emit_if_exists` files plus the project chat profile.
+**Reconciliation 260819-0840-reconciliation.md** (reconciler, domain `code`, HEAD `83488e9`). Ten of the eleven findings are closed and verified against disk; the eleventh, the migration-surfaces question, is deliberately open as `260819-0041_*_the-decision-record-status-removal-got-none-of-the-three-migration-surfaces-the-circle-record-removal-got.md`, and the Turn-2 review found its recorded reason contradicted by `install.sh`'s default ref (`shared/issues/260819-0823_o_*`). The four files this review declared not-opened were opened by the Turn-2 pass, so `bin/fusion-review-coverage --since 52b1d95` now returns `verdict=covered, uncovered=0, carried=none` over all five commits. The always-on byte correction this review demanded was applied to the `260816-1707` footer and reproduces exactly: 101 393 → 97 977 at `b200902`, measured over the five unindented `emit_if_exists` files plus the project chat profile.

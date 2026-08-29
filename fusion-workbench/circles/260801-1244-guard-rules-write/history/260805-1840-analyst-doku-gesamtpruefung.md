@@ -16,8 +16,8 @@ Gesamte Plugin-Doku (READMEs, CLAUDE.md, docs/, 15 rules/-Dateien, bin-Header, i
 ## Ergebnis
 
 - ~530 geprüfte Einzelaussagen, 46 Befunde (36 verifiziert-falsch, 6 abgeleitet, 4 verdächtig), Fehlerquote ~9 %.
-- 40 Issue-Records gefiled: `issues/260805-1840…`–`260805-1842…` (8 hoch, 17 mittel, 15 niedrig).
-- Analysebericht: `analyses/260805-1840-doku-gesamtpruefung-gegen-code.md`.
+- 40 Issue-Records gefiled: `260805-1840…`–`260805-1842…` (8 hoch, 17 mittel, 15 niedrig).
+- Analysebericht: `260805-1840-doku-gesamtpruefung-gegen-code.md`.
 - Guard-Doku substanziell präzise: 226/229 ausgeführte Erlaubt/Verboten-Behauptungen exakt bestätigt; docs/ (philosophy, working-model, plane-setup) ohne Befund.
 - Schwerste Befunde: PPD-Leere-Liste-Versprechen vs. Self-Protection-Floor; agent-setup "skipped silently" vs. fusion-rules-Abbruch; README-FUSION_REF-Beispiel auf ungetaggten v5.3.0; "nine fields" bei zehn; stales walk-out-and-back-Residual.
 - CLAUDE.md-Verdacht des Nutzers: trägt zur Hälfte (höchste absolute Zahl, aber README-agents.md höhere Dichte; Muster ist Aufzählungs-Drift dokumentübergreifend).

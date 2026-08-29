@@ -11,7 +11,7 @@ about the size of the set the comment exists to describe.
 ## How it surfaced
 
 Found by the analyst while writing the measurement protocol for
-`circles/260820-2051-style-rules-arrive-and-get-measured`, reported in that run and filed here rather
+`260820-2051-style-rules-arrive-and-get-measured`, reported in that run and filed here rather
 than in the Circle: it did not arise from that Circle's Directive, so the Origin Rule puts it in the
 shared store.
 
@@ -24,7 +24,7 @@ the defect and the cause as unverified.
 ## Why a count in a comment is worth a record
 
 The same class is already recorded twice in this project:
-`shared/issues/260819-0038_*_two-shipped-surfaces-still-say-four-topics-after-the-conventions-header-table-grew-to-five.md`
+`260819-0038_*_two-shipped-surfaces-still-say-four-topics-after-the-conventions-header-table-grew-to-five.md`
 was filed for a count that drifted from the table it described, and `CLAUDE.md` carries two rows whose
 inventories were deleted rather than re-measured, for the same reason. A number written beside the
 thing it counts goes stale silently, because nothing reads a comment.

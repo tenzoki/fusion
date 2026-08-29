@@ -6,7 +6,7 @@ The retired staging-drift example survives at two authoring sites and the closur
 **Domain:** code
 **Filed by:** coderev, reviewing C2 Turn 1
 **Affects:** `hooks/staging-drift.ts:23`, `bin/fusion-staging-drift:14`, `hooks/dist/staging-drift.js:23`
-**Cross-references:** `circles/260823-0023-settle-what-travels-between-checkouts/issues/260823-0800_c_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`, whose closure note names the first of these
+**Cross-references:** `260823-0800_*_two-further-surfaces-classify-portfolio-md-as-an-authored-record.md`, whose closure note names the first of these
 
 ---
 
@@ -44,7 +44,7 @@ and the same class the suite's `CIRCLE_RECORD` fixture exercises. `hooks/dist/st
 follows from `npm run build`.
 
 **Why a placeholder and not the fixture's literal path.** The suite uses
-`circles/260811-0100-close-the-findings/_t_circle.md`, which exists only as a scratch fixture. A
+`260811-0100-close-the-findings`, which exists only as a scratch fixture. A
 literal Circle-record spelling in shipped text is a citation to both gates that read this repository:
 `reference-resolution-lint` scans `bin/*` comments and `hooks/*.ts` comment lines, and a Circle
 record that does not exist in the workbench does not resolve. `<dir>` makes the token a placeholder

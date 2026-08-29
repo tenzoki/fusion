@@ -2,10 +2,10 @@
 
 **Date:** 2026-08-03 19:02
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write` (Turn 1 of this session, the Circle's fourth)
+**Circle:** `260801-1244-guard-rules-write` (Turn 1 of this session, the Circle's fourth)
 **Task:** T4-3 — close the High protected-path bypass filed at
-`issues/260802-2320`, implementing the direction the user chose at
-`decisions/260803-1419_a_how-should-the-protected-path-check-treat-the-case-of-a-path.md`
+`260802-2320`, implementing the direction the user chose at
+`260803-1419_*_how-should-the-protected-path-check-treat-the-case-of-a-path.md`
 **Status:** Complete
 
 ---
@@ -229,9 +229,9 @@ owns both. No commit.
 
 ## Left for the orchestrator
 
-- `issues/260802-2320_p_…` — the bypass is closed; the marker flip to `_c_` and the
+- `260802-2320_*_…` — the bypass is closed; the marker flip to `_c_` and the
   `Resolved:` note want the commit hash this session does not have yet.
-- `decisions/260803-1419_a_…` — `## Realisation` still says "Not implemented". The `_a_` →
+- `260803-1419_*_…` — `## Realisation` still says "Not implemented". The `_a_` →
   `_i_` transition and its `Implemented: <hash>` line need the same hash. Deliberately not
   written here rather than written with a citation that would not resolve — this Circle has
   already produced one of those.

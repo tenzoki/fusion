@@ -34,7 +34,7 @@ sits in the step whose stated purpose is to put a question where somebody looks.
 
 **3. The failure mode is measured in this project, not hypothetical.** The defect closed in the same
 range as this change,
-`shared/issues/260811-2146_c_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`,
+`260811-2146_*_half-the-decision-records-carry-a-status-that-disagrees-with-their-marker-and-twelve-keep-the-unfilled-template-stub.md`,
 is titled for exactly it: twelve records kept the unfilled template stub. A template field with no
 mandatory clause and no consumer that notices an empty one is the construction that produced those
 twelve.
@@ -53,7 +53,7 @@ folding "carries only the unfilled placeholder" into the existing do-nothing bra
 routed cases become four and tile. Do not build a parser — the decision `260817-1613` forecloses
 that, and a placeholder test is a substring check, not an interpretation of the clauses.
 
-Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301`. No Circle active, so it is
+Found in the coderev pass over `52b1d95..b54ace5`, session `260818-2301-orchestrator-session.md`. No Circle active, so it is
 filed in the shared store under the Origin Rule.
 
 ---

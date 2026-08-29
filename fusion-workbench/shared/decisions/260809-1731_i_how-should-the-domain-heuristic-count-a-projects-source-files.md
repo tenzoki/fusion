@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** implemented
 **Filed by:** orchestrator
-**Cross-references:** shared/issues/260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md (the depth defect, with the measured Cargo-workspace evidence, and the record that explicitly asked for this decision); shared/issues/260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md (the branch-order defect from the same review, fixable independently); circles/260801-1244-guard-rules-write/issues/260805-1830_*_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md (the original consuming-project report); shared/issues/260809-1729_c_... (closed as a duplicate of 260807-1951)
+**Cross-references:** 260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md (the depth defect, with the measured Cargo-workspace evidence, and the record that explicitly asked for this decision); 260807-1942_*_die-domaenenerkennung-entscheidet-vor-der-codezaehlung-und-erreicht-code-nie.md (the branch-order defect from the same review, fixable independently); 260805-1830_*_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md (the original consuming-project report); 260809-1729_*_... (closed as a duplicate of 260807-1951_*_die-tiefenschranke-der-codezaehlung-sieht-keinen-cargo-workspace.md)
 
 ---
 
@@ -94,7 +94,7 @@ cannot fire correctly after the counting is sound, the honest fix is to remove i
 tune the ratio until it fires.
 
 ---
-Answered: shared/history/260810-0241-orchestrator-session.md § "Human gates — the twelve answers" — **option 2, `git ls-files`**, chosen by the user at the pre-dispatch gate batch of session 260810-0241.
+Answered: 260810-0241-orchestrator-session.md § "Human gates — the twelve answers" — **option 2, `git ls-files`**, chosen by the user at the pre-dispatch gate batch of session 260810-0241-orchestrator-session.md.
 
 Two things the answer settles narrowly, recorded so the implementation does not widen them:
 

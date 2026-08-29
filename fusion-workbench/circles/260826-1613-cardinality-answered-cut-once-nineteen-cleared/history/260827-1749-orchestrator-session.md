@@ -1,6 +1,6 @@
-# Orchestrator Session — 260827-1749
+# Orchestrator Session — 260827-1749-orchestrator-session.md
 
-**Directive:** Take on the open defect records (the active Circle's four plus the sixteen open in shared/issues/, including the new 260827-1741) and produce a repair plan.
+**Directive:** Take on the open defect records (the active Circle's four plus the sixteen open in shared/issues/, including the new 260827-1741_*_tier-1-archives-a-terminal-circle-as-one-directory-and-never-reads-the-open-issues-inside-it.md) and produce a repair plan.
 **Mode:** custom (planning: planner dispatch, no execution before plan approval)
 **Status:** Complete (Circle closed coherent, marker _c_)
 
@@ -9,9 +9,9 @@
 - HEAD: 3cbb779
 - Active Circle: 260826-1613-cardinality-answered-cut-once-nineteen-cleared
 - Open issues: 4 (Circle) + 16 (shared) = 20
-- Open plan: shared/planning/260822-1136_o_spec-fusion-becomes-a-multi-user-tool.md
+- Open plan: 260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md
 - Open decisions: 5 (shared)
-- Circles: 1 active, 0 anticipated, 15 closed, 3 bounded, 1 superseded; no /fusion:next hint printed (0 anticipated). /fusion:next run by the user before the Directive; playmaker history 260827-1637.
+- Circles: 1 active, 0 anticipated, 15 closed, 3 bounded, 1 superseded; no /fusion:next hint printed (0 anticipated). /fusion:next run by the user before the Directive; playmaker history 260827-1637-playmaker-direct-dispatch.md.
 - Domain: code (code_files=121, data_files=10, counted_by=git-ls-files)
 - Turn budget: 12 (fusion.json, no loader diagnostics)
 - Identity: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7
@@ -20,10 +20,10 @@
 ## Per-Turn Log
 
 ### Turn 1
-- Plan: planning/260827-1756_p_repair-the-twenty-open-defect-records.md (24 steps, 5 bundles), approved at the gate; six decisions R1-R6 filed by the planner and answered at the gate (all recommendations adopted); the 13 open C4 records joined the scope; record 6 took direction option 1 (spec is history); the cut list S1-S5 / R1, R4, N1-N8 approved with step 19 split.
+- Plan: 260827-1756_*_repair-the-twenty-open-defect-records.md (24 steps, 5 bundles), approved at the gate; six decisions R1-R6 filed by the planner and answered at the gate (all recommendations adopted); the 13 open C4 records joined the scope; record 6 took direction option 1 (spec is history); the cut list S1-S5 / R1, R4, N1-N8 approved with step 19 split.
 - Tasks completed: all 24 (S19 as its first half: three commit-lock cases; the seven dispatch cases wait for the next cut).
 - Commits: cb7fa7b 3cb2cba 3fda829 c599bf0 d49e258 ea4be34 e7c0440 799ea34 38dc63e b8796a4 5e08bd7 440cad5 fe8a23c abb0238 d1489cc 90c309c + housekeeping.
-- Records closed: 19 of the plan's 20 (260827-0410 stays open, split), 13 C4 records, 260824-2013 answered. Filed: 260827-1807 (em-dash regression, analyst).
+- Records closed: 19 of the plan's 20 (260827-0410_*_the-machine-written-event-rows-ship-with-wiring-asserts-only-because-the-hook-test-surface-is-full.md stays open, split), 13 C4 records, 260824-2013 answered. Filed: 260827-1807 (em-dash regression, analyst).
 - The cut: skills/ -6 613 bytes (834 free after the paid-for steps), hook tests -239 lines (62 free after). No baseline map moved. Citation pin 1477/207 (stale at HEAD 3cbb779) -> 1506/212, every share stated.
 - Reverts: one, the C4-prose coder's sentence in the terminal record 260825-2023/_b_circle.md.
 - Misfiles: the ontocoder's history entry at circles/ under the repository root, moved.
@@ -44,12 +44,12 @@
 | Agent errors | 0 validation failures reaching bugfixer; 3 incidents (see Turn logs) |
 | Human gates hit | 7 (plan; C4 scope/S13/R1-R6/record 6; cut; review disposition; stop conditions ×2 asked, 1 answered) |
 
-Record counts: `records anchor=3cbb779 start=260827-1749`, taken over `circles/260826-1613-…`, `circles/260825-2023-…` (in scope by the user's direction) and `shared/`; the closed Circle left the resolver's scan set at closure, so the stores were named explicitly. `filed decision 6` are the planner's R1-R6.
+Record counts: `records anchor=3cbb779 start=260827-1749-orchestrator-session.md`, taken over `circles/260826-1613-…`, `circles/260825-2023-…` (in scope by the user's direction) and `shared/`; the closed Circle left the resolver's scan set at closure, so the stores were named explicitly. `filed decision 6` are the planner's R1-R6.
 
 ## Review coverage
 
 **Range:** `3cbb779..HEAD` — 25 commits
-**Covered by:** `reviews/260827-2041-coderev-circle-closure-review-3cbb779-e9dc9b2.md` `**Reviewed-range:** 3cbb779..e9dc9b2` (covers 19); `reviews/260826-1858-coderev-playmaker-prompt-and-the-two-fabricated-claims.md` range `4f7332c..4f7332c` (covers 0 in this range)
+**Covered by:** `260827-2041-coderev-circle-closure-review-3cbb779-e9dc9b2.md` `**Reviewed-range:** 3cbb779..e9dc9b2` (covers 19); `260826-1858-coderev-playmaker-prompt-and-the-two-fabricated-claims.md` range `4f7332c..4f7332c` (covers 0 in this range)
 **Not covered:**
 - `6c9d714` chore(workbench): the Step 0i finding closes with its sibling batch
 - `04847e5` fix(setup): Step 0j reports a nested ignore file honestly and never appends twice; Step 0i names the one bullet; the helper-gap line is guarded
@@ -65,7 +65,7 @@ Record counts: `records anchor=3cbb779 start=260827-1749`, taken over `circles/2
 - `circles/260826-1613-…/issues/260827-1807_o_*`: em-dash regression over the always-on corpus and the four profiles (analyst, step 6); a coder repunctuation pass, and the C10 measurement window question first.
 - `skills/` at 93 bytes free: the next Circle that touches a skill body starts with a cut.
 - The six uncovered commits above: a review pass over `e9dc9b2..HEAD` before any release tag.
-- Pre-session working-tree state, untouched: the tier-1 archive sweep `archive/260827-1535-safe-cleanup-tier-1/` with its 101 `shared/` deletions, `.cadence-anchors`, `history/260827-1521-orchestrator-session.md` (modified), `history/260827-1528-reconciliation.md`, and two untracked `_c_` records in `shared/issues/` (`260826-1315`, `260826-1331`). `/fusion:cleanup` is the place for them.
+- Pre-session working-tree state, untouched: the tier-1 archive sweep `archive/260827-1535-safe-cleanup-tier-1/` with its 101 `shared/` deletions, `.cadence-anchors`, `260827-1521-orchestrator-session.md` (modified), `260827-1528-reconciliation.md`, and two untracked `_c_` records in `shared/issues/` (`260826-1315_*_the-closure-note-claims-every-code-commit-was-reviewed-and-one-was-not.md`, `260826-1331_*_npm-test-is-red-at-head-on-a-one-word-slug-drift-in-the-record-that-reports-the-eighth-count.md`). `/fusion:cleanup` is the place for them.
 
 ## Commits
 
@@ -109,7 +109,7 @@ Record counts: `records anchor=3cbb779 start=260827-1749`, taken over `circles/2
 **Rebalance recommendation:** none
 
 ### Turn 2
-- Trigger: the Circle review (reviews/260827-2041-coderev-circle-closure-review-3cbb779-e9dc9b2.md) filed 11 findings; the user chose to fix all 11 before closure.
+- Trigger: the Circle review (260827-2041-coderev-circle-closure-review-3cbb779-e9dc9b2.md) filed 11 findings; the user chose to fix all 11 before closure.
 - Tasks completed: 5 batches (R-A..R-E), all 11 findings closed. The High (archive corpus collapsing to CLAUDE.md rules /bin in a fresh shell) is fixed and verified in a fresh bash -c.
 - Commits: e36a718 737cf19 e71d03f + the setup batch.
 - Incidents: the bookkeeping coder reverted three Turn 2 files with git checkout -- (a backup cp had failed silently) and replayed the edits from the coders' logs; byte sizes verified equal to the coders' reported end states, suite green. Filed as an incident in this log, not as a record: the prohibition in Step 3a item 4 covers whole-tree commands, and this was a named-file revert; the failure was the unchecked backup.
@@ -217,7 +217,7 @@ sequenceDiagram
 
 ## Portfolio update
 
-Playmaker dispatched after the `_t_`→`_c_` transition: `shared/history/260828-0038-playmaker-orchestrator-phase4.md`. No active, no anticipated Circle; backlog ranking unchanged (recommended to shape: `shared/backlog/260814-1733_*_bounded-executor-dispatches.md`). No parent-Grounding-stale note.
+Playmaker dispatched after the `_t_`→`_c_` transition: `260828-0038-playmaker-orchestrator-phase4.md`. No active, no anticipated Circle; backlog ranking unchanged (recommended to shape: `260814-1733_*_bounded-executor-dispatches.md`). No parent-Grounding-stale note.
 
 ## Coherence
 <!-- RECONCILER-OWNED -->

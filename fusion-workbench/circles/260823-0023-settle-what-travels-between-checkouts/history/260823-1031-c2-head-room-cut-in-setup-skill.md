@@ -10,7 +10,7 @@ Step 5 of the C2 plan left the `skills/` surface with 33 bytes of head-room
 (golden total 240 406 against budget 240 439). Step 6 cannot be written in 33
 bytes. The user authorised a cut at a gate and declined the re-baseline option,
 so no growth-bound baseline moved here; the open decision
-`shared/decisions/260822-1154_o_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
+`260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`
 stays open.
 
 ## What was cut
@@ -22,7 +22,7 @@ bound, literal string, path, or exit-code reading was touched.
 
 | # | Where | Bytes | What went, and why its absence changes nothing |
 |---|---|---|---|
-| 1 | Pre-v4 layout check, ordering rationale | 520 | The blow-by-blow of defect `260717-0115`, compressed to one clause. The order it argues for is stated as an instruction two paragraphs up and enforced by the `OLD=1` branch. |
+| 1 | Pre-v4 layout check, ordering rationale | 520 | The blow-by-blow of defect `260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md`, compressed to one clause. The order it argues for is stated as an instruction two paragraphs up and enforced by the `OLD=1` branch. |
 | 2 | Bracket-marker probe, measurement provenance | 128 | "hit twice, 1146 matches" and where they sat. The cost the conventions file cites this passage for (permanent refusal, migration with nothing to do) is kept verbatim. |
 | 3 | Bracket-marker probe, superseded design | 199 | The obituary of the `-not -path` whole-tree walk. The bound that replaced it ("do not widen it") opens the same paragraph. |
 | 4 | "All three probes are bounded" walkthrough | 575 | Per-probe accounts of how each achieves its bound, describing the code block directly beneath. The bound and its prohibition on path exceptions are kept. |

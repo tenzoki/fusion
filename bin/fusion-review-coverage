@@ -23,14 +23,14 @@
 #   uncovered=7
 #   verdict=uncovered
 #     uncovered 7785330 chore(workbench): the reconciler's annotations land
-#     review shared/reviews/260810-2110-….md range=da8c9db..b3cc034 not-opened=none covers=5
+#     review 260810-2110-….md range=da8c9db..b3cc034 not-opened=none covers=5
 #   carried=agents/orchestrator.md, skills/next/SKILL.md
-#   carried-from=shared/reviews/260810-2110-….md
+#   carried-from=260810-2110-….md
 #
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. Finding an uncovered range
 #      is NOT a non-zero exit, deliberately — same reason bin/fusion-staging-drift
-#      gives (issue 260810-0710): a check that hands its verdict to an exit code
+#      gives (issue 260810-0710_*_the-drift-checks-last-line-makes-the-whole-block-exit-non-zero-when-no-circle-is-active.md): a check that hands its verdict to an exit code
 #      teaches its reader to ignore that code.
 #   1  usage error.
 #   2  no fusion workbench above the working directory; nothing to check.
@@ -41,7 +41,7 @@
 # ---------------------------------------------------------------------------
 # Why this exists
 #
-# Issue 260810-1205: sixteen commits landed in 18b6094..ed87d87, two coderev
+# Issue 260810-1205_*_seven-of-sixteen-commits-in-the-session-range-never-reached-a-review-pass-and-nothing-measures-the-gap.md: sixteen commits landed in 18b6094..ed87d87, two coderev
 # passes ran, their ranges did not tile the range, and seven code-bearing
 # commits reached HEAD and a pushed tag with nobody having opened them. The
 # session's own report said ONE unreviewed commit, because it measured the gap

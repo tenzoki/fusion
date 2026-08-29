@@ -1,6 +1,6 @@
 # Layout tree omits `.commit-lock/` and `.session-marker`, both root-anchored; "the four root-anchored surfaces" undercounts
 
-**Filed:** 260716-2002
+**Filed:** 260716-2002_*_layout-tree-omits-two-root-anchored-surfaces.md
 **Severity:** Low
 **Domain:** code
 **Filed by:** coderev
@@ -70,7 +70,7 @@ every root-anchored path a `bin/` helper touches also appears in the tree is clo
 - `rules/fusion-workbench-conventions.md` `## Commit lock` → Mechanism
 - `bin/fusion-session-mark`, `bin/fusion-commit-lock`
 - `skills/setup/SKILL.md` Step 0d
-- Governing plan: `fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md` (P-8 lint gate)
+- Governing plan: `260716-1910[p]-plan-workbench-umbau-circle-container.md` (P-8 lint gate)
 
 ---
 Resolved: commit 6228391 (task T2-A). Verified by the orchestrator against the running system, not by reading.

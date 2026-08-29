@@ -10,14 +10,14 @@
 
 ## What the dispatch was
 
-Three queue entries from `tasklist.md`, each realising a decision the user answered on 260811-0752.
+Three queue entries from `tasklist.md`, each realising a decision the user answered on 260811-0752-orchestrator-session.md.
 Disjoint file sets, three independent fixes. Each defect record and the decision it cites were read
 before any edit, because in all three cases the record repeats a bound the decision carries.
 
 ## Task 4 — `bin/fusion-source-root`, and four skill bodies onto it
 
-Realises `shared/decisions/260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper…`,
-option 1. Closes `shared/issues/260811-1733`, and with it `260810-2030` and `260811-0109`.
+Realises `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper…`,
+option 1. Closes `260811-1733`, and with it `260810-2030` and `260811-0109`.
 
 **The helper.** `bin/fusion-source-root` prints one line: `$PWD` when `bin/fusion-plugin-cwd` says
 cwd is the plugin's own repository, `$FUSION_PLUGIN_ROOT` otherwise. Exit 2 printing nothing when
@@ -48,11 +48,11 @@ ending in an assignment so no `set -e` shell can trip on a trailing false test.
 **The split this makes explicit, and did not exist before.** *Read shipped text* → `$FUSION_SRC`;
 *run or copy an installed artefact* → `$FUSION_PLUGIN_ROOT`. So `cleanup`'s four `bin/`
 invocations and `help`'s `fusion-paths` and `templates/` reference all stay on the install root.
-That is not a judgement call taken here: part (c) of `260810-1544` — whether the work-tree
+That is not a judgement call taken here: part (c) of `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` — whether the work-tree
 preference reaches helper resolution — is explicitly unanswered, and the task's own bound says it
 must not be assumed. The split is stated at all four sites and in the helper's header.
 
-**The acceptance's arithmetic does not close, and the choice is recorded.** `260811-1733` asks for
+**The acceptance's arithmetic does not close, and the choice is recorded.** `260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md` asks for
 "four guarded calls" *and* for the two skills still citing the install copy to be corrected; those
 cannot both hold literally. `tasklist.md` task 4 is the more explicit statement — "the call-site
 count is **four, not two**", enumerating setup, next, cleanup and help — so "four" was read as four
@@ -71,8 +71,8 @@ skills/ rules/` is empty: no fifth copy of the criterion survives.
 
 ## Task 5 — the guard event log gets its archive case
 
-Realises `shared/decisions/260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`, option 1.
-Closes `shared/issues/260811-1731`.
+Realises `260811-1534_*_does-the-guard-event-log-get-an-upper-bound…`, option 1.
+Closes `260811-1731`.
 
 `skills/archive/SKILL.md`: safety filter 1 narrows to "`.guard-state/` **apart from
 `events.jsonl`**"; a new `### Rolling the guard event log` subsection carries the classification,
@@ -123,8 +123,8 @@ ordering of the two roll commands can break the dashboard.
 
 ## Task 6 — the editor's deliverable language
 
-Realises `shared/decisions/260807-2131_*_which-language-governs-a-customer-deliverable.md`,
-option 3. Closes `shared/issues/260811-1732`.
+Realises `260807-2131_*_which-language-governs-a-customer-deliverable.md`,
+option 3. Closes `260811-1732`.
 
 `agents/editor.md` gained `## Deliverable language — named in the dispatch, or you halt`: the
 language comes from the dispatching task and from nothing else, and without one the agent halts
@@ -181,19 +181,19 @@ and that is worth knowing when task 11 (reduce the surface) is taken up.
 
 ## Bookkeeping
 
-- Issues `_o_` → `_c_`, each with a `Resolved:` note: `260811-1733`, `260811-1731`, `260811-1732`,
-  plus the two `260811-1733` subsumes — `260810-2030` and `260811-0109`.
-- Decisions `_a_` → `_i_` with `Implemented:` notes: `260811-1534`, `260807-2131`. Both realise the
+- Issues `_o_` → `_c_`, each with a `Resolved:` note: `260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md`, `260811-1731_*_the-guard-event-log-needs-its-archive-case-because-it-is-evidence-and-not-live-state.md`, `260811-1732_*_the-editor-takes-its-deliverable-language-from-the-dispatch-and-fails-loudly-without-one.md`,
+  plus the two `260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md` subsumes — `260810-2030` and `260811-0109`.
+- Decisions `_a_` → `_i_` with `Implemented:` notes: `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md`, `260807-2131_*_which-language-governs-a-customer-deliverable.md`. Both realise the
   whole of what they answered; the halves each explicitly declined (dropping `guard_allow`; a
   project-wide default) are not unfinished work.
-- Decision `260810-2145` **stays `_a_`**, with an `Implemented:` note recording option 1's landing
+- Decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` **stays `_a_`**, with an `Implemented:` note recording option 1's landing
   and why the marker did not move: its second half — a home for the domain capture — is held in
   reserve by that very answer and still carried by `260810-2110` and task 41. `_i_` is terminal, so
   moving it would close a record whose second half nobody has decided. That is the reasoning
-  `260810-1544` was written out of, applied to itself; the note says to split the record when the
+  `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` was written out of, applied to itself; the note says to split the record when the
   domain-capture call is taken up.
 - Tasklist: tasks 4, 5 and 6 ticked with their outcomes. Four decision citations in that file moved
   to the wildcard marker form so the ticks do not immediately go stale, and two live records citing
-  a marker this session moved (`260810-2110`, and the new note in `260810-2145`) were corrected the
+  a marker this session moved (`260810-2110`, and the new note in `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`) were corrected the
   same way. History files, reviews and closed records were left alone — they record what was true
   when they were written.

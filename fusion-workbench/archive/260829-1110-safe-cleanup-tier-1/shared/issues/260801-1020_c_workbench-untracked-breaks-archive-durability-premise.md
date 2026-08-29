@@ -9,7 +9,7 @@ Both claims are wrong in this repo, and they are wrong for the same root cause: 
 Verified:
 
 - `git ls-files fusion-workbench/` returns 0 files. Nothing in the workbench is in the git index.
-- `git check-ignore -v fusion-workbench/shared/history/260801-0936-orchestrator-session.md` produces no match and exits non-zero. The path is not ignored.
+- `git check-ignore -v 260801-0936-orchestrator-session.md` produces no match and exits non-zero. The path is not ignored.
 - `.gitignore:49-50` reads:
   ```
   # fusion-workbench is a runtime artifact created by agents in the consuming project
@@ -24,7 +24,7 @@ Consequences:
 
 1. **Archive's durability premise fails.** `/fusion:archive` moves files rather than copying them, on the stated reasoning that git holds the bytes. With the workbench untracked, an archive move is the only copy, and a mistaken or colliding move loses the artifact outright. The skill's own collision guard (`skills/archive/SKILL.md:174`) protects against overwrite but not against this.
 
-2. **The workbench has no history of its own.** The reconciler appends to files in place, and playmaker regenerates `portfolio.md` wholesale on every run (`agents/playmaker.md:136`). Without version control, prior states are unrecoverable. Any capability that wants to reconstruct how the project's understanding evolved sees endpoints only, never trajectories. This is a direct constraint on the consolidation-agent design analysed in `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, second thin spot).
+2. **The workbench has no history of its own.** The reconciler appends to files in place, and playmaker regenerates `portfolio.md` wholesale on every run (`agents/playmaker.md:136`). Without version control, prior states are unrecoverable. Any capability that wants to reconstruct how the project's understanding evolved sees endpoints only, never trajectories. This is a direct constraint on the consolidation-agent design analysed in `260801-1020-normative-surface-drift-gap-analysis.md` (Question 4, second thin spot).
 
 3. **`git status` is permanently dirty**, which erodes the signal that `/fusion:cleanup` Step 2 and the orchestrator's commit phase rely on.
 
@@ -32,7 +32,7 @@ The commented-out ignore line suggests someone reversed the decision to ignore t
 
 Note that in the *general* case fusion ships no `.gitignore` rule for consuming projects, so a consuming project may land in any of the three states (tracked, ignored, or neither). Archive's sentence is unconditional and is therefore unsafe as written regardless of what this repo chooses.
 
-Filed by: analyst, from `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`.
+Filed by: analyst, from `260801-1020-normative-surface-drift-gap-analysis.md`.
 
 ---
 Resolved: Only the general-case part of this record was still live. Consequences 1–3 dissolved for

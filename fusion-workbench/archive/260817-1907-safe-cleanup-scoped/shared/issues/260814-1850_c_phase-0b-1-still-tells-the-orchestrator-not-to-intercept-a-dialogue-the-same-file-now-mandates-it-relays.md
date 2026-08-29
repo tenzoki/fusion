@@ -31,7 +31,7 @@ two documents is a lookup problem; a contradiction inside one prompt is read as 
 situations, and a reader will invent the distinction rather than notice the fault.
 
 **Relation to the open record on the same class.**
-`shared/issues/260813-1334_o_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`
+`260813-1334_*_fusion-direct-documents-a-shaper-clarification-flow-that-a-dispatched-sub-agent-cannot-run.md`
 files the same defect at two other sites — `skills/direct/SKILL.md` Step 4, and the shaper's
 `## Tool Discipline` enumeration not naming `/fusion:direct`. It does **not** name
 `agents/orchestrator.md:422`; on the contrary it cites the orchestrator's relay as "the working shape
@@ -56,7 +56,7 @@ point, so the orchestrator relays every round rather than answering on the user'
 **Filed in `shared/`** per the Origin Rule: the defect predates Circle `260801-1244-curator` and was
 caused by no part of its Directive; the Circle's Turn-4 work is what made it visible.
 
-**Filed by:** coderev, review `circles/260801-1244-curator/reviews/260814-1850-coderev-curator-turn-4.md`.
+**Filed by:** coderev, review `260814-1850-coderev-curator-turn-4.md`.
 
 ---
 Resolved: 9f4cdac. Phase 0b.1 step 3 of `agents/orchestrator.md` now states the relay and points at

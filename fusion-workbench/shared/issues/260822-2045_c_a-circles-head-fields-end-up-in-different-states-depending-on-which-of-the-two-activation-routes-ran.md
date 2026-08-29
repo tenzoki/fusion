@@ -34,10 +34,10 @@ acknowledges the other.
 
 ## The case that produced this
 
-Circle `circles/260822-1921-measure-what-two-checkouts-share/` was activated through
+Circle `260822-1921-measure-what-two-checkouts-share` was activated through
 `/fusion:next <dirname>` on 260822. Its `**Active spec/plan:**` reads `(none yet)`. Its own
 `## Grounding snapshot` cites the spec it runs on, by path, in its first sentence:
-`shared/planning/260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`.
+`260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`.
 
 So the spec exists, the record names it, and the field says nothing.
 
@@ -48,7 +48,7 @@ cite it**", and the record cites the spec in its Grounding. The condition fails,
 route leaves the field exactly as the skill route does. **The two routes agree on this record**, and
 the example this was filed on demonstrates nothing.
 
-Checked again on 260823 while activating `circles/260823-0023-settle-what-travels-between-checkouts/`,
+Checked again on 260823 while activating `260823-0023-settle-what-travels-between-checkouts`,
 whose record cites its specification twice outside the field. Both routes leave `(none yet)` there
 too, and the shaper had carried a caution into that record on the strength of this defect's original
 wording.
@@ -93,4 +93,4 @@ The three differ in who is assumed to know which spec a Circle runs on, which is
 all of them.
 
 ---
-Resolved: referred (decision) — which activation route writes `**Active spec/plan:**` when no party is clearly its writer is the decision's question; circles/260824-1853-close-every-open-defect/decisions/260824-2013_*_who-writes-the-circle-record-fields-that-no-current-party-may-write.md
+Resolved: referred (decision) — which activation route writes `**Active spec/plan:**` when no party is clearly its writer is the decision's question; 260824-2013_*_who-writes-the-circle-record-fields-that-no-current-party-may-write.md

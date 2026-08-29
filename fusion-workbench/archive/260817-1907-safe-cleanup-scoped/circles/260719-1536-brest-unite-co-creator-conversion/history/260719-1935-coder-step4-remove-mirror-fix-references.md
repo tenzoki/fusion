@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-19
 **Circle:** 260719-1536-brest-unite-co-creator-conversion
-**Plan:** `planning/260719-1917_o_unite-context-loading-conversion.md` Step 4
+**Plan:** `260719-1917_*_unite-context-loading-conversion.md` Step 4
 **Target repo (`$U`):** `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator` (branch `main`, separate from fusion source repo)
 **Status:** Complete
 

@@ -4,9 +4,9 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241`, Turn 1)
+**Filed by:** coderev, review of `8960e1a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 1)
 **Affects:** `skills/circle-stash/SKILL.md` Step 7.6 — both `|| true` terminators; the "Why the branch, and why that probe" paragraph
-**Cross-references:** commit `b6bbae7`; `shared/issues/260717-0030_c_git-stash-include-untracked-can-sweep-the-stash-directory.md` (closed)
+**Cross-references:** commit `b6bbae7`; `260717-0030_*_git-stash-include-untracked-can-sweep-the-stash-directory.md` (closed)
 
 ---
 

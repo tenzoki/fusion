@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-08-16
 **Agent:** coder
-**Task:** Fix direction 2 of `shared/issues/260816-0141_o_the-plugin-manifests-own-description-was-not-brought-to-v9-when-the-marketplace-entry-was.md` — the durable half.
+**Task:** Fix direction 2 of `260816-0141_*_the-plugin-manifests-own-description-was-not-brought-to-v9-when-the-marketplace-entry-was.md` — the durable half.
 
 ## What was done
 

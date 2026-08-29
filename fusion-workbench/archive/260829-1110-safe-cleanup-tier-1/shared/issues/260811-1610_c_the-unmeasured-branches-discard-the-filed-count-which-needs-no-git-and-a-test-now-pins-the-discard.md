@@ -7,7 +7,7 @@
 **Filed by:** coderev (Turn 3 review, range `7d9efc8..adaa545`)
 **Affects:** `agents/orchestrator.md:620-628` (the block), `agents/orchestrator.md:649` (the closing instruction), `hooks/lib/__tests__/record-counts-measurement.test.ts:271`
 **Cross-references:**
-`shared/issues/260811-1406_c_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` (the High finding this repair closed — same defect shape);
+`260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` (the High finding this repair closed — same defect shape);
 `shared/issues/260810-1205_*` (the hand-kept tally the block replaced);
 `CLAUDE.md` `fusion-workbench/` row (a consuming project decides whether to track its workbench)
 
@@ -66,14 +66,14 @@ fully computable.
 
 ## Why this is the same class as the finding it repairs
 
-`260811-1406` was High because the block declined to compute a number it could compute, and told the
+`260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` was High because the block declined to compute a number it could compute, and told the
 model to name a cause that was not the cause. The repair fixed the probe. It left the coupling: the
 git-dependent half of the measurement failing still takes the git-free half down with it, and the
-closing instruction still puts the word `unmeasured` in a cell whose value is known. `260811-1406`'s
+closing instruction still puts the word `unmeasured` in a cell whose value is known. `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md`'s
 own closing sentence is the standard this fails: *"A figure that could not be taken is never reported
 as a zero"* — and a figure that could be taken is never reported as unmeasurable either.
 
-The reach is wider than the defect it replaced, not narrower. `260811-1406` fired for Circle sessions
+The reach is wider than the defect it replaced, not narrower. `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md` fired for Circle sessions
 in a tracked workbench; this fires for **every session in a project that does not track its
 workbench**, which `CLAUDE.md` names as the consuming project's own choice and which was fusion's own
 configuration until 260801.

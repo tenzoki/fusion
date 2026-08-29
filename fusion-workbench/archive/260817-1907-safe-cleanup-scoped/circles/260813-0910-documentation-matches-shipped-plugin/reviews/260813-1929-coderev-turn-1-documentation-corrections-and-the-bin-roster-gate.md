@@ -4,8 +4,8 @@
 **Date:** 260813-1929
 **Reviewed-range:** `6590cd5..79ec7bb`
 **Not-opened:** none
-**Circle:** `circles/260813-0910-documentation-matches-shipped-plugin`
-**Plan:** `planning/260813-1820_o_documentation-matches-shipped-plugin.md`, steps 1-3
+**Circle:** `260813-0910-documentation-matches-shipped-plugin`
+**Plan:** `260813-1820_*_documentation-matches-shipped-plugin.md`, steps 1-3
 
 ## Summary
 
@@ -45,7 +45,7 @@ Recorded because the plan makes "read both sides" an acceptance condition, so a 
 | Row | Cited home | Verified |
 |---|---|---|
 | `fusion-commit-lock` | `rules/workbench-stash-and-lock.md` | `:122` noclobber holder write, `:124` two stale-lock paths at 60 s, `:130-135` four subcommands with `with` canonical, `:137-143` who acquires, `:150-153` failure modes. Orchestrator-only emission confirmed at `bin/fusion-rules:453-455` |
-| `fusion-count-sources` | its own header | `bin/fusion-count-sources:1-60` — output keys, exit codes, "Why git ls-files" (no fallback), "The absent count" (`unavailable`, never `0`). Decisions `260809-1731` and `260810-0921` both resolve on disk |
+| `fusion-count-sources` | its own header | `bin/fusion-count-sources:1-60` — output keys, exit codes, "Why git ls-files" (no fallback), "The absent count" (`unavailable`, never `0`). Decisions `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md` and `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` both resolve on disk |
 | `fusion-state-drift` | `hooks/lib/state-drift.ts` + `README-hooks.md:177` | both exist; wrapper target `hooks/dist/state-drift.js` at `bin/fusion-state-drift:57` |
 | `fusion-staging-drift` | `hooks/lib/staging-drift.ts` + `README-hooks.md:178` | both exist; the four classes and the `verdict=` scoping match the script header `:18-25` |
 | `fusion-review-coverage` | `hooks/lib/review-coverage.ts` + `README-hooks.md:179` | both exist; `--since` default confirmed at `bin/fusion-review-coverage:8` |
@@ -150,4 +150,4 @@ Every finding and every entry in `## What was verified and holds` rests on openi
 
 ---
 
-**Reconciled 260813-2258.** Seven findings filed, five closed and two still open. Each of the five closures was re-checked against the artifact at HEAD `c0e4219`, not against its closure note: `README-agents.md:300` (the narrowed lint claim), `CLAUDE.md:42` (the commit-lock row's partial acquirer list dropped), `CLAUDE.md:43` ("authoritative documentation" replacing the self-falsifying absolute), `CLAUDE.md:65` (the **unindented** `emit_if_exists` qualifier), and the plan's `_o_`→`_p_` rename with `**Status:** In progress`. All five hold. The two open findings — the missing `hooks/staging-drift.ts` row and the unanchored `bin/` roster parser — were re-verified as still present.
+**Reconciled 260813-2258-reconciliation.md.** Seven findings filed, five closed and two still open. Each of the five closures was re-checked against the artifact at HEAD `c0e4219`, not against its closure note: `README-agents.md:300` (the narrowed lint claim), `CLAUDE.md:42` (the commit-lock row's partial acquirer list dropped), `CLAUDE.md:43` ("authoritative documentation" replacing the self-falsifying absolute), `CLAUDE.md:65` (the **unindented** `emit_if_exists` qualifier), and the plan's `_o_`→`_p_` rename with `**Status:** In progress`. All five hold. The two open findings — the missing `hooks/staging-drift.ts` row and the unanchored `bin/` roster parser — were re-verified as still present.

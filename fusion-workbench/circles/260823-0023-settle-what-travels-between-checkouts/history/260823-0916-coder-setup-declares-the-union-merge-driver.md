@@ -3,8 +3,8 @@
 **Date:** 2026-08-23
 **Agent:** coder
 **Domain:** code
-**Circle:** `circles/260823-0023-settle-what-travels-between-checkouts`
-**Plan:** `circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 3
+**Circle:** `260823-0023-settle-what-travels-between-checkouts`
+**Plan:** `260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`, step 3
 **Status:** Complete
 
 ## What was done
@@ -42,7 +42,7 @@ branch the `.gitattributes` path.
 - `/Users/k1/Projects/productive/fusion/skills/setup/SKILL.md`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/reference-resolution-lint.test.ts`
 - `/Users/k1/Projects/productive/fusion/hooks/lib/__tests__/fixtures/surface-growth.golden`
-- `/Users/k1/Projects/productive/fusion/fusion-workbench/circles/260823-0023-settle-what-travels-between-checkouts/planning/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
+- `/Users/k1/Projects/productive/fusion/260823-0800_*_c2-what-travels-between-checkouts-is-settled.md`
   (step 3 marked `[DONE]`)
 
 ## Two gates forced a file outside the step's list, and both are re-approvals

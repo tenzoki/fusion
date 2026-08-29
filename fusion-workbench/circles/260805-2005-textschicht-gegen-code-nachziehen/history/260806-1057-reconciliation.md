@@ -1,14 +1,14 @@
-# Reconciliation — 260806-1057
+# Reconciliation — 260806-1057-reconciliation.md
 
-**Scope:** Final reconciliation of Circle `260805-2005-textschicht-gegen-code-nachziehen` (domain `code`), approved for closure after this pass. Session under reconciliation: 1 orchestrator session (`history/260805-2350-orchestrator-session.md`), 5 Turns, 12 commits `7ef2715`…`fbd8c4d` from anchor `66e4a69`, suite verified green at 1611 tests / 30 files (`npx vitest run`, 260806-1055).
+**Scope:** Final reconciliation of Circle `260805-2005-textschicht-gegen-code-nachziehen` (domain `code`), approved for closure after this pass. Session under reconciliation: 1 orchestrator session (`260805-2350-orchestrator-session.md`), 5 Turns, 12 commits `7ef2715`…`fbd8c4d` from anchor `66e4a69`, suite verified green at 1611 tests / 30 files (`npx vitest run`, 260806-1055).
 
 ## Plans
 
-1 reviewed, 1 updated. `planning/260805-2353_*_plan-textschicht-gegen-code.md`: Status Complete, marker `_c_`, all 17 steps `[DONE]` — verified consistent against source and commits; `## Reconciliation Log` appended with per-track evidence. No drift between planned approach and implementation beyond what the plan's own step annotations already record (step 6 executed against its falsifier's finding; step 12's ontocoder item done by coder, comment-lines only).
+1 reviewed, 1 updated. `260805-2353_*_plan-textschicht-gegen-code.md`: Status Complete, marker `_c_`, all 17 steps `[DONE]` — verified consistent against source and commits; `## Reconciliation Log` appended with per-track evidence. No drift between planned approach and implementation beyond what the plan's own step annotations already record (step 6 executed against its falsifier's finding; step 12's ontocoder item done by coder, comment-lines only).
 
 ## Issues
 
-- **This Circle:** 11 reviewed, 1 updated. 10 `_c_` (Turn-2 and Turn-4 review findings plus the monitor bind regression), all with resolution footers. 1 open: `issues/260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — re-verified at HEAD as a genuine residual (setup probes the whole tree, migrate reformats only `shared/` + `circles/` depth ≥ 2; the shape halves are unified, the scope halves are not). Reconciliation note appended; left open deliberately, not closed silently.
+- **This Circle:** 11 reviewed, 1 updated. 10 `_c_` (Turn-2 and Turn-4 review findings plus the monitor bind regression), all with resolution footers. 1 open: `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md` — re-verified at HEAD as a genuine residual (setup probes the whole tree, migrate reformats only `shared/` + `circles/` depth ≥ 2; the shape halves are unified, the scope halves are not). Reconciliation note appended; left open deliberately, not closed silently.
 - **The 66-finding corpus** (`circles/260801-1244-guard-rules-write/issues/260805-18*/19*`): counts reconcile exactly — 60 `_c_` + 6 `_o_` = 66. All 60 closed records carry `Resolved:` footers (the Turn-4/5 closes cite "Turn 4" + named files rather than a bare hash; traceable to `b37f13e`/`fbd8c4d`). The 6 open ones match the deliberate list (alle-17-guard-blocks → reachability-Circle Grounding; coder-rust; domaenenheuristik; guard-event-log; tracker-cwd → pairs with guard issue `260804-2100`; install-sh-license → user decision), each with a stated route in its record. Note: step 17's footnote partition (51+3+6+6) describes that step's snapshot; Turns 4–5 subsequently closed the 6 residuals it listed, giving the final 60/6.
 - **Shared:** 25 open shared issues, all pre-existing and outside this Circle's Directive; not processed by this pass.
 
@@ -18,7 +18,7 @@
 
 ## Circle record
 
-`_t_circle.md` corrected to ground truth (the known record-lag: body said "anticipated" under the `_t_` marker, plan/history fields empty, no Turn log — same class as `shared/issues/260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`). Now: Status active, Active spec/plan + Active session history filled, Turn log reconstructed from `orchestrator-events.jsonl` (5 Turns with commit ranges). Marker transition `_t_`→`_c_` is the orchestrator's, not done here.
+`_t_circle.md` corrected to ground truth (the known record-lag: body said "anticipated" under the `_t_` marker, plan/history fields empty, no Turn log — same class as `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`). Now: Status active, Active spec/plan + Active session history filled, Turn log reconstructed from `orchestrator-events.jsonl` (5 Turns with commit ranges). Marker transition `_t_`→`_c_` is the orchestrator's, not done here.
 
 ## Directive walk (clause by clause)
 
@@ -41,4 +41,4 @@ No new issues filed: the only unexpected findings were bookkeeping-level and are
 
 ## Coherence
 
-Verdict **coherent** — three-edge computation appended to `history/260805-2350-orchestrator-session.md` `## Coherence`.
+Verdict **coherent** — three-edge computation appended to `260805-2350-orchestrator-session.md` `## Coherence`.

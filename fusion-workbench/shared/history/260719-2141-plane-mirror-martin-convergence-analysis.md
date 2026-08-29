@@ -21,9 +21,9 @@ Read in full: MARTIN.md (the verified running integration), the anticipated Circ
 
 ## Artifacts produced
 
-- Analysis: `shared/analyses/260719-2141-plane-mirror-martin-convergence-feasibility.md` (3 Mermaid diagrams: two-models, concept-mapping, recommended-(b)-architecture).
-- Decision (open): `shared/decisions/260719-2141_o_plane-rolle-push-only-vs-bounded-readback-martin.md` — refines (does not supersede) D1.
-- Decision (open): `shared/decisions/260719-2141_o_concurrency-worktree-slots-vs-single-active-circle.md`.
+- Analysis: `260719-2141-plane-mirror-martin-convergence-feasibility.md` (3 Mermaid diagrams: two-models, concept-mapping, recommended-(b)-architecture).
+- Decision (open): `260719-2141_*_plane-rolle-push-only-vs-bounded-readback-martin.md` — refines (does not supersede) D1.
+- Decision (open): `260719-2141_*_concurrency-worktree-slots-vs-single-active-circle.md`.
 
 ## Notes
 

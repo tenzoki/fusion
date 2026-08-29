@@ -9,7 +9,7 @@
 **Cross-references:** commit `98c8b3f`; `bin/fusion-plane:1474-1477` (the equivalence
 this contradicts); `bin/fusion-plane:1626-1629` (the fixture branch that gets it right);
 `bin/fusion-plane:1863` and `:1875` (what `map --rebuild` does with the same status);
-closed issue `260810-0747` (quoted the same line for a different defect)
+closed issue `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md` (quoted the same line for a different defect)
 
 ---
 

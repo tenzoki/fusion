@@ -10,7 +10,7 @@
 Every one of the 21 shipped files the range touches was opened at `3a0408a` in a detached worktree,
 along with all 18 closure footers of the record batch in `4f7508d`. What was read markers-and-titles
 only, and not in full, is the session's own bookkeeping inside `fusion-workbench/`: the thirteen
-`shared/history/260815-23xx…260816-0115-*` entries this session wrote about its own Turns, and the
+`shared/history/260815-23xx…260816-0115-coder-monitor-review-findings.md-*` entries this session wrote about its own Turns, and the
 closure footers of `260815-2325_c_*` through `260815-2329_c_*` beyond their markers. They are
 recorded here rather than in the field, because putting a session's own history logs into
 `**Not-opened:**` would hand the next dispatch thirteen entries of scope that carry no shipped
@@ -42,7 +42,7 @@ own review, and two of those three predecessor records are now closed over the r
 | Low | 5 |
 
 Eleven records filed, all in `shared/issues/` (no Circle is active, so the Origin Rule places them
-there): `260816-0130` … `260816-0136`, `260816-0138` … `260816-0141`.
+there): `260816-0130_*_the-dual-stack-docstrings-second-reason-cites-a-test-pin-the-same-commit-changed.md` … `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md`, `260816-0138_*_the-direct-skills-relay-landed-in-the-body-and-not-in-the-tone-section-or-the-dispatch-parameter-roster.md` … `260816-0141_*_the-plugin-manifests-own-description-was-not-brought-to-v9-when-the-marketplace-entry-was.md`.
 
 ## Findings by theme
 
@@ -149,18 +149,18 @@ both sides. `skills/direct/SKILL.md:145` also still promises the dialogue the ch
 ## Cross-cutting observations
 
 **1. Three of the predecessor's five findings were closed over a remainder.** `260815-2325`
-(the IPv4 fallback) — behaviour landed, the docstring defending it did not (`0130`). `260815-2326`
+(the IPv4 fallback) — behaviour landed, the docstring defending it did not (`0130`). `260815-2326_*_the-monitors-listen-only-port-clearing-cannot-see-the-stale-listener-the-same-file-documents-on-macos.md`
 (listen-only port clearing) — the union landed, its stated predicate overstates what it does
-(`0131`). `260815-2328` (the breaker's two populations) — the caveat and the worked example landed,
-one of the two definitions did not (`0134`). Say it plainly: `260815-2328` is `_c_` while the
+(`0131`). `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md` (the breaker's two populations) — the caveat and the worked example landed,
+one of the two definitions did not (`0134`). Say it plainly: `260815-2328_*_the-net-negative-breakers-two-counters-cover-different-populations-and-both-are-the-untrusted-pair.md` is `_c_` while the
 asymmetry it was filed for is still in the file, four words wide. The other two closures are
 defensible; that one is not.
 
-**2. The predecessor's two clean closures were clean.** `260815-2329` — every single-point figure in
+**2. The predecessor's two clean closures were clean.** `260815-2329_*_the-growth-bound-walks-comment-misstates-what-vitest-runs-and-the-fixtures-question-was-left-to-the-filter.md` — every single-point figure in
 the growth-bound header now reproduces. I re-measured two of them off `git ls-tree` at the two named
 anchors: `rules/` 166 610 → 154 092 and `agents/` 289 958 → 460 292, both exact, and −7.5 % is the
 right percentage. Dropping the three unreproducible claims into a named paragraph rather than
-recomputing them to fit is the right call and should be the pattern. `260815-2327` — the wildcard
+recomputing them to fit is the right call and should be the pattern. `260815-2327_*_no-test-exercises-the-monitors-wildcard-bind-and-the-residual-is-recorded-only-in-a-closed-record.md` — the wildcard
 bind now has a real end-to-end test (`monitor-warnings-panel.test.ts:1052-1069`) whose skip probe
 binds a dual-stack wildcard from the test process itself rather than skipping on a guess.
 
@@ -193,7 +193,7 @@ The one closure that aged badly is `260815-1251`, whose asked-for sentence is ex
 
 **Do first, because they are four words each and they are wrong in the file right now.**
 `0134` (add "or the user" to `:955`), `0135` (the playmaker parenthetical, resolved together with
-`260816-0058` and `260816-0025` — three sites, one measurement), `0139`'s two `README-agents.md`
+`260816-0058` and `260816-0025_*_the-archive-skills-never-archive-list-omits-the-migration-backup-store-while-naming-its-twin.md` — three sites, one measurement), `0139`'s two `README-agents.md`
 rows.
 
 **Do next, one pass each.** `0130` (rewrite the two-reason paragraph to describe what the file does),
@@ -206,7 +206,7 @@ decide which of the two `allow`-list sentences is right), `0141` (the manifest d
 line in CLAUDE.md's release process naming the two descriptions as a pair).
 
 **Do not act on `0131` by tightening the predicate unless the union is being kept.** Its premise is
-`260816-0110`'s subject and is unverified at HEAD; if that record resolves toward removing the union,
+`260816-0110_*_the-macos-local-network-listener-claim-is-unverified-at-head-and-still-justifies-a-harness-constraint.md`'s subject and is unverified at HEAD; if that record resolves toward removing the union,
 `0131` resolves with it.
 
 **Hand to `reconciler`, not to `coder`.** `260815-1633_o_*` is open with a residual table whose every
@@ -215,22 +215,22 @@ row is now done, while a site it never surveyed still stands (`0139` part 2). Wh
 
 ---
 
-**Reconciliation annotation, 260816-0713 (reconciler, HEAD `f77633f`). Findings are not rewritten;
+**Reconciliation annotation, 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md (reconciler, HEAD `f77633f`). Findings are not rewritten;
 this records only the disposition of the eleven records at HEAD.**
 
 | Record | Marker at HEAD | Evidence |
 |---|---|---|
-| `260816-0130` | closed | `94683c9` |
-| `260816-0131` | closed | `94683c9` |
-| `260816-0132` | closed by this pass | `f77633f` rewrote `skills/next/SKILL.md:218-227` as one `awk` pass; all three defects and the `:225` sentence discharged |
-| `260816-0133` | open | untouched — no gate over the three byte-identical probes |
-| `260816-0134` | closed | `94683c9` |
-| `260816-0135` | closed | `d83c1b4` |
-| `260816-0136` | in progress (`_p_`) | part 1 landed at `rules/fusion-workbench-conventions.md:74`; `.gitignore:67` still reads `tasklist.md` and omits `.fusion-setup` |
-| `260816-0138` | open | untouched |
-| `260816-0139` | closed by this pass | part 1 by `f77633f` (`README-agents.md:71,72`); part 2 discharged by rewriting the residual table on `260815-1633_o_*` |
-| `260816-0140` | open | untouched |
-| `260816-0141` | open | untouched — `.claude-plugin/plugin.json` `description` still the pre-v9 text |
+| `260816-0130_*_the-dual-stack-docstrings-second-reason-cites-a-test-pin-the-same-commit-changed.md` | closed | `94683c9` |
+| `260816-0131_*_the-monitors-second-port-query-matches-any-command-line-naming-the-script-not-only-a-prior-monitor.md` | closed | `94683c9` |
+| `260816-0132_*_the-next-skills-status-note-is-decided-from-a-file-wide-grep-not-from-the-writes-result.md` | closed by this pass | `f77633f` rewrote `skills/next/SKILL.md:218-227` as one `awk` pass; all three defects and the `:225` sentence discharged |
+| `260816-0133_*_the-setup-and-migrate-probes-are-byte-identical-in-three-copies-with-no-gate-against-the-next-drift.md` | open | untouched — no gate over the three byte-identical probes |
+| `260816-0134_*_the-breakers-two-counters-still-differ-by-whether-the-user-counts-and-the-fix-claimed-they-do-not.md` | closed | `94683c9` |
+| `260816-0135_*_playmakers-frozen-store-bullet-repeats-the-falsified-claim-about-setups-find-and-is-outside-the-filed-record.md` | closed | `d83c1b4` |
+| `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md` | in progress (`_p_`) | part 1 landed at `rules/fusion-workbench-conventions.md:74`; `.gitignore:67` still reads `tasklist.md` and omits `.fusion-setup` |
+| `260816-0138_*_the-direct-skills-relay-landed-in-the-body-and-not-in-the-tone-section-or-the-dispatch-parameter-roster.md` | open | untouched |
+| `260816-0139_*_two-demoted-name-instances-remain-in-README-agents-and-the-open-record-tracking-them-lists-none.md` | closed by this pass | part 1 by `f77633f` (`README-agents.md:71,72`); part 2 discharged by rewriting the residual table on `260815-1633_o_*` |
+| `260816-0140_*_setup-step-0g-has-no-branch-for-a-malformed-settings-file-and-skips-the-allow-list-for-a-project-already-bypassing.md` | open | untouched |
+| `260816-0141_*_the-plugin-manifests-own-description-was-not-brought-to-v9-when-the-marketplace-entry-was.md` | open | untouched — `.claude-plugin/plugin.json` `description` still the pre-v9 text |
 
 **The pass's closing instruction was carried out.** `260815-1633_o_*` was handed to the reconciler
 rather than to the coder, its residual table was rewritten around what stands, and it stays open on
@@ -239,4 +239,4 @@ a scope question this pass named correctly: the remaining sites are code comment
 **One thing this review's range could not see.** `736e276`, inside the reviewed range, changed
 `hooks/lib/review-coverage.ts` and `hooks/tracker.ts` and no commit in the session carries the
 compiled `hooks/dist/` output. Filed as
-`shared/issues/260816-0709_*_the-review-coverage-fix-ships-only-as-typescript-because-no-commit-since-f45f76a-carries-hooks-dist.md`.
+`260816-0709_*_the-review-coverage-fix-ships-only-as-typescript-because-no-commit-since-f45f76a-carries-hooks-dist.md`.

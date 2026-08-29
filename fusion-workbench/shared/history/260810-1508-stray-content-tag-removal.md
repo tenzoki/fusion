@@ -4,7 +4,7 @@
 **Agent:** coder
 **Session:** `260810-1402`, Turn 1
 **Task:** `I:260809-2243-stray-tag` — task 1 in `fusion-workbench/tasklist.md`
-**Source record:** `fusion-workbench/shared/issues/260809-2243_o_docs-philosophy-md-ends-with-a-stray-content-tag-that-ships-to-every-consumer.md`
+**Source record:** `260809-2243_*_docs-philosophy-md-ends-with-a-stray-content-tag-that-ships-to-every-consumer.md`
 **Circle:** none — unaffiliated backlog, so everything here lands in `shared/`
 **Git HEAD at start:** `430d73a`
 

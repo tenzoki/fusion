@@ -1,4 +1,4 @@
-# Orchestrator Session — 260810-0241
+# Orchestrator Session — 260810-0241-orchestrator-session.md
 
 **Directive:** Close all open defects — the 34 `_o_` records in `shared/issues/`.
 **Mode:** issues
@@ -63,9 +63,9 @@ Mode `issues`, resolved with the user: the 34 open defect records in `shared/iss
 The 16 open defects inside five closed Circles were named to the user and deliberately
 deferred to a later session. Open plans, decisions, reviews and analyses are out of scope.
 
-Queue built by `taskplanner` at `260810-0249`: 31 execution tasks, 3 close-without-work,
+Queue built by `taskplanner` at `260810-0249-tasklist-update.md`: 31 execution tasks, 3 close-without-work,
 12 human-gated, 15 dependency edges. Queue file: `tasklist.md`. Taskplanner history:
-`shared/history/260810-0249-tasklist-update.md`.
+`260810-0249-tasklist-update.md`.
 
 ## Human gates — the twelve answers
 
@@ -132,7 +132,7 @@ Three tasks inverted their own premise once measured, which is the Turn's most u
   defect.
 
 Review: `coderev` over the whole range filed **17 findings** (the review's own totals table says 14
-— see `260810-0820`), three of them High, all against Turn 1's own work.
+— see `260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`), three of them High, all against Turn 1's own work.
 
 Circuit breaker: not tripped. Coherence at Step 3c-bis: `review-needed`, surfaced to the user, who
 chose to repair this session's own damage before continuing the queue.
@@ -165,7 +165,7 @@ Commits: `dd50efd`, `18e8960`.
   reasons, `set -o pipefail` considered and rejected because it would change every pipe at once.
 - **Two errors of the orchestrator's own**, both found by others and both corrected in place rather
   than quietly: the golden approval named cohorts that do not exist and understated the largest
-  agent's growth by 1749 bytes (`260810-0745`); and three commits staged a closed record without
+  agent's growth by 1749 bytes (`260810-0745_*_the-golden-approval-names-the-wrong-cohorts-and-absorbs-1749-bytes-on-the-largest-agent.md`); and three commits staged a closed record without
   unstaging the open one, so HEAD carried six records twice (`260810-0819`).
 
 Coherence at Phase 3: `review-needed`, recommendation `revise Directive`. The user chose **Bounded
@@ -180,7 +180,7 @@ Closure**.
 **Edges:**
 - Artifact↔Grounding: 20 of 20 closures verified against the working tree with no PARTIAL and no NOT RESOLVED, suite green at 38/1001 — against 5 drift items (HEAD carries 6 records twice via add-only renames in `c923935`/`3df0c17`/`dd50efd`, so a glob at HEAD reports 52 open where disk holds 46; `tasklist.md` marks 3 of 11 completed tasks done and was never committed; `agentstate.yaml` and `orchestrator-live.md` and this file's Per-Turn Log all froze mid-session) and 46 open reviewer issues, 23 of them filed tonight.
 - Artifact↔Directive: all 22 commits move toward the Directive and none is orthogonal or away, but 15 advance it and 7 (`2d103be`, `ea492e6`, `3df0c17`, `8d66265`, `c923935`, `6644414`, `dd50efd`) repair damage this session's own Turn 1 created — and the Directive's own target was reached for 11 of 34 records, 32%, while the store it names went from 34 open to 46.
-- Grounding↔Directive: 15 active decisions are consistent with the Directive and none conflicts, but the Grounding said at 02:49 that the Directive was unreachable as scoped — 12 of 34 records human-gated, 3 needing no work — and `directive_revisions_this_session: 0`; separately `260809-2310_a_should-the-branch-policy-fall-the-way-the-write-classifier-fell` owes an `_i_` transition for work that shipped in `7598073`.
+- Grounding↔Directive: 15 active decisions are consistent with the Directive and none conflicts, but the Grounding said at 02:49 that the Directive was unreachable as scoped — 12 of 34 records human-gated, 3 needing no work — and `directive_revisions_this_session: 0`; separately `260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell` owes an `_i_` transition for work that shipped in `7598073`.
 
 **Rebalance recommendation:** revise Directive
 
@@ -200,7 +200,7 @@ the 32 new records, and those defects existed before the pass named them. The su
 resuming the queue was the right call and the user made it explicitly.
 
 **The case for drift, and it is also real.** Three High findings were *created* by Turn 1's commits,
-not discovered — `260810-0455` (red suite), `260810-0456` and `260810-0457` (a dry run that rewrites
+not discovered — `260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md` (red suite), `260810-0456_*_fusion-plane-dry-run-rewrites-the-map-and-can-destroy-a-mapping.md` and `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md` (a dry run that rewrites
 and can destroy a mapping). One shape recurred three times and survived being written down: the
 empty-expansion class was established by `e99f0ef` at 03:38 and violated by `ff70d3a` at 04:39, in
 the same session, by the same agent. And the session's bookkeeping froze at four surfaces
@@ -224,7 +224,7 @@ have been met at roughly 58% instead of missed at 32%, and the three Turns would
 rather than as a shortfall. Revising it costs one sentence and resolves the edge that made the other
 two look worse than they are.
 
-**Evidence:** `shared/history/260810-0819-reconciliation.md` (full pass, §1 arithmetic, §3 duplicates,
+**Evidence:** `260810-0819-reconciliation.md` (full pass, §1 arithmetic, §3 duplicates,
 §4 queue staleness, §6 lint cohort, §7 decision surface, §9 counting defects).
 
 ## Budget
@@ -257,8 +257,8 @@ operation whose status is discarded) recurred three times across three different
 T25, T26, T27, T28, T29, T30, T31 in `tasklist.md`. All twelve human gates among them are already
 answered and recorded above, so a later session can dispatch them without re-asking.
 
-**Three records the queue judged need no work at all** — `260717-0031`, `260717-0115`,
-`260809-2255` — were never executed as closures. They are still `_o_` and are the cheapest three
+**Three records the queue judged need no work at all** — `260717-0031_*_p8-lint-gate-scope-open-questions-from-conversions.md`, `260717-0115_*_live-workbench-split-across-two-layouts-during-conversion.md`,
+`260809-2255_*_the-branch-policy-verification-left-an-active-halt-and-24-consecutive-blocks-in-the-live-guard-state.md` — were never executed as closures. They are still `_o_` and are the cheapest three
 closures available.
 
 **The queue itself is stale and was never committed.** Eight of the eleven completed tasks still
@@ -267,20 +267,20 @@ read `[ ] open`, its scope header still says 34, and `git log -- tasklist.md` to
 was split out to carry.
 
 **Five open decisions**, in the reconciler's priority order: `260810-0710` (must a rule land with
-the check that enforces it — governs how every future rule lands), `260809-1224` (escalation check
-3, the only open decision a written plan names as its blocker), `260807-2131` (deliverable
-language), `260810-0718` (rebuild-map merge or replace), `260806-1152` (stash manifest duplicate).
+the check that enforces it — governs how every future rule lands), `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md` (escalation check
+3, the only open decision a written plan names as its blocker), `260807-2131_*_which-language-governs-a-customer-deliverable.md` (deliverable
+language), `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md` (rebuild-map merge or replace), `260806-1152` (stash manifest duplicate).
 
 **Two things that will bite the next session first:**
 
-1. `260810-0352` — Setup Step 5 now calls `bin/fusion-count-sources` through `$FUSION_PLUGIN_ROOT`,
+1. `260810-0352_*_setup-step-5-now-calls-a-helper-the-installed-copy-does-not-have.md` — Setup Step 5 now calls `bin/fusion-count-sources` through `$FUSION_PLUGIN_ROOT`,
    which points at the installed copy. The helper is not there. A session starting now gets exit
    127. Run `fusion --update` first.
-2. `260810-0508` — 23 commits landed with `plugin.json` still at 7.0.0 and tag `v7.0.0` pointing at
+2. `260810-0508_*_fifteen-commits-landed-with-no-plugin-version-bump.md` — 23 commits landed with `plugin.json` still at 7.0.0 and tag `v7.0.0` pointing at
    this session's own base commit, so the documented `FUSION_REF=tags/v7.0.0` pin resolves to none
    of tonight's work.
 
-**One Grounding transition is owed:** `260809-2310_a_should-the-branch-policy-fall-the-way-the-write-classifier-fell`
+**One Grounding transition is owed:** `260809-2310_*_should-the-branch-policy-fall-the-way-the-write-classifier-fell`
 should be `_i_` — the work shipped in `7598073`.
 
 ## Commits

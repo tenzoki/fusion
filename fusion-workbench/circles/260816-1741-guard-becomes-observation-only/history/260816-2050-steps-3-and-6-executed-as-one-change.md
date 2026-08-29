@@ -3,8 +3,8 @@
 **Date:** 2026-08-16
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, steps 3 and 6
-**Defect that merged them:** `circles/260816-1741-guard-becomes-observation-only/issues/260816-2032_c_step-3-deletes-a-module-step-6s-file-still-imports.md` (option 1)
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, steps 3 and 6
+**Defect that merged them:** `260816-2032_*_step-3-deletes-a-module-step-6s-file-still-imports.md` (option 1)
 **Predecessor commit:** `2f624ca` (step 2)
 
 ## Why the two steps were merged

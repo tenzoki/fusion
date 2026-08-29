@@ -115,10 +115,10 @@ behaving exactly as before.
 
 ## Records filed
 
-- `shared/issues/260810-1557_c_bin-monitor-opens-a-browser-tab-on-every-non-interactive-spawn-…`
+- `260810-1557_*_bin-monitor-opens-a-browser-tab-on-every-non-interactive-spawn-…`
   — the defect and its `Resolved:` note. No record existed when the work started, so this
   one was filed by this session; it exists before the fix is committed, as asked.
-- `shared/issues/260810-1558_o_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-…`
+- `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-…`
   — found, not fixed. Under `set -euo pipefail` a missing `open` (Linux, or a narrowed
   `PATH`) exits the wrapper with 127 before `wait $SERVER_PID`, orphaning the forked
   server and killing the `INT`/`TERM` trap with it. Measured, not assumed: a failing

@@ -4,9 +4,9 @@
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241`, Turn 2)
+**Filed by:** coderev, review of `ff70d3a..HEAD` (session `260810-0241-orchestrator-session.md`, Turn 2)
 **Affects:** `bin/fusion-plane:1253-1260` (`JQ_REBUILD_MAP`'s `.collisions`), `:1268-1270`
-**Cross-references:** commit `c923935`; `shared/issues/260810-0457_c_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md`
+**Cross-references:** commit `c923935`; `260810-0457_*_rebuild-map-drops-a-colliding-plane-uuid-silently-unlike-the-migration-beside-it.md`
 
 ---
 

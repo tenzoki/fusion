@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Date:** 2026-08-24
-**Plan:** `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_o_c3-attribution-on-records-and-a-claim-on-the-circle.md`, step 11
+**Plan:** `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md`, step 11
 **Range measured:** `e209011..9efe19f`
 
 ## What this step produced
@@ -74,7 +74,7 @@ surface this Circle leaves better than it found it.
 
 **The hook-test surface is at 41 lines and is now the binding constraint.** It entered at 188 and
 step 5's helper test spent most of what was left, even after the 44-line cut logged at
-`circles/260824-0530-record-attribution-and-circle-claim/history/260824-1345-coder-hook-test-line-cut.md`.
+`260824-1345-coder-hook-test-line-cut.md`.
 Forty-one lines is under two of the citation-pin re-approval comments this Circle wrote one of per
 step. The next Circle touching a hook test should expect to cut before it writes.
 
@@ -102,7 +102,7 @@ it, and six of the seven in-Circle moves do. The seventh does not, which is the 
 
 ## Defect filed
 
-`circles/260824-0530-record-attribution-and-circle-claim/issues/260824-1512_o_one-of-the-seven-citation-pin-moves-in-this-circle-carries-no-re-approval-comment.md`
+`260824-1512_*_one-of-the-seven-citation-pin-moves-in-this-circle-carries-no-re-approval-comment.md`
 
 The move at `3ba7a46`, plan steps 4 and 5, carries no re-approval comment, and it is the largest:
 paths 1291 to 1303, anchors 180 to 181, records 117 to 119. The comment chain reads as continuous
@@ -114,5 +114,5 @@ the surface golden, and this is a different file.
 
 - `hooks/lib/__tests__/fixtures/surface-growth.golden` — regenerated, produced no diff, so the file
   as committed at `9efe19f` still stands.
-- `circles/260824-0530-record-attribution-and-circle-claim/planning/260824-0613_o_c3-attribution-on-records-and-a-claim-on-the-circle.md` — step 11 marked `[DONE]`.
+- `260824-0613_*_c3-attribution-on-records-and-a-claim-on-the-circle.md` — step 11 marked `[DONE]`.
 - This log, and the defect record named above.

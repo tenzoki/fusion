@@ -4,7 +4,7 @@
 
 **Severity:** High
 **Domain:** code
-**Filed by:** coderev, Turn 7 review of `circles/260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
+**Filed by:** coderev, Turn 7 review of `260801-1244-guard-rules-write` (`048f3db..c9c44a3`)
 **Affects:** `hooks/lib/shell-parse.ts:657-671` (`flush`); consequence in `hooks/lib/bash-mutation-guard.ts:2465`; `rules/protected-path-discipline.md:168-176` and `README-hooks.md:184` (the cost table that omits it)
 **Kind:** REGRESSION introduced by `c9c44a3`. `cd hooks &&\n  npm run build &&\n  rm -rf dist` allowed at `048f3db` and denies at HEAD.
 **Cross-references:**
@@ -88,7 +88,7 @@ not `;`". A multi-line `&&` chain is one of the most common shapes an agent writ
 `Bash` tool call.
 
 It is also absent from the five-row cost table the same document shows as the complete
-price of the change (see `260804-0840`).
+price of the change (see `260804-0840_*_the-shipped-cost-statement-five-shapes-and-nothing-else-measured-moved-is-false-in-every-agents-context.md`).
 
 ## Recommended fix
 

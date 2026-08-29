@@ -2,13 +2,13 @@
 
 **Date:** 2026-08-07 01:30
 **Agent:** planner
-**Circle:** `circles/260804-1205-shell-reachability-model`
+**Circle:** `260804-1205-shell-reachability-model`
 **Status:** Complete
 
 ## Directive
 
-Repair the approved plan `planning/260806-2353_o_plan-shell-reachability-model.md` in place against the
-diagram evaluation `reviews/260807-0002-conceptrev-plan-shell-reachability-model.md` (verdict tangled,
+Repair the approved plan `260806-2353_*_plan-shell-reachability-model.md` in place against the
+diagram evaluation `260807-0002-conceptrev-plan-shell-reachability-model.md` (verdict tangled,
 diagram 2 only). Three findings to resolve; step numbering and step 1 (landed as `3dc5014`) not to be
 disturbed.
 
@@ -52,7 +52,7 @@ All three Mermaid blocks re-validated by rendering (`@mermaid-js/mermaid-cli`, a
 
 ## Artifacts
 
-- Revised: `circles/260804-1205-shell-reachability-model/planning/260806-2353_o_plan-shell-reachability-model.md`
+- Revised: `260806-2353_*_plan-shell-reachability-model.md`
 
 ## Open
 

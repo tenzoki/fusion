@@ -1,8 +1,8 @@
 # Coder session — Plan-Schritte 10 (Batch A: rules/) und 13 (Inhaltskorrekturen)
 
 **Status:** Complete
-**Plan:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_p_plan-textschicht-gegen-code.md (Schritte 10, 13)
-**Zitierform:** D1, Option (a) — Wildcard `YYMMDD-HHMM_*_<slug>` (decisions/260806-0015_*_zitierform-fuer-workbench-records.md)
+**Plan:** 260805-2353_*_plan-textschicht-gegen-code.md (Schritte 10, 13)
+**Zitierform:** D1, Option (a) — Wildcard `YYMMDD-HHMM_*_<slug>` (260806-0015_*_zitierform-fuer-workbench-records.md)
 
 ## Schritt 10 — Batch A, Korrekturen in rules/
 
@@ -12,9 +12,9 @@ Jede Korrektur gegen den Code am HEAD verifiziert, nicht gegen den Befund-Snapsh
 - `rules/decision-record-examples.md` — zwei Prä-v4-Beispielpfade auf `shared/decisions/` umgestellt; Überschrift Example 2 von `_a_ → _s_` auf `_i_ → _s_` korrigiert (der Körper führte immer `_i_→_s_` vor); der Norm-Satz verweist jetzt auf die Konventionsdatei statt allein zu normieren.
 - `rules/user-facing-output.md` — Prä-v4-Beispielpfad `fusion-workbench/history/…` → `fusion-workbench/shared/history/…`.
 - `rules/protected-path-discipline.md` — die Leere-Liste-Behauptung korrigiert: eine deklarierte leere Liste leert die Plugin-Defaults, steht den Check aber NICHT ab — der Floor (`fusion-guard.json` selbst) hält Mutation-Check und Fail-closed am Leben (gemessen im Befund, Ursache `hooks/lib/config.ts` Floor).
-- `rules/circle-records.md` — (1) Skill-Zitierliste auf den gemessenen Bestand korrigiert (`next`, `direct`, `migrate` zitieren; cleanup/archive/circle-stash/setup nicht — per grep am HEAD erneut verifiziert); (2) Binding-Decision-Pfad vollqualifiziert und in Wildcard-Form: `circles/260716-1847-workbench-umbau/decisions/260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
+- `rules/circle-records.md` — (1) Skill-Zitierliste auf den gemessenen Bestand korrigiert (`next`, `direct`, `migrate` zitieren; cleanup/archive/circle-stash/setup nicht — per grep am HEAD erneut verifiziert); (2) Binding-Decision-Pfad vollqualifiziert und in Wildcard-Form: `260716-1910_*_circle-marker-am-verzeichnis-oder-an-der-circle-datei.md`.
 - `rules/workbench-path-resolution.md` — (1) „cited directly by bin/fusion-paths" gestrichen (fusion-paths zitiert nur die Konventionsdatei; CLAUDE.md zitiert wpr); (2) das tote log-activity-Beispiel durch ein lebendes ersetzt (`/fusion:cadence` schreibt `$OUT_MEMO`, das kein Agenten-Prompt nennt — verifiziert per grep über agents/); (3) Pre-v4-Pointer-Ablehnung: Mechanismus ehrlich beschrieben (Orphan-Check, nicht Format-Erkennung) mit korrigierter Zeilenzitation `bin/fusion-paths:245-248`.
-- `rules/workbench-stash-and-lock.md` — „nine fields" dreimal auf zehn korrigiert (Schema-Block und `skills/circle-stash` schreiben zehn; Historie 10→9→10 im Text nachgezogen); drei tote Record-Zitate nach der Regel aus `260805-0709` behandelt: Beleg-Substanz in den Text, toter Pfad gestrichen (Multi-Stash-Design, Cross-references-Sektion, Staging-Race-Issue).
+- `rules/workbench-stash-and-lock.md` — „nine fields" dreimal auf zehn korrigiert (Schema-Block und `skills/circle-stash` schreiben zehn; Historie 10→9→10 im Text nachgezogen); drei tote Record-Zitate nach der Regel aus `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md` behandelt: Beleg-Substanz in den Text, toter Pfad gestrichen (Multi-Stash-Design, Cross-references-Sektion, Staging-Race-Issue).
 - `rules/agent-setup.md` — **keine Textänderung nötig**: der Skip-silently-Satz ist seit Schritt 5 (`emit_if_exists` return 0) wahr; am HEAD verifiziert.
 
 Nicht angefasst, mit Grund: `konventionen-active-circle-nothing-else-touches-it` war durch Schritt 9 (Commit 81d4154) bereits realisiert; die migrate-Hälfte von `wpr-und-migrate-…` (wortgleicher Satz in `skills/migrate/SKILL.md:16`) gehört zu Batch C (Schritt 12) — Dateibindung dieses Tasks war rules/ only.

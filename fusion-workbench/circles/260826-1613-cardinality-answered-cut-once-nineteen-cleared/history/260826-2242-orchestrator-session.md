@@ -1,4 +1,4 @@
-# Orchestrator Session — 260826-2242
+# Orchestrator Session — 260826-2242-orchestrator-session.md
 
 **Directive:** (not yet stated — Setup ran on its own; the session's work is still to be given)
 **Mode:** (not yet resolved)

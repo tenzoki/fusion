@@ -15,12 +15,12 @@ Also noted by the same coder, pre-existing and separate: `original_circle_dirnam
 
 ---
 Cosmetic. Found by `coder` during task P-4 while implementing the schema against the document.
-Source: fusion-workbench/planning/260716-1910[p]-plan-workbench-umbau-circle-container.md
+Source: 260716-1910[p]-plan-workbench-umbau-circle-container.md
 
 ---
-Reconciliation 260731-2324 (reconciler, domain `code`) — **confirmed still live, stays `_o_`.** `rules/fusion-workbench-conventions.md:609` reads "Nine fields, in this order:" and the YAML block beneath it carries ten keys (`stash_id`, `timestamp`, `reason`, `original_circle_dirname`, `original_circle_record`, `active_circle_content`, `head_short_hash`, `git_stash_ref`, `git_stash_sha`, `has_agentstate` — counted mechanically, = 10).
+Reconciliation 260731-2324-reconciliation.md (reconciler, domain `code`) — **confirmed still live, stays `_o_`.** `rules/fusion-workbench-conventions.md:609` reads "Nine fields, in this order:" and the YAML block beneath it carries ten keys (`stash_id`, `timestamp`, `reason`, `original_circle_dirname`, `original_circle_record`, `active_circle_content`, `head_short_hash`, `git_stash_ref`, `git_stash_sha`, `has_agentstate` — counted mechanically, = 10).
 
 Worth recording because this session **edited that same file** (`8c1c9f8`, the cadence registration: a `Cadence digest` table row, an append-vs-overwrite paragraph, and one word in the state-marker sentence) without touching the manifest section. Not a regression and not a missed opportunity in scope — the cadence task had no reason to go near it — but the issue has now survived a doc-editing commit, which is the situation in which it is most likely to be fixed cheaply.
 
 ---
-Resolved: 2026-08-06 (reconciler, workbench-wide pass) — the counts now say ten at the section's current home: `rules/workbench-stash-and-lock.md:32` ("ten-field index"), `:54` ("Ten fields, in this order:"), with the 10→9→10 history stated at `:71`. Fixed by the Textschicht batch (commit `fae818b`) via the duplicate finding `circles/260801-1244-guard-rules-write/issues/260805-1840_*_stash-manifest-neun-felder-bei-zehn.md`. The side observation (original_circle_dirname / active_circle_content redundancy) is a schema question, now filed separately as `shared/decisions/260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md`.
+Resolved: 2026-08-06 (reconciler, workbench-wide pass) — the counts now say ten at the section's current home: `rules/workbench-stash-and-lock.md:32` ("ten-field index"), `:54` ("Ten fields, in this order:"), with the 10→9→10 history stated at `:71`. Fixed by the Textschicht batch (commit `fae818b`) via the duplicate finding `260805-1840_*_stash-manifest-neun-felder-bei-zehn.md`. The side observation (original_circle_dirname / active_circle_content redundancy) is a schema question, now filed separately as `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`.

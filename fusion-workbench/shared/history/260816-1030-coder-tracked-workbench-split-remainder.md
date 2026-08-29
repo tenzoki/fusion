@@ -2,7 +2,7 @@
 
 **Status:** Complete
 **Domain:** code
-**Dispatched for:** `shared/issues/260816-0136_p_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md` (part 2), plus the `.gitignore` half of `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/issues/260815-1633_o_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
+**Dispatched for:** `260816-0136_*_the-tracked-workbench-splits-declared-scope-reaches-two-legacy-stores-neither-group-classifies.md` (part 2), plus the `.gitignore` half of `260815-1633_*_eight-shipped-surfaces-still-present-the-three-demoted-skill-names-as-user-commands.md`
 **HEAD at start:** `433e206`
 
 ## What changed
@@ -26,7 +26,7 @@ named on the KEPT line above it and "too" would no longer be true. The `/fusion:
 .migration-v2-backup/ a workbench still carries, which follow archive/)`. This restores the
 conditional shape the source record's fix direction proposed. The sentence now states a rule the two
 legacy stores follow rather than a fact about which repositories track them, which was the coderev
-objection appended to the source record on 260816-0713. Scope and membership still tile the ten
+objection appended to the source record on 260816-0713-coderev-turn-5-6-range-3a0408a-f77633f.md. Scope and membership still tile the ten
 non-artifact root entries with no overlap and no remainder, against both the tree at `:26-61` and the
 sentence. `+80` bytes.
 
@@ -48,7 +48,7 @@ FAIL lib/__tests__/rules-emission-golden.test.ts > matches the checked-in golden
 all 15 agents; edit 3 moved one of those numbers by the 80 bytes it added, so all 15 stanzas
 disagree. Nothing else in the suite moved, and 763 of 764 tests pass.
 
-It is **not** the known instability of `260814-2118_o_the-hooks-suite-fails-differently-on-repeated-full-runs`:
+It is **not** the known instability of `260814-2118_*_the-hooks-suite-fails-differently-on-repeated-full-runs`:
 that record describes runs failing *differently* on repetition, and this failed identically twice.
 It is also **not** the universal-core growth bound the dispatch warned about. That bound has
 `GROWTH_BUDGET = 12_000` over a `RULE_BASELINE` of 86 573 for the five always-on files; the set
@@ -97,11 +97,11 @@ The four distinct totals all shift by exactly 80: 89 623 → 89 703 (the ten fiv
 head-room stands at 8 870 bytes of the 12 000-byte budget.
 
 ---
-**Correction appended 260824** (ontocoder, plan step 5 of `circles/260824-1853-close-every-open-defect/planning/260824-1905_*_plan-close-every-open-defect.md`). Item 1 under `## What changed` names a four-entry KEPT line as what
+**Correction appended 260824** (ontocoder, plan step 5 of `260824-1905_*_plan-close-every-open-defect.md`). Item 1 under `## What changed` names a four-entry KEPT line as what
 landed. The line that landed in `b18a8cf` has three entries, `orchestrator-events.jsonl`,
 `portfolio.md`, `.fusion-setup`: the fourth, `.guard-state/events.jsonl`, was reverted before the
 commit because the records bullet in the conventions file is a classification list and not a tracking
 list, and that file is ignored by `.gitignore`. The reversal and its reasoning are recorded in
-`shared/history/260816-1040-coder-gitignore-kept-line.md`, committed in the same commit; the two files
+`260816-1040-coder-gitignore-kept-line.md`, committed in the same commit; the two files
 read as one record. Filed as
-`shared/issues/260816-1051_*_the-main-session-history-states-the-reverted-four-entry-kept-line-as-what-landed.md`.
+`260816-1051_*_the-main-session-history-states-the-reverted-four-entry-kept-line-as-what-landed.md`.

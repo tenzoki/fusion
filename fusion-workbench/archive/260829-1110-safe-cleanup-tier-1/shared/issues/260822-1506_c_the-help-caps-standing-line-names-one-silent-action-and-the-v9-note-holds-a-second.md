@@ -49,15 +49,15 @@ move, and stops. The wrong number is the defect, not an unreachable document.
 ---
 
 **Found by:** coderev, reviewing `c2ad89c..6781814`, review file
-`shared/reviews/260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
+`260822-1506-coderev-the-guard-rationale-repair-and-the-capped-help-topic.md`.
 **Owner:** `coder`.
 **Severity:** Medium.
 **Affects:** `skills/help/SKILL.md:107`.
 **Filed in the shared store:** no Circle is active.
 **Cross-references:**
-`shared/issues/260822-0946_c_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`
+`260822-0946_*_the-v10-5-release-note-reaches-the-readme-and-not-fusion-help-because-the-skills-bound-has-30-bytes.md`
 (the record the cap closed);
-`shared/issues/260822-1503_o_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
+`260822-1503_*_claude-mds-docs-row-says-fusion-help-points-at-every-upgrade-note-and-the-cap-made-that-false.md`
 (the other consequence of the same cap, already filed by the commit).
 
 **The fix.** Change the last sentence of `skills/help/SKILL.md:107` from one silent action to two, and
@@ -80,5 +80,5 @@ actions, not one.
 in the retired `fusion-guard.json`, and the v9 retirement of the `strategic` and `knowledge`
 domain values, where a record still carrying one runs as `code` without saying so. The line was
 rewritten once for this finding and for
-`shared/issues/260822-1506_*_the-help-caps-standing-line-makes-three-claims-about-docs-and-none-of-the-three-resolves.md`
+`260822-1506_*_the-help-caps-standing-line-makes-three-claims-about-docs-and-none-of-the-three-resolves.md`
 together, since both are defects in the same sentence.

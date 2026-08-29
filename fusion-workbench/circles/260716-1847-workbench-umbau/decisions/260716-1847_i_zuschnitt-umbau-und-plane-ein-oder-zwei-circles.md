@@ -4,7 +4,7 @@
 **Domain:** code
 **Status:** answered
 **Filed by:** shaper
-**Cross-references:** planning/260716-1847[o]-spec-plane-integration-und-workbench-struktur.md, decisions/260716-1847[a]-plane-rolle-source-of-truth.md, decisions/260716-1847[a]-workbench-struktur-circle-container-vs-typ-ordner.md
+**Cross-references:** 260716-1847[o]-spec-plane-integration-und-workbench-struktur.md, 260716-1847[a]-plane-rolle-source-of-truth.md, 260716-1847[a]-workbench-struktur-circle-container-vs-typ-ordner.md
 
 ---
 
@@ -43,10 +43,10 @@ Beide Vorhaben fassen dieselben Dateien an, nämlich die 15 Agenten-Prompts und 
 Wir empfehlen Option 1. Der Umbau hat keine Abhängigkeit zu Plane, und die Circle-Verzeichnisse sind die Struktur, auf die sich Plane-Module später abbilden lassen. Die Reihenfolge macht den zweiten Schritt kleiner, statt Arbeit zu verdoppeln. Der Einwand, die Prompts würden zweimal angefasst, wiegt nach unserer Einschätzung leicht: die beiden Änderungen betreffen verschiedene Stellen der Prompts, nämlich die Ablagepfade einerseits und die Übertragungsschritte andererseits.
 
 ---
-Answered: history/260716-1800-orchestrator-session.md — Option 1 (Zwei Circles, Umbau zuerst). Der Nutzer hat am Spec-Gate 2026-07-16 gewählt. Circle 1 umfasst C1 und C2 (Umbau, braucht nur D2, ist damit unblockiert und startbereit). Circle 2 umfasst C3 und C4 (Plane-Anbindung als Spiegel, braucht D1 — beantwortet — und D3 — noch offen) und setzt Circle 1 voraus. Der Preis, die Agenten-Prompts zweimal anzufassen, ist bewusst akzeptiert.
+Answered: 260716-1800-orchestrator-session.md — Option 1 (Zwei Circles, Umbau zuerst). Der Nutzer hat am Spec-Gate 2026-07-16 gewählt. Circle 1 umfasst C1 und C2 (Umbau, braucht nur D2, ist damit unblockiert und startbereit). Circle 2 umfasst C3 und C4 (Plane-Anbindung als Spiegel, braucht D1 — beantwortet — und D3 — noch offen) und setzt Circle 1 voraus. Der Preis, die Agenten-Prompts zweimal anzufassen, ist bewusst akzeptiert.
 Implemented:
 Deferred:
 Superseded by:
 
 ---
-Implemented: circles/260716-1847-workbench-umbau/_c_circle.md + circles/260719-1536-plane-mirror-integration/_c_circle.md — beide Circles der gewählten Option 1 existieren als Verzeichnisse und sind kohärent geschlossen (Umbau als v4.0.0 am 260717, Plane-Bridge am 260720); der akzeptierte Preis (Prompts zweimal anfassen) ist in beiden Plänen belegt. (Reconciler, 260806-1152.)
+Implemented: 260716-1847-workbench-umbau + 260719-1536-plane-mirror-integration — beide Circles der gewählten Option 1 existieren als Verzeichnisse und sind kohärent geschlossen (Umbau als v4.0.0 am 260717, Plane-Bridge am 260720); der akzeptierte Preis (Prompts zweimal anfassen) ist in beiden Plänen belegt. (Reconciler, 260806-1152.)

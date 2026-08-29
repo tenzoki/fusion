@@ -6,7 +6,7 @@ The exempt-surface list is written from the plugin repo's position but is emitte
 **Domain:** code
 **Filed by:** coderev, review of `b246996..HEAD` (the two-language declaration split)
 **Affects:** `rules/fusion-workbench-conventions.md` `## Project language`, the exempt-surface block (`:259-268` at `f3a3565`, the commit this was fixed against; it stood at `:204-213` when filed)
-**Cross-references:** `fusion-workbench/shared/decisions/260807-1515_i_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` — its third constraint required naming this repository's double role; `bin/fusion-rules:385` — the unconditional emission that puts this text in front of every agent in every project
+**Cross-references:** `260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md` — its third constraint required naming this repository's double role; `bin/fusion-rules:385` — the unconditional emission that puts this text in front of every agent in every project
 
 ---
 
@@ -113,14 +113,14 @@ independent justification, and `hooks/session-start.ts` `## Why the message is E
 exists and is still cited from the rule at `:213`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The quoted block stands verbatim at `rules/fusion-workbench-conventions.md:259` and is still emitted unconditionally at `bin/fusion-rules:385`, so every consuming project loads it. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The quoted block stands verbatim at `rules/fusion-workbench-conventions.md:259` and is still emitted unconditionally at `bin/fusion-rules:385`, so every consuming project loads it. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 
 **Resolved:** 2026-08-18, `coder`. The exempt-surface block in
 `rules/fusion-workbench-conventions.md` `## Project language` is split in two by who the text
 reaches, per the `## Fix direction` above and per decision
-`shared/decisions/260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md`
+`260818-0814_*_what-covers-the-plugin-repo-shaped-exempt-surface-record-now-that-the-convention-rule-was-not-chosen.md`
 option 2 — an ordinary defect against the wording of one list, with no rule file created.
 
 **What the text now says.** A **universal** group carrying the two bullets that survived on their
@@ -133,7 +133,7 @@ its own `README.md` included. The sentence "These ship to consuming projects of 
 gone as a justification, and appears only inside the closing paragraph as the thing that was wrong.
 
 **The double role is named rather than passed over**, which is the third constraint of
-`shared/decisions/260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`. A closing
+`260807-1515_*_wie-weit-reicht-die-projektsprache-in-den-regelkorpus.md`. A closing
 paragraph says fusion's own repository holds both roles at once — source of the shipped rule text
 and a `de` project with its own workbench — and that the criterion *divides* it rather than
 exempting it whole: the rule files, agent prompts, skill bodies, `README.md` and `docs/` it ships

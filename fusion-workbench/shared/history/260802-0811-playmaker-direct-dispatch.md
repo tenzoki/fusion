@@ -1,4 +1,4 @@
-# Playmaker run 260802-0811 — portfolio regeneration
+# Playmaker run 260802-0811-playmaker-direct-dispatch.md — portfolio regeneration
 
 **Trigger:** direct-dispatch
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:** code` line)
@@ -21,7 +21,7 @@ Nine Circle directories, marker read from each record's filename:
 
 ## What changed since the previous run (260801-2341)
 
-Little, and none of it touches the ranking. Two orchestrator sessions ran Setup and stopped without a Directive (`shared/history/260801-2318-orchestrator-session.md`, `shared/history/260801-2358-orchestrator-session.md`). One issue was filed, `shared/issues/260801-2352_o_plugin-settings-json-has-no-agent-allow-entries.md`, taking the shared open set from seventeen to eighteen. No commit landed since `e8988d9`, and no file was added to or removed from the plugin's `rules/` directory.
+Little, and none of it touches the ranking. Two orchestrator sessions ran Setup and stopped without a Directive (`260801-2318-orchestrator-session.md`, `260801-2358-orchestrator-session.md`). One issue was filed, `260801-2352_*_plugin-settings-json-has-no-agent-allow-entries.md`, taking the shared open set from seventeen to eighteen. No commit landed since `e8988d9`, and no file was added to or removed from the plugin's `rules/` directory.
 
 ## Ranking
 
@@ -31,11 +31,11 @@ The ranking was re-derived from disk rather than carried over from the previous 
 
 ## Warnings emitted to the portfolio
 
-- The previous playmaker run (260801-2341) regenerated the portfolio, cited `shared/history/260801-2341-playmaker-user-fusion-next.md` as its own record, and never wrote that file. It also appended no activation proposal to the Circle it recommended.
+- The previous playmaker run (260801-2341) regenerated the portfolio, cited `260801-2341-playmaker-user-fusion-next.md` as its own record, and never wrote that file. It also appended no activation proposal to the Circle it recommended.
 - The workbench is now tracked in git, which falsifies a constraint the `260801-1244-curator` record lists as verified.
-- The same commit partly overtakes `shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md`, which needs re-verifying rather than closing.
+- The same commit partly overtakes `260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md`, which needs re-verifying rather than closing.
 - Grounding drift in the recommended Circle: it states nine rule files; there are ten.
-- `fusion-workbench/tasklist.md` still holds a fully closed queue from 260716-1920, filed as `shared/issues/260801-2038_o_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`.
+- `fusion-workbench/tasklist.md` still holds a fully closed queue from 260716-1920, filed as `260801-2038_*_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`.
 - Eighteen open issues in the shared store, one more than at the previous run; two more open inside Circles.
 
 ## Dependency cycles
@@ -48,7 +48,7 @@ No Circle carries `_b_`, so the parent-grounding-stale check did not fire. No `p
 
 ## Writes made this run
 
-- Appended a second `## Activation proposal` to `circles/260801-1244-rule-provenance-header/_a_circle.md`, dated 260802-0811. The first, from run 260801-2044, was left intact.
+- Appended a second `## Activation proposal` to `260801-1244-rule-provenance-header`, dated 260802-0811-playmaker-direct-dispatch.md. The first, from run 260801-2044-playmaker-user-fusion-next.md, was left intact.
 - Regenerated `fusion-workbench/portfolio.md` in full.
 - This log.
 

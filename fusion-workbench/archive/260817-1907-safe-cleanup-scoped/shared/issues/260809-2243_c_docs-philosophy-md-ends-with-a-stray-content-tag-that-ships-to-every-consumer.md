@@ -6,7 +6,7 @@
 **Domain:** code
 **Filed by:** coder (found while fixing the ping-back drift in the same file)
 **Affects:** `docs/philosophy.md:52`
-**Cross-references:** `43ee3b5` (the rewrite that introduced it), `260809-2047` (the ping-back drift in the same file, fixed without touching this line)
+**Cross-references:** `43ee3b5` (the rewrite that introduced it), `260809-2047_*_three-shipped-documents-still-describe-ping-back-detection-as-a-live-guard-feature.md` (the ping-back drift in the same file, fixed without touching this line)
 
 ---
 
@@ -59,4 +59,4 @@ after the edit: `docs/philosophy.md` now ends with the `/fusion:help` bullet, `R
 returns nothing (exit 1). Verification: `cd hooks && npm test` — exit 0, 39 files / 1040 tests, the
 `430d73a` baseline unchanged, as expected for a change that touches no code.
 Session `260810-1402`, task `I:260809-2243-stray-tag`; history at
-`fusion-workbench/shared/history/260810-1508-stray-content-tag-removal.md`.
+`260810-1508-stray-content-tag-removal.md`.

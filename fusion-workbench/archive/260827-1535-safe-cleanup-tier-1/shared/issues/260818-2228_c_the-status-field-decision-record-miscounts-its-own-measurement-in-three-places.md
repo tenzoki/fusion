@@ -4,9 +4,9 @@ The Status-field decision record miscounts its own measurement in three places
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** reconciler, session `shared/history/260818-2124-orchestrator-session.md`, domain `code`
-**Affects:** `shared/decisions/260818-2212_o_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`, sections `## The measurement` and `## What actually reads and writes the field`; the same two figures as re-stated in the note appended to `shared/issues/260812-1232_o_*.md` and in commit `8fa3286`
-**Cross-references:** `shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` (the defect the decision discharges), `shared/decisions/260816-0711_a_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md` (the open question about whether a report pins the count of what it examined, which is the convention that would have caught items 2 and 3 below)
+**Filed by:** reconciler, session `260818-2124-orchestrator-session.md`, domain `code`
+**Affects:** `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`, sections `## The measurement` and `## What actually reads and writes the field`; the same two figures as re-stated in the note appended to `shared/issues/260812-1232_o_*.md` and in commit `8fa3286`
+**Cross-references:** `260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` (the defect the decision discharges), `260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md` (the open question about whether a report pins the count of what it examined, which is the convention that would have caught items 2 and 3 below)
 
 ---
 
@@ -34,7 +34,7 @@ The finding, the recommendation and the option set are unaffected by everything 
 Three counts about the measurement disagree with the measurement.
 
 **1. The 40 includes one record that agrees with its marker.** The outlier row of the breakdown is
-`circles/260718-1924-v5x-overhaul/decisions/260718-2150_i_reviewers-history-log-step.md`, whose head
+`260718-2150_*_reviewers-history-log-step.md`, whose head
 reads:
 
 ```
@@ -94,7 +94,7 @@ open question about that field and is one of the records any answer will have to
 
 ---
 Resolved: all four edits applied inside
-`shared/decisions/260818-2212_o_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`,
+`260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`,
 and the record's marker and `**Status:**` field were left untouched as this record required.
 
 1. The criterion is now stated once and used consistently: a record counts as drift when its header

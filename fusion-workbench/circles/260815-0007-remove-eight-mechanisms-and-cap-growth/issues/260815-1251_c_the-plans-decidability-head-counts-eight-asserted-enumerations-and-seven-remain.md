@@ -12,16 +12,16 @@ as outside its own file list.
 
 **Severity:** Low — one word and one clause; nothing depends on the count at run time.
 **Domain:** code
-**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`reviews/260815-1251-coderev-turn-2-build-churn-and-stash.md`)
+**Filed by:** `coderev`, reviewing `7c12d6a..5d29b6d` (`260815-1251-coderev-turn-2-build-churn-and-stash.md`)
 **Owner:** `planner`
-**Affects:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`, the `**Decidability:**` line
-**Cross-references:** `history/260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`, which names the staleness and states why the executor left it
+**Affects:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`, the `**Decidability:**` line
+**Cross-references:** `260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`, which names the staleness and states why the executor left it
 
 **Verified 2026-08-15 at HEAD `5d29b6d`.**
 
 ## The claim and the tree
 
-`planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`, `**Decidability:**`:
+`260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`, `**Decidability:**`:
 
 > `hooks/lib/__tests__/derivable-enumerations-lint.test.ts` re-derives **eight** enumerations (the
 > skill roster, the agent-count digits, the always-on rule list, the conditional emission sets, the
@@ -67,8 +67,8 @@ that one stays. It is a statement about the tree at 08:47 and it was true then.
 
 ## Related
 
-- `planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`, `**Decidability:**`
-- `history/260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`
+- `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`, `**Decidability:**`
+- `260815-1032-coder-stash-pop-removal-and-commit-lock-rehome.md`
 - `rules/critical-stance.md` §4 — what the head is for
 
 ---

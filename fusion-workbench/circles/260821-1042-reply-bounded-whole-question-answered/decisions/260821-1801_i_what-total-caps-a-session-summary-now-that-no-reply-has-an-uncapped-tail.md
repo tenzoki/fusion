@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** planner
-**Cross-references:** `circles/260821-1042-reply-bounded-whole-question-answered/planning/260821-1805_*_plan-reply-bounded-whole-question-answered.md` (step 2 writes the number this record decides), `circles/260821-1042-reply-bounded-whole-question-answered/_t_circle.md`, `shared/issues/260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
+**Cross-references:** `260821-1805_*_plan-reply-bounded-whole-question-answered.md` (step 2 writes the number this record decides), `260821-1042-reply-bounded-whole-question-answered`, `260812-0253_*_agents-answer-a-question-the-user-did-not-ask-and-the-length-caps-do-not-hold.md`
 
 ---
 
@@ -42,13 +42,13 @@ agent's session report from the day it lands, so it is not the planner's to set 
 ## Constraints
 
 - Whatever the answer, it is written as a rewrite of the existing entry rather than as a new one:
-  `circles/260821-1042-reply-bounded-whole-question-answered/decisions/260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
+  `260821-1108_*_what-may-the-circles-own-new-clauses-cost.md`
   holds this Circle to net zero bytes or less.
 - The heading `## Length` must survive by name. Shipped text and workbench records both cite it, and
   `hooks/lib/__tests__/reference-resolution-lint.test.ts` fails on a heading a shipped file cites
   and no file carries.
 - No option may be enforced by a new check.
-  `shared/decisions/260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
+  `260816-0740_*_does-the-prose-register-get-a-measurable-gate-and-which-surface-does-it-measure.md`
   forbids a prose gate until its registered measurement runs, and this Circle does not run it.
 
 ## Recommendation
@@ -71,7 +71,7 @@ Superseded by:
 Retired:
 
 ---
-Answered: circles/260821-1042-reply-bounded-whole-question-answered/history/260821-1642-orchestrator-session.md — 25 lines total, the ten-line header kept, chosen by the user at the plan gate on 2026-08-21. The planner's recommendation, taken as filed: it closes the open tail without invalidating the bulk of existing reports, which the 15-line alternative would have done.
+Answered: 260821-1642-orchestrator-session.md — 25 lines total, the ten-line header kept, chosen by the user at the plan gate on 2026-08-21. The planner's recommendation, taken as filed: it closes the open tail without invalidating the bulk of existing reports, which the 15-line alternative would have done.
 
 ---
 Implemented: `9aa8ecf` — `rules/user-facing-output.md:103` now reads "Session summary: ≤ 25 lines in

@@ -3,7 +3,7 @@
 **Date:** 2026-08-16
 **Agent:** coder
 **Status:** Complete — the step is executed in part and the remainder is filed, not left silent
-**Plan:** `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_p_the-compliance-guard-becomes-observation-only.md`, step 5
+**Plan:** `260816-1915_*_the-compliance-guard-becomes-observation-only.md`, step 5
 **Predecessor commits:** `05d848b` (step 1), `2f624ca` (step 2), `9c79202` (steps 3 and 6), `ec3b6ad` (step 4)
 
 ## What the step asked for
@@ -65,7 +65,7 @@ deleted. And the mandated header rewrite could not have told the truth afterward
 explains a trailing-separator asymmetry between `collapseSegments` and the matchers, and with
 the matchers still standing that explanation still has a side.
 
-Filed as `circles/260816-1741-guard-becomes-observation-only/issues/260816-2108_o_step-5s-paths-reduction-depends-on-step-7a-not-step-2.md`,
+Filed as `260816-2108_*_step-5s-paths-reduction-depends-on-step-7a-not-step-2.md`,
 with three workable orders and one further finding: step 9's edit list is missing
 `lib/__tests__/paths.test.ts`, whose four matcher groups lose their subject whenever the
 reduction does land.

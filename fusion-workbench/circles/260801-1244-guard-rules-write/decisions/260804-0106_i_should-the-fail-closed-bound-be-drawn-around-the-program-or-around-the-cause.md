@@ -3,14 +3,14 @@
 ---
 **Domain:** code
 **Status:** implemented
-**Filed by:** coder (task T7-1, `circles/260801-1244-guard-rules-write`)
+**Filed by:** coder (task T7-1, `260801-1244-guard-rules-write`)
 **Cross-references:**
-`circles/260801-1244-guard-bash-inspection/issues/260801-1859_c_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`
 (the record this supersedes — an issue whose `Resolved:` line carried the whole
 argument, which is why this record exists),
-`issues/260803-1835_c_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`
+`260803-1835_*_a-redirection-after-an-unmodellable-cd-overwrites-any-protected-file-with-no-flag.md`
 (the defect the program-shaped bound left open),
-`decisions/260803-2338_i_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`
+`260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`
 (taken together with this one; neither closes the redirect spelling alone),
 `hooks/lib/bash-mutation-guard.ts` `classifyWords` pass 3,
 `hooks/lib/__tests__/bash-mutation-guard.test.ts`
@@ -27,7 +27,7 @@ The behaviour it reverses was decided deliberately, argued well, and recorded
 was no decision record to supersede, so a reader arriving at the reversal would
 have found a test flipped from `expectAllAllow` to `expectAllDeny` and no trace
 of the argument it overrode. This record is the one that should have existed;
-the supersession is stated in both directions, here and on `260801-1859`.
+the supersession is stated in both directions, here and on `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`.
 
 ## Question
 
@@ -40,10 +40,10 @@ untouched.
 
 Redirection is scanned position-independently, because `>` makes any program a
 mutation. So a redirect target lands in the written set whatever the program is,
-and until `260801-1859` it carried the fail-closed rule with it — `npm test >
+and until `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` it carried the fail-closed rule with it — `npm test >
 "$LOG"` denied, which is the sentence above being false.
 
-`260801-1859` narrowed the code to match the sentence, **by program**: pass 3
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` narrowed the code to match the sentence, **by program**: pass 3
 runs only when the segment names a table verb. That is one of two ways to read
 the sentence, and the question is which.
 
@@ -65,7 +65,7 @@ the sentence was ever about.
 
 ## Options
 
-### 1. Keep the bound around the PROGRAM (the status quo from `260801-1859`)
+### 1. Keep the bound around the PROGRAM (the status quo from `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`)
 
 - **Pros.** Costs nothing to keep. Consistent with the sentence as literally
   written. Has an argued issue behind it.
@@ -81,7 +81,7 @@ the sentence was ever about.
   ```
 
   Six more entrances opened at `048f3db` when the wrapper walk became a
-  give-up, and `260803-2338`'s option 1 would have opened one more. Every
+  give-up, and `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`'s option 1 would have opened one more. Every
   give-up on a directory feeds it: the moment the guard admits it cannot place
   the shell, a `>` target becomes unresolvable-because-of-the-directory and the
   bound lets it through.
@@ -95,9 +95,9 @@ unknown, whatever the program is.
 - **Pros.** It is what the promised sentence says. "However unparseable its
   ARGUMENTS are" is a claim about the caller's text, and `y.md` is not
   unparseable text — the guard's own model is what failed. Closes the fourth
-  escape of `260803-2338` and every entrance `260803-1835` accumulated.
+  escape of `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` and every entrance `260803-1835` accumulated.
 
-  ~~And it keeps the property `260801-1859` was really fixing: the rule is not
+  ~~And it keeps the property `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was really fixing: the rule is not
   looser on the visible case than on the invisible one, because
   `curl -o rules/x.md` denies on pass 1 either way.~~ **Struck 2026-08-04
   (T8-1). This Pro was false.** `curl -o rules/x.md` **allows**, before and
@@ -112,7 +112,7 @@ unknown, whatever the program is.
     allow  DENY    cd "$(pwd)" && npm test > out.log
   ```
 
-  Three rows, all three pinned assertions of `260801-1859`, **zero** rows of
+  Three rows, all three pinned assertions of `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`, **zero** rows of
   the 119-command ordinary-agent corpus, and **zero** newly-allowing commands.
   The third row is a correction: T6-1 costed this direction at two assertions
   and missed it, because both live in one `expectAllAllow` array.
@@ -122,7 +122,7 @@ unknown, whatever the program is.
   change. It was assembled by the same author as the change and contained no
   `cd X; prog > log`, no `if cd`, and no `&&`-newline chain. A 30-row corpus
   written for the review without seeing either cost table moved 10 rows
-  (`issues/260804-0840…`). The three rows above still reproduce; what does not
+  (`260804-0840…`). The three rows above still reproduce; what does not
   survive is the implication that they are all there is.
 
 ### 3. Add `echo` / `printf` / `cat` to the verb table
@@ -141,12 +141,12 @@ the one the last three Turns have been adding to.
 
 ## Constraints
 
-1. **The idiom `260801-1859` protected must survive.** `npm test > "$LOG"`,
+1. **The idiom `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` protected must survive.** `npm test > "$LOG"`,
    `cat report.md > ~/backup.md`, `curl -o $OUT https://x`, `make $TARGET`.
 2. **No fail-open.** No command may newly allow.
 3. ~~**The visible/invisible consistency must hold.** `curl -o rules/x.md`
    denies, so a rule that allowed its invisible sibling would be the
-   inconsistency `260801-1859` named.~~ **Struck 2026-08-04 (T8-1): this
+   inconsistency `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` named.~~ **Struck 2026-08-04 (T8-1): this
    constraint rested on a false premise and was never met.** `curl -o
    rules/x.md` allows. Stated correctly, the consistency argument runs the
    other way and mildly favours option 1. It is replaced by constraint 3′
@@ -160,18 +160,18 @@ the one the last three Turns have been adding to.
 
 **Option 2 — the bound is the CAUSE.**
 
-Taken with `260803-2338` option 1 at the Turn 6 closing gate: the user was shown
-that the two close together or not at all, and agreed. `260803-2338` closes
+Taken with `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` option 1 at the Turn 6 closing gate: the user was shown
+that the two close together or not at all, and agreed. `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md` closes
 three of the four measured escapes and leaves the redirect spelling; this record
 closes the redirect spelling and leaves the three verb escapes. Neither is worth
 taking alone.
 
-The argument that decides it is that `260801-1859` was right about the defect
+The argument that decides it is that `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` was right about the defect
 and imprecise about the repair. Its own words — "an unrecognised program is
 allowed however unparseable its ARGUMENTS are" — are a statement about the
 caller's text. `cd $D && echo x > y.md` has no unparseable argument in it. The
 program bound is a proxy for the cause bound that happens to agree on every row
-`260801-1859` measured and to disagree on the one it did not: a literal operand
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md` measured and to disagree on the one it did not: a literal operand
 under a directory the guard has already admitted it cannot name.
 
 Cost accepted: three commands that work today begin to deny, all three of them a
@@ -185,8 +185,8 @@ entrance set grows with every future improvement to the directory model.
 
 ## The argument, corrected
 
-**Appended 2026-08-04, task T8-1, after `reviews/260804-0845-coderev-turn7-…`
-found the central fact inverted (`issues/260804-0841`).**
+**Appended 2026-08-04, task T8-1, after `260804-0845-coderev-turn7-…`
+found the central fact inverted (`260804-0841`).**
 
 ### The fact
 
@@ -205,7 +205,7 @@ classifier, shipped protected list, at the pre-T8-1 tree and at HEAD:
 
 `curl` is not in `MUTATION_VERBS` and `-o` is not a redirection operator, so
 nothing puts that operand in the written set and no pass ever sees it.
-`260801-1859`'s own `Resolved:` line said this correctly — *"the table already
+`260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`'s own `Resolved:` line said this correctly — *"the table already
 **allows** `curl -o rules/x.md`"* — and T7-1's supersession note, three
 paragraphs below it on the same file, said the opposite.
 
@@ -267,7 +267,7 @@ into a decision record, a supersession note, two code comments and
 under review; this one was not a measurement at all, it was a recollection in
 the shape of one. Both fixed here, and the corpus that would have caught it —
 a cross-product generator rather than a harvest of the suite's own strings —
-is now the method (see `history/260804-0940-turn8-…`).
+is now the method (see `260804-0940-turn8-…`).
 
 ---
 Answered: this record, `## Answer` — the fail-closed bound is drawn around the CAUSE a target failed to resolve for, not around whether the program is in the verb table. The answer survives the correction in `## The argument, corrected`; one of its two supporting arguments does not.
@@ -277,19 +277,19 @@ Superseded by:
 
 ---
 
-**Reconciliation 260804-1021 (reconciler, domain `code`) — `_i_` confirmed. This is the best-formed record in the store, and the one worth copying.**
+**Reconciliation 260804-1021-reconciliation.md (reconciler, domain `code`) — `_i_` confirmed. This is the best-formed record in the store, and the one worth copying.**
 
 **The realisation is real and the bound is where the record says.** Verified at HEAD `cc012fc`: `sort /tmp/a > rules/x.md`, `curl -s https://x > rules/x.md`, `rm /tmp/a > "$F"` and `tee "$LOG"` all deny, while `curl -o $OUT …`, `make $TARGET` and `npm run $SCRIPT` all allow. An unresolved target denies when `viaCwd` whatever the program is; a token-unresolvable target outside the verb table still allows. Exactly as stated.
 
 **Three properties this record has that the others in this store do not**, recorded because the Circle's recurring failure has been record integrity rather than code:
 
 1. It exists *because* the behaviour it reverses was recorded only as the `Resolved:` line of a closed issue, and it says so in a section called `## Why this record exists at all`. That is the right instinct and it should become the rule: a reversal needs a record to supersede, and if there is none, write the one that should have existed.
-2. Its supersession is stated in both directions, here and on `260801-1859`.
+2. Its supersession is stated in both directions, here and on `260801-1859_*_redirection-carries-fail-closed-into-unrecognised-programs-and-three-docs-deny-it.md`.
 3. Its `## Method note` names its own false claim, says the claim was "a recollection in the shape of" a measurement, and states the method change that follows from it. A record that documents its author's error is worth more than one that reads clean.
 
-**One convention note.** The `Implemented:` line names task T7-1 rather than a commit hash; `rules/fusion-workbench-conventions.md` asks for `Implemented: <short-hash>`. T7-1 is **`c9c44a3`**. Recorded here rather than edited into the line, so the original wording stands. Same note on `260803-2338_i_`.
+**One convention note.** The `Implemented:` line names task T7-1 rather than a commit hash; `rules/fusion-workbench-conventions.md` asks for `Implemented: <short-hash>`. T7-1 is **`c9c44a3`**. Recorded here rather than edited into the line, so the original wording stands. Same note on `260803-2338_*_should-the-guard-degrade-its-directory-model-after-a-cd-it-cannot-prove-succeeded.md`.
 
 **The `## Answer` survived the correction, and the record says so correctly.** One of its two supporting arguments (the consistency claim about `curl -o rules/x.md`) was inverted and is now struck; the measured defect `260803-1835` carries the conclusion alone. Re-checked: `curl -o rules/x.md https://x` does allow at HEAD, so the correction is right and the conclusion still stands on the remaining leg.
 
 ---
-Retired: `ba7ccda` (circles/260807-0923-guard-misst-statt-orakelt/planning/260807-0931_c_plan-guard-misst-statt-orakelt.md) — the fail-closed bound was a property of the shell classifier's verdict, and the classifier is deleted. `hooks/lib/bash-mutation-guard.ts` and `hooks/lib/shell-parse.ts` are both absent at HEAD (`shell-parse.ts` was cut back by `ba7ccda` for the branch policy and deleted with it by `7598073`), so no command text produces a verdict that could fail closed either way.
+Retired: `ba7ccda` (260807-0931_*_plan-guard-misst-statt-orakelt.md) — the fail-closed bound was a property of the shell classifier's verdict, and the classifier is deleted. `hooks/lib/bash-mutation-guard.ts` and `hooks/lib/shell-parse.ts` are both absent at HEAD (`shell-parse.ts` was cut back by `ba7ccda` for the branch policy and deleted with it by `7598073`), so no command text produces a verdict that could fail closed either way.

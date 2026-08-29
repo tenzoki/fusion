@@ -27,18 +27,18 @@ Recommendation: do not build an agent that consolidates all three surfaces. The 
 ## Artifacts produced
 
 Analysis report:
-- `shared/analyses/260801-1020-normative-surface-drift-gap-analysis.md`
+- `260801-1020-normative-surface-drift-gap-analysis.md`
 
 Issues filed (4):
-- `shared/issues/260801-1020_o_workbench-untracked-breaks-archive-durability-premise.md`
-- `shared/issues/260801-1020_o_guard-protects-rules-but-not-claude-rules.md`
-- `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`
-- `shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md`
+- `260801-1020_*_workbench-untracked-breaks-archive-durability-premise.md`
+- `260801-1020_*_guard-protects-rules-but-not-claude-rules.md`
+- `260801-1020_*_scan-keys-never-reach-the-archive-store.md`
+- `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`
 
 Decision records filed (3):
-- `shared/decisions/260801-1020_o_where-does-normative-consistency-live.md`
-- `shared/decisions/260801-1020_o_may-any-fusion-writer-touch-rules.md`
-- `shared/decisions/260801-1020_o_provenance-header-on-rule-files.md`
+- `260801-1020_*_where-does-normative-consistency-live.md`
+- `260801-1020_*_may-any-fusion-writer-touch-rules.md`
+- `260801-1020_*_provenance-header-on-rule-files.md`
 
 ## Notes
 

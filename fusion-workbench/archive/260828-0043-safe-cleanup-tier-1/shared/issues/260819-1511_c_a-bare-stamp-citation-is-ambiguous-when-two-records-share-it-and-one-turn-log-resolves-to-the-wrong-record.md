@@ -24,7 +24,7 @@ dangling pointer.
 are a stamp plus a slug fragment, or a rule that a citation carries the marker wildcard form
 `YYMMDD-HHMM_*_<slug>` already used in `$PORTFOLIO`. Neither is chosen here.
 
-Found by the Circle-store reconciliation of session `260818-2301`, which could not file it at the time:
+Found by the Circle-store reconciliation of session `260818-2301-orchestrator-session.md`, which could not file it at the time:
 its write scope was `circles/*/` and a sibling reconciler held `shared/issues/`.
 
 ---

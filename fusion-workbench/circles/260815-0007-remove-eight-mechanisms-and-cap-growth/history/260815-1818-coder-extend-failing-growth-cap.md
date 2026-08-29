@@ -2,7 +2,7 @@
 
 **Agent:** coder
 **Status:** Complete
-**Plan:** `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`, step 13
+**Plan:** `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`, step 13
 **Started from:** HEAD `e8052e7`, suite green at 39 files / 739 tests in 59.8 s
 **Verification:** `cd hooks && npm test` — exit 0, 40 files / 751 tests in 62.8 s
 
@@ -75,7 +75,7 @@ on, and it holds on the re-measured numbers as well as the record's.
 ## The arming, recorded per the 2026-08-14 precedent
 
 Governing record:
-`circles/260801-1244-curator/decisions/260814-0738_i_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
+`260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
 (option 1). The arming log lives in the header of `hooks/lib/__tests__/surface-growth-bound.test.ts`
 and states three things the precedent asks for.
 

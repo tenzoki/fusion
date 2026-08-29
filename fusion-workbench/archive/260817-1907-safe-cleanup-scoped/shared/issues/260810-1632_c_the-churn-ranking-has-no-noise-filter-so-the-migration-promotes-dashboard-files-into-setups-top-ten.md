@@ -62,7 +62,7 @@ write path never records a noise file under the new anchor.
 
 Apply `matchesAny(path, TRACKER_NOISE_FILES)` in `rankThrashing` as a second exclusion,
 counted separately from `absent` so the reader can tell "deleted" from "not evidence".
-That keeps the entries in the map, which decision `260810-0920` part (c) asks for, and
+That keeps the entries in the map, which decision `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` part (c) asks for, and
 keeps them out of the ranking, which is the same treatment absent files already get.
 Dropping them during the migration would also work but discards history the decision
 chose to preserve, and it would not help a map migrated before the fix lands.
@@ -72,9 +72,9 @@ that `260809-2252` already has that list open for a separate reason.
 
 ## Cross-references
 
-- `fusion-workbench/shared/issues/260809-2252_o_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md` — same constant, different defect
-- `fusion-workbench/shared/decisions/260810-0920_i_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`
-- Filed by `coderev`, review `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md`
+- `260809-2252_*_the-tracker-noise-list-still-says-it-excludes-two-metrics-when-only-churn-reads-it.md` — same constant, different defect
+- `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md`
+- Filed by `coderev`, review `260810-1632-coderev-turn-1-range-430d73a-to-head.md`
 
 ---
 Resolved: `rankThrashing` now applies `matchesAny(path, TRACKER_NOISE_FILES)` as a second
@@ -98,4 +98,4 @@ ranked=10`, and `fusion-workbench/orchestrator-live.md` no longer occupies a slo
 default `--limit 10`. Verified end to end against a throwaway project root through the same
 program the orchestrator runs (`churn-key-anchor.test.ts`, "keeps a migrated dashboard key out
 of the ranking, and counts it apart"), plus four unit cases in `churn.test.ts`. The entries
-stay in the map, as decision `260810-0920` part (c) asks.
+stay in the map, as decision `260810-0920_*_what-should-a-churn-key-be-anchored-to-and-what-happens-to-the-535-entries-already-recorded.md` part (c) asks.

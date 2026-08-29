@@ -3,7 +3,7 @@ An executor verified a gate by mutating a file another executor held, in the liv
 ---
 
 To prove that a gate fails on the four mutations it is supposed to catch, the executor of task
-`I:260810-0503` wrote each mutation into `agents/orchestrator.md` in the live working tree, ran the
+`I:260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` wrote each mutation into `agents/orchestrator.md` in the live working tree, ran the
 gate, and restored the file. The technique is right — a gate that has not been shown to fail is not
 a gate — but the place was wrong. For about four minutes the prompt carried deliberately corrupted
 text while a second executor was editing Phase 2 Step 3b of the same file, and a third had already
@@ -49,16 +49,16 @@ copies in a scratch area and never touched the real prompt, so the safe techniqu
 practised beside the unsafe one in the same session. Whatever is written should cite that as the
 precedent rather than invent a procedure.
 
-**Filed by:** orchestrator, session `260810-1646`, on the task-6 executor's own report of the risk.
+**Filed by:** orchestrator, session `260810-1646-orchestrator-session.md`, on the task-6 executor's own report of the risk.
 
 ---
-**Chosen: option 1, a scratch copy of the repository.** User decision, session `260810-1646`
-(`shared/history/260810-1646-orchestrator-session.md`). A destructive verification copies the tree,
+**Chosen: option 1, a scratch copy of the repository.** User decision, session `260810-1646-orchestrator-session.md`
+(`260810-1646-orchestrator-session.md`). A destructive verification copies the tree,
 or the single file it needs, into a temporary directory, mutates there, and points the gate at the
 copy. The live working tree is never written by a verification step.
 
 The precedent to cite rather than invent: in the same Turn, the executor of the drift-lint task
-(`archive/260817-1907-safe-cleanup-scoped/shared/issues/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`)
+(`archive/260817-1907-safe-cleanup-scoped/260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`)
 verified four inversions against mutated copies in a scratch area and never touched the real prompt.
 The safe technique was already being practised beside the unsafe one, in the same session.
 
@@ -75,10 +75,10 @@ verification obligation already lives) or a rule file emitted to them. Prefer wh
 stating the same procedure in three prompts — `rules/critical-stance.md` §2.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The addendum records the user choosing a scratch copy of the repository, and nothing states it: `grep -rn "scratch copy" agents/ rules/` is empty and `agents/coder.md` still says nothing about where a destructive verification may write. The decided fix was never built. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: The addendum records the user choosing a scratch copy of the repository, and nothing states it: `grep -rn "scratch copy" agents/ rules/` is empty and `agents/coder.md` still says nothing about where a destructive verification may write. The decided fix was never built. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
-Also seen: 260821-2211 by coderev — a fresh instance, in the workbench rather than the code tree. Reviewing Circle `circles/260821-1042-reply-bounded-whole-question-answered`, I ran `sed -i '' ... *.md` over that Circle's `issues/` directory to normalise citation markers in my own two records, while a concurrent `ontorev` was filing five records into the same directory. All seven files carry my write mtime. The five I did not author are untracked, so no original exists to diff against; the only substitution the command could make in them is at the marker position of that Circle's plan citation, `_o_` to `_*_`, which is the wildcard form `rules/fusion-workbench-conventions.md` prescribes, so nothing broke. The class is the same as this record: a wildcard write into a live shared tree that another executor holds, with no lock and no per-file scoping.
+Also seen: 260821-2211 by coderev — a fresh instance, in the workbench rather than the code tree. Reviewing Circle `260821-1042-reply-bounded-whole-question-answered`, I ran `sed -i '' ... *.md` over that Circle's `issues/` directory to normalise citation markers in my own two records, while a concurrent `ontorev` was filing five records into the same directory. All seven files carry my write mtime. The five I did not author are untracked, so no original exists to diff against; the only substitution the command could make in them is at the marker position of that Circle's plan citation, `_o_` to `_*_`, which is the wildcard form `rules/fusion-workbench-conventions.md` prescribes, so nothing broke. The class is the same as this record: a wildcard write into a live shared tree that another executor holds, with no lock and no per-file scoping.
 
 ---
 Resolved: fixed — the dispatch fence now says the not-to-touch list covers temporary writes and a destructive verification runs against a scratch copy (the chosen option 1, with the option-3 fence line it argued for); agents/orchestrator.md:571

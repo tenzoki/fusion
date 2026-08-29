@@ -1,10 +1,10 @@
 # Protected-path guard — the measured forensics
 
-**Circle:** `circles/260801-1244-guard-rules-write`
+**Circle:** `260801-1244-guard-rules-write`
 **Kind:** analysis (evidence)
 **Sources:** `rules/protected-path-discipline.md` at `git:98c9363`, sections
 `### Illustrations, not a list` and `## Where this check does not reach`
-**Decision:** `decisions/260805-0709_i_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
+**Decision:** `260805-0709_*_wohin-gehoert-die-forensik-aus-protected-path-discipline.md`
 
 ---
 
@@ -56,7 +56,7 @@ numbered questions for a command you have not seen here, you have the rule; if y
 cannot, re-read it rather than looking for your command in the table. The count is
 deliberately not repeated here: it has been three and then four, and a back-reference
 that names a length goes stale one commit after the list it names
-(`issues/260804-1220…`).
+(`260804-1220…`).
 
 ```
 DENY   cd build; rm out.js
@@ -94,7 +94,7 @@ An earlier version of this section said "the cost is these five shapes, and noth
 measured moved". That was false in the context you read it in, and the way it was false is
 worth knowing: the five came from a corpus harvested out of the guard's own test suite,
 which can only ever reproduce what the suite already contains. A generated cross-product
-moved **ten of thirty** ordinary shapes (`issues/260804-0840…`). The fix is not a longer
+moved **ten of thirty** ordinary shapes (`260804-0840…`). The fix is not a longer
 list — it is the rule in the core file.
 
 **One honest edge, still open, and it costs rather than leaks.** The rule in the core file
@@ -104,20 +104,20 @@ is what the guard implements; the shell is slightly different in one place.
   loop body, a brace group and a pipeline stage all reach their write on a condition the
   shell has already tested, so `if cd hooks; then rm -rf dist; fi`,
   `while cd build; do rm out.js; break; done` and `cd hooks && npx tsc | tee typecheck.log`
-  are safe and denied anyway (`issues/260804-0839…`). Cost, not hazard. `&&` or an absolute
+  are safe and denied anyway (`260804-0839…`). Cost, not hazard. `&&` or an absolute
   path clears them. The compound-command family is **not** uniform, which is why this is a
   model to be built rather than a list to be exempted: `until cd X; do W; done` runs its
   body when the `cd` *failed*, so its deny is correct and has to survive the fix.
-  Only option 2 of `decisions/260804-0947_i…` — model the and-or list — closes it; the
+  Only option 2 of `260804-0947_i…` — model the and-or list — closes it; the
   cheap option measured identically before and after. **The model that closes it is
-  `circles/260804-1205-shell-reachability-model`**, whose Directive is exactly this, so
+  `260804-1205-shell-reachability-model`**, whose Directive is exactly this, so
   the issue stays open here and is answered there.
 
 The edge that used to sit beside it — `&&` read as a stronger guarantee than bash gives —
 is **closed**. `true || cd build && rm rules/x.md` and `echo hi | cd build && rm rules/x.md`
 used to be allowed and did delete the rule in a real shell; the joiner is now consulted for
 the segment that moves as well as for the one that writes, and both deny
-(`issues/260804-0836…`, `260804-0837…`, closed by `decisions/260804-0947…`).
+(`260804-0836…`, `260804-0837_*_a-cd-inside-a-pipeline-runs-in-a-subshell-in-bash-and-the-model-follows-it-anyway.md…`, closed by `260804-0947…`).
 
 ---
 
@@ -148,7 +148,7 @@ Known and accepted:
   `fusion-workbench/.guard-state/**`, where
   `escalation.json` holds `consecutiveBlocks` and `haltActive`. The residual therefore
   reaches the escalation machinery, one step past what
-  `decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
+  `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
   states it reaches. Measured, four tool calls, no flag, both surfaces: `Edit
   fusion-workbench/.guard-state/escalation.json` denies; `Write fusion-guard.json`
   allows, because the floor is not yet in force; the same `Edit` then allows, and
@@ -157,8 +157,8 @@ Known and accepted:
   blocks the narrowing write itself, on both surfaces, so an agent can narrow its way out
   of halts it has not yet earned and not out of one it is already in. The wider bound is
   the one the decision record rests on — the file is git-tracked, so its creation is a
-  diff. Whether the floor should grow a second entry is open at `issues/260804-1427…`;
-  the spec authorises exactly one (`shared/planning/260801-1122…:301`).
+  diff. Whether the floor should grow a second entry is open at `260804-1427…`;
+  the spec authorises exactly one (`260801-1122…:301`).
 - **The patterns are matched against the session's working directory, not the project
   root, and the two halves of the policy then disagree.** From a session started one
   level below the root, every relative pattern is anchored there, so the project's real
@@ -178,13 +178,13 @@ Known and accepted:
   The last row is the shape of it: the guard protects a `rules/` that need not exist and
   does not protect the one that does. Observed live as well as measured — the session
   that split this rule file into three layers ran from `fusion-workbench/` and copied
-  into `rules/` unremarked. `260804-1604` closed the self-protection floor's half of this
+  into `rules/` unremarked. `260804-1604_*_the-self-protection-floor-is-matched-cwd-relative-while-the-file-is-read-root-relative.md` closed the self-protection floor's half of this
   and argued the rest away on the ground that the list is documented as project-relative;
   that argument does not cover fail-closed, which is not project-relative at all. So in
   exactly the configuration where the list protects nothing, the policy is at its most
   obstructive, and an agent meeting that deny has no account of it. The two candidate
   fixes — scope fail-closed to the coordinate space the list can reach, or say it in the
-  deny reason — are open at `issues/260804-2100…`; the documentation half is discharged
+  deny reason — are open at `260804-2100…`; the documentation half is discharged
   by the core rule's own statement of it and by this entry.
 - **Operands that arrive on stdin are invisible.** `find rules -name '*.md' | xargs rm -rf`
   is allowed, because `xargs` receives its operands on the pipe rather than as words.
@@ -211,7 +211,7 @@ Known and accepted:
   The protection side decides on the TEXT of a path (`lib/paths.ts`), so any shell can
   manufacture a second, unprotected name for a protected file. **The invariant is kept on
   purpose, and the residual is its stated price** — the user chose this in
-  `decisions/260803-1402_a_should-the-mutation-classifier-inspect-a-read-operand-…`.
+  `260803-1402_*_should-the-mutation-classifier-inspect-a-read-operand-…`.
   "Only written operands count" is what keeps every legitimate read of a protected file
   allowed (`cp rules/x.md /tmp/backup`, `cp -R rules /tmp/backup`, `dd if=… of=/tmp/y`), it
   is one sentence you can hold in your head, and denying a read operand would close one
@@ -294,8 +294,8 @@ Known and accepted:
   write-through, not because the variable was read. Do not read that deny as coverage. The
   command-line spellings of the same fact are read exactly (`git -C rules clean -fdx`,
   `git --work-tree=rules clean -fdx` both deny), which is the boundary this sits on rather
-  than an oversight (`issues/260804-1332…`, deferred to
-  `circles/260804-1205-shell-reachability-model`).
+  than an oversight (`260804-1332…`, deferred to
+  `260804-1205-shell-reachability-model`).
 - **A redirect target whose TOKEN cannot be read is still not denied**, on a program
   outside the table. `echo x > "$F"`, `echo x > "rules/$F"` and `npm test > "$LOG"` are
   allowed, and `$F` may of course be `rules/x.md`. This is the fail-closed bound in

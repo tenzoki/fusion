@@ -7,9 +7,9 @@
 **Filed by:** analyst, independent assessment A1 of C5b
 **Affects:** `hooks/lib/config.ts:256-265` (project root from `findWorkbenchRoot()`, which walks up) and `:287-292` (the floor, appended as the bare relative pattern `fusion-guard.json`); `hooks/guard.ts` `normalizeToRelative`, which relativises against `process.cwd()`
 **Cross-references:**
-`circles/260801-1244-guard-rules-write/analyses/260804-1600-c5b-independent-assessment.md` `### What a consuming project can now do to itself`,
-`shared/planning/260801-1122_o_spec-normative-consolidation.md:301` (the floor stated as an invariant: "always includes the project configuration file itself"),
-`circles/260801-1244-guard-rules-write/decisions/260802-1912_a_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
+`260804-1600-c5b-independent-assessment.md` `### What a consuming project can now do to itself`,
+`260801-1122_*_spec-normative-consolidation.md:301` (the floor stated as an invariant: "always includes the project configuration file itself"),
+`260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md`
 
 ---
 
@@ -84,9 +84,9 @@ Option 1 with a case in the integration suite is the proportionate fix.
 
 ---
 
-**Resolved 260804-1940 (coder, plan Step 1).** Not yet committed; the orchestrator commits
+**Resolved 260804-1940-coder-step1-floor-step4-exemption-precedence.md (coder, plan Step 1).** Not yet committed; the orchestrator commits
 after validation. Session:
-`history/260804-1940-coder-step1-floor-step4-exemption-precedence.md`.
+`260804-1940-coder-step1-floor-step4-exemption-precedence.md`.
 
 Suggested direction 1 was taken, and it is **not sufficient on its own** — which is the one
 thing this record and the plan both got wrong. "Let the existing absolute-path handling in
@@ -115,7 +115,7 @@ the working directory — the reading this record calls arguably correct for the
 **All four measured rows now deny**, through the real guard subprocess with cwd one level
 below the project root, with the `Edit secret/a` control still denying. The `/fusion:setup`
 Step 0f block was run twice through the guard and through a real `bash`: the seeding write
-still allows before the file exists, so decision `260802-1912` is not reversed.
+still allows before the file exists, so decision `260802-1912_*_does-the-self-protection-floor-apply-before-the-config-file-exists.md` is not reversed.
 
 Two things moved that this record does not anticipate, both denials:
 

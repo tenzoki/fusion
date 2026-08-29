@@ -8,8 +8,8 @@
 **Affects:** `agents/orchestrator.md:430`, `CLAUDE.md:54`
 **Cross-references:**
 `rules/fusion-workbench-conventions.md:195-207` (`## Project language`, the owning definition — correct);
-`shared/decisions/260807-2131_i_which-language-governs-a-customer-deliverable.md` (the decision all three cite);
-`shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` (the standing complaint this is another instance of)
+`260807-2131_*_which-language-governs-a-customer-deliverable.md` (the decision all three cite);
+`260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` (the standing complaint this is another instance of)
 
 ---
 
@@ -49,7 +49,7 @@ This is the shape this session has now met four times: a fact corrected in the f
 
 ## Fix direction
 
-Delete the ordinals rather than correcting them. Both citing surfaces already name the section (`## Project language`) and the decision (`260807-2131`), which is enough to find the rule; the ordinal adds nothing a reader needs and adds a number that breaks when a fifth case is inserted. If a pointer inside the section is wanted, name the case rather than its position — "the customer-deliverable case", the form `agents/editor.md` already uses and the only one that survives a reordering.
+Delete the ordinals rather than correcting them. Both citing surfaces already name the section (`## Project language`) and the decision (`260807-2131_*_which-language-governs-a-customer-deliverable.md`), which is enough to find the rule; the ordinal adds nothing a reader needs and adds a number that breaks when a fifth case is inserted. If a pointer inside the section is wanted, name the case rather than its position — "the customer-deliverable case", the form `agents/editor.md` already uses and the only one that survives a reordering.
 
 ## Acceptance criteria
 
@@ -57,4 +57,4 @@ Delete the ordinals rather than correcting them. Both citing surfaces already na
 - `deliverable-language-lint.test.ts` gains a case asserting that neither `agents/orchestrator.md` nor `CLAUDE.md` names a numbered case of that section — a text check, cheap, and the only kind that can catch the next one.
 
 ---
-Resolved: The ordinals were deleted rather than corrected, which is the fix direction this record asked for. `agents/orchestrator.md` and `CLAUDE.md` now cite "the customer-deliverable case", the content-named form `agents/editor.md` already used and the only one that survives a reordering. Both in-section back-references in `rules/fusion-workbench-conventions.md` went the same way — "every case except the deliverable one collapses" at :206 and "the deliverable case above" at :224 — which this record read as correct because they were, but they belong to the same class and each is shorter for the change. The counted phrase "the other three cases" went with them. Acceptance criterion 1 verified by grep: no shipped surface under `agents/`, `rules/`, `skills/`, `docs/` or `CLAUDE.md` cites a `## Project language` case by ordinal. Criterion 2 (a lint case) is **not** met — that test was outside the dispatched file set — and is carried by `shared/issues/260811-2245_o_no-test-pins-that-the-project-language-cases-are-cited-by-content-….md`.
+Resolved: The ordinals were deleted rather than corrected, which is the fix direction this record asked for. `agents/orchestrator.md` and `CLAUDE.md` now cite "the customer-deliverable case", the content-named form `agents/editor.md` already used and the only one that survives a reordering. Both in-section back-references in `rules/fusion-workbench-conventions.md` went the same way — "every case except the deliverable one collapses" at :206 and "the deliverable case above" at :224 — which this record read as correct because they were, but they belong to the same class and each is shorter for the change. The counted phrase "the other three cases" went with them. Acceptance criterion 1 verified by grep: no shipped surface under `agents/`, `rules/`, `skills/`, `docs/` or `CLAUDE.md` cites a `## Project language` case by ordinal. Criterion 2 (a lint case) is **not** met — that test was outside the dispatched file set — and is carried by `260811-2245_*_no-test-pins-that-the-project-language-cases-are-cited-by-content-….md`.

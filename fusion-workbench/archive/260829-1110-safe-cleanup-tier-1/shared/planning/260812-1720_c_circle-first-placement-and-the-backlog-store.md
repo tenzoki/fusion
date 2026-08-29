@@ -3,8 +3,8 @@
 **Date:** 2026-08-12
 **Status:** Complete — steps 1–11, 13 and 14 done; step 12 did not run (its gate answered *leave it*, so the migration moves nothing).
 **Spec:** none. Planned from two answered decision records that are one design:
-`shared/decisions/260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`
-and `shared/decisions/260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`,
+`260812-0254_*_where-do-a-circles-spec-and-plan-belong-when-the-circle-exists-before-them.md`
+and `260812-0254_*_does-fusion-need-a-backlog-store-and-a-maintainer-that-anticipates-circles.md`,
 both answered by the user at 260812-1620.
 **Decidability:** The load-bearing question is *"which citations point at a file this migration
 moves?"*, and asked of the citation **text** it is not decidable from the inputs a text search
@@ -12,7 +12,7 @@ has. Measured over the seven candidate files in `shared/planning/`: 184 referenc
 of them (49 per cent) do not contain the file's current filename. They carry a stale marker
 (`_o_` where the file is now `_c_`, seven times for one file alone), a wildcard (`_*_`), the
 pre-v4 bracket form (`260717-1918[o]`, thirteen times), a trailing ellipsis
-(`shared/planning/260809-1229_c_…`), a `fusion-workbench/` prefix, a Circle-relative `planning/`
+(`260809-1229_*_…`), a `fusion-workbench/` prefix, a Circle-relative `planning/`
 prefix, or a bare timestamp. Matching the exact filename under-reports by half. Matching the
 timestamp stem over-reports, because a stem is not unique across artifact kinds: `260812-1232`
 names one plan, two decision records, one defect record and one session history, all written in
@@ -104,7 +104,7 @@ four lifecycle skills touch it in one bounded way each. This plan adds no writer
 the design below is shaped by that constraint rather than around it.
 
 **The backlog store half-exists already.** `fusion-workbench/shared/backlogs/` holds one file,
-`260811-0826_observations.txt`, hand-written by the user on 260811. It is a 12 KB unstructured
+`260811-0826_*_observations.md_observations.txt`, hand-written by the user on 260811. It is a 12 KB unstructured
 dump of observations about fusion itself. It is not a declared store: `bin/fusion-paths` has no
 key for it, `/fusion:setup` does not create it, and `hooks/lib/staging-drift.ts` classifies it as
 `unclassified` with an explicit note that it "must appear in a complete reading and must not
@@ -121,13 +121,13 @@ user chose migration over leaving-alone on a premise that measurement contradict
 
 | File in `shared/planning/` | Sibling history | Origin | Verdict |
 |---|---|---|---|
-| `260717-1918_c_skill-glob-nomatch-zsh-hardening.md` | `circles/260716-1847-workbench-umbau/history/` | Circle `260716-1847-workbench-umbau` | **the only move candidate**, and it was promoted out deliberately at that Circle's closure, with the reason recorded on the record's line 49 |
-| `260722-1943_c_spec-plane-spec-comment.md` | `shared/history/` | none active (the plane Circle closed 260720) | stays |
-| `260722-2021_c_plan-plane-spec-comment.md` | `shared/history/` | none active | stays |
-| `260801-1122_o_spec-normative-consolidation.md` | `shared/history/` | none active | stays, and cannot move: four Circles cite it as their spec |
-| `260807-2024_c_two-language-declarations.md` | `shared/history/` | none active | stays |
-| `260809-1229_c_plan-five-severe-guard-defects.md` | `shared/history/` | none active | stays |
-| `260812-1232_c_remove-the-protected-path-half-of-the-compliance-guard.md` | `shared/history/` | none active | stays |
+| `260717-1918_*_skill-glob-nomatch-zsh-hardening.md` | `circles/260716-1847-workbench-umbau/history/` | Circle `260716-1847-workbench-umbau` | **the only move candidate**, and it was promoted out deliberately at that Circle's closure, with the reason recorded on the record's line 49 |
+| `260722-1943_*_spec-plane-spec-comment.md` | `shared/history/` | none active (the plane Circle closed 260720) | stays |
+| `260722-2021_*_plan-plane-spec-comment.md` | `shared/history/` | none active | stays |
+| `260801-1122_*_spec-normative-consolidation.md` | `shared/history/` | none active | stays, and cannot move: four Circles cite it as their spec |
+| `260807-2024_*_two-language-declarations.md` | `shared/history/` | none active | stays |
+| `260809-1229_*_plan-five-severe-guard-defects.md` | `shared/history/` | none active | stays |
+| `260812-1232_*_remove-the-protected-path-half-of-the-compliance-guard.md` | `shared/history/` | none active | stays |
 
 Store enumerations that a new store has to reach, found by grep and each verified open:
 `bin/fusion-paths` (`ORDER`, `value_for`), `rules/workbench-path-resolution.md` (the key table),
@@ -359,7 +359,7 @@ than executable behaviour, go to `ontocoder`.
 6. [DONE] **Move the existing hand-made backlog file into the declared store**
    - Executor: `ontocoder`
    - Files: `fusion-workbench/shared/backlogs/260811-0826_observations.txt` becomes
-     `fusion-workbench/shared/backlog/260811-0826_o_observations.md`
+     `260811-0826_*_observations.md`
    - Changes: `git mv` the file, rename it to the entry pattern, and remove the now-empty
      `shared/backlogs/` directory. Do **not** split its contents into separate entries. It is a
      raw dump of a dozen distinct observations, and splitting a dump into entries is
@@ -458,12 +458,12 @@ than executable behaviour, go to `ontocoder`.
       rather than asking again. The move question was answered **leave it**: the single move
       candidate stays in `shared/planning/`, its promotion out of the Circle having been
       deliberate, reasoned and recorded, which the Origin Rule tolerates by its own text
-      (`shared/decisions/260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`).
+      (`260812-1720_*_does-the-circle-first-migration-reverse-a-recorded-promotion-out-of-a-circle.md`).
       The Circle-existence question was answered in favour of the "first write" reading step 8
       was already written for
-      (`shared/decisions/260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`).
+      (`260812-1720_*_when-exactly-does-the-anticipated-circle-come-into-existence.md`).
       **Step 12 therefore does not run. Step 13 does, and the answer is why** — this bullet said
-      "steps 12 and 13" and was wrong (see the 260812-2200 reconciliation entry). The move
+      "steps 12 and 13" and was wrong (see the 260812-2200-coder-what-stayed-and-the-prose-sweep.md reconciliation entry). The move
       question's answer carries a constraint of its own: *"whatever is chosen must be recorded on
       the file or the Circle record, not only here"*, and step 13 is the only step that performs
       that recording. Reading the answer as cancelling both steps would have marked the decision
@@ -474,7 +474,7 @@ than executable behaviour, go to `ontocoder`.
 
 12. [NOT RUN — gate answered *leave it*] **Execute the move, if the gate says move**
     - Executor: `ontocoder`
-    - Files: `fusion-workbench/shared/planning/260717-1918_c_skill-glob-nomatch-zsh-hardening.md`
+    - Files: `260717-1918_*_skill-glob-nomatch-zsh-hardening.md`
       into `fusion-workbench/circles/260716-1847-workbench-umbau/planning/`, plus every file the
       verifier says cites it
     - Changes: write a manifest of `old-path → new-path` pairs first, as a file, so the rewrite is
@@ -482,7 +482,7 @@ than executable behaviour, go to `ontocoder`.
       per moved file**, carrying the `git mv` and every citation rewrite for that file together,
       so that no commit ever contains a moved file whose citations were not rewritten in it.
       Rewrite each citation to the wildcard-marker form
-      (`circles/260716-1847-workbench-umbau/planning/260717-1918_*_skill-glob-nomatch-zsh-hardening.md`),
+      (`260717-1918_*_skill-glob-nomatch-zsh-hardening.md`),
       never to the exact marker. The marker moves, and the wildcard is the form
       `rules/circle-records.md` `## Citation form in the portfolio` already mandates, so the
       rewrite fixes the stale-marker class in the same pass rather than reproducing it in the
@@ -514,7 +514,7 @@ than executable behaviour, go to `ontocoder`.
     - Dependencies: 11 (the gate). **Not** 12: the recording is what the gate's answer requires
       whichever way it went, and it is the whole of the migration's product when the answer is
       *leave it*.
-    - **As executed, one note rather than seven** — see the 260812-2200 reconciliation entry.
+    - **As executed, one note rather than seven** — see the 260812-2200-coder-what-stayed-and-the-prose-sweep.md reconciliation entry.
 
 14. [DONE] **Bring the surrounding text up to the new placement rule**
     - Executor: `coder`
@@ -616,7 +616,7 @@ this plan's alone and stays here.
       **Step 8 is written for the "first write" reading and must be revisited if the user chooses
       the other.**
 - [x] **Does the migration reverse the recorded promotion of the zsh-glob plan out of its
-      Circle?** `circles/260716-1847-workbench-umbau/_c_circle.md:49` records that the plan was
+      Circle?** `260716-1847-workbench-umbau:49` records that the plan was
       lifted to `shared/planning/` at closure, because it declares its own Directive and is
       independent follow-on work. That is a substantive argument, and it is also the only
       promotion step in the workbench, which the Origin Rule tolerates but does not encourage.
@@ -680,7 +680,7 @@ Three bounds on that number, each measured rather than estimated:
    standing-gate question has to answer, and it moves the number by 47 per cent.
 2. **54 of the 322 "names nothing" are the parser's own blind spot**: a citation truncated with
    ASCII `...` rather than the `…` the grammar knows. Filed as
-   `shared/issues/260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
+   `260812-2136_*_the-citation-grammar-reads-one-ellipsis-and-one-marker-syntax-and-the-workbench-uses-two-of-each.md`.
 3. **171 occurrences of the retired pre-v4 bracket marker** (`260717-1918[o]`) are in the corpus
    and the grammar has no case for them. Store-prefixed, they resolve by prefix accident with the
    marker unread; bare, they fall into the residual. Same issue record.
@@ -699,7 +699,7 @@ measured mechanically.
 
 **No citation was rewritten and nothing was moved.** Steps 12 and 13 do not run.
 
-**260812-2200 (coder, steps 13 and 14) — one note, not seven, and one justification corrected
+**260812-2200-coder-what-stayed-and-the-prose-sweep.md (coder, steps 13 and 14) — one note, not seven, and one justification corrected
 rather than deleted.**
 
 *Step 13.* The plan asks for "one line to each staying file's header area". Six of the seven got
@@ -728,7 +728,7 @@ its realisation is the note, and the note is uncommitted at the time of writing.
 `Active spec/plan:` holding a path, "since a spec written before its Circle no longer lands
 elsewhere". That premise is false, and the workbench disproves it: four Circle records — `curator`,
 `guard-bash-inspection`, `guard-rules-write`, `rule-provenance-header` — name
-`shared/planning/260801-1122_*_spec-normative-consolidation.md` as their spec, one shared spec
+`260801-1122_*_spec-normative-consolidation.md` as their spec, one shared spec
 serving four Circles, none of them a migrated pre-v4 case. What the Circle-first change falsified is
 the bullet's *mechanism* clause ("every `/fusion:direct` run and every shaper run in
 anticipated-circle mode produces one"), not its claim. Deleting the bullet would have left the field

@@ -78,12 +78,12 @@ timeout message, so a pty failure reads as a pty failure.
 
 ## Cross-references
 
-- `fusion-workbench/shared/issues/260810-1557_c_bin-monitor-opens-a-browser-tab-on-every-non-interactive-spawn-and-the-test-suite-spawns-it-eleven-times.md` — the defect these cases were written for
-- `fusion-workbench/shared/issues/260810-1558_o_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md` — the still-open residual on the same gate
-- Filed by `coderev`, review `shared/reviews/260810-1632-coderev-turn-1-range-430d73a-to-head.md`
+- `260810-1557_*_bin-monitor-opens-a-browser-tab-on-every-non-interactive-spawn-and-the-test-suite-spawns-it-eleven-times.md` — the defect these cases were written for
+- `260810-1558_*_a-missing-open-command-exits-the-monitor-wrapper-under-set-e-and-orphans-the-server-it-forked.md` — the still-open residual on the same gate
+- Filed by `coderev`, review `260810-1632-coderev-turn-1-range-430d73a-to-head.md`
 
 ---
-Resolved — `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, session `260811-1315`.
+Resolved — `hooks/lib/__tests__/monitor-warnings-panel.test.ts`, session `260811-1315-coder-three-test-file-corrections.md`.
 
 **A pty failure now reads as a pty failure, and it fails rather than skips.** `ptyAvailable()`
 probes once with the same interpreter and the same `os.openpty()` call `PTY_RUNNER` makes, memoised
@@ -98,7 +98,7 @@ where the branch is: the two `tty: true` cases are the only executable coverage 
 browser-launch gate, fusion has no CI, and under vitest 2.1 a programmatic `ctx.skip()` carries no
 reason into the summary at all (the note argument arrives in vitest 3.1). A green run on a machine
 that never exercised the gate claims coverage it does not have, which is the failure mode
-`shared/issues/260810-2149_o_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`
+`260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`
 is open about. The cost is one red case in a pty-less container, with the cause in the first line
 of the message.
 

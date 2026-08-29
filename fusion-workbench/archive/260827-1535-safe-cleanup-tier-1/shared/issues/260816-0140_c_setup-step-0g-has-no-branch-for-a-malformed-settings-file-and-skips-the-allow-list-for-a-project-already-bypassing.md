@@ -39,7 +39,7 @@ The measurement behind "bare tool names only" (`:224`) is recorded and unaffecte
 **Found by:** coderev, reviewing `f4f01b0..3a0408a` (commit `bdc0df9`), with the state-by-state read performed by a supporting analyst pass and re-verified against `skills/setup/SKILL.md:198-238`.
 
 ---
-**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md` still says parse and union with no parse-failure branch, and the already-bypassing branch still skips the write, so such a project never receives the allow list. Marker stays open. Log: `shared/history/260817-1836-reconciliation.md`.
+**Reconciliation 260817-1836** (reconciler, domain `code`). Re-verified reproducible at HEAD `2552586`: `skills/setup/SKILL.md` still says parse and union with no parse-failure branch, and the already-bypassing branch still skips the write, so such a project never receives the allow list. Marker stays open. Log: `260817-1836-reconciliation.md`.
 
 ---
 Resolved: fixed — a settings file that does not parse gets no question and no write and is reported for the user to fix by hand; an already-bypassing project skips the question and still gets the allow list unioned and reported; `skills/setup/SKILL.md:279`, `:311`

@@ -4,9 +4,9 @@ The Status-field decision record still carries three figures on the criterion it
 
 **Severity:** Low
 **Domain:** code
-**Filed by:** reconciler, session `shared/history/260818-2124-orchestrator-session.md`, domain `code`, Turn 2
-**Affects:** `shared/decisions/260818-2212_o_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`, lines 66, 105 and 116; and the `Resolved:` note of `shared/issues/260818-2228_c_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`, point 1
-**Cross-references:** `shared/issues/260818-2228_c_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` (the defect this is the residue of), `shared/issues/260812-1232_o_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` (the drift the decision discharges), `rules/critical-stance.md` §3
+**Filed by:** reconciler, session `260818-2124-orchestrator-session.md`, domain `code`, Turn 2
+**Affects:** `260818-2212_*_should-the-decision-records-status-field-exist-at-all-now-that-the-circle-records-has-been-removed.md`, lines 66, 105 and 116; and the `Resolved:` note of `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`, point 1
+**Cross-references:** `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` (the defect this is the residue of), `260812-1232_*_thirty-four-of-seventy-four-decision-records-carry-a-status-header-that-contradicts-their-filename-marker.md` (the drift the decision discharges), `rules/critical-stance.md` §3
 
 ---
 
@@ -30,7 +30,7 @@ The criterion is stated once, at lines 57-62, and it is the right one.
 ## The defect
 
 Three figures elsewhere in the same record were not moved with it, so the record now expresses two
-criteria at once — which is the condition `260818-2228` was filed to end.
+criteria at once — which is the condition `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` was filed to end.
 
 **1. The trend paragraph, line 66.** It closes *"37 of 106 (2026-08-17, reconciler), 40 of 94
 today"*. The table nine lines above it says 39. This is the sentence a reader takes the headline
@@ -49,7 +49,7 @@ survives — 20 of 39 is still about half — but the figure is the old one.
 
 ## The knock-on claim
 
-`260818-2228`'s `Resolved:` note opens *"The criterion is now stated once and used consistently."*
+`260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`'s `Resolved:` note opens *"The criterion is now stated once and used consistently."*
 Stated once is true. Used consistently is not, by the three lines above. Points 2, 3 and 4 of that
 note hold exactly, as does its head-room paragraph and its closing re-measurement; only the second
 half of point 1 overstates.
@@ -82,9 +82,9 @@ Re-derived 2026-08-18 at HEAD `b46756e` by the reconciler, over the 94 records t
 Three edits, no change to any conclusion: line 66 to `39 of 94 today`; line 105 to the figure of the
 gate that option 2 actually proposes, with a word saying which criterion it is counting under; line
 116 to `20/19`, keeping the "about half" reading it already carries. Then narrow point 1 of
-`260818-2228`'s `Resolved:` note, or reopen that record until the three are done.
+`260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`'s `Resolved:` note, or reopen that record until the three are done.
 
-As with `260818-2228`: whoever edits this must not touch the record's marker or its `**Status:**`
+As with `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md`: whoever edits this must not touch the record's marker or its `**Status:**`
 field. It is the open question about that field and is one of the records any answer will account
 for.
 
@@ -100,7 +100,7 @@ exactly, so it fails on the 39 wrong states plus the 5 right states written in a
 is neither of the two figures that were candidates before. The constraints section reads 20 shared
 against 19 Circle and no longer claims the split is even.
 
-The record's marker and `**Status:**` field were left untouched, as your `260818-2228` required and
+The record's marker and `**Status:**` field were left untouched, as your `260818-2228_*_the-status-field-decision-record-miscounts-its-own-measurement-in-three-places.md` required and
 this record repeated.
 
 Re-read after the edits: no figure in the record now rests on the whole-field criterion without

@@ -4,8 +4,8 @@
 **Domain:** code
 **Status:** closed
 **Filed by:** shaper (anticipated-circle mode)
-**Active spec/plan:** circles/260813-0858-playmaker-maintains-backlog-store/planning/260813-1306_c_the-playmaker-maintains-the-backlog-store.md
-**Active session history:** shared/history/260813-0806-orchestrator-session.md
+**Active spec/plan:** 260813-1306_*_the-playmaker-maintains-the-backlog-store.md
+**Active session history:** 260813-0806-orchestrator-session.md
 
 ---
 
@@ -26,13 +26,13 @@ exactly one named writer.
 ## Grounding snapshot
 
 **Where this came from.** The decision record
-`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`
+`260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`
 asked who writes the recommended-for-promotion marker, offered four options, and
 recommended declining the one that hands the write to the playmaker. The user answered it
 by choosing exactly that option and widening it to full maintenance. The record's own
 recommendation was overruled rather than met, which the record now states in its answered
 line. The defect that follows from the answer is filed as
-`archive/260817-1907-safe-cleanup-scoped/shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`.
+`archive/260817-1907-safe-cleanup-scoped/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`.
 
 **The surfaces that move together** are enumerated in that issue record under
 `## Surfaces the fix has to reach`, with line citations into `agents/playmaker.md`,
@@ -79,7 +79,7 @@ plan should not spend steps on it.
 (`agents/playmaker.md`, `## Who dispatches playmaker`). Answer 1 gates splitting, merging
 and closing on a confirmation inside the same run, and the Phase 4 dispatch has no
 confirmation channel. Whether such a run performs those operations at all is filed as
-`circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`.
+`260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`.
 
 **The store as it stands.** `shared/backlog/` holds one entry,
 `260811-0826_*_observations.md`, a hand-written dump of about a dozen distinct ideas. It is
@@ -97,13 +97,13 @@ plus the closed original.
   exists; the ordering is stated as a named relationship so that it is visible from
   whichever of the two records a reader opens first.
 - Binding records, cited rather than copied per the Origin Rule:
-  `archive/260817-1907-safe-cleanup-scoped/shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
+  `archive/260817-1907-safe-cleanup-scoped/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
   and
-  `shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`.
+  `260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md`.
 
 ## Turn log
 
-- Turn 1 (session 260813-0806): commits 799fded..7342fdd; Coherence verdict not taken — this Turn ran against a shared defect record, not against this Circle's Directive; session history: shared/history/260813-0806-orchestrator-session.md
+- Turn 1 (session 260813-0806-orchestrator-session.md): commits 799fded..7342fdd; Coherence verdict not taken — this Turn ran against a shared defect record, not against this Circle's Directive; session history: 260813-0806-orchestrator-session.md
 
   The user activated this Circle and then chose, at the same gate, to repair the red test
   baseline before any of its Directive was started. So Turn 1 belongs to this Circle by clock
@@ -113,7 +113,7 @@ plus the closed original.
   1010 of 1010. Nothing in this Circle's `## Directive` was touched, and its Grounding is
   unchanged. A review of the repair filed five follow-on records, none of them blocking.
 
-- Turn 2 (session 260813-0806): commits 7342fdd..d6dd193; Coherence verdict not taken — this Turn ran against shared review findings, not against this Circle's Directive; session history: shared/history/260813-0806-orchestrator-session.md
+- Turn 2 (session 260813-0806-orchestrator-session.md): commits 7342fdd..d6dd193; Coherence verdict not taken — this Turn ran against shared review findings, not against this Circle's Directive; session history: 260813-0806-orchestrator-session.md
 
   Still not this Circle's Directive. The review of Turn 1's commit found that the fix, while
   sound, leaves three silent-failure modes on the same function: an unquoted temp path parsed
@@ -126,14 +126,14 @@ plus the closed original.
   previous commit's binary. This Circle's Directive is still untouched and its Grounding
   unchanged; Turn 3 is where its own work begins.
 
-- Turn 3 (session 260813-0806): commits 3c51bc1..2a029eb; Coherence verdict review-needed (reconciler, recommendation: revise Artifact); session history: shared/history/260813-0806-orchestrator-session.md
+- Turn 3 (session 260813-0806-orchestrator-session.md): commits 3c51bc1..2a029eb; Coherence verdict review-needed (reconciler, recommendation: revise Artifact); session history: 260813-0806-orchestrator-session.md
 
   Opens by settling the decision the shaper marked as planning-blocking, on whether a
   non-interactive Phase 4 run performs the confirm-gated operations. It has to be answered
   before the plan rather than inside it, because it decides whether a proposal-return path
   is built at all, and that is a shape rather than a detail.
 
-- Turn 4 (session 260813-0806): commits 2a029eb..HEAD; closing the seams the review found before the Circle closes; session history: shared/history/260813-0806-orchestrator-session.md
+- Turn 4 (session 260813-0806-orchestrator-session.md): commits 2a029eb..HEAD; closing the seams the review found before the Circle closes; session history: 260813-0806-orchestrator-session.md
 
   The Turn-3 review filed eleven findings against this Circle's own delivery, one of them High:
   the confirmation relay offers a "choose which" option with no continuation, against a store
@@ -142,38 +142,38 @@ plus the closed original.
   Artifact-to-Directive edge reads partially rather than reached. The user chose to close the
   seams rather than close the Circle over them.
 
-## Activation proposal (playmaker run 260813-0926)
+## Activation proposal (playmaker run 260813-0926-playmaker-direct-dispatch.md)
 
 **Proposed for activation.** Run identifier `260813-0926-playmaker-direct-dispatch`;
-proposed activation timestamp `260813-0926`.
+proposed activation timestamp `260813-0926-playmaker-direct-dispatch.md`.
 
 **Rationale.** This Circle ranks first of three anticipated Circles under the `code` domain
 bias, and it is the only one of the three that is activatable as written today.
 
 Its `## Dependencies` section names no Circle it waits on. The relation it does record runs
 outward: it blocks the documentation Circle
-`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md`, whose own
+`archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin`, whose own
 record cites this directory and states that four passages wait on it. Both records agree on
 the direction, so the ordering is unambiguous and this Circle is the head of it.
 
 Its Grounding snapshot was written today against records that are on disk and current: the
 defect record
-`archive/260817-1907-safe-cleanup-scoped/shared/issues/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
+`archive/260817-1907-safe-cleanup-scoped/260813-0825_*_the-playmaker-is-charged-with-backlog-upkeep-and-holds-no-write-key-to-the-store.md`
 carries the surfaces list with line citations, and the decision
-`shared/decisions/260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` was
-answered by the user in session `shared/history/260813-0806-orchestrator-session.md`. Four
+`260812-2043_*_who-writes-the-recommended-marker-on-a-backlog-entry.md` was
+answered by the user in session `260813-0806-orchestrator-session.md`. Four
 scoping questions were settled with the user in one round and are recorded in the Grounding
 rather than left for the planner to rediscover. The Circle directory holds all six artifact
 subdirectories.
 
 One open decision is cited, and it is a plan-shaping question rather than a bar to activation:
-`circles/260813-0858-playmaker-maintains-backlog-store/decisions/260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`.
+`260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md`.
 Its own text says it has to be settled before the plan, because it decides whether a
 proposal-return path gets built at all. Answering it is the first thing the activated Circle
 should do.
 
 **One measured argument the ranking rests on, from this run's own backlog pass.** The shared
-backlog holds one entry, `shared/backlog/260811-0826_*_observations.md`, carrying thirteen
+backlog holds one entry, `260811-0826_*_observations.md`, carrying thirteen
 distinct ideas. It has been recommended for splitting by three consecutive playmaker runs and
 has not been split, because no agent holds a write key to the store. This Circle is the one
 that hands over that key. The backlog job is blocked on exactly this Circle and on nothing
@@ -186,7 +186,7 @@ confirms.
 ## Closure note
 
 **Closed coherent on 260813**, after four Turns in session
-`shared/history/260813-0806-orchestrator-session.md`. The reconciler's Phase-3 verdict was
+`260813-0806-orchestrator-session.md`. The reconciler's Phase-3 verdict was
 `review-needed` with the recommendation *revise Artifact*; the user took that recommendation, the
 five findings behind it were closed in Turn 4, and the Circle closes on the revised Artifact rather
 than over the verdict.
@@ -202,7 +202,7 @@ exactly one named writer.
 **Two things this Circle did not do, and neither is a defect in it.**
 
 The end-to-end acceptance run never happened. The plan specified a `/fusion:next` run against
-`shared/backlog/260811-0826_*_observations.md` — propose a split, obtain confirmation, leave one
+`260811-0826_*_observations.md` — propose a split, obtain confirmation, leave one
 entry per idea plus the closed original. It could not be dispatched from inside a Turn loop, the
 plan terminated it after step 9, and step 9 was deferred. So the capability is proven by tests, by
 the resolver, by two lints and by a review that opened every changed file, and it has never been
@@ -211,11 +211,11 @@ first real run is where it gets closed.
 
 Step 9, the version bump to `8.2.0`, is deferred by the user's release decision: one release
 carries this Circle and
-`archive/260817-1907-safe-cleanup-scoped/circles/260813-0910-documentation-matches-shipped-plugin/_b_circle.md` together,
+`archive/260817-1907-safe-cleanup-scoped/260813-0910-documentation-matches-shipped-plugin` together,
 because that Circle rewrites four passages describing the behaviour this one replaced. Two of those
 four now contradict shipped behaviour outright, recorded under `## Update 260813-1500` in
 `shared/issues/260813-0825_*`. The bump has no carrier outside the plan being closed here, which is
-filed as `issues/260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
+filed as `260813-1545_*_the-deferred-version-bump-has-no-carrier-outside-the-plan-that-is-being-closed.md`.
 
 **Turns 1 and 2 did not serve this Directive** and their log entries say so. They repaired a red
 test baseline the user chose to clear first, and found a real product defect: `bin/fusion-plane`

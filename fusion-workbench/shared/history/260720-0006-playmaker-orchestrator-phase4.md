@@ -1,4 +1,4 @@
-# Playmaker session 260720-0006
+# Playmaker session 260720-0006-playmaker-orchestrator-phase4.md
 
 **Trigger:** orchestrator-phase4 (portfolio refresh after `260719-1536-plane-mirror-integration` closed `_c_`)
 **Domain bias:** code (parsed from `**Domain:** code`)
@@ -30,7 +30,7 @@ No `_b_` Circles exist. The just-closed Plane Circle closed `_c_` (coherent), no
 ## Warnings emitted to portfolio
 
 - No blocking warnings (clean pointer state, no cycles, no stale Grounding).
-- Advisory only: the Plane bridge's two go-live follow-ups (issue `260719-2304` live-verify create/PATCH body + `states/` envelope; decision `260719-2313` round-trip write policy) are surfaced as a suggested future Circle ("Plane live-verification + seed round-trip"). Not filed — out of playmaker scope; left to the user via `/fusion:direct`.
+- Advisory only: the Plane bridge's two go-live follow-ups (issue `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md` live-verify create/PATCH body + `states/` envelope; decision `260719-2313_*_round-trip-write-overwrites-origin-story-description.md` round-trip write policy) are surfaced as a suggested future Circle ("Plane live-verification + seed round-trip"). Not filed — out of playmaker scope; left to the user via `/fusion:direct`.
 
 ## Circle-record appends this run
 

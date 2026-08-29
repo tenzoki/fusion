@@ -1,4 +1,4 @@
-# Playmaker — 260806-2259 (trigger: user-fusion-next)
+# Playmaker — 260806-2259-playmaker-user-fusion-next.md (trigger: user-fusion-next)
 
 **Status:** Complete
 **Domain bias:** code (parsed from the dispatch prompt's `**Domain:** code` line)
@@ -41,13 +41,13 @@ decision D-g and removes its designated validation case.
 - The curator Circle cannot be activated as it stands; a shaper re-shape is required first and
   nobody owns it.
 - One open decision record appeared since the previous run:
-  `shared/decisions/260806-1152_o_stash-manifest-dirname-and-pointer-content-duplicate.md`. Neither
+  `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`. Neither
   anticipated Circle cites it, so the ranking is unaffected, but the previous portfolio's claim
   that the workbench holds no open decision records anywhere is now false and was dropped.
 - Two unowned residual defects have no Circle:
   `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_o_*` (setup and migrate
   scope) and `circles/260801-1244-guard-rules-write/issues/260803-1352_o_*` (guard advisory clamp).
-- `tasklist.md` is three weeks stale, tracked at `shared/issues/260801-2038_o_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`.
+- `tasklist.md` is three weeks stale, tracked at `260801-2038_*_tasklist-holds-a-fully-closed-queue-from-a-circle-closed-two-weeks-ago.md`.
   Reported only; playmaker never reads or writes the task queue.
 
 ## Dependency cycles
@@ -63,7 +63,7 @@ None. No Circle record carries `_b_`, so no parent Grounding can be stale on tha
 
 ## Writes performed
 
-1. `circles/260804-1205-shell-reachability-model/_a_circle.md` — one paragraph appended under the
+1. `260804-1205-shell-reachability-model` — one paragraph appended under the
    existing `## Activation proposal` heading, following the per-run paragraph pattern the record
    already uses. No existing content rewritten, no marker renamed, `.active-circle` untouched.
 2. `fusion-workbench/portfolio.md` — regenerated in full.
@@ -71,9 +71,9 @@ None. No Circle record carries `_b_`, so no parent Grounding can be stale on tha
 
 ## Context read
 
-`shared/history/260806-2158-orchestrator-session.md` (the dispatching session's Setup snapshot),
-`shared/history/260806-1152-reconciliation.md` (workbench-wide pass, verdict coherent),
-`shared/history/260806-1103-playmaker-orchestrator-phase4.md` predecessor state via the previous
+`260806-2158-orchestrator-session.md` (the dispatching session's Setup snapshot),
+`260806-1152-reconciliation.md` (workbench-wide pass, verdict coherent),
+`260806-1103-playmaker-orchestrator-phase4.md` predecessor state via the previous
 `portfolio.md`, all 11 Circle records, `shared/decisions/` (10 records, 1 open), and the closure
 notes of all 9 terminal Circles. Both stylometric profiles resolved to `en`
 (`CLAUDE.md` carries no `**Language:**` line; the documented default applies, no fallback note

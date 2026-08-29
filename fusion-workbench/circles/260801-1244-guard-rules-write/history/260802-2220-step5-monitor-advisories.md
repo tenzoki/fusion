@@ -2,8 +2,8 @@
 
 **Status:** Complete
 **Agent:** coder
-**Circle:** `circles/260801-1244-guard-rules-write`
-**Plan:** `circles/260801-1244-guard-rules-write/planning/260802-1856_o_plan-guard-rules-write.md` §Step 5
+**Circle:** `260801-1244-guard-rules-write`
+**Plan:** `260802-1856_*_plan-guard-rules-write.md` §Step 5
 **Files changed:** `bin/monitor` (one file, as scoped)
 
 ## What changed

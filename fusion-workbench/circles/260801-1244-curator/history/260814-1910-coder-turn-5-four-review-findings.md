@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-14
 **Agent:** coder
-**Circle:** `circles/260801-1244-curator`
+**Circle:** `260801-1244-curator`
 **Turn:** 5
 **Status:** Complete
 
@@ -14,7 +14,7 @@ question to settle before touching anything.
 
 ## 1. The dispatch roster (`README-agents.md` `## Dispatch parameters`) — HIGH, fixed
 
-Record: `circles/260801-1244-curator/issues/260814-1850_o_the-dispatch-parameter-roster-still-forbids-the-dispatch-and-has-no-row-for-the-new-parameter.md`
+Record: `260814-1850_*_the-dispatch-parameter-roster-still-forbids-the-dispatch-and-has-no-row-for-the-new-parameter.md`
 
 Four edits, one more than the record asked for.
 
@@ -45,7 +45,7 @@ description. The two roster cells were the whole of the residue.
 
 ## 2. Phase 0b.1 step 3 (`agents/orchestrator.md`) — MEDIUM, fixed
 
-Record: `shared/issues/260814-1850_o_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`
+Record: `260814-1850_*_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`
 
 The step told the orchestrator that the shaper reaches the user through `AskUserQuestion` and
 not to intercept. It now states the relay and points at
@@ -60,7 +60,7 @@ range rewrote — was **not** acted on. It is that record's scope, not this task
 
 ## 3. The layout tree's consumer column (`rules/fusion-workbench-conventions.md`) — MEDIUM, fixed
 
-Record: `circles/260801-1244-curator/issues/260814-1419_o_the-layout-trees-consumer-column-now-names-only-bin-monitor-for-three-surfaces-that-four-hooks-modules-read.md`
+Record: `260814-1419_*_the-layout-trees-consumer-column-now-names-only-bin-monitor-for-three-surfaces-that-four-hooks-modules-read.md`
 
 Three rows restored to the file-only citation form the same ledger entry chose for
 `.guard-state/`. Verified at HEAD by `grep -rn` over `hooks/lib/*.ts` excluding tests:
@@ -81,7 +81,7 @@ moved — and the re-run without the flag is green.
 
 ## 4. The halt's discriminator — HIGH, **not fixed**, and the reason is a measurement
 
-Record: `circles/260801-1244-curator/issues/260814-1850_o_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies.md`
+Record: `260814-1850_*_the-halt-that-guards-the-audit-trail-rests-on-a-self-test-the-inheritance-model-denies.md`
 
 The task said to establish the fact before editing, and to leave the code alone if it could not
 be settled. Half of it settled, and it is not the half the record expected.

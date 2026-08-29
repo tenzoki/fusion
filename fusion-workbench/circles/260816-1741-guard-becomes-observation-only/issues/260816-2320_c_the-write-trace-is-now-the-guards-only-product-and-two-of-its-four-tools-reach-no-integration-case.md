@@ -42,7 +42,7 @@ is not.
 **Cross-references:**
 - `hooks/guard.ts:90-109`, `:197-208`
 - `hooks/lib/__tests__/helpers/guard-harness.ts:747-755`
-- `circles/260816-1741-guard-becomes-observation-only/planning/260816-1915_*_the-compliance-guard-becomes-observation-only.md` `## Testing Strategy`
+- `260816-1915_*_the-compliance-guard-becomes-observation-only.md` `## Testing Strategy`
 
 ---
 Reconciliation 2026-08-17, Phase 3. **Left OPEN. Re-measured at HEAD and the gap is unchanged.**

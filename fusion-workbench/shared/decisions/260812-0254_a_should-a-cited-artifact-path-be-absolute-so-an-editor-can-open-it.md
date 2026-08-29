@@ -55,7 +55,7 @@ absolute paths in chat and keep relative paths in files. If "other files" turns 
 sources outside the workbench, option 2 becomes necessary and option 3 remains its inner half.
 
 ---
-Answered: shared/history/260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3: render `$WORKBENCH`-prefixed absolute paths in chat, keep relative paths in stored records. User answered inline 2026-08-16.
+Answered: 260816-1500-orchestrator-session.md `## Decisions answered by the user` — option 3: render `$WORKBENCH`-prefixed absolute paths in chat, keep relative paths in stored records. User answered inline 2026-08-16.
 
 ---
 **Reconciliation 260817-1836** (reconciler, domain `code`, HEAD `2552586`). Answer recorded, not yet realised — marker stays `_a_`. `rules/user-facing-output.md` carries no rule about rendering workbench-prefixed absolute paths in chat. The one absolute-path mandate in the shipped prompts is a different subject: `agents/orchestrator.md:537` requires absolute pathspecs for `git add` under the commit lock-s directory change.

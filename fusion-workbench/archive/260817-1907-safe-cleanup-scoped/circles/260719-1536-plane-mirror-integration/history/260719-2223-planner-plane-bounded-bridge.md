@@ -8,7 +8,7 @@
 
 Produced the C3 + C4 + one-seeding-read implementation plan for the Plane bounded bridge, in the fusion plugin source (bin/, hooks/, agent prompts, skills, templates, docs).
 
-**Plan:** `circles/260719-1536-plane-mirror-integration/planning/260719-2223_o_plan-plane-bounded-bridge.md` — 8 dependency-ordered steps.
+**Plan:** `260719-2223_*_plan-plane-bounded-bridge.md` — 8 dependency-ordered steps.
 
 ## Core design decision
 
@@ -20,8 +20,8 @@ Artifact→Plane-object mapping (all → Plane issues, labelled by kind; markers
 
 ## Decision records filed (open choices surfaced, not buried)
 
-- `circles/260719-1536-plane-mirror-integration/decisions/260719-2223_o_plane-datamodel-subissue-vs-flat-links.md` — how issues/decisions attach in Plane (child sub-issues vs flat+links vs labels-only). Recommend child sub-issues, fall back to verified links endpoint.
-- `circles/260719-1536-plane-mirror-integration/decisions/260719-2223_o_seeded-circle-anticipated-vs-active.md` — seeded Circle enters `_a_` (reuse `/fusion:direct`) vs `_t_` (Martin-style). Recommend `_a_`.
+- `260719-2223_*_plane-datamodel-subissue-vs-flat-links.md` — how issues/decisions attach in Plane (child sub-issues vs flat+links vs labels-only). Recommend child sub-issues, fall back to verified links endpoint.
+- `260719-2223_*_seeded-circle-anticipated-vs-active.md` — seeded Circle enters `_a_` (reuse `/fusion:direct`) vs `_t_` (Martin-style). Recommend `_a_`.
 
 Both have recommended defaults so Steps 3 and 5 can proceed; the plan gate confirms.
 

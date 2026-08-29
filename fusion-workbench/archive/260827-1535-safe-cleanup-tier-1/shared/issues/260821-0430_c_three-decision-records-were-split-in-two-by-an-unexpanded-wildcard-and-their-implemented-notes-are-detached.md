@@ -17,9 +17,9 @@ answered-but-unrealised, and the evidence that they were realised sits in a file
 
 | Record, still `_a_` | Phantom |
 |---|---|
-| `circles/260801-1244-curator/decisions/260814-1915_a_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md` | `260814-1915_i_*.md` |
-| `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-1845_a_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md` | `260815-1845_i_*.md` |
-| `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/decisions/260815-2056_a_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md` | `260815-2056_i_*.md` |
+| `260814-1915_*_should-mode-3-require-the-audit-line-on-every-run-instead-of-testing-whether-it-was-dispatched.md` | `260814-1915_i_*.md` |
+| `260815-1845_*_does-analyst-get-a-project-local-rule-pattern-now-that-the-investigator-fold-orphaned-one.md` | `260815-1845_i_*.md` |
+| `260815-2056_*_what-marks-an-answered-decision-whose-answer-can-no-longer-be-realised.md` | `260815-2056_i_*.md` |
 
 ## The likely mechanism, stated as an inference
 

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-06
 **Agent:** coder
-**Plan:** circles/260805-2005-textschicht-gegen-code-nachziehen/planning/260805-2353_*_plan-textschicht-gegen-code.md (step 9 + review finding 260806-0709)
+**Plan:** 260805-2353_*_plan-textschicht-gegen-code.md (step 9 + review finding 260806-0709_*_unquoted-scan-iteration-in-drei-schwester-skills-zsh.md)
 **Status:** Complete
 
 ## Task A — unquoted `$SCAN_*` iteration in three sibling skills (zsh)

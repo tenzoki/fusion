@@ -7,9 +7,9 @@
 **Filed by:** coderev (Turn 4 review, range `b261d83..951c809`)
 **Affects:** `hooks/lib/state-drift.ts:244-273` (`turnsRun`), `hooks/lib/state-drift.ts:276-287` (`commitsSince`), `hooks/lib/state-drift.ts:~460` (the row assembly), `agents/orchestrator.md:1095` (the row's user-facing description)
 **Cross-references:**
-`shared/issues/260811-1614_o_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md` (the same row, the opposite direction — that one is under-reporting, this one is over-reporting);
+`260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md` (the same row, the opposite direction — that one is under-reporting, this one is over-reporting);
 `hooks/tracker.ts:776-857` (the trigger doctrine, criterion 2: "On the commonest path, firing at that moment reports NOTHING");
-`shared/issues/260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the finding the whole check exists for)
+`260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` (the finding the whole check exists for)
 
 ---
 
@@ -57,7 +57,7 @@ Make the row's anchor the same one every other row uses. `session.git_head_at_st
 
 Option 1 is a change inside `turnsRun` and nothing else. Whichever is taken, the row and `commitsSince` must end up meaning the same "this session", and that agreement should be pinned.
 
-**Note on scope.** `turnsRun` is not modified by this range; `36984d7` touched only this module's git wrapper and throttle store. The defect predates the range and is reported here because it is live at HEAD, because the range wrote the doctrine it violates, and because `260811-1614` is already open against the same row from the other side — a fix should take both.
+**Note on scope.** `turnsRun` is not modified by this range; `36984d7` touched only this module's git wrapper and throttle store. The defect predates the range and is reported here because it is live at HEAD, because the range wrote the doctrine it violates, and because `260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md` is already open against the same row from the other side — a fix should take both.
 
 ## Acceptance criteria
 
@@ -68,7 +68,7 @@ Option 1 is a change inside `turnsRun` and nothing else. Whichever is taken, the
 ---
 Resolved: the Turn row now anchors on the session's own identity rather than on a position in the event log. `session_start` carries `history_file` (Setup step 8 in `agents/orchestrator.md`, Step 5 in `skills/setup/SKILL.md`), a session keeps one history file for its whole life, and `turnsRun` counts `turn_start` events from the **first** `session_start` naming it — so the window survives a resume exactly as `session.git_head_at_start` does, and the two numeric rows now answer "since when?" with one answer.
 
-Neither fix direction in this record was taken, and both were weighed. **Option 1** (compare event `ts` against `session.started`) is not available: `session.started` is written by local `date +%y%m%d-%H%M` and an event `ts` by `date -u`, neither carries an offset, and the two are measurably two hours apart in this very session — `started: "260811-0752"` against that session's own `session_start` at `2026-08-11T05:52:24`. The error's direction would silently drop the session's first Turns. **Option 2** (the resume emits no `session_start`) would work for the count but makes the row depend on an emission the resume path may legitimately make — the resume *is* a new process, and `bin/monitor` keys its orphan-task boundary on that line. Anchoring on identity makes the count indifferent to whether the resume emits anything at all.
+Neither fix direction in this record was taken, and both were weighed. **Option 1** (compare event `ts` against `session.started`) is not available: `session.started` is written by local `date +%y%m%d-%H%M` and an event `ts` by `date -u`, neither carries an offset, and the two are measurably two hours apart in this very session — `started: "260811-0752-orchestrator-session.md"` against that session's own `session_start` at `2026-08-11T05:52:24`. The error's direction would silently drop the session's first Turns. **Option 2** (the resume emits no `session_start`) would work for the count but makes the row depend on an emission the resume path may legitimately make — the resume *is* a new process, and `bin/monitor` keys its orphan-task boundary on that line. Anchoring on identity makes the count indifferent to whether the resume emits anything at all.
 
 A third rule was tried and rejected on the way: "the first `session_start` after the last `session_end`". It is correct for a resume and needs no new field, but it counts a crashed session's Turns into the session that replaced it after a **Restart** — so it relocates the defect rather than closing it. No rule over line positions separates those two cases, because both leave two `session_start` lines with no `session_end` between them; the identity is the input that decides it (`rules/critical-stance.md` §4). It survives as the fallback for a log written before the field existed, and only where exactly one candidate makes it unambiguous. Two or more candidates report `UNCHECKED` with that reason — which is what this repository's own log does right now, in place of the permanent false DRIFT.
 

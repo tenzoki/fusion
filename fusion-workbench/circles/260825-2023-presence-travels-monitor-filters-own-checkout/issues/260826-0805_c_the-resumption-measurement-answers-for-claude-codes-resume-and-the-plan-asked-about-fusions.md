@@ -11,9 +11,9 @@ does not land. The session filing this record is a live counterexample.
 **Severity:** Medium
 
 **Cross-references:**
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/analyses/260825-2214-can-a-hook-obtain-the-session-identifier.md`,
+`260825-2214-can-a-hook-obtain-the-session-identifier.md`,
 section `### Supplementary, measured but not asked`;
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/planning/260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`,
+`260825-2140_*_c4-presence-travels-and-the-monitor-reads-its-own-checkout.md`,
 step 11;
 `agents/orchestrator.md` `## Setup`, the paragraph **What a resumed session inherits**.
 
@@ -68,11 +68,11 @@ $ ls -lat /Users/k1/.claude/projects/-Users-k1-Projects-productive-fusion/*.json
 *Verified:* the two identifiers are distinct, and the first is this session's, read from the
 transcript path in its own context. *Inference:* that `bb616108-…` is the interrupted
 orchestrator session rather than some other run, resting on its span (`session.started` reads
-`260825-2123`) and on it being the only transcript last written between that stamp and this
+`260825-2123-orchestrator-session.md`) and on it being the only transcript last written between that stamp and this
 session's start.
 
 Both sessions name one `history_file`,
-`circles/260825-2023-presence-travels-monitor-filters-own-checkout/history/260825-2123-orchestrator-session.md`,
+`260825-2123-orchestrator-session.md`,
 and `fusion-workbench/orchestrator-events.jsonl` carries two `session_start` lines saying so,
 which is the shape Setup step 8 prescribes.
 

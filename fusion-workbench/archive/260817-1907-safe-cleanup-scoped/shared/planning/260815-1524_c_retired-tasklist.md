@@ -1,4 +1,4 @@
-<!-- Retired 2026-08-15 by step 10 of `circles/260815-0007-remove-eight-mechanisms-and-cap-growth/planning/260815-0029_o_plan-remove-eight-mechanisms-and-cap-growth.md`,
+<!-- Retired 2026-08-15 by step 10 of `260815-0029_*_plan-remove-eight-mechanisms-and-cap-growth.md`,
      which removed the persisted `tasklist.md` and the queue-ground apparatus that read it.
      Moved rather than deleted: the entries carry verification notes and acceptance reasoning that the
      defect records they cite do not. The records under `shared/issues/` remain the authority on what is
@@ -23,14 +23,14 @@
 **Session scope: open defect records only.** The Directive is *"close the open findings to reach a
 clean state before any new feature or restructuring work begins."* This is a cleanup queue. It
 carries no plan steps, no new capability work and no Circle activation, and it was built with **no
-Circle active** — the portfolio holds one anticipated Circle (`circles/260801-1244-curator`) and it
+Circle active** — the portfolio holds one anticipated Circle (`260801-1244-curator`) and it
 was deliberately not touched.
 
 Four things a later reader should take from that.
 
 1. Every task here traces to a defect record or to an answered decision that already existed.
    Nothing was invented as work. The one exception is task 1, and it is named as such.
-2. The one open plan, `shared/planning/260801-1122_o_spec-normative-consolidation.md`, is **not**
+2. The one open plan, `260801-1122_*_spec-normative-consolidation.md`, is **not**
    inventoried. Its absence says nothing about its state; it is out of the Directive's scope.
 3. Because no Circle is active, `$SCAN_ISSUES` resolves to `shared/issues/` alone. The 10 records
    inside closed Circles are outside that scan and were reached by naming their paths. Per the
@@ -50,7 +50,7 @@ follow the citations into the two source files that name them.
 The executor report contract derives `Result: done` from the suite's exit code
 (`agents/coder.md` `### Report shape`), so **every executor dispatched before task 1 lands will
 report `blocked`**, whatever it actually achieved. That is the contract behaving as written — the
-consequence is recorded at `shared/issues/260810-0703_o_…`, which is task 45 here. Land task 1
+consequence is recorded at `260810-0703_*_…`, which is task 45 here. Land task 1
 first.
 
 ---
@@ -65,14 +65,14 @@ the 74 open tasks above.
 
 | Record | Evidence at HEAD `f70cb07` |
 |---|---|
-| `shared/issues/260810-1632_o_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md` | Closed by commit `1d5eed6`. Both halves are done: the gate at `hooks/tracker.ts:1079` now reads `isFusionPluginRoot(workbenchRoot)` instead of `isFusionPluginCwd()`, and the comment at `:1043-1077` was rewritten — it names this record by number, states that the anchor moved in `25c5454`, and explains the null-root case rather than resting on the falsified premise. The record's own recommendation offered two routes and the stronger one was taken. |
+| `260810-1632_*_the-churn-stand-down-still-asks-cwd-and-the-comment-justifying-that-was-falsified-by-the-same-commit.md` | Closed by commit `1d5eed6`. Both halves are done: the gate at `hooks/tracker.ts:1079` now reads `isFusionPluginRoot(workbenchRoot)` instead of `isFusionPluginCwd()`, and the comment at `:1043-1077` was rewritten — it names this record by number, states that the anchor moved in `25c5454`, and explains the null-root case rather than resting on the falsified premise. The record's own recommendation offered two routes and the stronger one was taken. |
 
 ### Partially resolved — one acceptance criterion met, a human decides whether that closes it
 
 | Record | What is met, what is not |
 |---|---|
-| `shared/issues/260810-0819_o_head-carries-six-records-twice-and-the-class-fix-was-deferred-to-a-decision-never-filed.md` | **Criterion 1 met, measured now:** `git ls-tree -r --name-only HEAD -- fusion-workbench/shared/issues \| grep -c '_o_'` returns **62** and `ls … \| grep -c '_o_'` returns **62**; the duplicate-stem probe in the record's own Reproduction block returns nothing. No record is carried twice any more. **Criterion 2 met by a different mechanism than the record asked for:** it asked for a decision record on marker-rename staging or the convention written into `rules/fusion-workbench-conventions.md` with a gate. What exists instead is `agents/orchestrator.md:432` (the staging shape — no `-A`, no `-u`, no directory argument), a gate over it (`hooks/lib/__tests__/queue-commit-ownership-lint.test.ts`), and `hooks/lib/staging-drift.ts`, which *measures* records that missed their commit rather than forbidding the command that loses them. **Criterion 3 not met:** `260807-1941_c_`'s deferral is still unanswered in writing. Task 34 carries the residue. |
-| `shared/issues/260809-2255_o_the-branch-policy-verification-left-an-active-halt-and-24-consecutive-blocks-in-the-live-guard-state.md` | **Criterion 1 met:** `fusion-workbench/.guard-state/escalation.json` reads `"haltActive": false, "consecutiveBlocks": 0`, and the clearing is recorded in `shared/history/260810-0844-orchestrator-session.md`. **Criterion 2 is arguably moot:** it asks that the verification-surface rule name the branch policy, and the branch policy was deleted in `7598073` before such a rule could be written. The reconciler declined to make that call because the criterion is written as a rule obligation, not a state fact. Task 47 carries it. |
+| `260810-0819_*_head-carries-six-records-twice-and-the-class-fix-was-deferred-to-a-decision-never-filed.md` | **Criterion 1 met, measured now:** `git ls-tree -r --name-only HEAD -- fusion-workbench/shared/issues \| grep -c '_o_'` returns **62** and `ls … \| grep -c '_o_'` returns **62**; the duplicate-stem probe in the record's own Reproduction block returns nothing. No record is carried twice any more. **Criterion 2 met by a different mechanism than the record asked for:** it asked for a decision record on marker-rename staging or the convention written into `rules/fusion-workbench-conventions.md` with a gate. What exists instead is `agents/orchestrator.md:432` (the staging shape — no `-A`, no `-u`, no directory argument), a gate over it (`hooks/lib/__tests__/queue-commit-ownership-lint.test.ts`), and `hooks/lib/staging-drift.ts`, which *measures* records that missed their commit rather than forbidding the command that loses them. **Criterion 3 not met:** `260807-1941_c_`'s deferral is still unanswered in writing. Task 34 carries the residue. |
+| `260809-2255_*_the-branch-policy-verification-left-an-active-halt-and-24-consecutive-blocks-in-the-live-guard-state.md` | **Criterion 1 met:** `fusion-workbench/.guard-state/escalation.json` reads `"haltActive": false, "consecutiveBlocks": 0`, and the clearing is recorded in `260810-0844-orchestrator-session.md`. **Criterion 2 is arguably moot:** it asks that the verification-surface rule name the branch policy, and the branch policy was deleted in `7598073` before such a rule could be written. The reconciler declined to make that call because the criterion is written as a rule obligation, not a state fact. Task 47 carries it. |
 
 ---
 
@@ -87,25 +87,25 @@ conflated.
 
 | Entry | What released it |
 |---|---|
-| Task 25 — pin the drift check's four sentences to an approved baseline (`shared/decisions/260810-2032_a_…`) | The answer bound the implementer to land it **after** `I:260801-2038-frozen-state`. That record is now `shared/issues/260801-2038_c_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` — closed. The sequencing constraint is discharged and the pin can be built. |
-| Task 27 — the duplicate-filing check at filing time (`circles/260801-1244-guard-rules-write/issues/260805-1548_o_…`) | The record states it stays open "bis sie beantwortet ist", pointing at the rule-text ratchet question. That decision is now `circles/260801-1244-guard-rules-write/decisions/260805-1559_i_…` — implemented in `3163281`, which set a 12 000-byte headroom over the role floor with a hard cap at 145 144. The ~430-byte paragraph the record already drafted now fits. |
-| Tasks 2, 4, 5, 6, 7–11 — the five realisation records `260811-1730` … `260811-1734` | Their decisions were answered by the user on 260811 (commit `1064fec`). Each carries its chosen option and its exclusions; see the entries. |
-| Task 41 — the domain-capture one-liner in a fourth skill body | Its blocker was "resolve `2030` first with a `bin/` helper". `2030` is answered (`260810-2145_a_`) and realised as task 4. |
+| Task 25 — pin the drift check's four sentences to an approved baseline (`260810-2032_*_…`) | The answer bound the implementer to land it **after** `I:260801-2038-frozen-state`. That record is now `260801-2038_*_session-bookkeeping-froze-at-turn-1-while-three-turns-ran.md` — closed. The sequencing constraint is discharged and the pin can be built. |
+| Task 27 — the duplicate-filing check at filing time (`260805-1548_*_…`) | The record states it stays open "bis sie beantwortet ist", pointing at the rule-text ratchet question. That decision is now `260805-1559_*_…` — implemented in `3163281`, which set a 12 000-byte headroom over the role floor with a hard cap at 145 144. The ~430-byte paragraph the record already drafted now fits. |
+| Tasks 2, 4, 5, 6, 7–11 — the five realisation records `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md` … `260811-1734` | Their decisions were answered by the user on 260811 (commit `1064fec`). Each carries its chosen option and its exclusions; see the entries. |
+| Task 41 — the domain-capture one-liner in a fourth skill body | Its blocker was "resolve `2030` first with a `bin/` helper". `2030` is answered (`260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`) and realised as task 4. |
 
 ### Genuinely parked behind a deferred decision
 
 Three decisions are deferred, each with a stated trigger. Nothing in the open set is *hard*-blocked
 by them, but two triggers are close and one is worth naming:
 
-- `shared/decisions/260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
-  — **trigger: the lint cohort's own fate, records `260810-0502`, `260810-0503` and `260810-0510`.**
-  The first two are now `_c_`. **Only `260810-0510` is left**, and it is task 30 here. Landing task
+- `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`
+  — **trigger: the lint cohort's own fate, records `260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md`, `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` and `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`.**
+  The first two are now `_c_`. **Only `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md` is left**, and it is task 30 here. Landing task
   30 fires this decision's trigger, and the answer then governs task 46 (a release gate) and
   criterion 2 of task 47.
-- `shared/decisions/260810-0718_d_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md`
+- `260810-0718_*_should-rebuild-map-merge-with-the-existing-map-or-replace-it.md`
   — trigger: the first real `push --rebuild-map` recovery against a workbench that has seeded from
   Plane. Task 49 sits next to it and needs its own wire-format decision, which is not this one.
-- `shared/decisions/260809-1224_d_is-the-decision-governed-escalation-check-3-a-live-feature.md`
+- `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md`
   — trigger: a measurement over the consuming projects this developer can reach. That measurement
   is machine-bound; see the next section.
 
@@ -123,9 +123,9 @@ open half of **34**.
 
 | Item | What it needs |
 |---|---|
-| Task 73 — `circles/260801-1244-guard-rules-write/issues/260805-2323_o_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md` | Run `fusion --update` on the **unite-cocreator** machine, then spot-check the byte sums of `bin/fusion-rules <agent>` against `hooks/lib/__tests__/fixtures/rules-emission.golden`. The project path `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator` is not reachable from this machine. Without the update that machine still runs the old rule set (105 354 bytes). |
-| Task 74 — `circles/260719-1536-plane-mirror-integration/issues/260719-2304_o_verify-plane-create-patch-body-against-live-instance.md` | One real `fusion-plane push --circle <dir>` against the configured self-hosted Plane at `plane.digitalleadership.com`, confirming the `states/` envelope, the create/PATCH field names (`description_html` is the high-risk one — if it is wrong the embedded `fusion-key` never lands and `--rebuild-map` cannot reconstruct), and the `parent` sub-issue field. Also check `doctor`'s exit codes are non-zero on real failure. |
-| Deferral trigger for `260809-1224_d` | Read `fusion-guard.json` from each consuming project the user has, **`unite` first**, and report whether any populates `decisions` or the three `guard.category*` keys. A non-zero answer settles CHECK 3 as live; a zero answer settles it as retired. Not a queued task — it is the event that re-opens the decision. |
+| Task 73 — `260805-2323_*_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md` | Run `fusion --update` on the **unite-cocreator** machine, then spot-check the byte sums of `bin/fusion-rules <agent>` against `hooks/lib/__tests__/fixtures/rules-emission.golden`. The project path `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator` is not reachable from this machine. Without the update that machine still runs the old rule set (105 354 bytes). |
+| Task 74 — `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md` | One real `fusion-plane push --circle <dir>` against the configured self-hosted Plane at `plane.digitalleadership.com`, confirming the `states/` envelope, the create/PATCH field names (`description_html` is the high-risk one — if it is wrong the embedded `fusion-key` never lands and `--rebuild-map` cannot reconstruct), and the `parent` sub-issue field. Also check `doctor`'s exit codes are non-zero on real failure. |
+| Deferral trigger for `260809-1224_*_is-the-decision-governed-escalation-check-3-a-live-feature.md_d` | Read `fusion-guard.json` from each consuming project the user has, **`unite` first**, and report whether any populates `decisions` or the three `guard.category*` keys. A non-zero answer settles CHECK 3 as live; a zero answer settles it as retired. Not a queued task — it is the event that re-opens the decision. |
 
 ---
 
@@ -211,30 +211,30 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 1. Repair the two stale decision-marker citations that turn the suite red
 
 - **ID:** `T1`
-- **Source:** `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the failing gate); governing rule `shared/decisions/260806-0015_i_zitierform-fuer-workbench-records.md`
+- **Source:** `hooks/lib/__tests__/reference-resolution-lint.test.ts` (the failing gate); governing rule `260806-0015_*_zitierform-fuer-workbench-records.md`
 - **Executor:** coder
 - **Depends on:** none
 - **Priority:** critical
-- **Status:** [x] done — three citations rewritten to the wildcard form (`hooks/lib/reverted-copy.ts:32`, `hooks/lib/review-coverage.ts:78`, and a third the gate could not see, `hooks/review-coverage.ts:52`); `cd hooks && npm test` exit 0, 1284 passed. The recurrence is recorded at `shared/issues/260811-1755_o_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md`, which also carries the measured surface gap.
-- **Detail:** `cd hooks && npm test` fails one case at HEAD `f70cb07`. Two shipped source files cite decision records by a marker that commit `1064fec` moved: `hooks/lib/reverted-copy.ts:32` names `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_o_integritaet-des-eskalationsspeichers.md` (now `_a_`), and `hooks/lib/review-coverage.ts:78` names `shared/decisions/260810-0710_o_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` (now `_d_`). Rewrite both in the ratified wildcard form — `260807-0945_*_…`, `260810-0710_*_…` — which is what the lint's own fix message asks for and what survives the next transition. Then re-run the suite and confirm 1284 pass. **No defect record covers this**; it is the queue's own measured ground, and it is the same class as the closed `260805-1839_c_acht-zitate-tragen-verfallene-decision-marker…`. File a record for it if the recurrence matters.
+- **Status:** [x] done — three citations rewritten to the wildcard form (`hooks/lib/reverted-copy.ts:32`, `hooks/lib/review-coverage.ts:78`, and a third the gate could not see, `hooks/review-coverage.ts:52`); `cd hooks && npm test` exit 0, 1284 passed. The recurrence is recorded at `260811-1755_*_stale-marker-citations-recur-and-the-lint-does-not-read-the-hook-entrypoints-where-one-was-hiding.md`, which also carries the measured surface gap.
+- **Detail:** `cd hooks && npm test` fails one case at HEAD `f70cb07`. Two shipped source files cite decision records by a marker that commit `1064fec` moved: `hooks/lib/reverted-copy.ts:32` names `260807-0945_*_integritaet-des-eskalationsspeichers.md` (now `_a_`), and `hooks/lib/review-coverage.ts:78` names `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` (now `_d_`). Rewrite both in the ratified wildcard form — `260807-0945_*_…`, `260810-0710_*_…` — which is what the lint's own fix message asks for and what survives the next transition. Then re-run the suite and confirm 1284 pass. **No defect record covers this**; it is the queue's own measured ground, and it is the same class as the closed `260805-1839_*_acht-zitate-tragen-verfallene-decision-marker…`. File a record for it if the recurrence matters.
 
 ### 2. Move the three throttle stores onto the existing guard-state seam and extract one git wrapper
 
-- **ID:** `I:260811-1730`
-- **Source:** `shared/issues/260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`
-- **Closes:** `shared/issues/260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` (the narrow finding this realisation subsumes) — closed `_o_` → `_c_` in the same pass
+- **ID:** `I:260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`
+- **Source:** `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md`
+- **Closes:** `260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` (the narrow finding this realisation subsumes) — closed `_o_` → `_c_` in the same pass
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [x] done — `hooks/lib/git.ts` is new and holds the only `execFileSync` in the hooks source; `guardStatePath`/`loadGuardState`/`saveGuardState` widened by one optional `root?: string` and the six hand-written throttle functions replaced by six calls plus one total coercion each; the trigger criterion, its three checkable questions and the fourth-module trip-wire written into `hooks/tracker.ts` above the three `measure…ForModel` bodies, none of which moved. `cd hooks && npm test` exit 0, 1284 passed, plus a scratch project root driven through `dist/tracker.js`. Decision `260811-1146` moved `_a_` → `_i_`; issues `260811-1730` and `260811-1142` moved `_o_` → `_c_`. One thing the acceptance did not anticipate: `derivable-enumerations-lint.test.ts` requires every `hooks/lib/*.ts` to have a row in `README-hooks.md`'s files table, so `lib/git.ts` got one. History: `shared/history/260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`.
-- **Detail:** Realises `shared/decisions/260811-1146_*_…`, **option 2**. Two pieces only. (a) `hooks/lib/state-drift.ts:512-531`, `hooks/lib/review-coverage.ts:560-579` and `hooks/lib/staging-drift.ts:449-466` each hand-roll the same read/coerce/mkdir/write against `.guard-state/`, and each writes with a bare `writeFileSync` where `saveGuardState` writes through a `.tmp` and a `rename`. Widen `guardStatePath` / `loadGuardState` / `saveGuardState` in `hooks/lib/guard-state-file.ts` by one optional `root?: string` argument — verified at HEAD they take no root, which is why the three forked — and replace the six hand-written functions with calls plus a coercion each. `escalation.ts` and `churn.ts` keep their two-argument calls unchanged. Keep `staging-drift.ts`'s two-field state (`head` + `reported`) as its own coercion. (b) Extract the `execFileSync` git wrapper — verbatim twice and once inline at `review-coverage.ts:315-326`, `staging-drift.ts:260-271`, `state-drift.ts:280-288` — into one `hooks/lib/git.ts`. (c) Write down the **trigger** criterion as the thing that decides whether a future measurement is a sibling at all; the three differ (every guarded tool call, a review file landing, HEAD having moved) and that difference is why siblings were the right relation.
+- **Status:** [x] done — `hooks/lib/git.ts` is new and holds the only `execFileSync` in the hooks source; `guardStatePath`/`loadGuardState`/`saveGuardState` widened by one optional `root?: string` and the six hand-written throttle functions replaced by six calls plus one total coercion each; the trigger criterion, its three checkable questions and the fourth-module trip-wire written into `hooks/tracker.ts` above the three `measure…ForModel` bodies, none of which moved. `cd hooks && npm test` exit 0, 1284 passed, plus a scratch project root driven through `dist/tracker.js`. Decision `260811-1146` moved `_a_` → `_i_`; issues `260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md` and `260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` moved `_o_` → `_c_`. One thing the acceptance did not anticipate: `derivable-enumerations-lint.test.ts` requires every `hooks/lib/*.ts` to have a row in `README-hooks.md`'s files table, so `lib/git.ts` got one. History: `260811-1806-coder-task2-throttle-seam-and-git-wrapper.md`.
+- **Detail:** Realises `260811-1146_*_…`, **option 2**. Two pieces only. (a) `hooks/lib/state-drift.ts:512-531`, `hooks/lib/review-coverage.ts:560-579` and `hooks/lib/staging-drift.ts:449-466` each hand-roll the same read/coerce/mkdir/write against `.guard-state/`, and each writes with a bare `writeFileSync` where `saveGuardState` writes through a `.tmp` and a `rename`. Widen `guardStatePath` / `loadGuardState` / `saveGuardState` in `hooks/lib/guard-state-file.ts` by one optional `root?: string` argument — verified at HEAD they take no root, which is why the three forked — and replace the six hand-written functions with calls plus a coercion each. `escalation.ts` and `churn.ts` keep their two-argument calls unchanged. Keep `staging-drift.ts`'s two-field state (`head` + `reported`) as its own coercion. (b) Extract the `execFileSync` git wrapper — verbatim twice and once inline at `review-coverage.ts:315-326`, `staging-drift.ts:260-271`, `state-drift.ts:280-288` — into one `hooks/lib/git.ts`. (c) Write down the **trigger** criterion as the thing that decides whether a future measurement is a sibling at all; the three differ (every guarded tool call, a review file landing, HEAD having moved) and that difference is why siblings were the right relation.
 - **Bound, from the answer — do not widen:** the tracker's three `measure…ForModel` bodies, the three CLI mains and the three `bin/` wrappers **stay as they are**. The full chassis is taken at the fourth module. **Do not turn this into option 1.**
 - **Acceptance:** three throttle copies become one call to the existing seam; one `lib/git.ts` with no second copy anywhere; the trigger criterion is written where the next author will read it; tracker, CLIs and wrappers untouched; suite green.
 
 ### 3. Write the guarded-call convention for prompt-called `bin/` helpers, in prose, with no gate
 
-- **ID:** `D:260810-1544`
-- **Source:** `shared/decisions/260810-1544_a_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`
+- **ID:** `D:260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`
+- **Source:** `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
@@ -244,82 +244,82 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 4. One `bin/fusion-source-root` helper, and the four skill-body copies become four guarded calls
 
-- **ID:** `I:260811-1733`
-- **Source:** `shared/issues/260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md`
-- **Closes:** `shared/issues/260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`; `shared/issues/260811-0109_*_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`
+- **ID:** `I:260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md`
+- **Source:** `260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md`
+- **Closes:** `260810-2030_*_the-source-root-resolution-is-stated-in-two-skill-bodies-and-has-no-single-home.md`; `260811-0109_*_the-source-root-rooting-reached-two-skills-and-two-more-still-cite-the-install-copy.md`
 - **Executor:** coder
-- **Depends on:** T1, `D:260810-1544`
+- **Depends on:** T1, `D:260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`
 - **Priority:** high
-- **Status:** [x] done — `bin/fusion-source-root` is new (plus its `!bin/fusion-source-root` line in `.gitignore`). Four skill bodies, six guarded calls: setup and next carry two each (announce + inline re-resolution), cleanup and help one each, newly added, with their shipped-file citations moved onto `$FUSION_SRC`. `grep -rn 'fusion-plugin-cwd' agents/ skills/ rules/` is now empty. Siblings brought along: `bin/fusion-plugin-cwd`'s `Consumers:` header, `hooks/session-start.ts`'s no-upward-walk comment, and `CLAUDE.md` twice (a Layout row, and the Release-process paragraph's list of what the work-tree preference covers). `cd hooks && npm test` exit 0, 1293 passed. Issues `260811-1733`, `260810-2030` and `260811-0109` moved `_o_` → `_c_`; decision `260810-2145` **stays `_a_`** and carries an `Implemented:` note saying why — its second half (the domain capture, task 41) is unanswered and `_i_` is terminal. **Note on the acceptance:** "four guarded calls" and "the two skills that still cite the install copy are corrected with it" cannot both hold literally; this Detail's own "four, not two" was taken as authoritative, so "four" is four skill bodies. History: `shared/history/260811-1847-coder-tasks456-source-root-event-log-deliverable-language.md`.
-- **Detail:** Realises `shared/decisions/260810-2145_*_…`, **option 1**. Add `bin/fusion-source-root`, which prints the source root — the work tree when `bin/fusion-plugin-cwd` says cwd is the plugin's own repository, `$FUSION_PLUGIN_ROOT` otherwise — and replace the inline two-line branch in the skill bodies with calls to it. The call-site count is **four, not two**: `skills/setup/SKILL.md` and `skills/next/SKILL.md` carry `FUSION_SRC` today (`grep -rl 'FUSION_SRC' skills/ agents/` returns exactly those two), and `skills/cleanup/SKILL.md` (six citations at `:11, :117, :125, :134, :140, :146`) and `skills/help/SKILL.md` (five at `:23, :25, :49, :55, :88`) still cite the install copy. `cleanup:125` is behaviour, not reading — it sends the reader to Setup Step 5 of the installed `agents/orchestrator.md` as the one place the domain cascade is decided. Preserve three properties: the check is at cwd with **no upward walk**, so from a subdirectory of this repo the answer is the install; it must be callable from a skill body; and the `queue-check: UNAVAILABLE` path must still fire when the resolved copy lacks the section, naming which copy was read. Guard the call at all four sites per task 3.
+- **Status:** [x] done — `bin/fusion-source-root` is new (plus its `!bin/fusion-source-root` line in `.gitignore`). Four skill bodies, six guarded calls: setup and next carry two each (announce + inline re-resolution), cleanup and help one each, newly added, with their shipped-file citations moved onto `$FUSION_SRC`. `grep -rn 'fusion-plugin-cwd' agents/ skills/ rules/` is now empty. Siblings brought along: `bin/fusion-plugin-cwd`'s `Consumers:` header, `hooks/session-start.ts`'s no-upward-walk comment, and `CLAUDE.md` twice (a Layout row, and the Release-process paragraph's list of what the work-tree preference covers). `cd hooks && npm test` exit 0, 1293 passed. Issues `260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md`, `260810-2030` and `260811-0109` moved `_o_` → `_c_`; decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md` **stays `_a_`** and carries an `Implemented:` note saying why — its second half (the domain capture, task 41) is unanswered and `_i_` is terminal. **Note on the acceptance:** "four guarded calls" and "the two skills that still cite the install copy are corrected with it" cannot both hold literally; this Detail's own "four, not two" was taken as authoritative, so "four" is four skill bodies. History: `260811-1847-coder-tasks456-source-root-event-log-deliverable-language.md`.
+- **Detail:** Realises `260810-2145_*_…`, **option 1**. Add `bin/fusion-source-root`, which prints the source root — the work tree when `bin/fusion-plugin-cwd` says cwd is the plugin's own repository, `$FUSION_PLUGIN_ROOT` otherwise — and replace the inline two-line branch in the skill bodies with calls to it. The call-site count is **four, not two**: `skills/setup/SKILL.md` and `skills/next/SKILL.md` carry `FUSION_SRC` today (`grep -rl 'FUSION_SRC' skills/ agents/` returns exactly those two), and `skills/cleanup/SKILL.md` (six citations at `:11, :117, :125, :134, :140, :146`) and `skills/help/SKILL.md` (five at `:23, :25, :49, :55, :88`) still cite the install copy. `cleanup:125` is behaviour, not reading — it sends the reader to Setup Step 5 of the installed `agents/orchestrator.md` as the one place the domain cascade is decided. Preserve three properties: the check is at cwd with **no upward walk**, so from a subdirectory of this repo the answer is the install; it must be callable from a skill body; and the `queue-check: UNAVAILABLE` path must still fire when the resolved copy lacks the section, naming which copy was read. Guard the call at all four sites per task 3.
 - **Bound, from the answer — do not widen:** the **domain-capture** snippet is out of scope. It is the weaker case (short, read-only, fallback stated at every site) and is a separate call once this one has proved itself. It is task 41.
 - **Acceptance:** one helper, four guarded calls, no fifth copy anywhere in `agents/`, `skills/`, `rules/` or `bin/`; the two skills that still cite the install copy are corrected with it; suite green.
 
 ### 5. Give the guard event log its own archive case, because it is evidence and not live state
 
-- **ID:** `I:260811-1731`
-- **Source:** `shared/issues/260811-1731_*_the-guard-event-log-needs-its-archive-case-because-it-is-evidence-and-not-live-state.md`
+- **ID:** `I:260811-1731_*_the-guard-event-log-needs-its-archive-case-because-it-is-evidence-and-not-live-state.md`
+- **Source:** `260811-1731_*_the-guard-event-log-needs-its-archive-case-because-it-is-evidence-and-not-live-state.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [x] done — `skills/archive/SKILL.md` gained a `### Rolling the guard event log` subsection, a Tier 1 row, a proposal line, the Step 7 roll (`mv` then `: >`, never copy-then-truncate), a manifest section and a guardrail; `rules/fusion-workbench-conventions.md` moves the log to the records side and narrows `.guard-state/` on the live-state side; `hooks/lib/events.ts` gained a doc comment **forbidding** a ceiling and **no ceiling was added**; `.gitignore` carries the matching note. `bin/monitor` needed no change and three new cases in `monitor-warnings-panel.test.ts` pin why (byte-empty log, absent log, post-roll events only). `cd hooks && npm test` exit 0, 1293 passed. Issue `260811-1731` `_o_` → `_c_`; decision `260811-1534` `_a_` → `_i_`. `guard_allow` untouched.
-- **Detail:** Realises `shared/decisions/260811-1534_*_…`, **option 1: archive rather than truncate.** `.guard-state/events.jsonl` is classified as evidence. Give it its own case in `skills/archive/SKILL.md`: roll the log into the archive store under a dated name and start a fresh empty log, the way terminal records are already moved. The skill's never-touch list currently follows `.guard-state/` wholesale to the live-state side, and `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks` puts it there — an append-only log is not a state file, and both places need the distinction drawn.
+- **Status:** [x] done — `skills/archive/SKILL.md` gained a `### Rolling the guard event log` subsection, a Tier 1 row, a proposal line, the Step 7 roll (`mv` then `: >`, never copy-then-truncate), a manifest section and a guardrail; `rules/fusion-workbench-conventions.md` moves the log to the records side and narrows `.guard-state/` on the live-state side; `hooks/lib/events.ts` gained a doc comment **forbidding** a ceiling and **no ceiling was added**; `.gitignore` carries the matching note. `bin/monitor` needed no change and three new cases in `monitor-warnings-panel.test.ts` pin why (byte-empty log, absent log, post-roll events only). `cd hooks && npm test` exit 0, 1293 passed. Issue `260811-1731_*_the-guard-event-log-needs-its-archive-case-because-it-is-evidence-and-not-live-state.md` `_o_` → `_c_`; decision `260811-1534_*_does-the-guard-event-log-get-an-upper-bound-and-what-happens-to-the-evidence-in-it.md` `_a_` → `_i_`. `guard_allow` untouched.
+- **Detail:** Realises `260811-1534_*_…`, **option 1: archive rather than truncate.** `.guard-state/events.jsonl` is classified as evidence. Give it its own case in `skills/archive/SKILL.md`: roll the log into the archive store under a dated name and start a fresh empty log, the way terminal records are already moved. The skill's never-touch list currently follows `.guard-state/` wholesale to the live-state side, and `rules/fusion-workbench-conventions.md` `### Which of them a tracked workbench tracks` puts it there — an append-only log is not a state file, and both places need the distinction drawn.
 - **Bound, from the answer — do not add a ceiling:** **no line or byte limit anywhere, including in `emitEvent`.** Every such ceiling discards the oldest lines first, and those are the 99 block, halt and clear events — the only lines that record the guard enforcing anything. Dropping `guard_allow` (4 999 lines, 28 %) was offered alongside and **not taken**; it stays available as a separate, smaller call and must not be folded in here.
 - **Acceptance:** `/fusion:archive` archives the log and starts a fresh one; the conventions file distinguishes the append-only log from the state files inside `.guard-state/`; no ceiling in `emitEvent`; `bin/monitor` still reads a rolled log correctly, including immediately after a roll when the live file is empty.
 
 ### 6. The editor takes its deliverable language from the dispatch, and fails loudly without one
 
-- **ID:** `I:260811-1732`
-- **Source:** `shared/issues/260811-1732_*_the-editor-takes-its-deliverable-language-from-the-dispatch-and-fails-loudly-without-one.md`
+- **ID:** `I:260811-1732_*_the-editor-takes-its-deliverable-language-from-the-dispatch-and-fails-loudly-without-one.md`
+- **Source:** `260811-1732_*_the-editor-takes-its-deliverable-language-from-the-dispatch-and-fails-loudly-without-one.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [x] done — `agents/editor.md` gained `## Deliverable language — named in the dispatch, or you halt`, and the prompt now names **neither** declaration token anywhere, which is what makes the absence of a default checkable. `rules/fusion-workbench-conventions.md` `## Project language` is four-way, disjoint and complete: the persisted case splits on whether the file is for the project or for a reader outside it. New gate `hooks/lib/__tests__/deliverable-language-lint.test.ts` (6 cases), written in `executor-verification-report-lint.test.ts`'s shape and honest about what a prompt lint can check. Siblings: `agents/orchestrator.md` (routing + dispatch tables), `CLAUDE.md` (dispatch-parameter bullet, now four agents), `README-agents.md`. `cd hooks && npm test` exit 0, 1293 passed. Issue `260811-1732` `_o_` → `_c_`; decision `260807-2131` `_a_` → `_i_`.
-- **Detail:** Realises `shared/decisions/260807-2131_*_…`, **option 3: a per-deliverable declaration with no project default.** A customer deliverable follows neither the chat nor the artifact declaration. `agents/editor.md:16,62` must require the dispatching task to name the target language and **halt** when none is given, with a message naming what to pass. `rules/fusion-workbench-conventions.md` `## Project language` gains a customer-deliverable case naming the dispatch as the source; that section presents a three-way split that is currently disjoint and complete, so the fourth case must state where a deliverable sits relative to the persisted-file case it would otherwise fall into, and keep the split disjoint and complete.
+- **Status:** [x] done — `agents/editor.md` gained `## Deliverable language — named in the dispatch, or you halt`, and the prompt now names **neither** declaration token anywhere, which is what makes the absence of a default checkable. `rules/fusion-workbench-conventions.md` `## Project language` is four-way, disjoint and complete: the persisted case splits on whether the file is for the project or for a reader outside it. New gate `hooks/lib/__tests__/deliverable-language-lint.test.ts` (6 cases), written in `executor-verification-report-lint.test.ts`'s shape and honest about what a prompt lint can check. Siblings: `agents/orchestrator.md` (routing + dispatch tables), `CLAUDE.md` (dispatch-parameter bullet, now four agents), `README-agents.md`. `cd hooks && npm test` exit 0, 1293 passed. Issue `260811-1732_*_the-editor-takes-its-deliverable-language-from-the-dispatch-and-fails-loudly-without-one.md` `_o_` → `_c_`; decision `260807-2131_*_which-language-governs-a-customer-deliverable.md` `_a_` → `_i_`.
+- **Detail:** Realises `260807-2131_*_…`, **option 3: a per-deliverable declaration with no project default.** A customer deliverable follows neither the chat nor the artifact declaration. `agents/editor.md:16,62` must require the dispatching task to name the target language and **halt** when none is given, with a message naming what to pass. `rules/fusion-workbench-conventions.md` `## Project language` gains a customer-deliverable case naming the dispatch as the source; that section presents a three-way split that is currently disjoint and complete, so the fourth case must state where a deliverable sits relative to the persisted-file case it would otherwise fall into, and keep the split disjoint and complete.
 - **Bound, from the answer — the loudness is the substance:** **no fallback path may exist.** Silently defaulting to either declaration reintroduces exactly the defect the answer rejects — a finished document in the wrong language, discovered by the customer rather than by a stop. This project's deliverables are not reliably in one language, so any project-wide default is wrong a large share of the time.
 - **Acceptance:** `agents/editor.md` requires the language and halts without it; the conventions file carries the case and stays disjoint and complete; no fallback anywhere; a gate pins the absence of a default if one can be written in the shape of the existing prompt lints.
 
 ### 7. Give the churn-rank output contract one authoring home, and bring `CLAUDE.md` onto it
 
 - **ID:** `I:260811-1734a`
-- **Source:** `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` (first named instance)
-- **Closes:** `shared/issues/260811-1612_c_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md`
+- **Source:** `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md` (first named instance)
+- **Closes:** `260811-1612_*_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [x] done — the row cites `bin/fusion-churn-rank`'s own header as the authoritative usage block instead of restating the keys, and says so in the row, so a change to the output reaches one surface. What it keeps is behaviour: the map never prunes, and two classes of key stay in the map and out of the ranking, counted apart. Grep after the edit finds the keys in `bin/fusion-churn-rank`, `hooks/churn-rank.ts` and `agents/orchestrator.md:126` only — one contract. Issue `260811-1612` `_o_` → `_c_`. History: `shared/history/260811-1936-coder-two-claude-md-corrections.md`.
+- **Status:** [x] done — the row cites `bin/fusion-churn-rank`'s own header as the authoritative usage block instead of restating the keys, and says so in the row, so a change to the output reaches one surface. What it keeps is behaviour: the map never prunes, and two classes of key stay in the map and out of the ranking, counted apart. Grep after the edit finds the keys in `bin/fusion-churn-rank`, `hooks/churn-rank.ts` and `agents/orchestrator.md:126` only — one contract. Issue `260811-1612_*_claude-md-is-the-fifth-surface-of-the-churn-rank-output-contract-and-was-left-on-the-old-one.md` `_o_` → `_c_`. History: `260811-1936-coder-two-claude-md-corrections.md`.
 - **Detail:** Commit `adaa545` added a `noise=` line to `bin/fusion-churn-rank`'s output and carried the new contract to four surfaces plus two `README-hooks.md` rows. **Verified still wrong at HEAD:** `CLAUDE.md:33` says the helper prints `anchor=`/`entries=`/`absent=`/`ranked=` and that one exclusion runs on the read path. Both halves are false — five keys, two exclusions. It survived the sweep because it spells the keys inline in backticks, so the `grep -rn "absent="` the sweep used misses it. Fix the row, and while there make it **cite** `bin/fusion-churn-rank`'s own header usage block rather than restate it, so a sixth surface cannot appear. That citation-not-restatement move is the whole point of the parent record.
 - **Acceptance:** a grep for the output keys across `CLAUDE.md`, `README*.md`, `bin/`, `hooks/`, `agents/` and `skills/` returns one contract, not two.
 
 ### 8. Name `Cargo.toml` in the routing table, and make the four "authority" claims checkable against it
 
 - **ID:** `I:260811-1734b`
-- **Source:** `shared/issues/260811-1734_o_…` (second named instance)
-- **Closes:** `shared/issues/260811-1301_o_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`; `shared/issues/260811-1613_o_four-prompts-now-defer-to-a-routing-table-that-still-carries-the-gap-260811-1301-names.md`
+- **Source:** `260811-1734_*_…` (second named instance)
+- **Closes:** `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`; `260811-1613_*_four-prompts-now-defer-to-a-routing-table-that-still-carries-the-gap-260811-1301-names.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
 - **Status:** [ ] open
 - **Detail:** **Verified at HEAD:** `grep -n "Cargo.toml" agents/orchestrator.md` returns nothing. The `coder` row at `:346` names `.rs` but not its build manifest; the `ontocoder` row at `:347` scopes `.toml` to `ontology/`, `manifests/` and schema directories, so a workspace-root `Cargo.toml` falls under neither row and is decided only by the tiebreaker sentence at `:358`. Commit `3b30f5e` then made this worse in a specific way: `agents/coder.md:24`, `agents/ontocoder.md:24`, `agents/planner.md:45` and `README-agents.md:42` **dropped their own statement** of the boundary in favour of calling that table the authority — so four surfaces now point at a text that does not carry the fact. Add `Cargo.toml` to the `:346` row, or give it a row beside the `tsconfig.json` row at `:352`, which already settled the identical case of a build configuration carrying another layer's extension. Then either restate the role-not-extension rule in the tiebreaker in the words the four prompts quote, or soften the four "authority" claims. Second-order, same pass: `agents/ontocoder.md:24` says the table "routes on" the file's role; the ontocoder row routes on the file's **directory**.
-- **Note on the old reason for not fixing it:** `260811-1301` was filed rather than fixed because `agents/orchestrator.md` sat outside its task's disjoint file set. That reason no longer holds — `41d8e2b` and `adaa545` both edit that file.
+- **Note on the old reason for not fixing it:** `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md` was filed rather than fixed because `agents/orchestrator.md` sat outside its task's disjoint file set. That reason no longer holds — `41d8e2b` and `adaa545` both edit that file.
 - **Acceptance:** the table names `Cargo.toml`; every file that calls that section "the authority" can be checked against it and finds the rule stated in the same terms.
 
 ### 9. Generate the `README-hooks.md` lib table from the modules it describes
 
 - **ID:** `D:260811-1522`
-- **Source:** `shared/decisions/260811-1522_a_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
+- **Source:** `260811-1522_*_should-the-readme-hooks-lib-table-pin-its-prose-to-the-modules-it-describes.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
 - **Status:** [ ] open
 - **Detail:** Realises the answer, **option 1: generate every row from its module.** Each `hooks/lib/*.ts` exports a one-line description and the table is generated from them, the way `describeReach()` already pins the domain-cascade paragraph. Drift becomes impossible rather than detectable. Option 3 — pinning only the rows that restate a code decision — was declined because it leaves the pinned/unpinned boundary as a judgement call renewed at every edit.
 - **Known cost, stated in the answer rather than argued away:** the retrofit across roughly 25 rows was never measured. Expect that to be the bulk of the work.
-- **Why it is here:** this is the same rule as task 11's parent, applied to the surface where the drift was measured twice. Two open records already name this table as stale (`260809-2258`, task 36, and the `lib` rows the Turn-1 review found).
+- **Why it is here:** this is the same rule as task 11's parent, applied to the surface where the drift was measured twice. Two open records already name this table as stale (`260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`, task 36, and the `lib` rows the Turn-1 review found).
 
 ### 10. Make the Turn budget configurable per project instead of stating it in seven places
 
 - **ID:** `I:260811-1734c`
-- **Source:** `shared/issues/260811-1712_c_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
+- **Source:** `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
@@ -331,65 +331,65 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 11. Reduce the surface: one authoring home per claim, per instance
 
 - **ID:** `I:260811-1734`
-- **Source:** `shared/issues/260811-1734_o_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
+- **Source:** `260811-1734_*_reduce-the-surface-so-a-claim-cannot-go-stale-in-several-places-at-once.md`
 - **Executor:** coder
 - **Depends on:** tasks 7, 8, 9, 10
 - **Priority:** high
 - **Status:** [ ] open
-- **Detail:** Realises `shared/decisions/260810-1635_a_…`, which took **none of its four options** and re-cut the question: the obligation sits on no reviewer, executor or gate. The surface is reduced instead, so a claim stated once and cited from every other site cannot go stale in several places at once. That answers a question a mechanism can act on (is this claim stated twice?) in place of one a diff cannot (which artefact explains this behaviour?). `rules/critical-stance.md` §4 governs. The work: identify claims currently stated in more than one shipped surface across `agents/*.md`, `skills/*/SKILL.md`, `rules/*.md`, `README*.md` and `CLAUDE.md`; pick the authoring home for each; replace the rest with citations; let the existing duplication gates carry what remains. `rules/fusion-workbench-conventions.md` already did this to four of its own topics and is the worked precedent, header table included.
+- **Detail:** Realises `260810-1635_*_…`, which took **none of its four options** and re-cut the question: the obligation sits on no reviewer, executor or gate. The surface is reduced instead, so a claim stated once and cited from every other site cannot go stale in several places at once. That answers a question a mechanism can act on (is this claim stated twice?) in place of one a diff cannot (which artefact explains this behaviour?). `rules/critical-stance.md` §4 governs. The work: identify claims currently stated in more than one shipped surface across `agents/*.md`, `skills/*/SKILL.md`, `rules/*.md`, `README*.md` and `CLAUDE.md`; pick the authoring home for each; replace the rest with citations; let the existing duplication gates carry what remains. `rules/fusion-workbench-conventions.md` already did this to four of its own topics and is the worked precedent, header table included.
 - **This entry is the residual after the split.** The record says it should not be attempted in one dispatch and invites per-surface entries, so the four measured instances were pulled out as tasks 7, 8, 9 and 10. **This task is what remains: the sweep for instances nobody has enumerated yet.** It is not a licence to re-do the four.
 - **Acceptance is per instance, not for the class. Do not close this on a rule being written down.** It closes when each named instance has one authoring home. If the sweep finds further instances, split them out the same way rather than absorbing them here.
 - **Explicitly not the answer:** an obligation in a reviewer or executor prompt, and a gate that derives "the artefact explaining this behaviour" from a diff. Both were considered and rejected in the decision; do not reintroduce either as a supplement without re-opening it.
 
 ### 12. Print the record counts that need no git, instead of reporting the whole read as unmeasurable
 
-- **ID:** `I:260811-1610`
-- **Source:** `shared/issues/260811-1610_c_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`
+- **ID:** `I:260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`
+- **Source:** `260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
-- **Status:** [x] done — the block computes the cause once (`WHY=`) and then splits on `$T`: absent stays `records=unmeasured why=no-anchor-in-agentstate` with nothing printed; present runs the find loop, prints its `filed` lines and suppresses the `now_` probe with `[ -n "$WHY" ] ||`, under a `records=partial why=<cause>` header. The closing prose is now a bullet per header line saying which cells take a measured value. The `toEqual({})` at `record-counts-measurement.test.ts:271` was replaced with `toEqual(EXPECTED.filedOnly)` plus a `noNowCounts` helper, asserted in both shells. `cd hooks && npm test` exit 0, 1301 passed. Issue `260811-1610` `_o_` → `_c_`. History: `shared/history/260811-2005-coder-tasks1213-record-counts-partial-and-cause-list.md`.
+- **Status:** [x] done — the block computes the cause once (`WHY=`) and then splits on `$T`: absent stays `records=unmeasured why=no-anchor-in-agentstate` with nothing printed; present runs the find loop, prints its `filed` lines and suppresses the `now_` probe with `[ -n "$WHY" ] ||`, under a `records=partial why=<cause>` header. The closing prose is now a bullet per header line saying which cells take a measured value. The `toEqual({})` at `record-counts-measurement.test.ts:271` was replaced with `toEqual(EXPECTED.filedOnly)` plus a `noNowCounts` helper, asserted in both shells. `cd hooks && npm test` exit 0, 1301 passed. Issue `260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md` `_o_` → `_c_`. History: `260811-2005-coder-tasks1213-record-counts-partial-and-cause-list.md`.
 - **Detail:** The only High finding in the Turn-3 review. `agents/orchestrator.md:620-628` has two `records=unmeasured` branches; both print the cause and nothing else. But the loop produces two kinds of line, and only one needs the anchor: `now_<marker> <kind>` asks git whether a name existed at the anchor, while `filed <kind>` compares the record's own filename stamp against `session.started` — filenames and `T`, no git. The prompt's own prose at `:648` says so. `:649` then instructs the model to "write `unmeasured` into those four cells verbatim", and one of the four (`Issues created`) was measurable in both branches. The reach is wider than the defect it repaired: this fires for **every session in a project that does not track its workbench**. Split the condition on what each half needs — `T` for `filed`, `A` for `now_` — rather than on one combined gate: `T` present with an unusable anchor prints the `filed` lines then `records=partial why=workbench-not-in-anchor-commit`; `T` absent stays `records=unmeasured why=no-anchor-in-agentstate`. Note the branch-1 test is `[ -z "$A" ] || [ -z "$T" ]`, so it also fires when only the anchor is missing.
 - **A green-suite trap, named so the fix is not read as a regression:** `hooks/lib/__tests__/record-counts-measurement.test.ts:271` asserts `expect(v.counts).toEqual({})` — correct about today's behaviour, and it must be **replaced**, not deleted.
 - **Acceptance:** with the workbench untracked and `session.started` present, the block prints the `filed` counts; the closing paragraph says which cells take a measured value and which take `unmeasured`, per cause; a case asserts the filed counts over an untracked workbench in **both shells**; suite exits 0.
 
 ### 13. Make the `unmeasured` cause list correspond to the branch that emits each value
 
-- **ID:** `I:260811-1616`
-- **Source:** `shared/issues/260811-1616_c_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
+- **ID:** `I:260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
+- **Source:** `260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md`
 - **Executor:** coder
-- **Depends on:** `I:260811-1610` (same paragraph, same file — land them in that order)
+- **Depends on:** `I:260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md` (same paragraph, same file — land them in that order)
 - **Priority:** normal
-- **Status:** [x] done — "a project outside git" moved to `no-anchor-in-agentstate` with its reason (Setup Step 5 records a HEAD only in a git repository), `workbench-not-in-anchor-commit` left with the two causes it can reach, and the conjunction replaced by "missing either `git_head_at_start` or `started`". Gated twice: a no-`.git` fixture in both anchor states in both shells, and a prose case pinning "outside git" between the two backticked cause names. `cd hooks && npm test` exit 0, 1301 passed. Issue `260811-1616` `_o_` → `_c_`. Same history file as task 12.
-- **Detail:** `agents/orchestrator.md:649` lists "a project outside git" under `workbench-not-in-anchor-commit`. Measured: Setup Step 5 records the anchor conditionally ("Note current git HEAD (if git repo)"), so a project outside git writes no `git_head_at_start`, `[ -z "$A" ]` is true, and **branch 1** fires with `why=no-anchor-in-agentstate`. Branch 2 reaches "outside git" only when a valid anchor was recorded and the repository disappeared mid-session, which is not what a reader pictures. Second mismatch: branch 1's prose reads as a conjunction ("carries no `git_head_at_start` **and** `started`") where the code is `||`. Move "a project outside git" to branch 1 with its reason, leave branch 2 with the two causes it can reach, and change the prose to "missing either `git_head_at_start` or `started`". This is `260811-1406`'s defect one layer up: a stated cause list that does not match the branch that fires.
+- **Status:** [x] done — "a project outside git" moved to `no-anchor-in-agentstate` with its reason (Setup Step 5 records a HEAD only in a git repository), `workbench-not-in-anchor-commit` left with the two causes it can reach, and the conjunction replaced by "missing either `git_head_at_start` or `started`". Gated twice: a no-`.git` fixture in both anchor states in both shells, and a prose case pinning "outside git" between the two backticked cause names. `cd hooks && npm test` exit 0, 1301 passed. Issue `260811-1616_*_the-unmeasured-cause-list-assigns-a-project-outside-git-to-the-branch-that-cannot-reach-it.md` `_o_` → `_c_`. Same history file as task 12.
+- **Detail:** `agents/orchestrator.md:649` lists "a project outside git" under `workbench-not-in-anchor-commit`. Measured: Setup Step 5 records the anchor conditionally ("Note current git HEAD (if git repo)"), so a project outside git writes no `git_head_at_start`, `[ -z "$A" ]` is true, and **branch 1** fires with `why=no-anchor-in-agentstate`. Branch 2 reaches "outside git" only when a valid anchor was recorded and the repository disappeared mid-session, which is not what a reader pictures. Second mismatch: branch 1's prose reads as a conjunction ("carries no `git_head_at_start` **and** `started`") where the code is `||`. Move "a project outside git" to branch 1 with its reason, leave branch 2 with the two causes it can reach, and change the prose to "missing either `git_head_at_start` or `started`". This is `260811-1406_*_the-record-counts-block-reports-unmeasured-whenever-the-active-circles-issue-store-was-empty-at-the-session-anchor.md`'s defect one layer up: a stated cause list that does not match the branch that fires.
 - **Acceptance:** every cause named under a `why=` value is reachable by the branch emitting it; branch 1's description matches its `||`; cases in `record-counts-measurement.test.ts` cover a project outside git in both anchor states.
 
 ### 14. Replace the commit-message-path lint's keyword exemption with an explicit path allow-list
 
-- **ID:** `I:260811-1149`
-- **Source:** `shared/issues/260811-1149_c_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`
+- **ID:** `I:260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`
+- **Source:** `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
-- **Status:** [x] done — the keyword exemption is replaced by a module-level constant `NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp"`, subtracted from the helper's hits per line; every other workbench-internal commit-message path is an offence with no exemption. Line numbers re-measured before use: `agents/orchestrator.md:420` (record said `:418`, it moved today) and `skills/commit/SKILL.md:88`, both naming that one path. Verified by mutation, not by green: changing the constant's value fails `it("finds none")` and the new control, both naming `NAMEABLE_LEFTOVER`. Issue `260811-1149` `_o_` → `_c_`.
+- **Status:** [x] done — the keyword exemption is replaced by a module-level constant `NAMEABLE_LEFTOVER = "fusion-workbench/.commit-msg-tmp"`, subtracted from the helper's hits per line; every other workbench-internal commit-message path is an offence with no exemption. Line numbers re-measured before use: `agents/orchestrator.md:420` (record said `:418`, it moved today) and `skills/commit/SKILL.md:88`, both naming that one path. Verified by mutation, not by green: changing the constant's value fails `it("finds none")` and the new control, both naming `NAMEABLE_LEFTOVER`. Issue `260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md` `_o_` → `_c_`.
 - **Detail:** **Verified at HEAD:** `hooks/lib/__tests__/commit-message-path.test.ts:187` still reads `if (/Never inside|never inside|leftover|Measured|improvised|fault/.test(line)) continue;` (the record cites `:141`; the line has moved to `:187`, the text is unchanged). Three problems in order of consequence: `fault` is a common word in these prompts — `agents/orchestrator.md` uses it repeatedly in the staging-check section, so a line that genuinely *prescribed* a workbench message path and also said "fault" would be exempted, and that prompt is the gate's whole subject; the case handling is inconsistent (`Never inside|never inside` spelled twice, `Measured` capital-only, three others lowercase-only, with no stated rule); and it is a blacklist standing in for an allow-list, which is prose classification and not decidable from a keyword set. **The gate does not need to classify prose.** Both legitimate lines name one literal path, `fusion-workbench/.commit-msg-tmp` — measured, they are `agents/orchestrator.md:418` and `skills/commit/SKILL.md:88`. Allow-list that one path and flag every other workbench-internal commit-message path unconditionally.
 - **Sequencing note:** doing this as filed removes the keyword exemption entirely, which may close task 15 outright rather than requiring it. Read task 15's record before deciding.
 
 ### 15. Assert the exemption dependency over the real prompt lines, not over a fixture string
 
-- **ID:** `I:260811-1611`
-- **Source:** `shared/issues/260811-1611_c_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md`
+- **ID:** `I:260811-1611_*_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md`
+- **Source:** `260811-1611_*_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md`
 - **Executor:** coder
-- **Depends on:** `I:260811-1149`
+- **Depends on:** `I:260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`
 - **Priority:** normal
-- **Status:** [x] done — **built, not closed out.** Task 14 replaced the exemption rather than deleting the sparing, so the dependency survived in allow-list form. `flaggedLines()` lifts the scan out once; the new positive control asserts over it that the scan is non-empty (the gate is not passing while measuring nothing) and that the distinct set of flagged paths is exactly `[NAMEABLE_LEFTOVER]` (the allow-list is the only thing sparing them). Part (3) of the filed direction is `it("finds none")` itself, whose message now names the constant and the offending `file:line`, so it was not duplicated as a fourth assertion. Anchors are found by scanning, not hard-coded — `agents/orchestrator.md` moved `:418` → `:420` while the record was open. One drafted claim was withdrawn after mutation testing disproved it (non-emptiness does **not** guard against narrowing back to `classify`; the store-prescription control does). Issue `260811-1611` `_o_` → `_c_`.
+- **Status:** [x] done — **built, not closed out.** Task 14 replaced the exemption rather than deleting the sparing, so the dependency survived in allow-list form. `flaggedLines()` lifts the scan out once; the new positive control asserts over it that the scan is non-empty (the gate is not passing while measuring nothing) and that the distinct set of flagged paths is exactly `[NAMEABLE_LEFTOVER]` (the allow-list is the only thing sparing them). Part (3) of the filed direction is `it("finds none")` itself, whose message now names the constant and the offending `file:line`, so it was not duplicated as a fourth assertion. Anchors are found by scanning, not hard-coded — `agents/orchestrator.md` moved `:418` → `:420` while the record was open. One drafted claim was withdrawn after mutation testing disproved it (non-emptiness does **not** guard against narrowing back to `classify`; the store-prescription control does). Issue `260811-1611_*_the-positive-control-documents-the-keyword-exemption-dependency-in-a-comment-and-asserts-something-else.md` `_o_` → `_c_`.
 - **Detail:** Commit `3b30f5e` widened `workbenchMessagePaths()` to reach `hasCommitMessageName` instead of `classify()` — the right call — at a stated cost: a prompt line citing a record whose slug says "commit message" is now flagged, and only the line-level keyword exemption keeps `it("finds none")` green. The commit message claims the dependency "is now asserted by the positive control instead of sitting latent". It is not: the added assertion builds a fixture carrying none of the six keywords and asserts that the name test flags a record citation — a claim the test one line above already makes. Measured: exactly two shipped lines are flagged-and-spared, both by the single keyword `leftover`. Drop `leftover` and `it("finds none")` turns red while the positive control stays green. Fix: lift the exemption regex into a named constant the control can reach, then assert (1) `workbenchMessagePaths(line)` is non-empty for `agents/orchestrator.md:418` and `skills/commit/SKILL.md:88`, (2) the exemption matches both of those lines, (3) the flagged-and-not-exempted count is 0.
 - **Acceptance:** a test fails, with a message naming the keyword exemption, if the exemption stops matching the lines the widened helper flags; the assertion reads lines from the shipped prompts, not a fixture string; suite exits 0.
 
 ### 16. Give the drift check a row that notices a Turn which committed without recording what it committed
 
-- **ID:** `I:260811-1614`
-- **Source:** `shared/issues/260811-1614_o_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md`
+- **ID:** `I:260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md`
+- **Source:** `260811-1614_*_the-drift-checks-turn-row-is-satisfied-by-a-turn-start-alone-so-a-turn-that-emits-nothing-else-reads-clean.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -400,32 +400,32 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 17. Stop `boundedList` emitting `(+0 more)` for a single over-long path
 
-- **ID:** `I:260811-1615`
-- **Source:** `shared/issues/260811-1615_c_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`
+- **ID:** `I:260811-1615_*_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`
+- **Source:** `260811-1615_*_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
-- **Status:** [x] done — the suffix is now conditional (`return dropped > 0 ? … : shown`) and the comment names the floor at `kept = 1` as the branch its predecessor's loop-only proof missed. One case added beside the existing two-path one, asserting the whole singular-label string for a lone over-long path and `not.toContain(" more)")`. Rebuilt `hooks/dist/` (only `dist/lib/rules-write-exemption.js` changed) and re-measured the record's own reproduction against it: the 163-character path now prints with no suffix. `cd hooks && npm test` exit 0, 50 files, 1301 passed. Three earlier full runs were red on flakes outside this file set — twice `fusion-commit-lock`/`clear-halt-concurrent-halt` poll races under four concurrent agents, once `record-counts-measurement.test.ts` reading `agents/orchestrator.md` mid-edit; each passed in isolation. Issue `260811-1615` `_o_` → `_c_`. History: `shared/history/260811-2009-coder-task17-boundedlist-zero-dropped-suffix.md`.
+- **Status:** [x] done — the suffix is now conditional (`return dropped > 0 ? … : shown`) and the comment names the floor at `kept = 1` as the branch its predecessor's loop-only proof missed. One case added beside the existing two-path one, asserting the whole singular-label string for a lone over-long path and `not.toContain(" more)")`. Rebuilt `hooks/dist/` (only `dist/lib/rules-write-exemption.js` changed) and re-measured the record's own reproduction against it: the 163-character path now prints with no suffix. `cd hooks && npm test` exit 0, 50 files, 1301 passed. Three earlier full runs were red on flakes outside this file set — twice `fusion-commit-lock`/`clear-halt-concurrent-halt` poll races under four concurrent agents, once `record-counts-measurement.test.ts` reading `agents/orchestrator.md` mid-edit; each passed in isolation. Issue `260811-1615_*_boundedlist-emits-plus-zero-more-for-a-single-over-long-path-against-its-own-stated-invariant.md` `_o_` → `_c_`. History: `260811-2009-coder-task17-boundedlist-zero-dropped-suffix.md`.
 - **Detail:** `hooks/lib/rules-write-exemption.ts:790-792` carries a comment proving `dropped` is never 0, and the proof holds for the loop but not for the floor above it. With `paths.length === 1` and that path over budget, the loop breaks at `i = 0` with `kept = 0`, the floor sets `kept = 1`, and `dropped = 0` — so a complete list of one gets a suffix implying truncation. Measured against the shipped `dist`, not the source: a 163-character path yields `… (+0 more)`. Both call sites reach it — `hooks/guard.ts:586` passes exactly one path, `hooks/tracker.ts:526` passes the exempted set, which is one path whenever one file changed. The suite misses it because `rules-write-exemption.test.ts:1117` uses two paths and the integration case uses thirty. Fix: `return dropped > 0 ? \`${shown} (+${dropped} more)\` : shown;` and correct the comment to say the floor is the branch that can produce `dropped === 0`.
 - **Acceptance:** `rulesWriteDetail([<path longer than the budget>])` returns the path with no suffix; a case asserts that shape beside the existing two-path one; the comment no longer claims `dropped` cannot be 0; suite exits 0.
 
-### 18. Amend record `260811-1547` — its proposed lint has an exception, in a shipped skill
+### 18. Amend record `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` — its proposed lint has an exception, in a shipped skill
 
-- **ID:** `I:260811-1617`
-- **Source:** `shared/issues/260811-1617_o_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md`
+- **ID:** `I:260811-1617_*_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md`
+- **Source:** `260811-1617_*_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
 - **Status:** [ ] open
-- **Detail:** `260811-1547` is a correct record whose *proposal* carries an unchecked claim of the same kind it was filed against: "Built-in Claude Code commands are not in that namespace, so the rule has no exceptions to carve." Measured over `agents/`, `skills/`, `rules/`, `docs/`, `README*.md` and `CLAUDE.md`, there are **two** misses, not one. The second is `skills/setup/SKILL.md:49`, which names the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) to explain why a directory that former skill created is on the probe's exclusion list — honest, load-bearing, and exactly the shape criterion 2 forbids. A lint written to the record as filed turns the suite red on its first run against a line nobody should change. Amend the record: drop the "no exceptions" sentence, name the one that exists, and reshape criterion 2 so a reference is an offence only when the line does not mark it as retired or absent — asserting that exemption against `skills/setup/SKILL.md:49` directly, so it cannot be narrowed without that line failing.
+- **Detail:** `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md` is a correct record whose *proposal* carries an unchecked claim of the same kind it was filed against: "Built-in Claude Code commands are not in that namespace, so the rule has no exceptions to carve." Measured over `agents/`, `skills/`, `rules/`, `docs/`, `README*.md` and `CLAUDE.md`, there are **two** misses, not one. The second is `skills/setup/SKILL.md:49`, which names the retired `/fusion:migrate-workbench-v2` (fusion v2.3–v2.5) to explain why a directory that former skill created is on the probe's exclusion list — honest, load-bearing, and exactly the shape criterion 2 forbids. A lint written to the record as filed turns the suite red on its first run against a line nobody should change. Amend the record: drop the "no exceptions" sentence, name the one that exists, and reshape criterion 2 so a reference is an offence only when the line does not mark it as retired or absent — asserting that exemption against `skills/setup/SKILL.md:49` directly, so it cannot be narrowed without that line failing.
 - **Note:** this task edits a *record*, which is normally the reconciler's work. It is queued here because the record's proposal is the specification task 19 implements, and the amendment is what makes task 19 buildable.
 
 ### 19. Correct the `/fusion:monitor-reset` citation and gate the `/fusion:<name>` reference class
 
-- **ID:** `I:260811-1547`
-- **Source:** `shared/issues/260811-1547_o_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md`
+- **ID:** `I:260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md`
+- **Source:** `260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md`
 - **Executor:** coder
-- **Depends on:** `I:260811-1617`
+- **Depends on:** `I:260811-1617_*_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md`
 - **Priority:** low
 - **Status:** [ ] open
 - **Detail:** **Verified still live:** `grep -rn "monitor-reset"` over `agents/`, `skills/`, `rules/`, `bin/`, `README*.md` and `CLAUDE.md` returns exactly one line, `agents/orchestrator.md:192`. There is no such skill; `skills/` holds sixteen directories and none is `monitor-reset`. The sentence is not decoration — it is the *reason* given for the instruction beside it (never truncate the event log; touch-or-append, never `>`), so an agent reads "something already archives this file" as established. It propagated: the claim was cited a second time in a decision record about a different append-only log before anyone checked. Two separable pieces. (1) Correct `:192` — name the mechanism that really archives the log (task 5 is building one) or state plainly that nothing does; the append-only instruction stands on its own. (2) Extend `hooks/lib/__tests__/reference-resolution-lint.test.ts` to resolve `/fusion:<name>` against `skills/*/SKILL.md`, with the retired-or-absent exemption task 18 specifies.
@@ -433,8 +433,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 20. Define the `**Sender:**` header field the two reviewer prompts anchor on
 
-- **ID:** `I:260811-1147`
-- **Source:** `shared/issues/260811-1147_o_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md`
+- **ID:** `I:260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md`
+- **Source:** `260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
@@ -443,18 +443,18 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 21. Stop `parseNotOpened` reading a prose value as a file list or as a declared `none`
 
-- **ID:** `I:260811-1148`
-- **Source:** `shared/issues/260811-1148_o_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md`
+- **ID:** `I:260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md`
+- **Source:** `260811-1148_*_parse-not-opened-misreads-a-prose-value-as-a-file-list-or-as-a-declared-none.md`
 - **Executor:** coder
-- **Depends on:** `I:260811-1147` (same file, same parser)
+- **Depends on:** `I:260811-1147_*_both-reviewer-prompts-place-the-mandated-fields-beside-a-sender-field-neither-prompt-defines.md` (same file, same parser)
 - **Priority:** low
 - **Status:** [ ] open
 - **Detail:** **Verified at HEAD:** `hooks/lib/review-coverage.ts:265` still tests `/^none\b/i` on the trimmed value, and the third branch accepts anything. Two readings go wrong in opposite directions. `**Not-opened:** none of the prompt files` matches branch 1 and is recorded as *nothing was excluded* — the reviewer stated an exclusion and the parser records the opposite; that is the quiet failure and the shape the record was filed about. `**Not-opened:** nothing left unopened` reaches the fallback, becomes `["nothing left unopened"]`, and `coverageSentence` hands it to the orchestrator as the next dispatch's scope. The fallback's instinct is right — an unparseable statement must not vanish — but it promotes the statement to a file list, and a file list is acted on. Tighten branch 1 to `/^none$/i` on the trimmed value, or `/^none\b/i` only when nothing but punctuation follows (`none — everything was opened` still passes; `none of the prompt files` does not). Replace the word-splitting fallback with a fourth field on `ReviewRow`, `notOpenedRaw`, recorded and rendered verbatim with `files: []` and `recorded: true`.
 
 ### 22. Filter the review-coverage scan and trigger by the sender segment
 
-- **ID:** `I:260811-1145`
-- **Source:** `shared/issues/260811-1145_o_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`
+- **ID:** `I:260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`
+- **Source:** `260811-1145_*_conceptrev-review-files-are-scanned-and-trigger-the-coverage-report-though-no-mandate-covers-them.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -463,8 +463,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 23. Make the staging-shape lint catch a directory argument with no trailing slash
 
-- **ID:** `I:260811-1144`
-- **Source:** `shared/issues/260811-1144_o_the-staging-shape-lint-misses-a-directory-argument-that-has-no-trailing-slash.md`
+- **ID:** `I:260811-1144_*_the-staging-shape-lint-misses-a-directory-argument-that-has-no-trailing-slash.md`
+- **Source:** `260811-1144_*_the-staging-shape-lint-misses-a-directory-argument-that-has-no-trailing-slash.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -473,8 +473,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 24. Surface `staging_drift` and `review_coverage` in the monitor's warnings panel
 
-- **ID:** `I:260811-1143`
-- **Source:** `shared/issues/260811-1143_o_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`
+- **ID:** `I:260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`
+- **Source:** `260811-1143_*_staging-drift-and-review-coverage-events-are-emitted-into-a-log-nothing-reads.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -484,72 +484,72 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 25. Pin the drift check's four sentences to an approved baseline
 
-- **ID:** `D:260810-2032`
-- **Source:** `shared/decisions/260810-2032_a_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`
-- **Closes:** `shared/issues/260810-2110_o_the-skip-licence-list-has-no-pattern-for-permission-and-misses-only-when-beside-the-only-if-it-carries.md`
+- **ID:** `D:260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`
+- **Source:** `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`
+- **Closes:** `260810-2110_*_the-skip-licence-list-has-no-pattern-for-permission-and-misses-only-when-beside-the-only-if-it-carries.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** high
 - **Status:** [ ] open
 - **Detail:** **Newly unblocked.** The answer chose **option 2** — assert the four sentences against a committed baseline rather than screening them with a blacklist — and bound the implementer to land it *after* `I:260801-2038-frozen-state`. That record is now `_c_`, so the sequencing constraint is discharged. Build the pin in `hooks/lib/__tests__/state-drift-detection-lint.test.ts`, against the text that task left behind. This closes the open skip-licence record beside it, which measured 36 probes against the 26-pattern `SKIP_LICENCES` list and found **all 36 pass** — the list's whole vocabulary is negation-shaped, so bare permission ("you may run the drift check"), soft recommendation, advisory framing, deferral, exclusion synonyms and conditional near-synonyms all sail through, and `only when` is missing beside the `only if` that is present. Adding twenty more patterns is a longer approximation of an undecidable question; the pin closes the class.
-- **The text moved on 260811-2230, before this pin was built.** Closing `I:260811-2143` + `I:260811-2144` edited `agents/orchestrator.md` at one of the four call points and inside the `### Drift check` section: Phase 2 step 2's line now reads "This fires in **every** Turn **this session starts**, Turn 1 included" and carries a further sentence about a Turn re-entered by a resume; the section gained a paragraph naming the anchor of both numeric rows; the `progress.turn` condition cell names it too; and Setup step 1 gained a **What a resumed session inherits** paragraph. None of the four *check-mentioning* sentences was itself reworded, so the baseline this pin approves is the text at that commit, not at `500f51f`. Take the baseline fresh rather than from the record above.
+- **The text moved on 260811-2230, before this pin was built.** Closing `I:260811-2143_*_the-drift-checks-turn-row-and-commits-row-use-two-different-session-anchors-so-every-resume-reports-a-permanent-false-drift.md` + `I:260811-2144_*_a-resumed-session-re-enters-an-in-flight-turn-without-a-turn-start-so-the-boundary-drift-check-that-rides-it-never-fires.md` edited `agents/orchestrator.md` at one of the four call points and inside the `### Drift check` section: Phase 2 step 2's line now reads "This fires in **every** Turn **this session starts**, Turn 1 included" and carries a further sentence about a Turn re-entered by a resume; the section gained a paragraph naming the anchor of both numeric rows; the `progress.turn` condition cell names it too; and Setup step 1 gained a **What a resumed session inherits** paragraph. None of the four *check-mentioning* sentences was itself reworded, so the baseline this pin approves is the text at that commit, not at `500f51f`. Take the baseline fresh rather than from the record above.
 - **Three binding conditions from the answer:** (1) the failure message must say, in the failure itself, that re-approving the baseline is the expected response to a legitimate rewording and how to do it — a gate that punishes good edits gets routed around, and the message is the only place that can be prevented; (2) the normalisation must be **stated** in the test's header — whatever it collapses, whitespace, case, markdown emphasis, line wrapping — because a reader who cannot predict what counts as "the same sentence" cannot predict when re-approval is due; (3) option 3 (keep both mechanisms) was **declined**, so the blacklist's fate is not settled by this answer and must not be read into it — whether the patterns come out afterwards is a separate call made against what the pin demonstrably covers.
 
 ### 26. Pin the reference lint's coverage counts instead of asserting a floor
 
-- **ID:** `I:260810-2149`
-- **Source:** `shared/issues/260810-2149_o_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`
+- **ID:** `I:260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`
+- **Source:** `260810-2149_*_a-coverage-floor-cannot-see-coverage-leave-and-the-approved-baseline-pin-is-the-general-answer.md`
 - **Executor:** coder
-- **Depends on:** `D:260810-2032` (same mechanism; build it once and apply it)
+- **Depends on:** `D:260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` (same mechanism; build it once and apply it)
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** Two gates lost coverage in one session with nothing turning red, and the cause is the shape of the assertion rather than the contents of either gate. `reference-resolution-lint.test.ts` counts what it examined (`counts.paths`, `counts.anchors`, `counts.records`) and asserts a **floor** — `counts.paths > 50` against a corpus of 148. Eight citations left the examined set when they gained a root variable the gate did not classify, and no floor placed anywhere could have seen it: raise it to 140 and it is brittle against every legitimate edit that removes a citation; leave it low and it is blind. The cascade reach gate has the same shape from the other side — its claimed reach is written by hand beside it and was broader than the gate twice in two Turns. Apply the same baseline pin decision `260810-2032` adopted for prose, to a number. Costed by the executor who found it at roughly 15 lines in `reference-resolution-lint.test.ts` plus one number per deliberate change. **The failure message must say re-approval is expected and how**, the same condition the decision carries. **Open scope question worth settling once rather than per site:** is count-pinning a convention for every gate that reports what it examined, or a fix applied to these two? Three applications in one session is where the answer stops being obvious.
+- **Detail:** Two gates lost coverage in one session with nothing turning red, and the cause is the shape of the assertion rather than the contents of either gate. `reference-resolution-lint.test.ts` counts what it examined (`counts.paths`, `counts.anchors`, `counts.records`) and asserts a **floor** — `counts.paths > 50` against a corpus of 148. Eight citations left the examined set when they gained a root variable the gate did not classify, and no floor placed anywhere could have seen it: raise it to 140 and it is brittle against every legitimate edit that removes a citation; leave it low and it is blind. The cascade reach gate has the same shape from the other side — its claimed reach is written by hand beside it and was broader than the gate twice in two Turns. Apply the same baseline pin decision `260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md` adopted for prose, to a number. Costed by the executor who found it at roughly 15 lines in `reference-resolution-lint.test.ts` plus one number per deliberate change. **The failure message must say re-approval is expected and how**, the same condition the decision carries. **Open scope question worth settling once rather than per site:** is count-pinning a convention for every gate that reports what it examined, or a fix applied to these two? Three applications in one session is where the answer stops being obvious.
 
 ### 27. Add the duplicate-check step to the mandatory filing convention
 
 - **ID:** `I:260805-1548-dedup`
-- **Source:** `circles/260801-1244-guard-rules-write/issues/260805-1548_o_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
+- **Source:** `260805-1548_*_beim-filen-prueft-niemand-ob-der-store-denselben-defekt-schon-traegt.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** **Newly unblocked.** The paragraph is already drafted and measured in the record; it was withdrawn only because `hooks/lib/__tests__/rules-emission-golden.test.ts` ratcheted every role cap to the measured maximum and would not admit ~430 further bytes in an always-loaded rule file. That ratchet question is now answered and implemented: `circles/260801-1244-guard-rules-write/decisions/260805-1559_i_…`, commit `3163281`, sets 12 000 bytes of headroom over the role floor with a hard cap at 145 144 and a named-files report on overrun. The paragraph fits. Add it to `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`, before the NEVER block, with the three properties the draft specifies: a **budget** (one `ls` over the open records in the target store plus `shared/` when a Circle is active — names, not files, so the cost is constant); an **exit on hit** (append one `Also seen: YYMMDD-HHMM by <agent> — <clause>` line to the existing record, no second record, and the hit record's marker, state and ownership untouched); and an **explicit counter-direction** (on doubt the new record is written; a duplicate costs a reconciler a merge, an unfiled defect costs the defect; and this step must never end with nothing written). State the limit too: a filename comparison catches the same defect in similar words and misses it in different ones, and the reconciler stays the backstop. The motivating case is real — the same defect filed twice 21 hours apart in a consuming project holding 64 open issues.
+- **Detail:** **Newly unblocked.** The paragraph is already drafted and measured in the record; it was withdrawn only because `hooks/lib/__tests__/rules-emission-golden.test.ts` ratcheted every role cap to the measured maximum and would not admit ~430 further bytes in an always-loaded rule file. That ratchet question is now answered and implemented: `260805-1559_*_…`, commit `3163281`, sets 12 000 bytes of headroom over the role floor with a hard cap at 145 144 and a named-files report on overrun. The paragraph fits. Add it to `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing — MANDATORY`, before the NEVER block, with the three properties the draft specifies: a **budget** (one `ls` over the open records in the target store plus `shared/` when a Circle is active — names, not files, so the cost is constant); an **exit on hit** (append one `Also seen: YYMMDD-HHMM by <agent> — <clause>` line to the existing record, no second record, and the hit record's marker, state and ownership untouched); and an **explicit counter-direction** (on doubt the new record is written; a duplicate costs a reconciler a merge, an unfiled defect costs the defect; and this step must never end with nothing written). State the limit too: a filename comparison catches the same defect in similar words and misses it in different ones, and the reconciler stays the backstop. The motivating case is real — the same defect filed twice 21 hours apart in a consuming project holding 64 open issues.
 
 ### 28. Correct the `CLAUDE.md` troubleshooting row that says the measurement stands down on cwd
 
-- **ID:** `I:260811-1345`
-- **Source:** `shared/issues/260811-1345_c_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`
+- **ID:** `I:260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`
+- **Source:** `260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
-- **Status:** [x] done — all three gates read at HEAD first: the write-tool deny asks cwd, the protected-path measurement and the tracker's churn/event stand-down both ask the workbench root (the latter moved by `1d5eed6`). The row now names the measurement's root, points at the opening paragraph as the owner of the split instead of restating it, and says a halt here means the root walked up to is not this repository. Issue `260811-1345` `_o_` → `_c_`. Same history file as task 7.
+- **Status:** [x] done — all three gates read at HEAD first: the write-tool deny asks cwd, the protected-path measurement and the tracker's churn/event stand-down both ask the workbench root (the latter moved by `1d5eed6`). The row now names the measurement's root, points at the opening paragraph as the owner of the split instead of restating it, and says a halt here means the root walked up to is not this repository. Issue `260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md` `_o_` → `_c_`. Same history file as task 7.
 - **Detail:** **Verified still live at HEAD:** `CLAUDE.md:127` ends "In this repo the measurement stands down entirely, so seeing it here means the cwd was not the plugin root." The second clause has been false since v6.0.1 — the measurement's stand-down asks the **workbench root** it walks up to, through `isFusionPluginRoot(root)` folded into `measurementRoot()`. `CLAUDE.md`'s own opening paragraph says exactly that two hundred lines earlier, so the file contradicts itself, and the row a reader consults *while debugging a halt* is the wrong half. State which half asks which root, or point the row at the opening paragraph rather than restating it — restating is what let them drift. **Check all three gates when writing the correction, not two:** commit `1d5eed6` moved the tracker's churn and event stand-down onto the workbench root as well (that is the fix behind the resolved record listed above), so at HEAD the write-tool deny is the only one that still asks cwd.
 
 ### 29. State the queue-head derivation once, and have the retirement cite it
 
-- **ID:** `I:260810-0511`
-- **Source:** `shared/issues/260810-0511_o_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`
+- **ID:** `I:260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`
+- **Source:** `260810-0511_*_the-queue-head-parser-is-written-twice-in-one-file-that-calls-itself-the-canonical-implementation.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
 - **Detail:** **Still live, and the record's own description has drifted in the direction that makes it worse.** The record says the two copies "already differ" by a `2>/dev/null`. At HEAD they are no longer near-identical copies but **two different implementations**: `agents/orchestrator.md:703` (Phase 4 retirement) uses `grep -oE 'circles/[A-Za-z0-9._-]+|\`[A-Za-z0-9._-]+\`' | head -1 | tr -d '\`' | sed 's|^circles/||'`, while `:745` (`#### Reading a queue`) uses a single `sed -E` with three substitutions. The section containing the second declares itself canonical and two skills were changed to defer to it; `hooks/lib/__tests__/queue-ground-lint.test.ts:187-199` enforces that discipline against the two **skills** only, so the orchestrator's own second copy sits inside the file the lint treats as the source of truth and is invisible to it. The rule was applied outward and not inward. The consequence is concrete: the retirement decides whether to **move** the work queue by comparing `$G` against `basename "$DIR"`, so a divergence can report a queue `current` while the retirement declines to retire it, or the reverse. Fix: state the derivation once in `#### Reading a queue`, have Phase 4 step 4 cite it and keep only the comparison, and extend the lint to count occurrences of the parser inside `agents/orchestrator.md` itself.
-- **Coordination:** if the check is factored into a rule file instead (proposed in the now-closed `260810-0501`), this duplicate goes in the same change rather than being carried across.
+- **Coordination:** if the check is factored into a rule file instead (proposed in the now-closed `260810-0501_*_two-skills-cite-a-prompt-section-they-have-no-documented-route-to-read.md`), this duplicate goes in the same change rather than being carried across.
 
 ### 30. Make the queue-ground lint's negative controls call the production helpers
 
-- **ID:** `I:260810-0510`
-- **Source:** `shared/issues/260810-0510_o_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
+- **ID:** `I:260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
+- **Source:** `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** **This task fires a deferred decision's trigger** — it is the last of the three records `shared/decisions/260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` is waiting on (`260810-0502` and `260810-0503` are now `_c_`). **Verified still live:** `hooks/lib/__tests__/queue-ground-lint.test.ts` has three negative controls and only one is real. The tautology builds a string and asserts the string it just built lacks a substring — `assertRidesTheAct` is never called. The re-implementation copies the table-splitting logic from the real test inline and asserts on it (the record cites `.not.toBe(5)`; at HEAD it reads `.not.toBe(3)`, same shape). Measured consequence recorded in the reconciliation: replace the body of `assertRidesTheAct` with an empty block and **nothing in the file fails**. A structural precondition the fix must absorb: `assertRidesTheAct` is declared with **no parameter** and closes over `orchestrator()`, `nextSkill()` and `setupSkill()`, which read the real files — a fixture cannot be handed to it, so the factoring is a precondition, not a tidy-up. Also correct the overstated fixture comment in `executor-verification-report-lint.test.ts:180-182`: against `git show 1f2faaf^:agents/coder.md` it diverges three ways, not two — step 2 omitted, `### Report shape` prepended, step 5 truncated. The positive tests in both files are genuine gates; only the negative-control block is decorative.
+- **Detail:** **This task fires a deferred decision's trigger** — it is the last of the three records `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md` is waiting on (`260810-0502_*_the-state-drift-lint-anchors-on-the-phrase-it-checks-and-one-negative-control-is-a-duplicate.md` and `260810-0503_*_the-domain-cascade-lint-is-defeated-by-a-decoy-branch-and-one-helper-has-no-negative-control.md` are now `_c_`). **Verified still live:** `hooks/lib/__tests__/queue-ground-lint.test.ts` has three negative controls and only one is real. The tautology builds a string and asserts the string it just built lacks a substring — `assertRidesTheAct` is never called. The re-implementation copies the table-splitting logic from the real test inline and asserts on it (the record cites `.not.toBe(5)`; at HEAD it reads `.not.toBe(3)`, same shape). Measured consequence recorded in the reconciliation: replace the body of `assertRidesTheAct` with an empty block and **nothing in the file fails**. A structural precondition the fix must absorb: `assertRidesTheAct` is declared with **no parameter** and closes over `orchestrator()`, `nextSkill()` and `setupSkill()`, which read the real files — a fixture cannot be handed to it, so the factoring is a precondition, not a tidy-up. Also correct the overstated fixture comment in `executor-verification-report-lint.test.ts:180-182`: against `git show 1f2faaf^:agents/coder.md` it diverges three ways, not two — step 2 omitted, `### Report shape` prepended, step 5 truncated. The positive tests in both files are genuine gates; only the negative-control block is decorative.
 
 ### 31. Fix the commit lock's worked example, and state that `with` performs a `cd`
 
-- **ID:** `I:260810-2025`
-- **Source:** `shared/issues/260810-2025_o_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`
+- **ID:** `I:260810-2025_*_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`
+- **Source:** `260810-2025_*_the-lock-rules-worked-example-names-a-site-that-no-longer-uses-the-form-it-illustrates.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -559,8 +559,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 32. Give the monitor's browser-gap line an executable gate
 
-- **ID:** `I:260810-2027`
-- **Source:** `shared/issues/260810-2027_o_the-monitors-browser-gap-line-has-no-executable-gate.md`
+- **ID:** `I:260810-2027_*_the-monitors-browser-gap-line-has-no-executable-gate.md`
+- **Source:** `260810-2027_*_the-monitors-browser-gap-line-has-no-executable-gate.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -569,18 +569,18 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 33. Decide who owns a marker rename, then apply it — **needs a human decision**
 
-- **ID:** `I:260810-2024`
-- **Source:** `shared/issues/260810-2024_o_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`
+- **ID:** `I:260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`
+- **Source:** `260810-2024_*_a-marker-rename-is-claimed-by-two-prompts-and-one-executor-moved-seven-other-executors-records.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** `agents/orchestrator.md:216` permits the orchestrator to rename `_o_`→`_p_`→`_c_`, and `agents/coder.md:46` instructs the executor to do the same at task end. Both read it as permission and in session `260810-1646` both acted on it. Nothing detects the overlap because both produce the same result on the happy path. It surfaced when one of five parallel executors ran `for f in 260810-1918_p_*.md`, the glob matched all eleven records, and seven belonging to four other running executors were renamed; it noticed, reverted, and reported unprompted, and the orchestrator verified all twelve intact afterwards. The consequence is not the duplicate work — it is that no party can assume it is the only one renaming, so no party can safely use a pattern. **The choice, which an executor must not make:** (1) one owner — strike the rename from one prompt, at the cost of separating the `Resolved:` note from the rename, since the executor knows when the work is done and the orchestrator only when the report arrives; (2) keep both and forbid the pattern — a marker rename names its files explicitly, never through a glob, the same rule as staging applied to the surface it was not applied to; (3) make the transition atomic per record. Options 2 and 3 compose; option 1 excludes them. **Read `260810-0819` (task 34) first — one change may settle both.**
+- **Detail:** `agents/orchestrator.md:216` permits the orchestrator to rename `_o_`→`_p_`→`_c_`, and `agents/coder.md:46` instructs the executor to do the same at task end. Both read it as permission and in session `260810-1646-orchestrator-session.md` both acted on it. Nothing detects the overlap because both produce the same result on the happy path. It surfaced when one of five parallel executors ran `for f in 260810-1918_p_*.md`, the glob matched all eleven records, and seven belonging to four other running executors were renamed; it noticed, reverted, and reported unprompted, and the orchestrator verified all twelve intact afterwards. The consequence is not the duplicate work — it is that no party can assume it is the only one renaming, so no party can safely use a pattern. **The choice, which an executor must not make:** (1) one owner — strike the rename from one prompt, at the cost of separating the `Resolved:` note from the rename, since the executor knows when the work is done and the orchestrator only when the report arrives; (2) keep both and forbid the pattern — a marker rename names its files explicitly, never through a glob, the same rule as staging applied to the surface it was not applied to; (3) make the transition atomic per record. Options 2 and 3 compose; option 1 excludes them. **Read `260810-0819` (task 34) first — one change may settle both.**
 
 ### 34. Answer `260807-1941`'s deferral on marker-rename staging — **needs a human decision**
 
 - **ID:** `I:260810-0819`
-- **Source:** `shared/issues/260810-0819_o_head-carries-six-records-twice-and-the-class-fix-was-deferred-to-a-decision-never-filed.md`
+- **Source:** `260810-0819_*_head-carries-six-records-twice-and-the-class-fix-was-deferred-to-a-decision-never-filed.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -589,19 +589,19 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 35. Correct the Turn-1 review's totals table and the Turn-2 range line
 
-- **ID:** `I:260810-0820`
-- **Source:** `shared/issues/260810-0820_o_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`
+- **ID:** `I:260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`
+- **Source:** `260810-0820_*_the-turn-1-review-totals-table-says-fourteen-findings-and-the-body-carries-seventeen.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** `shared/reviews/260810-0512-coderev-turn-1-range-8960e1a-to-head.md:169-176` totals 3 High / 6 Medium / 5 Low / 14, and the body carries seventeen findings `F1`…`F17` (3 High / 7 Medium / 7 Low). The stamp range in the sentence at `:178` is right and all seventeen records exist; only two severity rows are short, so it is not a transcription slip in the total cell. The wrong number propagated — it is what the Phase 3 dispatch quoted back, and a totals table is what a reader trusts over a manual recount. Three findings under-counted is not cosmetic: closed-versus-filed is the input to the Coherence verdict, and this biases it toward progress. Second, smaller instance in the same cohort: `260810-0752-coderev-turn-2-range-ff70d3a-to-head.md:4` says "6 commits" where `git rev-list --count ff70d3a..c923935` returns 5.
+- **Detail:** `260810-0512-coderev-turn-1-range-8960e1a-to-head.md:169-176` totals 3 High / 6 Medium / 5 Low / 14, and the body carries seventeen findings `F1`…`F17` (3 High / 7 Medium / 7 Low). The stamp range in the sentence at `:178` is right and all seventeen records exist; only two severity rows are short, so it is not a transcription slip in the total cell. The wrong number propagated — it is what the Phase 3 dispatch quoted back, and a totals table is what a reader trusts over a manual recount. Three findings under-counted is not cosmetic: closed-versus-filed is the input to the Coherence verdict, and this biases it toward progress. Second, smaller instance in the same cohort: `260810-0752-coderev-turn-2-range-ff70d3a-to-head.md:4` says "6 commits" where `git rev-list --count ff70d3a..c923935` returns 5.
 - **Third acceptance criterion, worth answering rather than skipping:** decide whether a review's totals should be **derived** rather than typed. The counts are mechanically recoverable from the finding headings the file already carries, and this is the third counting defect the cohort produced. If they stay typed, say so somewhere a reviewer reads.
 
 ### 36. Fix the ordering-site count in `README-hooks.md`
 
-- **ID:** `I:260809-2258`
-- **Source:** `shared/issues/260809-2258_o_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`
+- **ID:** `I:260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`
+- **Source:** `260809-2258_*_readme-hooks-says-fourteen-ordering-sites-and-the-commit-that-wrote-it-converted-fifteen.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
@@ -610,18 +610,18 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 37. Identify and fix the load-sensitive case in the commit-lock test
 
-- **ID:** `I:260810-1135`
-- **Source:** `shared/issues/260810-1135_o_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
+- **ID:** `I:260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
+- **Source:** `260810-1135_*_a-timing-case-in-fusion-commit-lock-test-fails-under-load-and-passes-in-isolation.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** The case is now identified rather than suspected: **"creator reaped between mkdir and its holder write"** in `hooks/lib/__tests__/fusion-commit-lock.test.ts`. Four observations, all under parallel load (Turn 1 and Turn 2 of `260810-1646`, Turn 3, and one earlier), none in isolation; it passed standalone 10 of 10 immediately after failing, and `bin/fusion-commit-lock` and its test are untouched since 260806, so nothing in the change under test accounts for it. This session commits on the suite's exit code, so a load-sensitive case gives that gate a false-failure mode, and a false failure teaches its reader to re-run rather than to look. **Fix direction, and the caution matters:** if the case asserts on elapsed wall-clock time, make the timing **injectable** rather than widening the tolerance — a widened tolerance is the same test with a longer fuse. If it depends on the stale-lock threshold (60 s), that threshold is a constant the test could be given rather than sharing with production. The lock's documented behaviour includes real timing (200 ms poll, exponential backoff to 2 s), so a test of it necessarily waits; the question is whether it waits on a wall clock or an injectable one. Consider recording this and task 38 against one decision about whether this suite is meant to be run concurrently with itself at all.
+- **Detail:** The case is now identified rather than suspected: **"creator reaped between mkdir and its holder write"** in `hooks/lib/__tests__/fusion-commit-lock.test.ts`. Four observations, all under parallel load (Turn 1 and Turn 2 of `260810-1646-orchestrator-session.md`, Turn 3, and one earlier), none in isolation; it passed standalone 10 of 10 immediately after failing, and `bin/fusion-commit-lock` and its test are untouched since 260806, so nothing in the change under test accounts for it. This session commits on the suite's exit code, so a load-sensitive case gives that gate a false-failure mode, and a false failure teaches its reader to re-run rather than to look. **Fix direction, and the caution matters:** if the case asserts on elapsed wall-clock time, make the timing **injectable** rather than widening the tolerance — a widened tolerance is the same test with a longer fuse. If it depends on the stale-lock threshold (60 s), that threshold is a constant the test could be given rather than sharing with production. The lock's documented behaviour includes real timing (200 ms poll, exponential backoff to 2 s), so a test of it necessarily waits; the question is whether it waits on a wall clock or an injectable one. Consider recording this and task 38 against one decision about whether this suite is meant to be run concurrently with itself at all.
 
 ### 38. Fix the load-sensitive browser-launch case in the monitor suite
 
-- **ID:** `I:260811-1409`
-- **Source:** `shared/issues/260811-1409_o_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`
+- **ID:** `I:260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`
+- **Source:** `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -631,7 +631,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 39. Find the three tests whose registration is conditional in the Plane suite
 
 - **ID:** `I:260810-0918-suite`
-- **Source:** `shared/issues/260810-0918_o_the-suite-total-moves-between-runs-and-the-variance-is-entirely-in-one-file.md`
+- **Source:** `260810-0918_*_the-suite-total-moves-between-runs-and-the-variance-is-entirely-in-one-file.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -640,30 +640,30 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 40. Write the scratch-copy rule for destructive verification
 
-- **ID:** `I:260810-1820`
-- **Source:** `shared/issues/260810-1820_o_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
+- **ID:** `I:260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
+- **Source:** `260810-1820_*_an-executor-verified-a-gate-by-mutating-a-file-another-executor-held-in-the-live-tree.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** **The option is already chosen — this is implementation, not a decision.** User decision, session `260810-1646`: **option 1, a scratch copy of the repository.** A destructive verification copies the tree, or the single file it needs, into a temporary directory, mutates there, and points the gate at the copy; the live working tree is never written by a verification step. The incident: to prove a gate fails on four mutations, an executor wrote each into `agents/orchestrator.md` in the live tree, ran the gate, and restored — for about four minutes the prompt carried deliberately corrupted text while a second executor was editing Phase 2 Step 3b of the same file. It came out clean, and that is the outcome, not the design: the restore is a script's last step, so any crash, timeout or interruption leaves grammatical prose mutations in place that nothing downstream would notice. Cite the precedent rather than inventing a procedure — in the same Turn, the executor of `I:260810-0502-drift-lint` verified four inversions against mutated copies in a scratch area and never touched the real prompt.
+- **Detail:** **The option is already chosen — this is implementation, not a decision.** User decision, session `260810-1646-orchestrator-session.md`: **option 1, a scratch copy of the repository.** A destructive verification copies the tree, or the single file it needs, into a temporary directory, mutates there, and points the gate at the copy; the live working tree is never written by a verification step. The incident: to prove a gate fails on four mutations, an executor wrote each into `agents/orchestrator.md` in the live tree, ran the gate, and restored — for about four minutes the prompt carried deliberately corrupted text while a second executor was editing Phase 2 Step 3b of the same file. It came out clean, and that is the outcome, not the design: the restore is a script's last step, so any crash, timeout or interruption leaves grammatical prose mutations in place that nothing downstream would notice. Cite the precedent rather than inventing a procedure — in the same Turn, the executor of `I:260810-0502-drift-lint` verified four inversions against mutated copies in a scratch area and never touched the real prompt.
 - **Two things the record carries forward and the implementer must weigh once:** options 2 (fixtures) and 3 (state the rule in the dispatch fence) were offered and not taken, and option 3 was argued as worth doing whichever of the others was chosen — it is the line that makes an executor look for the scratch copy at all. Without it, option 1 is a technique that exists and is not asked for. **Either add the fence line or say why it is unnecessary.** And **where the rule belongs is still open and is the implementer's first call:** the executor prompts (`agents/coder.md`, `agents/ontocoder.md`, `agents/bugfixer.md`, where a verification obligation already lives) or a rule file emitted to them. Prefer whichever avoids stating the same procedure in three prompts.
 
 ### 41. Give the domain-capture one-liner one home
 
 - **ID:** `I:260810-2110-domain`
-- **Source:** `shared/issues/260810-2110_o_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`
+- **Source:** `260810-2110_*_the-domain-capture-one-liner-is-now-copied-into-a-fourth-skill-body-and-the-copying-is-the-stated-justification.md`
 - **Executor:** coder
-- **Depends on:** `I:260811-1733` (task 4 — the same design decision covers both, and the source-root helper proves the shape first)
+- **Depends on:** `I:260811-1733_*_the-source-root-resolution-becomes-one-helper-and-the-four-skill-body-copies-become-four-calls.md` (task 4 — the same design decision covers both, and the source-root helper proves the shape first)
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** `b3cc034` added the `agentstate.yaml` domain-read to `skills/cleanup/SKILL.md:65-71`; the same two lines already stood in `skills/next/SKILL.md:74-76`, `skills/direct/SKILL.md:56-58` and `skills/seed-from-plane/SKILL.md:78-80`, and the commit's own reasoning cites the three existing copies as the ground for a fourth. The change is right and the mechanism is not: cleanup's version adds `DOMAIN_SOURCE` so the fallback is reported rather than applied silently — a genuine improvement over the three it was copied from, which are now three lines behind it. **That divergence, on the first copy, is the whole defect.** The one-liner does three things — locate `agentstate.yaml`, read `session.domain`, fall back to `code` and say which happened — and all three belong in one place. Two candidates: a `bin/fusion-session-domain` helper printing `domain=` and `source=`, called the way `bin/fusion-count-sources` is with the `[ -x ]` guard convention decision `260810-0921` settled; or a `DOMAIN` key on `bin/fusion-paths`, which is the cheaper call site but stretches what the resolver is for.
-- **Bound from decision `260810-2145_*_`:** the domain capture is the **weaker** case (short, read-only, fallback stated at every site) and was explicitly deferred to "once the first has proved itself". Do not fold it into task 4.
+- **Detail:** `b3cc034` added the `agentstate.yaml` domain-read to `skills/cleanup/SKILL.md:65-71`; the same two lines already stood in `skills/next/SKILL.md:74-76`, `skills/direct/SKILL.md:56-58` and `skills/seed-from-plane/SKILL.md:78-80`, and the commit's own reasoning cites the three existing copies as the ground for a fourth. The change is right and the mechanism is not: cleanup's version adds `DOMAIN_SOURCE` so the fallback is reported rather than applied silently — a genuine improvement over the three it was copied from, which are now three lines behind it. **That divergence, on the first copy, is the whole defect.** The one-liner does three things — locate `agentstate.yaml`, read `session.domain`, fall back to `code` and say which happened — and all three belong in one place. Two candidates: a `bin/fusion-session-domain` helper printing `domain=` and `source=`, called the way `bin/fusion-count-sources` is with the `[ -x ]` guard convention decision `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md` settled; or a `DOMAIN` key on `bin/fusion-paths`, which is the cheaper call site but stretches what the resolver is for.
+- **Bound from decision `260810-2145_*_should-a-repeated-skill-body-snippet-become-a-bin-helper-now-that-one-fact-lives-in-four-executable-copies.md`:** the domain capture is the **weaker** case (short, read-only, fallback stated at every site) and was explicitly deferred to "once the first has proved itself". Do not fold it into task 4.
 
 ### 42. Seed `.claude/settings.local.json` at setup — **needs a human decision on the grant**
 
 - **ID:** `I:260810-0326`
-- **Source:** `shared/issues/260810-0326_o_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
+- **Source:** `260810-0326_*_setup-must-seed-claude-settings-because-the-plugin-settings-json-is-not-a-permission-source.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** high
@@ -675,8 +675,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 43. Put the two Plane runtime files in the layout tree — **needs a human decision on two of three questions**
 
-- **ID:** `I:260810-0410`
-- **Source:** `shared/issues/260810-0410_o_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md`
+- **ID:** `I:260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md`
+- **Source:** `260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md`
 - **Executor:** coder (after the choices)
 - **Depends on:** T1
 - **Priority:** normal
@@ -686,18 +686,18 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 44. Classify `.fusion-setup` and move the tracked-workbench section to its authoring home
 
-- **ID:** `I:260810-0504`
-- **Source:** `shared/issues/260810-0504_o_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
+- **ID:** `I:260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
+- **Source:** `260810-0504_*_the-tracked-workbench-section-re-enumerates-a-closed-list-and-leaves-one-surface-unclassified.md`
 - **Executor:** coder
-- **Depends on:** `I:260810-0410` (same file, same enumeration — land them together)
+- **Depends on:** `I:260810-0410_*_the-layout-tree-calls-itself-exhaustive-and-omits-the-two-plane-runtime-files.md` (same file, same enumeration — land them together)
 - **Priority:** normal
 - **Status:** [ ] open
 - **Detail:** Three parts. (1) **The partition is incomplete.** `### Which of them a tracked workbench tracks` splits the root-anchored surfaces into records (track) and live state (do not), and `fusion-workbench/.fusion-setup` is in neither — it is not a record in the section's sense and it is not live state, being written once and never overwritten. In this repository it is tracked and not ignored, so tree and `.gitignore` agree by accident rather than by the rule. `rules/critical-stance.md` §4 is the standard the section has to meet, and `65f7c3b`'s commit message claims "all ten root-anchored surfaces were put to it" while the tree holds eleven. Classify it, or say explicitly that the split ranges over the ten session-state surfaces and not over the tree. (2) **It is a second enumeration of a closed list ten lines below the first**, so a helper adding a root-anchored surface now has two places to land instead of one — the exact failure the paragraph above was written to prevent, arriving from inside the same document. (3) **The audience does not match the content:** this file is emitted to all sixteen agents on every dispatch, and the tracked/untracked split is consumed by `/fusion:circle-stash`, `/fusion:cleanup` and whoever writes a `.gitignore` — never by `coder`, `ontocoder`, `analyst`, `shaper`, `editor`, `planner`, `taskplanner` or `conceptrev`. `rules/workbench-stash-and-lock.md` already exists, is emitted to `orchestrator` alone, and is cited by both stash skills; move the section there and leave a one-line pointer, matching the four partitions the header table already records. The byte cost is measured: the two new paragraphs added 2 151 bytes to a file loaded sixteen times per dispatch.
 
 ### 45. Decide what the report contract does with a known-red baseline — **needs a human decision**
 
-- **ID:** `I:260810-0703`
-- **Source:** `shared/issues/260810-0703_o_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`
+- **ID:** `I:260810-0703_*_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`
+- **Source:** `260810-0703_*_the-report-contract-derives-blocked-from-a-suite-exit-code-so-a-known-red-baseline-blocks-every-task.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** high
@@ -706,8 +706,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 46. Decide how a release proves its range was reviewed — **needs a human decision**
 
-- **ID:** `I:260810-1618`
-- **Source:** `shared/issues/260810-1618_o_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`
+- **ID:** `I:260810-1618_*_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`
+- **Source:** `260810-1618_*_a-release-was-tagged-and-pushed-while-its-own-review-pass-was-still-running.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -717,29 +717,29 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 47. Close or restate criterion 2 of the branch-policy halt record — **needs a human decision**
 
-- **ID:** `I:260809-2255`
-- **Source:** `shared/issues/260809-2255_o_the-branch-policy-verification-left-an-active-halt-and-24-consecutive-blocks-in-the-live-guard-state.md`
+- **ID:** `I:260809-2255_*_the-branch-policy-verification-left-an-active-halt-and-24-consecutive-blocks-in-the-live-guard-state.md`
+- **Source:** `260809-2255_*_the-branch-policy-verification-left-an-active-halt-and-24-consecutive-blocks-in-the-live-guard-state.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** low
 - **Status:** [ ] open
-- **Detail:** Criterion 1 is met and verified now: `.guard-state/escalation.json` reads `haltActive: false`, `consecutiveBlocks: 0`, and the human clearing on 2026-08-09 22:14 is recorded both in the file's `recentEvents` and in `shared/history/260810-0844-orchestrator-session.md`. The residue in `recentEvents` is correct to leave — it is a log and the events happened. **Criterion 2 asks that the verification-surface rule cover the branch policy explicitly, and the branch policy was deleted in `7598073` before such a rule could be written.** That leaves it satisfiable only in the general form: *a policy is verified through the sanctioned harness, not through live probes against the running project.* The reconciler declined to close on criterion 1 alone because the criterion is written as a rule obligation, not a state fact. **The user's call:** judge criterion 2 moot with the policy gone and close the record, or write the general rule. It is the same class question deferred decision `260810-0710_d` carries from the other direction.
+- **Detail:** Criterion 1 is met and verified now: `.guard-state/escalation.json` reads `haltActive: false`, `consecutiveBlocks: 0`, and the human clearing on 2026-08-09 22:14 is recorded both in the file's `recentEvents` and in `260810-0844-orchestrator-session.md`. The residue in `recentEvents` is correct to leave — it is a log and the events happened. **Criterion 2 asks that the verification-surface rule cover the branch policy explicitly, and the branch policy was deleted in `7598073` before such a rule could be written.** That leaves it satisfiable only in the general form: *a policy is verified through the sanctioned harness, not through live probes against the running project.* The reconciler declined to close on criterion 1 alone because the criterion is written as a rule obligation, not a state fact. **The user's call:** judge criterion 2 moot with the policy gone and close the record, or write the general rule. It is the same class question deferred decision `260810-0710_d` carries from the other direction.
 - **Worth keeping from the record whichever way it goes:** the original incident was a verification sweep running documented deny cases as real `Bash` calls against the **live** project guard rather than a harness project — nine halts inside 1.3 seconds — and the branch policy was the one half that stayed active in this repository by design, which is exactly why probing it there had a side effect on shipped project state.
 
 ### 48. Decide what an unused `--fixture` does — **needs a human decision**
 
 - **ID:** `I:260810-0918-fixture`
-- **Source:** `shared/issues/260810-0918_o_push-fixture-without-rebuild-map-never-reads-the-fixture-and-says-nothing.md`
+- **Source:** `260810-0918_*_push-fixture-without-rebuild-map-never-reads-the-fixture-and-says-nothing.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** low
 - **Status:** [ ] open
-- **Detail:** `bin/fusion-plane`'s `--fixture <f>` is only ever consumed by the rebuild path, so a caller passing it without `--rebuild-map` gets a run that ignores the file, exits 0, and says nothing on either stream. Same silent-no-op family as `260810-0747`, which `4bf509e` closed; the file's own rule is stated in `map_forget` around `:1504` — an absent mutation is a reported failure, never a silent no-op. **It was left out of that fix deliberately and the reasoning holds:** `FUSION_PLANE_ISSUES_FIXTURE` is the env twin of this flag and is picked up unconditionally, so a blanket refusal would break every push issued from a shell that exports the seam for other purposes. **The decision:** whether an unused `--fixture` is a usage error, a warning on stderr, or a harmless no-op on a documented test seam — and whatever is decided must say what happens when the fixture arrives from the **environment** rather than the command line, since that is the spelling a user does not see in their own command. Low severity: `--fixture` is documented as a test seam and no operator documentation points a user at it.
+- **Detail:** `bin/fusion-plane`'s `--fixture <f>` is only ever consumed by the rebuild path, so a caller passing it without `--rebuild-map` gets a run that ignores the file, exits 0, and says nothing on either stream. Same silent-no-op family as `260810-0747_*_push-plan-rebuild-map-without-a-fixture-drops-the-flag-silently.md`, which `4bf509e` closed; the file's own rule is stated in `map_forget` around `:1504` — an absent mutation is a reported failure, never a silent no-op. **It was left out of that fix deliberately and the reasoning holds:** `FUSION_PLANE_ISSUES_FIXTURE` is the env twin of this flag and is picked up unconditionally, so a blanket refusal would break every push issued from a shell that exports the seam for other purposes. **The decision:** whether an unused `--fixture` is a usage error, a warning on stderr, or a harmless no-op on a documented test seam — and whatever is decided must say what happens when the fixture arrives from the **environment** rather than the command line, since that is the spelling a user does not see in their own command. Low severity: `--fixture` is documented as a test seam and no operator documentation points a user at it.
 
 ### 49. Decide whether the Plane issue body carries a key-format marker — **needs a human decision**
 
-- **ID:** `I:260810-1158`
-- **Source:** `shared/issues/260810-1158_o_a-third-derivation-site-reads-the-key-back-out-of-a-plane-issue-body-which-carries-no-format.md`
+- **ID:** `I:260810-1158_*_a-third-derivation-site-reads-the-key-back-out-of-a-plane-issue-body-which-carries-no-format.md`
+- **Source:** `260810-1158_*_a-third-derivation-site-reads-the-key-back-out-of-a-plane-issue-body-which-carries-no-format.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** low
@@ -749,17 +749,17 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 50. Decide the citation form for rule files — **needs a human decision on scope**
 
 - **ID:** `I:260808-0030-lines`
-- **Source:** `shared/issues/260808-0030_o_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
+- **Source:** `260808-0030_*_line-number-citations-into-rule-files-go-stale-and-no-gate-reads-them.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** A record citing a rule file by line number is correct on the day it is written and silently wrong afterwards: any insertion above the cited line moves it, the citation still parses, the file still exists, and the reader lands on something else. Measured on live records, not historical ones — and the sharp case is that an **open** finding was staled by a **later Turn of the same session**, about two hours after it was filed. This queue reproduces the pattern: three of the entries above had to annotate a moved line number (tasks 14, 29, 30). `hooks/lib/__tests__/reference-resolution-lint.test.ts` is the gate built for this class and resolves three reference kinds — plugin-file paths, adjacent section-heading anchors, and workbench-record citations in the ratified wildcard form. A line number is none of the three, and its input surface is bounded to the plugin's shipped text, so workbench-record citations sit outside it twice over. **The record class was solved and this one was not:** decision `260806-0015_i_zitierform-fuer-workbench-records` met the identical problem for record citations by ratifying a *form* that survives the change and teaching the lint to enforce it. **The decision:** option 1 — prefer the heading anchor and say so, which is the only route that removes the failure rather than sampling it and composes with the existing gate — needs a scope call first: does the preference bind fusion's own shipped text only, or also the records agents write? Option 2 (fail when `NNN` exceeds the file's length) catches only the crude half; option 3 (repair on reconciliation) guarantees that citations in records nobody re-reads stay wrong. Nothing is broken at runtime; the cost is a reader sent to the wrong line and reconciliation time re-deriving citations that were correct when filed.
+- **Detail:** A record citing a rule file by line number is correct on the day it is written and silently wrong afterwards: any insertion above the cited line moves it, the citation still parses, the file still exists, and the reader lands on something else. Measured on live records, not historical ones — and the sharp case is that an **open** finding was staled by a **later Turn of the same session**, about two hours after it was filed. This queue reproduces the pattern: three of the entries above had to annotate a moved line number (tasks 14, 29, 30). `hooks/lib/__tests__/reference-resolution-lint.test.ts` is the gate built for this class and resolves three reference kinds — plugin-file paths, adjacent section-heading anchors, and workbench-record citations in the ratified wildcard form. A line number is none of the three, and its input surface is bounded to the plugin's shipped text, so workbench-record citations sit outside it twice over. **The record class was solved and this one was not:** decision `260806-0015_*_zitierform-fuer-workbench-records` met the identical problem for record citations by ratifying a *form* that survives the change and teaching the lint to enforce it. **The decision:** option 1 — prefer the heading anchor and say so, which is the only route that removes the failure rather than sampling it and composes with the existing gate — needs a scope call first: does the preference bind fusion's own shipped text only, or also the records agents write? Option 2 (fail when `NNN` exceeds the file's length) catches only the crude half; option 3 (repair on reconciliation) guarantees that citations in records nobody re-reads stay wrong. Nothing is broken at runtime; the cost is a reader sent to the wrong line and reconciliation time re-deriving citations that were correct when filed.
 
 ### 51. Ask why the coderev pass wrote no review file, then decide what to do about the gap
 
 - **ID:** `I:260808-0030-review`
-- **Source:** `shared/issues/260808-0030_o_the-coderev-pass-filed-four-issues-and-left-no-review-file.md`
+- **Source:** `260808-0030_*_the-coderev-pass-filed-four-issues-and-left-no-review-file.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
@@ -768,8 +768,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 52. Split the exempt-surface list by who the text reaches
 
-- **ID:** `I:260807-2153`
-- **Source:** `shared/issues/260807-2153_o_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`
+- **ID:** `I:260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`
+- **Source:** `260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -779,7 +779,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 53. Decide how an existing consumer gets the corrected chat profile — **needs a human decision**
 
 - **ID:** `I:260807-2154-sibling`
-- **Source:** `shared/issues/260807-2154_o_corrected-sibling-wording-never-reaches-an-existing-consumer.md`
+- **Source:** `260807-2154_*_corrected-sibling-wording-never-reaches-an-existing-consumer.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** low
@@ -789,7 +789,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 54. Give the writing profiles a reciprocal handle — **needs the user's approval for the schema half**
 
 - **ID:** `I:260807-2154-handle`
-- **Source:** `shared/issues/260807-2154_o_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`
+- **Source:** `260807-2154_*_the-writing-profile-carries-no-handle-for-the-reference-that-now-points-at-it.md`
 - **Executor:** ontocoder
 - **Depends on:** T1
 - **Priority:** low
@@ -799,7 +799,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 55. Decide how a dispatch states a task's origin — **needs a human decision**
 
 - **ID:** `I:260805-0629`
-- **Source:** `shared/issues/260805-0629_o_dispatch-prompt-carries-no-origin-so-a-sub-agents-history-lands-by-pointer-alone.md`
+- **Source:** `260805-0629_*_dispatch-prompt-carries-no-origin-so-a-sub-agents-history-lands-by-pointer-alone.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -809,7 +809,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 56. Decide the agreement check between a diagram and its prose — **needs a human decision**
 
 - **ID:** `I:260804-1702`
-- **Source:** `shared/issues/260804-1702_o_the-diagram-self-check-tests-shape-and-never-tests-agreement-with-the-prose.md`
+- **Source:** `260804-1702_*_the-diagram-self-check-tests-shape-and-never-tests-agreement-with-the-prose.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -819,8 +819,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 57. Decide whether pre-Circle work can become a Circle, and whether files move — **needs a human decision**
 
-- **ID:** `I:260803-1837`
-- **Source:** `shared/issues/260803-1837_o_no-route-turns-existing-pre-circle-work-into-a-circle.md`
+- **ID:** `I:260803-1837_*_no-route-turns-existing-pre-circle-work-into-a-circle.md`
+- **Source:** `260803-1837_*_no-route-turns-existing-pre-circle-work-into-a-circle.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -829,19 +829,19 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 58. Decide the fate of the Circle record's `**Status:**` field — **needs a human decision**
 
-- **ID:** `I:260802-0920`
-- **Source:** `shared/issues/260802-0920_o_next-skill-activates-a-circle-without-updating-its-status-field.md`
+- **ID:** `I:260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`
+- **Source:** `260802-0920_*_next-skill-activates-a-circle-without-updating-its-status-field.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** `skills/next/SKILL.md` Step 6 renames the Circle record and writes `.active-circle` without touching `**Status:**`, and the orchestrator's Phase 4 closure renames without a field update either. **Four reconciliation passes measured it across the whole workbench rather than inferring, and the data corrects the record's own scope paragraph:** the field *is* updated at some transitions, just not reliably — two of nine records disagreed at the first survey, three of nine at the second, four of eleven at the third, and one record read `active` at a `_c_` marker, meaning its field was updated at activation and missed at closure, the exact inverse of the filed failure. So the defect is not "the transition points never update the field"; it is that **no prompt or skill step requires the update**, so it happens when a writer notices and is skipped when nobody does, and a reader cannot tell which of the two surfaces is stale on any given record. **The decision:** (1) have each transition point update the field, which is correct and spreads the obligation across every present and future transition site, each free to forget it; (2) **drop `**Status:**` and let the filename marker be the only source** — removes the duplication rather than maintaining it, at the cost of a record that no longer states its own state when read in isolation; (3) keep the field and define it as decorative, which leaves a field that reads as authoritative and is not. Option 2 matches the framework's own reasoning about derived-versus-declared state, and the evidence has strengthened for it: every activation-ownership surface was consolidated by decision `260806-0015_i_wem-gehoert-die-circle-aktivierung`, and the field-update obligation still landed nowhere because no decision assigned it.
-- **Do not hand-correct the live specimens.** `circles/260801-1244-rule-provenance-header/_c_circle.md` deliberately keeps its `anticipated` field as the sole preserved specimen, per its own closure note.
+- **Detail:** `skills/next/SKILL.md` Step 6 renames the Circle record and writes `.active-circle` without touching `**Status:**`, and the orchestrator's Phase 4 closure renames without a field update either. **Four reconciliation passes measured it across the whole workbench rather than inferring, and the data corrects the record's own scope paragraph:** the field *is* updated at some transitions, just not reliably — two of nine records disagreed at the first survey, three of nine at the second, four of eleven at the third, and one record read `active` at a `_c_` marker, meaning its field was updated at activation and missed at closure, the exact inverse of the filed failure. So the defect is not "the transition points never update the field"; it is that **no prompt or skill step requires the update**, so it happens when a writer notices and is skipped when nobody does, and a reader cannot tell which of the two surfaces is stale on any given record. **The decision:** (1) have each transition point update the field, which is correct and spreads the obligation across every present and future transition site, each free to forget it; (2) **drop `**Status:**` and let the filename marker be the only source** — removes the duplication rather than maintaining it, at the cost of a record that no longer states its own state when read in isolation; (3) keep the field and define it as decorative, which leaves a field that reads as authoritative and is not. Option 2 matches the framework's own reasoning about derived-versus-declared state, and the evidence has strengthened for it: every activation-ownership surface was consolidated by decision `260806-0015_*_wem-gehoert-die-circle-aktivierung`, and the field-update obligation still landed nowhere because no decision assigned it.
+- **Do not hand-correct the live specimens.** `260801-1244-rule-provenance-header` deliberately keeps its `anticipated` field as the sole preserved specimen, per its own closure note.
 
 ### 59. Confirm authorship of the ontocoder prompt edit, and decide on the durable fix — **needs the user**
 
-- **ID:** `I:260801-1410`
-- **Source:** `shared/issues/260801-1410_o_unattributed-edit-to-ontocoder-prompt-during-session.md`
+- **ID:** `I:260801-1410_*_unattributed-edit-to-ontocoder-prompt-during-session.md`
+- **Source:** `260801-1410_*_unattributed-edit-to-ontocoder-prompt-during-session.md`
 - **Executor:** coder (after the answer)
 - **Depends on:** T1
 - **Priority:** normal
@@ -851,17 +851,17 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 60. Backfill the plane-mirror Circle's Turn log, and make the omission detectable
 
 - **ID:** `I:260801-1020-turnlog`
-- **Source:** `shared/issues/260801-1020_o_plane-mirror-circle-closed-with-empty-turn-log.md`
+- **Source:** `260801-1020_*_plane-mirror-circle-closed-with-empty-turn-log.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
 - **Status:** [ ] open
-- **Detail:** `circles/260719-1536-plane-mirror-integration/_c_circle.md` carries `_c_` and a full Closure note citing six commits `eb9cf59..aefbf39`, while its `## Turn log` still holds the placeholder written at anticipation time. The Circle record template specifies the Turn log as an append-only list, one bullet per Turn, with the commit range, the Coherence verdict and the session-history path; the other Circles in this workbench have substantive Turn logs, and this one is the largest by commit count and the only one empty. **The information is not lost** — the Closure note carries it — so the defect is that it sits in the wrong section and mechanical readers miss it: `/fusion:cadence` ranks recurring themes by how many sessions a topic reappears in, and playmaker renders recently-closed Circles from their records, so the Circle with the most work behind it looks like the one with none. Two parts: backfill this record's Turn log from `shared/history/260719-1632-orchestrator-session.md` and the six commits its Closure note names; and make the omission harder to repeat — the orchestrator writes the Turn log and renames the record in the same Phase 4, so a closure that finds the anticipation placeholder still present is a detectable condition.
+- **Detail:** `260719-1536-plane-mirror-integration` carries `_c_` and a full Closure note citing six commits `eb9cf59..aefbf39`, while its `## Turn log` still holds the placeholder written at anticipation time. The Circle record template specifies the Turn log as an append-only list, one bullet per Turn, with the commit range, the Coherence verdict and the session-history path; the other Circles in this workbench have substantive Turn logs, and this one is the largest by commit count and the only one empty. **The information is not lost** — the Closure note carries it — so the defect is that it sits in the wrong section and mechanical readers miss it: `/fusion:cadence` ranks recurring themes by how many sessions a topic reappears in, and playmaker renders recently-closed Circles from their records, so the Circle with the most work behind it looks like the one with none. Two parts: backfill this record's Turn log from `260719-1632-orchestrator-session.md` and the six commits its Closure note names; and make the omission harder to repeat — the orchestrator writes the Turn log and renames the record in the same Phase 4, so a closure that finds the anticipation placeholder still present is a detectable condition.
 
 ### 61. Decide whether archived material is readable at all — **needs a human decision**
 
 - **ID:** `I:260801-1020-archive`
-- **Source:** `shared/issues/260801-1020_o_scan-keys-never-reach-the-archive-store.md`
+- **Source:** `260801-1020_*_scan-keys-never-reach-the-archive-store.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -871,7 +871,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 62. Record in the manifest schema why both stash fields exist
 
 - **ID:** `D:260806-1152`
-- **Source:** `shared/decisions/260806-1152_a_stash-manifest-dirname-and-pointer-content-duplicate.md`
+- **Source:** `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
@@ -881,7 +881,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 63. Write down that an agent can clear its own halt, as a stated boundary
 
 - **ID:** `D:260807-0945`
-- **Source:** `circles/260807-0923-guard-misst-statt-orakelt/decisions/260807-0945_a_integritaet-des-eskalationsspeichers.md`
+- **Source:** `260807-0945_*_integritaet-des-eskalationsspeichers.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -892,8 +892,8 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 64. Have `bin/fusion-count-sources` emit its own extension set
 
-- **ID:** `D:260810-1010`
-- **Source:** `shared/decisions/260810-1010_a_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`
+- **ID:** `D:260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`
+- **Source:** `260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -903,18 +903,18 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 65. Land the record-filename citation rule in `## Filename Patterns`
 
 - **ID:** `D:260807-0158`
-- **Source:** `shared/decisions/260807-0158_a_how-is-a-unique-record-filename-obtained.md`
+- **Source:** `260807-0158_*_how-is-a-unique-record-filename-obtained.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
 - **Status:** [ ] open
-- **Detail:** The record's premise was falsified by measurement, the filename pattern stands, and the answer is a **citation rule**. The record sets its own condition for moving to `_i_`: the rule text lands in `rules/fusion-workbench-conventions.md` `## Filename Patterns`. **Verified unmet at HEAD:** that section carries the artifact-kind table, the `<sender>` rule and the `$OUT_MEMO` write-semantics note, and no citation rule. It was explicitly scoped out of the language-split Directive and has been open work since session 260807-1917. Land the rule text.
+- **Detail:** The record's premise was falsified by measurement, the filename pattern stands, and the answer is a **citation rule**. The record sets its own condition for moving to `_i_`: the rule text lands in `rules/fusion-workbench-conventions.md` `## Filename Patterns`. **Verified unmet at HEAD:** that section carries the artifact-kind table, the `<sender>` rule and the `$OUT_MEMO` write-semantics note, and no citation rule. It was explicitly scoped out of the language-split Directive and has been open work since session 260807-1917-orchestrator-session.md. Land the rule text.
 - **Citation drift, already recorded:** this record's own header cites `## Filename Patterns` at lines 185-208 and the section has moved to 221-245, staled by the language-split plan's Step S1. Do not re-cite by line number — task 50 is the general case, and `260808-0030` names this record as its first measured instance.
 
 ### 66. Decide how an agent without `$OUT_DECISION` files a decision — **needs a human decision**
 
-- **ID:** `I:260807-0952`
-- **Source:** `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-0952_o_ontocoder-kann-keinen-entscheidungssatz-ablegen.md`
+- **ID:** `I:260807-0952_*_ontocoder-kann-keinen-entscheidungssatz-ablegen.md`
+- **Source:** `260807-0952_*_ontocoder-kann-keinen-entscheidungssatz-ablegen.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -925,7 +925,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 67. Measure the reach of the rules-write exemption after the mechanism change
 
 - **ID:** `I:260807-1427`
-- **Source:** `circles/260807-0923-guard-misst-statt-orakelt/issues/260807-1427_o_reichweite-der-regel-ausnahme-ist-nach-dem-mechanismuswechsel-nicht-neu-gemessen.md`
+- **Source:** `260807-1427_*_reichweite-der-regel-ausnahme-ist-nach-dem-mechanismuswechsel-nicht-neu-gemessen.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -935,7 +935,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 68. Align the setup probe's tree with migrate's reformat tree
 
 - **ID:** `I:260806-0022`
-- **Source:** `circles/260805-2005-textschicht-gegen-code-nachziehen/issues/260806-0022_o_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`
+- **Source:** `260806-0022_*_setup-klammer-probe-und-migrate-reformat-decken-verschiedene-baeume.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
@@ -945,17 +945,17 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 69. Put a source-code check ahead of the decision-to-defect ratio in the domain heuristic
 
 - **ID:** `I:260805-1830`
-- **Source:** `circles/260801-1244-guard-rules-write/issues/260805-1830_o_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md`
+- **Source:** `260805-1830_*_die-domaenenheuristik-meldet-strategic-trotz-cargo-workspace-mit-laufenden-tests.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** In the consuming project `krk` the orchestrator Setup's domain detection returned `strategic` because the count of open decisions (5) reached the count of open defects (3), without ever asking whether source code was present. What was actually there: a Cargo workspace with four crates, 16 Rust source files and running tests. The session corrected to `code` by hand. Evidence: `/Users/k1/Projects/productive/krk/fusion-workbench/circles/260802-0842-krk-mac-dateimanager-editor-git/history/260803-1038-orchestrator-session.md`, section "Domänenerkennung", carrying the heuristic's input values and the reason for the correction. The first branch reaches the decision-to-defect ratio before any source-code criterion is seen, so an active build project with lively decision discipline tips systematically to `strategic`. **Fix:** before the ratio, take a source-code inventory — build manifests present (`Cargo.toml`, `go.mod`, `package.json`, `pyproject.toml`) plus source files — as a dominant signal for `code`. The heuristic lives in the orchestrator's Setup step 5 (`agents/orchestrator.md`, mirrored in `skills/setup/SKILL.md`), and the domain-cascade order is gated by `hooks/lib/domain-cascade.ts` and its lint, so the reordering has a gate that will need updating with it.
+- **Detail:** In the consuming project `krk` the orchestrator Setup's domain detection returned `strategic` because the count of open decisions (5) reached the count of open defects (3), without ever asking whether source code was present. What was actually there: a Cargo workspace with four crates, 16 Rust source files and running tests. The session corrected to `code` by hand. Evidence: `/Users/k1/Projects/productive/krk/260803-1038-orchestrator-session.md`, section "Domänenerkennung", carrying the heuristic's input values and the reason for the correction. The first branch reaches the decision-to-defect ratio before any source-code criterion is seen, so an active build project with lively decision discipline tips systematically to `strategic`. **Fix:** before the ratio, take a source-code inventory — build manifests present (`Cargo.toml`, `go.mod`, `package.json`, `pyproject.toml`) plus source files — as a dominant signal for `code`. The heuristic lives in the orchestrator's Setup step 5 (`agents/orchestrator.md`, mirrored in `skills/setup/SKILL.md`), and the domain-cascade order is gated by `hooks/lib/domain-cascade.ts` and its lint, so the reordering has a gate that will need updating with it.
 
 ### 70. Settle the LICENSE — **needs a decision from the user**
 
 - **ID:** `I:260805-1839`
-- **Source:** `circles/260801-1244-guard-rules-write/issues/260805-1839_o_install-sh-will-eine-license-kopieren-die-das-repo-nicht-hat.md`
+- **Source:** `260805-1839_*_install-sh-will-eine-license-kopieren-die-das-repo-nicht-hat.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** low
@@ -965,7 +965,7 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 ### 71. Decide whether the write-tool deny walks up to the workbench root
 
 - **ID:** `I:260804-2100`
-- **Source:** `circles/260801-1244-guard-rules-write/issues/260804-2100_o_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
+- **Source:** `260804-2100_*_from-a-subdirectory-cwd-the-protected-list-matches-nothing-while-fail-closed-still-denies.md`
 - **Executor:** coder (after the choice)
 - **Depends on:** T1
 - **Priority:** normal
@@ -974,28 +974,28 @@ so drawing an edge from task 1 to each of them would say nothing the gate node d
 
 ### 72. Regenerate the git gold fixture with the missing joiners and an allow-only row
 
-- **ID:** `I:260804-0842`
-- **Source:** `circles/260801-1244-guard-rules-write/issues/260804-0842_o_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md`
+- **ID:** `I:260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md`
+- **Source:** `260804-0842_*_the-git-gold-fixture-carries-no-double-pipe-pipe-or-ampersand-joiner-and-no-allow-only-row.md`
 - **Executor:** coder
 - **Depends on:** T1
 - **Priority:** low
 - **Status:** [ ] open
-- **Detail:** **Read the scope note first: the classifier this fixture insulated no longer exists.** The git branch/worktree policy and its classifier were deleted on 260809, so whoever picks this up must decide whether the fixture still has a subject at all before regenerating it — that judgement is not made here, and if the answer is no, the record closes as moot rather than being worked. **What the record says, if it does have one:** the fixture's provenance claim holds and was independently reproduced (98/98 against a pre-change classifier materialised out of git, 98/98 against the current one; 25 845 git-shaped commands × 4 override combinations with zero differences). Two coverage gaps remain: three of the six joiners are absent (13 rows `&&`, 9 `;`, 13 newline, and **zero** `||`, `|`, `&`) in a fixture built to pin a *joiner* widening; and no row is allow-only, because the corpus was filtered to "produces a deny or an override", so an allow → deny drift outside the 98 is out of reach. The test docstring also overstates the corpus, claiming the verdicts hold "over every command string in the whole test suite" when it holds the filtered subset. If regenerated, the property that makes the fixture worth having must survive: generate against a classifier materialised out of git at the reference commit. Pair it with the test list from the closed `260804-1024`, as that record's reconciliation already asks.
+- **Detail:** **Read the scope note first: the classifier this fixture insulated no longer exists.** The git branch/worktree policy and its classifier were deleted on 260809, so whoever picks this up must decide whether the fixture still has a subject at all before regenerating it — that judgement is not made here, and if the answer is no, the record closes as moot rather than being worked. **What the record says, if it does have one:** the fixture's provenance claim holds and was independently reproduced (98/98 against a pre-change classifier materialised out of git, 98/98 against the current one; 25 845 git-shaped commands × 4 override combinations with zero differences). Two coverage gaps remain: three of the six joiners are absent (13 rows `&&`, 9 `;`, 13 newline, and **zero** `||`, `|`, `&`) in a fixture built to pin a *joiner* widening; and no row is allow-only, because the corpus was filtered to "produces a deny or an override", so an allow → deny drift outside the 98 is out of reach. The test docstring also overstates the corpus, claiming the verdicts hold "over every command string in the whole test suite" when it holds the filtered subset. If regenerated, the property that makes the fixture worth having must survive: generate against a classifier materialised out of git at the reference commit. Pair it with the test list from the closed `260804-1024_*_git-c-supplies-a-directory-the-model-skips-so-a-relative-operand-resolves-off-the-protected-list.md`, as that record's reconciliation already asks.
 
 ### 73. Measure the rules emission on the unite-cocreator machine — **needs the user at that machine**
 
 - **ID:** `I:260805-2323`
-- **Source:** `circles/260801-1244-guard-rules-write/issues/260805-2323_o_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md`
+- **Source:** `260805-2323_*_die-emissionsmessung-auf-der-unite-cocreator-maschine-steht-noch-aus.md`
 - **Executor:** none — user action
 - **Depends on:** none
 - **Priority:** normal
 - **Status:** [ ] open
-- **Detail:** The second falsification test of the exit plan's step 6 requires a measurement of `bin/fusion-rules` against `$FUSION_PLUGIN_ROOT` **on the consuming machine after `fusion --update`**, compared with the emission golden's numbers. **The plugin-side half is green** — the simulated install path put all 16 agents exactly on the golden numbers, recorded in `circles/260801-1244-guard-rules-write/history/260805-1200-coder-step6-release-vorbereitet.md`. The machine half cannot run from here: `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator` is not reachable from this machine. **What the user does:** run `fusion --update` on the unite-cocreator machine, then spot-check the byte sums of `bin/fusion-rules <agent>` against `$FUSION_PLUGIN_ROOT` versus `hooks/lib/__tests__/fixtures/rules-emission.golden`. Without the update that machine keeps the old rule set (105 354 bytes); releases v5.9.0–v5.9.2 and everything after are tagged and pushed.
+- **Detail:** The second falsification test of the exit plan's step 6 requires a measurement of `bin/fusion-rules` against `$FUSION_PLUGIN_ROOT` **on the consuming machine after `fusion --update`**, compared with the emission golden's numbers. **The plugin-side half is green** — the simulated install path put all 16 agents exactly on the golden numbers, recorded in `260805-1200-coder-step6-release-vorbereitet.md`. The machine half cannot run from here: `/Users/kai/Dropbox/qboot/projects/F03_digital-leadership/unite-co-creator` is not reachable from this machine. **What the user does:** run `fusion --update` on the unite-cocreator machine, then spot-check the byte sums of `bin/fusion-rules <agent>` against `$FUSION_PLUGIN_ROOT` versus `hooks/lib/__tests__/fixtures/rules-emission.golden`. Without the update that machine keeps the old rule set (105 354 bytes); releases v5.9.0–v5.9.2 and everything after are tagged and pushed.
 
 ### 74. Verify the Plane create/PATCH body against the live instance — **needs the user at a live Plane**
 
-- **ID:** `I:260719-2304`
-- **Source:** `circles/260719-1536-plane-mirror-integration/issues/260719-2304_o_verify-plane-create-patch-body-against-live-instance.md`
+- **ID:** `I:260719-2304_*_verify-plane-create-patch-body-against-live-instance.md`
+- **Source:** `260719-2304_*_verify-plane-create-patch-body-against-live-instance.md`
 - **Executor:** none — user action (a coder can run it once the instance is reachable)
 - **Depends on:** none
 - **Priority:** normal
@@ -1012,23 +1012,23 @@ The previous queue was treated as a stale input and discarded, not extended. Eve
 re-derived from the record on disk.
 
 **Added (24 entries with no counterpart in the previous queue).** The five realisation records for
-the decisions answered this sitting (`260811-1730` … `260811-1734`, split into eight entries because
-`1734` asks to be); the eleven Turn-1 and Turn-3 review findings filed since (`260811-1142` …
-`260811-1149`, `260811-1610` … `260811-1617`, `260811-1301`, `260811-1345`, `260811-1409`,
-`260811-1547`, `260811-1712`); and seven answered decisions whose realisation no defect record
-carries (`D:260806-1152`, `D:260807-0158`, `D:260807-0945`, `D:260810-1010`, `D:260810-1544`,
-`D:260810-2032`, `D:260811-1522`).
+the decisions answered this sitting (`260811-1730_*_realise-the-measurement-chassis-first-two-pieces-throttle-onto-the-existing-seam-and-one-git-wrapper.md` … `260811-1734`, split into eight entries because
+`1734` asks to be); the eleven Turn-1 and Turn-3 review findings filed since (`260811-1142_*_the-three-measurement-modules-hand-roll-a-guard-state-store-the-seam-built-for-it-already-owns.md` …
+`260811-1149_*_the-commit-message-path-lints-exemption-regex-is-broad-and-case-inconsistent.md`, `260811-1610_*_the-unmeasured-branches-discard-the-filed-count-which-needs-no-git-and-a-test-now-pins-the-discard.md` … `260811-1617_*_record-260811-1547-states-its-proposed-lint-has-no-exceptions-and-a-shipped-skill-already-is-one.md`, `260811-1301_*_the-orchestrators-routing-table-omits-cargo-toml-from-the-build-manifests.md`, `260811-1345_*_claude-md-says-the-measurement-stands-down-on-cwd-and-it-has-asked-the-workbench-root-since-v6-0-1.md`, `260811-1409_*_the-browser-launch-case-in-the-monitor-suite-fails-under-parallel-load-and-passes-in-isolation.md`,
+`260811-1547_*_the-orchestrator-prompt-cites-a-fusion-monitor-reset-skill-that-does-not-exist.md`, `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`); and seven answered decisions whose realisation no defect record
+carries (`D:260806-1152`, `D:260807-0158`, `D:260807-0945`, `D:260810-1010_*_should-a-test-learn-a-scripts-extension-set-by-reading-its-text-or-by-asking-bash.md`, `D:260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md`,
+`D:260810-2032_*_should-the-drift-checks-four-sentences-be-pinned-to-an-approved-baseline-instead-of-screened-by-a-blacklist.md`, `D:260811-1522`).
 
 **Added as task 1, with no source record.** The suite is red at HEAD and no open record covers it.
 Commit `1064fec` renamed twelve decision markers and left two citations in `hooks/lib/` behind.
 
 **Removed (31 records closed since the previous build).** Every entry whose source file now carries
 `_c_` was dropped, including the whole `260811-14xx` cohort, `260810-1918`, `260810-2110`'s closed
-half, `260810-0455` (the red suite the previous queue's task 1 fixed) and `260801-2038` (whose
+half, `260810-0455_*_npm-test-is-red-at-head-because-the-rules-emission-golden-was-never-regenerated.md` (the red suite the previous queue's task 1 fixed) and `260801-2038` (whose
 closure is what unblocks task 25 here).
 
 **Moved out of the task list, not dropped.** `260810-1632` is resolved on disk with an unrenamed
-marker; `260810-0819` and `260809-2255` are partially resolved. All three are in the section above
+marker; `260810-0819` and `260809-2255_*_the-branch-policy-verification-left-an-active-halt-and-24-consecutive-blocks-in-the-live-guard-state.md` are partially resolved. All three are in the section above
 with their evidence.
 
 **Re-verified rather than carried.** Fourteen entries were checked against the file on disk and
