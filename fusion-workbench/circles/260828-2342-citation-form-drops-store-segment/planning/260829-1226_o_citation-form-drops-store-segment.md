@@ -80,7 +80,7 @@ flowchart LR
 
 Commit boundaries: **A** = step 1. **B** = steps 2 to 8 and 10, one commit. **C** = steps 9, 11, 12. Steps inside B may be worked in parallel where the dependency lines allow, but nothing from B is committed until step 10 reports `npm test` green.
 
-1. **Move the grammar to `hooks/lib/citation-scan.ts`, behaviour unchanged**
+1. [DONE] **Move the grammar to `hooks/lib/citation-scan.ts`, behaviour unchanged**
    - Executor: `coder`
    - Files: `hooks/lib/citation-scan.ts` (new), `hooks/lib/__tests__/helpers/citation-scan.ts` (becomes a shim), `README-hooks.md` (`hooks/lib` table row), `CLAUDE.md` (`bin/fusion-prose-metric` row and `bin/fusion-prose-metric:96`, which cite the helper's old path), `hooks/dist/` (rebuilt)
    - Changes: the grammar, the exemptions, `fencedContentLines`, the index, the token walk, `scanRecordCitations`, `scanCitationTokens`, `scanCorpus`, `partition`, `markdownFilesUnder`, `shippedPrompts` and `agentNames` move into the lib module. The two memoised indexes and every resolver take the workbench root as a parameter; export `createScanner(workbenchRoot)` returning the bound functions, so a caller binds once. The shim keeps `pluginRoot`, `workbenchRoot`, `WORKBENCH_PRESENT` and re-exports the bound functions and the types under their current names; no test import changes. The lib module's header states why it left the test tree (decision `260828-0904_*_does-fusion-ship-a-citation-checker-to-consuming-projects.md`) and drops the "test-scoped on purpose" paragraph. The CLI `main` at the tail moves to step 8's entry point; the shim keeps no CLI. `npm run build`, `npm test` green, `committed-dist` green.
