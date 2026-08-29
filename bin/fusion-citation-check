@@ -30,8 +30,8 @@
 #
 # It decides nothing per line about pointer versus statement — a fenced code
 # block or a blockquote exempts a token, and that is the whole distinction.
-# It never rewrites: the one-shot rewriter is hooks/scripts/citation-sweep.mjs,
-# run by hand after reading its --dry-run census.
+# It never rewrites: the rewriter is bin/fusion-citation-sweep, run by hand
+# after reading its --dry-run census and behind its own three guards.
 #
 # Exit codes:
 #   0  the check ran. `verdict=` says what it found. A violation is NOT a

@@ -36,17 +36,17 @@
   commit/SKILL.md 6298
   curate/SKILL.md 12398
   direct/SKILL.md 10613
-  help/SKILL.md 16949
+  help/SKILL.md 16923
   log-activity/SKILL.md 13482
   memo/SKILL.md 12244
   migrate/SKILL.md 26620
   next/SKILL.md 27601
   setup/SKILL.md 46639
-  total 239859
+  total 239833
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
-  citation-sweep.test.ts 128
+  citation-sweep.test.ts 291
   commit-message-path.test.ts 315
   committed-dist.test.ts 332
   config.test.ts 809
@@ -96,4 +96,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 425
-  total 19713
+  total 19876

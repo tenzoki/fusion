@@ -1,0 +1,413 @@
+/**
+ * The citation sweep: rewrite store-prefixed citations to the storeless form,
+ * and repair what an earlier version of this program broke.
+ *
+ * The grammar is `lib/citation-scan.ts`, the one tokeniser the checker
+ * (`citation-check.ts`) and fusion's own gates run, so no second detector
+ * exists (Circle `260828-2342-citation-form-drops-store-segment`, plan step 3).
+ * Shipped as `bin/fusion-citation-sweep` since decision
+ * `260829-1623_*_does-fusion-ship-the-citation-sweep-or-only-the-checker-and-under-which-guards.md`
+ * (option 2). It lived as a `.mjs` script under `hooks/scripts/` until then, one
+ * script only a checkout with `node_modules` could run; it is compiled now so
+ * the install tarball runs it like every other helper. **No fusion pipeline
+ * or skill runs it**: `/fusion:cleanup` prints the checker's verdict and
+ * stops there, and a person runs the sweep by hand after reading its census.
+ *
+ * ## Usage
+ *
+ *   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--repair] [<path>...]
+ *
+ *   --root <dir>   the workbench to index and sweep; default: walk up from
+ *                  cwd to the directory holding `fusion-workbench/.fusion-setup`
+ *   --dry-run      the default: print the census and write nothing
+ *   --write        apply the rewrites, behind the three guards below
+ *   --yes          the second guard's answer; without it `--write` prints the
+ *                  census and writes nothing
+ *   --repair       the repair pass (below) instead of the sweep; combines with
+ *                  `--write` / `--dry-run` / `--yes` the same way
+ *   <path>...      files or directories to sweep BEYOND the workbench (a
+ *                  project's shipped text); a directory is walked for `*.md`,
+ *                  a file is taken as named whatever its extension
+ *
+ * ## The three guards on a writing mode
+ *
+ * A sweep over a workbench touches every record in it, and fusion's own first
+ * run rewrote 42 head fields and left 239 chained tails before a repair Turn
+ * (issues
+ * `260829-1346_*_the-committed-sweep-rewrote-29-date-head-fields-into-filenames-and-left-181-chained-tails-in-the-tree.md`
+ * and
+ * `260829-1347_*_the-grammars-marker-slot-is-one-letter-while-24-indexed-artifacts-carry-a-word-there-and-the-stamp-bare-rewrite-checks-no-boundary.md`).
+ * Three guards stand between `--write` and the tree, each evaluated before a
+ * byte is written:
+ *
+ *   (a) The workbench must be inside a git work tree, tracked by it
+ *       (`git ls-files --error-unmatch <workbench>`), and the tree must be
+ *       clean (`git status --porcelain` empty). Any extra `<path>` must sit
+ *       inside that same work tree. A failure is one line on stderr naming
+ *       the condition and why, and exit 4: without a commit to return to, a
+ *       damaged rewrite has no way back, and a dirty tree would mix the sweep
+ *       into somebody's unrelated diff.
+ *   (b) The census is printed first, in full, and nothing is written unless
+ *       `--yes` was passed. Without it the run ends in one stderr line and
+ *       exit 5, so a person reads what would move before it moves.
+ *   (c) There is no bare-stamp resolution, and no option turns one on. A bare
+ *       stamp names a minute, not a file; the rule that expanded a uniquely
+ *       matching one into that file's basename acted on the class the
+ *       scanner's own `partition()` refuses to judge, and it produced every
+ *       corrupted token the v10.20.0 sweep left in fusion's workbench: 38 head
+ *       fields (`**Date:**`, `**Started:**`, `**Stamp:**`, ...) turned into
+ *       self-citations, and every chained tail the repair pass counts. The
+ *       grammar refuses the shapes that fed it, and the rule is gone rather
+ *       than bounded: with it, `--dry-run` over a swept tree could not reach
+ *       `rewrites=0` while a terminal record kept a bare stamp on purpose.
+ *
+ * A dry run needs none of the three and runs anywhere the workbench does.
+ *
+ * ## What the sweep rewrites, per token kind
+ *
+ * Only where the scanner's status is not `exempt` (fenced code, blockquote
+ * lines, footer templates, announced illustrations, placeholders, fabricated
+ * names, globs, head fields, the example files):
+ *
+ *   record          -> `<stamp>_*_<slug>...`  the store segment is dropped and
+ *                                             a literal marker becomes `_*_`;
+ *                                             a token with no marker keeps its tail
+ *   circle-record   -> `<stamp>-<slug>`       the bare Circle-directory name
+ *   circle-dir      -> `<stamp>-<slug>`       the same
+ *   bare-record     -> `_*_` at the marker    only when the marker is literal; a
+ *                                             truncated citation (`<stamp>_o_`,
+ *                                             `<stamp>_d`) is one token and is
+ *                                             rewritten whole or left whole
+ *   stamp-bare      -> never rewritten; listed with its status
+ *
+ * Tokens are spliced right to left within a line, so earlier columns stay
+ * valid; nothing but the token span is touched. `.ts` files under
+ * `lib/__tests__` are never rewritten: their store-prefixed strings are
+ * fixtures the tests assert on.
+ *
+ * Output: one `<file>  rewrites=<n>` line per touched file, then the
+ * residual (every bare stamp the scanner judged, in file order,
+ * `<file>:<line>  '<token>'  <status>`; an exempt one is not listed), then
+ * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
+ * circle-record=<n> circle-dir=<n> bare-record=<n> stamp-bare=<n>
+ * mode=<dry-run|write>`, the per-kind figures being what the commit message
+ * that lands a sweep names. `stamp-bare=` is always 0 since the rule went and
+ * is kept so the line's shape is stable. The summary line reads `mode=write`
+ * only when files were written; a `--write` run stopped by guard (b) prints
+ * `mode=dry-run`, because that is what it was.
+ *
+ * ## The repair pass (`--repair`)
+ *
+ * Undoes what the retired bare-stamp rule did, token by token and nothing
+ * else, over every file the sweep would read (`archive/` and terminal records
+ * included, because the damage reached them). Three classes, each keyed on
+ * the workbench index rather than on a diff, so the pass is runnable in any
+ * workbench the v10.20.0 sweep touched:
+ *
+ *   date-field   `**<Field>:** <basename>` where the basename names the record
+ *                itself (`<stamp>-<slug>.md` or `<stamp>_coder_<slug>.md`, the
+ *                two legacy history shapes) -> `**<Field>:** <stamp>`. A
+ *                self-naming date is the one thing that line can have been.
+ *   chained-tail `<basename>.md<tail>` where `<basename>.md` (with `_*_` read
+ *                as any letter) is in the index and `<tail>` is `_<x>`, `_<x>_`,
+ *                `_...<anything>`, `_<word>_<anything>`, `[<x>]-<slug>` or a
+ *                second `.md` -> `<basename>.md`. A line-anchor `:<n>` after
+ *                the tail survives. One shape is deliberately excluded: a tail
+ *                that is itself a complete filename with an extension other
+ *                than `.md` (one `_observations.txt` tail, once) was a
+ *                different file's name before the sweep and is restored to it.
+ *   doubled      the `_<word>_` case of `chained-tail`, counted apart so the
+ *                figure reconciles with the issue that named 6.
+ *
+ * Fenced and blockquoted lines are left alone (an exhibit of the fault is not
+ * an instance of it). Output: `<file>:<line>  '<from>' -> '<to>'  <class>` per
+ * token, then `files=<n> repairs=<n> date-field=<n> chained-tail=<n>
+ * doubled=<n> mode=<dry-run|write>`.
+ *
+ * ## Exit codes
+ *
+ *   0  ran; in a writing mode, wrote.
+ *   1  usage error.
+ *   2  no workbench (no `fusion-workbench/.fusion-setup` above cwd and no
+ *      `--root`, or `--root` names no workbench).
+ *   3  the compiled hooks are missing; `bin/fusion-citation-sweep` raises it
+ *      before this file is reached.
+ *   4  guard (a) refused: not a git work tree, workbench untracked, tree
+ *      dirty, or an extra path outside the work tree. Nothing written.
+ *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
+ *      nothing written.
+ */
+
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
+import { dirname, join, relative, resolve, sep } from "node:path";
+import {
+  createScanner,
+  fencedContentLines,
+  markdownFilesUnder,
+  MARKER_SLOT,
+  type CitationHit,
+  type Scanner,
+} from "./lib/citation-scan.js";
+import { findWorkbenchRoot } from "./lib/workbench-root.js";
+import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
+
+// The reader may close stdout first; see exitZeroOnStdoutEpipe.
+exitZeroOnStdoutEpipe();
+
+const NAME = "fusion-citation-sweep";
+const USAGE = `usage: ${NAME} [--root <workbench>] [--dry-run | --write [--yes]] [--repair] [<path>...]`;
+
+type Line = { line: number; text: string };
+
+interface Options {
+  root: string;
+  write: boolean;
+  yes: boolean;
+  repair: boolean;
+  extra: string[];
+}
+
+function usage(msg: string): never {
+  process.stderr.write(`${NAME}: ${msg}\n${USAGE}\n`);
+  process.exit(1);
+}
+
+function parse(argv: string[]): Options {
+  let root: string | null = null;
+  let write = false;
+  let yes = false;
+  let repair = false;
+  const extra: string[] = [];
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--root") {
+      const next = argv[++i];
+      if (next === undefined) usage("--root needs a directory");
+      root = next;
+    } else if (a === "--write") write = true;
+    else if (a === "--dry-run") write = false;
+    else if (a === "--yes") yes = true;
+    else if (a === "--repair") repair = true;
+    else if (a.startsWith("--")) usage(`unknown option ${a}`);
+    else extra.push(a);
+  }
+  if (root === null) {
+    const project = findWorkbenchRoot();
+    if (project !== null) root = join(project, "fusion-workbench");
+  }
+  if (root === null || !existsSync(join(root, ".fusion-setup"))) {
+    process.stderr.write(`${NAME}: no workbench (no fusion-workbench/.fusion-setup above cwd; pass --root)\n`);
+    process.exit(2);
+  }
+  return { root: resolve(root), write, yes, repair, extra };
+}
+
+// --- guard (a): a tracked workbench in a clean git work tree -----------------
+
+function git(cwd: string, ...args: string[]): { status: number | null; stdout: string; failed: boolean } {
+  const r = spawnSync("git", args, { cwd, encoding: "utf-8" });
+  return { status: r.status, stdout: r.stdout ?? "", failed: r.error !== undefined };
+}
+
+/** One line naming the refused condition, or null when the tree qualifies. */
+function refusal(root: string, extra: string[]): string | null {
+  const top = git(root, "rev-parse", "--show-toplevel");
+  if (top.failed) return `refused (no-git): git could not be run, so no commit exists to return to; nothing written`;
+  if (top.status !== 0) {
+    return `refused (not-a-git-work-tree): ${root} is not inside a git work tree, so a rewrite there has no way back; nothing written`;
+  }
+  const toplevel = realpathSync(top.stdout.trim());
+  const wbRel = relative(toplevel, realpathSync(root));
+  const tracked = git(toplevel, "ls-files", "--error-unmatch", "--", wbRel === "" ? "." : wbRel);
+  if (tracked.status !== 0) {
+    return `refused (workbench-untracked): ${wbRel || "."} is not tracked by git (git ls-files --error-unmatch), so a rewrite there has no way back; nothing written`;
+  }
+  const status = git(toplevel, "status", "--porcelain");
+  const dirty = status.stdout.split("\n").filter((l) => l.length > 0);
+  if (dirty.length > 0) {
+    return `refused (dirty-tree): git status --porcelain lists ${dirty.length} ${dirty.length === 1 ? "entry" : "entries"}; commit or stash first, so the sweep is its own diff and the way back is one revert; nothing written`;
+  }
+  for (const p of extra) {
+    const abs = realpathSync(resolve(p));
+    const rel = relative(toplevel, abs);
+    if (rel.startsWith("..") || resolve(toplevel, rel) !== abs) {
+      return `refused (path-outside-repo): ${p} is not inside the work tree at ${toplevel}, so its rewrite would have no way back; nothing written`;
+    }
+  }
+  return null;
+}
+
+// --- the sweep ---------------------------------------------------------------
+
+/** The storeless spelling of one hit, or null when it is left as it stands. */
+function rewriteOf(hit: CitationHit): string | null {
+  if (hit.status === "exempt" || hit.status === "unresolved-no-workbench") return null;
+  const t = hit.token;
+  switch (hit.kind) {
+    case "record": {
+      const m = /([0-9]{6}-[0-9]{4})((?:_[a-zA-Z*]_)?[^]*)$/.exec(t.slice(t.lastIndexOf("/") + 1));
+      if (m === null) return null;
+      return m[1] + m[2].replace(/^_[a-z]_/, "_*_");
+    }
+    case "circle-record":
+    case "circle-dir": {
+      const m = /circles\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)/.exec(t);
+      return m === null ? null : m[1];
+    }
+    case "bare-record":
+      return /^[0-9]{6}-[0-9]{4}_[a-z]_/.test(t) ? t.replace(/_[a-z]_/, "_*_") : null;
+    default:
+      return null;
+  }
+}
+
+// --- the repair pass ---------------------------------------------------------
+
+const STAMP = "[0-9]{6}-[0-9]{4}";
+// `<basename>.md` then a tail; the basename's slug is the shortest run that
+// lets a `.md` follow, so a doubled `<b>.md_coder_<b>.md` splits at the first.
+const CHAINED_RE = new RegExp(
+  `(?<![\\/0-9A-Za-z_-])(${STAMP}(?:${MARKER_SLOT})[A-Za-z0-9…-]*?\\.md)` +
+    `(_[a-z*]_?(?![A-Za-z0-9])|_(?:[a-z]+_|…)[A-Za-z0-9._…-]*|_[a-z0-9-]+\\.[a-z]{2,4}|\\[[a-z]\\](?:-[a-z0-9-]+)?|\\.md)(?![A-Za-z0-9])`,
+  "g",
+);
+// the two legacy history shapes, `<stamp>-<slug>.md` and `<stamp>_coder_<slug>.md`
+const HEAD_FIELD_RE = new RegExp(`^(\\*\\*[^*\\n]+:\\*\\*\\s+)(${STAMP})((?:${MARKER_SLOT}|-)[a-z0-9-]+\\.md)\\s*$`);
+
+type Repair = [from: string, to: string, cls: "date-field" | "chained-tail" | "doubled", col: number];
+
+/** Whether any index entry's basename is the repaired citation's. */
+function indexed(scanner: Scanner, base: string): boolean {
+  const re = new RegExp("^" + base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/_\\\*_/g, "_[a-z]_") + "$");
+  return scanner.workbenchIndex().some((e) => re.test(e.base));
+}
+
+/** Every repair on one line, right to left. */
+function repairsOn(scanner: Scanner, lineText: string, ownBase: string): Repair[] {
+  const out: Repair[] = [];
+  const hf = HEAD_FIELD_RE.exec(lineText);
+  if (hf && hf[2] + hf[3] === ownBase) {
+    out.push([hf[2] + hf[3], hf[2], "date-field", hf[1].length]);
+    return out;
+  }
+  CHAINED_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = CHAINED_RE.exec(lineText)) !== null) {
+    const [full, base, tail] = m;
+    if (!indexed(scanner, base)) continue;
+    // a tail that is a whole filename with its own extension names another file
+    const ext = /^_([a-z0-9-]+\.[a-z]{2,4})$/.exec(tail);
+    if (ext && ext[1].split(".").pop() !== "md") {
+      out.push([full, base.slice(0, 11) + "_" + ext[1], "chained-tail", m.index]);
+      continue;
+    }
+    out.push([full, base, /^_[a-z]{2,}_/.test(tail) ? "doubled" : "chained-tail", m.index]);
+  }
+  return out.reverse();
+}
+
+// --- main --------------------------------------------------------------------
+
+const isTestFixture = (abs: string): boolean =>
+  abs.endsWith(".ts") && abs.split(sep).join("/").includes("/lib/__tests__/");
+
+function main(argv: string[]): number {
+  const opts = parse(argv);
+  const { root, repair, extra } = opts;
+  const write = opts.write && opts.yes;
+
+  if (opts.write) {
+    const why = refusal(root, extra);
+    if (why !== null) {
+      process.stderr.write(`${NAME}: ${why}\n`);
+      return 4;
+    }
+  }
+
+  const scanner = createScanner(root);
+  const files = markdownFilesUnder(root).map((f) => f.abs);
+  for (const p of extra) {
+    const abs = resolve(p);
+    if (!existsSync(abs)) usage(`${p} does not exist`);
+    if (statSync(abs).isDirectory()) files.push(...markdownFilesUnder(abs).map((f) => f.abs));
+    else files.push(abs);
+  }
+  const cwd = realpathSync(process.cwd());
+  const mode = write ? "write" : "dry-run";
+  const out: string[] = [];
+  let touched = 0;
+
+  if (repair) {
+    const byClass = { "date-field": 0, "chained-tail": 0, doubled: 0 };
+    let repairs = 0;
+    for (const abs of files) {
+      if (isTestFixture(abs)) continue;
+      const rel = relative(cwd, realpathSync(abs)).split(sep).join("/");
+      const ownBase = abs.slice(abs.lastIndexOf(sep) + 1);
+      const lines: Line[] = readFileSync(abs, "utf-8").split("\n").map((t, i) => ({ line: i + 1, text: t }));
+      const fenced = fencedContentLines(lines);
+      let n = 0;
+      for (const l of lines) {
+        if (fenced[l.line - 1] || /^\s*>/.test(l.text)) continue;
+        for (const [from, to, cls, col] of repairsOn(scanner, l.text, ownBase)) {
+          l.text = l.text.slice(0, col) + to + l.text.slice(col + from.length);
+          out.push(`${rel}:${l.line}  '${from}' -> '${to}'  ${cls}`);
+          byClass[cls]++;
+          n++;
+        }
+      }
+      if (n === 0) continue;
+      touched++;
+      repairs += n;
+      if (write) writeFileSync(abs, lines.map((l) => l.text).join("\n"));
+    }
+    const classes = Object.entries(byClass).map(([k, v]) => `${k}=${v}`).join(" ");
+    out.push(`files=${touched} repairs=${repairs} ${classes} mode=${mode}`);
+  } else {
+    let rewrites = 0;
+    const byKind = { record: 0, "circle-record": 0, "circle-dir": 0, "bare-record": 0, "stamp-bare": 0 };
+    const residual: [number, number, string][] = [];
+    for (const abs of files) {
+      if (isTestFixture(abs)) continue;
+      const rel = relative(cwd, realpathSync(abs)).split(sep).join("/");
+      const lines: Line[] = readFileSync(abs, "utf-8").split("\n").map((t, i) => ({ line: i + 1, text: t }));
+      const hits = scanner.scanCitationTokens(rel, lines);
+      let n = 0;
+      // right to left within a line, so each splice leaves the earlier columns valid
+      for (const h of [...hits].sort((a, b) => b.line - a.line || b.col - a.col)) {
+        const to = rewriteOf(h);
+        if (to === null) {
+          if (h.kind === "stamp-bare" && h.status !== "exempt") {
+            residual.push([h.line, h.col, `${rel}:${h.line}  '${h.token}'  ${h.status}`]);
+          }
+          continue;
+        }
+        if (to === h.token) continue;
+        const l = lines[h.line - 1];
+        l.text = l.text.slice(0, h.col) + to + l.text.slice(h.col + h.token.length);
+        n++;
+        if (h.kind in byKind) byKind[h.kind as keyof typeof byKind]++;
+      }
+      if (n === 0) continue;
+      touched++;
+      rewrites += n;
+      out.push(`${rel}  rewrites=${n}`);
+      if (write) writeFileSync(abs, lines.map((l) => l.text).join("\n"));
+    }
+    for (const [, , r] of residual.sort((a, b) => a[0] - b[0] || a[1] - b[1])) out.push(r);
+    const kinds = Object.entries(byKind).map(([k, v]) => `${k}=${v}`).join(" ");
+    out.push(`files=${touched} rewrites=${rewrites} residual=${residual.length} ${kinds} mode=${mode}`);
+  }
+
+  process.stdout.write(out.join("\n") + "\n");
+  if (opts.write && !opts.yes) {
+    process.stderr.write(
+      `${NAME}: refused (no --yes): the census above is what --write would change; pass --yes to write it; nothing written\n`,
+    );
+    return 5;
+  }
+  return 0;
+}
+
+process.exitCode = main(process.argv.slice(2));

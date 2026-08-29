@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# fusion-citation-sweep — rewrite a consuming project's store-prefixed record
+# citations to the storeless form, behind three guards, and never on its own.
+#
+# Usage:
+#   fusion-citation-sweep [--root <workbench>] [--dry-run | --write [--yes]] [--repair] [<path>...]
+#
+# --dry-run is the default and runs anywhere a workbench does: it prints the
+# census (one `<file>  rewrites=<n>` line per file it would touch, the bare
+# stamps it will not judge, then one `files=<n> rewrites=<n> ... mode=dry-run`
+# summary line) and writes nothing. --repair selects the repair pass over the
+# sweep; --write applies whichever was selected, behind three guards:
+#
+#   (a) the workbench is inside a git work tree, tracked by it
+#       (git ls-files --error-unmatch), and the tree is clean
+#       (git status --porcelain empty); every extra <path> sits inside that
+#       same work tree. Else one stderr line names the condition and why,
+#       exit 4, nothing written: without a commit to return to there is no
+#       way back.
+#   (b) the census is printed first and nothing is written unless --yes was
+#       passed; without it, one stderr line and exit 5.
+#   (c) there is no bare-stamp resolution and no option enables one. A bare
+#       stamp names a minute, not a file; the rule that expanded a uniquely
+#       matching stamp into a filename produced every corrupted token the
+#       v10.20.0 sweep left in fusion's own workbench, and it was removed
+#       rather than bounded.
+#
+# No fusion pipeline or skill runs this helper. `/fusion:cleanup` prints the
+# checker's verdict (bin/fusion-citation-check) and stops there; a person runs
+# the sweep by hand, --dry-run first, then --write --yes on a clean tree so
+# the sweep is its own commit and the way back is one revert.
+#
+# Exit codes:
+#   0  ran; in a writing mode, wrote.
+#   1  usage error.
+#   2  no fusion workbench above the working directory and no --root.
+#   3  the plugin's compiled hooks are missing, so nothing could be asked. Its
+#      own code and not 2: "there is no workbench" is an answer about the
+#      project, and a broken install must never be reported as one.
+#   4  guard (a) refused; nothing written.
+#   5  guard (b) refused (--write without --yes); the census was printed,
+#      nothing written.
+#
+# The work is hooks/dist/citation-sweep.js, resolved relative to this script
+# rather than through $FUSION_PLUGIN_ROOT, so an install copy and a work tree
+# each run their own build; its header carries the per-kind rewrite table and
+# the repair pass's three classes. A call site guards with [ -x ]: the
+# installed copy need not carry a helper added between releases (decision
+# 260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md).
+
+set -euo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+entry="$here/../hooks/dist/citation-sweep.js"
+
+if [ ! -f "$entry" ]; then
+  echo "fusion-citation-sweep: $entry is missing — the plugin's compiled hooks are not installed." >&2
+  exit 3
+fi
+
+exec node "$entry" "$@"

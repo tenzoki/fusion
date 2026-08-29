@@ -36,7 +36,8 @@
  * inside a fenced code block or a blockquote is exempt, and that fencing is
  * the whole of the distinction (`rules/fusion-workbench-conventions.md`
  * `## Filename Patterns`). There is no `--fix`: the rewriter is
- * `hooks/scripts/citation-sweep.mjs`, run by hand after reading its census.
+ * `citation-sweep.ts` through `bin/fusion-citation-sweep`, run by hand after
+ * reading its census and behind its own three guards.
  *
  * ## Exit codes
  *

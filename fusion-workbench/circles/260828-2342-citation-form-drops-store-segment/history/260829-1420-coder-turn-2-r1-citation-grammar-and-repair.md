@@ -43,7 +43,7 @@ Then `node hooks/scripts/citation-sweep.mjs --write`: files=48 rewrites=119 bare
 
 ## Sighting, not fixed
 
-`circles/260805-2005-textschicht-gegen-code-nachziehen/_c_circle.md:104`: the committed sweep starred both markers of a shell illustration, `mv "…_o_$f.md" "…_c_$f.md"` -> `_*_` twice, which deletes the example's meaning (a rename from open to closed). Outside the three repaired classes; left for the orchestrator.
+`260805-2005-textschicht-gegen-code-nachziehen:104`: the committed sweep starred both markers of a shell illustration, `mv "…_o_$f.md" "…_c_$f.md"` -> `_*_` twice, which deletes the example's meaning (a rename from open to closed). Outside the three repaired classes; left for the orchestrator.
 
 ## Issues closed
 

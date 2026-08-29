@@ -33,3 +33,5 @@
 
 **Rebalance recommendation:** none
 - Phase 3 coherent; Circle review (260829-1345) found 1 High, 1 Medium, 1 Low. User chose a repair Turn (Revise Artifact). Turn 2: R1 dispatched.
+- R1 done, commit D 3276b1e1 (42 head fields, 239 tails, 9 filenames repaired; dry-run rewrites=0; 797 tests). Issue filed for the starred shell illustration; decision filed on shipping the sweep. Turn 2 ends.
+- Decision 260829-1450 answered option 2. Turn 3: G1 dispatched.

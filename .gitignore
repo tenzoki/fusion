@@ -44,6 +44,7 @@ bin/*
 !bin/fusion-events
 !bin/fusion-cadence-anchor
 !bin/fusion-citation-check
+!bin/fusion-citation-sweep
 *.exe
 # Generated protobuf (rebuild from .proto)
 *.pb.go
