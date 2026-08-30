@@ -58,3 +58,6 @@ Option 2. Option 1 and option 3 answer the boundary question by narrowing what a
 
 ---
 Answered: 260830-1841_*_citation-mechanism-four-defect-repair.md — user approved the plan at the Phase 0b plan-review gate on 2026-08-30, choosing option 2: the three store-prefixed patterns gain a shared left anchor plus a closed rooting enumeration read off the layout, and the bare Circle-directory form is named in that enumeration so a token spans its own rooting.
+
+---
+Implemented: hooks/lib/citation-scan.ts:201 — LEFT_ANCHOR and ROOTING are shared source fragments carried by REC_RE, CIRCLE_RE and CIRCLE_REC_RE alike, and REC_RE's container group gained the bare Circle-directory alternative so a token spans its own rooting. The probe yields no token for the five foreign-path shapes and one whole-span token for each rooted one; resolved fell by exactly 1 where two overlapping hits merged into one, and no violation figure moved.

@@ -112,7 +112,7 @@ Every code step carries the same three standing obligations, stated once here ra
      - With `fusion-workbench/portfolio.md` modified, `bin/fusion-citation-sweep --write --yes` exits **4** with `refused (dirty-tree)` naming that path.
      - `bin/fusion-citation-sweep --dry-run` last line still reads `... rewrites=0 ...`.
 
-2. **Anchor the three store-prefixed patterns and name the rooting forms**
+2. [DONE] **Anchor the three store-prefixed patterns and name the rooting forms**
    - Executor: `coder`
    - Files: `hooks/lib/citation-scan.ts`
    - Changes: introduce one `CIRCLE_DIR` source fragment (`[0-9]{6}-[0-9]{4}-[a-z0-9-]+`) and build `SWEEP_DIR_RE` from it, replacing the second literal copy of the same shape. Introduce two shared fragments, a left anchor `(?<![A-Za-z0-9._\/-])` and a rooting prefix `(?:\.{1,2}\/)*(?:fusion-workbench\/)?(?:archive\/<CIRCLE_DIR>\/)?`. Prefix `REC_RE`, `CIRCLE_RE` and `CIRCLE_REC_RE` with both. In `REC_RE`, add a bare Circle-directory alternative to the existing `circles/<dir>/` and `shared/` group, so the group reads `(?:(circles\/<dir>)\/|(shared)\/|(<dir>)\/)?`. Update the destructuring at the `REC_RE` call site, which currently reads `const [full, circleDir, shared, store, stamp, restRaw] = m;` and gains a group, and extend the `segment` string the `store-prefixed` violation reports so it names the bare-directory case. Rewrite the grammar section of the file header to state the boundary rule once: a store-prefixed citation begins at a non-path boundary and carries one of the enumerated rooting prefixes, and the enumeration is read off the layout rather than guessed.

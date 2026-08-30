@@ -34,14 +34,47 @@
 //
 //   THE THREE STORE-PREFIXED SHAPES ARE DETECTED AND NEVER RESOLVED. A record
 //   behind a store segment (`shared/<store>/…`, `circles/<dir>/<store>/…`,
-//   `record`), a Circle's own record `circles/<dir>/_x_circle.md`
-//   (`circle-record`) and a Circle directory `circles/<dir>` (`circle-dir`)
-//   each get the status `store-prefixed`, a violation whose `fix` spells the
-//   storeless form. The segment is what an archive sweep moves, so a citation
-//   carrying it dies at the sweep; the storeless form survives it. Keeping the
-//   three as detectors is what lets the gates report the old spelling instead
-//   of silently resolving it through `archive/`, which is what they did until
-//   the 2026-08-19 archive tolerance was deleted with this rewrite.
+//   `<dir>/<store>/…`, `record`), a Circle's own record
+//   `circles/<dir>/_x_circle.md` (`circle-record`) and a Circle directory
+//   `circles/<dir>` (`circle-dir`) each get the status `store-prefixed`, a
+//   violation whose `fix` spells the storeless form. The segment is what an
+//   archive sweep moves, so a citation carrying it dies at the sweep; the
+//   storeless form survives it. Keeping the three as detectors is what lets the
+//   gates report the old spelling instead of silently resolving it through
+//   `archive/`, which is what they did until the 2026-08-19 archive tolerance
+//   was deleted with this rewrite.
+//
+//   WHERE A STORE-PREFIXED CITATION BEGINS, one rule for all three of them
+//   (decision
+//   260830-1841_*_where-may-a-store-prefixed-citation-begin-and-which-rooting-forms-does-the-grammar-name.md,
+//   option 2). It begins at a NON-PATH BOUNDARY, `LEFT_ANCHOR`, the lookbehind
+//   `BARE_RE` and `STAMP_RE` have always carried; and between that boundary and
+//   its store segment it carries one of the rootings `ROOTING` enumerates:
+//   `./` and `../` hops, `fusion-workbench/`, `archive/<sweep>/`. The
+//   enumeration is READ OFF THE LAYOUT (`rules/fusion-workbench-conventions.md`
+//   `## fusion-workbench Layout`) rather than guessed, and it is closed: every
+//   other left context is refused whole.
+//
+//   Until 2026-08-30 the three carried no left bound at all, so a store name
+//   was recognised wherever it stood and `pytorch/issues/<record>`,
+//   `myplanning/<record>` and `mycircles/<dir>` each matched from the store
+//   segment inward. A rewriter splices at the token's own `col`, so the foreign
+//   prefix survived glued to the rewritten basename; one consuming project
+//   measured 468 such sites. With no left bound the question is "is this
+//   arbitrary path a workbench path", which the token text cannot answer
+//   (`rules/critical-stance.md` §4); asked instead as a rooted path drawn from
+//   a closed enumeration it is decidable from the token text alone. That is why
+//   the mechanism changed rather than the approximation improving.
+//
+//   THE BARE CIRCLE DIRECTORY IS ONE OF `REC_RE`'S ROOTINGS: `<dir>/<store>/…`
+//   with nothing in front of it, the everyday spelling of a Circle-scoped
+//   record in running text and 150 of that project's sites. It is in the
+//   enumeration because a token must span its own rooting. Without it the
+//   anchored pattern would begin at the store segment and one such line would
+//   produce two overlapping hits, the directory as a `stamp-name` and the
+//   record behind it as a `record`; a rewriter would then rewrite the inner one
+//   under the outer prefix, and no repair inside it could recover a prefix the
+//   token never covered.
 //
 //   THE MARKER SLOT IS ONE LETTER OR ONE OF THREE LEGACY WORDS. Every record
 //   filed since the underscore form carries `_x_`; 24 pre-Circle history files
@@ -130,10 +163,43 @@ const STORES = "planning|issues|decisions|history|reviews|analyses|investigation
 export const MARKER_WORDS = ["coder", "ontocoder", "planner"];
 /** The marker slot, `_x_` or `_<word>_`, as a regex source with no capture. */
 export const MARKER_SLOT = `_(?:[a-zA-Z*]|${MARKER_WORDS.join("|")})_`;
+/**
+ * A Circle directory's name, `<stamp>-<slug>`. One fragment because the shape
+ * is read in four places that must agree: the two Circle patterns, `REC_RE`'s
+ * bare-directory rooting, and `SWEEP_DIR_RE`, which is how `circleDirs()`
+ * recognises an archive sweep's own directory. It was written out twice until
+ * 2026-08-30, and the two copies were the same shape only by inspection.
+ */
+const CIRCLE_DIR = "[0-9]{6}-[0-9]{4}-[a-z0-9-]+";
+/**
+ * Where a store-prefixed citation may BEGIN — the same question `BARE_RE` and
+ * `STAMP_RE` already ask in front of a stamp, asked in front of the three
+ * patterns that never asked it. `.` is in the class as well, so that the `./`
+ * of a rooted path is claimed by the rooting below and never by a second match
+ * starting one character in.
+ */
+const LEFT_ANCHOR = "(?<![A-Za-z0-9._\\/-])";
+/**
+ * The closed set of rootings a store-prefixed citation may carry between that
+ * boundary and its store segment: any number of `./` or `../` hops, an optional
+ * `fusion-workbench/`, an optional `archive/<sweep>/`. Read off the layout
+ * (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`), which
+ * is what makes it closed rather than a guess. No capture: what the citation
+ * names is the store segment and the basename, and the rooting is only what the
+ * token has to SPAN so a rewriter splicing at `col` replaces the whole path.
+ */
+const ROOTING = `(?:\\.{1,2}\\/)*(?:fusion-workbench\\/)?(?:archive\\/${CIRCLE_DIR}\\/)?`;
 // Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
 // A DETECTOR since 2026-08-29: every match is reported `store-prefixed`.
-const REC_RE = new RegExp("(?:fusion-workbench\\/)?" +
-    "(?:(circles\\/[0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/|(shared)\\/)?" +
+//
+// The third alternative in the container group is the BARE Circle directory,
+// `<dir>/<store>/<record>` with nothing in front of it. It is there so that such
+// a citation is one token spanning its own rooting instead of two overlapping
+// ones — see the header's boundary paragraph, which is where the reason is
+// written down.
+const REC_RE = new RegExp(LEFT_ANCHOR +
+    ROOTING +
+    `(?:(circles\\/${CIRCLE_DIR})\\/|(shared)\\/|(${CIRCLE_DIR})\\/)?` +
     `(${STORES})\\/` +
     `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?[A-Za-z0-9._…*-]*)`, // `.` admits ASCII `...`
 "g");
@@ -148,8 +214,9 @@ const REC_RE = new RegExp("(?:fusion-workbench\\/)?" +
 // `.md` is optional for the same reason it is everywhere else in this grammar
 // (`basenameMatcher` reads a citation not ending in `.md` as a prefix), and the
 // trailing lookahead stops the pattern from claiming a longer word.
-const CIRCLE_REC_RE = new RegExp("(?:fusion-workbench\\/)?" +
-    "circles\\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)\\/" +
+const CIRCLE_REC_RE = new RegExp(LEFT_ANCHOR +
+    ROOTING +
+    `circles\\/(${CIRCLE_DIR})\\/` +
     "(_[a-zA-Z*]_circle(?:\\.md)?)" +
     "(?![A-Za-z0-9_.\\/-])", "g");
 // Bare record citation — the `_` right after the stamp is required, or every
@@ -160,7 +227,9 @@ const CIRCLE_REC_RE = new RegExp("(?:fusion-workbench\\/)?" +
 const BARE_RE = new RegExp(`(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|_)[A-Za-z0-9._…*-]*)`, "g");
 // Bare Circle-directory citation. A trailing `/` is allowed when nothing
 // path-like follows (the conventions file's layout tree).
-const CIRCLE_RE = /circles\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)(?:\/(?![A-Za-z0-9_.*<]))?(?![A-Za-z0-9_\/-])/g;
+const CIRCLE_RE = new RegExp(LEFT_ANCHOR +
+    ROOTING +
+    `circles\\/(${CIRCLE_DIR})(?:\\/(?![A-Za-z0-9_.*<]))?(?![A-Za-z0-9_\\/-])`, "g");
 // A record stamp carrying no store prefix. Scanned last, and only where no
 // citation token above already covers the position. Two shapes, and they are
 // not the same question: `260812-2116-coder-<slug>` carries a name and is
@@ -327,9 +396,12 @@ function basenameMatcher(cited) {
  * An archive sweep's directory name: `/fusion:archive` creates exactly one
  * level, `archive/<YYMMDD-HHMM>-<slug>/`, and moves whole subtrees beneath it.
  * Read by `circleDirs()` alone, to find the swept `circles/` containers; no
- * resolver reads a path prefix any more.
+ * resolver reads a path prefix any more. Its shape is `CIRCLE_DIR`, the same
+ * fragment the three store-prefixed patterns root against — a sweep directory
+ * and a Circle directory are the same name shape, and stating it once is what
+ * keeps the rooting enumeration and this index reading the same set.
  */
-const SWEEP_DIR_RE = /^[0-9]{6}-[0-9]{4}-[a-z0-9-]+$/;
+const SWEEP_DIR_RE = new RegExp(`^${CIRCLE_DIR}$`);
 /** The storeless spelling of a store-prefixed record token's basename. */
 function storelessBase(stamp, rest) {
     return stamp + rest.replace(/^_[a-z](?:_|$)/, "_*_");
@@ -505,10 +577,13 @@ export function createScanner(workbenchRoot) {
             REC_RE.lastIndex = 0;
             let m;
             while ((m = REC_RE.exec(text)) !== null) {
-                const [full, circleDir, shared, store, stamp, restRaw] = m;
+                // Three container alternatives, exactly one of which can be set:
+                // `circles/<dir>`, `shared`, or the bare Circle directory `<dir>`.
+                const [full, circleDir, shared, bareDir, store, stamp, restRaw] = m;
                 const rest = restRaw ?? "";
                 const idx = m.index;
-                const segment = `${circleDir ?? shared ?? ""}${circleDir || shared ? "/" : ""}${store}/`;
+                const container = circleDir ?? shared ?? bareDir ?? "";
+                const segment = `${container}${container ? "/" : ""}${store}/`;
                 consider(idx, full, "record", () => storePrefixed(segment, storelessBase(stamp, rest)));
             }
             CIRCLE_REC_RE.lastIndex = 0;
