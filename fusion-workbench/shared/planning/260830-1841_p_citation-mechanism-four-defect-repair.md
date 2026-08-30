@@ -186,7 +186,7 @@ see shared/issues/260101-1200_o_x.md
      - `git diff --stat` on `hooks/lib/__tests__/citation-sweep.test.ts` shows at most 120 inserted lines.
      - The executor's report names the fixture rows that fail against the `cda72f71` grammar in the scratch worktree, and the status transition each shows.
 
-7. **The report to the consuming project**
+7. [DONE] **The report to the consuming project**
    - Executor: `analyst`
    - Files: one analysis report at `$OUT_ANALYSIS/YYMMDD-HHMM-<topic>.md`, resolved by the analyst's own `bin/fusion-paths analyst` at Setup. With no Circle active it lands in the shared analysis store.
    - **Language: English.** This is a fusion workbench artifact, so it takes fusion's artifact language, not the chat language and not the consuming project's (`rules/fusion-workbench-conventions.md` `## Project language`). The executor does not decide this.
