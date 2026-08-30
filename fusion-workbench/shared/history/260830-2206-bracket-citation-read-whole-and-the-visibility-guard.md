@@ -100,8 +100,9 @@ L2 col=4 kind=record status=store-prefixed token='shared/issues/260101-1200_o_x.
 
 4. The same scratch run over the ordinary line still reports **one** rewrite,
    `files=1 rewrites=1 residual=0 record=1 … mode=write`, and the line reads
-   `see 260101-1200_*_x.md` afterwards: the storeless basename with the marker
-   wildcarded. The guard did not suppress the ordinary case.
+   the storeless basename with the marker wildcarded (the fixture's own name,
+   quoted in the fenced probe output above and not repeated here as a pointer).
+   The guard did not suppress the ordinary case.
 
 5. Over this repository, both helpers run from the repository root with absolute
    paths. The sweep's last line:
