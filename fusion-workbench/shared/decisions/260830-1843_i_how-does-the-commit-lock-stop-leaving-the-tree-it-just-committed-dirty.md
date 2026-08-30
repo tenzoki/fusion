@@ -45,3 +45,6 @@ Option 4. Options 1 to 3 each pay for a clean `git status` with a property the p
 
 ---
 Answered: 260830-1841_*_citation-mechanism-four-defect-repair.md — user approved the plan at the Phase 0b plan-review gate on 2026-08-30, choosing option 4: the dirt is stated as intended and the sweep guard (a) is narrowed to the corpus question. bin/fusion-commit-lock and rules/commit-lock.md are not edited, so all three properties the rule mandates survive.
+
+---
+Implemented: hooks/citation-sweep.ts:294 — refusal() takes the run's own corpus and refuses only on a porcelain entry that names a file the run will read. bin/fusion-commit-lock and rules/commit-lock.md were not opened, which is what option 4 buys: the row keeps its measured hash, the log stays append-only and union-merged, and the lock stays the single author of no staging list.

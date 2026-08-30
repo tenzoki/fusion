@@ -154,17 +154,27 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
-  it("refuses a dirty tree, before the census and without writing, exit 4", () => {
+  // both halves of guard (a)'s corpus question, documented in `hooks/citation-sweep.ts`
+  it("passes a pending change outside the corpus and refuses one inside it, exit 4, naming that file alone", () => {
     const { root, wb, doc } = scratchRepo();
     try {
+      // outside: guard (a) lets the run through, so it reaches guard (b)
       writeFileSync(join(root, "unrelated.txt"), "in flight");
+      const past = sweep(root, wb, "--write");
+      expect(past.status, past.stderr).toBe(5);
+      expect(last(past)).toMatch(/^files=1 rewrites=1 .* mode=dry-run$/);
+      // inside: refused before the census, and the unrelated entry is not named
+      const edited = `${DIRTY_DOC}\nstill being written`;
+      writeFileSync(doc, edited);
       const run = sweep(root, wb, "--write", "--yes");
       expect(run.status).toBe(4);
       expect(run.stdout).toBe("");
       expect(run.stderr.trim()).toBe(
-        "fusion-citation-sweep: refused (dirty-tree): git status --porcelain lists 1 entry; commit or stash first, so the sweep is its own diff and the way back is one revert; nothing written",
+        "fusion-citation-sweep: refused (dirty-tree): uncommitted changes name 1 file this run reads: " +
+          "fusion-workbench/shared/decisions/260303-0303_o_doc.md; commit or stash them first, so the sweep " +
+          "is its own diff and the way back is one revert; nothing written",
       );
-      expect(readFileSync(doc, "utf-8")).toBe(DIRTY_DOC);
+      expect(readFileSync(doc, "utf-8")).toBe(edited);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

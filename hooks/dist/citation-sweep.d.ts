@@ -40,13 +40,43 @@
  * Three guards stand between `--write` and the tree, each evaluated before a
  * byte is written:
  *
- *   (a) The workbench must be inside a git work tree, tracked by it
- *       (`git ls-files --error-unmatch <workbench>`), and the tree must be
- *       clean (`git status --porcelain` empty). Any extra `<path>` must sit
- *       inside that same work tree. A failure is one line on stderr naming
- *       the condition and why, and exit 4: without a commit to return to, a
- *       damaged rewrite has no way back, and a dirty tree would mix the sweep
- *       into somebody's unrelated diff.
+ *   (a) The workbench must be inside a git work tree and tracked by it
+ *       (`git ls-files --error-unmatch <workbench>`), any extra `<path>` must
+ *       sit inside that same work tree, and **no uncommitted change may name a
+ *       file this run will read**. That last is the corpus question, not a
+ *       clean-tree question: the corpus is the one `main()` builds, every
+ *       `*.md` under the workbench plus each extra `<path>` resolved the way
+ *       `main()` resolves it, computed once and handed to the guard so the
+ *       guard and the run cannot disagree about what will be written. A
+ *       failure is one line on stderr naming the condition, and the offending
+ *       paths where it has them, and exit 4: without a commit to return to, a
+ *       damaged rewrite has no way back, and a change already standing in a
+ *       file the sweep rewrites would mix the two into one diff.
+ *
+ *       It asks about the corpus because a clean tree is not reachable here.
+ *       `fusion-workbench/orchestrator-events.jsonl` is tracked (class R2 in
+ *       `rules/workbench-tracking.md`) and `bin/fusion-commit-lock` appends
+ *       the machine-written `commit` row to it after every commit, so inside
+ *       an orchestrator session the tree is dirty again the moment it is
+ *       committed and a clean-tree test can never be satisfied. That test was
+ *       a proxy for the property guard (a) exists for, namely that a damaged
+ *       rewrite has one revert back and the sweep's diff is its own; this is
+ *       the property itself. The event log is not markdown, so it leaves the
+ *       question by construction rather than through an exemption somebody has
+ *       to maintain. Binding decision:
+ *       `260830-1843_*_how-does-the-commit-lock-stop-leaving-the-tree-it-just-committed-dirty.md`
+ *       (option 4), whose point is that `bin/fusion-commit-lock` and
+ *       `rules/commit-lock.md` are not edited: the other three options each
+ *       traded away a property that rule mandates.
+ *
+ *       Three mechanics of the reading, stated here because the code alone
+ *       leaves them to be inferred. The listing is taken with `git status
+ *       --porcelain -z`, so a path is never quoted or C-escaped and a rename
+ *       arrives as two NUL-separated fields, both of which are compared
+ *       (`R  old -> new` in the unquoted form). An untracked directory entry
+ *       (`?? dir/`) counts when any corpus file sits beneath it. And a
+ *       **deleted** corpus file does not refuse: the run cannot read a file
+ *       that is not there, so it falls outside the question this guard asks.
  *   (b) The census is printed first, in full, and nothing is written unless
  *       `--yes` was passed. Without it the run ends in one stderr line and
  *       exit 5, so a person reads what would move before it moves.
@@ -132,8 +162,9 @@
  *      `--root`, or `--root` names no workbench).
  *   3  the compiled hooks are missing; `bin/fusion-citation-sweep` raises it
  *      before this file is reached.
- *   4  guard (a) refused: not a git work tree, workbench untracked, tree
- *      dirty, or an extra path outside the work tree. Nothing written.
+ *   4  guard (a) refused: not a git work tree, workbench untracked, an
+ *      uncommitted change on a file in this run's corpus, or an extra path
+ *      outside the work tree. Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  */

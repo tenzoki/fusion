@@ -100,7 +100,7 @@ Defect 5 is the property stated as a test over a fixture workbench, after the tw
 
 Every code step carries the same three standing obligations, stated once here rather than repeated per step: run `npm run build` in `hooks/` and commit the regenerated `hooks/dist/` (otherwise `committed-dist.test.ts` fails); update the affected file's own header, which in every one of these files is the authoritative documentation; and commit the step on its own.
 
-1. **Narrow the sweep's dirty-tree guard to the sweep's own corpus**
+1. [DONE] **Narrow the sweep's dirty-tree guard to the sweep's own corpus**
    - Executor: `coder`
    - Files: `hooks/citation-sweep.ts`
    - Changes: in `refusal()`, replace the "any porcelain entry refuses" test with "any porcelain entry that names a file this run will read refuses". The corpus is what `main()` already builds: every `*.md` under `--root`, plus each extra `<path>` argument resolved the way `main()` resolves it. Compute the corpus once and pass it to `refusal()` rather than recomputing, so the guard and the run cannot disagree about what will be written. The refusal line keeps its `refused (dirty-tree):` shape and names the offending paths instead of a count. The other two guards, the `not-a-git-work-tree` / `workbench-untracked` / `path-outside-repo` branches and the exit codes are untouched. Update the `## The three guards on a writing mode` block in the file header to state guard (a) as the corpus question and to say why: `orchestrator-events.jsonl` is tracked, class R2 in `rules/workbench-tracking.md`, and appended by `bin/fusion-commit-lock` after every commit, so a clean-tree test can never be satisfied inside an orchestrator session.
