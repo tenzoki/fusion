@@ -117,6 +117,27 @@
 //   Since the `STAMP_RE` boundary above, a bracket-marked token is no token at
 //   all rather than a bare stamp with an invisible tail.
 //
+//   THE STANCE IS PRESERVED AND SHARPENED, NOT OVERTURNED, by the one place a
+//   `[` is admitted: `REC_RE`'s TAIL, since 2026-08-30. Only the tail, and only
+//   so that a store-prefixed citation of such a record is READ WHOLE. Until
+//   then the tail class refused `[`, so `<store>/260519-0438[o]-loader-check.md`
+//   tokenised as the store segment plus the bare stamp and stopped there, with
+//   `[o]-loader-check.md` outside the token; the sweep rewrote what it could see
+//   to the bare stamp and left the bracket tail standing beside it, and after
+//   that rewrite `STAMP_RE`'s boundary refused the token altogether, so nothing
+//   reported the pointer it had just made unresolvable. `BARE_RE`, `STAMP_RE`,
+//   `MARKER_SLOT` and `basenameMatcher` are untouched by that widening, so such
+//   a token is still never RESOLVED — only reported, now as one whole token
+//   instead of half of one, which is MORE pressure to run `/fusion:migrate`
+//   rather than less. The sweep declines it from the other side: a rewrite is
+//   applied only when the rewritten string re-tokenises whole under this same
+//   grammar, and the bracket form does not, so the token is left as it stands.
+//   Whether the grammar should ever RESOLVE such a record — `/fusion:migrate`
+//   does not convert the frozen stores, so a bracket-named record there is
+//   permanent — is open, and this widening deliberately does not answer it:
+//   260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md
+//   holds that question.
+//
 // The residual token class, the **bare timestamp** (`stamp-bare`).
 // `260722-1943` in running prose carries no store, kind or slug, so the gate
 // cannot judge it (`BARE_RE` requires the `_` a record citation carries). A
@@ -219,12 +240,18 @@ const ROOTING = `(?:\\.{1,2}\\/)*(?:fusion-workbench\\/)?(?:archive\\/${CIRCLE_D
 // a citation is one token spanning its own rooting instead of two overlapping
 // ones — see the header's boundary paragraph, which is where the reason is
 // written down.
+//
+// The tail class admits `[` and `]` — the ONE place in this grammar that reads
+// a pre-v4 bracket marker at all, and it reads it without resolving it, so that
+// such a citation is one whole token rather than a store segment plus a bare
+// stamp with its tail invisible. The header's not-read-on-purpose paragraph
+// carries the reasoning and the sweep-side guard that goes with it.
 const REC_RE = new RegExp(
   LEFT_ANCHOR +
     ROOTING +
     `(?:(circles\\/${CIRCLE_DIR})\\/|(shared)\\/|(${CIRCLE_DIR})\\/)?` +
     `(${STORES})\\/` +
-    `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?[A-Za-z0-9._…*-]*)`, // `.` admits ASCII `...`
+    `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?[A-Za-z0-9._…*\\[\\]-]*)`, // `.` admits ASCII `...`
   "g",
 );
 

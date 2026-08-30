@@ -115,6 +115,37 @@
  * `lib/__tests__` are never rewritten: their store-prefixed strings are
  * fixtures the tests assert on.
  *
+ * ## The visibility guard: no rewrite may escape the grammar
+ *
+ * Every rewrite the table above computes is then handed back to the SAME
+ * scanner that produced the token, alone on a line, and is applied only when
+ * that scan yields exactly one hit whose token is the whole string, whose kind
+ * the gates judge (`GATE_KINDS`) and whose status is not `exempt`. Otherwise
+ * the token is left exactly as it stands.
+ *
+ * It is one property rather than a list of shapes, and that is the point. A
+ * rewrite that the grammar cannot read back is strictly worse than no rewrite:
+ * the pointer stops resolving AND stops being reported, so the defect leaves
+ * the checker's output at the moment it is created. The measured case is the
+ * pre-v4 bracket marker — `<store>/<stamp>[o]-<slug>.md` rewrote to the bare
+ * stamp with `[o]-<slug>.md` left standing beside it, and `STAMP_RE`'s boundary
+ * then refused the result entirely — but the guard is not written against that
+ * shape and names none: asking the question from the other side subsumes every
+ * future shape whose rewrite would escape the grammar, instead of enumerating
+ * the two known today (`rules/critical-stance.md` §2, one integral rule rather
+ * than a rim of special cases).
+ *
+ * Cost, since the guard runs per candidate rewrite: it reuses the run's one
+ * memoised scanner, so it re-walks neither the workbench index nor the Circle
+ * directory index, and it is evaluated only after a candidate exists — a token
+ * the table leaves alone never reaches it.
+ *
+ * What the guard deliberately does NOT do is make the bracket form rewritable.
+ * The grammar reads such a citation whole and reports it; resolving one is a
+ * separate open question, `/fusion:migrate` not having converted the frozen
+ * stores:
+ * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
+ *
  * Output: one `<file>  rewrites=<n>` line per touched file, then the
  * residual (every bare stamp the scanner judged, in file order,
  * `<file>:<line>  '<token>'  <status>`; an exempt one is not listed), then
@@ -175,6 +206,7 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import {
   createScanner,
   fencedContentLines,
+  GATE_KINDS,
   markdownFilesUnder,
   MARKER_SLOT,
   type CitationHit,
@@ -320,9 +352,32 @@ function refusal(root: string, extra: string[], corpus: string[]): string | null
 
 // --- the sweep ---------------------------------------------------------------
 
-/** The storeless spelling of one hit, or null when it is left as it stands. */
-function rewriteOf(hit: CitationHit): string | null {
-  if (hit.status === "exempt" || hit.status === "unresolved-no-workbench") return null;
+/**
+ * The rel a rewrite is probed under. Any name outside `RECORD_EXAMPLE_FILES`
+ * does; naming it here is what keeps the probe from inheriting a file-wide
+ * exemption that has nothing to do with the string being judged.
+ */
+const REWRITE_PROBE = "<rewrite-probe>";
+
+/**
+ * Whether the grammar reads the rewritten string back WHOLE: one token, its own
+ * whole span, a kind the gates judge, and not exempt. The guard the header's
+ * visibility section states, asked of the output rather than of the shapes that
+ * could produce it. The scanner is the run's own, so both its indexes are
+ * already built and this costs no directory walk.
+ */
+function readsBackWhole(scanner: Scanner, rewritten: string): boolean {
+  const hits = scanner.scanCitationTokens(REWRITE_PROBE, [{ line: 1, text: rewritten }]);
+  return (
+    hits.length === 1 &&
+    hits[0].token === rewritten &&
+    GATE_KINDS.includes(hits[0].kind) &&
+    hits[0].status !== "exempt"
+  );
+}
+
+/** The storeless spelling of one hit, before the visibility guard reads it. */
+function candidateFor(hit: CitationHit): string | null {
   const t = hit.token;
   switch (hit.kind) {
     case "record": {
@@ -340,6 +395,13 @@ function rewriteOf(hit: CitationHit): string | null {
     default:
       return null;
   }
+}
+
+/** The storeless spelling of one hit, or null when it is left as it stands. */
+function rewriteOf(scanner: Scanner, hit: CitationHit): string | null {
+  if (hit.status === "exempt" || hit.status === "unresolved-no-workbench") return null;
+  const to = candidateFor(hit);
+  return to !== null && readsBackWhole(scanner, to) ? to : null;
 }
 
 // --- the repair pass ---------------------------------------------------------
@@ -459,7 +521,7 @@ function main(argv: string[]): number {
       let n = 0;
       // right to left within a line, so each splice leaves the earlier columns valid
       for (const h of [...hits].sort((a, b) => b.line - a.line || b.col - a.col)) {
-        const to = rewriteOf(h);
+        const to = rewriteOf(scanner, h);
         if (to === null) {
           if (h.kind === "stamp-bare" && h.status !== "exempt") {
             residual.push([h.line, h.col, `${rel}:${h.line}  '${h.token}'  ${h.status}`]);

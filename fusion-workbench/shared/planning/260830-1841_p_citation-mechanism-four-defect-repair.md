@@ -137,7 +137,7 @@ see fusion-workbench/circles/260801-1244-guard-rules-write/issues/260101-1200_o_
 ./fusion-workbench/shared/issues/260101-1200_o_x.md
 ```
 
-3. **Read a bracket-marked citation whole, and refuse any rewrite the grammar cannot re-read**
+3. [DONE] **Read a bracket-marked citation whole, and refuse any rewrite the grammar cannot re-read**
    - Executor: `coder`
    - Files: `hooks/lib/citation-scan.ts`, `hooks/citation-sweep.ts`
    - Changes: widen `REC_RE`'s tail character class to admit `[` and `]`, so a store-prefixed citation of a pre-v4 bracket-marked record tokenises whole instead of stopping at the stamp. Nothing else in the grammar learns the bracket form: `BARE_RE`, `STAMP_RE`, `MARKER_SLOT` and `basenameMatcher` are untouched, so such a token is still never **resolved**, only reported. In `rewriteOf()`, gate every returned rewrite: scan the rewritten string in isolation with the same scanner and return it only when the scan yields exactly one hit whose token equals the whole string, whose kind is in `GATE_KINDS`, and whose status is not `exempt`; otherwise return `null` and leave the token as it stands. State in both headers that the grammar's "not read, on purpose" stance is preserved and sharpened: the bracket marker is never resolved, and it is now reported as a whole token instead of half of one, which is more pressure to run `/fusion:migrate` rather than less.

@@ -115,6 +115,37 @@
  * `lib/__tests__` are never rewritten: their store-prefixed strings are
  * fixtures the tests assert on.
  *
+ * ## The visibility guard: no rewrite may escape the grammar
+ *
+ * Every rewrite the table above computes is then handed back to the SAME
+ * scanner that produced the token, alone on a line, and is applied only when
+ * that scan yields exactly one hit whose token is the whole string, whose kind
+ * the gates judge (`GATE_KINDS`) and whose status is not `exempt`. Otherwise
+ * the token is left exactly as it stands.
+ *
+ * It is one property rather than a list of shapes, and that is the point. A
+ * rewrite that the grammar cannot read back is strictly worse than no rewrite:
+ * the pointer stops resolving AND stops being reported, so the defect leaves
+ * the checker's output at the moment it is created. The measured case is the
+ * pre-v4 bracket marker — `<store>/<stamp>[o]-<slug>.md` rewrote to the bare
+ * stamp with `[o]-<slug>.md` left standing beside it, and `STAMP_RE`'s boundary
+ * then refused the result entirely — but the guard is not written against that
+ * shape and names none: asking the question from the other side subsumes every
+ * future shape whose rewrite would escape the grammar, instead of enumerating
+ * the two known today (`rules/critical-stance.md` §2, one integral rule rather
+ * than a rim of special cases).
+ *
+ * Cost, since the guard runs per candidate rewrite: it reuses the run's one
+ * memoised scanner, so it re-walks neither the workbench index nor the Circle
+ * directory index, and it is evaluated only after a candidate exists — a token
+ * the table leaves alone never reaches it.
+ *
+ * What the guard deliberately does NOT do is make the bracket form rewritable.
+ * The grammar reads such a citation whole and reports it; resolving one is a
+ * separate open question, `/fusion:migrate` not having converted the frozen
+ * stores:
+ * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
+ *
  * Output: one `<file>  rewrites=<n>` line per touched file, then the
  * residual (every bare stamp the scanner judged, in file order,
  * `<file>:<line>  '<token>'  <status>`; an exempt one is not listed), then
