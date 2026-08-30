@@ -29,6 +29,27 @@
  *                  project's shipped text); a directory is walked for `*.md`,
  *                  a file is taken as named whatever its extension
  *
+ * ## The declared corpus
+ *
+ * Since 2026-08-31 the run also reads every file the project DECLARED as
+ * citation-bearing in `citations.extraPaths` in its `fusion.json`, resolved by
+ * `declaredCitationFiles()` against `dirname(--root)` and deduplicated by
+ * absolute path. They join the corpus at the same place a `<path>` argument
+ * does, BEFORE guard (a) is asked, so the guard covers them with no new guard
+ * code. The loader's diagnostics and one line per pattern that matched nothing
+ * or was refused go to stderr; the summary line below is untouched by any of
+ * it, byte for byte, because `lib/__tests__/citation-sweep.test.ts` pins it as
+ * a release gate. A project that declares nothing sweeps exactly what it swept
+ * before.
+ *
+ * `citation-check.ts` resolves the same leaf through the same function: the
+ * two hand-run helpers share one corpus, because a reporter narrower than the
+ * rewriter is how this program came to change files the checker then declared
+ * clean. `lib/__tests__/workbench-citation-lint.test.ts` deliberately does not
+ * read the declaration and is not to be made to — that gate has no approvable
+ * baseline and runs in everyone's `npm test`, so a corpus set by an editable
+ * configuration leaf would redden the suite of somebody who edited nothing.
+ *
  * ## The three guards on a writing mode
  *
  * A sweep over a workbench touches every record in it, and fusion's own first

@@ -158,12 +158,23 @@
 // binds fusion's own roots so no gate import had to change. Nothing about what
 // the parser reads or reports moved with it.
 //
+// THE CORPUS THIS GRAMMAR IS POINTED AT IS NOT ITS OWN QUESTION, and since
+// 2026-08-31 one function here answers half of it: `declaredCitationFiles()`
+// resolves the non-Markdown paths a project DECLARED as citation-bearing
+// (`citations.extraPaths` in its `fusion.json`). It decides "did the project
+// declare this file", never "is this token a pointer or an exhibit" — the
+// second is undecidable outside Markdown, where a fence and a blockquote are
+// the entire distinction, so the mechanism was replaced rather than
+// approximated (`rules/critical-stance.md` §4). Its own docstring carries the
+// five-branch case split and what it refuses to decide.
+//
 // This is a measuring instrument, not a fixer (`rules/critical-stance.md` §2):
 // it reads and reports, it never rewrites a citation.
 // ---------------------------------------------------------------------------
 
 import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { isAbsolute, join, relative, sep } from "node:path";
+import { git } from "./git.js";
 
 // --- shared with the gate's other two classes -------------------------------
 
@@ -920,6 +931,125 @@ export function shippedPrompts(
 }
 
 // --- running the parser over an arbitrary corpus ----------------------------
+
+/**
+ * What a project DECLARED as citation-bearing, resolved to files.
+ *
+ * ## What this decides, and what it refuses to decide
+ *
+ * It does NOT decide whether a token in a `.go` file points at a record or
+ * exhibits one. Outside Markdown there is no fence and no blockquote, and those
+ * two are the whole of the pointer-versus-exhibit distinction this grammar has,
+ * so a citation inside a docstring and one inside a comment naming a real
+ * record are the same input to any reader of the text. That question is not
+ * decidable from the token, so the mechanism changes rather than the
+ * approximation improving (`rules/critical-stance.md` §4): the question this
+ * function answers is **"did the project declare this file"**, which is
+ * decidable because somebody wrote it down in a git-tracked file.
+ *
+ * The second question, "which files does a declared pattern name", is decided
+ * by `git ls-files` with `:(glob)` pathspec magic — one mechanism and no
+ * fallback, the one
+ * `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
+ * already chose for this class of question. Glob semantics are git's and not
+ * fusion's: `*` does not cross `/`, `**` does.
+ *
+ * ## The case split, disjoint and complete over five branches
+ *
+ *   1. `git rev-parse --show-toplevel` gives nothing -> `unavailable`, no
+ *      files. A property of the TREE, and never rendered as a zero: a count
+ *      that could not be taken is not a count of none
+ *      (`bin/fusion-count-sources` states the same rule for the same reason).
+ *   2. a pattern that is absolute or carries a `..` segment -> `refused`,
+ *      decided from the string alone, before git is reached.
+ *   3. `git ls-files` would not answer for the pattern -> `refused`.
+ *   4. it answers with nothing -> `unmatched`. One call PER PATTERN is what
+ *      makes a pattern that names nothing nameable at all.
+ *   5. otherwise the NUL-split paths join `files`, deduplicated by absolute
+ *      path.
+ *
+ * Three properties a caller should not have to infer. **No pattern is asked
+ * about when none was declared**: a project that declares nothing gets the
+ * empty result with `unavailable` false, which is an answer about zero patterns
+ * and not a claim about the tree — the alternative would put an advisory in
+ * front of every project that never wrote the key. **A refusal names the call
+ * and not git's own text**: `lib/git.ts` discards stderr and collapses every
+ * failure to `null` by contract, so "git declined it" is the most this can
+ * honestly say. And **an index entry with no file in the work tree is not
+ * returned**: git names the index, the callers read the work tree, and a file
+ * that is not there cannot be part of any corpus.
+ *
+ * `projectRoot` is the cwd of every git call and the base of every `rel`, so a
+ * pattern is relative to the project the declaration lives in, whether or not
+ * that project is the git toplevel.
+ */
+export interface DeclaredCitationPaths {
+  files: { rel: string; abs: string }[];
+  unmatched: string[];
+  refused: { pattern: string; why: string }[];
+  unavailable: boolean;
+}
+
+export function declaredCitationFiles(
+  projectRoot: string,
+  patterns: string[],
+): DeclaredCitationPaths {
+  const out: DeclaredCitationPaths = { files: [], unmatched: [], refused: [], unavailable: false };
+  if (patterns.length === 0) return out;
+  if (git(projectRoot, ["rev-parse", "--show-toplevel"]) === null) {
+    out.unavailable = true;
+    return out;
+  }
+  const seen = new Set<string>();
+  for (const pattern of patterns) {
+    const segments = pattern.split(/[\\/]/);
+    if (isAbsolute(pattern) || pattern.startsWith("/")) {
+      out.refused.push({ pattern, why: "an absolute path names a file outside the project" });
+      continue;
+    }
+    if (segments.includes("..")) {
+      out.refused.push({ pattern, why: "a `..` segment escapes the project root" });
+      continue;
+    }
+    const listed = git(projectRoot, ["ls-files", "-z", "--", `:(glob)${pattern}`]);
+    if (listed === null) {
+      out.refused.push({ pattern, why: "git declined the pathspec" });
+      continue;
+    }
+    const rels = listed.split("\0").filter((p) => p.length > 0);
+    if (rels.length === 0) {
+      out.unmatched.push(pattern);
+      continue;
+    }
+    for (const p of rels) {
+      const rel = p.split(sep).join("/");
+      const abs = join(projectRoot, rel);
+      if (seen.has(abs) || !existsSync(abs)) continue;
+      seen.add(abs);
+      out.files.push({ rel, abs });
+    }
+  }
+  return out;
+}
+
+/**
+ * What the two hand-run helpers say about a declaration, one line each, in the
+ * order a reader needs them. It lives beside the resolver so both callers print
+ * the same sentence for the same condition — the wording is part of the
+ * mechanism, not a detail of one caller — and it returns lines rather than
+ * writing them, because which stream and which prefix belong to the caller.
+ */
+export function declaredCitationNotes(d: DeclaredCitationPaths): string[] {
+  const notes: string[] = [];
+  if (d.unavailable) {
+    notes.push(
+      "declared citation paths unavailable: git would not answer for this tree, so no declared path was resolved (this is not a count of none)",
+    );
+  }
+  for (const r of d.refused) notes.push(`declared pattern refused: '${r.pattern}'; ${r.why}`);
+  for (const p of d.unmatched) notes.push(`declared pattern matched nothing: '${p}'`);
+  return notes;
+}
 
 export function markdownFilesUnder(root: string): { rel: string; abs: string }[] {
   if (!existsSync(root)) return [];

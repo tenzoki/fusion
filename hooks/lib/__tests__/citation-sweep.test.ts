@@ -223,6 +223,32 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
+  // the declared corpus, documented in `hooks/citation-sweep.ts` `## The declared corpus`
+  it("sweeps a file the project declared, and guard (a) covers it with no new guard code", () => {
+    const { root, wb } = scratchRepo();
+    const go = join(root, "src/a.go");
+    try {
+      writeFileSync(join(root, "fusion.json"), JSON.stringify({ citations: { extraPaths: ["src/*.go"] } }));
+      mkdirSync(join(root, "src"), { recursive: true });
+      writeFileSync(go, `// ${DIRTY_DOC}`);
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "a declared file");
+      const run = sweep(root, wb, "--write", "--yes");
+      expect(run.status, run.stderr).toBe(0);
+      expect(readFileSync(go, "utf-8")).toBe("// see `260101-0101_*_alpha.md`");
+      // the summary line is the release gate's, and the declaration never touches its shape
+      expect(last(run)).toBe("files=2 rewrites=2 residual=0 record=2 circle-record=0 circle-dir=0 bare-record=0 stamp-bare=0 mode=write");
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "swept");
+      writeFileSync(go, `// ${DIRTY_DOC}`);
+      const again = sweep(root, wb, "--write", "--yes");
+      expect(again.status).toBe(4);
+      expect(again.stderr).toMatch(/refused \(dirty-tree\): uncommitted changes name 1 file this run reads: src\/a\.go;/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
   it("has no bare-stamp option: --resolve-stamps is a usage error", () => {
     const { root, wb } = scratchRepo();
     try {

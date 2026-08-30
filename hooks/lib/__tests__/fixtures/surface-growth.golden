@@ -46,7 +46,7 @@
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
-  citation-sweep.test.ts 386
+  citation-sweep.test.ts 412
   commit-message-path.test.ts 315
   committed-dist.test.ts 332
   config.test.ts 858
@@ -57,7 +57,7 @@
   domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 168
-  fusion-citation-check.test.ts 76
+  fusion-citation-check.test.ts 164
   fusion-commit-lock.test.ts 424
   fusion-count-sources.test.ts 442
   fusion-events.test.ts 251
@@ -96,4 +96,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 425
-  total 20026
+  total 20140

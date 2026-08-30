@@ -158,11 +158,22 @@
 // binds fusion's own roots so no gate import had to change. Nothing about what
 // the parser reads or reports moved with it.
 //
+// THE CORPUS THIS GRAMMAR IS POINTED AT IS NOT ITS OWN QUESTION, and since
+// 2026-08-31 one function here answers half of it: `declaredCitationFiles()`
+// resolves the non-Markdown paths a project DECLARED as citation-bearing
+// (`citations.extraPaths` in its `fusion.json`). It decides "did the project
+// declare this file", never "is this token a pointer or an exhibit" — the
+// second is undecidable outside Markdown, where a fence and a blockquote are
+// the entire distinction, so the mechanism was replaced rather than
+// approximated (`rules/critical-stance.md` §4). Its own docstring carries the
+// five-branch case split and what it refuses to decide.
+//
 // This is a measuring instrument, not a fixer (`rules/critical-stance.md` §2):
 // it reads and reports, it never rewrites a citation.
 // ---------------------------------------------------------------------------
 import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { isAbsolute, join, relative, sep } from "node:path";
+import { git } from "./git.js";
 export function report(violations) {
     return violations
         .map((v) => `  ${v.file}:${v.line}  '${v.token}'\n    ${v.problem}\n    -> ${v.fix}`)
@@ -780,7 +791,64 @@ export function shippedPrompts(pluginRoot, exempt = new Set()) {
     }
     return files;
 }
-// --- running the parser over an arbitrary corpus ----------------------------
+export function declaredCitationFiles(projectRoot, patterns) {
+    const out = { files: [], unmatched: [], refused: [], unavailable: false };
+    if (patterns.length === 0)
+        return out;
+    if (git(projectRoot, ["rev-parse", "--show-toplevel"]) === null) {
+        out.unavailable = true;
+        return out;
+    }
+    const seen = new Set();
+    for (const pattern of patterns) {
+        const segments = pattern.split(/[\\/]/);
+        if (isAbsolute(pattern) || pattern.startsWith("/")) {
+            out.refused.push({ pattern, why: "an absolute path names a file outside the project" });
+            continue;
+        }
+        if (segments.includes("..")) {
+            out.refused.push({ pattern, why: "a `..` segment escapes the project root" });
+            continue;
+        }
+        const listed = git(projectRoot, ["ls-files", "-z", "--", `:(glob)${pattern}`]);
+        if (listed === null) {
+            out.refused.push({ pattern, why: "git declined the pathspec" });
+            continue;
+        }
+        const rels = listed.split("\0").filter((p) => p.length > 0);
+        if (rels.length === 0) {
+            out.unmatched.push(pattern);
+            continue;
+        }
+        for (const p of rels) {
+            const rel = p.split(sep).join("/");
+            const abs = join(projectRoot, rel);
+            if (seen.has(abs) || !existsSync(abs))
+                continue;
+            seen.add(abs);
+            out.files.push({ rel, abs });
+        }
+    }
+    return out;
+}
+/**
+ * What the two hand-run helpers say about a declaration, one line each, in the
+ * order a reader needs them. It lives beside the resolver so both callers print
+ * the same sentence for the same condition — the wording is part of the
+ * mechanism, not a detail of one caller — and it returns lines rather than
+ * writing them, because which stream and which prefix belong to the caller.
+ */
+export function declaredCitationNotes(d) {
+    const notes = [];
+    if (d.unavailable) {
+        notes.push("declared citation paths unavailable: git would not answer for this tree, so no declared path was resolved (this is not a count of none)");
+    }
+    for (const r of d.refused)
+        notes.push(`declared pattern refused: '${r.pattern}'; ${r.why}`);
+    for (const p of d.unmatched)
+        notes.push(`declared pattern matched nothing: '${p}'`);
+    return notes;
+}
 export function markdownFilesUnder(root) {
     if (!existsSync(root))
         return [];

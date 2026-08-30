@@ -74,3 +74,91 @@ describe("fusion-citation-check over a scratch consuming project", () => {
     }
   }, CASE_TIMEOUT);
 });
+
+// --- the non-Markdown paths a project declares -------------------------------
+
+/**
+ * A project declaring `patterns`, with one `.go` and one `.txt` citing the same
+ * record that does not exist. Tracked but never committed: `git ls-files` reads
+ * the index, so `git add` is the whole of what a declaration needs to resolve.
+ */
+function declaringProject(patterns: string[], withGit = true): string {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), "citation-declared-")));
+  const put = (rel: string, text: string) => {
+    mkdirSync(dirname(join(root, rel)), { recursive: true });
+    writeFileSync(join(root, rel), text);
+  };
+  put("fusion-workbench/.fusion-setup", "{}");
+  put("fusion.json", JSON.stringify({ citations: { extraPaths: patterns } }));
+  put("src/a.go", "// see 260199-9999_*_gone.md");
+  put("src/b.txt", "see 260199-9999_*_gone.md");
+  if (withGit) for (const a of [["init", "-q"], ["add", "-A"]]) spawnSync("git", a, { cwd: root });
+  return root;
+}
+
+describe("fusion-citation-check reads the non-Markdown paths a project declares", () => {
+  it("adds the declared .go file, leaves the undeclared .txt out, and prints both figures", () => {
+    const root = declaringProject(["src/*.go"]);
+    try {
+      const r = run(root);
+      expect(r.status, r.stderr).toBe(0);
+      const lines = r.stdout.trimEnd().split("\n");
+      expect(lines).toContain("declared-patterns=1");
+      expect(lines).toContain("declared-files=1");
+      const rows = lines.filter((l) => l.startsWith("  "));
+      expect(rows).toHaveLength(1);
+      expect(rows[0]).toMatch(/^ {2}src\/a\.go:1 {2}'260199-9999_\*_gone\.md' {2}dangling/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  it("names a pattern that matched nothing on stderr, and reports the other one as before", () => {
+    const root = declaringProject(["src/*.go", "nowhere/*.py"]);
+    try {
+      const r = run(root);
+      expect(r.status, r.stderr).toBe(0);
+      expect(r.stderr.trim()).toBe(
+        "fusion-citation-check: declared pattern matched nothing: 'nowhere/*.py'",
+      );
+      expect(r.stdout).toContain("declared-patterns=2");
+      expect(r.stdout).toContain("declared-files=1");
+      expect(r.stdout.split("\n").filter((l) => l.startsWith("  "))).toHaveLength(1);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  it("refuses an absolute pattern and one carrying a `..` segment, before git is asked", () => {
+    for (const [pattern, why] of [["/etc/*.conf", "absolute"], ["../x/*.go", "escapes"]]) {
+      const root = declaringProject([pattern]);
+      try {
+        const r = run(root);
+        expect(r.status, r.stderr).toBe(0);
+        expect(r.stdout).toContain("declared-files=0");
+        expect(r.stderr).toContain(`declared pattern refused: '${pattern}'`);
+        expect(r.stderr).toContain(why);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    }
+  }, CASE_TIMEOUT);
+
+  // git unreachable, which is how `lib/git.ts` renders every way git declines:
+  // an emptied PATH is deterministic where a scratch directory's own git-ness
+  // is a property of whoever's machine runs the suite
+  it("reads unavailable rather than a zero where git would not answer, and still exits 0", () => {
+    const root = declaringProject(["src/*.go"], false);
+    try {
+      const r = spawnSync(process.execPath, [ENTRY], {
+        cwd: root, encoding: "utf-8", env: { ...process.env, PATH: "" },
+      });
+      expect(r.status, r.stderr).toBe(0);
+      expect(r.stdout).toContain("declared-files=unavailable");
+      expect(r.stdout).toContain("declared-patterns=1");
+      expect(r.stderr.trim()).toMatch(/^fusion-citation-check: declared citation paths unavailable: git would not answer/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+});
