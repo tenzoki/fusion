@@ -100,3 +100,22 @@ Two findings from that run belong here because they bound any answer:
 
 ---
 Answered: 260830-1844_*_does-the-citation-helper-read-non-markdown-surfaces-with-the-stamp-as-the-anchor.md — user chose **option 5** on 2026-08-31, in the session that repaired the reporting project's code surfaces: the project declares its citation-bearing paths in `fusion.json` and both the checker and the sweep read them. The answer was given after the measurement above replaced the record's original premise, and after the repair route was demonstrated on a real tree.
+
+## What shipped, and the two things option 5 did not say
+
+Option 5 shipped in three commits under plan `260831-0024_*_a-project-declares-its-citation-bearing-paths.md`. `c08f70a5` added the configuration leaf `citations.extraPaths` to `hooks/lib/config.ts`, with the drop-and-name behaviour every other leaf has and `[]` for a project that declares nothing. `5fd6bfab` added `declaredCitationFiles()` to `hooks/lib/citation-scan.ts` and both callers reading it, so `bin/fusion-citation-check` gained `declared-patterns=` and `declared-files=` on stdout and both helpers add the declared files to the corpus they already build. `ebcbe525` declared fusion's own `bin/*`, `hooks/*.ts` and `hooks/lib/*.ts`, and in the same commit extended the sweep's guard (a) to refuse an untracked `<path>` argument, closing `260831-0015_*_the-sweeps-guard-a-does-not-check-that-an-extra-path-argument-is-tracked.md`. `bb934a4f` carried the documentation.
+
+Two properties of the shipped shape are the plan's decisions rather than this record's, and option 5 as written above says neither.
+
+**The sweep reads the declaration alongside the checker.** Option 4 proposed the opposite, a corpus wider in the reporter than in the rewriter. The plan refused it for a reason with a date on it: that split had been removed a week earlier, after the sweep was found changing files the checker then declared clean. Handing the declaration to the checker alone would have rebuilt the same split one class further out, over whole file types instead of over the frozen stores.
+
+**The blocking gate does not read it.** `hooks/lib/__tests__/workbench-citation-lint.test.ts` goes on computing its own corpus and never calls the resolver. A corpus set by an editable declaration would turn a one-line edit to a project's `fusion.json` into a red suite for everyone who pulls, which is the cost this record's own constraints name for widening that gate. The reason sits in `hooks/citation-check.ts`'s header rather than being left to inference.
+
+## The demonstration that a declaration is a judgement rather than a heuristic
+
+fusion declares 45 files. They carry 167 resolved citations and 2 dangling ones, measured at `7be624e7`. fusion does not declare the 51 files of `hooks/lib/__tests__/`, which carry 90 dangling and 133 store-prefixed tokens. Any rule keyed on file type takes both sets, and the noise options 2 and 3 were rejected for is exactly that second set. The declaration takes the first and leaves the second, because somebody read them and decided which files hold pointers.
+
+The two dangling rows fusion now reports against itself both sit at `hooks/lib/citation-scan.ts:330`, inside one string value: the reason text of `RECORD_EXAMPLE_FILES` for `skills/migrate/SKILL.md`, which names the fabricated artifacts that skill body demonstrates the layout conversion on. They are accepted, not exempted. `RECORD_EXAMPLE_FILES` exempts a whole file, so entering the grammar's own source there would blind every real citation in it.
+
+---
+Implemented: `c08f70a5`, `5fd6bfab`, `ebcbe525` — a project declares its citation-bearing non-Markdown paths as globs in `citations.extraPaths`, and `bin/fusion-citation-check` and `bin/fusion-citation-sweep` read exactly those, while the blocking citation gate does not.

@@ -46,3 +46,18 @@ The cost is real and belongs in the answer rather than under it: a project outsi
 
 ---
 Answered: 260831-0024_*_a-project-declares-its-citation-bearing-paths.md — user approved the plan at the Phase 0b plan-review gate on 2026-08-31, choosing option 1: one `git ls-files` call per declared pattern under `:(glob)` pathspec, run through the existing git helper, with no fallback enumerator. A tree git will not answer for yields `unavailable`, named on stdout and stderr, never an empty list.
+
+## What shipped
+
+Option 1, in `5fd6bfab`. `declaredCitationFiles(projectRoot, patterns)` in `hooks/lib/citation-scan.ts` runs `git rev-parse --show-toplevel` once through `hooks/lib/git.ts`, refuses from the string alone any pattern that is absolute or carries a `..` segment, and runs one `git ls-files -z -- ':(glob)<pattern>'` per surviving pattern. No glob engine was written and none ships. A tree git will not answer for sets `unavailable`, which the checker prints as `declared-files=unavailable` with one line on stderr, never as a zero.
+
+Three things the executor settled that the plan did not specify. Each falls between the branches of the case split above, which distinguishes patterns and trees but not the absence of both.
+
+**Nothing asks git anything when a project declared nothing.** The resolver returns on an empty pattern list before the `rev-parse` call, so a project outside a git work tree that never wrote the key gets no `unavailable`, no stderr line and no subprocess. The cost this answer accepts is paid only by a project that declared something.
+
+**A refusal names the call, not git's text.** `hooks/lib/git.ts` discards stderr by contract, so no diagnostic from git is available to quote. Each refusal states the condition and the command that established it, for instance that git declined the pathspec, rather than a message the helper never received.
+
+**A tracked file absent from the work tree is filtered out.** `git ls-files` reads the index, and the index names a file that a checkout, a stash or a deletion has removed from the tree. The callers read the tree, so the resolver drops any path with no file behind it instead of handing a caller a name it cannot open.
+
+---
+Implemented: `5fd6bfab` — one `git ls-files` call per declared pattern under `:(glob)` pathspec magic, through the existing git helper, with no fallback enumerator; a tree git will not answer for yields `unavailable`, named on stdout and on stderr.

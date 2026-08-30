@@ -45,3 +45,6 @@ It is filed rather than answered because nothing in the realising plan turns on 
 ## Recommendation
 
 None yet, and deliberately: the choice between options 1 and 2 turns on whether anybody actually runs the sweep by hand over this repository's test tree, which is a fact about practice rather than about the code. Option 3 is the one that can be ruled out now — it adds a list to solve a case the include list already solves.
+
+---
+Note (2026-08-31, analyst): plan `260831-0024_*_a-project-declares-its-citation-bearing-paths.md` shipped through `bb934a4f` without touching `isTestFixture`, so the skip stands exactly as quoted above and this record stays open as filed. The 51-file measurement in the Question section was taken at `7be624e7`.

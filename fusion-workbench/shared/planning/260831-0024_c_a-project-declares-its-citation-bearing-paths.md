@@ -1,7 +1,7 @@
 # Implementation Plan: a project declares which non-Markdown paths carry record citations, and the checker and the sweep read exactly those
 
 **Date:** 2026-08-31
-**Status:** In Progress
+**Status:** Complete
 **Spec:** none — planned from the orchestrator's dispatch, which carried the answer to `260830-1844_*_does-the-citation-helper-read-non-markdown-surfaces-with-the-stamp-as-the-anchor.md` (option 5) and the measurements from the consuming project's repair run
 **Decidability:** Two questions stack here and each is answered by replacing it, not by approximating it. The first is **"does this token in a `.go` file point at a record or exhibit one?"** — *not* decidable from the token or its surroundings. Outside Markdown there is no fence and no blockquote, and those two are the entire pointer-versus-exhibit distinction fusion has; a citation inside a Python docstring and one inside a comment that names a real record are the same input to any reader of the text. So the mechanism changes (`rules/critical-stance.md` §4): the question becomes **"did the project declare this file as citation-bearing?"**, which is decidable because somebody wrote it down in a git-tracked file. That is the same move that repaired defect 1 on 2026-08-30 — stop guessing where a citation may begin, name a closed set of places instead. The second question is the one the first creates: **"which files does a declared pattern name?"** It is decidable, and the plan answers it with one mechanism and no fallback, `git ls-files` with `:(glob)` pathspec magic, the mechanism `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md` already chose for the same class of question in this repository. Its case split is disjoint and complete over five branches, each settled by a value the resolver holds: not a git work tree (`git rev-parse --show-toplevel` gives nothing), a pattern refused before git (absolute, or carrying a `..` segment), a pattern git itself refuses, a pattern matching nothing, a pattern matching files. Nothing here asks whether a *declaration* is correct: that is a judgement the project makes, and fusion reports it rather than second-guessing it.
 
@@ -138,7 +138,7 @@ Every code step carries the same three standing obligations, stated once rather 
      - `bin/fusion-citation-check` prints `declared-patterns=3` and `declared-files=45`; `files` rises by 45 from its step-2 reading, `tokens` by 191, `resolved` by 167, `dangling` by 2, `undecidable` by 16, `exempt` by 6, and `store-prefixed` by 0. `verdict` stays `violations`. The two added rows are both `hooks/lib/citation-scan.ts:319`. The executor states the observed figures in its report; where one differs from the prediction it says so rather than restating the prediction.
      - `bin/fusion-citation-sweep --dry-run` reads `... rewrites=0 ...` with `residual` at 2804 plus whatever records this session filed. **If `rewrites` is not 0, stop and report; do not run `--write`.**
 
-5. **The documentation, including four claims the previous plan left false**
+5. [DONE] **The documentation, including four claims the previous plan left false**
    - Executor: `coder`
    - Files: `README-hooks.md`, `README.md`, `README-agents.md`, `CLAUDE.md`, `bin/fusion-citation-check`, `bin/fusion-citation-sweep`, `agents/orchestrator.md`, `skills/help/SKILL.md`, `hooks/turn-budget.ts`
    - Changes, in two groups.
@@ -154,7 +154,7 @@ Every code step carries the same three standing obligations, stated once rather 
      - The grep command above, re-run, returns no site that still states the cardinality as one outside `fusion-workbench/`, `hooks/dist/` and the activity log.
      - `bin/fusion-citation-sweep --dry-run` still reads `... rewrites=0 ...`.
 
-6. **The records**
+6. [DONE] **The records**
    - Executor: `analyst`
    - Files: three decision records under `$OUT_DECISION`, resolved by the analyst's own `bin/fusion-paths analyst` at Setup
    - **Language: English.** A fusion workbench artifact takes fusion's artifact language, not the chat language (`rules/fusion-workbench-conventions.md` `## Project language`). The executor does not decide this.
