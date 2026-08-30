@@ -10,28 +10,46 @@
  * `hooks/config.json`, inside the install. It existed for one reason: guard
  * settings needed a plugin-level default that a project could narrow. The
  * guard stopped deciding anything in this release, so that reason left with
- * it. What is left for the layer to carry is nothing — the loader reads ONE
- * leaf now, and that leaf's default is deliberately defined in exactly one
- * place, so restating it in a shipped JSON file is the thing this module has
+ * it. What is left for the layer to carry is nothing — every default this
+ * loader resolves is deliberately defined in exactly one place, `DEFAULTS`
+ * below, so restating one in a shipped JSON file is the thing this module has
  * always refused to do. A layer that carries nothing is a claim rather than a
  * capability, which is what the protected list and the escalation counter were
  * each removed for. Decision `260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, answered option 1 at the plan gate.
  *
- * ## The one leaf
+ * ## The settings
  *
  * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2
- * loop. It is the only setting this loader resolves. No hook reads it —
- * `bin/fusion-turn-budget` does, once per Setup, and the orchestrator carries
- * the answer from there.
+ * loop. No hook reads it — `bin/fusion-turn-budget` does, once per Setup, and
+ * the orchestrator carries the answer from there.
  *
  * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
  * seven places and four spellings, with one of them already calling it a
  * "default" — a word that was false, because no source could override it
  * (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
  *
- * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below. A project that wants a
- * different budget declares `{"orchestrator":{"maxTurns":12}}` in its own
- * `fusion.json` and the leaf walk does the rest.
+ * `citations.extraPaths` is the project's own list of the NON-MARKDOWN files
+ * that carry record citations, written as glob patterns.
+ * `bin/fusion-citation-check` and `bin/fusion-citation-sweep` add the files
+ * those patterns name to the Markdown corpus they already read; no hook reads
+ * this one either. A project that declares nothing gets `[]`, which is exactly
+ * the corpus those two helpers read today.
+ *
+ * It is a DECLARATION because the question underneath it cannot be decided
+ * from a file's text. Outside Markdown there is no fence and no block quote,
+ * and those are the whole of fusion's pointer-versus-exhibit distinction: a
+ * citation inside a docstring and one inside a comment naming a real record are
+ * the same input to any reader of the bytes. So the mechanism asks a question
+ * somebody wrote down instead.
+ *
+ * WHAT THIS LOADER ANSWERS ABOUT A PATTERN IS ONLY "is this the right type".
+ * Whether a pattern is absolute, escapes the project root, or names any file at
+ * all is a resolution question, answered once at the resolution site and
+ * deliberately not here.
+ *
+ * EVERY DEFAULT ABOVE IS DEFINED ONCE, in `DEFAULTS` below. A project that
+ * wants a different budget declares `{"orchestrator":{"maxTurns":12}}` in its
+ * own `fusion.json` and the leaf walk does the rest.
  *
  * ## Merge: PER LEAF, across both layers
  *
@@ -48,10 +66,12 @@
  * "declared" is read, from the whole top-level object down to the leaf.
  * Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, answered option 1 at the plan gate on 2026-08-04.
  *
- * With one leaf the walk has nothing to disagree with itself about, and it is
- * kept as the shape rather than collapsed into a single `??`, because the next
- * setting to land here inherits the rule instead of re-deriving it. The leaves
- * it was written for have all gone: `crossFile` with the ping-back tracker
+ * The walk was kept as the shape rather than collapsed into a single `??`
+ * through the release in which `orchestrator.maxTurns` was the only thing it
+ * had to walk, on the stated ground that the next setting to land here would
+ * inherit the rule instead of re-deriving it. `citations.extraPaths` is that
+ * setting, and it did. The leaves the walk was first written for have all gone:
+ * `crossFile` with the ping-back tracker
  * (`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`), `guard.protectedPaths` with the mechanism it configured
  * (2026-08-12), `churn` with the heatmap (2026-08-15), and the four remaining
  * guard leaves with the guard's verdict (2026-08-16).
@@ -148,6 +168,13 @@ const DEFAULTS = {
     orchestrator: {
         maxTurns: 5,
     },
+    // NOTHING DECLARED, which is the state of every project that has not written
+    // this key and keeps the two citation helpers' corpus exactly the Markdown it
+    // is now. A project inheriting this leaf is handed THIS array, so a caller
+    // reads the resolved value and does not mutate it in place.
+    citations: {
+        extraPaths: [],
+    },
 };
 /**
  * One memo slot, KEYED on the resolved source.
@@ -221,6 +248,27 @@ function isPositiveInteger(value) {
     return typeof value === "number" && Number.isInteger(value) && value >= 1;
 }
 /**
+ * The array AND its elements, checked as ONE thing.
+ *
+ * A pattern list is used whole or not at all. A caller handed the usable half
+ * of a declaration would resolve a corpus the project never wrote down, and
+ * would do it silently, so one bad element drops the whole leaf — named once,
+ * then inheriting exactly as an omission does.
+ *
+ * An empty string is refused with the non-strings, and it is the element most
+ * worth refusing: `git ls-files -- ':(glob)'` with an empty pattern lists every
+ * tracked file in the project (measured 2026-08-31 in this repository), so it
+ * is the one wrong value that would be read downstream as a very wide right
+ * one.
+ *
+ * An empty ARRAY is a different thing and is accepted: it is what a project
+ * that declares nothing already has, written out on purpose.
+ */
+function isArrayOfNonEmptyStrings(value) {
+    return (Array.isArray(value) &&
+        value.every((entry) => typeof entry === "string" && entry.length > 0));
+}
+/**
  * Every leaf this loader reads, with the type it must have.
  *
  * The table IS the rule, which is why it is a table: a leaf that is not named
@@ -234,6 +282,12 @@ const CONTAINER_LEAF_RULES = {
         maxTurns: {
             check: isPositiveInteger,
             expected: "a whole number of 1 or more",
+        },
+    },
+    citations: {
+        extraPaths: {
+            check: isArrayOfNonEmptyStrings,
+            expected: "an array of strings",
         },
     },
 };
@@ -251,7 +305,7 @@ const CONTAINER_LEAF_RULES = {
  * still be carrying it.
  */
 const RETIRED_PROJECT_FILES = {
-    "fusion-guard.json": `fusion removed the guard settings this file configured. The one setting it carried that was never the guard's, "orchestrator.maxTurns", now lives in ${PROJECT_CONFIG_FILENAME} at the project root. If this file sets a Turn budget, copy {"orchestrator": {"maxTurns": <n>}} into ${PROJECT_CONFIG_FILENAME} first: a budget left here is not read, and the orchestrator falls back to fusion's built-in default without saying so. Then delete this file to stop this advisory.`,
+    "fusion-guard.json": `fusion removed the guard settings this file configured. The setting it carried that was never the guard's, "orchestrator.maxTurns", now lives in ${PROJECT_CONFIG_FILENAME} at the project root. If this file sets a Turn budget, copy {"orchestrator": {"maxTurns": <n>}} into ${PROJECT_CONFIG_FILENAME} first: a budget left here is not read, and the orchestrator falls back to fusion's built-in default without saying so. Then delete this file to stop this advisory.`,
 };
 /**
  * Top-level keys this loader ONCE READ and no longer does, with the reason a
@@ -385,11 +439,17 @@ export function loadConfig(sources) {
     // THE MERGE, per leaf across both layers: project, then DEFAULTS. `??` and
     // not `||`, because a leaf may legitimately be `false`, `0` or `[]` — and
     // `[]` in particular is the deliberate narrowing that a project declares on
-    // purpose and that must survive as itself.
+    // purpose and that must survive as itself. `citations.extraPaths` is where
+    // that clause stopped being anticipatory: an explicit `[]` there is a project
+    // saying "no extra files", and it arrives as the empty list it wrote.
     const pickOrchestrator = (key) => project.raw.orchestrator?.[key] ?? DEFAULTS.orchestrator[key];
+    const pickCitations = (key) => project.raw.citations?.[key] ?? DEFAULTS.citations[key];
     const value = {
         orchestrator: {
             maxTurns: pickOrchestrator("maxTurns"),
+        },
+        citations: {
+            extraPaths: pickCitations("extraPaths"),
         },
         diagnostics,
     };

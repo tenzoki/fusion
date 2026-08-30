@@ -43,3 +43,6 @@ It has to be answered now because `hooks/dist/` ships in a tarball with no `node
 **Option 1.** It is the only one that answers the enumeration question without inventing a second exclusion policy, and the exclusion policy is where option 2 and option 3 quietly fail: fusion would have to decide, per project, that `node_modules/` and `dist/` are not citation-bearing, which is a judgement the project already made in its own `.gitignore`. Reading that judgement rather than restating it is the same move option 5 made one level up — replace a question fusion cannot decide with one somebody already wrote down.
 
 The cost is real and belongs in the answer rather than under it: a project outside a git work tree gets `declared-files=unavailable` and no declared corpus. That is the honest reading, and it is what `260809-1731` already accepted for the source-file count.
+
+---
+Answered: 260831-0024_*_a-project-declares-its-citation-bearing-paths.md — user approved the plan at the Phase 0b plan-review gate on 2026-08-31, choosing option 1: one `git ls-files` call per declared pattern under `:(glob)` pathspec, run through the existing git helper, with no fallback enumerator. A tree git will not answer for yields `unavailable`, named on stdout and stderr, never an empty list.

@@ -23,19 +23,20 @@ import { findWorkbenchRoot } from "../workbench-root.js";
 //
 // ## What it resolves, and what that leaves this file measuring
 //
-// ONE leaf: `orchestrator.maxTurns`. Six others were guard settings
-// (`guard.enabled`, `guard.defaultSensitivity`, `guard.categoryPaths`,
-// `guard.categorySensitivity`, `decisions`, `escalation.blocksBeforeHalt`) and
-// went with the guard's verdict on 2026-08-16; the plugin's own `config.json`
-// went with them, because a middle merge layer whose only reason was to give
-// those settings a narrowable default has nothing left to carry.
+// `orchestrator.maxTurns`, and `citations.extraPaths` since 2026-08-31. Six
+// former leaves were guard settings (`guard.enabled`,
+// `guard.defaultSensitivity`, `guard.categoryPaths`, `guard.categorySensitivity`,
+// `decisions`, `escalation.blocksBeforeHalt`) and went with the guard's verdict
+// on 2026-08-16; the plugin's own `config.json` went with them, because a middle
+// merge layer whose only reason was to give those settings a narrowable default
+// has nothing left to carry.
 //
 // So this file measures three things and no longer measures a fourth:
 //
-//   1. THE MERGE, which is one rule and now has one leaf to demonstrate it on.
-//      The walk is kept in `loadConfig` rather than collapsed into a `??` so
-//      that the next setting inherits the rule instead of re-deriving it, and it
-//      is measured here for the same reason.
+//   1. THE MERGE, which is one rule. The walk was kept in `loadConfig` rather
+//      than collapsed into a `??` so that the next setting would inherit the
+//      rule instead of re-deriving it; `citations.extraPaths` is that setting,
+//      and its own cases assert the rule rather than restating it.
 //   2. VALIDATION — an unusable value is dropped, NAMED, and then inherits, so
 //      that a dropped key, an omitted key and an unwritten file are three
 //      spellings of one behaviour (decision `260804-1630`).
@@ -245,7 +246,7 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
   });
 
   it("accepts unknown keys, including the template's documentation keys", () => {
-    // The seeded template is mostly five underscore-prefixed notes. A validator
+    // The seeded template is mostly underscore-prefixed notes. A validator
     // that rejected unknown keys would make the file fusion itself ships a
     // broken one.
     const config = load(
@@ -274,6 +275,54 @@ describe("a value that cannot be used is dropped, named, and inherited past", ()
     expect(dropped.diagnostics).toHaveLength(1);
     expect(omitted.diagnostics).toEqual([]);
     expect(never.diagnostics).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// `citations.extraPaths` — the non-Markdown files a project declares as
+// citation-bearing. Checked as ONE thing, because a pattern list is used whole
+// or not at all: a bad element drops the whole declaration rather than leaving
+// a caller to resolve a corpus the project never wrote down. Nothing here
+// judges a pattern's SHAPE, which is decidable only where they are resolved.
+// ---------------------------------------------------------------------------
+
+describe("citations.extraPaths — the array and its elements are one check", () => {
+  it("takes a declared list exactly as written", () => {
+    const config = load(projectWith({ citations: { extraPaths: ["a/*.go", "b/**"] } }));
+
+    expect(config.citations.extraPaths).toEqual(["a/*.go", "b/**"]);
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it("keeps an explicit empty list as itself", () => {
+    // "No extra files", in as many words: the merge passes it through rather
+    // than reading it as an omission.
+    const config = load(projectWith({ citations: { extraPaths: [] } }));
+
+    expect(config.citations.extraPaths).toEqual([]);
+    expect(config.diagnostics).toEqual([]);
+  });
+
+  it.each([
+    ["a bare string", "a/*.go"],
+    ["a list holding a number", ["a/*.go", 7]],
+    ["a list holding an empty string", ["a/*.go", ""]],
+  ])("drops %s WHOLE, names it, and inherits", (_name, value) => {
+    // The empty string is the element most worth refusing: as a git pathspec
+    // under `:(glob)` it names every tracked file in the project.
+    const config = load(projectWith({ citations: { extraPaths: value } }));
+
+    expect(config.citations.extraPaths).toEqual([]);
+    expect(config.diagnostics).toHaveLength(1);
+    expect(config.diagnostics[0]).toContain("citations.extraPaths");
+    expect(config.diagnostics[0]).toContain("an array of strings");
+  });
+
+  it("gives a project that declares nothing the corpus it already has", () => {
+    const config = load(projectWith({ orchestrator: { maxTurns: 9 } }));
+
+    expect(config.citations.extraPaths).toEqual([]);
+    expect(config.diagnostics).toEqual([]);
   });
 });
 
