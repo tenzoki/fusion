@@ -21,13 +21,13 @@
   editor.md 13635
   ontocoder.md 13262
   ontorev.md 7094
-  orchestrator.md 150287
+  orchestrator.md 150360
   planner.md 19725
   playmaker.md 41160
   reconciler.md 21131
   shaper.md 29057
   taskplanner.md 14070
-  total 408641
+  total 408714
 
 [skills bytes]
   archive/SKILL.md 26364
@@ -36,13 +36,13 @@
   commit/SKILL.md 6298
   curate/SKILL.md 12398
   direct/SKILL.md 10613
-  help/SKILL.md 16923
+  help/SKILL.md 16919
   log-activity/SKILL.md 13482
   memo/SKILL.md 12244
   migrate/SKILL.md 26620
   next/SKILL.md 27601
   setup/SKILL.md 46639
-  total 239833
+  total 239829
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

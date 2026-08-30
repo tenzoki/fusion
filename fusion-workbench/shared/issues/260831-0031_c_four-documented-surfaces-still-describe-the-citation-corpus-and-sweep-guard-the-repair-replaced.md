@@ -24,3 +24,16 @@ Plan `260830-1841_*_citation-mechanism-four-defect-repair.md` moved two shipped 
 The plan's own step 4 rewrote the `## Corpus` block inside `hooks/citation-check.ts` and step 1 rewrote the guard block inside `hooks/citation-sweep.ts`. Neither step named the wrapper header, the `CLAUDE.md` row or the two README rows, and no gate reads a prose claim against the code it describes.
 
 **Acceptance test.** At the fixing commit, `grep -n 'migration-v2-backup' bin/fusion-citation-check` returns nothing; `CLAUDE.md`'s `bin/fusion-citation-check` row states that the frozen stores are read like the live tree; `README-hooks.md`'s `citation-check.ts` row names the corpus without the word "live"; `README-hooks.md`'s `citation-sweep.ts` row states guard (a) as the corpus question rather than as a clean tree. `cd hooks && npm test` exits 0.
+
+---
+
+Resolved: all four sites corrected in step 5 of `260831-0024_*_a-project-declares-its-citation-bearing-paths.md`, together with the declared corpus this plan added.
+
+- `bin/fusion-citation-check`'s corpus block now states the frozen stores as read exactly like the live tree, names the declared corpus, and adds `declared-patterns=` and `declared-files=` to its sample `KEY=value` output, the second reading `unavailable` where git will not answer. `grep -n 'migration-v2-backup' bin/fusion-citation-check` returns nothing.
+- `CLAUDE.md`'s `bin/fusion-citation-check` row says the same, cites `32fe0d49` for the deletion, and states the shared-corpus rule and the gate that deliberately does not read the declaration.
+- `README-hooks.md`'s `citation-check.ts` row names the corpus without the word "live".
+- `README-hooks.md`'s `citation-sweep.ts` row states guard (a) as the corpus question — a tracked workbench, no uncommitted change naming a file the run will read, and every extra `<path>` inside the work tree and tracked by it — rather than as a clean tree.
+
+Two things beyond the four, and both are named rather than left implicit. `bin/fusion-citation-sweep`'s own header carried the same clean-tree claim the README row did; it was corrected in the same pass, since an authoritative header stating a guard that no longer exists is the defect this record is about. And `CLAUDE.md`'s `bin/fusion-citation-sweep` row still says "the workbench is tracked in a clean git work tree": it was left standing because step 5's dispatch bounds the `CLAUDE.md` edit to two named rows, and it is reported to the user as a residual rather than fixed here.
+
+`cd hooks && npm test` exits 0 at the fixing change (47 files, 818 tests), with the `surface-growth.golden` fixture regenerated and the `reference-resolution-lint.test.ts` baseline re-approved 1552 -> 1563 paths.

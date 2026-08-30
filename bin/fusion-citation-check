@@ -10,6 +10,8 @@
 #   anchor=workbench-root
 #   root=.
 #   files=312
+#   declared-patterns=2
+#   declared-files=45            # or `unavailable`, see below
 #   tokens=1904
 #   judged=1211
 #   resolved=1180
@@ -20,13 +22,34 @@
 #   verdict=violations            # or clean
 #     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  …
 #
-# Corpus: every .md under fusion-workbench/ except archive/, stashes/ and
-# .migration-v2-backup/, plus CLAUDE.md, rules/*.md, .claude/rules/*.md and
-# docs/**/*.md at the project root, where present. The grammar is
-# hooks/lib/citation-scan.ts, the same one fusion's own gates run; the form it
-# reads is stated in rules/fusion-workbench-conventions.md "Filename Patterns".
+# Corpus: every .md under fusion-workbench/, the frozen stores read exactly
+# like the live tree since commit 32fe0d49 deleted the exclusion, plus
+# CLAUDE.md, rules/*.md, .claude/rules/*.md and docs/**/*.md at the project
+# root, where present. The grammar is hooks/lib/citation-scan.ts, the same one
+# fusion's own gates run; the form it reads is stated in
+# rules/fusion-workbench-conventions.md "Filename Patterns".
 # `--undecidable` adds one row per bare stamp or ambiguous token, which reach
 # no verdict: a bare stamp names a minute, not a file.
+#
+# Plus the declared corpus: every file the project named in citations.extraPaths
+# in its fusion.json, as git pathspecs under :(glob), deduplicated against the
+# above by absolute path. That is how a NON-MARKDOWN file enters — outside
+# Markdown there is no fence and no blockquote, so nothing in a file's text
+# tells a pointer from an exhibit, and the project declares instead. declared-
+# patterns= is what the project wrote and declared-files= what those patterns
+# name; declared-files reads `unavailable` where git would not answer, which is
+# never a 0, because a 0 would report an empty declaration as a taken count.
+# A pattern matching nothing, or refused for being absolute or carrying a `..`
+# segment, is named on stderr and never on stdout. Declare nothing and the
+# corpus is the Markdown above, exactly as it was before the leaf existed.
+#
+# bin/fusion-citation-sweep resolves the same leaf through the same function:
+# the two hand-run helpers share one corpus, because a reporter narrower than
+# the rewriter is how the sweep came to change files this check declared clean.
+# The blocking gate hooks/lib/__tests__/workbench-citation-lint.test.ts does
+# NOT read the declaration, on purpose: it runs in everyone's npm test with no
+# approvable baseline, so a corpus set by an editable configuration leaf would
+# redden the suite of somebody who edited nothing.
 #
 # It decides nothing per line about pointer versus statement — a fenced code
 # block or a blockquote exempts a token, and that is the whole distinction.

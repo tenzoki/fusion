@@ -114,7 +114,7 @@ For the maintainer-side release flow (bumping `plugin.json` + `marketplace.json`
 
 Two things to configure:
 
-- **Project settings:** `$FUSION_SRC/templates/fusion.json` is the seeded file and documents each key in its own notes; `$FUSION_SRC/README-hooks.md` is the full account. There is exactly one setting, the orchestrator's Turn budget (`orchestrator.maxTurns`), and the guard is not it — the hooks block nothing and have no settings. A project root still carrying the retired `fusion-guard.json` is told so on every guarded tool call until it is deleted; the Turn budget has to be copied across first, or it is silently not applied.
+- **Project settings:** `$FUSION_SRC/templates/fusion.json` is the seeded file and documents each key; `$FUSION_SRC/README-hooks.md` is the full account. It sets the orchestrator's Turn budget (`orchestrator.maxTurns`) and `citations.extraPaths`, a project's citation-bearing non-Markdown paths. Not the guard: the hooks block nothing and have no settings. A project root still carrying the retired `fusion-guard.json` is told so on every guarded call until deleted; copy the budget across first, or it is silently not applied.
 - **Project rules:** read `$FUSION_SRC/bin/fusion-rules` (the header comment is the spec). Two project-side rule locations:
   - `./rules/` — fusion-agent-specific rules (e.g. `taskplanner-priorities.md`) that have no meaning outside a fusion context.
   - `.claude/rules/` — project-wide rules every Claude session should respect (coding/ontology/normative/verb guidelines).
