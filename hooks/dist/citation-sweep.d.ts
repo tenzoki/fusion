@@ -63,8 +63,9 @@
  *
  *   (a) The workbench must be inside a git work tree and tracked by it
  *       (`git ls-files --error-unmatch <workbench>`), any extra `<path>` must
- *       sit inside that same work tree, and **no uncommitted change may name a
- *       file this run will read**. That last is the corpus question, not a
+ *       sit inside that same work tree **and be tracked by it**, asked with
+ *       that same `git ls-files --error-unmatch`, and **no uncommitted change
+ *       may name a file this run will read**. That last is the corpus question, not a
  *       clean-tree question: the corpus is the one `main()` builds, every
  *       `*.md` under the workbench plus each extra `<path>` resolved the way
  *       `main()` resolves it, computed once and handed to the guard so the
@@ -89,6 +90,26 @@
  *       (option 4), whose point is that `bin/fusion-commit-lock` and
  *       `rules/commit-lock.md` are not edited: the other three options each
  *       traded away a property that rule mandates.
+ *
+ *       The extra-path half asked only whether the path sat inside the work
+ *       tree until 2026-08-31, and inside is not tracked: only tracked gives
+ *       the revert. Measured on a real run that day, a sweep pointed at 89
+ *       code files in a consuming project rewrote all 89, of which 79 were
+ *       tracked and 10 sat under a gitignored build-output directory with no
+ *       committed version to return to — harmless there because build output
+ *       is regenerated, harmless by luck rather than by construction (issue
+ *       `260831-0015_*_the-sweeps-guard-a-does-not-check-that-an-extra-path-argument-is-tracked.md`).
+ *       Declared files need no such check and get none: `git ls-files` cannot
+ *       name an untracked or ignored file, so the route `## The declared
+ *       corpus` describes is tracked by construction and only a hand-passed
+ *       `<path>` reaches this branch. A `<path>` naming a DIRECTORY is asked
+ *       exactly the question the workbench is asked and carries the same
+ *       residual: a directory holding anything git tracks passes, and an
+ *       untracked `*.md` beneath it is still rewritten with no way back. The
+ *       check is per argument and never widens to "everything under the work
+ *       tree must be tracked": a project may legitimately leave its workbench
+ *       untracked, and that choice is the project's
+ *       (`rules/workbench-tracking.md`).
  *
  *       Three mechanics of the reading, stated here because the code alone
  *       leaves them to be inferred. The listing is taken with `git status
@@ -216,7 +237,7 @@
  *      before this file is reached.
  *   4  guard (a) refused: not a git work tree, workbench untracked, an
  *      uncommitted change on a file in this run's corpus, or an extra path
- *      outside the work tree. Nothing written.
+ *      outside the work tree or untracked by it. Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  */

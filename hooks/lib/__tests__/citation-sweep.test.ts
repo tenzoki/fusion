@@ -249,6 +249,35 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
+  // guard (a)'s extra-path half: inside the work tree is not tracked by it
+  it("refuses an untracked <path> argument, exit 4, and passes a tracked one", () => {
+    const { root, wb } = scratchRepo();
+    const kept = join(root, "kept.go");
+    const ignored = join(root, "ignored.go");
+    try {
+      writeFileSync(join(root, ".gitignore"), "ignored.go\n");
+      writeFileSync(kept, `// ${DIRTY_DOC}`);
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "kept.go and the ignore rule");
+      writeFileSync(ignored, `// ${DIRTY_DOC}`);
+      const refused = sweep(root, wb, "--write", "--yes", "ignored.go");
+      expect(refused.status).toBe(4);
+      expect(refused.stdout).toBe("");
+      expect(refused.stderr.trim()).toBe(
+        "fusion-citation-sweep: refused (path-untracked): git does not track 1 path this run would rewrite: " +
+          "ignored.go; commit it first, so a damaged rewrite has one revert back; nothing written",
+      );
+      expect(readFileSync(ignored, "utf-8")).toBe(`// ${DIRTY_DOC}`);
+      // tracked: this branch lets it through, so the run reaches the write
+      rmSync(ignored);
+      const past = sweep(root, wb, "--write", "--yes", "kept.go");
+      expect(past.status, past.stderr).toBe(0);
+      expect(readFileSync(kept, "utf-8")).toBe("// see `260101-0101_*_alpha.md`");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
   it("has no bare-stamp option: --resolve-stamps is a usage error", () => {
     const { root, wb } = scratchRepo();
     try {

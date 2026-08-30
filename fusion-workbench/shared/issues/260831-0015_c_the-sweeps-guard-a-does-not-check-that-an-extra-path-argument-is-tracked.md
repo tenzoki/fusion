@@ -39,3 +39,17 @@ choice is the project's (`rules/workbench-tracking.md`). And do not fold this in
 dirty-tree question, which was just narrowed to the corpus for a different reason
 (`260830-1843_*_how-does-the-commit-lock-stop-leaving-the-tree-it-just-committed-dirty.md`); this is
 about tracking, not about pending changes.
+
+---
+Resolved: `refusal()` in `hooks/citation-sweep.ts` now asks of every extra `<path>` both questions —
+inside the work tree, and tracked by it — with the same `git ls-files --error-unmatch` the guard
+already asks about the workbench. An untracked argument refuses the run with one stderr line naming
+the untracked paths and exit 4, and nothing is written. The check is per argument and never widens
+to the whole work tree, so a project that leaves its workbench untracked is unaffected
+(`rules/workbench-tracking.md`). Declared files get no such check and need none: `git ls-files`
+cannot name an untracked or ignored file, so the declared route is tracked by construction and only
+a hand-passed `<path>` reaches this branch. The file's guard (a) header block states the extra-path
+condition as "inside the work tree and tracked by it" and carries the 89-file measurement above as
+its reason, including the residual a `<path>` naming a directory keeps. Step 3 of
+`260831-0024_*_a-project-declares-its-citation-bearing-paths.md`; case in
+`hooks/lib/__tests__/citation-sweep.test.ts`.

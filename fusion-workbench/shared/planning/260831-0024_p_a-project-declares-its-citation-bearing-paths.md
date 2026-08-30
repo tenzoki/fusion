@@ -114,7 +114,7 @@ Every code step carries the same three standing obligations, stated once rather 
      - `bin/fusion-citation-check` over this repository prints `declared-patterns=0 declared-files=0` and every other figure unchanged from `7be624e7`, because this repository declares nothing until step 4.
      - `bin/fusion-citation-sweep --dry-run` over this repository still reads `... rewrites=0 ...` and its summary line has the same fields in the same order.
 
-3. **Guard (a) asks whether each extra path is tracked, not only whether it is inside the work tree**
+3. [DONE] **Guard (a) asks whether each extra path is tracked, not only whether it is inside the work tree**
    - Executor: `coder`
    - Files: `hooks/citation-sweep.ts`, `hooks/lib/__tests__/citation-sweep.test.ts`
    - Changes: in `refusal()`, extend the existing per-`extra`-path loop — which already resolves each path and refuses one outside the work tree — to also refuse one git does not track, with `git ls-files --error-unmatch`, the same question the guard already asks about the workbench one line earlier. The refusal line names the untracked paths and keeps its exit code 4. Declared files need no check and get none: `git ls-files` cannot name an untracked or ignored file, so the routine route is tracked by construction and only the hand-passed route can reach this branch. Update the guard (a) block in the file header to state the extra-path condition as "inside the work tree **and** tracked by it", with the measurement below.
@@ -127,7 +127,7 @@ Every code step carries the same three standing obligations, stated once rather 
      - In a scratch git work tree with a tracked workbench, a committed tree, a tracked `kept.go` and an untracked `ignored.go`: `citation-sweep.js --write --yes ignored.go` exits **4** with a refusal line naming `ignored.go`, and writes nothing; `citation-sweep.js --write --yes kept.go` does not refuse on this branch.
      - `bin/fusion-citation-sweep --dry-run` over this repository still reads `... rewrites=0 ...`. A dry run needs none of the three guards, so this step cannot move that figure.
 
-4. **fusion declares its own citation-bearing paths**
+4. [DONE] **fusion declares its own citation-bearing paths**
    - Executor: `coder`
    - Files: `fusion.json`, `hooks/lib/__tests__/config.test.ts`
    - Changes: add `"citations": { "extraPaths": ["bin/*", "hooks/*.ts", "hooks/lib/*.ts"] }` to this repository's root `fusion.json`, and add `"citations"` to `PROJECT_SET_KEYS` in `config.test.ts` so the template-drift comparison keeps holding every other byte identical. `templates/fusion.json` declares nothing and keeps only the `_citations` note step 1 gave it — the template is what a project starts from, and a project's citation-bearing paths are not fusion's. `hooks/lib/__tests__/*.ts` is deliberately not declared, and the `_citations` note in `fusion.json` says so in one clause: the fixtures are exhibits, and this is the judgement a declaration is for.

@@ -624,11 +624,12 @@ function projectSeededWithTemplate(): string {
 
 /**
  * The top-level keys of `fusion.json` a project is documented to set for itself
- * (`templates/fusion.json`, `_turnBudget`), which the drift check below admits
- * as a difference between this repository's copy and the template. The ONE
- * place that exemption is stated: a new project-settable key is added here.
+ * (`templates/fusion.json`, `_turnBudget` and `_citations`), which the drift
+ * check below admits as a difference between this repository's copy and the
+ * template. The ONE place that exemption is stated: a new project-settable key
+ * is added here.
  */
-const PROJECT_SET_KEYS = ["orchestrator"] as const;
+const PROJECT_SET_KEYS = ["orchestrator", "citations"] as const;
 
 /** Index just past the closing quote of the JSON string starting at `start`. */
 function endOfString(text: string, start: number): number {

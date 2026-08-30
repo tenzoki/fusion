@@ -46,10 +46,10 @@
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
-  citation-sweep.test.ts 412
+  citation-sweep.test.ts 441
   commit-message-path.test.ts 315
   committed-dist.test.ts 332
-  config.test.ts 858
+  config.test.ts 859
   context-manifest.test.ts 472
   deliverable-language-lint.test.ts 138
   derivable-enumerations-lint.test.ts 453
@@ -96,4 +96,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 425
-  total 20140
+  total 20170
