@@ -285,3 +285,96 @@ Two, and only two.
 2. **Step 2's `rewrites` reading.** If `bin/fusion-citation-sweep --dry-run` stops reading `rewrites=0` after the anchoring lands, the executor stops and reports. Running `--write` over this repository's own workbench is a hand-run act behind the sweep's own census guard, and it is the user's, not the executor's.
 
 No other step needs a gate. Steps 1, 3 and 4 are verified by commands with expected exit codes, and steps 5 and 7 write records and a report that the citation gate itself checks.
+
+## Reconciliation Log
+
+**260830-2254** (reconciler, domain `code`, Phase 3 of session `260830-1801-orchestrator-session.md`,
+HEAD `7be624e7`; log `260830-2254-reconciliation.md`)
+
+**Marker and header left as they stand, deliberately: `_p_` and `**Status:** In Progress`.**
+All seven steps are `[DONE]` and every one of them was verified against the tree rather than
+against its own claim. The rename to `_c_` is nevertheless not made, because this plan carries
+its own stopping section and one of its clauses is not yet met (clause 4 below). The general
+rule "all steps `[DONE]` → `_c_`" is a default; a plan that wrote its own bounds is the stricter
+instrument and wins. The rename becomes correct the moment clause 4 is met, and nothing else is
+outstanding.
+
+### Steps verified against the tree
+
+| step | commit | verified at | what was read |
+|---|---|---|---|
+| 1 | `d2e90ba9` | `hooks/citation-sweep.ts:312`, `:326`, `:462` | `dirtyCorpusPaths()` and a `refusal(root, extra, corpus)` that takes the run's own corpus; header block at `:46` states guard (a) as the corpus question |
+| 2 | `cbc1d9fb` | `hooks/lib/citation-scan.ts:213`, `:222`, `:233`, `:249`, `:269`, `:290` | `CIRCLE_DIR`, `LEFT_ANCHOR`, `ROOTING` as shared fragments; all three store-prefixed patterns carry both; `REC_RE`'s container group carries the bare-Circle-directory alternative |
+| 3 | `4cffcae4` | `hooks/lib/citation-scan.ts:253`; `hooks/citation-sweep.ts:118`, `:374`, `:401` | `REC_RE`'s tail class admits `\[` and `\]`; `rewriteOf()` returns a rewrite only when it re-tokenises to one whole-span hit in `GATE_KINDS` and not `exempt` |
+| 4 | `32fe0d49` | `hooks/citation-check.ts:11`, `:139` | `FROZEN_PREFIXES` and its filter are gone; the walk is `markdownFilesUnder(workbenchRoot)` unfiltered; header `## Corpus` block rewritten |
+| 5 | `4412fc4a` | the decision store | `260830-1816_*_do-the-frozen-stores-enter-the-sweeps-and-the-checkers-corpus-the-way-the-live-tree-does.md` is `_i_` citing `32fe0d49`; the residual is `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`, `_o_` |
+| 6 | `5907b4ae` | `hooks/lib/__tests__/citation-sweep.test.ts:284`, `:315` | one fixture table and one property loop, no per-shape assertions beside it; `git show --numstat` reads 85 inserted lines against the 120 budgeted |
+| 7 | `7be624e7` | `260830-2241-citation-mechanism-repairs-reported-to-the-consuming-project.md` | exists in the shared analysis store, English, four defect sections, the tripwire section, and the undecided point at `:129` naming its record's basename |
+
+Step 1's headline criterion was re-run live at `7be624e7` rather than taken from its history file:
+with `fusion-workbench/orchestrator-events.jsonl` the only modified path, `bin/fusion-citation-sweep --write`
+exits **5** (guard (b), no `--yes`) and writes nothing. It exited 4 at `cda72f71`. Defect 4 is
+repaired and demonstrable at HEAD.
+
+### The stopping clauses, one by one
+
+Eight clauses and one explicit non-clause. Seven hold, one does not.
+
+1. **Holds.** Each of the four defects has its commit, and each commit's acceptance was reported in
+   its own history file (`260830-1934-sweep-dirty-tree-guard-narrowed-to-the-corpus.md`,
+   `260830-2153-store-prefixed-patterns-anchored-and-rooted.md`,
+   `260830-2206-bracket-citation-read-whole-and-the-visibility-guard.md`,
+   `260830-2214-checker-corpus-widened-to-the-frozen-stores.md`). Nothing is named as not repaired.
+2. **Holds.** `cd hooks && npm test` at `7be624e7`: 47 files, **806 tests passed**, exit 0.
+3. **Holds.** `bin/fusion-citation-sweep --dry-run` reads `files=0 rewrites=0 ... mode=dry-run`.
+   `rewrites=0` is the figure the release gate pins and it did not move. `residual` reads 2784
+   against the 2782 recorded at `cda72f71`; that figure moves with every record filed and is
+   pinned by nothing, as this plan's Current State says.
+4. **Does not hold.** The checker was run at `7be624e7` and reads
+   `files=2350 tokens=22206 judged=17672 resolved=16990 dangling=311 store-prefixed=0 undecidable=3157 exempt=1748 verdict=violations`.
+   Those figures are **not** in the session history: `260830-1801-orchestrator-session.md` ends at
+   `## Turn log` with `(pending)` and its `**Status:**` still reads `In progress`. The clause asks
+   for the figures to be recorded there, and the file that must carry them is the orchestrator's.
+   `dangling=311` and `store-prefixed=0` match step 4's prediction exactly; `files` reads 2350
+   against the predicted 2332, the difference being the eighteen records filed since that
+   measurement.
+5. **Holds.** Verified in the step table above.
+6. **Holds against the convention, and reads short against its own wording.** Both records are
+   `_i_`. `260830-1843_*_how-does-the-commit-lock-stop-leaving-the-tree-it-just-committed-dirty.md`
+   cites `hooks/citation-sweep.ts:294` and
+   `260830-1841_*_where-may-a-store-prefixed-citation-begin-and-which-rooting-forms-does-the-grammar-name.md`
+   cites `hooks/lib/citation-scan.ts:201`. The clause says "naming the commit that realised each";
+   both name a `path:line` instead, which `rules/fusion-workbench-conventions.md`
+   `### Decision files` permits as an alternative to a hash. Not corrected: the citation is
+   accurate and the annotation form is one the conventions offer. Recorded so a later reader does
+   not read the clause as met in its letter.
+7. **Holds.** Verified in the step table above.
+8. **Deliberately not met, and correctly so.** `bin/fusion-review-coverage --since v10.20.0` has
+   not been run as a release precondition, because no release was cut in this session. Measured
+   over the session range for information: `commits=8 reviews=87 unusable=24 uncovered=8
+   verdict=uncovered`. Every commit of this session is uncovered; no review pass ran. The
+   precondition binds the release, not this plan's closure, and it stands unwaived.
+9. **The non-clause holds.**
+   `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`
+   and
+   `260830-1844_*_does-the-citation-helper-read-non-markdown-surfaces-with-the-stamp-as-the-anchor.md`
+   are both `_o_`, both carry `## Recommendation` sections reading "None yet", and neither has an
+   answer anywhere in `shared/analyses/`, `shared/planning/` or the decision store. Open on
+   purpose, as written.
+
+### One finding filed
+
+`260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md`.
+The checker reports exactly one violation row inside a file this session wrote, and it is the
+orchestrator's session history naming the consuming project's own source record. No citation form
+fusion accepts can express a record held in another project's workbench, so the row is permanent
+rather than a writer's slip. Adjacent to
+`260830-2235_*_the-fabricated-name-exemption-keys-on-the-literal-foo-so-every-realistic-probe-fixture-is-read-as-a-real-citation.md`
+and not the same shape: that token names nothing, this one names something real held elsewhere.
+
+### Not drift, recorded so it is not read as drift
+
+`fusion-workbench/agentstate.yaml` still carries `current_task: P-7` with `status: "running"` and
+no `commit:` on the P-7 queue entry, while `7be624e7` landed it. That file is session state at the
+workbench root, written by the orchestrator, and it is outside the reconciler's edit scope. The
+orchestrator closes it at Phase 4.
