@@ -54,3 +54,34 @@ Whether the answer is a fifth exemption, a convention the prompts carry, or noth
 An exemption that reads intent from a token is the undecidable shape §4 forbids, so any answer
 naming one has to say what decidable property it keys on. This record states the defect and its
 measurement and stops there.
+
+---
+Reconciliation evidence, 260831-0159 (reconciler, HEAD `6f3f7dd6`). Still open; marker unchanged,
+and nothing in the tree answers the question this record leaves open.
+
+**The evidence heading above reads three, and the session closed at six.** The heading counts what
+had happened when this record was filed, mid-session, and it is left exactly as it stands. Later
+instances are cited here rather than folded into its table, and each is labelled by how this pass
+knows it.
+
+- Instances one to three: the table above, read from this record.
+- Instance five: the closure note of
+  `260831-0038_*_the-answered-non-markdown-decision-carries-a-store-prefixed-token-that-reddens-the-citation-gate.md`,
+  read from that record, which names itself the fifth and the second by the orchestrator. It is the
+  harder half of the shape, a real pointer used as an exhibit, where the four before it were
+  exhibits pointing at nothing.
+- Instances four and six: reported by the orchestrator in the dispatch that ordered this pass, one of
+  them the reconciler's own in `260830-2254-reconciliation.md`. Neither survives in the tree, both
+  having been repaired in the working tree before commit, so this pass takes them on the
+  orchestrator's report and did not verify them independently.
+
+That totals six instances by four writers, the orchestrator twice and the reconciler once. Whoever
+answers this record should read the count off the instances rather than off any one heading, this
+line included.
+
+**The acceptance test is unmet and no code moved toward it.** The exemption chain in
+`hooks/lib/citation-scan.ts` still keys `fabricated-name` on the one substring, and the session that
+filed this record shipped four commits into that file without touching it, deliberately: no plan step
+named it and no decision proposed a keying property. The gate corpus is unchanged too, so the cost is
+unchanged. A live record sits inside the blocking gate, so an instance in one still reddens
+`npm test` for whoever pulls.

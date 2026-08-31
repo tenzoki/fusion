@@ -252,3 +252,86 @@ Two, and only two.
 2. **Step 5's `skills/help` byte budget.** If the configure topic cannot state two settings inside a net-zero byte delta, the executor halts and the user decides the cut. A baseline edit is not available to the executor.
 
 No other step needs a gate. Steps 1, 2, 3 and 6 are verified by commands with expected output and expected exit codes.
+
+## Reconciliation Log
+
+**260831-0159** (reconciler, domain `code`, Phase 3 of session `260830-1801-orchestrator-session.md`,
+HEAD `6f3f7dd6`; log `260831-0159-reconciliation.md`)
+
+**Marker and header left as they stand: `_c_` and `**Status:** Complete`.** All six steps are
+`[DONE]`, each was verified against the tree rather than against its own claim, and each has its own
+commit. One stopping clause was not met at the moment of the closing commit and is met by the time
+this pass ends; that is recorded below rather than corrected by a marker move.
+
+### Steps verified against the tree
+
+| step | commit | verified at | what was read |
+|---|---|---|---|
+| 1 | `c08f70a5` | `hooks/lib/config.ts:194`, `:232`, `:382`, `:574` | `citations.extraPaths` in `GuardSettings`, in `RawConfig`, in `DEFAULTS` as `[]`, a `CONTAINER_LEAF_RULES` entry, and a `pickCitations` merge reading `project.raw.citations?.[key] ?? DEFAULTS.citations[key]`, which is the per-leaf inheritance every other leaf has |
+| 2 | `5fd6bfab` | `hooks/lib/citation-scan.ts:993`; `hooks/citation-check.ts:185`; `hooks/citation-sweep.ts:529` | one exported `declaredCitationFiles()` and exactly two callers; the checker reads the leaf against the workbench root's directory and the sweep against `dirname(--root)` |
+| 3 | `ebcbe525` | `hooks/citation-sweep.ts:396` | the per-extra-path loop runs `git ls-files --error-unmatch` on each resolved path, beside the workbench's own tracked check at `:379`, and keeps exit 4 |
+| 4 | `ebcbe525` | `fusion.json`; `hooks/lib/__tests__/config.test.ts:632` | the three declared patterns are `bin/*`, `hooks/*.ts`, `hooks/lib/*.ts`; the `_note` states in one clause why the test-fixture directory is not among them; `PROJECT_SET_KEYS` reads `["orchestrator", "citations"]`, so the template-drift comparison still holds every other byte identical |
+| 5 | `bb934a4f` | the grep the step names, re-run at this pass | outside `fusion-workbench/`, `hooks/dist/` and the activity log it returns exactly one hit, `skills/curate/SKILL.md`'s "differ in exactly one thing, who holds the prompt", which is about invocation shapes and not about the configuration. `grep -rn 'migration-v2-backup' bin/fusion-citation-check` returns nothing; the `README-hooks.md` rows for the checker and the sweep both name the declared corpus; the `CLAUDE.md` checker row names the frozen stores as read like the live tree |
+| 6 | `6f3f7dd6` | the decision store | `260830-1844_*_does-the-citation-helper-read-non-markdown-surfaces-with-the-stamp-as-the-anchor.md` is `_i_` naming the three commits; `260831-0032_*_which-mechanism-enumerates-a-declared-citation-path-and-what-happens-where-git-will-not-answer.md` is `_i_` naming step 2's commit and carrying its `Answered:` line as well; `260831-0033_*_does-the-sweeps-test-fixture-skip-survive-a-project-declaring-its-own-citation-bearing-paths.md` is `_o_` |
+
+Step 6's own acceptance was run rather than trusted: over the live tree, no stamp-and-slug pair
+carries two markers anywhere, and the decisions store shows one marker per stamp for every record
+this session filed.
+
+Both executor gates were reached and neither fired, and this pass measured each rather than reading
+the step histories. `bin/fusion-citation-sweep --dry-run` still reads `rewrites=0` at HEAD.
+`skills/help/SKILL.md` came in at 16 919 bytes against 16 923 before step 5, a delta of −4, so the
+net-zero budget holds with room rather than exactly.
+
+### The stopping clauses, one by one
+
+Ten clauses and one explicit non-clause. Nine hold outright, one was unmet at the closing commit and
+is met by the end of this pass.
+
+1. **Holds.** Verified at step 1 above; a project declaring nothing gets `[]` from `DEFAULTS` with no
+   diagnostic, which is what the merge line does when `project.raw.citations` is absent.
+2. **Holds.** `declaredCitationFiles()` is the only enumerator. The two other `git ls-files` call
+   sites in the tree are the sweep's tracked-path guards, which ask whether a named path is tracked
+   and enumerate nothing.
+3. **Holds.** The blocking gate's corpus predicate is unchanged, and the reason it does not read the
+   declaration is written into `hooks/citation-check.ts`'s header under
+   `## The declaration reaches both hand-run helpers and neither gate`, in the terms the clause asks
+   for.
+4. **Holds.** `cd hooks && npm test` at `6f3f7dd6`: 47 files, **818 tests passed**, exit 0.
+5. **Holds.** `bin/fusion-citation-sweep --dry-run` reads `files=0 rewrites=0 record=0
+   circle-record=0 circle-dir=0 bare-record=0 stamp-bare=0 mode=dry-run`, with `residual=2822`.
+   `rewrites=0` is the figure the release gate pins and it did not move.
+6. **Did not hold at `6f3f7dd6`; holds at the end of this pass.** The checker was run at the closing
+   commit and reads `files=2410 declared-patterns=3 declared-files=45 tokens=22536 judged=17942
+   resolved=17257 dangling=313 store-prefixed=0 undecidable=3196 exempt=1770 verdict=violations`.
+   Those figures were in no session history when the plan was renamed to `_c_`:
+   `260830-1801-orchestrator-session.md` carries a figures table for the predecessor plan's range
+   only, with columns at `cda72f71` and `7be624e7`. The clause names the session history, and the
+   file that must carry it is the orchestrator's, which is the reading the 260830-2254 pass took of the
+   predecessor plan's identical clause. This pass writes the six figures into that file, inside the
+   `## Coherence` section it is authorised to append, so the clause is met there rather than left
+   open. **The closure was premature by this plan's own bounds, and the marker is not moved back**:
+   reverting `_c_` to `_p_` for a condition met inside the same close would be churn, and the fact is
+   more useful recorded than enacted. `declared-patterns=3` and `declared-files=45` match step 4's
+   prediction exactly; `store-prefixed=0` and `verdict=violations` did not move; `files` and
+   `dangling` read 2410 and 313 against the 2352 and 311 the orchestrator recorded at `7be624e7`,
+   the difference being the 45 declared code files plus the records this session has filed since.
+7. **Holds.** Verified at step 5 above, by re-running the step's own grep and the four claim probes.
+8. **Holds.** Verified at step 6 above. All four records carry the marker the clause names.
+9. **Deliberately not met, and correctly so.** Both release preconditions stand unwaived, because no
+   release was cut in this session. `bin/fusion-review-coverage --since cda72f71` reads
+   `commits=14 reviews=87 unusable=24 uncovered=14 verdict=uncovered`; no review pass ran at all. And
+   no tag was pushed, so the second precondition is untouched: the release is tagged, or every
+   consuming project reads the old helper until it runs `fusion --update`. The plugin manifest
+   still reads the version the session opened with, so this work is unreleased rather than released
+   untagged. Both bind the release, not this plan's closure.
+10. **The non-clause holds.**
+    `260831-0033_*_does-the-sweeps-test-fixture-skip-survive-a-project-declaring-its-own-citation-bearing-paths.md`
+    is `_o_`, carries the line step 6 was told to append, and has no answer anywhere in the analysis,
+    planning or decision stores. Open on purpose, as written.
+
+### Nothing filed
+
+This pass found no defect the session had not already filed. The two conditions it names, the
+premature closure at clause 6 and the unmet release preconditions at clause 9, are recorded here
+and in the session's `## Coherence` section, and neither is a defect in the tree.

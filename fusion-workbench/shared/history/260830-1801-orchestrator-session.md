@@ -2,7 +2,7 @@
 
 **Directive:** A consuming project (unite-co-creator) reports that fusion's citation mechanism leaves it carrying local workarounds after the last update: four defects in `bin/fusion-citation-sweep` / its checker, one commit-lock defect, one missing tripwire, and one open upstream design point (the helper reading non-Markdown surfaces with the stamp as anchor). Verify each claim against fusion's own sources and fix what is fusion's, so a consumer can use the fusion standard without local departures.
 **Mode:** custom (verification first, then scoped repair)
-**Status:** In progress
+**Status:** Complete
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 
 ## Snapshot at session start
@@ -243,7 +243,12 @@ unwaived. Nothing here waives it.
 Computed 260830-2254 by the reconciler at HEAD `7be624e7`, session anchor `cda72f71`. Full pass:
 `260830-2254-reconciliation.md`.
 
-**Verdict:** directive-partially-met
+**SUPERSEDED** by the 260831-0159 verdict at the end of this section. It was computed over the
+session's first plan alone, before the user answered the item that made it partial. It is kept as it
+stands, unedited apart from this line and the label on the next, because it records what was true at
+that commit. Read the final verdict below.
+
+**Verdict (superseded):** directive-partially-met
 
 **Edges:**
 - Artifact↔Grounding: 7 of 7 plan steps verified against the tree, not against their own claims / 0 drift items / 0 open coderev+ontorev issues, because no review pass ran. `npm test` reads 806 passed exit 0, `bin/fusion-citation-check` reads `dangling=311 store-prefixed=0 verdict=violations` against step 4's prediction of the first two, and `bin/fusion-citation-sweep --dry-run` reads `rewrites=0`, the figure the release gate pins. Defect 4 was re-run live rather than trusted: with `orchestrator-events.jsonl` the only modified path, `--write` exits 5 where it exited 4 at `cda72f71`. Two items outstanding and neither is drift: one stopping clause of eight is unmet, the checker's figures are not yet in this file, which this session's own Phase-3 close performs; and `bin/fusion-review-coverage --since cda72f71` reads `commits=8 uncovered=8 verdict=uncovered`, which `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` settles as advisory and states does not flag this edge.
@@ -256,3 +261,109 @@ The Directive named six items. Five are repaired, shipped and verified; the sixt
 recorded and open by choice, and it is the one the consumer is blocked on. That is a session
 stopped short on purpose rather than one that drifted, so neither `review-needed` nor
 `coherent` fits: nothing disagrees with its basis, and the destination is not yet reached.
+
+---
+
+### Final verdict, 260831-0159
+
+Computed by the reconciler at HEAD `6f3f7dd6`, session anchor `cda72f71`, over the whole session:
+14 commits, 5 Turns, both plans. **Supersedes the 260830-2254 verdict above**, which covered the
+first plan only. Full pass: `260831-0159-reconciliation.md`.
+
+**Verdict:** coherent
+
+**Edges:**
+- Artifact↔Grounding: 13 of 13 plan steps verified against the tree rather than against their own claims (7 in the first plan, re-confirmed unmoved; 6 in the second, each read at the file and line the step names) / 0 drift items / 0 open coderev+ontorev issues, because no review pass ran. At HEAD, `cd hooks && npm test` reads 47 files and 818 tests passed, exit 0; `bin/fusion-citation-check` reads `declared-patterns=3 declared-files=45 files=2410 dangling=313 store-prefixed=0 verdict=violations`, which is the six-figure reading the second plan's clause 6 asks be recorded in this file, so that clause is met here rather than left open; `bin/fusion-citation-sweep --dry-run` reads `rewrites=0`, the figure the release gate pins. `declared-patterns` and `declared-files` match step 4's prediction exactly. Records: every marker sits where the plans say, no stamp-and-slug pair carries two markers anywhere in the live tree, and one violation row lands in a file this session wrote, the permanent one already filed as `260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md`. Two bookkeeping conditions were found and both are reconciled by this pass rather than left as drift: the first plan stood at `_p_` with every clause now met and is closed here to `_c_`; the second plan was closed to `_c_` at `6f3f7dd6` with its clause 6 unmet, which this section's own figures now satisfy. `bin/fusion-review-coverage --since cda72f71` reads `commits=14 reviews=87 unusable=24 uncovered=14 verdict=uncovered`, which `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` settles as advisory and states does not flag this edge.
+- Artifact↔Directive: commits move **toward** the stated Directive, and all six of its enumerated items are now met. `d2e90ba9`, `cbc1d9fb`, `4cffcae4` and `32fe0d49` repair the four defects; `5907b4ae` adds the tripwire; `7be624e7` writes the report. The sixth item, the open upstream design point on non-Markdown surfaces, was the one that made the 260830-2254 verdict partial: the user answered it option 5 on 2026-08-31 and `c08f70a5`, `5fd6bfab` and `ebcbe525` built the answer, with `bb934a4f` bringing eight documented surfaces and four false claims up to the shipped behaviour and `6f3f7dd6` closing the records. `06b5aac1` and `94908036` carry the planning. Nothing is orthogonal and nothing moves away. The Directive's purpose clause, that the consumer can use the fusion standard without local departures, rests on two commits in the consuming project that this reconciler cannot read and takes on the orchestrator's report rather than as verified: `4f8aab36`, 158 citations repaired across 89 files with the shipped sweep and no fusion change, and `69fef330`, 14 declared globs covering the 193 files that carry repairable citations. The label is deliberate. If either report is wrong, this edge is the one that moves.
+- Grounding↔Directive: 38 active decisions consistent (8 `_o_`, 30 `_a_`) / 0 potentially conflicting. That is the scoped figure: with no Circle active the resolver names the shared store alone, and the 10 further `_a_` records sitting in terminal Circles' own stores are a known condition with its own record, `260824-2013_*_do-archive-and-terminal-circles-stores-enter-any-scan-set-or-is-the-exclusion-written-down.md`. Two records that could have conflicted with what shipped were read individually rather than counted. `260823-1414_*_does-the-workbench-citation-gates-corpus-cover-review-files.md` asks which files the blocking gate reads, and the declaration reaches neither gate by design, with the reason written into `hooks/citation-check.ts`'s header rather than left to be inferred. `260816-0711_*_is-count-pinning-the-convention-for-every-gate-that-reports-what-it-examined.md` settles probe-assertion as the convention and count-pinning as the fallback; the two new stdout lines are reporter output and pin nothing, so nothing departs from it. The three records this session left `_o_` are residuals both plans named as not stopping conditions, not conflicts.
+
+**Rebalance recommendation:** none
+
+Every evaluable edge is OK and a Directive was stated, so no Rebalance option applies. Two things
+stand open and neither flags an edge. The release preconditions on both plans are unmet and
+unwaived: no review pass ran over any of the 14 commits, and no tag points at HEAD, with
+`.claude-plugin/plugin.json` still reading `10.20.0` as it did at `cda72f71`, so this work is
+unreleased rather than released untagged. Both bind a release rather than either plan's closure, and
+the review-coverage question is the user's to answer. And six open records carry the residuals and
+the defects found beside the work, each filed and none of them a clause of the Directive.
+
+## Session Flow
+
+Built from this checkout's own event rows in `orchestrator-events.jsonl`, filtered by session
+identifier and sorted by timestamp. 70 rows, of which the dispatch pairs and the commit rows are
+machine-written.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant P as Planner
+    participant C as Coder
+    participant A as Analyst
+    participant R as Reconciler
+
+    Note over O: Phase 0b — plan 1
+    O->>U: GATE scope (Circle / plan / report only)
+    U-->>O: plan directly, no Circle
+    O->>P: the four verified defects + tripwire + report
+    P-->>O: plan, 7 steps, 4 decisions + 1 issue filed
+    O->>U: GATE plan review
+    U-->>O: approve
+
+    Note over O: Turn 1
+    O->>C: P-1 sweep guard asks the corpus question
+    C-->>O: blocked — a test pins the retired proxy
+    O->>C: P-1 re-dispatched, boundary widened
+    C-->>O: done (d2e90ba9)
+    O->>C: P-2 anchor the three patterns
+    C-->>O: stalled, tree untouched
+    O->>C: P-2 re-dispatched
+    C-->>O: done (cbc1d9fb)
+
+    Note over O: Turn 2
+    O->>C: P-3 bracket read whole + rewrite guard
+    C-->>O: done (4cffcae4)
+    O->>C: P-4 checker corpus = sweep corpus
+    C-->>O: done (32fe0d49)
+
+    Note over O: Turn 3 — parallel
+    O->>A: P-5 frozen-stores decision + residual
+    O->>C: P-6 the tripwire property
+    A-->>O: done (4412fc4a)
+    C-->>O: done (5907b4ae)
+
+    Note over O: Turn 4
+    O->>A: P-7 report to the consuming project
+    A-->>O: done (7be624e7), repair gap filed
+    O->>R: reconciliation 1
+    R-->>O: directive-partially-met
+    O->>U: GATE Rebalance
+    U-->>O: what is the problem? / answer the open question
+
+    Note over O: outside this repository
+    O->>O: consuming project repaired (4f8aab36, 158 citations)
+    O->>O: consuming project declares its paths (69fef330)
+
+    Note over O: Phase 0b — plan 2
+    O->>P: the declared-paths extension
+    P-->>O: plan, 6 steps, 3 records filed, 1 red gate found
+    O->>U: GATE plan review
+    U-->>O: approve
+
+    Note over O: Turn 5
+    O->>C: Q-1 the configuration leaf
+    C-->>O: done (c08f70a5)
+    O->>C: Q-2 resolver + both callers
+    C-->>O: done (5fd6bfab)
+    O->>C: Q-3 guard (a) tracked check
+    O->>C: Q-4 fusion declares its own paths
+    C-->>O: both done (ebcbe525, shared golden)
+    O->>C: Q-5 documentation + four false claims
+    C-->>O: done (bb934a4f)
+    O->>A: Q-6 the three decision records
+    A-->>O: done (6f3f7dd6), plan closes
+
+    Note over O: Converged
+    O->>R: reconciliation 2
+    R-->>O: coherent, recommendation none
+```

@@ -1,7 +1,7 @@
 # Implementation Plan: repair four verified defects in the citation mechanism, add the tripwire, report to the consuming project
 
 **Date:** 2026-08-30
-**Status:** In Progress
+**Status:** Complete
 **Spec:** none — planned from the orchestrator's dispatch, which carried the consuming project's report and the orchestrator's own reproduction against `cda72f71`
 **Decidability:** The load-bearing question is defect 1's: **where does a store-prefixed citation token begin?** As the grammar asks it today it is *not* decidable, because with no left boundary the question reduces to "is this arbitrary path a workbench path", and a foreign directory in front of a store name is the same input as fusion's own `shared/` in front of it, to a pattern that has no left bound (the pair is spelled out under Current State). The mechanism therefore changes rather than the approximation improving (`rules/critical-stance.md` §4): the pattern stops recognising a store segment wherever it stands and instead recognises a **rooted path drawn from a closed set of rooting prefixes read off the workbench layout**, with one lookbehind in front of the whole thing. That question *is* decidable from the token text alone, because every accepted left context is a literal the layout defines and every other left context is refused by the lookbehind. The second question, defect 2's, is decidable by construction once asked the right way round: instead of enumerating the shapes a rewrite may not eat, the sweep re-reads its own output and declines any rewrite the grammar cannot see.
 
@@ -378,3 +378,44 @@ and not the same shape: that token names nothing, this one names something real 
 no `commit:` on the P-7 queue entry, while `7be624e7` landed it. That file is session state at the
 workbench root, written by the orchestrator, and it is outside the reconciler's edit scope. The
 orchestrator closes it at Phase 4.
+
+---
+
+**260831-0159** (reconciler, domain `code`, Phase 3 of session `260830-1801-orchestrator-session.md`,
+HEAD `6f3f7dd6`; log `260831-0159-reconciliation.md`)
+
+**Closed: marker `_p_` → `_c_`, header `**Status:**` → Complete.** The 260830-2254 pass withheld
+exactly this rename over clause 4, and clause 4 now holds: the orchestrator wrote the checker and
+sweep figures into `260830-1801-orchestrator-session.md` under `## Checker and sweep figures at the
+last commit`, as a two-column table reading `files=` 1735 and 2352, `dangling=` 246 and 311,
+`store-prefixed=` 0 and 0, `verdict=violations` at both, and `rewrites=0` at both. Nothing else was
+outstanding, so the rename becomes correct with that write and is made here.
+
+One figure moved between the two passes and neither reading is wrong. The 260830-2254 pass measured
+`files=2350` at `7be624e7` and the orchestrator recorded 2352 at the same commit: the checker walks
+the working tree, and eighteen records were filed while the session ran. The clause asks for the
+figures to be recorded, not for them to be reproducible from a commit hash, and this plan's own
+Current State already says which of its figures are pinned and which move.
+
+Clause 8 is unchanged and stays unmet: `bin/fusion-review-coverage --since v10.20.0` is a
+precondition on a release, no release was cut, and nothing here waives it. Re-measured over the
+whole session range at this pass, `--since cda72f71` reads `commits=14 reviews=87 unusable=24
+uncovered=14 verdict=uncovered`. Every commit of the session is uncovered, and
+`260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` settles that as
+advisory rather than blocking.
+
+The three verification readings at `6f3f7dd6`, run rather than carried forward: `cd hooks && npm test`
+exits 0 with 47 files and 818 tests passed; `bin/fusion-citation-check` reads
+`files=2410 declared-patterns=3 declared-files=45 tokens=22536 judged=17942 resolved=17257
+dangling=313 store-prefixed=0 undecidable=3196 exempt=1770 verdict=violations`;
+`bin/fusion-citation-sweep --dry-run` reads `rewrites=0` with `residual=2822`. The one violation row
+the checker names inside a file this session wrote is still the single permanent one filed as
+`260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md`;
+every other row outside the archive predates the session.
+
+The non-clause still holds. `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`
+is `_o_` as written. Its companion,
+`260830-1844_*_does-the-citation-helper-read-non-markdown-surfaces-with-the-stamp-as-the-anchor.md`,
+was named in the same non-clause and has since moved to `_i_`: the user answered it after this plan
+closed, and the successor plan built the answer. That is the non-clause being overtaken by later
+work rather than violated.
