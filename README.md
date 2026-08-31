@@ -23,7 +23,7 @@ fusion --uninstall  # remove ~/.fusion and the launcher
 fusion --where      # print the install dir
 ```
 
-Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.21.0` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
+Overrides: `FUSION_REF` (git ref, e.g. `FUSION_REF=tags/v10.21.1` to pin a release — every release since v5.5.0 is tagged), `FUSION_HOME` (install dir, default `~/.fusion`), `FUSION_BIN` (launcher dir, default `~/.local/bin`).
 
 **Upgrading from v10.14?** v10.20 changes how a record is cited: by its storeless basename, `YYMMDD-HHMM_*_<topic>.md`, with a store segment now reported as a violation. `bin/fusion-citation-check` is new and prints a `verdict=` line over your own corpus, which `/fusion:cleanup` repeats in its report (`helper-missing` until `fusion --update`). Nothing in your project is rewritten; the one-shot sweep is yours to run after reading its `--dry-run` census. `docs/upgrading-to-v10-20.md` is the note.
 
