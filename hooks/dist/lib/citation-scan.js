@@ -99,6 +99,23 @@
 //   stamp followed by one of those is the head of a longer token, never a bare
 //   stamp.
 //
+//   A CITATION ENDING A SENTENCE DOES NOT EAT THE SENTENCE'S STOP. Both record
+//   tails admit `.`, for `.md` and for the ASCII ellipsis, and that same `.` used
+//   to take a trailing full stop into the basename, after which
+//   `basenameMatcher()` read the token as a prefix and demanded a character
+//   after `.md` — so the citation dangled while its record sat on disk. Since
+//   2026-08-31 both tails end in `SENTENCE_STOP`, whose docstring carries the
+//   rule, the one dot it does not trim (the ASCII ellipsis) and the run it
+//   deliberately leaves alone.
+//
+//   A BARE DIRECTORY NAME RESOLVES TO A CIRCLE OR TO AN ARCHIVE SWEEP. Since
+//   2026-08-31 `circleDirs()` indexes the sweep directory itself alongside the
+//   Circles inside it, reporting `archive/<sweep>` as what such a citation
+//   resolved to; a record naming the sweep that moved it used to dangle against
+//   a directory plainly on disk. The two are the same name shape, a collision
+//   would report `ambiguous`, and only the BARE name is a token — a sweep cited
+//   as a path is no token at all. That function's docstring carries the rest.
+//
 //   A HEAD FIELD WHOSE WHOLE VALUE IS A BARE STAMP IS NOT A CITATION. A legacy
 //   history record's `**Date:** 260801-1355` names the minute the record was
 //   written; the sweep read it as a bare stamp, found the record itself by
@@ -221,6 +238,26 @@ const LEFT_ANCHOR = "(?<![A-Za-z0-9._\\/-])";
  * token has to SPAN so a rewriter splicing at `col` replaces the whole path.
  */
 const ROOTING = `(?:\\.{1,2}\\/)*(?:fusion-workbench\\/)?(?:archive\\/${CIRCLE_DIR}\\/)?`;
+/**
+ * Where a record token may END: not on a full stop that closes a word. Both
+ * record tails admit `.` so that `.md` and the ASCII ellipsis are inside the
+ * token, and that same `.` let a citation ending a SENTENCE eat the sentence's
+ * stop — `basenameMatcher()` then read the token as a prefix and demanded a
+ * character after `.md`, so the citation dangled while the record it named was
+ * on disk (issue
+ * 260831-2119_*_the-bare-record-tail-class-admits-a-full-stop-so-a-citation-ending-a-sentence-dangles.md,
+ * 11 rows here and 31 in the project that reported it). The tail stays greedy,
+ * takes the stop, fails this lookbehind and backtracks one character.
+ *
+ * A trailing dot survives only when the character in front of it is itself a
+ * dot, which is the ASCII ellipsis and nothing else. THE TRIM IS ONE STOP, NOT A
+ * RUN: `<stamp>_o_slug..` is left exactly as it stands, and four dots stay
+ * ambiguous between "elided, then the sentence ended" and "elided" — unchanged
+ * behaviour rather than a new hole, and the alternative would have to decide
+ * where an ASCII ellipsis ends. `basenameMatcher()`, `MARKER_SLOT` and the
+ * ellipsis rule are untouched, and a truncated citation is still a `bare-record`.
+ */
+const SENTENCE_STOP = "(?<![A-Za-z0-9_…*-]\\.)";
 // Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
 // A DETECTOR since 2026-08-29: every match is reported `store-prefixed`.
 //
@@ -235,12 +272,18 @@ const ROOTING = `(?:\\.{1,2}\\/)*(?:fusion-workbench\\/)?(?:archive\\/${CIRCLE_D
 // such a citation is one whole token rather than a store segment plus a bare
 // stamp with its tail invisible. The header's not-read-on-purpose paragraph
 // carries the reasoning and the sweep-side guard that goes with it.
+//
+// The tail carries `SENTENCE_STOP` for the reason written at that constant, and
+// it carries it even though `store-prefixed=0` in this tree: the sweep applies a
+// rewrite only when the rewritten string re-tokenises whole, so a `BARE_RE` that
+// stopped at a word while this one did not would make the sweep DECLINE a
+// rewrite it performs today rather than land it correctly.
 const REC_RE = new RegExp(LEFT_ANCHOR +
     ROOTING +
     `(?:(circles\\/${CIRCLE_DIR})\\/|(shared)\\/|(${CIRCLE_DIR})\\/)?` +
     `(${STORES})\\/` +
-    `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?[A-Za-z0-9._…*\\[\\]-]*)`, // `.` admits ASCII `...`
-"g");
+    `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?[A-Za-z0-9._…*\\[\\]-]*)` + // `.` admits ASCII `...`
+    SENTENCE_STOP, "g");
 // A Circle's OWN record, `circles/<dir>/_x_circle.md`. It gets its own pattern
 // rather than a widening of `REC_RE` because the two basenames have nothing in
 // common: a store record is `<stamp>_<marker>_<slug>.md` and `REC_RE`'s tail is
@@ -262,7 +305,7 @@ const CIRCLE_REC_RE = new RegExp(LEFT_ANCHOR +
 // a marker slot and a slug when the citation is whole, and any prefix of that
 // when it is truncated (`<stamp>_*_`, `<stamp>_d`, `<stamp>_…`);
 // `basenameMatcher` reads a token not ending in `.md` as a prefix either way.
-const BARE_RE = new RegExp(`(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|_)[A-Za-z0-9._…*-]*)`, "g");
+const BARE_RE = new RegExp(`(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|_)[A-Za-z0-9._…*-]*)` + SENTENCE_STOP, "g");
 // Bare Circle-directory citation. A trailing `/` is allowed when nothing
 // path-like follows (the conventions file's layout tree).
 const CIRCLE_RE = new RegExp(LEFT_ANCHOR +
@@ -433,8 +476,10 @@ function basenameMatcher(cited) {
 /**
  * An archive sweep's directory name: `/fusion:archive` creates exactly one
  * level, `archive/<YYMMDD-HHMM>-<slug>/`, and moves whole subtrees beneath it.
- * Read by `circleDirs()` alone, to find the swept `circles/` containers; no
- * resolver reads a path prefix any more. Its shape is `CIRCLE_DIR`, the same
+ * Read by `circleDirs()` alone — to find the swept `circles/` containers, and
+ * since 2026-08-31 to index the sweep directory itself, which a record naming
+ * the sweep that moved it cites by bare name. No resolver reads a path prefix
+ * any more. Its shape is `CIRCLE_DIR`, the same
  * fragment the three store-prefixed patterns root against — a sweep directory
  * and a Circle directory are the same name shape, and stating it once is what
  * keeps the rooting enumeration and this index reading the same set.
@@ -500,20 +545,47 @@ export function createScanner(workbenchRoot) {
         return wbIndex;
     }
     /**
-     * Every Circle directory a citation can name, keyed by directory name and
+     * Every stamped directory a citation can name, keyed by directory name and
      * carrying the workbench-relative path(s) that hold it: `circles/<dir>` while
-     * the Circle is live, and `archive/<sweep>/circles/<dir>` once a sweep has
-     * moved it. The map is the paths rather than a bare name set so that what a
-     * citation RESOLVED TO is reported truthfully — an archived Circle that
-     * reported `circles/<dir>` would be naming a path that is not on disk, in a
-     * file whose header calls itself a measuring instrument. Archive sweeps are
-     * indexed because a bare directory name resolves wherever the directory is.
+     * the Circle is live, `archive/<sweep>/circles/<dir>` once a sweep has moved
+     * it, and `archive/<sweep>` for the sweep's OWN directory. The map is the
+     * paths rather than a bare name set so that what a citation RESOLVED TO is
+     * reported truthfully — an archived Circle that reported `circles/<dir>` would
+     * be naming a path that is not on disk, in a file whose header calls itself a
+     * measuring instrument. Archive sweeps are indexed because a bare directory
+     * name resolves wherever the directory is.
+     *
+     * THE SWEEP DIRECTORY IS AN ENTRY IN ITS OWN RIGHT since 2026-08-31. The walk
+     * opened every sweep to reach the `circles/` inside it and indexed 0 of the
+     * sweeps themselves, so a record naming the sweep that MOVED it dangled
+     * against a directory plainly on disk (issue
+     * 260831-2120_*_an-archive-sweep-directory-is-in-no-index-so-a-citation-naming-one-dangles.md).
+     * A sweep resolves to `archive/<sweep>` and never to a path inside it.
+     *
+     * A sweep and a Circle are the same name shape, so a collision is possible in
+     * principle; measured here on 2026-08-31 there is none (4 sweeps, 26 distinct
+     * Circle names, no overlap). One would report `ambiguous` with both paths,
+     * which `scanRecordCitations()` counts as resolved and `partition()` puts in
+     * `undecidable` — the honest answer, and the one two same-named Circles in two
+     * sweeps already get. ONLY THE BARE NAME: a sweep cited as a PATH,
+     * `archive/<sweep>/`, still produces no token at all, because every pattern's
+     * lookbehind refuses a `/` in front of the stamp. That is unchanged behaviour.
      */
     let circleDirIndex = null;
     function circleDirs() {
         if (circleDirIndex)
             return circleDirIndex;
         const dirs = new Map();
+        // One directory under its own name. Extracted so the sweep entry and the
+        // Circle entries share the push-or-set arm: a name held twice accumulates
+        // paths and reports `ambiguous`, rather than one overwriting the other.
+        const one = (name, path) => {
+            const at = dirs.get(name);
+            if (at)
+                at.push(path);
+            else
+                dirs.set(name, [path]);
+        };
         const add = (relRoot) => {
             const abs = join(workbenchRoot, relRoot);
             if (!existsSync(abs))
@@ -521,11 +593,7 @@ export function createScanner(workbenchRoot) {
             for (const e of readdirSync(abs, { withFileTypes: true })) {
                 if (!e.isDirectory())
                     continue;
-                const at = dirs.get(e.name);
-                if (at)
-                    at.push(`${relRoot}/${e.name}`);
-                else
-                    dirs.set(e.name, [`${relRoot}/${e.name}`]);
+                one(e.name, `${relRoot}/${e.name}`);
             }
         };
         add("circles");
@@ -533,6 +601,7 @@ export function createScanner(workbenchRoot) {
         if (existsSync(archive)) {
             for (const sweep of readdirSync(archive, { withFileTypes: true })) {
                 if (sweep.isDirectory() && SWEEP_DIR_RE.test(sweep.name)) {
+                    one(sweep.name, `archive/${sweep.name}`);
                     add(`archive/${sweep.name}/circles`);
                 }
             }

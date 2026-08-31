@@ -18,7 +18,10 @@ see 260819-1645_*_what-defines-the-citation-gates-corpus…md.    bare-record/da
 ```
 
 The reporter measured 31 rows over 26 distinct tokens in its tree. **fusion's own tree carries 11**,
-found with `bin/fusion-citation-check | grep "md\.'"`, all inside `archive/`. Three of them are
+found with `bin/fusion-citation-check | grep "md\.'"`. **Five of the 11 are inside `archive/` and six
+are not**, correcting an earlier "all inside `archive/`" in this paragraph: the six sit under a
+Circle's `history/`, a Circle's `analyses/`, a `_c_` issue, an `_i_` decision, and `shared/history`
+twice. The count of 11 was right and the placement claim was not. Three of them are
 citations of real records in `260801-1253_*_plan-guard-bash-inspection.md` and
 `260717-1938_*_branch-switch-guard-not-invoked-live-harness-pretooluse-bash.md`.
 
