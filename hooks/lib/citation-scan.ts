@@ -127,6 +127,20 @@
 //   or a name (`**Active spec/plan:** <stamp>_*_<slug>.md`) is a citation the
 //   orchestrator resolves, and stays one.
 //
+//   A FABRICATED PLACEHOLDER NAME IS EXEMPT, AND THE TEST IS A WORD TEST.
+//   The exemption asks whether the token's slug carries the placeholder as one
+//   of its own words, delimited by anything that is not a letter or a digit;
+//   `FABRICATED_NAME`'s docstring carries the spelling and why `\b` is the
+//   wrong delimiter set here. Until 2026-09-01 it asked `includes`, a bare
+//   substring test on three letters inside a corpus of hyphenated slugs, and
+//   `footer` is a word this project files records about: sixteen store-prefixed
+//   citations were exempt, so the checker printed `store-prefixed=0`, the sweep
+//   printed `rewrites=0`, and the release gate that asserts that zero was green
+//   over a tree still carrying the spelling the storeless form retired (issue
+//   260901-0318_*_the-fabricated-name-exemption-hides-sixteen-store-prefixed-citations-in-this-repositorys-own-workbench.md).
+//   An exemption keyed on a substring gets wider every time English does; one
+//   keyed on a word does not.
+//
 //   NOT READ, ON PURPOSE: the pre-v4 bracket marker (`260717-1918[o]_slug`).
 //   It is retired syntax that `/fusion:migrate` rewrites; a grammar that
 //   accepted it would remove the only pressure to rewrite it (issue
@@ -374,6 +388,24 @@ export const RECORD_EXAMPLE_FILES: Record<string, string> = {
     "demonstrates the pre-v4 -> v4 layout conversion on fabricated artifacts " +
     "(260519-0438-coderev-loader-check, 260101-0903-dup, plan-foo)",
 };
+
+/**
+ * The placeholder slug a fabricated record carries, as a WORD of the token's
+ * own slug rather than a substring of it. The delimiters are the slug's:
+ * anything that is not a letter or a digit opens and closes a word here, `_`
+ * and `-` and `.` and `/` included, which is why this is not `\bfoo\b` — JS
+ * counts `_` as a word character, so that spelling would refuse the seven
+ * `<stamp>_<marker>_foo.md` fixtures this corpus actually carries while
+ * refusing nothing else. The narrower test is the point: the exemption keyed on
+ * the bare substring until 2026-09-01 and fired on `footer`, which is a word
+ * this project files records about, so sixteen store-prefixed citations were
+ * invisible to both the checker and the sweep and the release gate asserting
+ * `rewrites=0` was green over them
+ * (260901-0318_*_the-fabricated-name-exemption-hides-sixteen-store-prefixed-citations-in-this-repositorys-own-workbench.md).
+ * A three-letter substring inside a corpus of hyphenated slugs will keep
+ * finding new English words; a word test can only ever find the placeholder.
+ */
+const FABRICATED_NAME = /(?:^|[^A-Za-z0-9])foo(?:[^A-Za-z0-9]|$)/;
 
 /**
  * A class-(c) token inside an open backtick span that begins with a
@@ -775,7 +807,7 @@ export function createScanner(workbenchRoot: string): Scanner {
                     // (`<stamp>_*_$f.md` in a shell illustration)
                     isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
                     ? "placeholder"
-                    : token.includes("foo")
+                    : FABRICATED_NAME.test(token)
                       ? "fabricated-name"
                       : // a `*` anywhere but the marker position is a glob, not a citation
                         /\*/.test(token.replace(/_\*_/g, ""))

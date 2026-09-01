@@ -96,3 +96,21 @@ describe("a bare directory name resolves to a Circle or to the archive sweep its
     expect(toks(wb, `see archive/${SWEEP}/ for the move`)).toEqual([]);
   });
 });
+
+describe("the fabricated-name exemption reads a word, not a substring", () => {
+  const wb = scratch();
+  // [line, the reason the one token carries, or null when it must be judged]
+  const rows: [string, string | null][] = [
+    ["see shared/issues/260819-0836_o_the-templates-footer-stub-stands.md", null],
+    ["see shared/issues/260101-0000_o_foo.md", "fabricated-name"],
+    // `_` delimits a slug word, so the placeholder is exempt behind a marker too
+    ["see 260811-1534_i_foo.md", "fabricated-name"],
+  ];
+  for (const [text, reason] of rows) {
+    it(`${reason ?? "judges"}: ${text}`, () => {
+      const [hit] = toks(wb, text);
+      expect(hit.reason).toBe(reason ?? undefined);
+      expect(hit.status).toBe(reason ? "exempt" : "store-prefixed");
+    });
+  }
+});
