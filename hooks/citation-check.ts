@@ -66,16 +66,67 @@
  * The gate's own comment reasons its exclusions; nothing here overrides it, and
  * the two corpora are not to be re-unified by making the gate wider.
  *
+ * ## The verdict scope: only a file somebody still edits moves `verdict=`
+ *
+ * Since 2026-09-01, by decision
+ * `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`
+ * (option 3). EVERY VIOLATION IS STILL PRINTED — the scope narrows the verdict
+ * and never the search, because a row nobody prints is a row nobody can check
+ * and hiding one is the coverage claim the corpus decision already refused.
+ *
+ * WHY. `verdict=` is the one figure a reader acts on, and a violation nobody
+ * will repair cannot be acted on. Over this repository at `d30ca04a` the line
+ * read `violations` and structurally could not read anything else: of 299 rows,
+ * 297 sat in text nobody edits — 60 under the archive, the rest in history,
+ * analyses, reviews and in closed issues and implemented decisions. A figure
+ * pinned at one value carries no information, and a reader who learns that
+ * stops reading it. Archived-ness was the intuition behind the question and was
+ * NOT the criterion: the frozen stores are under a quarter of the mass.
+ *
+ * WHAT IS IN SCOPE, in three parts, which are disjoint and cover the corpus:
+ *
+ *   - A workbench file, by `isLiveRecord()` in `lib/citation-corpus.ts` — the
+ *     blocking gate's own corpus predicate, moved there so the two share one
+ *     definition instead of authoring two. Circle records in any state,
+ *     `portfolio.md`, open issues, live decisions, live plans; the frozen
+ *     stores out, terminal issues and decisions out.
+ *   - A workbench record kind that carries NO marker — history, analyses,
+ *     reviews, consult, memos, investigations. Out of scope, by a JUDGEMENT
+ *     rather than a derivation, reasoned at `lib/citation-corpus.ts`: a history
+ *     entry records what was true then, so correcting its citation falsifies
+ *     the record rather than repairing it. This class is where most of the
+ *     scoping happens — 191 of the 312 rows measured when the question was put.
+ *   - Everything outside the workbench — `CLAUDE.md`, `rules/*.md`,
+ *     `.claude/rules/*.md`, `docs/**` and every declared path. IN scope: no
+ *     marker exists there and every one of those files is live.
+ *
+ * The scope reaches the verdict and NOTHING else. `dangling`, `store-prefixed`,
+ * `files` and the row list are unchanged by it, and no exit code carries the
+ * verdict — that rule is shared with `bin/fusion-review-coverage` and
+ * `bin/fusion-staging-drift` and this change does not reopen it.
+ *
  * ## Output, one `KEY=value` per line, then one row per violation
  *
  *   anchor=workbench-root
  *   root=<project directory>
- *   files=<n>            declared-patterns=<n>   declared-files=<n>
+ *   files=<n>            edited-files=<n>
+ *   declared-patterns=<n>   declared-files=<n>
  *   tokens=<n>           judged=<n>
  *   resolved=<n>         dangling=<n>        store-prefixed=<n>
+ *   edited-violations=<n>   unedited-violations=<n>
  *   undecidable=<n>      exempt=<n>
  *   verdict=clean|violations
- *     <file>:<line>  '<token>'  <status>  <problem>
+ *     <file>:<line>  '<token>'  <status>  <scope>  <problem>
+ *
+ * `edited-files` is how many of `files` are in the verdict scope, and
+ * `edited-violations` / `unedited-violations` split the printed rows the same
+ * way — they sum to `dangling` + `store-prefixed`, and the first is what
+ * `verdict=` reads. A scoped verdict whose scope is not in the output would be
+ * worse than an unscoped one, so the three figures are mandatory rather than
+ * decorative. `<scope>` repeats the split per row, `edited` or `not-edited`, so
+ * a reader looking at three hundred rows can see which ones the verdict was
+ * taken over. An `--undecidable` row carries no scope column: it reaches no
+ * verdict by kind, before any scoping question is asked.
  *
  * `declared-patterns` is what the project wrote; `declared-files` is what those
  * patterns name, which is a different figure and is why both are printed. It
@@ -92,8 +143,9 @@
  * pointer fails to find its record; `store-prefixed` is the spelling the
  * storeless form retired; `undecidable` is the bare stamps and the ambiguous
  * tokens, which no reader of the token can settle and which reach no verdict.
- * `verdict=violations` when dangling + store-prefixed > 0. `--undecidable`
- * adds one row per undecidable token after the violations.
+ * `verdict=violations` when `edited-violations` > 0 — which is the scoped half
+ * of dangling + store-prefixed, not their whole; see `## The verdict scope`.
+ * `--undecidable` adds one row per undecidable token after the violations.
  *
  * It decides nothing per line about pointer versus statement: a citation
  * inside a fenced code block or a blockquote is exempt, and that fencing is
@@ -122,6 +174,7 @@ import {
   GATE_KINDS,
   type CitationHit,
 } from "./lib/citation-scan.js";
+import { isLiveRecord } from "./lib/citation-corpus.js";
 import { loadConfig } from "./lib/config.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
@@ -130,6 +183,18 @@ import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 exitZeroOnStdoutEpipe();
 
 const USAGE = "usage: fusion-citation-check [--undecidable]";
+
+/**
+ * One corpus file. `edited` is the verdict scope: true when somebody still
+ * edits this file, so a violation in it moves `verdict=`. See `## The verdict
+ * scope` above; the workbench half is `isLiveRecord()` in
+ * `lib/citation-corpus.ts` and everything outside the workbench is `true`.
+ */
+interface CorpusFile {
+  rel: string;
+  abs: string;
+  edited: boolean;
+}
 
 /** The project-side files the check reads beside the workbench. */
 function projectFiles(root: string): { rel: string; abs: string }[] {
@@ -147,8 +212,15 @@ function projectFiles(root: string): { rel: string; abs: string }[] {
   return out;
 }
 
-function row(h: CitationHit): string {
-  return `  ${h.file}:${h.line}  '${h.token}'  ${h.status}  ${h.problem ?? ""}`.trimEnd();
+/**
+ * One violation row. The scope column sits between the status and the problem,
+ * reading `edited` or `not-edited`, so a reader with three hundred rows can see
+ * which of them the verdict was taken over without counting stores by eye. It
+ * is a column and not a filter: every row is printed under either value.
+ */
+function row(h: CitationHit, scope?: string): string {
+  const cols = [`${h.file}:${h.line}`, `'${h.token}'`, h.status, scope, h.problem];
+  return `  ${cols.filter((c) => c !== undefined).join("  ")}`.trimEnd();
 }
 
 function main(argv: string[]): number {
@@ -171,12 +243,15 @@ function main(argv: string[]): number {
   const workbenchRoot = join(root, "fusion-workbench");
   const scanner = createScanner(workbenchRoot);
 
-  const files = [
+  const files: CorpusFile[] = [
     ...markdownFilesUnder(workbenchRoot).map((f) => ({
       rel: `fusion-workbench/${f.rel}`,
       abs: f.abs,
+      // the one place the workbench half of the verdict scope is decided, on
+      // the workbench-RELATIVE path the predicate is written against
+      edited: isLiveRecord(f.rel),
     })),
-    ...projectFiles(root),
+    ...projectFiles(root).map((f) => ({ ...f, edited: true })),
   ];
 
   // what the project declared, added to the corpus and never subtracted from
@@ -187,10 +262,12 @@ function main(argv: string[]): number {
     process.stderr.write(`fusion-citation-check: ${line}\n`);
   }
   const inCorpus = new Set(files.map((f) => f.abs));
-  for (const f of declared.files) if (!inCorpus.has(f.abs)) files.push(f);
+  for (const f of declared.files) if (!inCorpus.has(f.abs)) files.push({ ...f, edited: true });
 
   const hits: CitationHit[] = [];
+  const editedFile = new Map<string, boolean>();
   for (const f of files) {
+    editedFile.set(f.rel, f.edited);
     const lines = readFileSync(f.abs, "utf-8")
       .split("\n")
       .map((text, i) => ({ line: i + 1, text }));
@@ -204,11 +281,14 @@ function main(argv: string[]): number {
   const violations = [...dangling, ...storePrefixed].sort(
     (a, b) => a.file.localeCompare(b.file) || a.line - b.line,
   );
+  const moves = (h: CitationHit) => editedFile.get(h.file) === true;
+  const edited = violations.filter(moves);
 
   const out = [
     "anchor=workbench-root",
     `root=${relative(process.cwd(), root).split(sep).join("/") || "."}`,
     `files=${files.length}`,
+    `edited-files=${files.filter((f) => f.edited).length}`,
     `declared-patterns=${config.citations.extraPaths.length}`,
     `declared-files=${declared.unavailable ? "unavailable" : declared.files.length}`,
     `tokens=${hits.length}`,
@@ -216,11 +296,13 @@ function main(argv: string[]): number {
     `resolved=${p.resolved.length}`,
     `dangling=${dangling.length}`,
     `store-prefixed=${storePrefixed.length}`,
+    `edited-violations=${edited.length}`,
+    `unedited-violations=${violations.length - edited.length}`,
     `undecidable=${p.undecidable.length}`,
     `exempt=${p.exempt.length}`,
-    `verdict=${violations.length > 0 ? "violations" : "clean"}`,
+    `verdict=${edited.length > 0 ? "violations" : "clean"}`,
   ];
-  for (const h of violations) out.push(row(h));
+  for (const h of violations) out.push(row(h, moves(h) ? "edited" : "not-edited"));
   if (undecidable) for (const h of p.undecidable) out.push(row(h));
   process.stdout.write(out.join("\n") + "\n");
   return 0;

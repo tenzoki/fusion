@@ -10,6 +10,7 @@
 #   anchor=workbench-root
 #   root=.
 #   files=312
+#   edited-files=94
 #   declared-patterns=2
 #   declared-files=45            # or `unavailable`, see below
 #   tokens=1904
@@ -17,10 +18,44 @@
 #   resolved=1180
 #   dangling=3
 #   store-prefixed=28
+#   edited-violations=2
+#   unedited-violations=29
 #   undecidable=402
 #   exempt=291
 #   verdict=violations            # or clean
-#     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  …
+#     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  edited  …
+#
+# ONLY A ROW IN A FILE SOMEBODY STILL EDITS MOVES `verdict=` (2026-09-01,
+# decision 260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md,
+# option 3). Every violation is still PRINTED — the scope narrows the verdict
+# and never the search. The reason is that `verdict=` is the one figure a reader
+# acts on, and a violation nobody will repair cannot be acted on: over fusion's
+# own repository 297 of 299 rows sat in text nobody edits, so the line was
+# pinned at `violations` and carried no information. Archived-ness is NOT the
+# criterion — the frozen stores are under a quarter of that mass.
+#
+# In scope: a live workbench record — a Circle record in any state,
+# portfolio.md, an open issue, a decision carrying `_o_` or `_a_`, a plan
+# carrying `_o_` or `_p_` — and everything outside the workbench, where no
+# marker exists and every file is live (CLAUDE.md, rules/, .claude/rules/,
+# docs/ and every declared path). Out of scope: the frozen stores, an issue or
+# decision at a terminal marker, a closed or deferred plan, and the kinds that
+# carry no marker at all — history, analyses, reviews, consult, memos,
+# investigations, which record what was true when they were written. That last
+# class is a judgement rather than a derivation and is reasoned in
+# hooks/lib/citation-corpus.ts, the one place the predicate is authored: the
+# blocking gate hooks/lib/__tests__/workbench-citation-lint.test.ts reads the
+# same function as its corpus, so the two cannot drift apart.
+#
+# `edited-files` says how many of `files` were in that scope, and
+# `edited-violations` / `unedited-violations` split the printed rows the same
+# way — they sum to dangling + store-prefixed, and the first is what `verdict=`
+# reads. A scoped verdict whose scope is not in the output would be worse than
+# an unscoped one, so those three figures are part of the block rather than
+# extras on it. Each violation row repeats the split in a column between the
+# status and the problem, `edited` or `not-edited`. An `--undecidable` row
+# carries no such column: it reaches no verdict by kind, before any scoping
+# question is asked.
 #
 # Corpus: every .md under fusion-workbench/, the frozen stores read exactly
 # like the live tree since commit 32fe0d49 deleted the exclusion, plus

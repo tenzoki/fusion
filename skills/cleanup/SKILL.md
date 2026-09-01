@@ -218,7 +218,7 @@ A single concise summary, action-first per `rules/user-facing-output.md`:
 - Archive: files moved (count) into `<archive folder>` / nothing to archive
 - Normative surfaces changed: entries approved and applied, per surface; every entry that came back `stale` or `failed`, by id and reason; or that the ledger was rejected, or that the survey proposed nothing
 - Activity log: updated
-- Citations: the `verdict=`, `store-prefixed=` and `dangling=` lines of `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-citation-check" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-citation-check" | grep -E '^(verdict|store-prefixed|dangling)='`, else `citations: helper-missing`
+- Citations: the `verdict=`, `edited-violations=`, `store-prefixed=` and `dangling=` lines of `[ -x "$FUSION_PLUGIN_ROOT/bin/fusion-citation-check" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-citation-check" | grep -E '^(verdict|edited-violations|store-prefixed|dangling)='`, else `citations: helper-missing`. `verdict=` counts only the files somebody still edits; `dangling=` counts every row, so the two differ by design and reporting one without the other misreads the tree
 - Normative surfaces, current state: the date of the last consolidation run, or that none has run, followed by the current size in bytes of the decision records, the project's own rule files, and `CLAUDE.md`
 
 **Where the consolidation line comes from.** It is a read-only measurement. It dispatches nothing, writes nothing, and runs under `--dry-run` exactly as it does on a full run. It reports the state of the surfaces; Step 6 is what changes them, and only through the gate.

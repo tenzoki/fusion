@@ -144,3 +144,23 @@ be lifted out of a gate's definition file, and the marker-less record kinds need
 has made yet. If neither cost is worth paying, option 1 is the honest fallback — a verdict that never
 returns to `ok`, said plainly in the checker's own header, is better than a scoped one whose scope
 nobody can restate.
+
+---
+Answered: 260901-0356 — user chose **option 3** on 2026-09-01: only rows in a file somebody still edits move the verdict. The choice was made with a consuming project blocked on the pinned verdict, and with that project separately repairing its own archive; the two are compatible, since option 3 removes archived rows from the verdict without preventing anyone from repairing them, and a later archive sweep moves new records in whose citations would otherwise pin the verdict again.
+
+The two costs the option names are accepted as stated: the live-versus-terminal predicate leaves the test file it lives in, and the judgement about markerless kinds and the surfaces outside the workbench is made rather than deferred.
+
+Implemented: `hooks/lib/citation-corpus.ts:174` and `hooks/citation-check.ts:252` — the gate's corpus
+predicate left `hooks/lib/__tests__/workbench-citation-lint.test.ts` whole and became `isLiveRecord()`
+in `hooks/lib/citation-corpus.ts`, imported by both; the gate's assertions and corpus are byte-for-byte
+what they were. `bin/fusion-citation-check` now takes `verdict=` over the edited files alone — a live
+workbench record by that predicate, plus everything outside the workbench, where no marker exists and
+every file is live — and prints `edited-files`, `edited-violations` and `unedited-violations` in the
+`KEY=value` block with an `edited` / `not-edited` column on every row. Every violation is still printed:
+299 rows over this repository before and after. The two judgements the option required were made rather
+than deferred, and both are reasoned in `hooks/lib/citation-corpus.ts`: the marker-less kinds (history,
+analyses, reviews, consult, memos, investigations) count as not edited, and the surfaces outside the
+workbench count as edited. Measured here at `d30ca04a` plus this change: 297 of the 299 rows stopped
+moving the verdict, and the two that still move it are a genuine live-file finding
+(`hooks/lib/citation-scan.ts:389`, two fabricated record names written in pointer form inside a declared
+source file), which is the verdict becoming actionable rather than a residual of the scoping.

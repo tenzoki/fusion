@@ -385,8 +385,10 @@ export const RECORD_EXAMPLE_FILES: Record<string, string> = {
   "rules/decision-record-examples.md":
     "the worked-example corpus — every record it walks is fabricated by design",
   "skills/migrate/SKILL.md":
-    "demonstrates the pre-v4 -> v4 layout conversion on fabricated artifacts " +
-    "(260519-0438-coderev-loader-check, 260101-0903-dup, plan-foo)",
+    "demonstrates the pre-v4 -> v4 layout conversion on fabricated artifacts: two " +
+    "invented record names and one invented plan slug, spelled in that file. They are " +
+    "named there rather than here, because a name written in pointer form inside this " +
+    "file is a pointer to this scanner, and this file is declared in citations.extraPaths",
 };
 
 /**

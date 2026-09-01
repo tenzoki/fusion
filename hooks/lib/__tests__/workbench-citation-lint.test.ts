@@ -12,6 +12,12 @@ import {
   scanRecordCitations,
   type Violation,
 } from "./helpers/citation-scan.js";
+import {
+  CIRCLE_RECORD_RE,
+  FROZEN_PREFIXES,
+  LIVE_DECISION_RE,
+  isLiveRecord,
+} from "../citation-corpus.js";
 
 // ---------------------------------------------------------------------------
 // Workbench citation gate (Circle 260819-1645-four-constraints-on-deep-change,
@@ -51,135 +57,24 @@ import {
 
 // --- the corpus -------------------------------------------------------------
 
-// THE CORPUS IS A MARKER PREDICATE, NOT THE WORD "OPEN". The user's answer named
-// it as "the Circle records, portfolio.md, the open decisions and the open
-// issues", and the planning run then measured that "the open decisions" has two
-// readings which differ by 20 files and 39 dangling tokens. A word that admits
-// two corpora does not define one, so the predicate is written out below and the
-// reading it takes is named.
+// THE CORPUS PREDICATE MOVED TO `hooks/lib/citation-corpus.ts` on 2026-09-01,
+// whole and with its reasoning, when decision
+// `260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md`
+// scoped `citation-check.ts`'s `verdict=` line to the files somebody still
+// edits — which is this predicate, read by a reporter instead of by a gate.
+// Read that file for what the corpus IS and why: the wide reading of a live
+// decision, the two markers a live plan carries, the frozen stores and their
+// root anchoring, the hole at terminal state, and the judgement the reporter
+// needed about the kinds that carry no marker at all.
 //
-// IT TAKES THE WIDE READING — decisions carrying `_o_` OR `_a_` — for three
-// reasons, in descending weight:
-//
-//   1. It is this project's own definition of a live decision.
-//      `rules/fusion-workbench-conventions.md` `## Decision Records` states that
-//      `_o_` and `_a_` together are Grounding-Stand, "the current best-of-
-//      knowledge the project is working with", and that a reconciliation pass
-//      listing active Grounding filters on `_o_` + `_a_`. An answered decision
-//      awaiting realisation is a document people still open and act on. A gate
-//      over live records should hold exactly the records that are live, and this
-//      repository already wrote down which those are.
-//   2. It is a superset of the narrow reading, so it can only judge more. Where
-//      the two disagree the wide one is the stricter, and a citation gate erring
-//      strict costs a repair while erring loose costs a dead pointer nobody sees.
-//   3. It is the reading the repair was performed against. Plan steps 5 to 9b
-//      cleared the wide corpus deliberately, so that the arming would satisfy
-//      either answer. Choosing the narrow one now would discard measured work.
-//
-// THE HOLE THIS PREDICATE HAS, recorded because it is real and because the
-// answering decision's own footer records it. Membership follows markers, so a
-// record LEAVES the corpus when it reaches a terminal state, carrying whatever
-// citations it holds. That happened inside this very Circle: a decision moved
-// `_a_` -> `_i_` at plan step 4 and took three dangling citations out of reach,
-// silently, and this gate would have shown green over them. It is a cost of the
-// recomputed corpus — the same property that makes a baseline unnecessary is the
-// property that lets a record walk out of scope — and not a defect in it. The
-// fix would be a predicate that does not narrow at terminal state. Nobody has
-// proposed one and this file does not.
+// NOTHING ABOUT WHAT THIS GATE ASSERTS OR READS CHANGED WITH THE MOVE. The
+// cases below are the same cases, put to the same predicate under its new
+// name. One predicate, two stakes: a file this gate admits must carry no
+// dangling citation or the suite goes red, while the reporter prints every row
+// either way and only narrows a verdict.
 
-/** `circles/<dir>/_<marker>_circle.md` — a Circle record in ANY state. */
-const CIRCLE_RECORD_RE = /^circles\/[^/]+\/_[atcbsd]_circle\.md$/;
-
-/** An issue carrying `_o_`, in a Circle's store or in `shared/`. */
-const OPEN_ISSUE_RE = /(?:^|\/)issues\/[0-9]{6}-[0-9]{4}_o_[^/]+\.md$/;
-
-/** A decision carrying `_o_` or `_a_` — Grounding-Stand, per the wide reading. */
-const LIVE_DECISION_RE = /(?:^|\/)decisions\/[0-9]{6}-[0-9]{4}_[oa]_[^/]+\.md$/;
-
-/**
- * The portfolio briefing, at the workbench root. Class L since 2026-08-23, so it
- * is present in the checkout that generated one and in no other; the corpus
- * admits it either way and `corpusFiles()` judges it only where it exists.
- */
-const PORTFOLIO = "portfolio.md";
-
-/**
- * The frozen stores, excluded at the workbench root.
- *
- * An archived record is a frozen copy of what was true when it was swept, and
- * repairing its citations would rewrite history rather than correct it. That
- * reason was written here for `archive/` alone and is not `archive/`'s alone.
- * `stashes/` (the removed Circle stash skills) and `.migration-v2-backup/` (the
- * retired `/fusion:migrate-workbench-v2`'s rollback copy) are copy trees of the
- * same layout, carrying the very `issues/` and `decisions/` subtrees these
- * predicates match. Neither exists in this workbench; one exists in any project
- * that ran that migration, and a blocking gate over a rollback copy has no
- * honest remedy. The pair is authored in `rules/fusion-workbench-conventions.md`
- * ("Two legacy stores are absent from this tree on purpose"), and
- * `skills/log-activity/SKILL.md:89` is the precedent this list follows.
- *
- * IT TAKES THREE OF THAT PRECEDENT'S FOUR ENTRIES. `stilwerk/` is on the
- * activity-log's list under that skill's own criterion — configuration rather
- * than activity. It is not a frozen copy of records: it holds fixed-name voice
- * profiles, no `.md` at all, and no path under it can match a predicate here.
- * Carrying it would be an exclusion with no reason of this gate's own.
- *
- * ANCHORED AT THE ROOT, and that is the point rather than a detail. All three
- * are workbench-root stores. A substring test would be a second unanchored
- * predicate, which is the defect this clause answers, repeated
- * (`circles/260819-1645-four-constraints-on-deep-change/issues/260820-0805_*_the-citation-gates-corpus-excludes-only-archive-so-a-frozen-copy-tree-would-enter-a-blocking-gate.md`).
- *
- * EXCLUDING A STORE IS STILL NOT A WAY TO MAKE THE GATE GREEN. A record moved
- * into one leaves the corpus, but so do the obligations of everything it cited,
- * and the citations OF it in live records stay judged and go red. That
- * asymmetry is intentional.
- */
-const FROZEN_PREFIXES = ["archive/", "stashes/", ".migration-v2-backup/"];
-
-/**
- * A plan or spec carrying `_o_` or `_p_`, in a Circle's store or in `shared/`.
- *
- * THOSE TWO MARKERS AND NO OTHERS. `rules/fusion-workbench-conventions.md`
- * `## State Markers — issues and planning` gives a planning file four states:
- * `_o_` open, `_p_` in progress, `_c_` closed, `_d_` deferred. The first two are
- * the states in which an executor is dispatched against the document, so a
- * citation in it is one somebody is about to follow. `_c_` and `_d_` are
- * terminal and out for the reason a closed issue is out — and measurably so: the
- * 24 closed plans outside `archive/` carry 157 dangling citations between them
- * (2026-08-20; the exact figure moves with the parser, the order does not).
- * Admitting them would arm a red gate over records nobody will open again, and
- * narrowing the corpus afterwards to get back to green is exactly the move
- * decision
- * `circles/260819-1645-four-constraints-on-deep-change/decisions/260819-1645_*_what-defines-the-citation-gates-corpus-and-what-happens-when-a-marker-move-changes-it.md`
- * exists to refuse. An `_o_`/`_p_` backlog entry is a separate question, asked
- * by the record that asked for this clause and not answered here.
- *
- * MEASURED before it was written, 2026-08-20 at HEAD `8e7cae7`: the clause
- * admits zero files today. Every plan outside `archive/` carries `_c_`,
- * including this Circle's own, and the tree's only `_p_` plan sits inside
- * `archive/` where the frozen-store exclusion takes it. Corpus and findings are
- * unchanged by adding it — 199 files, 0 violations, before and after. It is
- * armed for the next plan somebody writes, which is the whole of its job.
- */
-const LIVE_PLAN_RE = /(?:^|\/)planning\/[0-9]{6}-[0-9]{4}_[op]_[^/]+\.md$/;
-
-/**
- * The predicate itself, pure and over a workbench-relative path, so that the
- * cases below can put a path to it that this tree does not carry. Two of the
- * three frozen stores are such paths, and so is every live plan — which is the
- * shape of both defects this clause answered: nothing in this repository's tree
- * would have shown either of them. Twin: `skills/archive/SKILL.md` filter 3 enumerates the shipped files whose citations an archive move must keep resolvable (decision 260827-1756).
- */
-export function inCorpus(rel: string): boolean {
-  if (FROZEN_PREFIXES.some((p) => rel.startsWith(p))) return false;
-  if (rel === PORTFOLIO) return true;
-  return (
-    CIRCLE_RECORD_RE.test(rel) ||
-    OPEN_ISSUE_RE.test(rel) ||
-    LIVE_DECISION_RE.test(rel) ||
-    LIVE_PLAN_RE.test(rel)
-  );
-}
+/** The gate's name for it, kept so every case below reads as it always did. */
+export const inCorpus = isLiveRecord;
 
 /** Workbench-relative paths of every file the gate judges under `root`. */
 export function corpusFiles(root = workbenchRoot): { rel: string; abs: string }[] {

@@ -8,6 +8,12 @@
  * which is the property `citation-check.ts` `## Corpus` reasons. The blocking
  * gate `workbench-citation-lint.test.ts` still excludes the same stores; the
  * two corpora differ on purpose.
+ *
+ * And since 2026-09-01 the VERDICT is scoped where the corpus is not: only a
+ * row in a file somebody still edits moves it, while every row is printed
+ * either way (`citation-check.ts` `## The verdict scope`). The scratch project
+ * below carries one violation in an open issue and one in a swept archive
+ * copy, so the two halves of that split are exercised on every run.
  */
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
@@ -53,10 +59,15 @@ describe("fusion-citation-check over a scratch consuming project", () => {
       expect(lines).toContain("dangling=1");
       expect(lines).toContain("resolved=2");
       expect(lines).toContain("verdict=violations");
+      // the verdict scope, in the block: four of the five files are edited (the
+      // swept copy is not), and the two violations split one each way
+      expect(lines).toContain("edited-files=4");
+      expect(lines).toContain("edited-violations=1");
+      expect(lines).toContain("unedited-violations=1");
       const rows = lines.filter((l) => l.startsWith("  "));
       expect(rows).toHaveLength(2);
-      expect(rows[0]).toMatch(/^  fusion-workbench\/archive\/260102-0000-sweep\/shared\/issues\/260101-0002_c_old\.md:1  '260199-9999_\*_gone\.md'  dangling  /);
-      expect(rows[1]).toMatch(/^  fusion-workbench\/shared\/issues\/260101-0000_o_alpha\.md:1  'shared\/decisions\/260101-0001_o_beta\.md'  store-prefixed  /);
+      expect(rows[0]).toMatch(/^  fusion-workbench\/archive\/260102-0000-sweep\/shared\/issues\/260101-0002_c_old\.md:1  '260199-9999_\*_gone\.md'  dangling  not-edited  /);
+      expect(rows[1]).toMatch(/^  fusion-workbench\/shared\/issues\/260101-0000_o_alpha\.md:1  'shared\/decisions\/260101-0001_o_beta\.md'  store-prefixed  edited  /);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -71,6 +82,79 @@ describe("fusion-citation-check over a scratch consuming project", () => {
       expect(r.stderr).toMatch(/no fusion workbench/);
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+});
+
+// --- the verdict scope -------------------------------------------------------
+
+/**
+ * One issue carrying `marker`, with one citation that resolves to nothing, and
+ * nothing else. The same file under two markers is the whole experiment: the
+ * corpus, the row and the counts are identical, and only `verdict=` differs.
+ */
+function oneIssue(marker: string): string {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), "citation-scope-")));
+  mkdirSync(join(root, "fusion-workbench/shared/issues"), { recursive: true });
+  writeFileSync(join(root, "fusion-workbench/.fusion-setup"), "{}");
+  writeFileSync(
+    join(root, `fusion-workbench/shared/issues/260101-0000_${marker}_x.md`),
+    "cites `260199-9999_*_gone.md`\n",
+  );
+  return root;
+}
+
+describe("fusion-citation-check scopes the verdict to the files somebody still edits", () => {
+  it("moves the verdict on an open record and not on a closed one, printing the row either way", () => {
+    const seen: Record<string, string[]> = {};
+    for (const marker of ["o", "c"]) {
+      const root = oneIssue(marker);
+      try {
+        const r = run(root);
+        expect(r.status, r.stderr).toBe(0);
+        seen[marker] = r.stdout.trimEnd().split("\n");
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    }
+    // The row is printed under both markers — the scope narrows the verdict and
+    // never the search, which is the constraint the answering decision names
+    // first. Only the scope column and the three scope figures differ.
+    for (const marker of ["o", "c"]) {
+      const rows = seen[marker].filter((l) => l.startsWith("  "));
+      expect(rows, marker).toHaveLength(1);
+      expect(rows[0], marker).toContain(`260101-0000_${marker}_x.md:1`);
+      expect(seen[marker], marker).toContain("dangling=1");
+    }
+    expect(seen.o).toContain("verdict=violations");
+    expect(seen.o).toContain("edited-files=1");
+    expect(seen.o).toContain("edited-violations=1");
+    expect(seen.o).toContain("unedited-violations=0");
+    expect(seen.o.filter((l) => l.startsWith("  "))[0]).toContain("  dangling  edited  ");
+
+    expect(seen.c).toContain("verdict=clean");
+    expect(seen.c).toContain("edited-files=0");
+    expect(seen.c).toContain("edited-violations=0");
+    expect(seen.c).toContain("unedited-violations=1");
+    expect(seen.c.filter((l) => l.startsWith("  "))[0]).toContain("  dangling  not-edited  ");
+  }, CASE_TIMEOUT);
+
+  it("keeps a project file in scope, where no marker exists and every file is live", () => {
+    // The third part of the scope, and the one no marker predicate can decide:
+    // `rules/*.md` is judged live by construction, so a dead citation there
+    // moves the verdict even though the workbench half is empty of live records.
+    const root = oneIssue("c");
+    try {
+      mkdirSync(join(root, "rules"), { recursive: true });
+      writeFileSync(join(root, "rules/local.md"), "see `260199-9999_*_gone.md`\n");
+      const lines = run(root).stdout.trimEnd().split("\n");
+      expect(lines).toContain("dangling=2");
+      expect(lines).toContain("edited-files=1");
+      expect(lines).toContain("edited-violations=1");
+      expect(lines).toContain("unedited-violations=1");
+      expect(lines).toContain("verdict=violations");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
     }
   }, CASE_TIMEOUT);
 });
