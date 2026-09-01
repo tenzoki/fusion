@@ -138,7 +138,7 @@ a commit made at 14:26:43 and counting defect records stamped 14:50.
 The irony is load-bearing rather than decorative: the contract this very gate authorised now says
 "record the same gate answer in your session history … a permission that lives only in the prompt
 leaves no trace at all" (`agents/orchestrator.md:355-358`).
-Filed: `circles/260801-1244-curator/issues/260814-1850_o_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`.
+Filed: `260814-1850_*_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`.
 
 **F5 — Medium. The final reconciliation emitted no `reconciliation` event, and the gate it is
 recorded as triggering fired first.** `reconciliation` is a defined event type
@@ -267,7 +267,7 @@ re-derived from the tree rather than taken from the closing commit's message.
   points at the `## Re-sharpening an anticipated Circle` contract for the mechanics instead of
   carrying a second copy. Record closed in the shared store
   (`260814-1850_*_phase-0b-1-still-tells-the-orchestrator-not-to-intercept-a-dialogue-the-same-file-now-mandates-it-relays.md`).
-- **F4 — open.** `circles/260801-1244-curator/issues/260814-1850_o_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`
+- **F4 — open.** `260814-1850_*_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`
   stands; nothing in `9f4cdac` or `41c224c` touches the footer it names.
 - **F5 — open.** `260814-1850_*_the-final-reconciliation-emitted-no-reconciliation-event-and-the-gate-it-is-recorded-as-triggering-fired-first.md`
   stands.

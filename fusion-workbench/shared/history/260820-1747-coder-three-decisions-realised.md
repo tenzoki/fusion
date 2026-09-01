@@ -120,7 +120,7 @@ The 10, for whoever discharges them:
 | File | Lines |
 |---|---|
 | `260801-1244-curator` | 140, 419 |
-| `circles/260801-1244-curator/issues/260814-2017_o_the-newest-decision-record-carries-no-answered-implemented-footer-block…md` | 4, 37, 50 |
+| `260814-2017_*_the-newest-decision-record-carries-no-answered-implemented-footer-block…md` | 4, 37, 50 |
 | `260806-1152_*_stash-manifest-dirname-and-pointer-content-duplicate.md` | 76, 89 |
 | `260810-2032_*_should-the-drift-checks-four-sentences…md` | 163, 185 |
 | `260816-0119_*_can-anything-carry-the-rename-to-citation-obligation…md` | 93 |

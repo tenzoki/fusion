@@ -161,7 +161,7 @@ five bullets happen to equal five Turns: the continuation bullet is counted as a
 missing one. Both surfaces are the orchestrator's to write, which is why this is a record and not an
 edit.
 
-**4. `260814-2017_o_the-newest-decision-record-carries-no-answered-implemented-footer-block-so-its-next-transition-has-nowhere-to-land.md`**
+**4. `260814-2017_*_the-newest-decision-record-carries-no-answered-implemented-footer-block-so-its-next-transition-has-nowhere-to-land.md`**
 
 `circles/260801-1244-curator/decisions/260814-1915_o_*` ends after `## Recommendation` with no
 `Answered: / Implemented: / Deferred: / Superseded by:` block. The template in

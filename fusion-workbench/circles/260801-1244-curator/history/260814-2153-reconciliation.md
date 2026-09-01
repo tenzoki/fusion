@@ -156,7 +156,7 @@ pass, not a verified claim.
 | `260814-2022-coderev-curator-turn-5.md` | per-finding annotation: F1, F2, F3 resolved with evidence; F4 standing |
 | `260814-2128-coderev-curator-turn-6.md` | per-finding annotation: F1, F3 resolved with evidence; F2 standing |
 | `260814-2017_*_three-of-the-five-turns-…` | re-measurement appended: half repaired, Turn 6 now missing from both surfaces, masking recurred |
-| `circles/260801-1244-curator/issues/260814-2017_o_the-newest-decision-record-carries-no-…-footer-block-…` | re-checked at HEAD, stands unchanged |
+| `260814-2017_*_the-newest-decision-record-carries-no-…-footer-block-…` | re-checked at HEAD, stands unchanged |
 | `260810-1635_*_where-does-the-obligation-sit-…` | a sixth instance of its class recorded, the Turn-6 F1; marker unchanged at `_a_` |
 | `260813-2345-orchestrator-session.md` | third `## Coherence` entry appended (append-only; this pass's only cross-agent write) |
 

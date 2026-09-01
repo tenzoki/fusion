@@ -18,7 +18,7 @@ none — all 19 terminal Circles were kept: 5 cited in CLAUDE.md (hard exclusion
 - 260819-0837_*_an-untracked-zero-byte-test-txt-sits-at-the-repository-root-and-no-ignore-rule-covers-it.md
 - 260811-2306_*_the-check-in-opt-out-is-session-scoped-but-lives-only-in-the-history-file-so-the-resume-the-same-range-defines-as-the-same-session-loses-it.md
 - 260807-2153_*_the-exempt-surface-list-is-plugin-repo-shaped-but-ships-to-every-consumer.md
-- shared/issues/260819-0836_c_the-status-field-closure-answers-one-of-the-defects-two-halves-and-the-templates-footer-stub-stands.md
+- 260819-0836_*_the-status-field-closure-answers-one-of-the-defects-two-halves-and-the-templates-footer-stub-stands.md
 - 260815-0752_*_no-agent-may-revise-an-active-circle-records-directive-so-a-revision-leaves-it-contradicting-the-spec.md
 - 260819-0042_*_the-move-turned-an-adjacent-duplicate-enumeration-of-the-root-entries-into-a-cross-file-one.md
 - 260821-2207_*_the-rules-inventory-of-the-chat-profile-names-eight-of-nine-blacklist-entries-and-four-of-six-whitelist-entries.md
