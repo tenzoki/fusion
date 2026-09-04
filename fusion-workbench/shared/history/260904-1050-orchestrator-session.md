@@ -50,3 +50,20 @@ neither of the other two.
 Still open, and not covered by that choice: whether a registry entry carries hostname,
 account name and folder path at all, and whether `bin/fusion-identity`'s exit-1 halt
 survives a registry that can name the person.
+
+## Turn 1 — the worker-field gate
+
+At the plan's step-1 gate the user was shown the decision record's four options as
+written, together with the three values option 2 or 3 would publish out of this
+checkout (hostname `k1i9`, account `k1`, path `/Users/k1/Projects/productive/fusion`).
+**He answered "1": never written.** No `**Worker:**` field and no `--worker` flag come
+into existence, and nothing in this project publishes hostname, account name or folder
+path. The alias carries the whole "which checkout is this" job.
+
+Two deviations from the plan step, both deliberate and neither silent. The record was
+renamed where it lives, in `shared/decisions/`, rather than in "this Circle's copy" as
+the step's wording has it: the record was filed before the Circle existed, and the
+Origin Rule keeps one record in one location with citations carrying the reach. And the
+transition was performed by the orchestrator rather than by the dispatched `analyst` the
+step routes to, because recording a user's gate answer and moving the marker is the
+orchestrator's own act under Phase 1 step 3.

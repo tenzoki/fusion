@@ -43,3 +43,8 @@ Measured in this checkout: hostname `k1i9`, account `k1`, path `/Users/k1/Projec
 ## Recommendation
 
 Option 2. Option 1 is defensible and loses a little; option 3 inverts the burden onto the least attentive project; option 4 spends the field's whole point. The offer should name the three values it is about to publish, in the words above, rather than asking whether to record "machine details".
+
+---
+Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the worker-field gate` — option 1, never written; the user answered "1" at the step-1 gate of the plan.
+
+**What step 2 must therefore do:** no `**Worker:**` field and no `--worker` flag exist. `bin/fusion-checkout-name` neither writes nor reads a worker value, `register` takes no such argument, `resolve` emits no `worker=` line, and step 5's Setup question offers nothing about hostname, account name or folder path. Nothing in this project publishes any of the three.
