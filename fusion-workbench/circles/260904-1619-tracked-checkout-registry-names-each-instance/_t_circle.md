@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260904-1640: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
-**Active spec/plan:** (none yet)
+**Active spec/plan:** 260904-1651_*_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md
 **Active session history:** 260904-1050-orchestrator-session.md
 
 ---
