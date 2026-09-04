@@ -28,3 +28,25 @@
 ## Turns
 
 (none yet)
+
+## Turn 1 — the analysis, and what the user answered
+
+The analyst's report is `260904-1058-identity-per-instance-and-the-checkout-registry.md`,
+committed as `23ffbe73` together with four decision records and three defects.
+
+**The user chose the report's Option 1, "Checkout registry as an attribute table, hex stays
+the key", in these words: "ok, we go for: Option 1. Checkout registry as an attribute table,
+hex stays the key (recommended)".** That answer settles two of the four filed decisions and
+neither of the other two.
+
+- The registry exists, in shape (a): one tracked file per checkout, `<8hex>.md`, in a new
+  store beside the memo store, class R1, written by the checkout it describes and by no
+  other. Fields: the eight hex as key, alias, person, git identity, and an optional worker
+  note.
+- The alias is an **attribute** of the minted identifier, not the identifier. The hex stays
+  the value written into `**Claim:**` and into `checkout:` on every event line, so nothing
+  already on disk changes and no migration is owed.
+
+Still open, and not covered by that choice: whether a registry entry carries hostname,
+account name and folder path at all, and whether `bin/fusion-identity`'s exit-1 halt
+survives a registry that can name the person.

@@ -51,3 +51,6 @@ Answered:
 Implemented:
 Deferred:
 Superseded by:
+
+---
+Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the analysis, and what the user answered` — option 1, one tracked file per checkout keyed by the eight hex, class R1, chosen by the user in his own words.

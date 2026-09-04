@@ -38,3 +38,6 @@ The user's structure opens with a petname or alias, generated arbitrarily. Wheth
 Option 1. The argument is backward compatibility rather than taste: 280 event lines and every claim in the workbench carry the hex, and option 2 makes each of them read as a stranger's from the switch point backward. The legibility option 2 buys is available to option 1 by lookup, at a cost option 2 also pays once its readers are corrected.
 
 A generated default the user may replace at Setup is better than pure generation. A human naming his own checkout produces a name he recognises, and a collision surfaces at the moment of naming rather than at a later read.
+
+---
+Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the analysis, and what the user answered` — option 1, attribute; the minted eight hex stays the key and stays the written value.
