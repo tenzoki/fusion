@@ -152,7 +152,7 @@ E="$FUSION_PLUGIN_ROOT/bin/fusion-events"
 if [ -x "$E" ]; then "$E" presence; echo "exit=$?"; else echo "presence=unread"; fi
 ```
 
-**Both counts `0`: print nothing at all**, as `/fusion:next` does for an empty backlog. Otherwise one line in the project's chat language: `other_people` and `other_checkouts` apart (*"1 other person, 1 further checkout of your own"*), each `party=`'s person, Circle and time, the `window_days` window, and `scope=pulled`: only what this checkout has pulled, so a session started elsewhere since the last fetch is invisible, not absent. **A failed read says so and never prints a zero**: `exit=3` — presence could not be read, this checkout has no identifier; `exit=4` — `other_checkouts`, another person not tellable from a further checkout of your own; `presence=unread` — not read, this install lacks the helper. The rest: that helper's header.
+**Both counts `0`: print nothing at all**, as `/fusion:next` does for an empty backlog. Otherwise one line in the project's chat language: `other_people` and `other_checkouts` apart (*"1 other person, 1 further checkout of your own"*), each `party=`'s person, Circle and time, its sixth field as that checkout's alias where the field is not `-`, the `window_days` window, and `scope=pulled`. **A failed read says so and never prints a zero**: `exit=3` — presence could not be read, this checkout has no identifier; `exit=4` — `other_checkouts`, another person not tellable from a further checkout of your own; `presence=unread` — not read, this install lacks the helper. The rest: that helper's header.
 
 ## Step 0d — Ensure stylometric profiles are present locally
 
@@ -337,13 +337,26 @@ fi
 
 A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`, the condition `agents/playmaker.md` names and `/fusion:next` renders. A pointer deleted by hand is that same state, same report, same offer.
 
-It **asks only in that condition**, which is not a normal run, so Step 0g stays the only step that asks on one.
+**Two conditions here ask**, each at most once per checkout: that one, and a checkout with no registry entry.
 
 **This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`, minting `fusion-workbench/.checkout-id` where none exists. Its header documents the six exit codes and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as `$FUSION_SRC/agents/orchestrator.md` Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
 
 ```bash
 [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
 ```
+
+**And its name**, on `CHECKOUT=`:
+
+```bash
+C="$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name"
+[ -x "$C" ] && { "$C" resolve <hex>; echo "exit=$?"; }
+```
+
+- **`exit=3`** — unregistered. Ask **one** question, the person and the alias the header offers, in plain text with a numbered list, not `AskUserQuestion`. Then `register` with the answer, bare where it declines.
+- **`exit=0`** — registered. Bare `register`; act on any `collision=`.
+- **No hex** (identity exit 3 or 5) or no `$C` — write nothing, report `checkout-registry=unread` or `helper-missing`. **No person** (exit 4) — register anyway.
+
+The rest: that helper's header.
 
 ```bash
 [ -f ./fusion-workbench/.active-circle ] && echo pointer-present

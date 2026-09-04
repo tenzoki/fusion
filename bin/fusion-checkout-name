@@ -104,6 +104,34 @@
 # option 1 — the alias carries the whole "which one is this" job, and the
 # registry publishes nothing about the machine it was written on.
 #
+# ## What a caller offers before the first `register`
+#
+# `resolve` exiting 3 is the whole test for "this checkout has never
+# registered", and the caller that meets it asks its human once. What there is
+# to offer is fixed by what `roster` and `suggest` return, so it is documented
+# here rather than in each caller.
+#
+# For the person, three: each distinct `**Person:**` the roster already holds,
+# so a second checkout of one human is claimed by picking a name off a list;
+# this checkout's git identity, which `bin/fusion-identity` has already read;
+# or a name typed freely, `**Person:**` being free text no list can exhaust.
+# For the alias, two: the one `suggest` offers, or a typed replacement.
+#
+# Both values end as free text, which fixes the form of the asking as well as
+# its content: the offer is put as plain prose with a numbered list, not as a
+# fixed-choice dialog, because a dialog has nowhere to put the typed answer
+# that both fields have to admit.
+#
+# An answer that declines every part still writes an entry — a bare `register`,
+# taking the suggested alias and the git identity as the person — and that is
+# deliberate rather than a fallback. The entry is what records that the
+# question was asked, so it is asked once per checkout and never again. It
+# publishes nothing that is not already in every commit and on every event line
+# this checkout has written. And its content reproduces the behaviour of a
+# workbench with no registry exactly, because a person equal to the git
+# identity makes `canon` the identity function for that line. There is no
+# "ask me later" state, because the store has no way to hold one.
+#
 # ## Why the alias is an attribute and never the key
 #
 # The eight hex characters minted by `bin/fusion-identity` stay the key
@@ -126,6 +154,12 @@
 # prevented — and a mechanism that renamed on what it can currently see would
 # rename against a fact it does not have.
 #
+# What a caller does with the line is therefore the whole of the response: it
+# names the other checkout to its human and offers a rename, which the human
+# may decline. Declining leaves two entries holding one alias, and that is a
+# working state rather than a fault — the hex stays the key, so every lookup,
+# comparison and claim goes on answering exactly as it did.
+#
 # ## A resolution failure is never a substituted value
 #
 # `resolve` on an unregistered hex exits 3 and prints nothing rather than
@@ -135,6 +169,34 @@
 # absence is the answer and the consumer decides what to render. Every display
 # site renders the hex on a miss, which is exactly what it rendered before this
 # store existed.
+#
+# ## Naming a holder, and why the name never enters a comparison
+#
+# A site that refuses because another checkout holds something renders that
+# holder through `resolve` and through nothing else. `/fusion:next` Step 6.1 is
+# the worked case: it reads the claim's `<person>, checkout <id>`, calls
+# `resolve <id>` behind the usual `[ -x ]`, and renders
+#
+#   held by <person> on <alias>
+#
+# from the `person=` and `alias=` lines, preferring `person=` over the claim's
+# own person, which is the same human as some earlier session spelled them.
+# Where the entry carries one of the two and not the other, the rendered line
+# carries the one it has: an absent field stays absent here as everywhere else.
+#
+# Exit 3, a missing helper, and a claim carrying no hex each render exactly
+# what that site rendered before this program existed, composed from the claim
+# alone. There is no third rendering, and no alias is ever substituted for a
+# lookup that did not answer.
+#
+# **The comparison behind the refusal is untouched by any of this, and no
+# caller may route one through `resolve`.** It runs on the hex and on the
+# person as written, both values the two sides hold locally, while an entry in
+# this store is a pulled file: a comparison reading one would answer
+# differently before and after a fetch, so whether two checkouts are one party
+# or two would turn on when somebody last ran `git pull`. The claim's own
+# two-half test is authored in `rules/circle-records.md` `### The claim field`,
+# and this program is not an input to it.
 
 set -eu
 

@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 // hooks.json lives at hooks/hooks.json; this test is at hooks/lib/__tests__/.
 const hooksJsonPath = resolve(
@@ -139,5 +140,48 @@ describe("hooks.json wiring — the session identifier reaches the model at Sess
     expect(() => JSON.parse(line)).toThrow();
     expect(out({})).toBe("");
     expect(out({ session_id: "" })).toBe("");
+  });
+});
+
+describe("hooks.json wiring — SessionStart resolves the checkout's alias", () => {
+  // The alias is a clause of the identity command, not a command of its own:
+  // that process already holds the hex, and a second `fusion-identity` run
+  // would evaluate the identity criterion twice for one session.
+  const sessionCommands = () =>
+    (loadHooks().hooks.SessionStart ?? []).flatMap((e) => e.hooks.map((h) => h.command));
+  const identityCommand = () => sessionCommands().find((c) => c.includes("fusion-identity"))!;
+
+  it("carries the alias clause inside the one identity command, behind [ -x ]", () => {
+    expect(sessionCommands().filter((c) => c.includes("fusion-identity"))).toHaveLength(1);
+    const cmd = identityCommand();
+    expect(cmd).toContain('[ -x "${CLAUDE_PLUGIN_ROOT}/bin/fusion-checkout-name" ]');
+    expect(cmd).toContain("FUSION_ALIAS");
+    expect(cmd.trimEnd().endsWith("|| true"), "the failure path stays open").toBe(true);
+  });
+
+  it("exports the alias where an entry exists and nothing at all where none does", () => {
+    // `resolve` exits 3 with no stdout for an unregistered checkout, which is
+    // the ordinary case. Absent beats empty: a `FUSION_ALIAS=` line would read
+    // downstream as a checkout that registered under a blank name.
+    const run = (hex: string): string => {
+      const root = mkdtempSync(join(tmpdir(), "fusion-alias-"));
+      mkdirSync(join(root, "bin"));
+      writeFileSync(join(root, "bin", "fusion-identity"), `#!/bin/sh\nprintf 'PERSON=P <p@e.test>\\nCHECKOUT=%s\\n' "$FUSION_TEST_HEX"\n`, { mode: 0o755 });
+      writeFileSync(join(root, "bin", "fusion-checkout-name"), `#!/bin/sh\n[ "$2" = 5e8248d7 ] || exit 3\necho alias=west-harbor\n`, { mode: 0o755 });
+      const envFile = join(root, "env");
+      writeFileSync(envFile, "");
+      spawnSync("bash", ["-c", identityCommand()], {
+        env: { ...process.env, CLAUDE_PLUGIN_ROOT: root, CLAUDE_ENV_FILE: envFile, FUSION_TEST_HEX: hex },
+        encoding: "utf-8",
+      });
+      return readFileSync(envFile, "utf-8");
+    };
+    const registered = run("5e8248d7");
+    expect(registered).toContain("export FUSION_CHECKOUT=5e8248d7");
+    expect(registered).toContain("export FUSION_PERSON=");
+    expect(registered).toContain("export FUSION_ALIAS=west-harbor");
+    const unregistered = run("deadbeef");
+    expect(unregistered).toContain("export FUSION_CHECKOUT=deadbeef");
+    expect(unregistered).not.toContain("FUSION_ALIAS");
   });
 });

@@ -161,7 +161,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: `npm test` green; `bin/fusion-events presence` in this tree, which has no registry entries yet, prints the same stdout it prints at HEAD; the diff shows no new file read inside `hooks/lib/events-query.ts`.
    - Dependencies: 2
 
-5. **`/fusion:setup` registers this checkout, once, and reports what it wrote**
+5. [DONE] **`/fusion:setup` registers this checkout, once, and reports what it wrote**
    - Executor: `coder`
    - **Human gate:** no. The step asks the *user* a question at run time; it needs no approval to be written.
    - Files: `skills/setup/SKILL.md` (Step 0i, and one clause in Step 0c)
@@ -171,21 +171,21 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: the surface-growth test passes with no baseline edited; running `./bin/fusion-checkout-name register --alias <a> --person <p>` by hand in this tree produces `shared/checkouts/5e8248d7.md` carrying the six fields; the diff shows the false sentence rewritten; `path-literal-lint` stays green, meaning the skill body names the helper and never the store path.
    - Dependencies: 2, 4
 
-6. **`/fusion:next` names the holder's checkout instead of its hex**
+6. [DONE] **`/fusion:next` names the holder's checkout instead of its hex**
    - Executor: `coder`
    - Files: `skills/next/SKILL.md` (Step 6.1)
    - Changes: the refusal message resolves the claim's hex through `bin/fusion-checkout-name resolve`, guarded with `[ -x ]`, and reads "held by <person> on <alias>" where an entry exists and exactly what it reads today where none does. **The comparison itself is untouched**, and the step adds one sentence saying so and why: it runs on the hex and on the person as written, both values the two sides hold locally, and a comparison depending on a pulled file would answer differently before and after a fetch.
    - Acceptance: the diff shows a rendering change and no change to any test in the claim comparison; the surface-growth test passes.
    - Dependencies: 2
 
-7. **The monitor header carries this checkout's name**
+7. [DONE] **The monitor header carries this checkout's name**
    - Executor: `coder`
    - Files: `bin/monitor`
    - Changes: a reader beside `_read_checkout_id()` that reads `<workbench>/shared/checkouts/<own hex>.md` and returns the first `**Alias:**` value, cached like the identifier is and re-read per request so an alias written mid-session is honoured on the next poll. The header shows the alias beside the hex where one is found and the hex alone where none is. Its docstring states why the file is read directly rather than through the helper (a verbatim copy served out of the workbench, with no reliable plugin root at poll time, reading `.checkout-id` directly today for the same reason) and cites the helper header as the grammar's authoritative home. **The own-checkout filter at `bin/monitor:1350-1357` is not touched**, and the docstring says so: it reads a class L file and must not acquire a dependency on a pulled one.
    - Acceptance: with an entry present the header renders the alias, with the store absent it renders exactly what it renders at HEAD; `grep -n "_read_checkout_id" bin/monitor` shows the filter still calling it; `monitor-warnings-panel.test.ts` stays green.
    - Dependencies: 2
 
-8. **SessionStart exports `FUSION_ALIAS` beside the three values it already exports**
+8. [DONE] **SessionStart exports `FUSION_ALIAS` beside the three values it already exports**
    - Executor: `coder`
    - Files: `hooks/hooks.json` (the fifth SessionStart command), `hooks/lib/__tests__/hooks-wiring.test.ts`
    - Changes: the command that already runs `bin/fusion-identity` and seds `PERSON=` and `CHECKOUT=` gains one clause: where `$c` is non-empty and `bin/fusion-checkout-name` is executable, run `resolve "$c"`, sed `alias=`, and append `export FUSION_ALIAS=%q` when it is non-empty. Every existing failure path is unchanged, including the trailing `|| true` that keeps a failed identity read from failing the hook. No fourth command is added: one process already holds the hex, and a second run of `bin/fusion-identity` would evaluate the criterion twice.

@@ -189,7 +189,7 @@ On **Activate** (or after a selection) carry out the following in order.
 
 ### 6.1 — Verify the target
 
-Read the target Circle's record and confirm it carries the `_a_` marker. Enumerate the record rather than globbing per state — the underscore marker is inert, so `circles/*/_a_circle.md` matches literally (no escaping) and `find -name '_a_circle.md'` needs no special handling, but the enumeration below reads the marker as data in one pass. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
+Read the target Circle's record and confirm it carries the `_a_` marker. Enumerate it rather than globbing per state: the block below reads the marker as data in one pass (`rules/fusion-workbench-conventions.md` `## Marker globs`).
 
 ```bash
 CDIR="$WORKBENCH/$SCAN_CIRCLES/<candidate-dirname>"
@@ -199,7 +199,7 @@ MARKER="$(basename "$REC" | sed -nE 's/^_([a-z])_.*/\1/p')"
 
 If `$CDIR` is not a directory, `$REC` is empty, or `$MARKER` is not `a`, halt and report the mismatch. Do not rename, do not write the pointer. A directory holding no record, or more than one, is a workbench-state fault the user must resolve — say which it is.
 
-**Where `$MARKER` is `t`, the refusal is in the claim's terms and not the marker's.** Read the record's `**Claim:**` and this checkout's identity from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`, guarded with `[ -x ]` as every helper call site is. Where the field opens with `Claimed ` and names another identity, say who holds the Circle and when the claim was written, then offer one override at an `AskUserQuestion`: *Take it over here* / *Leave it alone*. Taking it appends the `Overridden ` sentence per `$FUSION_SRC/rules/circle-records.md` `### The claim field`, so the first sentence stays and both identities stand in the record, then writes `.active-circle` (Step 6.3) and nothing more: the record already carries `_t_`, so nothing is renamed. Leaving it writes nothing. `Unclaimed`, an absent field, or this checkout's own identity is the mismatch above and is reported as one. When the helper prints one half or neither (its exits 3, 4 and 5), the claim's value for a partial identity and the comparison against it are what that same section states; read them there and compose nothing.
+**Where `$MARKER` is `t`, the refusal is in the claim's terms and not the marker's.** Read the record's `**Claim:**` and this checkout's identity from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"`, guarded with `[ -x ]` as every helper call site is. Where the field opens with `Claimed ` and names another identity, name the holder and the claim's time, the name from `"$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name" resolve <the claim's checkout>` under the same guard, its misses in that helper's header. **That renders and decides nothing:** the comparison stays on the hex and the person as written, values both sides hold locally; one reading a pulled file would answer differently across a fetch. Then offer one override at an `AskUserQuestion`: *Take it over here* / *Leave it alone*. Taking it appends the `Overridden ` sentence per `$FUSION_SRC/rules/circle-records.md` `### The claim field`, then writes `.active-circle` (Step 6.3) and nothing more: the record already carries `_t_`, so nothing is renamed. Leaving it writes nothing. `Unclaimed`, an absent field, or this checkout's own identity is the mismatch above and is reported as one. A partial identity (exits 3, 4 and 5) is that section's business: read the value and the comparison there, and compose nothing.
 
 ### 6.2 — Rename the record
 

@@ -40,9 +40,9 @@
   log-activity/SKILL.md 13482
   memo/SKILL.md 12244
   migrate/SKILL.md 26620
-  next/SKILL.md 27601
-  setup/SKILL.md 46639
-  total 239833
+  next/SKILL.md 27604
+  setup/SKILL.md 47231
+  total 240428
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -75,7 +75,7 @@
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
-  hooks-wiring.test.ts 143
+  hooks-wiring.test.ts 187
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
   monitor-warnings-panel.test.ts 1153
@@ -86,7 +86,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 486
-  reference-resolution-lint.test.ts 996
+  reference-resolution-lint.test.ts 999
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
   rules-emission-golden.test.ts 1150
@@ -97,4 +97,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 425
-  total 20115
+  total 20162

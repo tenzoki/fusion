@@ -125,6 +125,9 @@ STATE_YAML = os.path.join(BASE_DIR, "agentstate.yaml")
 GUARD_EVENTS_JSONL = os.path.join(BASE_DIR, ".guard-state", "events.jsonl")
 # This checkout's own identifier. Read, never written: see _read_checkout_id().
 CHECKOUT_ID_FILE = os.path.join(BASE_DIR, ".checkout-id")
+# The checkout registry: one entry file per checkout, named after its
+# identifier. Read, never written: see _read_checkout_label().
+CHECKOUT_STORE_DIR = os.path.join(BASE_DIR, "shared", "checkouts")
 
 # Guard events surfaced as sticky rows in the warnings panel. Three kinds
 # qualify, and the distinction is what the panel is for:
@@ -443,6 +446,9 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <body>
 <nav>
   <span style="color: var(--accent); font-weight: 700; padding: 12px 16px; font-size: 14px; white-space: nowrap;">MONITOR_NAME_PLACEHOLDER</span>
+  <!-- This checkout's name, filled per poll from data.checkout. Stays empty,
+       and occupies nothing, in a project that keeps no checkout registry. -->
+  <span id="checkout-label" style="color: var(--fg3); padding: 12px 0; font-size: 13px; white-space: nowrap;"></span>
   <button data-page="dashboard" class="active">Dashboard</button>
   <button data-page="events">Event Log</button>
   <button data-page="state">Agent State</button>
@@ -1043,6 +1049,11 @@ HTML_PAGE = r"""<!DOCTYPE html>
       .then(function(r) { return r.json(); })
       .then(function(data) {
         lastPollOk = Date.now();
+        // The header's checkout name. Server-side null means this project
+        // keeps no registry, and the slot stays empty rather than showing a
+        // placeholder: nothing about the header changes for such a project.
+        var coEl = document.getElementById('checkout-label');
+        if (coEl) coEl.textContent = data.checkout ? data.checkout : '';
         updateStatus(data.exists, data.age, data.mode);
         renderWarnings(data.warnings);
         // ETA next to the "Updated:" timestamp — recomputed every poll
@@ -1301,6 +1312,59 @@ class Handler(http.server.BaseHTTPRequestHandler):
             return None
         return content.strip() or None
 
+    def _read_checkout_label(self):
+        """The name this checkout goes by, for the page header. Three answers,
+        and the third is why the reader exists rather than a lookup:
+
+          - an entry for this checkout carrying an **Alias:** -> the alias
+            beside the hex, which is what a human recognises;
+          - a registry that holds no entry for this checkout -> the hex alone,
+            which says "you are in a project that names its checkouts and this
+            one is unregistered";
+          - no registry at all -> None, and the header renders exactly what it
+            rendered before the registry existed. A project that keeps no
+            registry sees no change, from this same code path rather than from
+            a fallback branch.
+
+        WHY THIS FILE IS READ DIRECTLY RATHER THAN THROUGH THE HELPER.
+        bin/fusion-checkout-name is the store's only writer and its principal
+        reader, and every other consumer asks it. This one cannot: monitor is
+        copied verbatim into the workbench and served out of it, with no
+        reliable $FUSION_PLUGIN_ROOT at poll time — which is the same reason it
+        already reads .checkout-id directly a few lines above. So it reads one
+        field out of one file. THE ENTRY GRAMMAR IS NOT RESTATED HERE: the
+        helper's own header is its authoritative home, and this reader
+        implements the single anchored line form defined there — first
+        occurrence of a key wins, an absent field is absent rather than empty,
+        every other line in the file is ignored.
+
+        WHAT THIS DELIBERATELY DOES NOT TOUCH. The own-checkout filter in
+        _read_events() below goes on reading _read_checkout_id(), and must.
+        That filter decides which event lines belong to this session, and
+        .checkout-id is class L in rules/workbench-tracking.md: it is minted
+        here and never travels. A registry entry is class R1 and arrives with
+        a pull, so routing the filter through one would make it answer
+        differently before and after a fetch. This reader serves the header
+        and nothing else.
+
+        Read fresh on every request, exactly as the identifier is, so an alias
+        registered mid-session is honoured on the next poll."""
+        own = self._read_checkout_id()
+        if own is None:
+            return None
+        if not os.path.isdir(CHECKOUT_STORE_DIR):
+            return None
+        content, exists = self._read_file(
+            os.path.join(CHECKOUT_STORE_DIR, own + ".md"))
+        if not exists:
+            return own
+        key = "**Alias:**"
+        for line in content.splitlines():
+            if line.startswith(key):
+                alias = line[len(key):].strip()
+                return (alias + " \u00b7 " + own) if alias else own
+        return own
+
     def _read_events(self):
         """The event window served at /api/dashboard: this checkout's lines
         from orchestrator-events.jsonl, chronological, newest MAX_EVENTS last.
@@ -1377,6 +1441,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 "mode": self._parse_mode(events),
                 "events": events,
                 "warnings": self._read_warnings(),
+                # Null where the project keeps no checkout registry, which is
+                # the case the header renders as it always did.
+                "checkout": self._read_checkout_label(),
             })
             self.wfile.write(resp.encode("utf-8"))
 
