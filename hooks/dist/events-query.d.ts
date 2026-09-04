@@ -25,7 +25,9 @@
  *      and that place is not here. What *is* here is the one translation of
  *      that helper's exit vocabulary into what this program does about it:
  *      `resolveIdentity` below, which every branch reads instead of testing a
- *      code of its own.
+ *      code of its own. The checkout registry arrives the same way and for the
+ *      same reason, as `FUSION_EVENTS_ROSTER`, and `readRoster` below is the
+ *      one place its two maps are built.
  *
  * ## Reasons go to stderr, values to stdout
  *

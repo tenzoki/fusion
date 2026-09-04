@@ -17,8 +17,8 @@
 #     scope=pulled
 #     other_people=1
 #     other_checkouts=1
-#     party=person<TAB>Jane Roe <jane@example.com><TAB>4f21ab90<TAB>2026-08-24T09:12:00<TAB>260824-0530-record-attribution-and-circle-claim
-#     party=checkout<TAB>Kai Stalmann <ks@qantr.com><TAB>9c30ee11<TAB>2026-08-25T07:40:00<TAB>shared
+#     party=person<TAB>Jane Roe <jane@example.com><TAB>4f21ab90<TAB>2026-08-24T09:12:00<TAB>260824-0530-record-attribution-and-circle-claim<TAB>amber-harbor
+#     party=checkout<TAB>Kai Stalmann <ks@qantr.com><TAB>9c30ee11<TAB>2026-08-25T07:40:00<TAB>shared<TAB>-
 #
 #   turns
 #     turns=3
@@ -67,10 +67,14 @@
 # The `party=` line
 #
 # One `party=` line per distinct pair of person and checkout other than this
-# one's, most recent first, carrying five TAB-separated fields: the class, the
+# one's, most recent first, carrying six TAB-separated fields: the class, the
 # person, the checkout, the timestamp of that pair's most recent `session_start`
-# in the window, and the Circle it ran on. **The separator is a TAB** because
-# the person value is git's `Name <email>` form and contains spaces by
+# in the window, the Circle it ran on, and the alias the checkout registry holds
+# for that checkout, or `-` where it holds none. **The sixth is appended**, so a
+# consumer written against five fields is unaffected, and it is a rendering of a
+# report: no alias reaches `orchestrator-events.jsonl` and no comparison here
+# runs on one. **The separator is a TAB** because the person value is git's
+# `Name <email>` form and contains spaces by
 # construction. A person the line did not record renders `(not recorded)`; the
 # Circle is read off `history_file` (`circles/<dir>/…` names its Circle,
 # anything else is `shared`, an absent field is `unknown`) and off no field of
@@ -81,8 +85,8 @@
 # `user.name` and `user.email` as some other machine holds them, and JSON
 # carries a `\t` or a `\n` through the round trip intact — so without this a TAB
 # in a person value shifted every later field by one and a newline split the
-# record in two. The record is therefore always one line of exactly five fields.
-# The flattening is not reversible, which is the price: none of the five fields
+# record in two. The record is therefore always one line of exactly six fields.
+# The flattening is not reversible, which is the price: none of the six fields
 # means anything different for having had a control character taken out of it.
 #
 # **The order is total.** Most recent first, then by checkout, then by person —
@@ -189,6 +193,32 @@
 # unidentified checkout.
 #
 # ---------------------------------------------------------------------------
+# Why the roster is passed in as well
+#
+# `other_people` counts persons, and one person can hold more than one git
+# identity. The checkout registry is where a human says which identities are
+# theirs, so this script runs `bin/fusion-checkout-name roster` once and hands
+# the text over in FUSION_EVENTS_ROSTER. The node program builds two maps from
+# it: a git identity to the person who claims it, applied to both sides of the
+# one comparison presence makes, and a hex to its alias, used only to render the
+# sixth `party=` field.
+#
+# **The join column is the git identity and not the hex**, and that is the whole
+# of why the roster is read rather than the alias alone. An unregistered line
+# carries a git identity too, so canonicalising on it leaves such a line
+# classified as a further checkout of your own; joining on the hex would turn it
+# into another person, which is the figure this reading exists to get right.
+#
+# The call is `[ -x ]`-guarded like the identity call. An install that does not
+# carry the helper exports an empty roster, and an empty roster is not a
+# fallback: the map is then the identity function, so presence counts exactly
+# what it counted before the registry existed, from the same code path.
+#
+# It is exported **before** the early `exec` as well as after it. That `exec` is
+# the SessionStart-export path and it returns from this script, so a roster built
+# only below it would be the one path that silently lost the map.
+#
+# ---------------------------------------------------------------------------
 # Why this exists
 #
 # The event log is class R2 in rules/workbench-tracking.md and carries
@@ -223,6 +253,18 @@ if [ ! -f "$entry" ]; then
   echo "fusion-events: $entry is missing — the plugin's compiled hooks are not installed." >&2
   exit 5
 fi
+
+# --- the checkout registry, read once and handed over -----------------------
+#
+# Before the early `exec` below, so both paths out of this script carry it. An
+# install that predates the helper, or a workbench with no entries, exports an
+# empty roster, which makes the canonicalisation the identity function.
+
+roster=''
+if [ -x "$here/fusion-checkout-name" ]; then
+  roster="$("$here/fusion-checkout-name" roster 2>/dev/null || true)"
+fi
+export FUSION_EVENTS_ROSTER="$roster"
 
 # --- the identity, obtained in the one place that obtains it ----------------
 #

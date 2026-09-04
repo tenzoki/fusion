@@ -4,7 +4,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
-import { measurePresence, countTurns } from "../events-query.js";
+import { measurePresence, countTurns, renderParty } from "../events-query.js";
 import type { Party, PresenceResult, ReadingIdentity } from "../events-query.js";
 
 // ---------------------------------------------------------------------------
@@ -20,6 +20,9 @@ import type { Party, PresenceResult, ReadingIdentity } from "../events-query.js"
 // exit-3/exit-4 split, the missing-state exits, and the wrapper's env hand-off.
 // NOT COVERED, deliberately: the wrapper running `bin/fusion-identity` itself,
 // and two real checkouts merging end to end (a manual pass per the plan).
+//
+// THE CHECKOUT REGISTRY reaches both levels: the map as a `measurePresence`
+// argument, and the roster text as `FUSION_EVENTS_ROSTER` at the entry point.
 // ---------------------------------------------------------------------------
 
 const ME = "5e8248d7";
@@ -33,8 +36,8 @@ const log = (...rows: (Row | string)[]): string =>
   rows.map((r) => (typeof r === "string" ? r : JSON.stringify(r))).join("\n") + "\n";
 const start = (o: Row): Row => ({ event: "session_start", ts: "2026-08-25T09:00:00", ...o });
 
-const presence = (text: string, id = IDENT) =>
-  measurePresence(text, id, { now: NOW, windowDays: 7 });
+const presence = (text: string, id = IDENT, identityMap: Record<string, string> = {}) =>
+  measurePresence(text, id, { now: NOW, windowDays: 7, identityMap });
 function measured(r: PresenceResult) {
   if (!r.ok) throw new Error(`presence returned no report: ${r.why}`);
   return r.report;
@@ -118,6 +121,60 @@ describe("presence, the figures and the order", () => {
   });
 });
 
+/* --- the checkout registry: one person's identities count as one ----------- */
+
+const KAI2 = "Kai Stalmann <kai@example.com>";
+/** Both of the reading person's git identities, claimed by one entry each. */
+const CLAIMED = { [KAI]: "Kai", [KAI2]: "Kai" };
+/** One further checkout of the reading person, writing under two identities. */
+const TWO_IDENTITIES = log(
+  start({ person: KAI, checkout: "9c30ee11", ts: "2026-08-25T07:40:00" }),
+  start({ person: KAI2, checkout: "9c30ee11", ts: "2026-08-25T07:50:00" }),
+);
+
+describe("presence canonicalises the git identity before it counts persons", () => {
+  it("counts two registered identities of one person as one person, on one checkout", () => {
+    const r = measured(presence(TWO_IDENTITIES, IDENT, CLAIMED));
+    expect(r.otherPeople).toBe(0);
+    expect(r.otherCheckouts).toBe(1);
+  });
+
+  it("counts the same two lines as another person with an empty map, which is HEAD", () => {
+    const r = measured(presence(TWO_IDENTITIES));
+    expect(r.otherPeople).toBe(1);
+    expect(r.otherCheckouts).toBe(1);
+  });
+
+  it("still reads a foreign line carrying the reader's own raw identity as a further checkout", () => {
+    // The join column is the git identity and not the hex. An UNREGISTERED
+    // checkout of the reading person must not become another person, which is
+    // exactly what a hex join would make of it.
+    const r = measured(presence(log(start({ person: KAI, checkout: "9c30ee11" })), IDENT, CLAIMED));
+    expect(r.parties.map((p) => p.kind)).toEqual(["checkout"]);
+    expect(r.otherPeople).toBe(0);
+  });
+
+  it("leaves the party key and the parties' own person values on the raw identity", () => {
+    const r = measured(presence(TWO_IDENTITIES, IDENT, CLAIMED));
+    expect(r.parties.map((p) => p.person)).toEqual([KAI2, KAI]);
+  });
+});
+
+describe("renderParty appends the registry's alias as a sixth field", () => {
+  const party: Party = { kind: "person", person: JANE, checkout: "4f21ab90", ts: "2026-08-24T09:12:00", circle: "shared" };
+
+  it("carries the alias where the registry holds one for that hex", () => {
+    const fields = renderParty(party, (h) => (h === "4f21ab90" ? "amber-harbor" : null)).split("\t");
+    expect(fields).toEqual(["party=person", JANE, "4f21ab90", "2026-08-24T09:12:00", "shared", "amber-harbor"]);
+  });
+
+  it("carries a dash where it holds none, and stays six fields wide", () => {
+    const fields = renderParty(party, () => null).split("\t");
+    expect(fields).toHaveLength(6);
+    expect(fields[5]).toBe("-");
+  });
+});
+
 const HF = "circles/260825-2023-x/history/s.md";
 const S = (o: Row): Row => ({ event: "session_start", history_file: HF, ...o });
 const T = (o: Row): Row => ({ event: "turn_start", ...o });
@@ -186,12 +243,12 @@ const LOG = log(
 );
 const STATE = "session:\n  history_file: h.md\n";
 
-function workbench(state: string | null = STATE): string {
+function workbench(state: string | null = STATE, text: string = LOG): string {
   const dir = mkdtempSync(join(tmpdir(), "fusion-events-"));
   tmpRoots.push(dir);
   mkdirSync(join(dir, "fusion-workbench"));
   writeFileSync(join(dir, "fusion-workbench", ".fusion-setup"), "{}\n");
-  writeFileSync(join(dir, "fusion-workbench", "orchestrator-events.jsonl"), LOG);
+  writeFileSync(join(dir, "fusion-workbench", "orchestrator-events.jsonl"), text);
   if (state !== null) writeFileSync(join(dir, "fusion-workbench", "agentstate.yaml"), state);
   return dir;
 }
@@ -205,7 +262,7 @@ const ident = (exit: number, o: { person?: string; checkout?: string } = {}) => 
 
 function cli(dir: string, env: Record<string, string>, bin = process.execPath, ...args: string[]) {
   const argv = bin === process.execPath ? [entry, ...args] : args;
-  const r = spawnSync(bin, argv, { cwd: dir, encoding: "utf-8", env: { ...process.env, FUSION_PERSON: "", FUSION_CHECKOUT: "", ...env } });
+  const r = spawnSync(bin, argv, { cwd: dir, encoding: "utf-8", env: { ...process.env, FUSION_PERSON: "", FUSION_CHECKOUT: "", FUSION_EVENTS_ROSTER: "", ...env } });
   return { status: r.status, stdout: r.stdout, stderr: r.stderr };
 }
 
@@ -241,6 +298,20 @@ describe("the entry point: scope=, the identity split, and the missing-state exi
       expect(r.status).toBe(3);
       expect(r.stdout).toBe("");
     }
+  });
+
+  it("presence reads FUSION_EVENTS_ROSTER, so one person's two identities count once", () => {
+    const dir = workbench(STATE, log(start({ person: KAI2, checkout: "9c30ee11", ts: "2026-08-25T07:40:00" })));
+    const roster = `entries=2\nentry=${ME}\tmine\tKai\t${KAI}\nentry=9c30ee11\tamber-harbor\tKai\t${KAI2}\n`;
+    const me = ident(0, { person: KAI, checkout: ME });
+    const args = [process.execPath, "presence", "--days", "3650"] as const;
+    const mapped = cli(dir, { ...me, FUSION_EVENTS_ROSTER: roster }, ...args);
+    const bare = cli(dir, me, ...args);
+    expect(mapped.status, mapped.stderr).toBe(0);
+    expect(mapped.stdout).toContain("other_people=0");
+    expect(mapped.stdout).toContain("\tamber-harbor\n");
+    expect(bare.stdout).toContain("other_people=1");
+    expect(bare.stdout).toContain("\t-\n");
   });
 
   it("bin/fusion-events hands the SessionStart identity export through untouched", () => {

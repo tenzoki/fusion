@@ -25,7 +25,9 @@
  *      and that place is not here. What *is* here is the one translation of
  *      that helper's exit vocabulary into what this program does about it:
  *      `resolveIdentity` below, which every branch reads instead of testing a
- *      code of its own.
+ *      code of its own. The checkout registry arrives the same way and for the
+ *      same reason, as `FUSION_EVENTS_ROSTER`, and `readRoster` below is the
+ *      one place its two maps are built.
  *
  * ## Reasons go to stderr, values to stdout
  *
@@ -182,6 +184,60 @@ function readIdentity(): { identity: ReadingIdentity; status: IdentityStatus } {
 }
 
 /* ------------------------------------------------------------------ *
+ * The checkout registry, as the wrapper handed it over
+ * ------------------------------------------------------------------ */
+
+/**
+ * `bin/fusion-checkout-name roster` output, parsed into the two maps presence
+ * needs: a git identity to the person who claims it, and a hex to its alias.
+ *
+ * It arrives in `FUSION_EVENTS_ROSTER` for the reason the identity does. The
+ * wrapper obtains it, so `lib/events-query.ts` stays a pure function of the log
+ * text, the reading identity and the current time.
+ *
+ * The roster is `entries=<n>` and one `entry=` line per registration,
+ * TAB-separated as hex, alias, person, git identity. An unset variable, an
+ * empty one and a roster of nothing are the same state here: two empty maps,
+ * which make `canon` the identity function and every alias lookup a miss, so a
+ * project with no registry gets the figures it got before the registry existed
+ * from this same code path rather than from a fallback branch.
+ *
+ * Where two entries claim one git identity for two different persons, the first
+ * wins and the disagreement is said on stderr. The roster's order is the store's
+ * glob order, which is filename order, so the winner is the same on every run
+ * and the figure is deterministic while the conflict stays visible.
+ */
+function readRoster(): {
+  identityMap: Record<string, string>;
+  aliasOf: (hex: string) => string | null;
+} {
+  // No prototype: a git identity spelled `__proto__` is then an ordinary key.
+  const identityMap: Record<string, string> = Object.create(null);
+  const aliases = new Map<string, string>();
+
+  for (const raw of (envValue("FUSION_EVENTS_ROSTER") ?? "").split("\n")) {
+    if (!raw.startsWith("entry=")) continue;
+    const [hex, alias, person, gitIdentity] = raw.slice("entry=".length).split("\t");
+
+    if (hex !== undefined && hex !== "" && alias !== undefined && alias !== "") {
+      if (!aliases.has(hex)) aliases.set(hex, alias);
+    }
+
+    if (!gitIdentity || !person) continue;
+    const held = identityMap[gitIdentity];
+    if (held === undefined) identityMap[gitIdentity] = person;
+    else if (held !== person) {
+      say(
+        `the registry claims ${JSON.stringify(gitIdentity)} for both ${JSON.stringify(held)} ` +
+          `and ${JSON.stringify(person)}. The first by filename order is the one counted.`,
+      );
+    }
+  }
+
+  return { identityMap, aliasOf: (hex) => aliases.get(hex) ?? null };
+}
+
+/* ------------------------------------------------------------------ *
  * The log
  * ------------------------------------------------------------------ */
 
@@ -248,7 +304,12 @@ function presence(root: string, days: number): number {
     return 3;
   }
 
-  const result = measurePresence(text, identity, { now: Date.now(), windowDays: days });
+  const { identityMap, aliasOf } = readRoster();
+  const result = measurePresence(text, identity, {
+    now: Date.now(),
+    windowDays: days,
+    identityMap,
+  });
   if (!result.ok) {
     say("this checkout could not be identified, so no line can be classified. No count printed.");
     return 3;
@@ -260,7 +321,7 @@ function presence(root: string, days: number): number {
   const out: string[] = [`window_days=${r.windowDays}`, "scope=pulled"];
   if (r.otherPeople !== null) out.push(`other_people=${r.otherPeople}`);
   out.push(`other_checkouts=${r.otherCheckouts}`);
-  for (const p of r.parties) out.push(renderParty(p));
+  for (const p of r.parties) out.push(renderParty(p, aliasOf));
   process.stdout.write(out.join("\n") + "\n");
 
   if (r.otherPeople === null) {

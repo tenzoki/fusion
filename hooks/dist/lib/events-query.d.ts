@@ -36,6 +36,29 @@
  * checkout's pre-C4 lines, already merged in, read as this checkout's own. It
  * is bounded and shrinking, and it applies to no line written after.
  *
+ * ## The identity map, and what it changes about a figure already reported
+ *
+ * `measurePresence` classifies on `canon(g) = identityMap[g] ?? g`, a map from
+ * a git identity to the person who claims it. It is a table a human wrote, in
+ * the checkout registry, so a person who registers a second identity changes
+ * what `other_people` counted yesterday over the same window. That is the
+ * correction landing rather than a drift: the two identities were always one
+ * person, and the log could not say so.
+ *
+ * Where two entries map one git identity to two different persons, the first by
+ * filename order wins and the conflict is named on stderr. The map is built in
+ * `hooks/events-query.ts` from one `bin/fusion-checkout-name roster` call, so
+ * that resolution and the sentence about it live there and this module still
+ * opens no file and runs no subprocess.
+ *
+ * The join column is the git identity and never the hex, because an
+ * unregistered line carries both and only the first can be canonised. Joining
+ * on the hex would classify an unregistered checkout of the reading person as
+ * another person, which is the one regression this reading must not have.
+ * `canon` is applied at the classification and at the `people` set and nowhere
+ * else: the party key, the sort and the `checkouts` set stay on raw values,
+ * because they are about lines rather than about people.
+ *
  * ## The one thing every consumer of this file gets wrong
  *
  * The emit convention writes `ts` as UTC **without** the `Z` designator, and
@@ -153,6 +176,13 @@ export interface PresenceOptions {
     /** The reading moment, in ms. Passed in, never taken, so it is testable. */
     now: number;
     windowDays: number;
+    /**
+     * Git identity to the person who claims it, from the checkout registry. Data,
+     * never a file this module opens. An empty map makes `canon` the identity
+     * function, so a workbench with no registry runs this same code and returns
+     * the figures it returned before the registry existed.
+     */
+    identityMap: Record<string, string>;
 }
 /**
  * Who else has been here, over the last `windowDays`.
@@ -167,8 +197,17 @@ export interface PresenceOptions {
  * the guess this module exists to stop making.
  */
 export declare function measurePresence(text: string, identity: ReadingIdentity, opts: PresenceOptions): PresenceResult;
-/** One `party=` line. Tab-separated: the person value contains spaces. */
-export declare function renderParty(p: Party): string;
+/**
+ * One `party=` line. Tab-separated: the person value contains spaces.
+ *
+ * `aliasOf` resolves the checkout registry's name for a hex, and the sixth
+ * field carries it or `-`. It is **appended**, so a consumer reading five
+ * fields is unaffected, and it is a rendering of a report rather than anything
+ * written to a record: no alias reaches `orchestrator-events.jsonl`, no
+ * comparison here runs on one, and a hex with no entry renders exactly what it
+ * rendered before the registry existed.
+ */
+export declare function renderParty(p: Party, aliasOf: (hex: string) => string | null): string;
 export type TurnsResult = {
     malformed: number;
 } & ({

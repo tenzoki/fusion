@@ -36,6 +36,29 @@
  * checkout's pre-C4 lines, already merged in, read as this checkout's own. It
  * is bounded and shrinking, and it applies to no line written after.
  *
+ * ## The identity map, and what it changes about a figure already reported
+ *
+ * `measurePresence` classifies on `canon(g) = identityMap[g] ?? g`, a map from
+ * a git identity to the person who claims it. It is a table a human wrote, in
+ * the checkout registry, so a person who registers a second identity changes
+ * what `other_people` counted yesterday over the same window. That is the
+ * correction landing rather than a drift: the two identities were always one
+ * person, and the log could not say so.
+ *
+ * Where two entries map one git identity to two different persons, the first by
+ * filename order wins and the conflict is named on stderr. The map is built in
+ * `hooks/events-query.ts` from one `bin/fusion-checkout-name roster` call, so
+ * that resolution and the sentence about it live there and this module still
+ * opens no file and runs no subprocess.
+ *
+ * The join column is the git identity and never the hex, because an
+ * unregistered line carries both and only the first can be canonised. Joining
+ * on the hex would classify an unregistered checkout of the reading person as
+ * another person, which is the one regression this reading must not have.
+ * `canon` is applied at the classification and at the `people` set and nowhere
+ * else: the party key, the sort and the `checkouts` set stay on raw values,
+ * because they are about lines rather than about people.
+ *
  * ## The one thing every consumer of this file gets wrong
  *
  * The emit convention writes `ts` as UTC **without** the `Z` designator, and
@@ -143,6 +166,15 @@ export function measurePresence(text, identity, opts) {
         return { ok: false, why: "unidentified-checkout" };
     const { lines, malformed } = parseLog(text);
     const floor = opts.now - opts.windowDays * 24 * 60 * 60 * 1000;
+    // Membership is asked with `Object.hasOwn`, because the map is a plain object
+    // built from parsed input and a git identity spelled `__proto__` must not
+    // resolve to whatever the prototype carries.
+    const canon = (g) => {
+        if (g === undefined || g === null)
+            return null;
+        return Object.hasOwn(opts.identityMap, g) ? opts.identityMap[g] : g;
+    };
+    const me = canon(identity.person);
     // Keyed by the pair, because two checkouts of one person are two parties and
     // one checkout that changed hands is still one.
     const seen = new Map();
@@ -160,9 +192,9 @@ export function measurePresence(text, identity, opts) {
             seen.set(key, { line, ms });
     }
     const parties = [...seen.values()].map(({ line }) => ({
-        kind: identity.person === null
+        kind: me === null
             ? "unknown"
-            : line.person === identity.person
+            : canon(line.person) === me
                 ? "checkout"
                 : "person",
         person: line.person ?? null,
@@ -191,7 +223,7 @@ export function measurePresence(text, identity, opts) {
             // A party whose person was not recorded is counted as its own party,
             // named by the checkout it wrote from. Merging such parties would claim
             // they are one person, which the lines do not say.
-            people.add(p.person ?? `checkout:${p.checkout}`);
+            people.add(canon(p.person) ?? `checkout:${p.checkout}`);
         }
         else {
             checkouts.add(p.checkout);
@@ -218,19 +250,28 @@ export function measurePresence(text, identity, opts) {
  * reasoning that put a NUL in `KEY_SEP` above, carried to the output format,
  * which is the surface a consumer actually parses.
  *
- * Flattening rather than escaping keeps the record five fields wide with no
- * decoding step at the reader, at the cost of not being reversible. The five
- * fields are a class, a git identity, a hex identifier, a timestamp and a
- * directory name; none of them means anything different for having had a
- * control character flattened out of it.
+ * Flattening rather than escaping keeps the record six fields wide with no
+ * decoding step at the reader, at the cost of not being reversible. The six
+ * fields are a class, a git identity, a hex identifier, a timestamp, a
+ * directory name and an alias; none of them means anything different for
+ * having had a control character flattened out of it.
  */
 function flattenField(s) {
     return s.replace(/[\u0000-\u001f\u007f]+/g, " ");
 }
-/** One `party=` line. Tab-separated: the person value contains spaces. */
-export function renderParty(p) {
+/**
+ * One `party=` line. Tab-separated: the person value contains spaces.
+ *
+ * `aliasOf` resolves the checkout registry's name for a hex, and the sixth
+ * field carries it or `-`. It is **appended**, so a consumer reading five
+ * fields is unaffected, and it is a rendering of a report rather than anything
+ * written to a record: no alias reaches `orchestrator-events.jsonl`, no
+ * comparison here runs on one, and a hex with no entry renders exactly what it
+ * rendered before the registry existed.
+ */
+export function renderParty(p, aliasOf) {
     const person = p.person ?? "(not recorded)";
-    return [`party=${p.kind}`, person, p.checkout, p.ts, p.circle]
+    return [`party=${p.kind}`, person, p.checkout, p.ts, p.circle, aliasOf(p.checkout) ?? "-"]
         .map(flattenField)
         .join("\t");
 }
