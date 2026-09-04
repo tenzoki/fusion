@@ -46,7 +46,8 @@ fusion-workbench/
 │   ├── consult/                       # consultations are always shared — see below
 │   ├── history/
 │   ├── memos/                         # memos are always shared — see below
-│   └── backlog/                       # ideas not yet units of work — always shared, see below
+│   ├── backlog/                       # ideas not yet units of work — always shared, see below
+│   └── checkouts/                     # one entry per checkout — written by bin/fusion-checkout-name, nothing else
 ├── archive/                           # target of cleanup's archive step
 ├── stilwerk/                          # stylometric profiles
 ├── portfolio.md                       # playmaker output
@@ -79,7 +80,7 @@ The list is exhaustive as written, and it is a list rather than a count on purpo
 
 Whether a consuming project tracks its workbench at all is that project's decision: fusion ships no `.gitignore` rule for it. Which of the root entries above a project that *does* track it should commit, which it should not, and what preserves the evidence in the ones it does not, are authored in `rules/workbench-tracking.md`, which `bin/fusion-rules` emits to **no agent**: its two readers are a human writing a project's `.gitignore` and the archive step of `/fusion:cleanup`.
 
-**`shared/` mirrors the Circle's artifact kinds, plus four of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/`, `memos/` and `backlog/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, a memo records a note, and a backlog entry precedes every Directive by construction. None of the four is produced by executing a Directive, so none can originate in a Circle. `investigations/` is **write-frozen** since the `investigator` fold of 2026-08-15: the store and its reports stay, nothing writes there any more, and a failure analysis goes to `$OUT_ANALYSIS` like every other analysis.
+**`shared/` mirrors the Circle's artifact kinds, plus stores of its own.** Every kind a Circle can hold has a shared counterpart, because any of them can be produced with no Circle active and must still have a home. `investigations/`, `consult/`, `memos/`, `backlog/` and `checkouts/` exist only in `shared/`: an investigation studies a failure capture, a consultation answers a question, a memo records a note, a backlog entry precedes every Directive by construction, and a checkout entry names an instance of the project rather than anything done in one. None of them is produced by executing a Directive, so none can originate in a Circle. `checkouts/` holds one file per checkout, written by `bin/fusion-checkout-name` and by nothing else; that script's header is the authoritative documentation for the entry grammar, and this document does not restate it. `investigations/` is **write-frozen** since the `investigator` fold of 2026-08-15: the store and its reports stay, nothing writes there any more, and a failure analysis goes to `$OUT_ANALYSIS` like every other analysis.
 
 **The review types collapse into one `reviews/`.** codereview and ontoreview differ by sender, not by kind. The sender is in the filename (`YYMMDD-HHMM-<sender>-<topic>.md`) and in the document header. Inside one Circle they do not earn a directory each.
 
