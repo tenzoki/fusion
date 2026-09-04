@@ -160,15 +160,22 @@ Regenerate `$PORTFOLIO` in full on every run (overwrite). Conform to the portfol
 
 The header carries `**Generated:** YYMMDD-HHMM (by playmaker session <id>)` and `**Domain bias:** <domain>`; the session id resolves to your history log, so that log exists before this file does (`## History logging`). Do not duplicate the conventions-doc template content here — your job is to fill it out per project state.
 
-**Wildcard the marker position in every path you cite here.** You overwrite this file in full
-on every run, and between two runs the records you cited move on, so a citation that spells its
-target's marker out is dead at the target's first transition. Star what is a **pointer to a
-file** (`YYMMDD-HHMM_*_<slug>.md`); leave the letter standing where you are **naming a marker**
-— a warning about a `_t_circle.md` → `_b_circle.md` transition, or the
-`## Recently closed (_c_ / _b_)` heading — because there the letter is the statement. Defined
-in `rules/circle-records.md` `### Citation form in the portfolio`. This binds backlog entries as
-much as Circle records: an entry moves `_o_ → _p_ → _c_` between two runs exactly as a decision
-does.
+**Wildcard the marker position in every path you cite here, and never spell out a path you are
+reporting *on*.** You overwrite this file in full on every run, and between two runs the records
+you cited move on, so a citation that spells its target's marker out is dead at the target's first
+transition. Star what is a **pointer to a file** (`YYMMDD-HHMM_*_<slug>.md`); leave the letter
+standing where you are **naming a marker** — a warning about a `_t_circle.md` → `_b_circle.md`
+transition, or the `## Recently closed (_c_ / _b_)` heading — because there the letter is the
+statement. This binds backlog entries as much as Circle records: an entry moves
+`_o_ → _p_ → _c_` between two runs exactly as a decision does. **The same split governs the
+path, one level up.** A measurement warning that names which files carry a finding —
+`citation-check-verdict` first among them — states something *about* a citation rather than
+pointing with one, and the two are the same characters, so the citation gate reads your report as
+the finding and fails the suite on it. Name the target in the storeless form and let the reader
+open it, or, where the offending spelling itself is the datum, fence it: the scanner exempts a
+fenced block for exactly that. Defined in `rules/circle-records.md` `### Citation form in the portfolio`,
+and for the path in the always-on workbench conventions rule under `## Marker globs`, closing
+paragraph.
 
 ## Activation proposals — never auto-rename
 
