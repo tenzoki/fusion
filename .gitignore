@@ -43,6 +43,7 @@ bin/*
 !bin/fusion-session-domain
 !bin/fusion-events
 !bin/fusion-cadence-anchor
+!bin/fusion-checkout-name
 !bin/fusion-citation-check
 !bin/fusion-citation-sweep
 *.exe

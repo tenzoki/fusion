@@ -1,0 +1,356 @@
+#!/usr/bin/env bash
+# fusion-checkout-name — the checkout registry's only writer and its principal
+# reader: the one program that turns eight hex characters into a name a human
+# recognises, and the one program that writes an entry saying so.
+#
+# THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION. The row in CLAUDE.md, the
+# skill bodies that call this helper and the one docstring in `bin/monitor`
+# that reads an entry directly all summarise it and deliberately do not restate
+# it.
+#
+# ## Usage
+#
+#   fusion-checkout-name resolve <8hex>
+#   fusion-checkout-name roster
+#   fusion-checkout-name suggest [<8hex>]
+#   fusion-checkout-name register [--alias A] [--person P]
+#
+# Output is the KEY=value shape `bin/fusion-paths` established, one fact per
+# line. A value that could not be read is ABSENT, never empty and never
+# substituted; see "A resolution failure is never a substituted value" below.
+#
+#   resolve <8hex>   Prints `alias=`, `person=` and `git_identity=`, omitting
+#                    the line for a field the entry does not carry. Exit 3 with
+#                    nothing on stdout when no entry exists for that hex, which
+#                    is the ordinary case for every checkout that has not
+#                    registered and is not a fault.
+#   roster           Prints `entries=<n>`, then one `entry=` line per entry,
+#                    TAB-separated: hex, alias, person, git identity. Fields
+#                    are flattened the way `renderParty` in
+#                    `hooks/lib/events-query.ts` flattens them — every run of
+#                    control characters becomes one space — because the
+#                    separator is a TAB and a value read out of a file another
+#                    machine wrote can hold one. `entries=0` over an empty or
+#                    absent store is an answer, printed, exit 0.
+#   suggest [<8hex>] Prints `suggested_alias=<word>-<word>`, derived from the
+#                    hex by arithmetic over the two word lists carried in this
+#                    script. Deterministic: the same checkout is offered the
+#                    same name on every run, on every machine, for the life of
+#                    the lists. With no argument it uses this checkout's own
+#                    hex. Nothing is written; the name is a default to accept
+#                    or replace, not a registration.
+#   register         Writes or refreshes THIS checkout's entry and no other.
+#                    On a first write it sets every field it has and stamps
+#                    `**Registered:**`. On a refresh it rewrites
+#                    `**Git identity:**` and `**Refreshed:**` unconditionally,
+#                    so a changed git configuration is picked up, and the other
+#                    fields only where a flag was given, so the person and the
+#                    alias stand. Prints `entry=<path relative to
+#                    fusion-workbench/>`,
+#                    `action=created|refreshed`, and one `collision=<hex>` line
+#                    per OTHER entry holding the same alias.
+#
+# ## Exit codes
+#
+#   0  the answer was produced. `entries=0` and a roster of nothing are
+#      answers, and they exit 0.
+#   2  usage error: no subcommand, an unknown one, a missing or malformed
+#      argument, or -h/--help.
+#   3  `resolve` only: no entry exists for the hex asked about. Nothing on
+#      stdout.
+#   4  this checkout's own hex did not resolve, so there is nothing to register
+#      and nothing to suggest a name for. Raised by `register` and by a bare
+#      `suggest`, the two subcommands that need it.
+#   5  no fusion workbench above the working directory, so the store cannot be
+#      located. Raised by `resolve`, `roster`, `register` and a bare `suggest`
+#      — every subcommand except `suggest <8hex>`, which is arithmetic over its
+#      argument and needs no workbench at all.
+#
+# Nothing here halts a caller. `[ -x ]` at every call site is the third branch,
+# per `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
+# an installed copy predating this helper renders the hex, which is what every
+# consumer rendered before the registry existed.
+#
+# ## The store, and the entry grammar
+#
+# One file per checkout at `<workbench>/shared/checkouts/<8hex>.md`, created on
+# the first `register` and never otherwise. It is class R1 in
+# `rules/workbench-tracking.md` `## The four classes` — it travels in git like
+# every other record store, and it needs no merge driver and no lock because
+# each checkout writes only the file named after its own identifier.
+#
+# The grammar is one anchored line form, `**Key:** value`, first occurrence of
+# a key wins, an absent field is absent rather than empty, and every other line
+# in the file is ignored by every reader. A worked example, with values chosen
+# to be obviously synthetic:
+#
+#   # Checkout 3f9a1c07
+#
+#   **Checkout:** 3f9a1c07
+#   **Alias:** amber-harbor
+#   **Person:** Ada Example
+#   **Git identity:** Ada Example <ada@example.invalid>
+#   **Registered:** 260904-1712
+#   **Refreshed:** 260905-0903
+#
+# `**Person:**` is the human's claim and is free text; it defaults to the git
+# identity, which reproduces the behaviour of a workbench with no registry at
+# all. `**Git identity:**` is git's `Name <email>` as read here, and it is
+# absent outside a git work tree, where absent is the honest value.
+#
+# No field carries a hostname, an operating-system account name or a folder
+# path. That is a decision and not an omission:
+# `260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md`,
+# option 1 — the alias carries the whole "which one is this" job, and the
+# registry publishes nothing about the machine it was written on.
+#
+# ## Why the alias is an attribute and never the key
+#
+# The eight hex characters minted by `bin/fusion-identity` stay the key
+# everywhere: in the filename, in every event line, in every claim field, and
+# in every comparison. The alias is a rendering.
+# `260904-1058_*_is-the-checkout-alias-the-identifier-or-an-attribute-of-the-minted-one.md`
+# settled it on backward compatibility rather than taste: every event line and
+# every claim already written carries the hex, and promoting the alias to the
+# key would make each of them read as a stranger's from the switch point
+# backward. The legibility that buys is available by lookup, which is this
+# program.
+#
+# ## Why a collision is reported and never enforced
+#
+# Two checkouts can register the same alias, and `register` says so with one
+# `collision=<hex>` line per other entry holding it. It does not rename, and no
+# option makes it rename: a checkout that has not pulled cannot see an entry
+# that has not been pushed, so enforcement is not available to any code that
+# runs here. The claim field's stated limit is the precedent — detected, not
+# prevented — and a mechanism that renamed on what it can currently see would
+# rename against a fact it does not have.
+#
+# ## A resolution failure is never a substituted value
+#
+# `resolve` on an unregistered hex exits 3 and prints nothing rather than
+# printing the hex back, and `roster` omits nothing and invents nothing. The
+# rule is `bin/fusion-identity`'s and it is carried here deliberately: a
+# consumer that receives a value cannot tell a read from a guess, so the
+# absence is the answer and the consumer decides what to render. Every display
+# site renders the hex on a miss, which is exactly what it rendered before this
+# store existed.
+
+set -eu
+
+self="$(basename "$0")"
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+usage() {
+  cat >&2 <<'USAGE'
+usage: fusion-checkout-name resolve <8hex>
+       fusion-checkout-name roster
+       fusion-checkout-name suggest [<8hex>]
+       fusion-checkout-name register [--alias A] [--person P]
+The header of this script is the authoritative documentation, including the
+entry grammar and the exit-code table.
+USAGE
+}
+
+die_usage() {
+  [ "$#" -eq 0 ] || printf '%s: %s\n' "$self" "$1" >&2
+  usage
+  exit 2
+}
+
+is_hex() { printf '%s' "${1:-}" | LC_ALL=C grep -Eq '^[0-9a-f]{8}$'; }
+
+# --- the workbench, and the store inside it ---------------------------------
+
+resolve_root() {
+  local root=''
+  if [ ! -x "$here/fusion-workbench-root" ]; then
+    printf '%s: %s is missing — the plugin install is incomplete.\n' "$self" "$here/fusion-workbench-root" >&2
+  else
+    root="$("$here/fusion-workbench-root" 2>/dev/null || true)"
+  fi
+  if [ -z "$root" ]; then
+    printf '%s: no fusion workbench above %s. Run /fusion:setup.\n' "$self" "$(pwd)" >&2
+    return 1
+  fi
+  # STORE_REL is relative to `fusion-workbench/`, which is what `register`
+  # prints; STORE is the absolute path this program reads and writes.
+  STORE_REL="shared/checkouts"
+  STORE="$root/fusion-workbench/$STORE_REL"
+}
+
+# This checkout's own hex, and the git identity read in the same call. Absent
+# values stay absent: `bin/fusion-identity` prints no line it did not read.
+resolve_self() {
+  local out=''
+  if [ ! -x "$here/fusion-identity" ]; then
+    printf '%s: %s is missing — the plugin install is incomplete.\n' "$self" "$here/fusion-identity" >&2
+  else
+    out="$("$here/fusion-identity" 2>/dev/null || true)"
+  fi
+  SELF_HEX="$(printf '%s\n' "$out" | sed -n 's/^CHECKOUT=//p' | head -1)"
+  SELF_GIT="$(printf '%s\n' "$out" | sed -n 's/^PERSON=//p' | head -1)"
+  if ! is_hex "$SELF_HEX"; then
+    printf "%s: this checkout's identifier did not resolve, so there is nothing to name.\n" "$self" >&2
+    return 1
+  fi
+}
+
+# --- the entry grammar, in one place ----------------------------------------
+
+get_field() {
+  # get_field <file> <Key> — first occurrence wins, trailing blanks trimmed.
+  sed -n "s/^\*\*$2:\*\*[[:space:]]*//p" "$1" 2>/dev/null | head -1 | sed 's/[[:space:]]*$//'
+}
+
+set_field() {
+  # set_field <file> <Key> <value> — replaces the first occurrence, or appends
+  # after the last field line, so anything a human added to the file survives.
+  local file="$1" tmp="$1.tmp.$$"
+  # Key and value travel in the environment, not through `awk -v`, which
+  # processes backslash escapes in the value it is handed.
+  FCN_KEY="$2" FCN_VALUE="$3" awk '
+    BEGIN { key = ENVIRON["FCN_KEY"]; value = ENVIRON["FCN_VALUE"] }
+    { line[NR] = $0
+      if (!seen && $0 ~ "^\\*\\*" key ":\\*\\*") { hit = NR; seen = 1 }
+      if ($0 ~ /^\*\*[^*]+:\*\*/) anchor = NR }
+    END {
+      if (seen) line[hit] = "**" key ":** " value
+      for (i = 1; i <= NR; i++) {
+        print line[i]
+        if (!seen && i == anchor) print "**" key ":** " value
+      }
+      if (!seen && !anchor) print "**" key ":** " value
+    }' "$file" > "$tmp" && mv "$tmp" "$file"
+}
+
+# Every run of control characters becomes one space. See `roster` above.
+flatten() { printf '%s' "${1:-}" | LC_ALL=C sed 's/[[:cntrl:]][[:cntrl:]]*/ /g'; }
+
+# --- suggest -----------------------------------------------------------------
+
+ADJECTIVES=(amber brisk calm dusky eager fern glad hazel ivory jade keen lark
+            mild north opal plum quiet russet sage teal umber vivid west yarrow)
+NOUNS=(anchor birch cliff delta ember forge gable harbor inlet jetty kiln ledge
+       marsh nook orchard pier quarry ridge shoal tarn upland vale willow yard)
+
+suggest_for() {
+  # Deterministic over the hex: two independent digits of one 32-bit number in
+  # mixed radix, so neither half repeats faster than the other.
+  local n=$((16#$1)) a b
+  a=$(( (n / ${#NOUNS[@]}) % ${#ADJECTIVES[@]} ))
+  b=$(( n % ${#NOUNS[@]} ))
+  printf '%s-%s\n' "${ADJECTIVES[$a]}" "${NOUNS[$b]}"
+}
+
+# --- subcommands -------------------------------------------------------------
+
+cmd="${1:-}"
+[ "$#" -eq 0 ] || shift
+
+case "$cmd" in
+  resolve)
+    hex="${1:-}"
+    is_hex "$hex" || die_usage "resolve takes one 8-hex-character identifier"
+    resolve_root || exit 5
+    entry="$STORE/$hex.md"
+    [ -f "$entry" ] || exit 3
+    for pair in "alias:Alias" "person:Person" "git_identity:Git identity"; do
+      value="$(get_field "$entry" "${pair#*:}")"
+      if [ -n "$value" ]; then printf '%s=%s\n' "${pair%%:*}" "$value"; fi
+    done
+    exit 0
+    ;;
+
+  roster)
+    [ "$#" -eq 0 ] || die_usage "roster takes no arguments"
+    resolve_root || exit 5
+    entries=()
+    if [ -d "$STORE" ]; then
+      for f in "$STORE"/*.md; do
+        [ -f "$f" ] || continue
+        stem="$(basename "$f" .md)"
+        is_hex "$stem" || continue
+        entries+=("$(printf '%s\t%s\t%s\t%s' "$stem" \
+          "$(flatten "$(get_field "$f" Alias)")" \
+          "$(flatten "$(get_field "$f" Person)")" \
+          "$(flatten "$(get_field "$f" 'Git identity')")")")
+      done
+    fi
+    printf 'entries=%s\n' "${#entries[@]}"
+    for e in ${entries+"${entries[@]}"}; do printf 'entry=%s\n' "$e"; done
+    exit 0
+    ;;
+
+  suggest)
+    hex="${1:-}"
+    if [ -n "$hex" ]; then
+      is_hex "$hex" || die_usage "suggest takes one 8-hex-character identifier"
+    else
+      resolve_root || exit 5
+      resolve_self || exit 4
+      hex="$SELF_HEX"
+    fi
+    printf 'suggested_alias=%s\n' "$(suggest_for "$hex")"
+    exit 0
+    ;;
+
+  register)
+    alias_flag=''; person_flag=''
+    while [ "$#" -gt 0 ]; do
+      case "$1" in
+        --alias)  [ "$#" -ge 2 ] || die_usage "--alias takes a value"; alias_flag="$2"; shift 2 ;;
+        --person) [ "$#" -ge 2 ] || die_usage "--person takes a value"; person_flag="$2"; shift 2 ;;
+        *) die_usage "unknown option '$1'" ;;
+      esac
+    done
+    resolve_root || exit 5
+    resolve_self || exit 4
+    entry="$STORE/$SELF_HEX.md"
+    stamp="$(date +%y%m%d-%H%M)"
+
+    if [ -f "$entry" ]; then
+      action=refreshed
+      if [ -n "$alias_flag" ]; then set_field "$entry" Alias "$alias_flag"; fi
+      if [ -n "$person_flag" ]; then set_field "$entry" Person "$person_flag"; fi
+      # Unconditional, so a changed git configuration is picked up.
+      if [ -n "$SELF_GIT" ]; then set_field "$entry" 'Git identity' "$SELF_GIT"; fi
+      set_field "$entry" Refreshed "$stamp"
+    else
+      action=created
+      mkdir -p "$STORE"
+      alias_value="${alias_flag:-$(suggest_for "$SELF_HEX")}"
+      person_value="${person_flag:-$SELF_GIT}"
+      {
+        printf '# Checkout %s\n\n' "$SELF_HEX"
+        printf '**Checkout:** %s\n' "$SELF_HEX"
+        printf '**Alias:** %s\n' "$alias_value"
+        if [ -n "$person_value" ]; then printf '**Person:** %s\n' "$person_value"; fi
+        if [ -n "$SELF_GIT" ]; then printf '**Git identity:** %s\n' "$SELF_GIT"; fi
+        printf '**Registered:** %s\n' "$stamp"
+        printf '\nWritten by `bin/fusion-checkout-name` and by nothing else.\n'
+      } > "$entry"
+    fi
+
+    printf 'entry=%s\n' "$STORE_REL/$SELF_HEX.md"
+    printf 'action=%s\n' "$action"
+
+    mine="$(get_field "$entry" Alias)"
+    for f in "$STORE"/*.md; do
+      [ -f "$f" ] || continue
+      stem="$(basename "$f" .md)"
+      if [ "$stem" != "$SELF_HEX" ] && [ "$(get_field "$f" Alias)" = "$mine" ]; then
+        printf 'collision=%s\n' "$stem"
+      fi
+    done
+    exit 0
+    ;;
+
+  ""|-h|--help|help)
+    die_usage
+    ;;
+
+  *)
+    die_usage "unknown subcommand '$cmd'"
+    ;;
+esac
