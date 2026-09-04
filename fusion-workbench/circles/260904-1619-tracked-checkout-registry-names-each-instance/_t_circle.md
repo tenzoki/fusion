@@ -3,9 +3,9 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Unclaimed
+**Claim:** Claimed 260904-1640: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
 **Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active session history:** 260904-1050-orchestrator-session.md
 
 ---
 
@@ -38,5 +38,25 @@ No anticipated or active Circle blocks this one. Three terminal Circles bind it 
 - `260824-0530-record-attribution-and-circle-claim`. Where the identity model was answered: attribution takes the git identity, the claim takes the git identity plus the locally minted checkout identifier. This Circle inherits that answer and introduces no second identity source.
 - `260823-0023-settle-what-travels-between-checkouts`. Where the four-class state partition and the union merge driver on the event log were settled. The new store joins class R1 with no exception owed, which is one of the three grounds the recommended shape was chosen on.
 - `260825-2023-presence-travels-monitor-filters-own-checkout`. Where presence reporting and the monitor's own-checkout filter were built. Its `_b_` marker records a Bounded Closure whose Directive was nonetheless reached; the surfaces this Circle changes are the ones it built.
+
+## Activation proposal
+
+Proposed activation timestamp: 260904-1636. Run identifier: playmaker session
+`260904-1636-playmaker-direct-dispatch`.
+
+Rationale: this is the only anticipated Circle in the portfolio, so it ranks first by
+construction. Its Grounding snapshot cites two open decisions,
+`260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md` and
+`260904-1058_*_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md`,
+both scoped in the Directive as work to answer inside the Circle rather than as blockers to
+activation. Its `## Dependencies` cites three terminal Circles: two carry `_c_`
+(`260824-0530-record-attribution-and-circle-claim`, `260823-0023-settle-what-travels-between-checkouts`)
+and one carries `_b_` (`260825-2023-presence-travels-monitor-filters-own-checkout`), so the
+Dependencies-closed flag is set — that dependency reached Bounded Closure rather than
+Closed-coherent, though the record's own citation states its Directive was nonetheless
+reached. Of the eight marker-carrying records the Grounding snapshot cites, one is terminal
+(`260825-1329_c_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`),
+well under the half-of-cited threshold this run checks, so the Grounding is current rather
+than stale.
 
 ## Turn log
