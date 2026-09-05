@@ -18,6 +18,18 @@
 // whether this is a gate or a switch, so the unclosed-fence negative control
 // below is not a completeness test but the load-bearing one.
 //
+// WHAT THE FENCE STOPPED COVERING ON 2026-09-05. Its premise is "do not look
+// this token up", so it reaches the verdicts a lookup decides and not
+// `store-prefixed`, which `SHAPE_DECIDED_KINDS` settles from the token's shape
+// before anything is read off disk (issue
+// 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
+// The cost is stated rather than hidden: a record whose subject is that some
+// other file carries a store segment can no longer fence the whole token, and
+// names the segment in words instead. That is the remedy the gate's own failure
+// message now spells. What the fence still buys such a token is that NOTHING
+// REWRITES IT: the reason rides along with the verdict and `citation-sweep.ts`
+// skips every hit that carries one.
+//
 // The scanner's own doc comment on `fencedContentLines` carries the CommonMark
 // citation, the three omissions and the one deliberate departure. This file
 // tests behaviour and does not restate the reasoning.
@@ -32,8 +44,18 @@ import {
   type CitationHit,
 } from "./helpers/citation-scan.ts";
 
-/** A citation that matches nothing on disk, so "judged" is unambiguous. */
-const DEAD = "shared/issues/990101-0101_o_no-such-record.md";
+/**
+ * A citation that matches nothing on disk, so "judged" is unambiguous, and
+ * STORELESS on purpose: its verdict is `dangling`, which a lookup decides, so
+ * the fence has something to silence. A store-prefixed spelling is decided from
+ * its shape, which the fence's premise does not reach, so it is judged — and
+ * keeps the fence as its reason, which is what stops the sweep rewriting it.
+ * The cases at the foot of this file hold the two apart.
+ */
+const DEAD = "990101-0101_o_no-such-record.md";
+
+/** The same absence, spelled with the store segment the storeless form drops. */
+const DEAD_STORE_PREFIXED = "shared/issues/990101-0101_o_no-such-record.md";
 
 /** A markdown document as lines, numbered from 1 the way both callers number. */
 const doc = (...text: string[]) => text.map((t, i) => ({ line: i + 1, text: t }));
@@ -154,6 +176,40 @@ describe("citation scanner: the gate sees the exemption", () => {
     // the identical token in running prose is still a violation
     const bare = scanRecordCitations("fixture.md", doc(`see ${DEAD}`));
     expect(bare.violations.length).toBe(1);
+  });
+
+  it("judges a store-prefixed token inside a fence, and still exempts a dead one", () => {
+    // The two tokens name the same absent record and sit on adjacent lines of
+    // one fence. Only the spelling differs, and only the spelling is judged.
+    const hits = scan("```", `$ grep '${DEAD}'`, `$ grep '${DEAD_STORE_PREFIXED}'`, "```");
+    expect(statusAt(hits, 2)).toBe("exempt");
+    expect(reasonAt(hits, 2)).toBe("fenced-code");
+    expect(statusAt(hits, 3)).toBe("store-prefixed");
+    // The reason SURVIVES the verdict, and the sweep reads it: the token is
+    // reported to a human and never rewritten, because rewriting an exhibit
+    // deletes the finding it exists to show.
+    expect(reasonAt(hits, 3)).toBe("fenced-code");
+  });
+
+  it("judges a store-prefixed token inside the worked-example file's fences", () => {
+    // The acceptance of the issue above, at the real path: the file whose job is
+    // to teach the citation form is exempt from the verdicts that need a lookup
+    // — its records are fabricated — and from nothing else. Both lines sit
+    // inside a fence, which is where its examples live by necessity.
+    const rel = "rules/decision-record-examples.md";
+    const hits = scanCitationTokens(rel, doc("```markdown", `Answered: ${DEAD}`, `Answered: ${DEAD_STORE_PREFIXED}`, "```"));
+    expect(statusAt(hits, 2)).toBe("exempt");
+    expect(reasonAt(hits, 2)).toBe("record-example-file");
+    expect(statusAt(hits, 3)).toBe("store-prefixed");
+    // and the gate, not just the token walk, is what reports it
+    expect(scanRecordCitations(rel, doc("```markdown", `Answered: ${DEAD_STORE_PREFIXED}`, "```")).violations.length).toBe(1);
+  });
+
+  it("exempts a store-prefixed token in the file that converts between the two layouts", () => {
+    // `RETIRED_LAYOUT_FILES`, whose premise DOES reach the shape verdict: the
+    // store segment is what `/fusion:migrate` describes moving.
+    const hits = scanCitationTokens("skills/migrate/SKILL.md", doc(`becomes ${DEAD_STORE_PREFIXED}`));
+    expect(reasonAt(hits, 1)).toBe("retired-layout-file");
   });
 
   it.skipIf(!WORKBENCH_PRESENT)("does not count a fenced citation as resolved either", () => {

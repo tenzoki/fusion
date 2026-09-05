@@ -65,9 +65,13 @@
  *
  * ## What the sweep rewrites, per token kind
  *
- * Only where the scanner's status is not `exempt` (fenced code, blockquote
+ * Only where the scanner reported NO exemption reason — fenced code, blockquote
  * lines, footer templates, announced illustrations, placeholders, fabricated
- * names, globs, head fields, the example files):
+ * names, globs, head fields, the example files and the layout-conversion file.
+ * The reason and not the status is what holds the sweep off: a fenced or
+ * worked-example token whose SHAPE is store-prefixed is judged by the gate and
+ * still carries its reason here, because rewriting a verbatim exhibit deletes
+ * the finding it exists to show:
  *
  *   record          -> `<stamp>_*_<slug>...`  the store segment is dropped and
  *                                             a literal marker becomes `_*_`;

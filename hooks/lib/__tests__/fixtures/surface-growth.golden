@@ -56,7 +56,7 @@
   domain-cascade-order-lint.test.ts 234
   domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
-  fenced-code-exemption.test.ts 168
+  fenced-code-exemption.test.ts 224
   fusion-checkout-name.test.ts 168
   fusion-citation-check.test.ts 70
   fusion-commit-lock.test.ts 424
@@ -70,7 +70,7 @@
   guard-bash-integration.test.ts 338
   guard-project-config-integration.test.ts 251
   guard-state-shape.test.ts 215
-  helpers/citation-scan.ts 54
+  helpers/citation-scan.ts 56
   helpers/growth-bound.ts 123
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
@@ -96,5 +96,5 @@
   staging-drift.test.ts 673
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
-  workbench-citation-lint.test.ts 425
-  total 20182
+  workbench-citation-lint.test.ts 430
+  total 20245

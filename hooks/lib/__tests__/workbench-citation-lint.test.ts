@@ -24,7 +24,7 @@ import {
 // `shared/issues/260812-1720_*_the-reference-resolution-lint-does-not-scan-the-workbench-where-citations-are-densest.md`).
 //
 // One parser serves both. Everything about what a citation IS — the storeless
-// grammar, the seven exemptions, what resolves, what dangles and why a store
+// grammar, the exemptions, what resolves, what dangles and why a store
 // segment (`shared/<store>/`, `circles/<dir>/`) is the `store-prefixed`
 // violation — lives in `hooks/lib/citation-scan.ts` (bound to this checkout by
 // the shim at `hooks/lib/__tests__/helpers/citation-scan.ts`) and is not
@@ -210,6 +210,11 @@ const VIOLATION_MESSAGE =
   "THE FILE AND THE LINE and let the reader open it, or put the verbatim form " +
   "in a FENCED CODE BLOCK, which this scanner exempts for exactly this case. " +
   "Prose is the default; the fence is for when the spelling itself is the datum.\n" +
+  "ONE VERDICT THE FENCE DOES NOT COVER: `store-prefixed`. It is decided from " +
+  "the token's shape and never needs a lookup, so no exemption premised on not " +
+  "looking a record up reaches it — the fence and RECORD_EXAMPLE_FILES included. " +
+  "To report a store segment, NAME IT IN WORDS (\"carries the segment " +
+  "`analyses/`\") instead of spelling the whole token.\n" +
   "WHAT IS NOT THE ANSWER: adding a file to RECORD_EXAMPLE_FILES. That exempts " +
   "every citation in the file, including the ones that go stale later, and the " +
   "records likeliest to trip this gate are the records ABOUT stale citations — " +

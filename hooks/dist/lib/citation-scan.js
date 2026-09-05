@@ -175,11 +175,38 @@ const CIRCLE_RE = /circles\/([0-9]{6}-[0-9]{4}-[a-z0-9-]+)(?:\/(?![A-Za-z0-9_.*<
 // invisible. A stamp followed by `-…` is still a bare stamp: an elided name is
 // an illustration, not a longer token.
 const STAMP_RE = /(?<![\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:-[a-z0-9]+)*)(\.md)?(?![0-9A-Za-z_\[])(?!-[a-z0-9])(?!\.md)/g;
-/** Files exempt from class (c) wholesale, with the reason. */
+/**
+ * Files whose record citations are fabricated, with the reason. THE PREMISE IS
+ * RESOLUTION — a made-up record cannot be found on disk — so the exemption
+ * reaches exactly the verdicts a lookup decides and NOT `store-prefixed`, which
+ * `SHAPE_DECIDED_KINDS` below settles from the token's shape before anything is
+ * looked up. Until 2026-09-05 it silenced every verdict, which made the one file
+ * whose job is to teach the citation form the one file where a wrong form could
+ * not be detected (issue
+ * 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
+ */
 export const RECORD_EXAMPLE_FILES = {
     "rules/decision-record-examples.md": "the worked-example corpus — every record it walks is fabricated by design",
-    "skills/migrate/SKILL.md": "demonstrates the pre-v4 -> v4 layout conversion on fabricated artifacts " +
-        "(260519-0438-coderev-loader-check, 260101-0903-dup, plan-foo)",
+};
+/**
+ * Files whose SUBJECT is the retired store-prefixed layout, with the reason.
+ * A different premise from `RECORD_EXAMPLE_FILES` and therefore a different
+ * reach: here the store segment is what the file is about, so the exemption
+ * covers `store-prefixed` as well. `skills/migrate/SKILL.md` describes the
+ * pre-v4 -> v4 conversion move by move (`codereview/…` becomes
+ * `shared/reviews/…`), and a gate telling it to drop the segment would be
+ * telling it to stop describing the migration; `CLAUDE.md` states the same
+ * licence in prose, calling `/fusion:migrate` the only consumer allowed to name
+ * both layouts literally, because it is the transition between them.
+ *
+ * A SECOND MEMBER NEEDS THAT CLAIM ABOUT ITS CONTENT, not a red gate. The claim
+ * is checkable by reading the file: does it convert between the two layouts? If
+ * the answer is "no, it merely cites a record", the file belongs in
+ * `RECORD_EXAMPLE_FILES` or the citation belongs in the storeless form.
+ */
+export const RETIRED_LAYOUT_FILES = {
+    "skills/migrate/SKILL.md": "the pre-v4 -> v4 layout conversion, demonstrated move by move on fabricated " +
+        "artifacts (260519-0438-coderev-loader-check, 260101-0903-dup, plan-foo)",
 };
 /**
  * A class-(c) token inside an open backtick span that begins with a
@@ -369,6 +396,53 @@ export const GATE_KINDS = [
     "stamp-name",
 ];
 /**
+ * The kinds whose verdict is settled by the token's SHAPE. Each of the three
+ * carries a store segment, so each is `store-prefixed` unconditionally: their
+ * `check()` below reads nothing off disk, and a fabricated record and a real one
+ * are indistinguishable to it.
+ *
+ * WHAT THE LIST IS FOR. An exemption whose premise is "do not look this token
+ * up" cannot reach a verdict that needed no lookup, so the two resolution-
+ * premised exemptions — `record-example-file` and `fenced-code` — are skipped
+ * for these three kinds and the token is judged (issue
+ * 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md).
+ * The exemptions that keep silencing it are the ones saying the token is not
+ * this file's own spelling of a citation at all: `glob` (a pattern),
+ * `placeholder` (a template slot), `blockquote` (another author's text, which
+ * must not be silently respelled) and `retired-layout-file` (the store segment
+ * is the subject).
+ *
+ * THE RESIDUAL, stated rather than left to be found: the same argument reaches
+ * `announced-illustration`, `footer-template` and `fabricated-name`, which are
+ * announcements about one illustration rather than claims that the token is not
+ * a citation. They were measured at zero store-shaped tokens over both gate
+ * corpora on 2026-09-05 and left alone — the record that asked for this
+ * narrowing names the other two, and each of these three has fixtures of its own
+ * that would have to be rewritten to decide it.
+ */
+export const SHAPE_DECIDED_KINDS = ["record", "circle-record", "circle-dir"];
+/**
+ * The exemptions whose premise is "do not look this token up": a fabricated
+ * record cannot be found on disk, and a fenced transcript is quoted rather than
+ * followed. Neither says anything about the token's SHAPE, so neither silences
+ * `store-prefixed` on the three kinds above.
+ *
+ * THE REASON SURVIVES THE VERDICT, and that is the half a reader is likeliest
+ * to miss. Such a token is reported as `store-prefixed` AND keeps its `reason`,
+ * because the two answer different questions: the status says the spelling is
+ * one the project retired, the reason says nobody may rewrite it in place. The
+ * sweep (`hooks/citation-sweep.ts`) skips every hit carrying a reason, so a
+ * verbatim exhibit inside a fence is reported to a human and never edited by a
+ * machine — rewriting an exhibit deletes the finding it exists to show. Route 3
+ * of issue
+ * 260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md:
+ * the store-prefix check runs on a pass no file-level exemption gates, while the
+ * exemptions go on governing what may be written.
+ *
+ * `retired-layout-file` is deliberately absent: its premise IS about shape.
+ */
+const RESOLUTION_PREMISED_EXEMPTIONS = new Set(["record-example-file", "fenced-code"]);
+/**
  * Bind the grammar to a workbench root. The two indexes below are memoised per
  * scanner, and for one reason: both are read once per token and the tree does
  * not move under a run. A caller that needs a fresh read makes a fresh scanner.
@@ -440,10 +514,16 @@ export function createScanner(workbenchRoot) {
      * exemptions are the gate's, applied identically — a token they catch is
      * reported as `exempt` with the reason rather than dropped, so a corpus scan
      * can state how much of itself it did not judge.
+     *
+     * ONE HIT SHAPE CARRIES BOTH: a `store-prefixed` verdict with a `reason` set.
+     * It means the token was judged on its shape, which no exemption here bears
+     * on, while an exemption still forbids rewriting it in place
+     * (`RESOLUTION_PREMISED_EXEMPTIONS`).
      */
     function scanCitationTokens(rel, lines) {
         const hits = [];
         const fileExempt = rel in RECORD_EXAMPLE_FILES;
+        const layoutExempt = rel in RETIRED_LAYOUT_FILES;
         const fenced = fencedContentLines(lines);
         for (let li = 0; li < lines.length; li++) {
             const { line, text } = lines[li];
@@ -454,35 +534,44 @@ export function createScanner(workbenchRoot) {
                     return;
                 covered.push([idx, idx + token.length]);
                 const before = text.slice(0, idx);
-                const reason = fileExempt
-                    ? "record-example-file"
-                    : // ahead of `blockquote`: inside a fence a leading `>` is literal text
-                        // and not a quotation, so on a line that satisfies both this is the
-                        // true reason and the other is a coincidence of the first character.
-                        fenced[li]
-                            ? "fenced-code"
-                            : blockquoted
-                                ? "blockquote"
-                                : inAnnouncedIllustration(before)
-                                    ? "announced-illustration"
-                                    : inFooterTemplateSpan(before)
-                                        ? "footer-template"
-                                        : // a token cut at a `$`, `<` or `{` is the head of a template
-                                            // (`<stamp>_*_$f.md` in a shell illustration)
-                                            isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
-                                                ? "placeholder"
-                                                : token.includes("foo")
-                                                    ? "fabricated-name"
-                                                    : // a `*` anywhere but the marker position is a glob, not a citation
-                                                        /\*/.test(token.replace(/_\*_/g, ""))
-                                                            ? "glob"
-                                                            : // a bare stamp that is the whole value of a `**Field:**`
-                                                                // head line is the minute the record was written, not a
-                                                                // pointer (the `**Date:**` case in the header)
-                                                                kind === "stamp-bare" && isHeadFieldValue(before, text.slice(idx + token.length))
-                                                                    ? "head-field"
-                                                                    : null;
-                if (reason) {
+                const reason = layoutExempt
+                    ? "retired-layout-file"
+                    : fileExempt
+                        ? "record-example-file"
+                        : // ahead of `blockquote`: inside a fence a leading `>` is literal text
+                            // and not a quotation, so on a line that satisfies both this is the
+                            // true reason and the other is a coincidence of the first character.
+                            fenced[li]
+                                ? "fenced-code"
+                                : blockquoted
+                                    ? "blockquote"
+                                    : inAnnouncedIllustration(before)
+                                        ? "announced-illustration"
+                                        : inFooterTemplateSpan(before)
+                                            ? "footer-template"
+                                            : // a token cut at a `$`, `<` or `{` is the head of a template
+                                                // (`<stamp>_*_$f.md` in a shell illustration)
+                                                isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
+                                                    ? "placeholder"
+                                                    : token.includes("foo")
+                                                        ? "fabricated-name"
+                                                        : // a `*` anywhere but the marker position is a glob, not a citation
+                                                            /\*/.test(token.replace(/_\*_/g, ""))
+                                                                ? "glob"
+                                                                : // a bare stamp that is the whole value of a `**Field:**`
+                                                                    // head line is the minute the record was written, not a
+                                                                    // pointer (the `**Date:**` case in the header)
+                                                                    kind === "stamp-bare" && isHeadFieldValue(before, text.slice(idx + token.length))
+                                                                        ? "head-field"
+                                                                        : null;
+                // An exemption whose premise is "do not look this token up" cannot
+                // reach a verdict that needed no lookup, so a shape-decided kind under
+                // one is JUDGED — and keeps the reason, which is what stops a rewriter
+                // from touching it. See `SHAPE_DECIDED_KINDS`.
+                const judgedAnyway = reason !== null &&
+                    RESOLUTION_PREMISED_EXEMPTIONS.has(reason) &&
+                    SHAPE_DECIDED_KINDS.includes(kind);
+                if (reason && !judgedAnyway) {
                     hits.push({ file: rel, line, col: idx, token, kind, status: "exempt", matches: [], reason });
                     return;
                 }
@@ -490,7 +579,7 @@ export function createScanner(workbenchRoot) {
                     hits.push({ file: rel, line, col: idx, token, kind, status: "unresolved-no-workbench", matches: [] });
                     return;
                 }
-                hits.push({ file: rel, line, col: idx, token, kind, ...check() });
+                hits.push({ file: rel, line, col: idx, token, kind, ...check(), ...(reason ? { reason } : {}) });
             };
             const found = (m) => ({
                 status: m.length === 1 ? "resolved" : "ambiguous",

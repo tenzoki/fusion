@@ -65,9 +65,13 @@
  *
  * ## What the sweep rewrites, per token kind
  *
- * Only where the scanner's status is not `exempt` (fenced code, blockquote
+ * Only where the scanner reported NO exemption reason — fenced code, blockquote
  * lines, footer templates, announced illustrations, placeholders, fabricated
- * names, globs, head fields, the example files):
+ * names, globs, head fields, the example files and the layout-conversion file.
+ * The reason and not the status is what holds the sweep off: a fenced or
+ * worked-example token whose SHAPE is store-prefixed is judged by the gate and
+ * still carries its reason here, because rewriting a verbatim exhibit deletes
+ * the finding it exists to show:
  *
  *   record          -> `<stamp>_*_<slug>...`  the store segment is dropped and
  *                                             a literal marker becomes `_*_`;
@@ -242,7 +246,13 @@ function refusal(root: string, extra: string[]): string | null {
 
 /** The storeless spelling of one hit, or null when it is left as it stands. */
 function rewriteOf(hit: CitationHit): string | null {
-  if (hit.status === "exempt" || hit.status === "unresolved-no-workbench") return null;
+  if (hit.status === "unresolved-no-workbench") return null;
+  // A `reason` is what forbids a rewrite, and the status is not: since
+  // 2026-09-05 a shape-decided token inside a fence or in a worked-example file
+  // is REPORTED as `store-prefixed` and still carries its reason, because a
+  // rewrite of a verbatim exhibit deletes the finding the exhibit exists to
+  // show. The gate names such a token to a human; this program never edits one.
+  if (hit.reason !== undefined) return null;
   const t = hit.token;
   switch (hit.kind) {
     case "record": {

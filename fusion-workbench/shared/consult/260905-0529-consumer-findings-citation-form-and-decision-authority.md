@@ -1,7 +1,7 @@
 # Consultation: two consumer findings — resolution-line citation form, and who may answer a decision
 
 **Date:** 2026-09-05 05:29
-**Status:** Complete
+**Status:** Complete, partly overtaken — see `## Addendum 2026-09-05 12:28`
 **Requested by:** user, relaying a consuming project's report
 
 ## Question
@@ -218,6 +218,41 @@ again after R2 lands, because a corpus that already prefers a form is evidence f
 - [ ] Does the `_a_` marker owe a ruler field, and in what shape (R5)? Blocked on R4.
 - [ ] Attribution for the consumer's three records is not established here and cannot be: the
       tree carries none, and we did not read their transcripts.
+
+## Addendum 2026-09-05 12:28
+
+Two of the six recommendations were overtaken by work in this repository between the analysis and
+the filing pass, and the analysis above is left unedited so the reasoning stays readable against
+what it was written from.
+
+**R1 is done.** Commit `505ac4df` ("the decisions table stops instructing the citation form the
+gates reject") removed the contradicting sentence from the `_a_` marker row and put "That citation
+takes the form `## Filename Patterns` defines" in its place.
+
+**R4 is done and was already decided.** Commit `9f08fa58` rewrote `agents/reconciler.md:132`: the
+reconciler moves no marker and appends no `Answered:` line, reports the located answer in its log
+under "Answered elsewhere — needs the user's ruling", and only the orchestrator performs
+`_o_` → `_a_`, only to relay a ruling the user gave. The binding record is
+`260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`,
+answered option 1. Its accepted cost is filed separately as
+`260905-1105_*_a-located-answer-reaches-the-user-only-if-somebody-reads-the-reconciliation-log.md`.
+The analysis above reads the two prompts as an unresolved contradiction; they had been reconciled
+seven hours earlier and the report did not know it.
+
+**R2, R3 and R5 stand, and are now filed** in the shared stores:
+
+- `260905-1228_*_does-a-resolution-line-cite-path-line-or-a-heading-anchor.md` (R2)
+- `260905-1228_*_the-worked-example-teaches-a-store-prefixed-citation-and-a-section-suffix-the-rule-rejects.md` (the example correction, blocked on R2 for its locator half)
+- `260905-1228_*_the-record-example-exemption-silences-a-verdict-that-does-not-depend-on-resolution.md` (R3)
+- `260905-1228_*_does-an-answered-record-carry-who-ruled-now-that-only-the-orchestrator-may-transition-it.md` (R5, reframed against the answer R4 turned out to have)
+
+**The measurement was re-taken** on the same corpus at 12:28, after the day's transitions: 30
+`Answered:` lines, 1 `path:line`, 11 heading anchor, 11 other, 7 with the first line empty, 0
+self-citing, 0 store-prefixed. The count moved from 33 because three records reached `_i_`; the
+ratio the argument rests on did not.
+
+**R6 changes shape.** The reply to the consumer now reports two repairs already shipped rather
+than one pending, and holds the `:line` correction pending R2 alone.
 
 ## Sources
 

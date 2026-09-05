@@ -240,7 +240,7 @@ Patterns attach to the **kind of artifact**, not to a directory. The same kind c
 
 `<sender>` on a review file is `coderev` or `ontorev`. It is what distinguishes the two review kinds now that they share one `reviews/` directory: it is mandatory, and the document header repeats it. Older files may carry a third sender, `conceptrev`, retired with its agent on 2026-08-15.
 
-**Cite a record by its storeless basename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move and every archive sweep. **A citation carrying a store segment is a violation the gates report** (`shared/<store>/`, `circles/<dir>/<store>/`, or `circles/` in front of a Circle): the segment is what a sweep moves, so a citation spelling it dies at the sweep. A markerless artifact (history, review, analysis, consultation) is cited as `YYMMDD-HHMM-<topic>.md`, and a Circle by its bare directory name `YYMMDD-HHMM-<slug>`. The reader resolves any of the three by one workbench-wide lookup (`find "$WORKBENCH" -name '<basename>'`, the wildcard as a glob), which is correct because no two stamped artifacts share a marker-normalised basename: measured over the live tree and `archive/` at commit `4b8f769d` (2 235 basenames, 0 collisions) and re-taken on every run by `hooks/lib/__tests__/workbench-citation-lint.test.ts`. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. **No pattern above changes.** In living text (prompts, rules, docs), which outlives its target, cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no gate resolves `path:N`. A `Resolved:`, `Answered:` or `Implemented:` line is a point-in-time citation carried by its commit, and there `path:line` is the form; on such a line the `:line` suffix stays, and when the target is a record the path half is its storeless basename (a rule file, a source file or a commit stays a path).
+**Cite a record by its storeless basename with the state marker wildcarded**, `YYMMDD-HHMM_*_<topic>.md`, so the citation survives every marker move and every archive sweep. **A citation carrying a store segment is a violation the gates report** (`shared/<store>/`, `circles/<dir>/<store>/`, or `circles/` in front of a Circle): the segment is what a sweep moves, so a citation spelling it dies at the sweep. A markerless artifact (history, review, analysis, consultation) is cited as `YYMMDD-HHMM-<topic>.md`, and a Circle by its bare directory name `YYMMDD-HHMM-<slug>`. The reader resolves any of the three by one workbench-wide lookup (`find "$WORKBENCH" -name '<basename>'`, the wildcard as a glob), which is correct because no two stamped artifacts share a marker-normalised basename: measured over the live tree and `archive/` at commit `4b8f769d` (2 235 basenames, 0 collisions) and re-taken on every run by `hooks/lib/__tests__/workbench-citation-lint.test.ts`. **A bare stamp is not a citation**: 111 of the 545 stamps in fusion's own corpus are carried by more than one file, measured 260824 over 876 records. **No pattern above changes.** In living text (prompts, rules, docs), which outlives its target, cite a rule file by heading anchor (`file.md` `## Section`), never by line number: an edit above the line moves it silently, and no gate resolves `path:N`. **A resolution line takes the same anchor**, never `:line` — `Resolved:` on an issue and the five decision lines `## Inline State Tracking` spells. `path:line` was mandated here until 2026-09-05, on the argument that a resolution line is point-in-time and carried by its commit. That argument is real but narrow: it holds for a target frozen at the citing commit and fails for the one these lines most often name, a session history the session goes on appending to after the citation is written. The corpus said the same — measured over the live tree on 2026-09-05, 1 of 30 `Answered:` lines wrote `path:line` and 11 wrote the anchor — so the rule moved on evidence, not on taste (`260905-1228_*_does-a-resolution-line-cite-path-line-or-a-heading-anchor.md`). The commit still carries the moment; what is given up is precision inside a file. When the target is a record the path half is its storeless basename (a rule file, a source file or a commit stays a path), and a commit hash takes no locator.
 
 The two kinds sharing `$OUT_MEMO` differ in write semantics: the memo and task files are **append** logs (`/fusion:memo` adds to them), while the cadence digest is **overwritten** on each `/fusion:cadence` run (it is a fresh snapshot of the work cadence, not a history of its own runs).
 
@@ -271,10 +271,10 @@ Decision records carry a richer state marker that distinguishes "the answer is r
 | Marker | Meaning |
 |--------|---------|
 | `_o_` | Open: the question has been filed but not yet answered. Initial state on creation. |
-| `_a_` | Answered: a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location with `Answered: <path>:<line> — <one-line summary>`. That citation takes the form `## Filename Patterns` defines. The decision is not yet realised in code or data. `_a_` does not assert that realising it is still possible: when the subject was removed before anyone built against it, the body gains a `Retired:` line and the marker does not move. |
-| `_i_` | Implemented: the answer has been realised, and code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <path>:<line> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. `_i_` does not assert that the implementation still exists: when it is later removed and no decision overrode it, the body gains a `Retired:` line and the marker does not move, so the marker alone cannot tell a live implementation from a retired one. |
-| `_d_` | Deferred: the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target. |
-| `_s_` | Superseded: a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <path> — <reason>`. |
+| `_a_` | Answered: a recorded answer exists somewhere on disk (typically an analysis, a plan, a session history, or the decision record itself). The file body MUST cite the answer's location and name who ruled: `Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <person>`. Both halves take the forms `## Filename Patterns` and `## Inline State Tracking` define. The decision is not yet realised in code or data. `_a_` does not assert that realising it is still possible: when the subject was removed before anyone built against it, the body gains a `Retired:` line and the marker does not move. |
+| `_i_` | Implemented: the answer has been realised, and code or data on disk now reflects the decision. The file body MUST cite the implementation with `Implemented: <commit hash> or <citation> — <one-line summary>`. This is the terminal state for decisions whose realisation is verifiable. `_i_` does not assert that the implementation still exists: when it is later removed and no decision overrode it, the body gains a `Retired:` line and the marker does not move, so the marker alone cannot tell a live implementation from a retired one. |
+| `_d_` | Deferred: the user explicitly pushed the decision out (to v1.x, to a future workbench, etc.). The file body MUST cite the deferral target and name who ruled, in the form `## Inline State Tracking` spells. |
+| `_s_` | Superseded: a later decision has overridden this one. The file body MUST cite the superseding decision file: `Superseded by: <citation> — <reason>`. |
 
 **Worked transitions are authored in `rules/decision-record-examples.md`** (emitted to the transition agents — see `bin/fusion-rules` block 1b2; decision `260827-0830_*_do-the-decision-record-worked-examples-stay-on-the-always-on-floor.md` in the shared store); each rename's annotation form is `### Decision files` below, and a superseding record is cited where it lives, never copied next to the superseded one.
 
@@ -359,25 +359,25 @@ Decision files have their own resolution annotations matching the marker semanti
 
 ```
 ---
-Answered: <path>:<line> — <one-line summary>
+Answered: <citation> — <one-line summary>; ruled by <agent name or "user">, <person>
 ```
 (rename `_o_` → `_a_`)
 
 ```
 ---
-Implemented: <commit hash> or <path>:<line> — <one-line summary>
+Implemented: <commit hash> or <citation> — <one-line summary>
 ```
 (rename `_a_` → `_i_`, or `_o_` → `_i_` if the implementation skipped the recorded-answer step)
 
 ```
 ---
-Deferred: <target — one-line reason>
+Deferred: <target> — <one-line reason>; ruled by <agent name or "user">, <person>
 ```
 (rename to `_d_`)
 
 ```
 ---
-Superseded by: <path to new decision> — <reason>
+Superseded by: <citation of the new decision> — <reason>
 ```
 (rename to `_s_`)
 
@@ -392,6 +392,10 @@ removed the **implementation**; on `_a_`, where there is none, it names what rem
 answer would have been realised against, so the answer can no longer be realised. Nothing renames,
 so no glob, filter or count changes behaviour. And the filename still reads as implemented or
 answered, so a history pass has to open the body to learn otherwise.
+
+**Every citation above is the anchor form**, not `path:line` — `## Filename Patterns` states it and says why it moved.
+
+**Two of the five lines name who ruled, and three do not.** `Answered:` and `Deferred:` record an act only a person performs, and nothing on disk confirms one, so the line names the party and a reader has something to check instead of nothing. `Implemented:`, `Superseded by:` and `Retired:` each cite something a reader verifies without trusting anybody — code at a commit, a record carrying its own `**Filed by:**` and its own ruler, the plan, commit or gate that removed the subject — so a name there would restate an attribution that already exists or attach one to a fact needing none. `<agent name or "user">, <person>` is `**Filed by:**`'s own shape, and its person half is read the same way: `### Who filed it` governs it unchanged, halt and both file-anyway branches included. Both parties appear because the writer is not the ruler — the orchestrator writes the line and the user rules (`260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md`). **Records written before this rule stand as they are, and no gate checks the field**: an absent `ruled by` means the record predates the rule, never that nobody ruled (`260905-1228_*_does-an-answered-record-carry-who-ruled-now-that-only-the-orchestrator-may-transition-it.md`).
 
 ### When to update
 

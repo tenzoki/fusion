@@ -10,7 +10,7 @@ Companion to `fusion-workbench-conventions.md`. Three end-to-end examples showin
 
 **Initial state (filed by shaper after the user said "we'll need to pick a vector store, but not now"):**
 
-`fusion-workbench/shared/decisions/260501-1430_o_vector-store-pick.md` (no Circle active → shared store):
+`260501-1430_o_vector-store-pick.md`, filed in the shared decision store because no Circle is active:
 
 ```markdown
 # Which vector store for v1?
@@ -52,7 +52,7 @@ Append to file body:
 
 ```markdown
 ---
-Answered: analyses/260501-1730-vector-store-comparative.md §5 — sqlite-vss selected for v1 (matches recommendation; pgvector kept as v1.x escape hatch).
+Answered: 260501-1730-vector-store-comparative.md `## Recommendation` — sqlite-vss selected for v1 (pgvector kept as v1.x escape hatch); ruled by user, Ada Lovelace <ada@example.com>.
 ```
 
 Rename file: `260501-1430_o_vector-store-pick.md` → `260501-1430_a_vector-store-pick.md`.
@@ -74,7 +74,7 @@ Rename file: `260501-1430_a_vector-store-pick.md` → `260501-1430_i_vector-stor
 
 Six months later, a customer crosses 5M vectors and sqlite-vss thrashes. A new decision is filed:
 
-`fusion-workbench/shared/decisions/261107-0915_o_vector-store-revisit.md` is created (with its own Options, Recommendation, etc.). After the user picks pgvector, it transitions `_o_ → _a_ → _i_` per Example 1.
+`261107-0915_o_vector-store-revisit.md` is created in the shared decision store (with its own Options, Recommendation, etc.). After the user picks pgvector, it transitions `_o_ → _a_ → _i_` per Example 1.
 
 The original decision file is then updated:
 
@@ -99,7 +99,7 @@ Append to body of `260501-1430_o_vector-store-pick.md`:
 
 ```markdown
 ---
-Deferred: v1.x — pilot customers expected at <1M vectors; revisit when first customer crosses 500k. Deferred per user 2026-05-12.
+Deferred: v1.x — pilot customers expected at <1M vectors; revisit when first customer crosses 500k; ruled by user, Ada Lovelace <ada@example.com>.
 ```
 
 Rename: `260501-1430_o_vector-store-pick.md` → `260501-1430_d_vector-store-pick.md`.
@@ -111,6 +111,6 @@ Skipping `_a_` is fine: the deferral itself is the answer.
 ## Anti-patterns
 
 - **Don't rename `_i_` back to `_o_` or `_a_`** to "reopen" an implemented decision. File a new decision (which can `Supersede` the old one).
-- **Don't omit the cited path** in `Answered:` / `Implemented:` / `Superseded by:` lines. The whole point of the vocabulary is traceability.
+- **Don't omit the cited path** in `Answered:` / `Implemented:` / `Superseded by:` lines. The whole point of the vocabulary is traceability. Cite it as a heading anchor, never `path:line`, and **don't omit `ruled by`** on `Answered:` / `Deferred:` — those two record a ruling nothing on disk can confirm, which is why they alone name the party.
 - **Don't use `Resolved:`** in decision files: that footer is for `issues/` only. Use the marker-specific footer.
 - **Don't use the issue-state vocabulary `_c_`** in decisions. Decisions never close: they answer, implement, defer, or get superseded.
