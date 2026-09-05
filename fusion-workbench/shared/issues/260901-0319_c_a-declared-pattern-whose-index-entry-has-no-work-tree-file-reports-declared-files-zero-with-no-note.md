@@ -56,3 +56,6 @@ a pattern that matched nothing.
 
 Over this repository the condition does not arise today: `node hooks/dist/citation-check.js` reports
 `declared-patterns=3 declared-files=48`, every declared file present.
+
+---
+Resolved: 12dee877 — the missing-file drop and the dedup drop no longer share one continue. A path git named that the work tree does not hold pushes to a missing list, a duplicate still drops silently, and declaredCitationNotes emits one line naming how many of how many are absent and which. Both hand-run helpers print it with neither file touched. The docstring goes to six branches and states which quantity it is disjoint over. Not covered: the note reports; nothing fails on a declared pattern whose files are all absent.

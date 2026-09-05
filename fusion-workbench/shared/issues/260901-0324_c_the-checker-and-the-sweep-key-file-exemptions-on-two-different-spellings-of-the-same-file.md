@@ -52,3 +52,6 @@ sweep.
 
 Still no effect on this tree, for the reason the record gives: `fusion.json` declares nothing under
 `rules/` or `skills/`, so neither exempt file is in the sweep's corpus.
+
+---
+Resolved: 12dee877 — the sweep names every corpus file relative to the project root through one local helper, used by the sweep pass and the repair pass, as scan key and display name both, anchored on the same project root the checker builds its whole corpus against. The first residual row is now identical whether the sweep runs from hooks/ or from the project root, which is the direct evidence. citation-check.ts needed no code change and got a header paragraph recording that its spelling is the key the exemptions are read on.

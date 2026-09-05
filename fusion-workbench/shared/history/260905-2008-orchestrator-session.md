@@ -55,6 +55,52 @@ the first loop and may invoke the consultant themselves at any point.
   in `hooks/` at HEAD `5b84b13a` passed, 864 tests in 50 files, exit 0, 31.7s. The two red gates
   `CLAUDE.md` warns about are not currently firing.
 
+**Reconciliation, committed as `27b21b5d`.** Four records described defects already repaired on
+disk and were closed against the evidence rather than against the record's own text; a fifth was
+wrong rather than resolved and stays open with its figure corrected from 181 paths to three breaks
+totalling 35. Both plans were reconciled, one moving to Partially Complete. No decision marker
+moved: that transition is the user's, and none of the nine open questions had an answer written
+down elsewhere.
+
+**Eight repairs dispatched in two parallel batches**, grouped so that no two agents held one file.
+Four on source (`citation-scan.ts`, `citation-sweep.ts` with `citation-check.ts`, `config.ts`,
+`staging-drift.ts`), three on shipped text (`agent-setup.md`, `setup/SKILL.md`, `cadence/SKILL.md`),
+one on the reference pin's entry chain. Every dispatch carried the same four constraints: no
+whole-tree git command, no staging or committing, no `npm run build`, no full-suite run. The build
+prohibition earned itself — `hooks/dist/` is one shared output and four concurrent writers would
+have corrupted it; one agent went as far as compiling into a private staging directory to test
+without touching it.
+
+**Committed as `12dee877`** (seven source records) **and `ea819262`** (three shipped-text records
+plus the pin chain). Two commits rather than eight, for a reason that is structural and not
+convenience: `dist/` bundles the sources into shared entry files, and the two goldens and the pin
+are single files that three edits moved together, so a per-record split would have committed a
+build matching no source and a baseline matching no tree.
+
+**Two baselines re-approved, both measured rather than inferred.** The emission golden moved by the
+one sentence added to the always-on rule, +218 bytes on every agent, leaving 5 332 of the 12 000
+head-room. The reference pin moved 1622 → 1624 paths and 224 → 225 anchors, and the whole movement
+was attributed to `skills/cadence/SKILL.md` by single-file revert: reverting either of the other two
+shipped-text edits leaves the gate at 1624/225, reverting cadence alone returns it to 1622/224
+green. Writing that attribution into the pin's own comment required naming the two citations in
+prose rather than spelling them as paths, because the comment sits inside the corpus the gate
+counts and spelling them would have moved the number the entry exists to explain.
+
+**One repair produced a defect of its own, caught by the release gate.** The pin-chain agent's
+history file cited its own issue with the state marker spelled out instead of wildcarded, which the
+citation sweep reports as a rewrite and which would have died at that record's next transition.
+Corrected in place.
+
+**Validation.** `npm test` after the build and both re-approvals: 871 tests in 51 files, exit 0.
+One case failed in the first full run and passed in an isolated run and a second full run; it is
+filed as `260905-2134_*_review-coverage-test-fails-in-a-full-suite-run-and-passes-in-isolation.md`
+rather than absorbed, because the tree was not byte-identical across the three runs and a green run
+is not an explanation.
+
+**Loop 1 outcome: 15 records closed** — four by the reconciliation, eleven by repair — **one filed**,
+and 8 of the 19 that were open at the loop's start remain, of which 7 are the ones no dispatch can
+move.
+
 ## Coherence
 
 <!-- RECONCILER-OWNED -->

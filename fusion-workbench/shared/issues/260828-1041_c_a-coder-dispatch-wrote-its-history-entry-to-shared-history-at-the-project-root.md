@@ -19,3 +19,6 @@ directory in that paragraph. The acceptance is unmet at the site it names.
 
 The misplacement has not recurred: no `shared/` directory exists at the project root, and every
 history entry written since sits under the workbench.
+
+---
+Resolved: ea819262 — rules/agent-setup.md What fusion-paths emits now states the join: every emitted value except the workbench root is relative to that root and is joined to it, never to the working directory, with the stray store a cwd join produces named as the symptom. One sentence, 218 bytes, on the text every agent loads on every dispatch. The instance itself was already repaired and had not recurred; the rule is what closes this.

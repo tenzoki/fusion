@@ -45,3 +45,6 @@ it are unfiltered — so the report now mixes two scopes in one document.
 **The record's ambiguity is therefore not resolved, it is restated one level over.** The file is named
 after a checkout rather than a person, and it still digests every checkout's sessions. The acceptance
 asks the skill to say which of the two it is, and the skill still does not say.
+
+---
+Resolved: ea819262 — the digest states its scope, names the writers it covers via a new Covers line read from each history Filed by field, and labels the session-flow section as this checkout only. It does not filter or group by author, which is the project-wide branch of the acceptance: the cross-referenced analysis prices per-person aggregation as new capability for its own Circle, and the filename pattern is settled in the conventions. A history with no person half is unattributed, never assumed to be this checkout.

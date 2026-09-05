@@ -22,3 +22,6 @@ for is already in the block — it is the class L loop that does not use it.
 The roster the loop walks has grown since the record was filed and now names `.cadence-anchors`
 alongside the eight it had, so the instance that produced this record would be covered were it
 tracked. It still would not be covered untracked, which is the defect.
+
+---
+Resolved: ea819262 — Step 0j class L loop is an if/elif over the same roster and reports the entry that is neither tracked nor ignored. The existence test in front of the ignore check is load-bearing: check-ignore answers for a path that does not exist, so without it a fresh workbench would report its own lock and marker directories as departures. Run verbatim over five scratch roots covering the record instance, an ignored entry, a tracked one, an unignored directory and a conformant root. Reports and does not repair, per the decision the record cites; the checkout identifier stays the one repaired entry.

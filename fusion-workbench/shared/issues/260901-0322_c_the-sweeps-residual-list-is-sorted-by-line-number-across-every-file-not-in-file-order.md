@@ -49,3 +49,6 @@ name a shared history file, a shared decision and a Circle issue.
 
 Neither branch of the acceptance is taken: the rows are not grouped by file and the header still makes
 the claim.
+
+---
+Resolved: 12dee877 — residual now holds rendered rows and the sort moved inside the per-file loop, so corpus order comes from the file loop, the same order the census lines above it already use. Measured old build against new over this workbench: identical row multiset, reordered only; 557 files had their rows in non-contiguous blocks before and none has now; zero line inversions within a file. The release gate summary line is byte-identical.

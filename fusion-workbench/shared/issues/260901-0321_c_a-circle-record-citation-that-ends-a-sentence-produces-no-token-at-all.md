@@ -61,3 +61,6 @@ Still latent in this tree, as the record says: no live Circle-record citation he
 Same file and same constant as `260901-0320_*_the-sentence-stop-lookbehind-does-not-cover-the-bracket-characters-the-record-tail-admits.md`,
 and the bounded fix the two records propose is one edit: give this pattern the shared lookbehind and
 derive that lookbehind's class from the tail it closes.
+
+---
+Resolved: 12dee877 — CIRCLE_REC_RE and CIRCLE_RE now share one name-ending constant, so a Circle-record citation at a sentence end produces a token where it produced none at all. One guard went in with it: with the full stop out of the lookahead, the optional extension group would give .md back on a _x_circle.mdx and report a token a rewriter would splice under an extension it never covered; a negative lookahead refuses that backtrack. Probed both. Not covered: this repairs detection, so citations that were invisible now enter the dangling census and may raise the reported figure.

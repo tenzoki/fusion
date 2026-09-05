@@ -64,3 +64,6 @@ The record shares a file and a constant with two siblings: this one and
 `260901-0321_*_a-circle-record-citation-that-ends-a-sentence-produces-no-token-at-all.md` are both the
 sentence stop meeting a pattern it was not derived for, and the narrower fix the record proposes —
 deriving the lookbehind's class from the tail it is appended to — is the same edit that fixes both.
+
+---
+Resolved: 12dee877 — SENTENCE_STOP is gone as a hand-written constant. recordTail(chars) returns the tail class and the lookbehind that closes it from one spelling, so REC_RE stop now carries the brackets its tail has admitted since 4cffcae4. A store-prefixed token ending in a bracket no longer keeps the sentence full stop, and the fix string no longer tells the writer to put one inside the basename. Pinned in citation-grammar-boundaries.test.ts. Not covered: the derivation closes the two greedy-tail patterns; a future pattern with a third tail class has to call recordTail rather than inherit.

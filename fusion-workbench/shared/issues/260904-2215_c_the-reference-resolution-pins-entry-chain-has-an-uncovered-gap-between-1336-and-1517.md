@@ -42,3 +42,6 @@ each other, and the chain uses two connector spellings. Both hold at HEAD.
 
 The acceptance stands, resized: three named breaks totalling 35 to recover or to declare
 unreconstructed, not one of 181.
+
+---
+Resolved: ea819262 — the chain audit found three breaks totalling 35 paths, not one gap of 181; the record headline was an artefact of reading line by line a comment whose middle line carries twenty-five chained entries. Eight entries recovered from git history, each marked as a recovery and naming its commit, appended into the existing single line at net zero lines. The two smaller findings the record named are preserved rather than tidied: the entries are not in chronological order and carry no ordinals, and a preface now says so.

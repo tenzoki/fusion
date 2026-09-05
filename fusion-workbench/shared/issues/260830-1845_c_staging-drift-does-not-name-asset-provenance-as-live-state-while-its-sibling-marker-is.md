@@ -24,3 +24,6 @@ repository's own dirty tree prints the pair side by side, which is the acceptanc
 
 The consequence is still mild for the reason the record gives: `unclassified` is never a fault and the
 verdict reads `clean`.
+
+---
+Resolved: 12dee877 — LIVE_STATE gained .asset-provenance beside .fusion-setup, so both class R3 entries classify the same way and neither falls through to unclassified. The list doc comment no longer counts its own members, which is what went stale when an entry was added; it names the classes it holds in full, so the property to check when the layout gains a root-anchored entry is stated rather than implied.

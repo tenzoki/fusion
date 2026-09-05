@@ -54,3 +54,6 @@ The drop itself is still correct, which is why this is a message defect and not 
 
 Same file as no other open record: this is the only one of the twenty-three that would be repaired by
 an edit to `hooks/lib/config.ts`.
+
+---
+Resolved: 12dee877 — LeafRule no longer holds a predicate plus a constant expectation, which could not describe an element-level refusal. It holds one function returning the clause, so the two checks were folded into their messages rather than wrapped. A project writing an empty string in extraPaths is now told which index carries it and that non-empty is the requirement; the maxTurns message is byte-identical to before. Verified by running the loader against a scratch project rather than composed by hand. Not covered: README-hooks.md, fusion.json and the template already say an array of strings with none of them empty, still true and untouched.
