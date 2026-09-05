@@ -31,11 +31,11 @@ None. `## Warnings` reads `(none)`.
 
 ## Backlog (Step 2b)
 
-Entries read: `_o_` 1 (`260814-1733_o_attach-the-rule-to-the-act.md`), `_p_` 1 (`260814-1733_p_bounded-executor-dispatches.md`), `_c_`/`_d_` 0. Both already hold one idea each (both are the product of an earlier split of `260811-0826_*_observations.md`, now closed and archived) — no split, merge, or defect/decision misfile found. No items handed to `## Warnings`.
+Entries read: `_o_` 1 (`260814-1733_*_attach-the-rule-to-the-act.md`), `_p_` 1 (`260814-1733_*_bounded-executor-dispatches.md`), `_c_`/`_d_` 0. Both already hold one idea each (both are the product of an earlier split of `260811-0826_*_observations.md`, now closed and archived) — no split, merge, or defect/decision misfile found. No items handed to `## Warnings`.
 
-Ranking (domain-`code` bias, on-disk-evidence adaptation): the `_p_` entry stays top — its two halves are already separated on disk by `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`, and shaping it means putting the narrowed Directive to the user today. The `_o_` entry stays second — its own text names an unmet precondition (reviving the deferred decision `260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`), which is the user's act and has not happened, even though the decision's own blocking issue closed on 260813. No rename performed: both entries already carry the marker this ranking recommends.
+Ranking (domain-`code` bias, on-disk-evidence adaptation): the `_p_` entry stays top — its two halves are already separated on disk by `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`, and shaping it means putting the narrowed Directive to the user today. The `_o_` entry stays second — its own text names an unmet precondition (reviving the deferred decision `260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`), which is the user's act and has not happened, even though the decision's own blocking issue closed on 260813. No rename performed: both entries already carry the marker this ranking recommends.
 
-Top-ranked backlog entry: `260814-1733_p_bounded-executor-dispatches.md` — the bounded-dispatch half of the user's own proposed fix is already isolated and analysis-backed; shaping it is putting the narrowed Directive to the user.
+Top-ranked backlog entry: `260814-1733_*_bounded-executor-dispatches.md` — the bounded-dispatch half of the user's own proposed fix is already isolated and analysis-backed; shaping it is putting the narrowed Directive to the user.
 
 **Backlog writes performed:** none — no rename, split, merge, close, or defer met the confirmed-operation bar or changed the standing ranking.
 
@@ -44,3 +44,15 @@ Top-ranked backlog entry: `260814-1733_p_bounded-executor-dispatches.md` — the
 ## Regenerated portfolio
 
 `fusion-workbench/portfolio.md`.
+
+---
+**Citation form corrected by the orchestrator, 260905.** Four citations in this file spelled the
+marker their target happened to carry instead of `_*_`, against
+`rules/fusion-workbench-conventions.md` `## Filename Patterns`, and `citation-sweep.test.ts` failed
+on them. The prose around each already states the state in words, so no statement was lost; the
+`_p_`/`_o_` letters naming the *ranking* rather than pointing at a file were left standing.
+
+**This says nothing about the repair made to `agents/playmaker.md` earlier in the same session.**
+That run was dispatched from the installed plugin, which does not carry the edit, so it wrote the
+pre-repair form as expected. Whether the repair holds is provable only from a session started after
+`fusion --update`.
