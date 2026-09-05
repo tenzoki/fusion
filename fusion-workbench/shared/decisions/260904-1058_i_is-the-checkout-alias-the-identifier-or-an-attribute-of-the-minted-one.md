@@ -43,4 +43,6 @@ A generated default the user may replace at Setup is better than pure generation
 Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the analysis, and what the user answered` — option 1, attribute; the minted eight hex stays the key and stays the written value.
 
 ---
-Implemented: 092a15dc — the hex stays the key and the written value: `canon()` joins on the git identity, the claim field and every event line still carry the hex, and the alias is resolved for display only at the four sites `4ff9d2e0` changed. No record and no event line was rewritten.
+Implemented: 092a15dc — the hex stays the key and the written value: `canon()` joins on the git identity, the claim field and every event line still carry the hex, and the alias is resolved for display only at the four sites `e9c14bdf` changed. No record and no event line was rewritten.
+
+**Reconciled 260905-0610.** The `Implemented:` line above cited `4ff9d2e0`, which is no object in this repository (`git cat-file -t` fails on it); it was the pre-amend hash of the commit that carries the four consumer sites. Corrected to `e9c14bdf`, verified by `git show --stat e9c14bdf`, which lists `skills/setup/SKILL.md`, `skills/next/SKILL.md`, `bin/monitor` and `hooks/hooks.json`. Nothing else on the line moved.

@@ -56,4 +56,6 @@ Superseded by:
 Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the analysis, and what the user answered` — option 1, one tracked file per checkout keyed by the eight hex, class R1, chosen by the user in his own words.
 
 ---
-Implemented: 0dcbf992 — `bin/fusion-checkout-name` writes and reads one file per checkout under `shared/checkouts/`, keyed by the eight hex; the store joined the layout tree and class R1 at `d5a27230`, and its consumers landed at `4ff9d2e0` and `092a15dc`.
+Implemented: 0dcbf992 — `bin/fusion-checkout-name` writes and reads one file per checkout under `shared/checkouts/`, keyed by the eight hex; the store joined the layout tree and class R1 at `d5a27230`, and its consumers landed at `e9c14bdf` and `092a15dc`.
+
+**Reconciled 260905-0610.** The `Implemented:` line above cited `4ff9d2e0`, which is no object in this repository (`git cat-file -t` fails on it); it was the pre-amend hash of the commit that carries the four consumer sites. Corrected to `e9c14bdf`, verified by `git show --stat e9c14bdf`, which lists `skills/setup/SKILL.md`, `skills/next/SKILL.md`, `bin/monitor` and `hooks/hooks.json`. Nothing else on the line moved.

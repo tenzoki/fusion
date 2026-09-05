@@ -304,3 +304,42 @@ The property every test set has to hold, and the one worth naming because it is 
 - [ ] `260904-1651_*_may-a-project-declare-that-it-does-not-want-a-checkout-registry.md`, filed with this plan. The analysis named it and left it unfiled because it arises only under option 1, which is now the answer in force. The plan proceeds on that record's option 1 and step 5 states what changes under option 2.
 - [ ] Whether the `/fusion:cadence` per-person grouping is wanted at all. Out of scope by the Directive and belongs to its own Circle; noted here because this Circle builds its prerequisite and a reader will ask why nothing consumes it.
 - [ ] `260904-1058_*_four-tracked-workbench-filenames-are-keyed-by-the-os-account-name-the-identity-decision-rejected.md` stays an open shared issue. The registry gives that defect a repair route it did not have, since `**Person:**` is a claimed name where `$USER` is an accident of the machine. Nothing in this plan takes that route, and the issue is not this Circle's.
+
+## Reconciliation Log
+
+**260905-0610, reconciler, domain `code`.** Verified against the tree at `326440dc`, session range `cda72f71..HEAD` (18 commits). Marker moved `_o_` → `_p_`: fourteen steps carry `[DONE]` and step 15 does not, so the creation-state marker was stale. No live text cited this file with a literal marker, so the rename breaks nothing.
+
+**Fourteen `[DONE]` claims, each read against disk rather than against the step's own report.**
+
+- Step 1 — `grep -i worker bin/fusion-checkout-name` returns nothing; `bin/fusion-checkout-name:16,211` spell `register [--alias A] [--person P]`; `hooks/lib/__tests__/fusion-checkout-name.test.ts:94` asserts `not.toContain("worker")`. The answer "never written" is realised by absence and the absence is asserted.
+- Step 2 — the helper exists and has written a live entry: `fusion-workbench/shared/checkouts/5e8248d7.md`, carrying `**Checkout:**`, `**Alias:** west-harbor`, `**Person:**`, `**Git identity:**`, `**Registered:**`, `**Refreshed:**`, and no `**Worker:**`.
+- Step 3 — `rules/fusion-workbench-conventions.md:50` carries the `checkouts/` node in the layout tree; `rules/workbench-tracking.md:26` places it in class R1 and states why no exception is owed. The four classes still tile.
+- Step 4 — `bin/fusion-events:264-265` calls `fusion-checkout-name roster` under an `[ -x ]` guard; `bin/fusion-events presence` runs and prints `other_people=0`.
+- Steps 5 to 8 — `skills/setup/SKILL.md:351`, `skills/next/SKILL.md:202`, `bin/monitor:1330`, `hooks/hooks.json:24`. The SessionStart clause is guarded `[ -x ]` and appends `FUSION_ALIAS` only when non-empty.
+- Steps 9 and 10 — `bin/fusion-identity:187-192` (`announce_mint`), two stderr lines, the second naming both causes it cannot separate; the header at `:105-128` carries the reason and cites the issue.
+- Step 11 — `rules/fusion-workbench-conventions.md:452` states both halves: presence joins, the claim comparison does not, and the residual is deliberate.
+- Step 12 — `.claude-plugin/plugin.json:3`, `install.sh:27` and `README.md:26` all read `10.21.0`; `docs/upgrading-to-v10-21.md` exists.
+- Step 13 — re-run at this commit: `cd hooks && npm test` is **green**, 48 files, 825 tests, exit 0. The suite that was red at `9b488aac` closed at `dc2116f4`.
+- Step 14 — every `Implemented:` line now names a commit that exists; see the correction below.
+
+**Two Grounding faults found. One corrected here, one not mine to correct.**
+
+1. **Corrected.** Three `Implemented:` lines written at step 14 cited `4ff9d2e0` in their bodies, which is no object in this repository — the pre-amend hash of `e9c14bdf`. Corrected in all three shared decision records, each carrying its own reconciliation note. Step 14's acceptance ("each `Implemented:` line names a commit that exists") held for the leading hash of every line and failed for a hash inside three of them.
+2. **Not corrected — a plan description is outside a reconciliation pass.** Step 7's Changes and Acceptance still state two branches for the monitor header, while the built behaviour is three. `260904-2140_*_step-7-states-two-branches-for-the-monitor-header-that-contradict-each-other.md` records the divergence, endorses the built reading against the Directive's no-migration constraint, and states its acceptance as a correction to *this* step's text. That acceptance is unmet: step 13's verification pass read a specification that does not match what was built. The record stays `_o_` correctly.
+
+**Where this Circle stops — clause by clause.**
+
+| Clause | Holds | Evidence |
+|---|---|---|
+| Consumers resolve for display; no alias into a record, an event line or a comparison | yes | `**Claim:**` carries the hex; the five `alias` hits in `orchestrator-events.jsonl` are all prose in `detail` fields, none a field value |
+| Presence joins two identities; empty registry is HEAD | yes | asserted in `fusion-events.test.ts`, measured against a control at `dc2116f4` |
+| No pre-existing file rewritten; no migration ran | yes, in the Directive's sense | no record and no event line was rewritten; source files were of course edited, and the clause reads against the Directive's "nothing already on disk changes" about *data* |
+| Four classes still tile, `shared/checkouts/` in exactly one | yes | `rules/workbench-tracking.md:26`; `derivable-enumerations-lint` green |
+| `bin/fusion-identity` halts exactly where it did at HEAD | yes | pinned in `hooks/lib/__tests__/fusion-identity.test.ts` against `cda72f71` |
+| The `git clean` sweep no longer mints in silence | yes | `bin/fusion-identity:187-192` |
+| Both scoped decisions carry `_a_` or `_d_`, answered by the user | **literally no, substantively yes** | both carry `_i_`. Step 14 authorised `_a_`→`_i_` where the answer required code, which postdates this clause. Both answers are the user's, recorded at their gates in `260904-1050-orchestrator-session.md`. The clause and step 14 were never reconciled with each other |
+| `npm test` green, no growth-bound baseline edited | yes | green at `326440dc`; `git diff v10.20.0..HEAD` over `growth-bound.ts`, `surface-growth-bound.test.ts` and `rules-emission-golden.test.ts` is empty |
+| Release precondition: review coverage run and stated before the tag | yes | `commits=16 uncovered=16 verdict=uncovered`, recorded at step 13; no `v10.21.0` tag exists yet |
+| Closure precondition: step 15 belongs to a later session; no close on unit tests alone without the user | holds, and is now live | step 15 is unmarked; `_t_` still on the record; the marketplace clone stands at `10.20.0` deliberately |
+
+**One thing the marker scan cannot see and the closure gate should.** Steps 5, 6 and 8 are proven by unit test and by direct invocation from the work tree. Not one of the four call sites has fired through `$FUSION_PLUGIN_ROOT` in this session, and none can: `bin/fusion-checkout-name` is absent from the installed copy for its whole duration. The plan says this and the Circle record says this. It is a weaker claim than an end-to-end run, and step 15 is where it is discharged.
