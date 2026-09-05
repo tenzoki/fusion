@@ -5,6 +5,9 @@
  * and
  * 260831-2120_*_an-archive-sweep-directory-is-in-no-index-so-a-citation-naming-one-dangles.md.
  *
+ * The two blocks after them cover the exemptions that read the token's own
+ * neighbourhood: the `foo` word test, and the `foreign:<project>:` qualifier.
+ *
  * Every case runs `createScanner()` over a scratch workbench, so none of it
  * depends on this repository's own tree — the tail rows are the probe table the
  * plan was written against, and they are here because a naive removal of `.`
@@ -131,4 +134,46 @@ describe("the fabricated-name exemption reads a word, not a substring", () => {
       expect(hit.status).toBe(reason ? "exempt" : "store-prefixed");
     });
   }
+});
+
+describe("a citation the writer qualified as another project's is exempt, not dangling", () => {
+  const wb = scratch();
+  const FOREIGN = "260905-2054-reconciliation.md";
+
+  it("exempts the qualified token and resolves nothing", () => {
+    const [hit] = toks(wb, `its Source line names foreign:menue-rs:${FOREIGN}`);
+    expect([hit.token, hit.status, hit.reason]).toEqual([FOREIGN, "exempt", "foreign-record"]);
+    expect(hit.matches).toEqual([]);
+  });
+
+  it("dangles without it — the writer's marker decides, never the name", () => {
+    expect(toks(wb, `its Source line names ${FOREIGN}`).map((h) => [h.status, h.reason])).toEqual([
+      ["dangling", undefined],
+    ]);
+  });
+
+  // The property that separates it from `fenced-code`: a foreign path is not
+  // this project's to respell, and its sweep will never move that store segment.
+  it("reaches the shape-decided verdict too, so no store-prefixed row survives it", () => {
+    const path = `shared/history/${FOREIGN}`;
+    expect(toks(wb, `see foreign:menue-rs:${path}`).map((h) => [h.status, h.reason])).toEqual([
+      ["exempt", "foreign-record"],
+    ]);
+    expect(toks(wb, `see ${path}`).map((h) => h.status)).toEqual(["store-prefixed"]);
+  });
+
+  // Both segments are required. A bare `<word>:` in front of a stamp is the
+  // legacy `I:`/`D:`/`CR:` task-id spelling, 214 of them in this corpus, every
+  // one naming a LOCAL record.
+  it("needs both segments, and the keyword whole", () => {
+    const near = [`I:`, `menue-rs:`, `notforeign:menue-rs:`, `foreign:`];
+    for (const p of near) expect(toks(wb, `see ${p}${FOREIGN}`)[0].reason, p).toBeUndefined();
+  });
+
+  // The residual, pinned rather than left to be claimed away later: no property
+  // of the text separates a foreign record from a local one a writer mislabelled.
+  it("exempts a qualified token that names a record sitting in THIS workbench", () => {
+    const [hit] = toks(wb, `see foreign:elsewhere:${RECORD}`);
+    expect([hit.status, hit.reason]).toEqual(["exempt", "foreign-record"]);
+  });
 });

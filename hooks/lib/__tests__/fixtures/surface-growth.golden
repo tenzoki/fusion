@@ -41,13 +41,13 @@
   memo/SKILL.md 12336
   migrate/SKILL.md 26620
   next/SKILL.md 27604
-  setup/SKILL.md 50954
-  total 246466
+  setup/SKILL.md 51971
+  total 247483
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
-  citation-grammar-boundaries.test.ts 134
-  citation-sweep.test.ts 480
+  citation-grammar-boundaries.test.ts 179
+  citation-sweep.test.ts 527
   commit-message-path.test.ts 315
   committed-dist.test.ts 332
   config.test.ts 866
@@ -100,4 +100,4 @@
   surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 325
-  total 21023
+  total 21115

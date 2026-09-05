@@ -152,8 +152,9 @@ export declare const GATE_KINDS: CitationKind[];
  * The exemptions that keep silencing it are the ones saying the token is not
  * this file's own spelling of a citation at all: `glob` (a pattern),
  * `placeholder` (a template slot), `blockquote` (another author's text, which
- * must not be silently respelled) and `retired-layout-file` (the store segment
- * is the subject).
+ * must not be silently respelled), `retired-layout-file` (the store segment is
+ * the subject) and `foreign-record` (the path is another project's, so this
+ * project's spelling rule does not govern it and its sweep will never move it).
  *
  * THE RESIDUAL, stated rather than left to be found: the same argument reaches
  * `announced-illustration`, `footer-template` and `fabricated-name`, which are

@@ -222,11 +222,13 @@
  *
  * ## The repair pass (`--repair`)
  *
- * Undoes what the retired bare-stamp rule did, token by token and nothing
- * else, over every file the sweep would read (`archive/` and terminal records
- * included, because the damage reached them). Three classes, each keyed on
- * the workbench index rather than on a diff, so the pass is runnable in any
- * workbench the v10.20.0 sweep touched:
+ * Undoes what an earlier sweep did, token by token and nothing else, over every
+ * file the sweep would read (`archive/` and terminal records included, because
+ * the damage reached them). Four classes, each keyed on the workbench index
+ * rather than on a diff, so the pass is runnable in any workbench the v10.20.0
+ * sweep touched. The first three undo the retired bare-stamp rule; the fourth
+ * undoes one half of the splice the unanchored store patterns produced, and
+ * `## The splice damage` below is why it is one half and not both:
  *
  *   date-field   `**<Field>:** <basename>` where the basename names the record
  *                itself (`<stamp>-<slug>.md` or `<stamp>_coder_<slug>.md`, the
@@ -242,11 +244,93 @@
  *                different file's name before the sweep and is restored to it.
  *   doubled      the `_<word>_` case of `chained-tail`, counted apart so the
  *                figure reconciles with the issue that named 6.
+ *   spliced-prefix
+ *                a run of LETTERS fused to the front of a storeless basename
+ *                (`<letters><stamp>_<x>_<slug>.md`, `<letters><stamp>-<slug>`)
+ *                -> the basename alone. The letter run must itself begin at a
+ *                non-path boundary, and the basename must name a record or a
+ *                Circle directory the index holds AND read back through the
+ *                grammar whole.
  *
  * Fenced and blockquoted lines are left alone (an exhibit of the fault is not
- * an instance of it). Output: `<file>:<line>  '<from>' -> '<to>'  <class>` per
- * token, then `files=<n> repairs=<n> date-field=<n> chained-tail=<n>
- * doubled=<n> mode=<dry-run|write>`.
+ * an instance of it). A line is repaired to a FIXPOINT, because one token can
+ * carry two damages at once: a glued prefix hides its own chained tail from
+ * `CHAINED_RE`'s lookbehind, so a single pass would leave the second damage for
+ * a second run and `--repair` would not be idempotent. Every repair strictly
+ * shortens the line, so the walk terminates; the pass bound is belt to that
+ * brace. Output: `<file>:<line>  '<from>' -> '<to>'  <class>` per token, then
+ * `files=<n> repairs=<n> date-field=<n> chained-tail=<n> doubled=<n>
+ * spliced-prefix=<n> mode=<dry-run|write>`.
+ *
+ * ## The splice damage, and why exactly one half of it repairs
+ *
+ * Until `cbc1d9fb` the three store-prefixed patterns carried no left boundary,
+ * so a store name was recognised wherever it stood and the sweep spliced the
+ * storeless basename in at the token's own column, leaving everything to the
+ * left of the store segment standing. Two shapes came out of that, and they are
+ * not one problem:
+ *
+ *   a letter run fused to the stamp, from a directory whose NAME ends in a
+ *   store name. What survives is the head of one path segment, cut where the
+ *   store name began. It is not a path and cannot become one: it is the broken
+ *   half of a segment, and no rooting the layout admits ends in a letter, which
+ *   is what makes the damage decidable from the token alone. Deleting it is
+ *   what `spliced-prefix` does, and the token that remains is the storeless
+ *   citation the sweep meant to write.
+ *
+ *   a complete path segment in front of the stamp, from a store name that
+ *   occupied a whole segment. What survives is a WHOLE path, terminated by its
+ *   own `/`, and what was removed sits inside it. That is not recoverable: the
+ *   token does not say which store stood there, nor whether a
+ *   `fusion-workbench/` or a `shared/` stood with it, and the index cannot say
+ *   either, because the record may have been archived since. Any rule that
+ *   dropped the surviving segment would delete text the damage did not touch,
+ *   and any rule that inserted a store would be guessing. `rules/critical-stance.md`
+ *   §4: the mechanism changes rather than the approximation improving, and the
+ *   mechanism is the project's own git history.
+ *
+ * No detector is shipped for the second shape either, and that is deliberate
+ * rather than unfinished. Telling a spliced foreign path from a foreign path
+ * somebody wrote on purpose is the same undecidable question as the one that
+ * caused the damage, so a count would be a guess with a number in front of it.
+ *
+ * ### Recovering the second shape from git
+ *
+ * The sweep's guard (a) is what guarantees this works: a writing run refuses
+ * unless the workbench is tracked and no pending change names a file it reads,
+ * so the damage is always exactly one diff away from the text before it.
+ *
+ *   1. Find the commit that ran the sweep. It is the one whose diff turns
+ *      `<store>/<stamp>…` into `<stamp>…` across many files at once:
+ *
+ *        git log --oneline -S'fusion-workbench/shared' -- fusion-workbench
+ *
+ *      or, if the commit message named it, `git log --oneline --grep=citation`.
+ *      Call it `<sweep>`.
+ *   2. See what it removed, and read the two sides side by side:
+ *
+ *        git diff <sweep>^ <sweep> -- fusion-workbench | grep -E '^[-+].*[0-9]{6}-[0-9]{4}'
+ *
+ *      Every `-` line carries the original spelling. A `-` line whose citation
+ *      sat behind a path that is NOT one of `shared/`, `circles/<dir>/`,
+ *      `archive/<sweep-dir>/` or a bare `<stamp>-<slug>/` Circle directory is
+ *      an instance of this shape.
+ *   3. Restore one file to its pre-sweep text, edit the citations by hand
+ *      against what step 2 showed, and keep everything else the sweep did:
+ *
+ *        git show <sweep>^:<path> > <path>
+ *
+ *      A whole-tree revert is the wrong tool here. The same commit made a large
+ *      number of CORRECT rewrites, and `git revert <sweep>` would take those
+ *      back with the damage.
+ *   4. Re-run `bin/fusion-citation-sweep --dry-run` afterwards. A citation you
+ *      restored to its store-prefixed spelling is reported again, and one more
+ *      `--write` puts it in the storeless form with the anchored patterns that
+ *      landed at `cbc1d9fb`, which cannot splice.
+ *
+ * If the sweep's commit is not in your history at all, the text is gone and no
+ * program in this tree can reconstruct it. That is the honest end of this
+ * remedy, and it is why guard (a) refuses to write into an untracked workbench.
  *
  * ## Exit codes
  *
@@ -484,6 +568,15 @@ const CHAINED_RE = new RegExp(`(?<![\\/0-9A-Za-z_-])(${STAMP}(?:${MARKER_SLOT})[
     `(_[a-z*]_?(?![A-Za-z0-9])|_(?:[a-z]+_|…)[A-Za-z0-9._…-]*|_[a-z0-9-]+\\.[a-z]{2,4}|\\[[a-z]\\](?:-[a-z0-9-]+)?|\\.md)(?![A-Za-z0-9])`, "g");
 // the two legacy history shapes, `<stamp>-<slug>.md` and `<stamp>_coder_<slug>.md`
 const HEAD_FIELD_RE = new RegExp(`^(\\*\\*[^*\\n]+:\\*\\*\\s+)(${STAMP})((?:${MARKER_SLOT}|-)[a-z0-9-]+\\.md)\\s*$`);
+// A letter run fused to the front of a storeless basename: the decidable half
+// of the splice damage, `## The splice damage` in the header. The run must
+// itself begin at a non-path boundary — a `/` in front of it means a COMPLETE
+// path segment survived, which is the half this pass leaves to git.
+// The tail carries no `_`: a basename's slug never does, so an underscore is
+// where a CHAINED tail begins. Stopping there is what lets one run repair a
+// token carrying both damages, the outer one first and the inner on the pass
+// its own lookbehind can finally see.
+const SPLICED_RE = new RegExp(`(?<![A-Za-z0-9._\\/-])([A-Za-z]+)(${STAMP}(?:${MARKER_SLOT}|-)[A-Za-z0-9.…*-]*)`, "g");
 /** Whether any index entry's basename is the repaired citation's. */
 function indexed(scanner, base) {
     const re = new RegExp("^" + base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/_\\\*_/g, "_[a-z]_") + "$");
@@ -511,7 +604,21 @@ function repairsOn(scanner, lineText, ownBase) {
         }
         out.push([full, base, /^_[a-z]{2,}_/.test(tail) ? "doubled" : "chained-tail", m.index]);
     }
-    return out.reverse();
+    SPLICED_RE.lastIndex = 0;
+    while ((m = SPLICED_RE.exec(lineText)) !== null) {
+        const [full, , rest] = m;
+        // it must name something here, and it must read back as a whole token the
+        // gates judge: the first keeps the strip off a pointer into another tree,
+        // the second is the sweep's own visibility guard, asked of a repair
+        if (!indexed(scanner, rest) && !scanner.circleDirs().has(rest))
+            continue;
+        if (!readsBackWhole(scanner, rest))
+            continue;
+        out.push([full, rest, "spliced-prefix", m.index]);
+    }
+    // right to left across BOTH producers, so each splice leaves the earlier
+    // columns valid; one producer alone was reversible by walk order
+    return out.sort((a, b) => b[3] - a[3]);
 }
 // --- main --------------------------------------------------------------------
 const isTestFixture = (abs) => abs.endsWith(".ts") && abs.split(sep).join("/").includes("/lib/__tests__/");
@@ -557,7 +664,7 @@ function main(argv) {
     const out = [];
     let touched = 0;
     if (repair) {
-        const byClass = { "date-field": 0, "chained-tail": 0, doubled: 0 };
+        const byClass = { "date-field": 0, "chained-tail": 0, doubled: 0, "spliced-prefix": 0 };
         let repairs = 0;
         for (const abs of files) {
             if (isTestFixture(abs))
@@ -570,11 +677,20 @@ function main(argv) {
             for (const l of lines) {
                 if (fenced[l.line - 1] || /^\s*>/.test(l.text))
                     continue;
-                for (const [from, to, cls, col] of repairsOn(scanner, l.text, ownBase)) {
-                    l.text = l.text.slice(0, col) + to + l.text.slice(col + from.length);
-                    out.push(`${rel}:${l.line}  '${from}' -> '${to}'  ${cls}`);
-                    byClass[cls]++;
-                    n++;
+                // to a fixpoint: one token can carry two damages, and the outer one
+                // hides the inner from its pattern's lookbehind (see the header). Every
+                // repair strictly shortens the line, so this terminates on its own; the
+                // bound is what keeps a future class that does not shorten from hanging
+                for (let pass = 0; pass < 8; pass++) {
+                    const here = repairsOn(scanner, l.text, ownBase);
+                    if (here.length === 0)
+                        break;
+                    for (const [from, to, cls, col] of here) {
+                        l.text = l.text.slice(0, col) + to + l.text.slice(col + from.length);
+                        out.push(`${rel}:${l.line}  '${from}' -> '${to}'  ${cls}`);
+                        byClass[cls]++;
+                        n++;
+                    }
                 }
             }
             if (n === 0)

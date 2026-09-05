@@ -364,8 +364,55 @@ describe("citation-sweep --repair undoes the retired stamp-bare rewrite, token b
         before[7], before[8], before[9],
         before[10],
       ]);
-      expect(last(run)).toBe("files=1 repairs=9 date-field=1 chained-tail=6 doubled=2 mode=write");
-      expect(last(again)).toBe("files=0 repairs=0 date-field=0 chained-tail=0 doubled=0 mode=dry-run");
+      expect(last(run)).toBe("files=1 repairs=9 date-field=1 chained-tail=6 doubled=2 spliced-prefix=0 mode=write");
+      expect(last(again)).toBe("files=0 repairs=0 date-field=0 chained-tail=0 doubled=0 spliced-prefix=0 mode=dry-run");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  /**
+   * THE SPLICE DAMAGE, AND THE CUT THROUGH IT. The unanchored store patterns
+   * matched from inside a longer word and from behind a foreign path, and the
+   * sweep spliced the storeless basename in at the token's own column. What
+   * survived in front of the stamp decides whether the damage is repairable:
+   * a LETTER RUN is the broken head of one path segment and cannot be part of
+   * any rooting, so deleting it is decidable from the token; a COMPLETE path
+   * segment terminated by its own `/` is intact text whose removed interior the
+   * token does not record, and it is left to the git remedy the header spells.
+   * Both halves are pinned here, because a class that quietly widened to the
+   * second would be guessing in a program that rewrites a project's records.
+   */
+  it("strips a glued letter run when the basename names a record here, and never touches a surviving path segment", () => {
+    const { root, wb } = scratchRepo();
+    const doc = join(wb, "shared/history/260202-0202-beta-log.md");
+    // a Circle directory: the other shape a splice could have left a prefix on
+    mkdirSync(join(wb, "circles/260505-0505-widget-bar"), { recursive: true });
+    writeFileSync(join(wb, "circles/260505-0505-widget-bar/_t_circle.md"), "x");
+    const before = [
+      "repairable: `my260101-0101_*_alpha.md` `sub260101-0101-alpha-analysis.md` `mine260505-0505-widget-bar`",
+      "twice damaged, one run: `my260101-0101_*_alpha.md_o`",
+      "left to git: `pytorch/260101-0101_*_alpha.md` `docs/sub260101-0101_*_alpha.md`",
+      "names nothing here: `zz269999-9999_*_nothing.md`",
+      "```", "an exhibit: my260101-0101_*_alpha.md", "```",
+      "> quoted exhibit: my260101-0101_*_alpha.md",
+    ];
+    writeFileSync(doc, before.join("\n"));
+    git(root, "add", "-A");
+    git(root, "commit", "-q", "-m", "spliced");
+    try {
+      const run = sweep(root, wb, "--repair", "--write", "--yes");
+      const after = readFileSync(doc, "utf-8").split("\n");
+      const again = sweep(root, wb, "--repair", "--dry-run");
+      expect(run.status, run.stderr).toBe(0);
+      expect(after).toEqual([
+        "repairable: `260101-0101_*_alpha.md` `260101-0101-alpha-analysis.md` `260505-0505-widget-bar`",
+        // the glued prefix hid the chained tail from its own lookbehind; one run
+        "twice damaged, one run: `260101-0101_*_alpha.md`",
+        before[2], before[3], before[4], before[5], before[6], before[7],
+      ]);
+      expect(last(run)).toBe("files=1 repairs=5 date-field=0 chained-tail=1 doubled=0 spliced-prefix=4 mode=write");
+      expect(last(again)).toBe("files=0 repairs=0 date-field=0 chained-tail=0 doubled=0 spliced-prefix=0 mode=dry-run");
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

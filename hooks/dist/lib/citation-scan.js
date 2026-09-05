@@ -145,6 +145,19 @@
 //   An exemption keyed on a substring gets wider every time English does; one
 //   keyed on a word does not.
 //
+//   A RECORD IN ANOTHER PROJECT'S WORKBENCH IS SPELLED
+//   `foreign:<project>:<citation>`, AND THE QUALIFIER IS THE WRITER'S. Every
+//   citation here resolves by one lookup against THIS workbench, so a record
+//   held in a consuming project's tree could only ever answer "no" and dangled
+//   by construction, at every future run, with nothing in the vocabulary saying
+//   it is somebody else's (issue
+//   260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md).
+//   The criterion could not be the failed lookup, which is exactly what a dead
+//   citation produces; it is a marker the writer types, read off the line before
+//   any lookup, as `announced-illustration` and `footer-template` already are.
+//   `carriesForeignQualifier()` carries the spelling, why both segments are
+//   required, and what the form does NOT decide.
+//
 //   NOT READ, ON PURPOSE: the pre-v4 bracket marker (`260717-1918[o]_slug`).
 //   It is retired syntax that `/fusion:migrate` rewrites; a grammar that
 //   accepted it would remove the only pressure to rewrite it (issue
@@ -308,8 +321,8 @@ const REC_TAIL = recordTail("A-Za-z0-9_…*\\[\\]");
  * it, so a `circles/<dir>/_x_circle.md` ending a sentence matched nothing, was
  * picked up by no other pattern, and was not reported at all (issue
  * 260901-0321_*_a-circle-record-citation-that-ends-a-sentence-produces-no-token-at-all.md).
- * That is one class worse than the dangle `SENTENCE_STOP` repairs, which is why
- * the two endings are now the same string.
+ * That is one class worse than the dangle the stop derived at `recordTail()`
+ * repairs, which is why the two endings are now the same string.
  */
 const NAME_END = "(?![A-Za-z0-9_\\/-])";
 // Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
@@ -351,8 +364,9 @@ const REC_RE = new RegExp(LEFT_ANCHOR +
 // `NAME_END` stops the pattern from claiming a longer word.
 //
 // THIS TAIL IS A LITERAL, NOT A GREEDY CLASS, so it cannot eat a sentence's stop
-// and `SENTENCE_STOP` has nothing to do here: what refused the stop was the
-// trailing lookahead, and `NAME_END` is that lookahead with the `.` taken out.
+// and the lookbehind `recordTail()` derives has nothing to do here: what refused
+// the stop was the trailing lookahead, and `NAME_END` is that lookahead with the
+// `.` taken out.
 // The `(?!\.md)` after the group is what keeps the two changes from adding up to
 // a third defect. Without it, `_x_circle.mdx` would give the `.md` back — the
 // optional group backtracks to empty, `NAME_END` is then satisfied by the `.` it
@@ -475,6 +489,59 @@ function inAnnouncedIllustration(before) {
         return false; // word boundary
     const sinceEg = before.slice(at + "e.g.".length);
     return !/[);]|\.\s/.test(sinceEg);
+}
+/**
+ * The qualifier that says a citation names a record in ANOTHER project's
+ * workbench: `foreign:<project>:` immediately in front of the token, so the
+ * whole pointer reads `foreign:menue-rs:260905-2054-reconciliation.md`.
+ *
+ * READ OFF THE LINE'S OWN TEXT BEFORE ANY LOOKUP, exactly as
+ * `inAnnouncedIllustration()` and `inFooterTemplateSpan()` are, and for the same
+ * reason. Resolution here is one lookup against THIS workbench, so a record held
+ * in a consuming project's tree can only ever answer "no": it dangled by
+ * construction and would dangle at every future run. The criterion could not be
+ * the failed lookup, because a failed lookup is precisely the evidence a
+ * genuinely dead citation produces (`rules/critical-stance.md` §4, and the
+ * objection issue
+ * 260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md
+ * raises against its own direction 1). The deciding input is supplied by the
+ * writer instead of inferred from the name, so no token becomes foreign by
+ * accident.
+ *
+ * IT REACHES EVERY VERDICT, `store-prefixed` INCLUDED — which is why it is
+ * absent from `RESOLUTION_PREMISED_EXEMPTIONS` and why the chain reads it AHEAD
+ * of `fenced-code`. Its premise is about the referent, not about resolution:
+ * the storeless form is THIS project's spelling rule and an archive sweep here
+ * moves nothing in another project's tree, so telling a writer to drop the store
+ * segment out of a foreign path is telling them to break the pointer. Observed
+ * rather than reasoned about: the first version of issue
+ * 260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md
+ * spelled such a path out, the gate reported it `store-prefixed`, and the sweep
+ * stood ready to rewrite a path that names nothing here and never will. That
+ * record names the stamp and the kind of file in prose instead, which is the
+ * workaround this form exists to retire.
+ *
+ * WHY BOTH SEGMENTS, MEASURED RATHER THAN GUESSED. The keyword alone would not
+ * say WHOSE record it is, which is the half a reader needs to follow the pointer
+ * at all. The project name alone — any `<word>:` in front of the token — is too
+ * wide by 214 tokens in this corpus, the legacy `I:`/`D:`/`CR:` task-id spelling
+ * in archived planning files, every one of them a LOCAL record that would have
+ * stopped being judged. `foreign:<project>:` matches nothing in this tree
+ * (measured 2026-09-05, over every `.md` in it).
+ *
+ * WHAT IT DOES NOT DECIDE, stated rather than left to be found: whether the
+ * record is really foreign. Nothing in the text can separate a foreign citation
+ * from a local one a writer mislabelled, and this exemption shares that with
+ * every other writer-supplied one here — a fence, a blockquote, an `e.g.` and
+ * the `foo` placeholder each silence a real dangling citation if a writer puts
+ * one behind them. What bounds it: the token is never counted as resolved (it
+ * lands in `partition()`'s `exempt` bucket, which every census prints), the
+ * marker is two literal segments no ordinary spelling reaches, and
+ * `grep -rn 'foreign:'` enumerates every use in one command.
+ */
+const FOREIGN_QUALIFIER = /(?:^|[^A-Za-z0-9_.\/-])foreign:[A-Za-z0-9][A-Za-z0-9._-]*:$/;
+function carriesForeignQualifier(before) {
+    return FOREIGN_QUALIFIER.test(before);
 }
 // --- fenced code blocks -----------------------------------------------------
 /**
@@ -646,8 +713,9 @@ export const GATE_KINDS = [
  * The exemptions that keep silencing it are the ones saying the token is not
  * this file's own spelling of a citation at all: `glob` (a pattern),
  * `placeholder` (a template slot), `blockquote` (another author's text, which
- * must not be silently respelled) and `retired-layout-file` (the store segment
- * is the subject).
+ * must not be silently respelled), `retired-layout-file` (the store segment is
+ * the subject) and `foreign-record` (the path is another project's, so this
+ * project's spelling rule does not govern it and its sweep will never move it).
  *
  * THE RESIDUAL, stated rather than left to be found: the same argument reaches
  * `announced-illustration`, `footer-template` and `fabricated-name`, which are
@@ -676,7 +744,10 @@ export const SHAPE_DECIDED_KINDS = ["record", "circle-record", "circle-dir"];
  * the store-prefix check runs on a pass no file-level exemption gates, while the
  * exemptions go on governing what may be written.
  *
- * `retired-layout-file` is deliberately absent: its premise IS about shape.
+ * `retired-layout-file` and `foreign-record` are deliberately absent: the first
+ * says the store segment is the file's subject, the second that the path is
+ * another project's. Both are claims about the token's shape and its referent,
+ * and neither is a claim that the token cannot be looked up.
  */
 const RESOLUTION_PREMISED_EXEMPTIONS = new Set(["record-example-file", "fenced-code"]);
 /**
@@ -799,32 +870,39 @@ export function createScanner(workbenchRoot) {
                     ? "retired-layout-file"
                     : fileExempt
                         ? "record-example-file"
-                        : // ahead of `blockquote`: inside a fence a leading `>` is literal text
-                            // and not a quotation, so on a line that satisfies both this is the
-                            // true reason and the other is a coincidence of the first character.
-                            fenced[li]
-                                ? "fenced-code"
-                                : blockquoted
-                                    ? "blockquote"
-                                    : inAnnouncedIllustration(before)
-                                        ? "announced-illustration"
-                                        : inFooterTemplateSpan(before)
-                                            ? "footer-template"
-                                            : // a token cut at a `$`, `<` or `{` is the head of a template
-                                                // (`<stamp>_*_$f.md` in a shell illustration)
-                                                isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
-                                                    ? "placeholder"
-                                                    : FABRICATED_NAME.test(token)
-                                                        ? "fabricated-name"
-                                                        : // a `*` anywhere but the marker position is a glob, not a citation
-                                                            /\*/.test(token.replace(/_\*_/g, ""))
-                                                                ? "glob"
-                                                                : // a bare stamp that is the whole value of a `**Field:**`
-                                                                    // head line is the minute the record was written, not a
-                                                                    // pointer (the `**Date:**` case in the header)
-                                                                    kind === "stamp-bare" && isHeadFieldValue(before, text.slice(idx + token.length))
-                                                                        ? "head-field"
-                                                                        : null;
+                        : // ahead of `fenced-code`, unlike the other writer-supplied markers:
+                            // this one's premise is the token's REFERENT, so it must reach the
+                            // shape-decided `store-prefixed` verdict too, and a writer who both
+                            // qualifies and fences must not still be told to respell a path
+                            // that is not this project's to respell.
+                            carriesForeignQualifier(before)
+                                ? "foreign-record"
+                                : // ahead of `blockquote`: inside a fence a leading `>` is literal text
+                                    // and not a quotation, so on a line that satisfies both this is the
+                                    // true reason and the other is a coincidence of the first character.
+                                    fenced[li]
+                                        ? "fenced-code"
+                                        : blockquoted
+                                            ? "blockquote"
+                                            : inAnnouncedIllustration(before)
+                                                ? "announced-illustration"
+                                                : inFooterTemplateSpan(before)
+                                                    ? "footer-template"
+                                                    : // a token cut at a `$`, `<` or `{` is the head of a template
+                                                        // (`<stamp>_*_$f.md` in a shell illustration)
+                                                        isPlaceholder(token) || isPlaceholder(text.charAt(idx + token.length))
+                                                            ? "placeholder"
+                                                            : FABRICATED_NAME.test(token)
+                                                                ? "fabricated-name"
+                                                                : // a `*` anywhere but the marker position is a glob, not a citation
+                                                                    /\*/.test(token.replace(/_\*_/g, ""))
+                                                                        ? "glob"
+                                                                        : // a bare stamp that is the whole value of a `**Field:**`
+                                                                            // head line is the minute the record was written, not a
+                                                                            // pointer (the `**Date:**` case in the header)
+                                                                            kind === "stamp-bare" && isHeadFieldValue(before, text.slice(idx + token.length))
+                                                                                ? "head-field"
+                                                                                : null;
                 // An exemption whose premise is "do not look this token up" cannot
                 // reach a verdict that needed no lookup, so a shape-decided kind under
                 // one is JUDGED — and keeps the reason, which is what stops a rewriter

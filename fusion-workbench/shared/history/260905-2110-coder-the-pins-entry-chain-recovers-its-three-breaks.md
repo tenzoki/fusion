@@ -1,6 +1,7 @@
 # The reference-resolution pin's entry chain recovers its three breaks
 
 **Status:** Complete
+**Filed by:** coder, Kai Stalmann <ks@qantr.com>
 **Agent:** coder
 **Date:** 2026-09-05 21:10
 **Task:** Repair the uncovered gap in the `BASELINE` entry chain of
