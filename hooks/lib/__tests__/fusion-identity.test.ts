@@ -192,6 +192,26 @@ describe("bin/fusion-identity", () => {
     expect(readFileSync(f.idFile, "utf-8")).toBe("not-hex\n");
   });
 
+  it("the mint speaks: stderr states it, stdout and the exit code do not move", () => {
+    const f = fixture({ git: "both", workbench: true });
+    writeFileSync(join(f.dir, "fusion-workbench", "orchestrator-events.jsonl"), '{"checkout":"aaaaaaaa"}\n{"checkout":"aaaaaaaa"}\n{"checkout":"bbbbbbbb"}\n');
+    const r = run(f);
+    expect(r.status, r.stderr).toBe(0);
+    expect(r.stdout).toBe(`PERSON=Test Person <t@example.com>\nCHECKOUT=${r.checkout}\n`);
+    expect(r.stderr).toContain(`minted ${r.checkout}`);
+    expect(r.stderr).toContain("2 in orchestrator-events.jsonl");
+    expect(r.stderr).toContain("0 under shared/checkouts/");
+    expect(run(f).stderr, "the line reports an act, not a state").toBe("");
+  });
+
+  it("exit 1 fires in exactly the cases it fires in at HEAD", () => {
+    const cases: [Parameters<typeof fixture>[0], number][] = [
+      [{ git: "both", workbench: true }, 0], [{ git: "no-name", workbench: true }, 1], [{ git: "no-email", workbench: true }, 1],
+      [{ git: "both", workbench: false }, 3], [{ git: null, workbench: true }, 4], [{ git: null, workbench: false }, 5],
+    ];
+    for (const [opts, code] of cases) expect(run(fixture(opts)).status, JSON.stringify(opts)).toBe(code);
+  });
+
   it("exit 2: rejects an argument without printing a value", () => {
     const r = run(fixture({ git: "both", workbench: true }), {}, "--help");
     expect(r.status).toBe(2);

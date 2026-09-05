@@ -51,7 +51,9 @@
 # Exit codes, where 3 and 4 "must never be merged" for the same reason).
 #
 #   1  says *stop, something is wrong*. A tree that intends to commit and
-#      cannot is misconfigured, and a record filed from it would name nobody.
+#      cannot is misconfigured, so its records reach no other checkout. That
+#      clause alone: the second, that such a record would name nobody, the
+#      checkout registry makes false (`260904-1058_*_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md`, option 1).
 #   4  says *carry on, there is nothing to name*. A directory that is not a git
 #      repository takes no part in the multi-checkout arrangement, so no
 #      identity is owed and none is missing.
@@ -119,6 +121,12 @@
 # point of doing it on first read: a checkout set up under an older fusion would
 # otherwise halt on every filing until Setup were re-run.
 #
+# **The mint speaks, and claims no more than it knows.** `.checkout-id` is
+# git-ignored, so `git clean -xdf` takes it and the next read mints anew, after
+# which nothing local separates a first mint from a re-mint. It states that the
+# file was absent and how many other identifiers this workbench holds, names
+# both causes, and leaves the inference to the human. Issue: `260904-1058_*_git-clean-deletes-the-checkout-identifier-and-the-next-read-mints-a-new-one-in-silence.md`.
+#
 # `fusion-workbench/.checkout-id` is class L in `rules/workbench-tracking.md`.
 # It never travels, and a checkout that pulls another checkout's copy of it is
 # the one failure that makes the field meaningless.
@@ -175,8 +183,18 @@ fi
 
 # --- the checkout half ------------------------------------------------------
 
+# Both counts are over tracked files, so both survive the sweep that makes this speak.
+announce_mint() {
+  local wb="$1/fusion-workbench" id="$2" n m
+  n="$(LC_ALL=C grep -o '"checkout":"[^"]*"' "$wb/orchestrator-events.jsonl" 2>/dev/null | sort -u | LC_ALL=C grep -vF "\"checkout\":\"$id\"" | wc -l | tr -d ' ')"
+  m="$(ls "$wb/shared/checkouts"/*.md 2>/dev/null | LC_ALL=C grep -vF "/$id.md" | wc -l | tr -d ' ')"
+  printf 'fusion-identity: minted %s, because %s/.checkout-id did not exist.\n' "$id" "$wb" >&2
+  if [ "$n" != 0 ] || [ "$m" != 0 ]; then printf 'fusion-identity: this workbench already carries other checkout identifiers (%s in orchestrator-events.jsonl, %s under shared/checkouts/), so this is either a first identity in a workbench others have written to, or a re-mint after `git clean -xdf` swept the ignored .checkout-id. Nothing on disk distinguishes the two.\n' "$n" "$m" >&2; fi
+}
+
 checkout=''
 root=''
+did_mint=''
 
 if [ ! -x "$here/fusion-workbench-root" ]; then
   printf 'fusion-identity: %s is missing — the plugin install is incomplete.\n' \
@@ -193,10 +211,8 @@ if [ -n "$root" ]; then
     minted="$(LC_ALL=C od -An -N4 -tx1 -v < /dev/urandom | tr -d ' \n')"
     if [ "${#minted}" -ne 8 ]; then
       printf 'fusion-identity: could not read four bytes from /dev/urandom.\n' >&2
-    elif ! ( set -C; printf '%s\n' "$minted" > "$target" ) 2>/dev/null; then
-      # Either another process won the race (the file now exists and is read
-      # below) or the workbench could not be written to (the read below fails).
-      :
+    elif ( set -C; printf '%s\n' "$minted" > "$target" ) 2>/dev/null; then
+      did_mint=1  # a lost race or an unwritable workbench is neither this process's mint nor announced as one
     fi
   fi
 
@@ -207,6 +223,7 @@ if [ -n "$root" ]; then
     held="$(head -1 "$target" 2>/dev/null | tr -d ' \t\r\n' || true)"
     if printf '%s' "$held" | LC_ALL=C grep -Eq '^[0-9a-f]{8}$'; then
       checkout="$held"
+      if [ -n "$did_mint" ]; then announce_mint "$root" "$checkout"; fi
     else
       printf 'fusion-identity: %s does not hold an identifier (expected 8 lowercase hex). It was not overwritten; inspect it, and delete it only if no record cites it.\n' \
         "$target" >&2

@@ -40,3 +40,8 @@ A registry carrying the person breaks the second clause. The record would name s
 Option 1. `inference:` The halt's value was never mainly about the record's text; it is that a tree which cannot commit produces work nobody else will ever see, and a registry does not change that. The change owed is to the sentence in the helper's header and to `### Who filed it`, not to the behaviour.
 
 `speculation:` Option 2 is the one to be careful about. Its failure is invisible by construction: a record naming a person, joined to no commit, is indistinguishable at every reading surface from one that is joined. We have not looked for a mechanism that would notice, and we would want one before recommending it.
+
+---
+Answered: 260904-1050-orchestrator-session.md `## Turn 3 — the exit-1 halt gate` — option 1, the halt stays and its reason is restated to the first clause alone; the user answered "1" at the step-9 gate of the plan.
+
+**What step 10 must therefore do:** no behaviour changes anywhere, and no caller gains or loses a halt. What changes is text. `bin/fusion-identity`'s header drops the second clause of exit 1's stated reason, the one about a record naming nobody, which a registry makes false; the reason becomes the first clause alone, that a tree which cannot commit produces records no other checkout will ever see. `rules/fusion-workbench-conventions.md` `### Who filed it` is brought into line with the same reading, so a reader meeting the halt is told what it now rests on rather than being left with a justification the registry has retired.

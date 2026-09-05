@@ -62,7 +62,7 @@
   fusion-commit-lock.test.ts 424
   fusion-count-sources.test.ts 442
   fusion-events.test.ts 322
-  fusion-identity.test.ts 200
+  fusion-identity.test.ts 220
   fusion-paths.test.ts 873
   fusion-prose-metric.test.ts 174
   fusion-session-domain.test.ts 80
@@ -97,4 +97,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 425
-  total 20162
+  total 20182

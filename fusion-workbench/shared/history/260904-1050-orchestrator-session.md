@@ -67,3 +67,13 @@ Origin Rule keeps one record in one location with citations carrying the reach. 
 transition was performed by the orchestrator rather than by the dispatched `analyst` the
 step routes to, because recording a user's gate answer and moving the marker is the
 orchestrator's own act under Phase 1 step 3.
+
+## Turn 3 — the exit-1 halt gate
+
+The plan's step-9 gate put the decision record's three options to the user as written.
+**He answered "1": the halt stays, with its reason restated to the first clause alone.**
+Nothing about the behaviour moves. `bin/fusion-identity` halts in exactly the cases it
+halts in today, no filing agent gains a halt anywhere, and what changes is the sentence
+that says why: a tree which cannot commit produces records no other checkout will ever
+see, which stands on its own, rather than the clause about a record naming nobody, which
+a registry carrying the person makes false.
