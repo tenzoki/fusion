@@ -396,6 +396,38 @@ fi
 
 Every line printed goes into the Done report verbatim; nothing printed means nothing to report.
 
+## Step 0k — Whether this checkout is behind its upstream (advisory)
+
+This step reads how far the current branch is behind its upstream and **does not fetch**. The read is local, so what it answers is "behind what this checkout last saw", and the age of that view is reported together with the number in every case. A count printed without its age is the one shape this step may not produce (issue `260905-1850_*_setup-does-not-notice-that-the-checkout-is-behind-its-remote.md`). Fetching would answer the sharper question and was refused for what it costs at this point: it is the only network call in an otherwise wholly local sequence, it writes remote-tracking refs before the user has agreed to anything, and against a remote that wants credentials it blocks a non-interactive shell at a prompt, with no timeout command that ships on every platform. A hang in the mandatory first step of a session is worse than a number that names its own staleness. Fetching stays the user's move; this step exists to make them want to make it.
+
+```bash
+if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" != "true" ]; then echo "upstream=no-work-tree"; else
+  B="$(git symbolic-ref -q --short HEAD 2>/dev/null)"
+  U=""; [ -n "$B" ] && U="$(git for-each-ref --format='%(upstream:short)' "refs/heads/$B")"
+  if [ -z "$U" ]; then echo "upstream=none"; else
+    echo "upstream=$U"
+    if C="$(git rev-list --left-right --count "$U...HEAD" 2>/dev/null)"; then
+      echo "behind=$(printf '%s' "$C" | cut -f1) ahead=$(printf '%s' "$C" | cut -f2)"
+    else echo "counts=unread"; fi
+    F="$(git rev-parse --git-path FETCH_HEAD)"
+    if [ -f "$F" ]; then echo "fetched_hours_ago=$(( ($(date +%s) - $(date -r "$F" +%s)) / 3600 ))"; else echo "fetched=never"; fi
+  fi
+fi
+```
+
+One line in the project's chat language, and no line carrying a count omits the age:
+
+- **`behind=` non-zero:** how many commits, the `upstream=` name, the age, and that a pull is owed.
+- **`behind=0` with `ahead=` non-zero:** nothing to pull as of that view; the branch is that many commits ahead and unpushed. The age is still said.
+- **`behind=0 ahead=0`:** level as of that view, with the age.
+- **`fetched=never`:** the count was taken against a remote this checkout has never contacted, so it is not evidence of anything. Say to fetch. This is the case the record was filed on, and it reads as a warning whatever the count says.
+- **`fetched_hours_ago=` above 24:** lead with the age and put the count after it, not the other way round.
+- **`upstream=none`:** no upstream is configured for the current branch. A detached HEAD reads the same way.
+- **`upstream=no-work-tree`:** not a git work tree, so nothing is owed here and nothing is a fault.
+- **`counts=unread`:** an upstream is configured and its remote-tracking ref could not be read. Name it unread beside the upstream name; never print a zero in its place.
+
+Advisory throughout: no branch of this step blocks Setup, and none of them asks the user anything.
+
 ## Step 1 — Interrupted-session check (CRITICAL — do not skip)
 
 Read `./fusion-workbench/agentstate.yaml`.
@@ -495,4 +527,4 @@ Create `$OUT_HISTORY/YYMMDD-HHMM-orchestrator-session.md` (the value `fusion-pat
 
 ## Done
 
-Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0's marker write had to report, whatever Step 0e had to report about the copied assets, the permission line Step 0g produced (written and effective next session, declined, or already in place), which of Step 0h's four outcomes occurred (rule written, naming the `.gitattributes` path; a union driver already applying; another value left alone, named; or no git work tree), and which Step 0i branch ran (nothing to report; one active Circle with no pointer, named, with whether the user activated it here; or `MULTIPLE-ACTIVE`, every record named), every line Step 0j printed, and every helper Step 2 found in the work tree and not in the install. End with the three usual next moves: name a task, "run the active Circle", or `/fusion:next` for a recommendation.
+Only after every step above completes may you begin the user's actual task. Report Setup complete with: workspace path, history file path, snapshot counts, **detected workbench domain**, whether an interrupted session was resumed, whatever Step 0's marker write had to report, whatever Step 0e had to report about the copied assets, the permission line Step 0g produced (written and effective next session, declined, or already in place), which of Step 0h's four outcomes occurred (rule written, naming the `.gitattributes` path; a union driver already applying; another value left alone, named; or no git work tree), and which Step 0i branch ran (nothing to report; one active Circle with no pointer, named, with whether the user activated it here; or `MULTIPLE-ACTIVE`, every record named), every line Step 0j printed, what Step 0k read about the upstream together with the age of the view it came from, and every helper Step 2 found in the work tree and not in the install. End with the three usual next moves: name a task, "run the active Circle", or `/fusion:next` for a recommendation.
