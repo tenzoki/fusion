@@ -158,6 +158,15 @@ describe("bin/fusion-checkout-name", () => {
     expect(r.lines("entry").find((e) => e.startsWith("aaaaaaaa"))).toBe("aaaaaaaa\ta b\tBo Example\t");
   });
 
+  it("exit 4: register with no git identity, carrying fusion-identity's own reason", () => {
+    const f = fixture();
+    // That helper exits 1 and prints no CHECKOUT=, which reaches this program as its own 4.
+    for (const k of ["user.name", "user.email"]) spawnSync("git", ["config", "--unset", k], { cwd: f.dir, env: { ...process.env, ...gitEnv(f.dir) } });
+    const r = run(f, "register");
+    expect([r.status, r.stdout]).toEqual([4, ""]);
+    expect(r.stderr).toContain("user.name and user.email are not set");
+  });
+
   it("exit 5: no workbench above the working directory, and nothing on stdout", () => {
     const dir = mkdtempSync(join(tmpdir(), "fusion-checkout-name-bare-"));
     tmpRoots.push(dir);

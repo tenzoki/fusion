@@ -41,8 +41,8 @@
   memo/SKILL.md 12244
   migrate/SKILL.md 26620
   next/SKILL.md 27604
-  setup/SKILL.md 47231
-  total 240428
+  setup/SKILL.md 47236
+  total 240433
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
@@ -57,7 +57,7 @@
   domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 224
-  fusion-checkout-name.test.ts 168
+  fusion-checkout-name.test.ts 177
   fusion-citation-check.test.ts 70
   fusion-commit-lock.test.ts 424
   fusion-count-sources.test.ts 442
@@ -87,7 +87,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 486
-  reference-resolution-lint.test.ts 1000
+  reference-resolution-lint.test.ts 1001
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
   rules-emission-golden.test.ts 1150
@@ -98,4 +98,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 430
-  total 20364
+  total 20374

@@ -23,3 +23,6 @@ C="$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name"
 ## Acceptance test
 
 The block runs verbatim without a shell error, or the placeholder is quoted and the prose says the hex is substituted from Step 0h's `CHECKOUT=`.
+
+---
+Resolved: both halves of the acceptance test, not one. The placeholder in `skills/setup/SKILL.md` Step 0i is quoted — `"$C" resolve "<hex>"` — so the block now runs verbatim and reaches the helper's usage error (exit 2, which this step branches on) instead of a bash syntax error at `;`. The lead-in now says where the value comes from, naming Step 0h's `CHECKOUT=` as what stands in for `<hex>`. Verified by running the fence as written in a scratch workbench, and against the old form, which bash rejects before executing anything.

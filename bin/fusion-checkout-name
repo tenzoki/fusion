@@ -132,6 +132,46 @@
 # identity makes `canon` the identity function for that line. There is no
 # "ask me later" state, because the store has no way to hold one.
 #
+# ## Why the identity helper's own reason is what this program reports
+#
+# `resolve_self` runs `bin/fusion-identity` with its stderr passing through and
+# its exit code captured, and names both when no `CHECKOUT=` came back. It ran
+# it as `2>/dev/null || true` until 260905 and then printed "this checkout's
+# identifier did not resolve" — a cause it had not established. In a git work
+# tree with `user.name` or `user.email` unset the helper exits 1 saying exactly
+# that, and the sentence naming the real fault was discarded while the
+# substituted one sent the reader to the wrong file. `bin/fusion-events` already
+# did it the other way and wrote down why: the cause of a missing half is worth
+# more to a human than the code alone. This program matches that shape rather
+# than carrying a second one.
+#
+# Nothing about the outcome moved. No `CHECKOUT=` is still exit 4 from
+# `register` and from a bare `suggest`, stdout is unchanged, and this program
+# raises no halt of its own.
+#
+# ## Two exit vocabularies, and which number belongs to which
+#
+# A caller of this program is nearly always a caller of `bin/fusion-identity`
+# too, and the two tables are unrelated. The clearest collision is 4: here it is
+# "this checkout's hex did not resolve", there it is "no git identity is owed,
+# because this is not a git work tree". A caller printing one list of numbers
+# therefore has to say per line whose number it is, and `/fusion:setup` Step 0i
+# is the worked case.
+#
+# The two tables meet at one point, this program's exit 4. Every reason
+# `bin/fusion-identity` prints no `CHECKOUT=` — its exit 1, its 3, its 5, and a
+# helper missing from the install — arrives here as that single code, with the
+# helper's own reason on stderr above it. A caller reads the number to decide
+# what to do and the stderr to say why; it never re-derives the cause from the
+# number, because the number does not carry it.
+#
+# One obligation the number cannot carry either: the helper's exit-1 halt, which
+# `rules/fusion-workbench-conventions.md` `### Who filed it` places on the
+# caller. This program does not perform it — it files no record and has none to
+# withhold. A caller that must tell exit 1 from exit 3 runs `bin/fusion-identity`
+# itself, as `/fusion:setup` Step 0h does one block before Step 0i, and keys the
+# halt on that code.
+#
 # ## Why the alias is an attribute and never the key
 #
 # The eight hex characters minted by `bin/fusion-identity` stay the key
@@ -242,18 +282,22 @@ resolve_root() {
 }
 
 # This checkout's own hex, and the git identity read in the same call. Absent
-# values stay absent: `bin/fusion-identity` prints no line it did not read.
+# values stay absent: `bin/fusion-identity` prints no line it did not read. Its
+# stderr is NOT discarded and its exit code is NOT dropped — see "Why the
+# identity helper's own reason is what this program reports" above.
 resolve_self() {
-  local out=''
+  local out='' rc=127
   if [ ! -x "$here/fusion-identity" ]; then
     printf '%s: %s is missing — the plugin install is incomplete.\n' "$self" "$here/fusion-identity" >&2
+  elif out="$("$here/fusion-identity")"; then
+    rc=0
   else
-    out="$("$here/fusion-identity" 2>/dev/null || true)"
+    rc=$?
   fi
   SELF_HEX="$(printf '%s\n' "$out" | sed -n 's/^CHECKOUT=//p' | head -1)"
   SELF_GIT="$(printf '%s\n' "$out" | sed -n 's/^PERSON=//p' | head -1)"
   if ! is_hex "$SELF_HEX"; then
-    printf "%s: this checkout's identifier did not resolve, so there is nothing to name.\n" "$self" >&2
+    printf '%s: bin/fusion-identity exited %s and printed no CHECKOUT=; the reason it gave stands above this line. There is nothing to name.\n' "$self" "$rc" >&2
     return 1
   fi
 }

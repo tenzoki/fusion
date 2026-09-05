@@ -335,26 +335,27 @@ fi
 
 ## Step 0i — This checkout's identity, and a Circle it never activated
 
-A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`, the condition `agents/playmaker.md` names and `/fusion:next` renders. A pointer deleted by hand is that same state, same report, same offer.
+A `_t_` Circle record travels between checkouts and `.active-circle` does not (`rules/workbench-tracking.md`), so a clone taken mid-Circle holds an active record with no pointer: `MISSING-POINTER`, the condition `agents/playmaker.md` names and `/fusion:next` renders. A pointer deleted by hand is that same state.
 
 **Two conditions here ask**, each at most once per checkout: that one, and a checkout with no registry entry.
 
-**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`, minting `fusion-workbench/.checkout-id` where none exists. Its header documents the six exit codes and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as `$FUSION_SRC/agents/orchestrator.md` Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
+**This checkout's identity is read here, and the read mints it.** `bin/fusion-identity` prints `PERSON=` and `CHECKOUT=`; its header documents the mint and the six exit codes, and `rules/fusion-workbench-conventions.md` `### Who filed it` what each obliges; restate neither. Report both in the Done report, or a non-zero exit's reason unchanged. Hold the identity fragment `<ID>` as `$FUSION_SRC/agents/orchestrator.md` Setup step 2 defines it (the bullet "Who, which checkout, which session"): three keys, `session_id` from the line a SessionStart hook printed into your context, and no line means no key.
 
 ```bash
 [ -x "$FUSION_PLUGIN_ROOT/bin/fusion-identity" ] && "$FUSION_PLUGIN_ROOT/bin/fusion-identity"
 ```
 
-**And its name**, on `CHECKOUT=`:
+**And its name**, with Step 0h's `CHECKOUT=` for `<hex>`:
 
 ```bash
 C="$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name"
-[ -x "$C" ] && { "$C" resolve <hex>; echo "exit=$?"; }
+[ -x "$C" ] && { "$C" resolve "<hex>"; echo "exit=$?"; }
 ```
 
-- **`exit=3`** — unregistered. Ask **one** question, the person and the alias the header offers, in plain text with a numbered list, not `AskUserQuestion`. Then `register` with the answer, bare where it declines.
-- **`exit=0`** — registered. Bare `register`; act on any `collision=`.
-- **No hex** (identity exit 3 or 5) or no `$C` — write nothing, report `checkout-registry=unread` or `helper-missing`. **No person** (exit 4) — register anyway.
+- **`$C` exit 3** — unregistered. Ask and `register` as that helper's header prescribes.
+- **`$C` exit 0** — registered. Bare `register`. On both, act on any `collision=`.
+- **`$C` exit 2, 4 or 5**, from either call — write nothing; report `checkout-registry=unread` and the reason `$C` gave. No `$C`: `helper-missing`.
+- **`bin/fusion-identity` exit 1** — halt per `### Who filed it`: register nothing. Its **3 or 5**: no hex, skip this block, `unread`. Its **4**: no person, register anyway.
 
 The rest: that helper's header.
 
