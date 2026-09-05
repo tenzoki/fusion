@@ -11,3 +11,6 @@ The step's Changes say the header shows "the hex alone where none is" found, and
 **Why that reading is the right one and not merely a workable one.** The Circle's Directive states that every consumer falls back to today's behaviour when no entry exists, which is what makes the registry adoptable one checkout at a time with no migration. A bare hex in the header of every project that has no registry at all would be a visible change in a project that never opted in, and it would contradict that constraint rather than merely stretching the step's wording.
 
 **Acceptance.** Step 7's text in the plan states three branches rather than two, so step 13's verification pass reads a specification that matches what was built. No code changes: the built behaviour is already the one this record endorses.
+
+---
+Resolved: rewrote step 7's Changes and Acceptance in the plan (`260904-1651_*_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md`) to state the three branches actually built and tested — `<alias> · <hex>` where an entry carries an alias, the hex alone where the registry holds no entry for this hex, and exactly what HEAD renders where no registry exists at all — replacing the two-branch text that contradicted itself. No code changed.

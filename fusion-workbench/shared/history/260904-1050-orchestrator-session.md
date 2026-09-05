@@ -130,6 +130,38 @@ by the party that made it. The repair is the reconciliation's; the cause is the
 orchestrator's, and it is recorded here rather than left standing as an amend that never
 happened.
 
+## The sweep gate was green at session start, and this record's title is wrong
+
+The orchestrator told the user twice, firmly, that `citation-sweep.test.ts` was already
+red before this session began, and filed a defect saying so. **It was not.** The
+measurement ran the sweep **from the installed plugin** against a detached worktree at
+`cda72f71`. The gate does not run that binary; it executes this repository's own compiled
+output. Re-measured with the work tree's own sweep inside the same worktree, `cda72f71`
+reports `files=0 rewrites=0`.
+
+The installed copy is version 10.22.0 while this checkout and `origin/main` stand at
+10.20.0, so its sweep carries a later grammar and reports seventeen rewrites the gate
+would never have seen. Being one release *ahead* is the reverse of the documented
+condition, which is why neither the orchestrator nor the coder that first raised it
+thought to check which binary was answering.
+
+**Two claims fall with it.** The gate was not inherited red: it went red during this
+session, from citations this session's own history records introduced. And the earlier
+correction in which the orchestrator told the user "the coder was right and I was wrong"
+was itself wrong in the other direction — both were reasoning from the same bad
+measurement.
+
+**Nothing about the repair changes.** The sixteen tokens were genuinely wrong against
+`rules/fusion-workbench-conventions.md` `## Filename Patterns`, and the suite is green at
+HEAD. What changes is the account of where they came from, and that account was the
+orchestrator's, twice, stated as measured.
+
+**The method fault, named so it is not repeated:** a helper invoked through
+`$FUSION_PLUGIN_ROOT` answers for the installed release, and a gate that compiles the
+repository answers for the repository. Measuring one to make a claim about the other is
+not a close-enough approximation; it is a different question. This is the second unchecked
+claim this session dressed as a checked one, the first being the commit hash above.
+
 ## Coherence
 
 <!-- RECONCILER-OWNED -->
