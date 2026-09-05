@@ -44,7 +44,9 @@ sqlite-vss for v1; revisit if a customer crosses 1M vectors.
 
 **The head carries no `Status:` field.** It left the template; the marker on the filename is the state and the only source. `fusion-workbench-conventions.md` `## Decision Record Template` says why, and what to do with records that still carry it.
 
-**Reconciler's next pass (analyst has authored a comparative-analysis report selecting sqlite-vss):**
+**Reconciler's next pass (analyst has authored a comparative-analysis report selecting sqlite-vss):** it reports where the answer sits and moves no marker. Only the orchestrator performs `_o_` → `_a_`, and only to relay a ruling the user gave.
+
+**Orchestrator, once the user has ruled at the gate:**
 
 Append to file body:
 

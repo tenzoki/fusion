@@ -46,3 +46,10 @@ That bound is prose in one agent's prompt and nothing enforces it. An agent that
 ## Recommendation
 
 `inference:` Option 1, with option 3 filed separately rather than folded in. The consultation's own reasoning points there: if only the orchestrator relays a user ruling, the marker the consumer asks for is unnecessary and the repair is a prompt edit rather than a new mechanism. Option 2's cost is the decisive one — the check it needs would test whether a cited answer pre-dates its transition, and nothing on disk records that, so it repeats the fault the consultation identified in the consumer's proposal one level up.
+
+---
+Answered: 260904-1050-orchestrator-session.md `## Turn 4 — the two consumer findings` — option 1, only the orchestrator performs `_o_` → `_a_` and only to relay a ruling the user gave; the user answered "1".
+
+**Scope, measured rather than assumed.** A grep over the agents, the rules and the skills finds exactly two places that instruct this transition: `agents/reconciler.md`, in the `_o_` branch of its decision-marker pass, and `rules/decision-record-examples.md`, whose Example 1 shows the reconciler performing the rename. The orchestrator's own instruction stays as it is — it is the path this answer keeps. Every other hit is a counter, a citation-form illustration or the marker vocabulary itself.
+
+**What is not answered here.** `_a_` → `_i_` is a different question and stays open: implemented is a claim about code existing on disk, which an agent can verify by reading the tree, where answered is a ruling only a person can give. Nothing in this record bears on it, and no prompt was changed for it.

@@ -293,3 +293,22 @@ sequenceDiagram
     O->>PM: portfolio refresh after closure
     PM-->>O: 21 Circles, all terminal
 ```
+
+## Turn 4 — the two consumer findings
+
+Two defects a consuming project reported, relayed by the user through the consultation
+`260905-0529-consumer-findings-citation-form-and-decision-authority.md`. No issue record
+for either exists in this workbench; the consultation is their only local trace, and
+whether the user filed them in the consuming project is unresolved.
+
+**Finding 1, the citation contradiction: fixed.** The `_a_` row of the decisions marker
+table instructed the store-prefixed form that the same file's `## Filename Patterns`
+calls a violation and that `hooks/lib/citation-scan.ts` rejects. One sentence out, a
+pointer in. The neighbouring rows were read for the same drift and carry none.
+
+**Finding 2, decision authority: not fixed as reported, and deliberately.** The consumer's
+factual claim holds and its diagnosis does not: no filter failed, because a shipped prompt
+authorises the transition it treats as unauthorised, and its proposed self-citation check
+would report a form the rules permit. The question underneath — may a dispatched agent
+perform `_o_` → `_a_` at all — was filed as a decision and **answered by the user, option 1**:
+only the orchestrator, and only to relay a ruling the user gave.
