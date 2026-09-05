@@ -23,11 +23,11 @@
 // declared in the test file that bounds it, next to the measurement that derived
 // it. This file holds the arithmetic and the rule below, and nothing else.
 //
-// ## Re-baselining: the two events at which a baseline moves
+// ## Re-baselining: the three events at which a baseline moves
 //
 // A baseline map is the reference a bound measures growth from: what each file
 // weighed at the moment the surface was last settled. It is hand-edited, and it
-// moves at exactly two kinds of moment.
+// moves at the three kinds of moment named below and at no other.
 //
 //   1. AFTER A CLEANUP. Somebody has done the cut the bound asked for. Then, and
 //      only then, copy the per-file sizes out of the regenerated golden into the
@@ -40,18 +40,53 @@
 //      the always-on rule core (`rules-emission-golden.test.ts`), and on
 //      2026-08-15 for the three surfaces in `surface-growth-bound.test.ts`.
 //
+//   3. AT A MERGE OF TWO LINES THAT WERE EACH INSIDE THE BOUND. What this
+//      instrument measures is addition per line of development. A merge adds
+//      two lines' growth to one baseline at once, so two histories that were
+//      each measured and each passed can join into one that is over — by a sum
+//      neither of them wrote and no cut answers. Then, and only then, the
+//      baseline moves to the MERGED figure, and the entry names the merge
+//      commit and BOTH PARENT FIGURES it reconciles, the way a cleanup names
+//      its cut and an arming names its gate.
+//
+//      THE CONDITION IS MEASURED, NEVER ASSUMED: each parent was inside the
+//      bound at its own head, measured there and written down here beside the
+//      merged figure, so a later reader can check that neither was over. A
+//      merge whose parents were not each inside is A CUT AS BEFORE — event 1
+//      and nothing else — because the line that was already over is over on
+//      growth somebody made, and joining it to another line did not change
+//      that. Nor does this event reach anything but the merged tree's own
+//      figure: growth that arrived with the merge commit's conflict
+//      resolution, and every edit made on top of it, is measured FROM the new
+//      baseline like any other addition. That is why the number copied in is
+//      the merged tree's and not the one the re-baselining commit leaves
+//      behind.
+//
+//      AND IT IS NOT THE THIRD EVENT THAT WAS ALREADY REFUSED. A Circle that
+//      needs room to do its work asked for one on 2026-08-22 and did not get it
+//      (`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`,
+//      option 1: the room was cut first). The two are not the same request. That
+//      one asks to be absolved of growth somebody is about to choose to make;
+//      this one reconciles two figures that were each already measured and each
+//      already passed.
+//
 // Between those, the baseline stays where it is — a reference that followed the
-// measurement would measure nothing. And neither event is the SILENT RAISE this
-// section exists to prevent, for one reason: both are written down. A cleanup
+// measurement would measure nothing. And no one of the three is the SILENT RAISE
+// this section exists to prevent, for one reason: each is written down. A cleanup
 // names the cut; an arming names the gate it armed and reproduces, AS TEXT, what
-// the re-baseline absolved — so the request the instrument had been making
-// survives the number moving. Editing a baseline to make a failing bound pass,
-// with no cut and no log entry, is neither of these and is the thing this file
-// is asking you not to do.
+// the re-baseline absolved; a merge names its commit and both parent figures —
+// so the request the instrument had been making survives the number moving.
+// Editing a baseline to make a failing bound pass, with no cut, no arming, no
+// merge and no log entry, is none of these and is the thing this file is asking
+// you not to do.
 //
 // The governing record for the arming form is
 // `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`
-// (option 1, answered by the user on 2026-08-14).
+// (option 1, answered by the user on 2026-08-14). For the merge form it is
+// `260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md`
+// (option 2, answered by the user on 2026-09-05), with the measurement that
+// raised it in
+// `260905-1755_*_the-merge-puts-two-surface-growth-budgets-over-while-neither-line-was-over-on-its-own.md`.
 // ---------------------------------------------------------------------------
 
 /**

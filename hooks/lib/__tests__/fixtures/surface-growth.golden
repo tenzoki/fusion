@@ -72,7 +72,7 @@
   guard-project-config-integration.test.ts 251
   guard-state-shape.test.ts 215
   helpers/citation-scan.ts 56
-  helpers/growth-bound.ts 123
+  helpers/growth-bound.ts 158
   helpers/guard-harness.ts 970
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
@@ -91,12 +91,12 @@
   reference-resolution-lint.test.ts 1004
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
-  rules-emission-golden.test.ts 1150
+  rules-emission-golden.test.ts 1154
   rules-voice-profile.test.ts 323
   sentence-identifier-containment.test.ts 425
   session-start-subdirectory.test.ts 159
   staging-drift.test.ts 673
-  surface-growth-bound.test.ts 608
+  surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 325
-  total 20766
+  total 20882

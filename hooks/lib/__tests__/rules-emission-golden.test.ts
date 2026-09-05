@@ -187,13 +187,16 @@ import { agentNames } from "./helpers/citation-scan.js";
 //
 // `RULE_BASELINE` is the reference both measurements read: the report measures a
 // role's extras from it, and the hard bound measures the universal core from it.
-// It is hand-edited, and it moves at exactly two moments, neither of which is the
+// It is hand-edited, and it moves at exactly three moments, none of which is the
 // silent raise this file warns about. THE RULE IS AUTHORED ONCE, in
-// `helpers/growth-bound.ts` `## Re-baselining: the two events at which a baseline
-// moves`, because since 2026-08-15 four surfaces obey it and a second copy would
-// be a second rule. Read it there. What is local to this file is the CUT LOG
-// above `RULE_BASELINE`, where the two events are recorded for THIS surface, and
-// the 2026-08-14 arming entry that is the only non-cut in it.
+// `helpers/growth-bound.ts` `## Re-baselining: the three events at which a
+// baseline moves`, because since 2026-08-15 four surfaces obey it and a second
+// copy would be a second rule. Read it there — the third, a merge of two lines
+// that were each inside the bound, arrived on 2026-09-05 and has not reached
+// this surface: `agents/`, `skills/` and the hook tests were the surfaces that
+// merge put over. What is local to this file is the CUT LOG above
+// `RULE_BASELINE`, where this surface's own events are recorded, and the
+// 2026-08-14 arming entry that is the only non-cut in it.
 //
 // `npx vitest run` is enough for this file: it measures rule text and needs no
 // compile at all. `npm test` also works and no longer wipes anything — the
@@ -676,10 +679,11 @@ function hardBoundMessage(g: Growth): string {
     "",
     "Regenerating does NOT clear this: the golden records what the files weigh, " +
       "RULE_BASELINE records what they are allowed to weigh from. RULE_BASELINE " +
-      "moves at exactly the two events named in `## Re-baselining: the two events " +
-      "at which a baseline moves` in helpers/growth-bound.ts — after a cleanup, or at " +
-      "a one-time arming written into the cut log. Editing it to make this " +
-      "assertion pass is neither of them.",
+      "moves at exactly the three events named in `## Re-baselining: the three " +
+      "events at which a baseline moves` in helpers/growth-bound.ts — after a " +
+      "cleanup, at a one-time arming written into the cut log, or at a merge of two " +
+      "lines that were each inside this bound. Editing it to make this " +
+      "assertion pass is none of them.",
     "",
   ].join("\n");
 }
@@ -1144,7 +1148,7 @@ describe("growth(), on synthetic file sets", () => {
     expect(msg).toContain(CORE[1]);
     expect(msg).toContain(`+${fmt(GROWTH_BUDGET + 500)}`);
     expect(msg).toContain("UPDATE_RULES_GOLDEN=1");
-    expect(msg).toContain("## Re-baselining: the two events at which a baseline moves");
+    expect(msg).toContain("## Re-baselining: the three events at which a baseline moves");
     expect(msg).toContain("helpers/growth-bound.ts");
   });
 });

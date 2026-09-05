@@ -26,3 +26,6 @@ reported ten rows across them.
 That paragraph names the one verdict the fence does not cover and the remedy for it — the store
 segment stated in words — and no agent reading only the always-on rule can file the record this
 merge had to repair four times.
+
+---
+Resolved: 260905-1839-coder-the-third-re-baselining-event-and-the-fence-correction.md `## What changed` — `rules/fusion-workbench-conventions.md` `## Marker globs` now names the verdicts the fence covers (the ones a lookup decides) against the one it does not (`store-prefixed`, settled from the token's shape, `git:ff52dd4a`), says the fence still holds the sweep off an exhibit, and gives the remedy: name the store in words rather than spelling it into the token. An agent reading only the always-on rule can no longer file the record this merge had to repair four times.

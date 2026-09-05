@@ -189,6 +189,59 @@ import { fmt, Growth, growth, grownLines, Sized } from "./helpers/growth-bound.j
 // itself its own savings back as head-room would be the arming mistake this file
 // already refused once.
 //
+// ## The merge re-baseline, 2026-09-05 — `skills/` and the hook tests
+//
+// This is event 3 of `## Re-baselining` in `helpers/growth-bound.ts`, the first
+// use of that event and the case it was written for: two lines of development
+// that were each inside the bound at their own head joined, and the sum put two
+// surfaces over.
+//
+// THE MERGE IS `420b022b` — `git merge origin/main`, joining this checkout's
+// line (head `18bb1f93`) to the line that shipped v10.21.0, v10.21.1 and
+// v10.22.0 from another checkout (head `7f9f2f4d`), from the merge base
+// `cda72f71`. All four figures are re-measured off `git` at those commits
+// rather than quoted, and the floors are re-summed at each of them:
+//
+//   surface           base      this line  the other  merged     budget
+//   skills/ bytes     239 833   240 410    240 037    240 614    240 439
+//   hook-test lines    19 876    20 374     20 266     20 766     20 375
+//
+// BOTH PARENTS WERE INSIDE, which is the condition event 3 turns on and the
+// thing a later reader is owed the numbers to check. The floors stand unmoved
+// at all four commits — 220 439 bytes and 17 875 lines, no baselined file added
+// or deleted on either line — so `skills/` had 29 bytes of head-room left on
+// this line and 402 on the other, and the hook tests had 1 line and 109. The
+// merged tree is over by 175 bytes and 391 lines. On `skills/` the merged delta
+// is exactly the two side deltas (+577 and +204 = +781); on the hook tests it is
+// +890 against +498 and +390, the two extra lines being the merge's own conflict
+// resolution in this suite's pin log (`reference-resolution-lint.test.ts`,
+// 996 -> 1 001 / 997 -> 1 004). Nobody wrote 391 lines: two people wrote 498 and
+// 390 against a shared floor that could absorb either one alone.
+//
+// WHAT THIS RE-BASELINE ABSOLVES, written as text so it survives the numbers
+// moving. Everything the two lines added between the arming and the merge and
+// did not cut: on `skills/` the 20 175 bytes now standing above the 2026-08-15
+// arming baseline, and on the hook tests the 2 891 lines above the 2026-08-17
+// one — a citation grammar with its checker and its sweep, the identity helpers,
+// the event query, and a test file for each. None of it was cut here and none of
+// it is being asked for; what these two surfaces are asked from here is the rate
+// they were asked for before, measured from the higher mark.
+//
+// THE MERGED FIGURE IS COPIED IN, NOT THE TREE THIS STEP LEAVES BEHIND. The
+// lines this step adds to `helpers/growth-bound.ts` and to this file are
+// measured FROM the new baseline like any other addition and come out of the
+// surface's next 2 500. That is deliberately not the 2026-08-15 precedent, where
+// the instrument's own 699 lines entered the baseline it bounds: an arming has no
+// earlier figure to move to, while event 3 names one, and taking the post-edit
+// figure would absolve this step's own growth on the strength of somebody else's
+// merge.
+//
+// THE OTHER TWO BOUNDED SURFACES DO NOT MOVE. `agents/*.md` measures 411 882
+// bytes on the merged tree against a budget of 417 843, and the always-on rule
+// core passes its own bound in `rules-emission-golden.test.ts`. Event 3 reaches
+// only the surfaces a merge put over; copying a merged figure into a baseline
+// that is passing is the silent raise, whatever produced the tree.
+//
 // ## What no bound covers
 //
 // Authored under that heading in `README-hooks.md`, and claimed by no step here.
@@ -240,9 +293,11 @@ interface Surface {
 /**
  * The agent prompts, in bytes. 399 843 at the 2026-08-15 arming.
  *
- * Hand-edited only at one of the two re-baselining events. The figures are the
+ * Hand-edited only at one of the three re-baselining events. The figures are the
  * post-removal sizes as Circle 260815-0007 leaves the tree; nothing was cut to
- * produce them.
+ * produce them. It does not move at the 2026-09-05 merge: this surface was
+ * inside its bound on the merged tree, and event 3 reaches only what a merge put
+ * over.
  */
 const AGENT_BASELINE: Record<string, number> = {
   "analyst.md": 21317,
@@ -262,71 +317,92 @@ const AGENT_BASELINE: Record<string, number> = {
   "taskplanner.md": 14375,
 };
 
-/** The skill bodies, in bytes. 220 439 at the 2026-08-15 arming. */
+/**
+ * The skill bodies, in bytes. 240 614 at the 2026-09-05 merge re-baseline, up
+ * from 220 439 at the 2026-08-15 arming: the merged tree's own figure, taken
+ * per file. See `## The merge re-baseline, 2026-09-05` above for the two parent
+ * figures, the check that neither was over, and what the move absolves.
+ */
 const SKILL_BASELINE: Record<string, number> = {
-  "archive/SKILL.md": 23705,
-  "cadence/SKILL.md": 17506,
-  "cleanup/SKILL.md": 23662,
-  "commit/SKILL.md": 6233,
-  "curate/SKILL.md": 12741,
-  "direct/SKILL.md": 9232,
-  "help/SKILL.md": 13351,
-  "log-activity/SKILL.md": 13559,
-  "memo/SKILL.md": 12560,
-  "migrate/SKILL.md": 26256,
-  "next/SKILL.md": 26249,
-  "setup/SKILL.md": 35385,
+  "archive/SKILL.md": 26364,
+  "cadence/SKILL.md": 16923,
+  "cleanup/SKILL.md": 23674,
+  "commit/SKILL.md": 6298,
+  "curate/SKILL.md": 12398,
+  "direct/SKILL.md": 10613,
+  "help/SKILL.md": 16919,
+  "log-activity/SKILL.md": 13629,
+  "memo/SKILL.md": 12336,
+  "migrate/SKILL.md": 26620,
+  "next/SKILL.md": 27604,
+  "setup/SKILL.md": 47236,
 };
 
 /**
- * The hook tests and their helpers, in lines. 17 875 at the 2026-08-17 cleanup
- * re-baseline, down from 19 453 at the 2026-08-15 arming: five entries dropped
- * with the files Circle 260816-1741 deleted, and the survivors taken as they
- * stand. See `## The cleanup re-baseline, 2026-08-17` above for what that
- * absolves and for why the other two maps did not move. The instrument still
- * counts itself — a bound that did not would be granting itself the one
- * exemption it exists to refuse.
+ * The hook tests and their helpers, in lines. 20 766 at the 2026-09-05 merge
+ * re-baseline, up from 17 875 at the 2026-08-17 cleanup re-baseline and 19 453
+ * at the 2026-08-15 arming: the merged tree's own figure, taken per file. See
+ * `## The merge re-baseline, 2026-09-05` above for the two parent figures, the
+ * check that neither was over, and what the move absolves — and
+ * `## The cleanup re-baseline, 2026-08-17` for the previous move. The
+ * instrument still counts itself, and so does this file: a bound that did not
+ * would be granting itself the one exemption it exists to refuse.
  */
 const TEST_LINE_BASELINE: Record<string, number> = {
-  "commit-message-path.test.ts": 366,
-  "config.test.ts": 795,
-  "context-manifest.test.ts": 476,
-  "deliverable-language-lint.test.ts": 141,
-  "derivable-enumerations-lint.test.ts": 462,
-  "domain-cascade-order-lint.test.ts": 235,
-  "domain-cascade.test.ts": 925,
-  "executor-verification-report-lint.test.ts": 218,
-  "fusion-commit-lock.test.ts": 372,
-  "fusion-count-sources.test.ts": 443,
-  "fusion-paths.test.ts": 879,
-  "glob-nomatch-lint.test.ts": 162,
-  "guard-bash-integration.test.ts": 346,
-  "guard-project-config-integration.test.ts": 423,
-  "guard-state-shape.test.ts": 251,
-  "helpers/citation-scan.ts": 574,
+  "archive-filter-key.test.ts": 40,
+  "citation-grammar-boundaries.test.ts": 116,
+  "citation-sweep.test.ts": 441,
+  "commit-message-path.test.ts": 315,
+  "committed-dist.test.ts": 332,
+  "config.test.ts": 859,
+  "context-manifest.test.ts": 472,
+  "deliverable-language-lint.test.ts": 138,
+  "derivable-enumerations-lint.test.ts": 453,
+  "domain-cascade-order-lint.test.ts": 234,
+  "domain-cascade.test.ts": 911,
+  "executor-verification-report-lint.test.ts": 217,
+  "fenced-code-exemption.test.ts": 224,
+  "fusion-checkout-name.test.ts": 177,
+  "fusion-citation-check.test.ts": 248,
+  "fusion-commit-lock.test.ts": 424,
+  "fusion-count-sources.test.ts": 442,
+  "fusion-events.test.ts": 322,
+  "fusion-identity.test.ts": 220,
+  "fusion-paths.test.ts": 873,
+  "fusion-prose-metric.test.ts": 174,
+  "fusion-session-domain.test.ts": 80,
+  "glob-nomatch-lint.test.ts": 148,
+  "guard-bash-integration.test.ts": 338,
+  "guard-project-config-integration.test.ts": 251,
+  "guard-state-shape.test.ts": 215,
+  "helpers/citation-scan.ts": 56,
   "helpers/growth-bound.ts": 123,
-  "helpers/guard-harness.ts": 972,
+  "helpers/guard-harness.ts": 970,
   "helpers/prompt-blocks.ts": 28,
-  "hook-fail-open.test.ts": 621,
-  "hooks-wiring.test.ts": 103,
+  "hook-fail-open.test.ts": 624,
+  "hooks-wiring.test.ts": 187,
+  "identity-mint-notice.test.ts": 118,
   "legacy-halt-clearing.test.ts": 213,
-  "marker-format-lint.test.ts": 186,
-  "monitor-warnings-panel.test.ts": 1079,
-  "path-literal-lint.test.ts": 342,
-  "paths.test.ts": 51,
-  "playmaker-backlog-mandate-lint.test.ts": 392,
-  "portfolio-citation-form-lint.test.ts": 171,
-  "provenance-header-lint.test.ts": 449,
-  "record-counts-measurement.test.ts": 521,
-  "reference-resolution-lint.test.ts": 979,
-  "review-coverage-mandate.test.ts": 336,
-  "review-coverage.test.ts": 804,
-  "rules-emission-golden.test.ts": 1159,
-  "rules-voice-profile.test.ts": 318,
+  "marker-format-lint.test.ts": 171,
+  "monitor-warnings-panel.test.ts": 1153,
+  "path-literal-lint.test.ts": 338,
+  "paths.test.ts": 31,
+  "plan-stopping-section-lint.test.ts": 266,
+  "playmaker-backlog-mandate-lint.test.ts": 357,
+  "portfolio-citation-form-lint.test.ts": 170,
+  "provenance-header-lint.test.ts": 448,
+  "record-counts-measurement.test.ts": 486,
+  "reference-resolution-lint.test.ts": 1004,
+  "review-coverage-mandate.test.ts": 353,
+  "review-coverage.test.ts": 818,
+  "rules-emission-golden.test.ts": 1150,
+  "rules-voice-profile.test.ts": 323,
+  "sentence-identifier-containment.test.ts": 425,
   "session-start-subdirectory.test.ts": 159,
-  "staging-drift.test.ts": 649,
-  "surface-growth-bound.test.ts": 628,
-  "turn-budget-lint.test.ts": 524,
+  "staging-drift.test.ts": 673,
+  "surface-growth-bound.test.ts": 608,
+  "turn-budget-lint.test.ts": 525,
+  "workbench-citation-lint.test.ts": 325,
 };
 
 /** See `## Where each head-room comes from`. Derived per surface, never shared. */
@@ -404,11 +480,12 @@ function boundMessage(s: Surface, g: Growth): string {
     "",
     "Regenerating the golden does NOT clear this — the golden records what the " +
       `files measure, ${s.key}'s baseline map records what they are allowed to ` +
-      "measure from. A baseline moves at exactly the two events in " +
-      "`## Re-baselining: the two events at which a baseline moves` in " +
-      "helpers/growth-bound.ts: after a cleanup, or at a one-time arming written " +
-      "into this file's arming log. Editing it to make this assertion pass is " +
-      "neither of them.",
+      "measure from. A baseline moves at exactly the three events in " +
+      "`## Re-baselining: the three events at which a baseline moves` in " +
+      "helpers/growth-bound.ts: after a cleanup, at a one-time arming written " +
+      "into this file's arming log, or at a merge of two lines that were each " +
+      "inside this bound at their own head. Editing it to make this assertion " +
+      "pass is none of them.",
     "",
   ].join("\n");
 }

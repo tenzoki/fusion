@@ -44,3 +44,6 @@ figures and their two acceptance conditions are stated separately above.
 Whether a bound whose subject is a rate of addition should be evaluated against a merge at all is
 not answered here, and is not this record's to answer. What is measured is that it currently is,
 and that the failure names no edit anybody made.
+
+---
+Resolved: 260905-1839-coder-the-third-re-baselining-event-and-the-fence-correction.md `## What changed` — the question this record left open was answered as a third re-baselining event (`260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md`, option 2), so no cut was owed and this record's acceptance test does not apply. `SKILL_BASELINE` and `TEST_LINE_BASELINE` moved to the merged tree's per-file figures, with the merge commit, both parent figures and the parents-inside check written into `hooks/lib/__tests__/surface-growth-bound.test.ts` `## The merge re-baseline, 2026-09-05`. All four figures per surface were re-measured off `git` and match the table above.
