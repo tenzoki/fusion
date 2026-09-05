@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260904-1640: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
+**Claim:** Unclaimed
 **Active spec/plan:** 260904-1651_*_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md
 **Active session history:** 260904-1050-orchestrator-session.md
 
@@ -67,3 +67,45 @@ than stale.
 - Turn 2 (session 260904-1050): commits `d5a27230`..`e9c14bdf`; Coherence verdict coherent; session history: `260904-1050-orchestrator-session.md`. Plan steps 4 to 8 done, the whole consumer block: presence canonicalisation over the git identity, Setup registering once per checkout, the claim message naming the holder, the monitor header and a SessionStart export. The skills growth surface was the binding constraint throughout and was paid by cutting duplication rather than substance, ending with 11 bytes free. Four defects filed, one closed.
 
 - Turn 3 (session 260904-1050): commits `2a1d6d82`..`3d91e3db`; Coherence verdict coherent; session history: `260904-1050-orchestrator-session.md`. Plan steps 9 to 14 done, the plan reaching `[DONE]` on all but step 15. The exit-1 halt gate was answered option 1, the mint stopped being silent without pretending to a detection it cannot make, the shipped documentation and the version reached v10.21.0, and the presence claim was measured against a control that isolates it. The suite reached exit 0 after the inherited sweep gate was closed with its cause named.
+
+## Closure note
+
+**Closed coherent on 260905, with one stopping clause not holding and eight defects open against
+the delivery.** Session history: `260904-1050-orchestrator-session.md`. Range `cda72f71..HEAD`,
+20 commits, reviewed in full by `260905-0933-coderev-the-checkout-registry-and-the-presence-join.md`.
+
+**The Directive was reached and measured, not asserted.** A registered checkout carries a name a
+reader recognises, and one person's several git identities count as one person where fusion reports
+presence. The second half was measured against a control that isolates it: two readings differ in
+`other_people` and in the alias field the store's mere presence renders, and a third run holding the
+store present in both while breaking only the person mapping differs from the joined reading by one
+line. Nothing on disk was rewritten, no migration ran, and a workbench with no entry reproduces the
+previous behaviour from the same code path rather than a fallback branch.
+
+**The clause that does not hold**, marked by the user at the closure gate: *"The `git clean` sweep no
+longer produces a silent new identifier."* The code reports and the channel swallows. `announce_mint`
+writes to stderr, and both callers that run first in a session discard stderr, the SessionStart hook
+among them — and that hook is the one that mints, because it runs before `/fusion:setup`. The unit
+test passes because it drives the script directly. Filed as
+`260905-0933_*_the-mint-announcement-is-unreachable-on-every-path-that-actually-mints.md`, the one
+high finding of the review, measured in a throwaway workbench rather than inferred.
+
+**Why `_c_` and not `_b_`, stated so it can be overruled.** The reconciliation verdict was
+`review-needed` and a Rebalance gate fired, which by the letter of the marker rule bars
+closed-coherent. The flag stood on two sentences of plan text that described something other than
+what was built; both were corrected before closure, and the tree was never wrong. Bounded Closure
+means the Directive was judged unreachable, and it was reached. The eight open defects are against
+the delivery's edges, not against its claim.
+
+**What this closure does not carry.** Step 15 is unrun by design: a session reads its helpers from
+the installed copy at start, `bin/fusion-checkout-name` is absent there, and every `[ -x ]` guard
+took its miss branch for this whole session. Steps 5, 6 and 8 are proven by unit test and by direct
+invocation from the work tree, which is the weaker claim and is stated as one. The end-to-end proof
+belongs to a session after `fusion --update`. The release is prepared and not made: the version
+reads 10.21.0 across three surfaces, the marketplace clone still reads 10.20.0, and no tag exists
+although `README.md` and `install.sh` already name one.
+
+**Two errors of the orchestrator's own are recorded in the session history rather than smoothed
+over:** a commit hash stated to the user and written into three records without ever being read back,
+and a measurement of the sweep gate taken with the installed helper to make a claim about a gate that
+compiles this repository. Both were caught by later passes rather than by the party that made them.

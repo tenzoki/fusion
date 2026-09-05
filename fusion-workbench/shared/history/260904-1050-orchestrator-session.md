@@ -3,7 +3,7 @@
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 **Directive:** Revise the identity decision. Attribution per git user is not sufficient: fusion needs an identity per local instance, so that several checkouts of one consumer project — on one machine or across several machines belonging to one person, possibly with different git identities — can run orchestrators in parallel. The proposed structure is an alias (petname/ahikunator style) carrying a worker-id (machine id, user name on the machine, local folder), the git name and email, and the real person. `person` aggregates work per human for cadence; the petname differentiates workbenches for the same person. The structure is tracked per project in git. Analyse the problem, test the idea, and put concrete proposals to the user.
 **Mode:** custom (analysis first, no implementation this Turn)
-**Status:** In progress
+**Status:** Complete
 
 ## Snapshot at session start
 
@@ -162,6 +162,46 @@ repository answers for the repository. Measuring one to make a claim about the o
 not a close-enough approximation; it is a different question. This is the second unchecked
 claim this session dressed as a checked one, the first being the commit hash above.
 
+## Budget
+
+Counts derived at closure by reading the stores against the session anchor `cda72f71` and the
+session start stamp `260904-1050`, across the shared stores and the Circle's own. The Circle's
+stores had to be counted separately: the pointer was cleared before the count ran, so the
+resolver no longer names them.
+
+| Metric | Count |
+|--------|-------|
+| Turns | 3 |
+| Plan steps resolved | 14 of 15, step 15 unrun by design |
+| Tasks skipped/deferred | 0 |
+| Issues created | 17 — 8 shared, 9 in the Circle |
+| Issues resolved | 4 — 3 shared, 1 in the Circle |
+| Decisions answered (`_o_`→`_a_`) | 4, each at a gate the user answered |
+| Decisions implemented (`_a_`→`_i_`) | 4 |
+| Decisions filed | 7 — 4 shared, 3 in the Circle |
+| Commits | 20 |
+| Agent errors | 0 |
+| Human gates hit | 6 |
+
+## Review coverage
+
+**Range:** `cda72f71..HEAD` — 20 commits
+**Covered by:** `260905-0933-coderev-the-checkout-registry-and-the-presence-join.md`, whose
+`**Reviewed-range:**` spans `v10.20.0..HEAD` and therefore contains this session's range whole.
+**Not covered:** none. The range read `uncovered=16` for most of the session and was tiled at
+closure by the Circle's one review pass.
+**Carried out-of-scope files:** 57, listed in that review's `**Not-opened:**` field — the Circle
+record, the plan, the step histories, the decisions and analyses, `hooks/dist/` and one fixture.
+They are what the next pass inherits.
+
+## Portfolio update
+
+`portfolio.md` was regenerated after the `_t_` → `_c_` transition; the playmaker's log is
+`260905-1018-playmaker-direct-dispatch.md`. The portfolio now holds 21 Circles, all terminal —
+17 closed-coherent, 3 bounded, 1 superseded — and no anticipated or active Circle, so the next
+piece of work starts from the backlog or from a fresh Directive. Two backlog entries are live and
+were left as they stood; neither needed splitting.
+
 ## Coherence
 
 <!-- RECONCILER-OWNED -->
@@ -176,3 +216,80 @@ claim this session dressed as a checked one, the first being the commit hash abo
 **Rebalance recommendation:** revise Grounding
 
 **Two things the recommendation is not, and the closure gate needs both.** It is not a verdict on the work: the tree is green at `326440dc` (48 files, 825 tests, exit 0), `bin/fusion-citation-check` reads `verdict=clean`, `bin/fusion-staging-drift` reads `verdict=clean`, no growth-bound baseline moved, and three of the four version surfaces agree with the fourth knowingly outstanding. The flag is on two sentences of record, one now repaired. And it is not a reading of the uncovered review range: `commits=16 uncovered=16`, confirmed here from the other side by the absence of any review file for this range, is advisory under `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` and flags no edge. It sets the confidence this verdict carries — every claim about 18 commits rests on the executors' self-reports, the suite, and this pass — and it is the user's to weigh at the closure gate, alongside the standing precondition that step 15 belongs to a session after `fusion --update`.
+
+## Session Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant O as Orchestrator
+    participant A as Analyst
+    participant S as Shaper
+    participant P as Planner
+    participant PM as Playmaker
+    participant C as Coder
+    participant BF as Bugfixer
+    participant CR as Coderev
+    participant R as Reconciler
+
+    U->>O: revise the per-git-user identity decision
+    O->>A: analyse, test the alias structure, propose options
+    A-->>O: 4 options, 4 decisions, 3 defects (23ffbe73)
+    O->>U: GATE which option
+    U-->>O: option 1, the attribute table
+    O->>U: GATE run it as a Circle?
+    U-->>O: as a Circle
+    O->>S: capture the Directive (anticipated-circle)
+    S-->>O: round 1, four questions
+    O->>U: relay the four questions
+    U-->>O: F1b F2b F3c F4b
+    O->>S: the answers, verbatim
+    S-->>O: Circle created (d4e0eedd)
+    U->>O: activate it
+    O->>PM: portfolio refresh before the mutation
+    PM-->>O: no cycle, no pointer contradiction
+    O->>P: plan the Circle
+    P-->>O: 15 steps, 2 gates (539ad346)
+    O->>U: GATE approve the plan
+    U-->>O: approved
+
+    Note over O: Turn 1
+    O->>U: GATE the worker field
+    U-->>O: option 1, never written
+    O->>C: S2 the registry helper
+    C-->>O: built, two pins stale (0dcbf992)
+    O->>BF: re-approve the two pins
+    BF-->>O: green, shares measured by revert
+    O->>C: S3 the layout tree and the partition
+    C-->>O: done (d5a27230)
+
+    Note over O: Turn 2
+    O->>C: S4 the presence join
+    C-->>O: measured identical to HEAD (092a15dc)
+    O->>C: S5 setup registers
+    C-->>O: stopped: budget unpayable in scope
+    O->>C: S5 again, header payment allowed
+    C-->>O: +592 bytes, fits
+    O->>C: S6, S7, S8 in parallel
+    C-->>O: S6 fits in +3 by cutting duplication (e9c14bdf)
+
+    Note over O: Turn 3
+    O->>U: GATE the exit-1 halt
+    U-->>O: option 1, the halt stays
+    O->>C: S10 the mint speaks
+    C-->>O: done, 44 lines (9ffb9911)
+    O->>C: S11, S12, S13, S14
+    C-->>O: presence claim measured against a control (dc2116f4)
+    O->>R: final reconciliation
+    R-->>O: review-needed; a hash naming no object, repaired
+    O->>U: GATE does the Directive stand?
+    U-->>O: it stands
+    O->>CR: the Circle's one review pass
+    CR-->>O: 8 issues, 1 high: the mint reaches nobody
+    O->>U: GATE the stopping clauses
+    U-->>O: the git clean clause does not hold
+
+    Note over O: Closed _c_ with one clause not holding
+    O->>PM: portfolio refresh after closure
+    PM-->>O: 21 Circles, all terminal
+```
