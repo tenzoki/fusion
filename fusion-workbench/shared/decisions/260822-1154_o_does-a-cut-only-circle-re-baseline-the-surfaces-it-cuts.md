@@ -63,3 +63,31 @@ the record binds the next cut-only Circle and nothing on disk settles it.
 
 ---
 Also seen: 260824-2022-ontocoder-close-the-32-referred-records.md by ontocoder — `260815-1942_*_nothing-detects-a-raised-growth-baseline-and-the-only-bound-on-one-is-a-comment.md` asks the neighbouring question, whether a baseline *raise* is meant to be detectable by anything other than a human reading a diff: the doctrine names two events at which a baseline moves and nothing asserts that a third has not happened. Referred here at its closure.
+
+---
+**Reconciliation 260905-2015 (reconciler, domain `code`, HEAD `5b84b13a`) — marker unchanged at `_o_`.
+No answer exists anywhere on disk, and one of this record's own Constraints has been overtaken.**
+
+Searched for an answer in the shared and Circle decision stores, the analyses and the September session
+histories: nothing rules on the question this record asks, and the practice of C0 is still the only
+thing standing in for one. No `Answer located:` line is written, because there is no answer to locate.
+
+**The overtaken constraint.** This record says "the user has already rejected declaring a third
+re-baselining moment. Any answer works inside the two events that exist, or changes one of them."
+A third event now exists. `260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md`
+was answered by the user on 260905 and implemented in `9f3dfae4`: a merge of two lines that were each
+inside the bound is a third event at which a baseline moves, provided both parents' figures are
+recorded with the merged one. `hooks/lib/__tests__/helpers/growth-bound.ts` now names three events, and
+two baselines moved under it with nothing cut.
+
+**What that does and does not do to this question.** It does not answer it: a merge is not a cut, and a
+cut-only Circle still has no ruling. What it removes is the premise that no third event may be declared
+at all — the rejection this record leans on was about a *proposed* third event under a different
+condition, and the user has since declared one under another. Whoever answers this record should read
+the merge event first, because the argument that carried it (the bound measures addition per line, and
+paying for growth nobody made is the fault) is the same argument this record's option 1 rests on.
+
+The neighbouring question this record already carries at its foot — whether a baseline raise is
+detectable by anything other than a human reading a diff — is also still unanswered, and the third
+event makes it larger rather than smaller: there are now three doorways and still nothing asserting
+that a fourth was not used.

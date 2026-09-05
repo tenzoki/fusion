@@ -39,3 +39,16 @@ rewrites the worked-example corpus whenever it is run from a subdirectory.
 
 Both programs name a corpus file by one spelling, anchored on the project root, so a file-wide
 exemption fires identically in the checker and the sweep from any working directory.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, unmoved, and confirmed on both sides.
+
+`hooks/citation-check.ts` still names every corpus file by a fixed project-relative spelling — the
+workbench prefix at `:248`, plus `CLAUDE.md`, `rules/<f>` and `docs/<rel>` in `projectFiles()` at
+`:200-211`. `hooks/citation-sweep.ts` still computes `rel = relative(cwd, realpathSync(abs))`, at
+`:569` for the repair pass and `:596` for the sweep. `RECORD_EXAMPLE_FILES` is keyed on `rel` in both,
+so the file-wide exemption fires from anywhere in the checker and only from the project root in the
+sweep.
+
+Still no effect on this tree, for the reason the record gives: `fusion.json` declares nothing under
+`rules/` or `skills/`, so neither exempt file is in the sweep's corpus.

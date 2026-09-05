@@ -44,3 +44,20 @@ The line in the first probe above produces one `circle-record` token spanning up
 `citation-grammar-boundaries.test.ts` carries a row for it. The bounded fix is the one the other
 two patterns took: end the pattern with `SENTENCE_STOP` rather than with a lookahead that refuses
 the stop outright.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, and reproduced against a live Circle
+directory rather than against a scratch one.
+
+`CIRCLE_REC_RE` at `hooks/lib/citation-scan.ts:339-345` still ends `(?![A-Za-z0-9_.\/-])`, the lookahead
+that refuses the stop, where its two neighbours now end in `SENTENCE_STOP`. A scanner probe over this
+workbench, naming a Circle that exists here:
+
+- the citation followed by a full stop — **no token at all**;
+- the same citation followed by a space — one `circle-record` token, whole.
+
+Still latent in this tree, as the record says: no live Circle-record citation here is followed by a stop.
+
+Same file and same constant as `260901-0320_*_the-sentence-stop-lookbehind-does-not-cover-the-bracket-characters-the-record-tail-admits.md`,
+and the bounded fix the two records propose is one edit: give this pattern the shared lookbehind and
+derive that lookbehind's class from the tail it closes.

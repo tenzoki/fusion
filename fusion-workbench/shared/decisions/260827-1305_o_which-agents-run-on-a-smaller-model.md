@@ -26,3 +26,13 @@ Not another probe: live evidence. After a few sessions on ≥ v10.15.0, run one 
 - Verification is transcript-based, per the analysis; a tiering change ships only with its transcript evidence cited.
 - The two-session shape applies: a frontmatter change is live only after `fusion --update` and a restart.
 - Nothing here touches the orchestrator, shaper, curator or editor: judgement-heavy, user-facing, or gate-holding roles are out of scope for the first round by construction.
+
+---
+**Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
+disk.** No agent prompt carries a `model:` frontmatter key: `grep -l '^model:' agents/*.md` is empty,
+so all 14 sub-agents still inherit the session's model and no tiering has been tried. The live evidence
+this record asks for — two candidate runs against the same workbench state, verified from the
+transcripts — does not exist anywhere in the tree. No `Answer located:` line.
+
+The first candidate this record names is the reconciler, and this pass is the kind of run it means. It
+was made on the session model and is therefore a control rather than evidence.

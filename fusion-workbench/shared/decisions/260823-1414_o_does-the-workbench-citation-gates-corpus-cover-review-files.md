@@ -133,3 +133,16 @@ this record's own filing commit. The file counts in the table (90, 34, 3) and th
 active Circle's third review was added one commit later. The token and dangling figures (522, 270 in
 64, 116 in 22, zero) are identical at both anchors and are unchanged. Filed as
 `260823-1640_*_the-corpus-decisions-measured-block-declares-an-anchor-whose-tree-gives-different-file-counts.md`.
+
+---
+**Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
+disk.** `inCorpus()` in `hooks/lib/__tests__/workbench-citation-lint.test.ts` still selects the same
+five kinds and no review file matches any of them. The corpus is the user's answer under the record
+this one would amend, so no pass may widen it; searched the decision stores, the analyses and the
+September histories and found nothing ruling on it. No `Answer located:` line.
+
+Two facts a re-measurement would need before an answer, both grown since the `## Measured` table:
+the tree now holds **108** review files rather than 90, of which 35 are in `shared/reviews/` rather
+than 34, and the corpus the gate runs over has grown from 2 416 files to 2 521. Option 2's repair debt
+therefore grows with time exactly as the record predicted, and the figure has to be re-taken with the
+project's own scanner rather than scaled from the old one.

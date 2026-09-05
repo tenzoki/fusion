@@ -1,7 +1,7 @@
 # Implementation Plan: repair three citation-grammar defects
 
 **Date:** 2026-08-31
-**Status:** Draft
+**Status:** Partially Complete
 **Spec:** none — planned from three filed defect records
 **Decidability:** The load-bearing question is defect 3's: *is this head-field value a pointer at a record or an identifier that names no record?* From the token text alone it is **not decidable** — a session identifier and a Circle directory name are both `<stamp>-<name>`, which is measured below and is what refutes candidate 3. So the mechanism changes rather than the approximation improving (`rules/critical-stance.md` §4): the grammar stops asking about the token and asks about the **field label**, an input `isHeadFieldValue()` already parses and which does separate the two classes. Defects 1 and 2 pose no such question — the tail class and the directory index are each decidable from what the mechanism already reads.
 
@@ -69,7 +69,7 @@ Two things this plan deliberately does **not** do. It builds no configuration su
 
 ## Implementation Steps
 
-### 1. The tail class stops at a word, not at a full stop
+### 1. [DONE] The tail class stops at a word, not at a full stop
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/citation-scan.ts`, `hooks/lib/__tests__/citation-grammar-boundaries.test.ts` (new), `hooks/dist/**` (rebuild)
@@ -114,7 +114,7 @@ cd hooks && npm run build && npm test                          # expect: exit 0,
 ```
 **If the reading differs:** a `dangling` above 302 means a row did not resolve — the checker names it, and the token is the evidence. A `dangling` below 302 means the lookbehind claimed something else too; `git stash` the change and diff the two checker outputs row by row, because a token that stopped being reported is not a token that was repaired (the standard `citation-sweep.test.ts:410` states for the sweep, applied here).
 
-### 2. An archive sweep directory is its own index entry
+### 2. [DONE] An archive sweep directory is its own index entry
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/citation-scan.ts`, `hooks/lib/__tests__/citation-grammar-boundaries.test.ts`, `hooks/dist/**`
@@ -296,3 +296,55 @@ cd hooks && npx vitest run lib/__tests__/surface-growth-bound.test.ts
 - [ ] Does the enumeration under candidate 1 need entries beyond `Bus session`? Answerable only over the reporting project's tree, with the same `grep` this plan used on ours. It is a step-3 input, not a design question, and an absent entry shows up as a false dangling row naming its own label.
 
 **No user gate beyond the plan approval and defect 3's property.** Every other decision in this plan is settled by a measurement stated here or by a contract already written down in the file it governs.
+
+## Reconciliation Log
+
+**260905-2015 (reconciler, domain `code`, HEAD `5b84b13a`) — marker unchanged at `_o_`,
+`**Status:** Draft` → `Partially Complete`, steps 1 and 2 marked `[DONE]`.**
+
+Every figure below is the command's own output at HEAD, not a reading of a diff or of a step's
+acceptance block.
+
+**Step 1 — landed, in `4f5834ef`.** `SENTENCE_STOP` is one constant at
+`hooks/lib/citation-scan.ts:296` and both tails carry it, `REC_RE` at `:324` and `BARE_RE` at `:354`,
+which is the plan's "one rule applied twice" taken as written rather than two fixes.
+`node hooks/dist/citation-check.js | grep -c "md\.'"` returns 0. Its record closes at this pass.
+
+**Step 2 — landed, in the same commit.** `circleDirs()` indexes each sweep directory in its own right
+and its docstring at `:803-808` names the defect record as the reason. A probe resolves the one sweep
+name cited bare in this tree to `archive/<sweep>` rather than to a Circle inside it, which is the
+clause the CLI could not have shown. Its record closes at this pass.
+
+**Step 3 — not started, and blocked on a ruling rather than on work.**
+`grep -rn IDENTIFIER_HEAD_FIELDS hooks/` finds nothing and the clause at `:912` is unchanged. The
+blocking question stands at `_o_` **with its recommendation withdrawn**: this plan recommended
+candidate 1, the field-label enumeration, and a measurement appended to that record on 260831-2215
+refuted it on the same kind of evidence that refuted candidate 3 — 26 distinct stamp-shaped head-field
+labels in this tree, and one label, `**Session:**`, carrying both a citation and a timestamp under the
+same name. A fourth direction is named there (an unresolvable head-field value classified
+`undecidable`) and the record says plainly it was never put to the user. **No executor can be
+dispatched against this step as it stands.**
+
+**Step 4 — partly done and not by this plan.** The two records for steps 1 and 2 reach `_c_` at this
+pass; the third stays `_o_` because its step is unbuilt, and the head-field decision stays `_o_`.
+`.claude-plugin/plugin.json` reads `10.23.0`, bumped several times by other work since this plan was
+written, so the step's version obligation is satisfied incidentally rather than performed.
+
+**Against `## Where this Circle stops`, condition by condition.**
+
+1. `dangling=301`, not the 299 the plan predicts. **Not a fault of either step**: the corpus grew from
+   2 416 files to 2 521 between the plan and HEAD, and 2 837 tokens with it, so the figure the plan
+   fixed is stale rather than missed. The eleven rows step 1 was to resolve are gone and the three rows
+   step 2 was to resolve are gone; what the plan could not foresee is what arrived after it.
+2. `node hooks/dist/citation-sweep.js --dry-run` reports `files=0 rewrites=0`. **Holds.**
+3. `cd hooks && npm test` is green, 50 files and 864 tests. **Holds.** `BASELINE` in
+   `reference-resolution-lint.test.ts` did move since the plan, twice, and each move carries its
+   re-approval note in the same commit as this file's contract requires; neither move was this plan's.
+4. `committed-dist.test.ts` green, so `hooks/dist/` is the compilation of the committed source. **Holds.**
+5. The hook-test surface is inside its head-room, and the two surface baselines moved on 260905 at a
+   merge of two in-budget lines (`9f3dfae4`), a third re-baselining event that postdates this plan.
+6. **Fails on both halves**: the third issue is `_o_` and the decision is `_o_`.
+7. A version is bumped. **Holds**, incidentally.
+
+**What is left of this plan is one step, and it is the user's to unblock.** Steps 1, 2 and half of 4
+are finished; step 3's whole content is a predicate nobody has a property for.

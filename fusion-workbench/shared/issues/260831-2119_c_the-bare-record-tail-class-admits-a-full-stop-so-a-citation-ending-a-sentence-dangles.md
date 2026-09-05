@@ -52,3 +52,24 @@ two neighbours while fixing it: a citation legitimately continues past `.md` in 
 `--repair`'s `chained-tail` class strips a marker tail that the retired bare-stamp rule appended. This
 is a full stop that was always in the prose, so no repair pass should rewrite the line: the fix is in
 the grammar, and the citing text is already correct.
+
+---
+Resolved: `4f5834ef` gave `BARE_RE` and `REC_RE` the same trailing lookbehind, held in one constant
+`SENTENCE_STOP` at `hooks/lib/citation-scan.ts:296` and appended at `:324` and `:354`, which is step 1
+of the plan `260831-2144_*_repair-three-citation-grammar-defects.md` taken as written.
+
+Verified at HEAD `5b84b13a`, each figure the command's own output rather than a reading of the diff:
+
+- `node hooks/dist/citation-check.js | grep -c "md\.'"` returns **0**; the record's own measurement was 11.
+- A scanner probe over this workbench, one line each: the same citation with and without a closing
+  full stop both produce one `bare-record` token ending at `.md`, status `resolved`. The stop is left
+  in the prose.
+- `cd hooks && npm test`: 50 files, 864 tests, green.
+
+The record's own correction stands and is not folded away: of the 11 rows, five were inside the
+frozen store and six were not.
+
+Two neighbours the acceptance told the fixer to watch were checked and are unmoved: a truncation
+continuing past `.md` still tokenises whole, and the ellipsis rule reads the same tail class. The one
+residual the plan named is unchanged behaviour and not a new hole — a run of stops after a basename
+is left exactly as it was.

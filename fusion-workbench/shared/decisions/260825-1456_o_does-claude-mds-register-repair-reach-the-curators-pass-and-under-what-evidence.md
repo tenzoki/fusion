@@ -48,3 +48,24 @@ None strong enough to name a winner, and the reason is stated rather than hedged
 `inference:` option 3 is the only one that keeps both things the 260821 answer was buying, a gate and a record, without asking the curator to certify a rewrite it has no evidence for. Its cost is real and is the one this record cannot resolve: nothing in the apply pass knows what to do with an entry another agent executed.
 
 `speculation:` option 4 may be the honest answer if the user, meeting `260820-2314_o_*` as the live question it was filed to be, reads the ceiling as governing output rather than conditioning text. That would dissolve this record rather than answer it, and it is worth putting the two questions to the user together for exactly that reason.
+
+---
+**Reconciliation 260905-2015 (reconciler, domain `code`, HEAD `5b84b13a`) — marker unchanged at `_o_`.
+No answer on disk, and one cross-reference this record leans on has changed state.**
+
+Nothing rules on the question. `agents/curator.md` still admits the same two grounds and still names
+the excluded case, so the routing is still to a writer whose discipline forbids the work. No
+`Answer located:` line is written.
+
+**The cross-reference that moved.** This record cites the em-dash ceiling's scope question as still
+open, twice, and the closing `speculation:` paragraph proposes putting the two questions to the user
+together on that basis. That record now carries `_d_` — deferred, on 2026-08-29, to a later Circle that
+meets the question again. So the pairing this record recommends is no longer available as written: one
+of the two questions has been pushed out and the other is this one.
+
+That does not decide anything here. What it does is remove the cheapest route the record named toward
+option 4, which was to let the ceiling's scope answer dissolve this question rather than answer it.
+Whoever opens this record should read the deferral first and decide whether reviving it is part of the
+answer or a separate act.
+
+The measurement itself was not re-taken at this pass, so the 126-over-9-646 figure stands as filed.

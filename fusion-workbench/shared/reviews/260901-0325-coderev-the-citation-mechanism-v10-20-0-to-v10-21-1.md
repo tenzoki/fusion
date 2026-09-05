@@ -199,3 +199,34 @@ same set.
 3. **F4** with whatever next touches `declaredCitationFiles()`. The leaf is new and unmeasured in the
    field; a silent short count is worth closing before a project depends on the figure.
 4. **F5, F6, F7** as cleanup. None changes a verdict today.
+
+---
+
+**Reconciliation annotation, 260905-2015 (reconciler, HEAD `5b84b13a`). Findings only; nothing above
+is rewritten.**
+
+**F1 — confirmed resolved.** Both halves landed. `7af91d5c` made the exemption a word test
+(`FABRICATED_NAME`, `hooks/lib/citation-scan.ts:439`), and `d30ca04a` swept the sixteen it had been
+hiding, 12 files and 16 rewrites. `node hooks/dist/citation-sweep.js --dry-run` reports
+`files=0 rewrites=0` at HEAD, and the gate at `citation-sweep.test.ts:428` is now green over a tree
+where the invisibility is gone rather than green because of it, which is what this finding asked for.
+The record closes at this pass.
+
+**F2, F3 — confirmed open, and the recommended sequencing still holds.** `SENTENCE_STOP` at
+`hooks/lib/citation-scan.ts:296` still restates `BARE_RE`'s tail class rather than deriving from the
+tail it closes, and `CIRCLE_REC_RE` at `:339-345` still ends in the lookahead that refuses a full stop.
+Both reproduce by probe at HEAD. The one-commit repair this section recommends is still the whole of
+the work.
+
+**F4 — confirmed open.** The drop at `hooks/lib/citation-scan.ts:1231` still has no note and no
+counter, and `declaredCitationNotes()` still has nothing to emit for it.
+
+**F5, F6, F7 — confirmed open.** The residual sort in `hooks/citation-sweep.ts:621` still carries no
+file key while the header at `:196` still promises file order; the `extraPaths` advisory in
+`hooks/lib/config.ts` still composes a constant `expected` against the container's own type; and the
+checker and the sweep still name a corpus file by two different spellings, project-relative at
+`hooks/citation-check.ts:248` and cwd-relative at `hooks/citation-sweep.ts:596`.
+
+The cross-cutting observation this review closes on — that the exemption chain is where the next defect
+of this kind will be — has since been paid twice over: the same chain carries the still-open
+false-positive direction of F1, and the foreign-record question that no exemption expresses.

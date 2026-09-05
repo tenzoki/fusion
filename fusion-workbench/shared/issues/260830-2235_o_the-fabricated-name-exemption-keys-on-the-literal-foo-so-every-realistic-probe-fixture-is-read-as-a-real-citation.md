@@ -85,3 +85,19 @@ filed this record shipped four commits into that file without touching it, delib
 named it and no decision proposed a keying property. The gate corpus is unchanged too, so the cost is
 unchanged. A live record sits inside the blocking gate, so an instance in one still reddens
 `npm test` for whoever pulls.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, and the one commit that touched the
+exemption since moved it **away** from this record's acceptance rather than toward it.
+
+`7af91d5c` replaced the substring test with `FABRICATED_NAME` at `hooks/lib/citation-scan.ts:439`, a
+word test that matches the placeholder only where a non-alphanumeric opens and closes it. That was the
+correct fix for the sibling record, the false-negative direction, which closed at this pass. It makes
+the exemption **narrower**, so a fixture written to look like a real record is no less judged than it
+was: the test still asks for the one placeholder substring and a serious fixture still carries none.
+
+The acceptance is unmet and unapproached. No decidable keying property has been proposed anywhere in
+the tree, and the question this record leaves open is the same question it left open.
+
+Whoever answers it answers both directions at once, which is what the sibling record said and what
+`7af91d5c` demonstrates by having settled only one.

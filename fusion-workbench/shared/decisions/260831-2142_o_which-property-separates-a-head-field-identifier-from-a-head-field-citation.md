@@ -128,3 +128,17 @@ on refuted candidates and the two mechanical defects were shipped instead.
 The 20 rows in the reporting project stay visible and named. Nothing here is urgent; what is urgent
 is that the next person to open this record does not act on a recommendation that measurement has
 already removed.
+
+---
+**Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
+disk, and no recommendation standing.** The clause the answer would change is unedited, and
+`grep -rn IDENTIFIER_HEAD_FIELDS hooks/` finds nothing, so nothing has been built against any
+candidate. Searched the decision stores, the analyses and the September histories: the fourth direction
+this record names — an unresolvable head-field value classified `undecidable` rather than `dangling` —
+appears nowhere but here and was never put to the user. No `Answer located:` line.
+
+This is the only one of the nine open decisions that **blocks a plan step**: step 3 of
+`260831-2144_*_repair-three-citation-grammar-defects.md`, whose two siblings landed and closed at this
+pass. The defect it answers,
+`260831-2121_*_the-head-field-exemption-reads-only-a-bare-stamp-so-a-name-shaped-identifier-in-a-head-field-is-judged.md`,
+is therefore blocked on a user ruling and not on executor work.

@@ -74,3 +74,17 @@ failure cannot be the criterion.
 Either a citation form that names a record in another project's workbench and is judged as
 something other than `dangling`, with the decidable property it keys on stated; or a written
 decision that no such form exists, carried where a writer about to cite one will read it.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, unmoved.
+
+The exemption chain in `hooks/lib/citation-scan.ts:890-913` runs seven reasons — `retired-layout-file`,
+`fenced-code`, `blockquote`, `announced-illustration`, `footer-template`, `placeholder`,
+`fabricated-name`, `glob` and `head-field` — and none of them expresses a foreign record. Resolution is
+still one lookup against this workbench's own index, so a real record held elsewhere can only answer
+"no". No decision record proposes a form.
+
+The prediction the record made has held: the workaround it named, fencing the token and naming the
+project in prose, is what every cross-project session has done since, including the two records filed
+on 260831 from a consuming project's report, both of which fence the reporter's stamps for exactly
+this reason.

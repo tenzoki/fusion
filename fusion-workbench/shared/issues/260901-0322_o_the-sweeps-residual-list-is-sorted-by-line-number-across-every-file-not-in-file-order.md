@@ -34,3 +34,18 @@ It is filed here because that is the pass that opened the file.
 
 The residual rows are grouped by file, in the corpus order the census lines above them use, and
 ordered by line within a file. Or the header stops saying "in file order".
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, unmoved.
+
+`hooks/citation-sweep.ts:593` still declares `residual` once, above the `for (const abs of files)` loop
+at `:594`, as `[number, number, string][]` — line, column, rendered row, and no file key. `:621` still
+prints it as `residual.sort((a, b) => a[0] - b[0] || a[1] - b[1])`. The header at `:196` still promises
+"in file order".
+
+Reproduced: `node hooks/dist/citation-sweep.js --dry-run` over this repository reports `residual=2870`
+and the rows interleave across unrelated files by line number — three consecutive rows from this run
+name a shared history file, a shared decision and a Circle issue.
+
+Neither branch of the acceptance is taken: the rows are not grouped by file and the header still makes
+the claim.

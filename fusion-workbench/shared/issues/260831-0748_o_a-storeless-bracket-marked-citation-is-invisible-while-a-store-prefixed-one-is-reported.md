@@ -84,3 +84,21 @@ That is the condition filed as
 `260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md`,
 demonstrated by this paragraph: naming those two as citations put two permanent dangling rows in this
 record and reddened the gate, which is how the fencing above came to be here.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, and the asymmetry reproduced
+unchanged.
+
+Two scanner probes over this workbench, the same citation differing only in whether a store segment
+precedes it:
+
+- with the segment — one `record` token, status `store-prefixed`, the fix line naming the storeless form;
+- without it — **no token at all**.
+
+`REC_RE` at `hooks/lib/citation-scan.ts:318-324` still admits `[` and `]` in its tail while `BARE_RE`
+at `:353-356` does not, which is the whole of the asymmetry. The header still states the retired-syntax
+stance without stating the asymmetry as a decision, so neither branch of the acceptance is met.
+
+The neighbour this record kept separate is still separate and still open: whether such a record may be
+**resolved** is `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`,
+which stands at `_o_` with its recommendation still asking for a citation count nobody has taken.

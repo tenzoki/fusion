@@ -52,3 +52,23 @@ rather than as a list of fields, or the record says plainly that an enumeration 
 A fence would call the value an exhibit, and it is not: there is nothing to point at. A rewrite would
 invent a target. This is the one class in the corpus where the citing text is right, the record does
 not exist, and both are correct at once.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open. Its two siblings closed at this pass
+and this one did not, for the reason the plan gave: it is the step blocked on a user answer.
+
+`hooks/lib/citation-scan.ts:912` still reads
+`kind === "stamp-bare" && isHeadFieldValue(...)`, the clause the record quotes, and
+`grep -rn IDENTIFIER_HEAD_FIELDS hooks/` finds nothing. The three probes reproduce exactly as filed: a
+bare stamp in a head field is `exempt(head-field)`, the same stamp plus a name is `stamp-name/dangling`,
+and a real record citation in a head field resolves.
+
+The blocking question `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md`
+stands at `_o_` **with no recommendation** — the plan recommended the field-label enumeration and a
+measurement appended to that record on 260831-2215 refuted it, on the same kind of evidence that
+refuted the third candidate: one label carries both kinds under the same name. The record names a
+fourth direction, classifying an unresolvable head-field value `undecidable`, and says plainly it was
+never put to the user.
+
+So this defect is blocked on a user ruling and not on work, and nothing about it can be fixed by
+dispatching an executor.

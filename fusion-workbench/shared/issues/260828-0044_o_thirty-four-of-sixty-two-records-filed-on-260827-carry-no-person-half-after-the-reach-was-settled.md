@@ -30,3 +30,27 @@ The rule text landed at `260827-1845` (plan step 8 of the closed Circle); record
 ## Fix direction
 
 Either the agents' history-entry shape and the decision template write the line where the rule says they do, and the next reconciliation re-measures; or the user closes the multi-user spec bounded with this criterion named. The reconciler moves neither.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, and materially smaller. Re-measured
+rather than carried forward, because the record's own fix direction asks the next reconciliation to
+re-measure.
+
+Over every record in `issues/`, `decisions/`, `history/` and `reviews/` stamped `2609*`, in the live
+Circles and in the shared stores, `archive/` excluded — **89 files**:
+
+- 84 carry a person half.
+- 75 carry it in the form the rule mandates, `**Filed by:** <agent>, Name <email>`.
+- 9 carry it in a second spelling that arrived since: `**Filed by:** coder (Name <email>, checkout <hex>)`.
+- 5 carry no person at all, every one of them a session-history entry.
+
+So the class the original count named — history entries missing the field — has gone from 21 of 21 to
+5 of the September set, and the decision, issue and review kinds are fully compliant. The criterion
+this record blocks, C3's third in `260822-1136_*_spec-fusion-becomes-a-multi-user-tool.md`, is still
+unmet: "every agent that files a record writes the field" is false for five.
+
+**A second finding this pass turned up and did not fold into the count.** The nine parenthesised
+records are not a miss — they carry the person and the checkout — but they are a second form of a
+field the rule states once, and a reader or a gate counting the mandated form reads them as absent.
+That is a shape question rather than an omission, and whoever answers this record should decide it in
+the same pass rather than meet it a third time.

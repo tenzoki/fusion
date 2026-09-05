@@ -41,3 +41,18 @@ The repair planned for defect 2 does not answer this. It widens `REC_RE`'s tail 
 ## Recommendation
 
 None yet. The choice turns on how many bracket-named frozen records exist across real consuming projects and how often they are cited: 226 files are measured in one project, and the number of *citations* of them is not. Take that measurement before answering.
+
+---
+**Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
+disk.** The stance is unchanged: `hooks/lib/citation-scan.ts` still declines the bracket marker on
+purpose, and a probe confirms the two halves of the shape are still split — a bracket-marked citation
+carrying a store segment is reported, the same citation without one produces no token. No
+`Answer located:` line.
+
+The measurement the Recommendation asks for before answering — how often such a record is actually
+**cited**, as against how many exist — has not been taken in any project. Until it is, this record is
+blocked on data rather than on judgement.
+
+The detection half is tracked separately and is still open as
+`260831-0748_*_a-storeless-bracket-marked-citation-is-invisible-while-a-store-prefixed-one-is-reported.md`,
+which asks only whether the citation is seen. The two remain independently answerable.

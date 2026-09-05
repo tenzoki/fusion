@@ -60,3 +60,27 @@ anchor, 302 at HEAD. The Circle also produced the case the record is about in mi
 lines that came back onto the surface are pin re-approval attributions, comment prose the cuts
 themselves required. Correctly open; the record says why it is not answerable inside a Circle that
 may not move a baseline.
+
+---
+**Reconciliation 260905-2015 (reconciler, domain `code`, HEAD `5b84b13a`) — marker unchanged at `_o_`.
+No answer on disk; one Constraint's premise has moved and the constraint itself survives it.**
+
+Nothing in the tree rules on what the surface counts. The collector in
+`hooks/lib/__tests__/surface-growth-bound.test.ts` is still a recursive walk counting newlines with
+`fixtures/` the only exclusion, so option 1 is still the status quo carried forward rather than an
+answer. No `Answer located:` line is written.
+
+**The premise that moved.** This record's Constraints say a recomputation "is neither of the two
+re-baselining events. The user has rejected a third." There are three events now:
+`260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md`
+was answered by the user and implemented in `9f3dfae4`, and `hooks/lib/__tests__/helpers/growth-bound.ts`
+names all three.
+
+**The constraint survives the premise.** The new event is a merge of two in-budget lines, which is not
+a recomputation under a changed counting rule, so options 2 and 3 are still unreachable without an
+arming or a fourth event. What changes is the reason: it is no longer "the user has refused to declare
+a third" but "the third that was declared is not this one". That is a smaller obstacle and it should be
+stated as the smaller one when this record is answered.
+
+The pressure the record was about is still low rather than gone. The surface stands inside its
+head-room at HEAD and `cd hooks && npm test` is green, 50 files and 864 tests.

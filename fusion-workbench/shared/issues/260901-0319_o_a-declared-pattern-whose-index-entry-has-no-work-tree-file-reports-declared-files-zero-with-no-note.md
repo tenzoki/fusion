@@ -43,3 +43,16 @@ nothing nameable at all").
 A pattern git names but that resolves to no readable file produces a line on stderr saying so, and
 `declared-files=` never reports a silent drop as a taken count of none — the rule this module
 already applies to `unavailable`.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, unmoved.
+
+`declaredCitationFiles()` in `hooks/lib/citation-scan.ts:1197-1237` is unchanged in the respect this
+record names. The four refusal branches and the `unmatched` branch each push a note; the drop at
+`:1231` is still `if (seen.has(abs) || !existsSync(abs)) continue;` — no note, no counter, no line of
+output. `declaredCitationNotes()` at `:1245-1254` emits one line per `refused` and one per `unmatched`
+and has nothing to emit for this sixth outcome, so `declared-files=0` is still indistinguishable from
+a pattern that matched nothing.
+
+Over this repository the condition does not arise today: `node hooks/dist/citation-check.js` reports
+`declared-patterns=3 declared-files=48`, every declared file present.

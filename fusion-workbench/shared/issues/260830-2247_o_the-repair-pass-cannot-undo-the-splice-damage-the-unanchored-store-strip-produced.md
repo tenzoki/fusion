@@ -57,3 +57,18 @@ that mechanism.
 Either a repair class that reverses the splice, with the decidability argument stated, or a
 written decision that git is the remedy and the documentation says so where somebody about to run
 `--write` will read it.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open on both branches of its acceptance.
+
+`hooks/citation-sweep.ts` still documents and implements three repair classes and no fourth: the
+`Repair` tuple at `:486` types the class as `"date-field" | "chained-tail" | "doubled"`, `repairsOn()`
+at `:495` produces only those, and the header's repair section at `:214-232` names the same three.
+Every one keys on a token that begins at a stamp and has acquired a suffix; nothing reads a prefix.
+
+The second branch is unmet too. No decision record anywhere in the workbench answers this question —
+the shared decisions store holds nine open records and none of them is about the splice — and the two
+places a person about to run `--write` reads say only what guard (a) already buys in general: the
+script header at `bin/fusion-citation-sweep:21` and `:55`, and the same sentence in
+`docs/upgrading-to-v10-20.md`. Neither names the splice shape, and neither is a written decision that
+git is the remedy for it.

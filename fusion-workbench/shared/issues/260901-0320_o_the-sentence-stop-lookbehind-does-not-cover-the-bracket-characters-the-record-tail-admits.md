@@ -45,3 +45,22 @@ A store-prefixed citation whose token ends in `]` and that ends a sentence produ
 the stop, and `citation-grammar-boundaries.test.ts` carries a row for it. The narrower fix is to
 derive `SENTENCE_STOP`'s class from the tail class it is appended to rather than restating one of
 them.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, and reproduced.
+
+`SENTENCE_STOP` at `hooks/lib/citation-scan.ts:296` is still `(?<![A-Za-z0-9_…*-]\.)`, and `REC_RE`'s
+tail at `:323` still admits `[` and `]`. A scanner probe over this workbench, one line of prose each:
+
+- a store-prefixed token ending `]` and closing a sentence produces a token that **keeps the stop**,
+  and the `fix` string it hands the writer carries the stop too;
+- the control, the same token with a basename before the stop, produces the token without it.
+
+So the two tails are still out of step and the reported token still tells a reader to write a full stop
+into a citation. `citation-grammar-boundaries.test.ts` exists now (added by `4f5834ef`, extended by
+`7af91d5c`, 8 cases) and carries no row for this one.
+
+The record shares a file and a constant with two siblings: this one and
+`260901-0321_*_a-circle-record-citation-that-ends-a-sentence-produces-no-token-at-all.md` are both the
+sentence stop meeting a pattern it was not derived for, and the narrower fix the record proposes —
+deriving the lookbehind's class from the tail it is appended to — is the same edit that fixes both.

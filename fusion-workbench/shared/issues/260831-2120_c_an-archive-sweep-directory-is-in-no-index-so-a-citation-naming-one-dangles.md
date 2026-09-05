@@ -48,3 +48,21 @@ things to hold while fixing: the resolver reports what a token resolved **to**, 
 must report its own path rather than a Circle path inside it; and the sweep-directory pattern already
 exists in the file and is read by this same index, so the fix reuses it rather than adding a second
 spelling of the shape.
+
+---
+Resolved: `4f5834ef` made the sweep directory an index entry in its own right — step 2 of the plan
+`260831-2144_*_repair-three-citation-grammar-defects.md`. `circleDirs()` in `hooks/lib/citation-scan.ts`
+now adds each sweep's own name beside the Circle directories it already walked into, and its docstring
+says so at `:803-808`, naming this record as the reason.
+
+Verified at HEAD `5b84b13a`: a scanner probe over this workbench reads the sweep name cited bare as one
+`stamp-name` token, status `resolved`, where the record measured `dangling`. `node hooks/dist/citation-check.js`
+reports no row carrying that name. `cd hooks && npm test`: 50 files, 864 tests, green.
+
+The correction this record made to the reporter — that the walk already indexed the Circle directories
+*inside* a sweep and only the sweep itself was missing — is what the fix was built on, and the entry
+resolves to the sweep's own path rather than to a Circle path inside it, as the acceptance required.
+
+Out of scope then and still: a sweep named as a **path** produces no token, because every pattern's
+left anchor refuses a slash in front of the stamp. That is unchanged behaviour, stated in the record's
+own second probe.

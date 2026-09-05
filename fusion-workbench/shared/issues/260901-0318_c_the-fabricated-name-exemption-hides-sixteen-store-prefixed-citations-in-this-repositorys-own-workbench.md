@@ -65,3 +65,28 @@ Still open, and the reason this stays `_p_`: the sixteen are not yet rewritten. 
 `--write` is a hand-run act behind its own census guard and belongs to the user, and nothing here
 is committed. Session log:
 `260901-0332-coder-the-fabricated-name-exemption-becomes-a-word-test.md`.
+
+---
+Resolved: both halves landed, in two commits.
+
+The exemption became a word test in `7af91d5c`: `FABRICATED_NAME` at `hooks/lib/citation-scan.ts:439`
+matches the placeholder only where a non-alphanumeric opens and closes it, so `footer` is no longer
+exempt and the seven fixtures spelled with a marker still are.
+
+The sixteen were then swept in `d30ca04a` — 12 files, 16 rewrites, exactly the census this record
+measured — which is the half that kept the marker at `_p_`.
+
+Verified at HEAD `5b84b13a`, each figure the command's own output:
+
+- `node hooks/dist/citation-sweep.js --dry-run` reports `files=0 rewrites=0`, and the gate that
+  asserts it over this repository is green rather than green-by-invisibility, which is this record's
+  acceptance read the way it was written.
+- `node hooks/dist/citation-check.js` reports `store-prefixed=395` over the whole corpus, none of it
+  hidden behind this exemption; the four rows still carrying the placeholder substring are two live
+  store-prefixed citations in a Circle history file, one stale marker and one record whose own slug
+  contains it.
+- `cd hooks && npm test`: 50 files, 864 tests, green.
+
+The sibling record this one names — the false-positive direction, where a realistic fixture carrying
+no placeholder is judged as a real citation — is **not** settled by either commit and stays open.
+Narrowing the exemption moved it further from an answer, not closer.

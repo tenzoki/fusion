@@ -48,3 +48,14 @@ None yet, and deliberately: the choice between options 1 and 2 turns on whether 
 
 ---
 Note (2026-08-31, analyst): plan `260831-0024_*_a-project-declares-its-citation-bearing-paths.md` shipped through `bb934a4f` without touching `isTestFixture`, so the skip stands exactly as quoted above and this record stays open as filed. The 51-file measurement in the Question section was taken at `7be624e7`.
+
+---
+**Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
+disk.** `isTestFixture` in `hooks/citation-sweep.ts` stands exactly as quoted in the Question, and
+both the sweep and the repair pass still call it at the head of their per-file loops. No
+`Answer located:` line.
+
+The record's own reason for standing open still holds unchanged: `fusion.json` declares `bin/*`,
+`hooks/*.ts` and `hooks/lib/*.ts` and no fixture path, so the skip is inert for the declared route and
+guards only the hand-passed one. The choice between options 1 and 2 still turns on a fact about
+practice, and nothing in the tree records that practice.

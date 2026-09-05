@@ -19,3 +19,26 @@ The playmaker spells a store-prefixed path inline when reporting a measurement a
 **Repair applied 260904 (coder).** `agents/playmaker.md` `## Output — the portfolio`: the citation paragraph is rewritten to carry the statement-versus-pointer rule for a **path** as well as for a marker, bound to the measurement warnings where it fires (`citation-check-verdict` and any warning naming which files carry a finding), with the two sanctioned forms and their source. `portfolio.md` line 107 is corrected in place to the storeless Circle name, keeping which files carry the hits and the un-investigated count discrepancy. `hooks/lib/__tests__/workbench-citation-lint.test.ts` passes.
 
 **The marker stays `_o_`.** The Acceptance above is a property of a playmaker *run*, and a session reads its agent roster from the installed copy at start, so the run that proves the prompt edit belongs to the next session (the note on proving it above). Close it there.
+
+---
+Resolved: the proof run the record reserved for the next session has happened. `portfolio.md` was
+regenerated in full on 260905-1018 (history entry `260905-1018-playmaker-direct-dispatch.md`), a
+session later than the 260904 prompt repair, so the edited `agents/playmaker.md` was the roster this
+run read.
+
+Verified at HEAD `5b84b13a`, against the record's four acceptance clauses:
+
+- `hooks/lib/__tests__/workbench-citation-lint.test.ts` passes; `cd hooks && npm test` is 50 files,
+  864 tests, green.
+- `node hooks/dist/citation-sweep.js --dry-run` reports `files=0 rewrites=0` over the whole corpus,
+  so zero for `portfolio.md` and zero for the run's own history file; both files' only residual rows
+  are their own stamps, status `resolved`.
+- Every Circle in the regenerated briefing is named by its storeless directory name and every backlog
+  entry by its storeless basename. No line carries a store segment.
+- The `## Recently closed (_c_ / _b_)` heading and every transition warning keep their marker letters,
+  which is the distinction the naive repair destroys.
+
+One clause is **unexercised rather than proven**: "with its measurement warnings still naming which
+files carry the hits". This run's Warnings section reads `(none)`, because it had nothing to warn
+about. The behaviour is unrefuted and untested; the next run that does carry a finding is what
+exercises it.

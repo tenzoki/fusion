@@ -11,3 +11,16 @@ The consequence is mild and is why this is filed rather than fixed in passing: `
 Adjacent but not the same mechanism: `260828-0853_*_setup-step-0j-misses-a-class-l-entry-that-is-untracked-but-not-ignored.md` is about the setup skill's own probe, not about the staging classifier.
 
 Acceptance: `classify(".asset-provenance", "")` returns `in-flight` with a reason naming `/fusion:setup`, and `bin/fusion-staging-drift` prints it in the in-flight class over a workbench where it is modified.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, and reproduced rather than inferred.
+
+`LIVE_STATE` in `hooks/lib/staging-drift.ts:178-187` holds eight entries and `.asset-provenance` is
+not among them; `.fusion-setup` is, at `:186`. Running `bin/fusion-staging-drift` over this
+repository's own dirty tree prints the pair side by side, which is the acceptance's negative:
+
+- `unclassified    M .asset-provenance  (not a record store and not live state — nothing is claimed about it)`
+- `in-flight       M .fusion-setup  (the setup marker — written by /fusion:setup)`
+
+The consequence is still mild for the reason the record gives: `unclassified` is never a fault and the
+verdict reads `clean`.

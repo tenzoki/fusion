@@ -57,3 +57,17 @@ The question is whether that lever is built, and when.
 would be attached to is unblocking a project today, and building the lever inside it trades that
 against a case nobody has met. The record stands so the third instance meets a written answer instead
 of being rediscovered.
+
+---
+**Reconciliation 260905-2015 (reconciler, HEAD `5b84b13a`) — marker unchanged at `_o_`, no answer on
+disk.** `hooks/lib/config.ts` carries one leaf under `citations`, `extraPaths`; no
+`exemptHeadFields` key exists in the loader, in `fusion.json` or in the template. No
+`Answer located:` line.
+
+The record's own Recommendation names option 2 and calls itself "what makes it a decision rather than
+an omission", but a record's own recommendation is not a ruling and the marker stays where it is.
+
+The condition option 2 waits on has moved further away rather than closer: the enumeration this record
+is the recurrence of was itself refuted on 260831-2215, in the record above, so there is currently no
+list for a project to extend. Whoever answers the parent question decides whether this one still has a
+subject.

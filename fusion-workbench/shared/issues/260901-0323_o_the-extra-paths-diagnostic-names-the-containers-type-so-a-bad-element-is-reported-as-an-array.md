@@ -39,3 +39,18 @@ with one sentence that is accurate for exactly the first of them.
 The advisory for a bad element names the element and the property it failed, and the one for a
 non-array still names the type. A shared `expected` string cannot do both, so the rule needs a
 message the check produces rather than a constant beside it.
+
+---
+Reconciled 260905-2015 (reconciler, HEAD `5b84b13a`): still open, unmoved.
+
+`hooks/lib/config.ts` is unchanged in every respect this record names.
+`CONTAINER_LEAF_RULES.citations.extraPaths` at `:384-385` still pairs `isArrayOfNonEmptyStrings` with
+the constant `expected: "an array of strings"`; `validateLayer()` at `:508` still composes
+`must be ${rule.expected}, got ${describeValue(leafValue)}`; and `describeValue()` at `:437` still
+returns the container's type. So a list holding an empty string is still told it must be an array of
+strings and is an array.
+
+The drop itself is still correct, which is why this is a message defect and not a behaviour one.
+
+Same file as no other open record: this is the only one of the twenty-three that would be repaired by
+an edit to `hooks/lib/config.ts`.

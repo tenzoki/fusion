@@ -486,3 +486,36 @@ record; it is the user's call and not the reconciler's.
 *One box the notation decision leaves as it is.* C1's seventh (`:142`) carries the inline "condition did not arise" clause option 2 of `260827-1756_*_how-does-a-checkbox-criterion-say-that-its-condition-never-arose.md` prescribes; it stays `[ ]` by that decision, and no pass needs to re-derive it again.
 
 *Left for the user.* With every Circle terminal and one behavioural criterion short, this spec can close only by a user's direction (bounded, with `:181` named) or by the behaviour catching up; a reconciler moves neither.
+
+---
+
+**260905-2015 (reconciler, domain `code`, HEAD `5b84b13a`) — marker unchanged at `_o_`,
+`**Status:** Partially Complete` unchanged, no criterion ticked or unticked.**
+
+Two criteria across C0 to C4 are unticked. One of them, C1's stop-and-report branch, carries its own
+annotation saying the condition never arose; that is settled and is not re-opened here.
+
+**The other is the only thing between this spec and closure, and it is measurably closer than the
+record that tracks it says.** C3's third criterion — "every agent that files a record writes the
+field" — was last measured on 260827, when 34 of 62 records missed the person half. Re-measured at
+this pass over every record in `issues/`, `decisions/`, `history/` and `reviews/` stamped `2609*`,
+in the live Circles and the shared stores, `archive/` excluded: **89 files, 84 carrying a person half,
+5 carrying none, and all 5 of them session-history entries.** The decision, issue and review kinds are
+fully compliant, and the 21-of-21 history miss the original count was made of is now 5 of the
+September set.
+
+The criterion is still **false as written**, so the tick does not move. What has changed is the size
+of what remains and where it sits: one record kind, one writer role, five files.
+
+**One finding the re-measurement turned up that no record holds.** Nine of the 89 carry the person in
+a second spelling, `**Filed by:** coder (Name <email>, checkout <hex>)`, where the rule states
+`**Filed by:** <agent>, <person>` with the checkout on its own line. They are not misses — the person
+and the checkout are both there — but a reader or a gate counting the mandated form reads them as
+absent, which is how this pass first counted 14 rather than 5. The shape question is appended to
+`260828-0044_*_thirty-four-of-sixty-two-records-filed-on-260827-carry-no-person-half-after-the-reach-was-settled.md`,
+whose fix direction is where it belongs, rather than filed as a new record.
+
+**The spec's second closure route is unchanged and is the user's.** Its own fix direction says either
+the writing sites are repaired and the next reconciliation re-measures, or the user closes this spec
+bounded with the criterion named. This pass has performed the re-measurement half; the reconciler
+moves neither.
