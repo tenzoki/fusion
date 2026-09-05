@@ -32,3 +32,8 @@ That `git clean -xdf` is a common act, or that any measured instance of this exi
 ## Acceptance test
 
 Either the identifier survives a sweep of ignored files, or `bin/fusion-identity` distinguishes a first mint from a re-mint and says which one happened. Deleting `.checkout-id` in a checkout that has already written event lines, then running the helper, produces a stated outcome rather than a silent new value.
+
+---
+Resolved: 9ffb9911 — the mint stops being silent. `bin/fusion-identity` now prints two stderr lines on the branch that writes `.checkout-id`: that an identifier was minted because the file did not exist, and how many other checkout identifiers the workbench already carries, split by source. Both counts read tracked files, so both survive the sweep they describe.
+
+**The acceptance offered two outcomes and the second was taken, with the first ruled out rather than skipped.** Either the identifier survives a sweep, or the helper distinguishes a first mint from a re-mint and says which happened. Neither was built, because the second is **not decidable**: after `git clean -xdf` no local file tells the two apart, and the registry entry cannot help, the pointer naming it being the file that was deleted. So the mechanism changed instead of the claim being strengthened. The helper reports the two facts that are decidable, names the two causes it cannot separate, and leaves the inference to the human whose tree it is. Verified by hand in a scratch workbench: identifier deleted, helper re-run, both lines printed, stdout and exit code unmoved, a second call silent.

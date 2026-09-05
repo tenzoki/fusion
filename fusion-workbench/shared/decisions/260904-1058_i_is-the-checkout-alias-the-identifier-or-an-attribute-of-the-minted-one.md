@@ -41,3 +41,6 @@ A generated default the user may replace at Setup is better than pure generation
 
 ---
 Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the analysis, and what the user answered` — option 1, attribute; the minted eight hex stays the key and stays the written value.
+
+---
+Implemented: 092a15dc — the hex stays the key and the written value: `canon()` joins on the git identity, the claim field and every event line still carry the hex, and the alias is resolved for display only at the four sites `4ff9d2e0` changed. No record and no event line was rewritten.

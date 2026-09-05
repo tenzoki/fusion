@@ -54,3 +54,6 @@ Superseded by:
 
 ---
 Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the analysis, and what the user answered` — option 1, one tracked file per checkout keyed by the eight hex, class R1, chosen by the user in his own words.
+
+---
+Implemented: 0dcbf992 — `bin/fusion-checkout-name` writes and reads one file per checkout under `shared/checkouts/`, keyed by the eight hex; the store joined the layout tree and class R1 at `d5a27230`, and its consumers landed at `4ff9d2e0` and `092a15dc`.

@@ -45,3 +45,6 @@ Option 1. `inference:` The halt's value was never mainly about the record's text
 Answered: 260904-1050-orchestrator-session.md `## Turn 3 — the exit-1 halt gate` — option 1, the halt stays and its reason is restated to the first clause alone; the user answered "1" at the step-9 gate of the plan.
 
 **What step 10 must therefore do:** no behaviour changes anywhere, and no caller gains or loses a halt. What changes is text. `bin/fusion-identity`'s header drops the second clause of exit 1's stated reason, the one about a record naming nobody, which a registry makes false; the reason becomes the first clause alone, that a tree which cannot commit produces records no other checkout will ever see. `rules/fusion-workbench-conventions.md` `### Who filed it` is brought into line with the same reading, so a reader meeting the halt is told what it now rests on rather than being left with a justification the registry has retired.
+
+---
+Implemented: 9ffb9911 — option 1 realised as text: `bin/fusion-identity`'s exit-1 reason is cut to the clause a registry cannot falsify, and `rules/fusion-workbench-conventions.md` `### Who filed it` carries the same reading. Behaviour is unmoved, and a test case pins that exit 1 fires exactly where it fires at `cda72f71`.

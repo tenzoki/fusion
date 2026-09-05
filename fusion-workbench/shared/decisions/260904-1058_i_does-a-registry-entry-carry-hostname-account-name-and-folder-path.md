@@ -48,3 +48,8 @@ Option 2. Option 1 is defensible and loses a little; option 3 inverts the burden
 Answered: 260904-1050-orchestrator-session.md `## Turn 1 — the worker-field gate` — option 1, never written; the user answered "1" at the step-1 gate of the plan.
 
 **What step 2 must therefore do:** no `**Worker:**` field and no `--worker` flag exist. `bin/fusion-checkout-name` neither writes nor reads a worker value, `register` takes no such argument, `resolve` emits no `worker=` line, and step 5's Setup question offers nothing about hostname, account name or folder path. Nothing in this project publishes any of the three.
+
+---
+Implemented: 0dcbf992 — realised by absence, which is verifiable rather than merely intended: `bin/fusion-checkout-name` carries no `**Worker:**` field, `register` takes `[--alias A] [--person P]` and nothing else, `resolve` emits no `worker=` line, and one of the helper's nine cases asserts a written entry contains no `worker` at all. `/fusion:setup` Step 0i (`4ff9d2e0`) offers nothing about hostname, account name or folder path.
+
+**Marker note.** The plan's step 14 would leave this record `_a_`, on the reading that an answer of "never written" requires no code. It is `_i_` instead, and the departure is deliberate: the answer did shape code, it is the reason the helper has two flags rather than three, and a test asserts the absence. A reader meeting `_a_` here would look for realisation still owed, and none is.
