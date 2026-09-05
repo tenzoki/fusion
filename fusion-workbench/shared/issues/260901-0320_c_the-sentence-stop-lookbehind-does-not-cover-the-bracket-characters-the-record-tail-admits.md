@@ -67,3 +67,17 @@ deriving the lookbehind's class from the tail it is appended to — is the same 
 
 ---
 Resolved: 12dee877 — SENTENCE_STOP is gone as a hand-written constant. recordTail(chars) returns the tail class and the lookbehind that closes it from one spelling, so REC_RE stop now carries the brackets its tail has admitted since 4cffcae4. A store-prefixed token ending in a bracket no longer keeps the sentence full stop, and the fix string no longer tells the writer to put one inside the basename. Pinned in citation-grammar-boundaries.test.ts. Not covered: the derivation closes the two greedy-tail patterns; a future pattern with a third tail class has to call recordTail rather than inherit.
+
+---
+Reconciled 260905-2234 (reconciler, HEAD `4db7dddb`): the closure holds. `recordTail()` at
+`hooks/lib/citation-scan.ts:314` returns `{cls, stop}` from one spelling; `BARE_TAIL` and `REC_TAIL`
+both call it, so `REC_RE`'s stop carries the brackets its tail admits. The three-sentence diagnostic
+behaviour was re-exercised against a scratch project and the "not covered" clause is exact: a third
+tail class inherits nothing.
+
+**One residue the repair left.** The constant it deleted is still named twice in the same file's
+prose, in the present tense — `:336` "the dangle `SENTENCE_STOP` repairs" and `:384` "`SENTENCE_STOP`
+has nothing to do here" — while `grep -rn SENTENCE_STOP hooks/ --include='*.ts'` outside `dist/`
+returns only those two comment lines. `reference-resolution-lint` reads paths and heading anchors,
+not identifiers, so no gate sees it. Recorded here rather than filed: it is prose in the file this
+record's own repair rewrote.

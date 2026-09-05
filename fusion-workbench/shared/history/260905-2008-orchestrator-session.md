@@ -140,3 +140,83 @@ What the flagged edge says is that the first condition cannot be met by dispatch
 of the nineteen are executor work and seven are the user's. The highest-leverage act behind this
 recommendation is the user answering the blocking decisions — beginning with the head-field property,
 whose plan step is otherwise finished work waiting on one predicate.
+
+## Coherence, loop 2's verification pass
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: 15 closure notes verified against the tree (11 closed by repair, 4 closed as already-repaired) / 3 drift items, 1 of them live / 0 open `coderev` or `ontorev` findings among the eleven, all six of the review's F2 through F7 close correctly (Artifact at fault). The live item is `260828-0853`'s repair, whose `check-ignore` branch asks about a directory's own path while the `dir/*` ignore form this project mandates covers the contents, so Setup reports `.guard-state` as a departure in this repository today while `git status --untracked-files=all` is silent and `git add` stages nothing. Filed as `260905-2234_*_step-0js-new-unignored-branch-fires-on-a-directory-whose-contents-are-ignored-by-the-dir-star-form.md`. The two repaired items: a release gate red at the dispatch HEAD `cd623b6f`, from a store-prefixed citation in the record loop 1 filed in its own closing commit, repaired concurrently at `4db7dddb`; and `260901-0320`'s repair leaving two present-tense references to the constant it deleted. Every other claim in the fifteen notes is borne out, and three are stronger than stated: `260901-0324`'s two sweep runs are byte-identical rather than agreeing on one row, `260901-0322` measured 556 non-contiguous files against 0, and `260904-1839`'s clean portfolio carries 15 resolved citations rather than none.
+- Artifact↔Directive: the five commits in `git log 5b84b13a..HEAD` move toward the stated Directive, none orthogonal and none away. `12dee877` and `ea819262` are the eleven defect repairs, `27b21b5d` and `e9bd3e53` the two record-closure passes, `cd623b6f` the end-of-loop analysis the Directive asks for by name, and `4db7dddb` the citation repair. The Directive's "analyse the state at the end of each loop" is met at `cd623b6f` and its "take decision support from an agent" at the same commit.
+- Grounding↔Directive: not re-derived this pass and unchanged since loop 1's reading: no decision marker moved in `5b84b13a..HEAD`, and the nine records touched there took reconciliation evidence only. Loop 1's finding stands, sharpened by the analysis at `e9bd3e53`: of the seven defects it reported as unmovable by any dispatch, four are movable, two wait on a rate measurement and exactly one is undecidable as posed. So the first stop condition is still unreachable autonomously, and the gate in front of it is five paragraphs rather than five documents.
+
+**Rebalance recommendation:** revise Artifact
+
+Loop 1's recommendation was `revise Grounding` and it is not withdrawn; it is now the second-highest
+rather than the highest, because the analysis at `e9bd3e53` reduced the user's column from seven
+records to five questions and this pass found a live fault in shipped text. The Artifact item is one
+edit to one `elif` in `skills/setup/SKILL.md`, and it fires at Setup in fusion's own repository on
+every run, which is why it outranks a Grounding revision that is already scoped and costed.
+
+## Per-Loop Log, continued
+
+### Loop 2 (Turn 2)
+
+Opened with a **scoped** reconciliation rather than a second full walk: the loop-1 pass and the
+end-of-loop analysis had both read the corpus within the hour, so the question worth asking was
+narrower and sharper. Does each of loop 1's closure notes say something the tree bears out? The
+notes were written by the orchestrator from the executors' own reports, which is exactly the
+arrangement in which a claim passes unchecked.
+
+**Fourteen of fifteen closures hold. One repair is wrong.** The `elif` that loop 1 added to Setup's
+Step 0j tests whether an entry is ignored by asking `git check-ignore` about the entry's own path.
+The `dir/*` form this project mandates for directories excludes a directory's *contents*, not its
+path, so the branch reports a departure for `.guard-state` and `.commit-lock` while git itself
+picks up nothing. It prints a false line in this repository on every Setup run. Filed as
+`260905-2234_*_step-0js-new-unignored-branch-fires-on-a-directory-whose-contents-are-ignored-by-the-dir-star-form.md`.
+
+Loop 1 accepted that repair on a five-root scratch test, and the fifth root used a directory with
+**no** ignore rule where the mandated form is `dir/*`. The test was real and the fixture was wrong,
+which is the failure mode a passing test cannot report.
+
+**One closure note overstated by hedging.** `260901-0321`'s note said the dangling census "may
+rise". Running the pre-repair build beside the current one over the same 2 534 files returns
+byte-identical counts, so the shape has no instance in this corpus and the cheap measurement that
+settles it was never taken. A hedge is not free: it reads as a measurement that was made.
+
+**A release gate was red at the HEAD the verification was dispatched against, and the cause was
+the orchestrator's own.** The record filed in loop 1's closing commit quoted a foreign project's
+commit message verbatim, spelling a path into that project's workbench. The citation gate reported
+it store-prefixed; the sweep would have rewritten a path naming nothing in this workbench. Repaired
+at `4db7dddb` before the verification pass reported it, which is why that pass saw HEAD move under
+it and read the repair as a second orchestrator on this checkout. There is no second orchestrator
+here; there is a second fusion session, on another project, which is what the `/tmp` collision
+record is about.
+
+That mistake is worth more to the corpus than the sentence it cost. Spelling a foreign workbench
+path is precisely the case
+`260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md`
+describes, so that record now carries a walked-into instance rather than a constructed example.
+
+**The intermittent-failure measurement, and an honest limit on it.** Forty-five full-suite runs in
+all. The last eight of the twenty-five-run batch were red deterministically and are explained by
+the citation regression above, not by any race. Of the seventeen runs before it, four were red,
+across six distinct cases in four different files — the staging classifier, three separate
+review-coverage cases, the guard state shape and the hook fail-open path. That is not two flaky
+tests, which is what the two existing records describe between them; it is a property of the
+suite. The limit: none of those runs had a genuinely quiet machine, since agents and the
+orchestrator were writing throughout, so what is established is the rate under load. A quiet-tree
+rate is still unmeasured and the difference between the two is the interesting number.
+
+**Four repairs dispatched**, on disjoint files, the regression first: the false Step 0j branch
+(`skills/setup/SKILL.md`), the foreign-record citation form together with two stale references the
+loop-1 repair left behind (`hooks/lib/citation-scan.ts`), the splice repair's fourth class with a
+written git remedy for the half that is not machine-repairable (`hooks/citation-sweep.ts`), and a
+header template for history entries (`rules/fusion-workbench-conventions.md`).
+
+Two of those implement an analysis recommendation on which the user has not ruled, and they are
+marked here rather than presented as settled. Both are reversible in one commit, and the Directive
+asked for autonomous work; the five rulings that genuinely need the user were put to them when the
+loop opened.

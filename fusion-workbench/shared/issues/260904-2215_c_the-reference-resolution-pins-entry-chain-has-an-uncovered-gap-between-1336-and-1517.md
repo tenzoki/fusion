@@ -45,3 +45,25 @@ unreconstructed, not one of 181.
 
 ---
 Resolved: ea819262 — the chain audit found three breaks totalling 35 paths, not one gap of 181; the record headline was an artefact of reading line by line a comment whose middle line carries twenty-five chained entries. Eight entries recovered from git history, each marked as a recovery and naming its commit, appended into the existing single line at net zero lines. The two smaller findings the record named are preserved rather than tidied: the entries are not in chronological order and carry no ordinals, and a preface now says so.
+
+---
+Reconciled 260905-2234 (reconciler, HEAD `4db7dddb`): the closure holds, re-walked independently.
+
+**The three breaks are closed.** Every `paths A -> B` entry on the chain line was extracted in order
+and each entry's opening figure now equals the next one's closing figure across all 34 adjacencies,
+from `1517 -> 1520` down to `1336 -> 1350`, which meets the `1325 -> 1336` on the line above. The
+pre-repair file walked the same way still shows the three the previous pass named — 1466/1464,
+1462/1431, 1376/1374 — and shows nothing else in that range.
+
+**The recovery count checks out.** Nine `recovered 2026-09-05` marks stand beside entries; one of the
+nine is the transition figures restored to the six-times summary entry at `9c056b6c`, leaving the
+eight the note claims, each naming the commit it came from. Ten `paths` entries are new against
+`ea819262^`, of which one is the `1622 -> 1624` BASELINE re-approval.
+
+**One thing outside this record's scope, recorded and not filed.** Walked in physical-file order from
+`const BASELINE` downward, seven further adjacency breaks stand in the 1544-1603 region, on the
+one-per-line entries above the chain line. All seven predate this repair — the same walk over
+`ea819262^` finds ten breaks, these seven plus the three now closed. They are not necessarily faults:
+the chain's own preface states the entries are not in chronological order with each other, so a
+file-order adjacency walk is not the invariant there. Nothing is claimed about them beyond that they
+did not arrive with this repair.

@@ -64,3 +64,16 @@ derive that lookbehind's class from the tail it closes.
 
 ---
 Resolved: 12dee877 — CIRCLE_REC_RE and CIRCLE_RE now share one name-ending constant, so a Circle-record citation at a sentence end produces a token where it produced none at all. One guard went in with it: with the full stop out of the lookahead, the optional extension group would give .md back on a _x_circle.mdx and report a token a rewriter would splice under an extension it never covered; a negative lookahead refuses that backtrack. Probed both. Not covered: this repairs detection, so citations that were invisible now enter the dangling census and may raise the reported figure.
+
+---
+Reconciled 260905-2234 (reconciler, HEAD `4db7dddb`): the closure holds and its "may raise the
+reported figure" clause is now measured rather than hedged. The repair was real — `CIRCLE_REC_RE` and
+`CIRCLE_RE` share `NAME_END`, the `(?!\.md)` guard refuses the `.mdx` backtrack, and both are pinned
+in `citation-grammar-boundaries.test.ts`.
+
+**The census did not move.** The pre-repair build (`12dee877^` `hooks/dist/`) was run against the
+current tree beside the current build, same 2534 files: `tokens=23373 resolved=18018 dangling=301
+store-prefixed=396` from both, byte-identical. The repair added no token here, because the shape it
+detects has no instance in this corpus — the three occurrences of `_x_circle.md.` are a `$REC.tmp`
+sentence, a `260825-2023/_b_circle.md.` with no `circles/` segment, and this record's own `<circles>`
+placeholder. A rise, if it comes, comes from a consuming project.
