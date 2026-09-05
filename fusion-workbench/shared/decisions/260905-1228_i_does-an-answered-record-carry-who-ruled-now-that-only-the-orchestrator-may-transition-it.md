@@ -48,3 +48,6 @@ The gain from option 1 is bounded and worth naming plainly: it makes the claim v
 Answered: 260904-1050-orchestrator-session.md `## Turn 4 — the two consumer findings` — option 1, the resolution line names who ruled, reusing the shape `**Filed by:**` already uses; ruled by user, Kai Stalmann <ks@qantr.com>.
 
 **What the option's own cons keep**, and they are not withdrawn by the answer: thirty existing records carry no such field and are not swept, so the absence of a ruler means "written before this rule" and never "nobody ruled". And the field records a claim rather than proving one — an agent willing to ignore the transition bound is equally willing to write `user` into it. What is bought is that a reader who wants to check has something to read, which today is nothing.
+
+---
+Implemented: ff52dd4a — `Answered:` and `Deferred:` carry `ruled by <agent name or "user">, <person>`; the other three do not, and `### Decision files` states the cut and its reason so it is not re-opened. No sweep and no gate, per the answer.

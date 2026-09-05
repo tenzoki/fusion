@@ -46,3 +46,6 @@ Answered: 260904-1050-orchestrator-session.md `## Turn 4 — the two consumer fi
 **Written in the form it answers**, deliberately: this line carries an anchor rather than a line number, and the ruler per the sibling decision answered in the same exchange. Whoever normalises the format may normalise this line with the rest.
 
 **Existing records are not swept.** Records are not rewritten in this project, and option 1's own pros rest on that: eleven of thirty already comply and become compliant by reclassification rather than by edit. The nineteen that use a line number, a third form or a following-line citation stand as they are. The rule binds what is written from here.
+
+---
+Implemented: ff52dd4a — `rules/fusion-workbench-conventions.md` `## Filename Patterns` mandates the anchor and carries the reason the rule moved; `## State Markers — decisions` and `### Decision files` spell it on all five lines; the worked example teaches it.
