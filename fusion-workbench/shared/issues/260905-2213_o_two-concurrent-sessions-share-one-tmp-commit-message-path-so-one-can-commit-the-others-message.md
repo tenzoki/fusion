@@ -14,10 +14,17 @@ ids are short and conventional, so they agree often. Observed, not reasoned abou
 At 22:08 on 2026-09-05 this session's `/tmp/fusion-commit-msg-L1-RECONCILE.txt` was replaced by
 a commit message belonging to a different session working on a different project. The
 replacement is identifiable and leaves no room for another reading: it is written in German
-against a project with 347 open defect records and a `menue.rs`, it names
-`fusion-workbench/shared/history/260905-2054-reconciliation.md` as its source, and it carries
+against a project with 347 open defect records and a `menue.rs`, its `Source:` line names a
+`260905-2054` reconciliation history file in that project's workbench, and it carries
 `Claude-Session: https://claude.ai/code/session_01YGhmkbAMAFN41W32hjhy9B` where this session is
 `session_01G3zwGUwFLp2LoJrEQbT8Wt`.
+
+That `Source:` line is itself an instance of the open record
+`260830-2254_*_a-record-citing-another-projects-workbench-record-is-reported-dangling-forever-and-no-citation-form-expresses-it.md`,
+found by walking into it: this record's first version spelled the foreign path out, the citation
+gate reported it store-prefixed, and the sweep would have rewritten a path that names nothing in
+this workbench and never will. The stamp and the kind of file are named here instead, which is
+what the vocabulary can express today.
 
 Nothing was corrupted here, and that is timing rather than protection. This session had already
 run `git commit -F` on that path at 21:31, thirty-seven minutes before the overwrite. Had the
