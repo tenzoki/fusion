@@ -29,6 +29,27 @@
  *                  project's shipped text); a directory is walked for `*.md`,
  *                  a file is taken as named whatever its extension
  *
+ * ## The declared corpus
+ *
+ * Since 2026-08-31 the run also reads every file the project DECLARED as
+ * citation-bearing in `citations.extraPaths` in its `fusion.json`, resolved by
+ * `declaredCitationFiles()` against `dirname(--root)` and deduplicated by
+ * absolute path. They join the corpus at the same place a `<path>` argument
+ * does, BEFORE guard (a) is asked, so the guard covers them with no new guard
+ * code. The loader's diagnostics and one line per pattern that matched nothing
+ * or was refused go to stderr; the summary line below is untouched by any of
+ * it, byte for byte, because `lib/__tests__/citation-sweep.test.ts` pins it as
+ * a release gate. A project that declares nothing sweeps exactly what it swept
+ * before.
+ *
+ * `citation-check.ts` resolves the same leaf through the same function: the
+ * two hand-run helpers share one corpus, because a reporter narrower than the
+ * rewriter is how this program came to change files the checker then declared
+ * clean. `lib/__tests__/workbench-citation-lint.test.ts` deliberately does not
+ * read the declaration and is not to be made to — that gate has no approvable
+ * baseline and runs in everyone's `npm test`, so a corpus set by an editable
+ * configuration leaf would redden the suite of somebody who edited nothing.
+ *
  * ## The three guards on a writing mode
  *
  * A sweep over a workbench touches every record in it, and fusion's own first
@@ -40,13 +61,64 @@
  * Three guards stand between `--write` and the tree, each evaluated before a
  * byte is written:
  *
- *   (a) The workbench must be inside a git work tree, tracked by it
- *       (`git ls-files --error-unmatch <workbench>`), and the tree must be
- *       clean (`git status --porcelain` empty). Any extra `<path>` must sit
- *       inside that same work tree. A failure is one line on stderr naming
- *       the condition and why, and exit 4: without a commit to return to, a
- *       damaged rewrite has no way back, and a dirty tree would mix the sweep
- *       into somebody's unrelated diff.
+ *   (a) The workbench must be inside a git work tree and tracked by it
+ *       (`git ls-files --error-unmatch <workbench>`), any extra `<path>` must
+ *       sit inside that same work tree **and be tracked by it**, asked with
+ *       that same `git ls-files --error-unmatch`, and **no uncommitted change
+ *       may name a file this run will read**. That last is the corpus question, not a
+ *       clean-tree question: the corpus is the one `main()` builds, every
+ *       `*.md` under the workbench plus each extra `<path>` resolved the way
+ *       `main()` resolves it, computed once and handed to the guard so the
+ *       guard and the run cannot disagree about what will be written. A
+ *       failure is one line on stderr naming the condition, and the offending
+ *       paths where it has them, and exit 4: without a commit to return to, a
+ *       damaged rewrite has no way back, and a change already standing in a
+ *       file the sweep rewrites would mix the two into one diff.
+ *
+ *       It asks about the corpus because a clean tree is not reachable here.
+ *       `fusion-workbench/orchestrator-events.jsonl` is tracked (class R2 in
+ *       `rules/workbench-tracking.md`) and `bin/fusion-commit-lock` appends
+ *       the machine-written `commit` row to it after every commit, so inside
+ *       an orchestrator session the tree is dirty again the moment it is
+ *       committed and a clean-tree test can never be satisfied. That test was
+ *       a proxy for the property guard (a) exists for, namely that a damaged
+ *       rewrite has one revert back and the sweep's diff is its own; this is
+ *       the property itself. The event log is not markdown, so it leaves the
+ *       question by construction rather than through an exemption somebody has
+ *       to maintain. Binding decision:
+ *       `260830-1843_*_how-does-the-commit-lock-stop-leaving-the-tree-it-just-committed-dirty.md`
+ *       (option 4), whose point is that `bin/fusion-commit-lock` and
+ *       `rules/commit-lock.md` are not edited: the other three options each
+ *       traded away a property that rule mandates.
+ *
+ *       The extra-path half asked only whether the path sat inside the work
+ *       tree until 2026-08-31, and inside is not tracked: only tracked gives
+ *       the revert. Measured on a real run that day, a sweep pointed at 89
+ *       code files in a consuming project rewrote all 89, of which 79 were
+ *       tracked and 10 sat under a gitignored build-output directory with no
+ *       committed version to return to — harmless there because build output
+ *       is regenerated, harmless by luck rather than by construction (issue
+ *       `260831-0015_*_the-sweeps-guard-a-does-not-check-that-an-extra-path-argument-is-tracked.md`).
+ *       Declared files need no such check and get none: `git ls-files` cannot
+ *       name an untracked or ignored file, so the route `## The declared
+ *       corpus` describes is tracked by construction and only a hand-passed
+ *       `<path>` reaches this branch. A `<path>` naming a DIRECTORY is asked
+ *       exactly the question the workbench is asked and carries the same
+ *       residual: a directory holding anything git tracks passes, and an
+ *       untracked `*.md` beneath it is still rewritten with no way back. The
+ *       check is per argument and never widens to "everything under the work
+ *       tree must be tracked": a project may legitimately leave its workbench
+ *       untracked, and that choice is the project's
+ *       (`rules/workbench-tracking.md`).
+ *
+ *       Three mechanics of the reading, stated here because the code alone
+ *       leaves them to be inferred. The listing is taken with `git status
+ *       --porcelain -z`, so a path is never quoted or C-escaped and a rename
+ *       arrives as two NUL-separated fields, both of which are compared
+ *       (`R  old -> new` in the unquoted form). An untracked directory entry
+ *       (`?? dir/`) counts when any corpus file sits beneath it. And a
+ *       **deleted** corpus file does not refuse: the run cannot read a file
+ *       that is not there, so it falls outside the question this guard asks.
  *   (b) The census is printed first, in full, and nothing is written unless
  *       `--yes` was passed. Without it the run ends in one stderr line and
  *       exit 5, so a person reads what would move before it moves.
@@ -88,6 +160,37 @@
  * valid; nothing but the token span is touched. `.ts` files under
  * `lib/__tests__` are never rewritten: their store-prefixed strings are
  * fixtures the tests assert on.
+ *
+ * ## The visibility guard: no rewrite may escape the grammar
+ *
+ * Every rewrite the table above computes is then handed back to the SAME
+ * scanner that produced the token, alone on a line, and is applied only when
+ * that scan yields exactly one hit whose token is the whole string, whose kind
+ * the gates judge (`GATE_KINDS`) and whose status is not `exempt`. Otherwise
+ * the token is left exactly as it stands.
+ *
+ * It is one property rather than a list of shapes, and that is the point. A
+ * rewrite that the grammar cannot read back is strictly worse than no rewrite:
+ * the pointer stops resolving AND stops being reported, so the defect leaves
+ * the checker's output at the moment it is created. The measured case is the
+ * pre-v4 bracket marker — `<store>/<stamp>[o]-<slug>.md` rewrote to the bare
+ * stamp with `[o]-<slug>.md` left standing beside it, and `STAMP_RE`'s boundary
+ * then refused the result entirely — but the guard is not written against that
+ * shape and names none: asking the question from the other side subsumes every
+ * future shape whose rewrite would escape the grammar, instead of enumerating
+ * the two known today (`rules/critical-stance.md` §2, one integral rule rather
+ * than a rim of special cases).
+ *
+ * Cost, since the guard runs per candidate rewrite: it reuses the run's one
+ * memoised scanner, so it re-walks neither the workbench index nor the Circle
+ * directory index, and it is evaluated only after a candidate exists — a token
+ * the table leaves alone never reaches it.
+ *
+ * What the guard deliberately does NOT do is make the bracket form rewritable.
+ * The grammar reads such a citation whole and reports it; resolving one is a
+ * separate open question, `/fusion:migrate` not having converted the frozen
+ * stores:
+ * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
  *
  * Output: one `<file>  rewrites=<n>` line per touched file, then the
  * residual (every bare stamp the scanner judged, in file order,
@@ -136,15 +239,17 @@
  *      `--root`, or `--root` names no workbench).
  *   3  the compiled hooks are missing; `bin/fusion-citation-sweep` raises it
  *      before this file is reached.
- *   4  guard (a) refused: not a git work tree, workbench untracked, tree
- *      dirty, or an extra path outside the work tree. Nothing written.
+ *   4  guard (a) refused: not a git work tree, workbench untracked, an
+ *      uncommitted change on a file in this run's corpus, or an extra path
+ *      outside the work tree or untracked by it. Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
-import { join, relative, resolve, sep } from "node:path";
-import { createScanner, fencedContentLines, markdownFilesUnder, MARKER_SLOT, } from "./lib/citation-scan.js";
+import { dirname, join, relative, resolve, sep } from "node:path";
+import { createScanner, declaredCitationFiles, declaredCitationNotes, fencedContentLines, GATE_KINDS, markdownFilesUnder, MARKER_SLOT, } from "./lib/citation-scan.js";
+import { loadConfig } from "./lib/config.js";
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 // The reader may close stdout first; see exitZeroOnStdoutEpipe.
@@ -193,13 +298,65 @@ function parse(argv) {
     }
     return { root: resolve(root), write, yes, repair, extra };
 }
-// --- guard (a): a tracked workbench in a clean git work tree -----------------
+// --- guard (a): a tracked workbench, and no pending change in its corpus -----
 function git(cwd, ...args) {
     const r = spawnSync("git", args, { cwd, encoding: "utf-8" });
     return { status: r.status, stdout: r.stdout ?? "", failed: r.error !== undefined };
 }
+/** A path as the filesystem spells it, falling back for one that is not there. */
+function real(p) {
+    try {
+        return realpathSync(p);
+    }
+    catch {
+        return resolve(p);
+    }
+}
+/**
+ * Every path `git status --porcelain -z` names, work-tree-relative. `-z` is
+ * what keeps this a split rather than a parse: no quoting, no C-escapes, and a
+ * rename or copy carries its original path as the next NUL-separated field
+ * instead of the ` -> ` infix the quoted form uses. Both halves are returned.
+ */
+function porcelainPaths(toplevel) {
+    const fields = git(toplevel, "status", "--porcelain", "-z").stdout.split("\0").filter((f) => f.length > 0);
+    const out = [];
+    for (let i = 0; i < fields.length; i++) {
+        const f = fields[i];
+        out.push(f.slice(3)); // `XY <path>`
+        if (/[RC]/.test(f.slice(0, 2))) {
+            const orig = fields[++i];
+            if (orig !== undefined)
+                out.push(orig);
+        }
+    }
+    return out;
+}
+/**
+ * The porcelain entries that name a file this run will read, sorted. Porcelain
+ * is work-tree-relative and the corpus is absolute, so both are resolved
+ * through the filesystem's own spelling before they are compared: the toplevel
+ * is already a realpath, and a corpus entry may have been reached through a
+ * symlinked `--root`.
+ */
+function dirtyCorpusPaths(toplevel, corpus) {
+    const files = new Set(corpus.map(real));
+    const hits = new Set();
+    for (const p of porcelainPaths(toplevel)) {
+        const abs = resolve(toplevel, p);
+        if (p.endsWith("/")) {
+            // an untracked directory stands for every corpus file beneath it
+            for (const f of files)
+                if (f.startsWith(abs + sep))
+                    hits.add(p);
+        }
+        else if (files.has(abs))
+            hits.add(p);
+    }
+    return [...hits].sort();
+}
 /** One line naming the refused condition, or null when the tree qualifies. */
-function refusal(root, extra) {
+function refusal(root, extra, corpus) {
     const top = git(root, "rev-parse", "--show-toplevel");
     if (top.failed)
         return `refused (no-git): git could not be run, so no commit exists to return to; nothing written`;
@@ -212,32 +369,53 @@ function refusal(root, extra) {
     if (tracked.status !== 0) {
         return `refused (workbench-untracked): ${wbRel || "."} is not tracked by git (git ls-files --error-unmatch), so a rewrite there has no way back; nothing written`;
     }
-    const status = git(toplevel, "status", "--porcelain");
-    const dirty = status.stdout.split("\n").filter((l) => l.length > 0);
+    const dirty = dirtyCorpusPaths(toplevel, corpus);
     if (dirty.length > 0) {
-        return `refused (dirty-tree): git status --porcelain lists ${dirty.length} ${dirty.length === 1 ? "entry" : "entries"}; commit or stash first, so the sweep is its own diff and the way back is one revert; nothing written`;
+        const named = dirty.slice(0, 10).join(", ") + (dirty.length > 10 ? `, and ${dirty.length - 10} more` : "");
+        return `refused (dirty-tree): uncommitted changes name ${dirty.length} ${dirty.length === 1 ? "file" : "files"} this run reads: ${named}; commit or stash them first, so the sweep is its own diff and the way back is one revert; nothing written`;
     }
+    // inside the work tree AND tracked by it: see the header's guard (a) block
+    const untracked = [];
     for (const p of extra) {
         const abs = realpathSync(resolve(p));
         const rel = relative(toplevel, abs);
         if (rel.startsWith("..") || resolve(toplevel, rel) !== abs) {
             return `refused (path-outside-repo): ${p} is not inside the work tree at ${toplevel}, so its rewrite would have no way back; nothing written`;
         }
+        if (git(toplevel, "ls-files", "--error-unmatch", "--", rel === "" ? "." : rel).status !== 0) {
+            untracked.push(rel === "" ? "." : rel);
+        }
+    }
+    if (untracked.length > 0) {
+        const one = untracked.length === 1;
+        const named = untracked.slice(0, 10).join(", ") + (untracked.length > 10 ? `, and ${untracked.length - 10} more` : "");
+        return `refused (path-untracked): git does not track ${untracked.length} ${one ? "path" : "paths"} this run would rewrite: ${named}; commit ${one ? "it" : "them"} first, so a damaged rewrite has one revert back; nothing written`;
     }
     return null;
 }
 // --- the sweep ---------------------------------------------------------------
-/** The storeless spelling of one hit, or null when it is left as it stands. */
-function rewriteOf(hit) {
-    if (hit.status === "unresolved-no-workbench")
-        return null;
-    // A `reason` is what forbids a rewrite, and the status is not: since
-    // 2026-09-05 a shape-decided token inside a fence or in a worked-example file
-    // is REPORTED as `store-prefixed` and still carries its reason, because a
-    // rewrite of a verbatim exhibit deletes the finding the exhibit exists to
-    // show. The gate names such a token to a human; this program never edits one.
-    if (hit.reason !== undefined)
-        return null;
+/**
+ * The rel a rewrite is probed under. Any name outside `RECORD_EXAMPLE_FILES`
+ * does; naming it here is what keeps the probe from inheriting a file-wide
+ * exemption that has nothing to do with the string being judged.
+ */
+const REWRITE_PROBE = "<rewrite-probe>";
+/**
+ * Whether the grammar reads the rewritten string back WHOLE: one token, its own
+ * whole span, a kind the gates judge, and not exempt. The guard the header's
+ * visibility section states, asked of the output rather than of the shapes that
+ * could produce it. The scanner is the run's own, so both its indexes are
+ * already built and this costs no directory walk.
+ */
+function readsBackWhole(scanner, rewritten) {
+    const hits = scanner.scanCitationTokens(REWRITE_PROBE, [{ line: 1, text: rewritten }]);
+    return (hits.length === 1 &&
+        hits[0].token === rewritten &&
+        GATE_KINDS.includes(hits[0].kind) &&
+        hits[0].status !== "exempt");
+}
+/** The storeless spelling of one hit, before the visibility guard reads it. */
+function candidateFor(hit) {
     const t = hit.token;
     switch (hit.kind) {
         case "record": {
@@ -256,6 +434,21 @@ function rewriteOf(hit) {
         default:
             return null;
     }
+}
+/** The storeless spelling of one hit, or null when it is left as it stands. */
+function rewriteOf(scanner, hit) {
+    if (hit.status === "unresolved-no-workbench")
+        return null;
+    // A `reason` is what forbids a rewrite, and the status is not: since
+    // 2026-09-05 a shape-decided token inside a fence or in a worked-example file
+    // is REPORTED as `store-prefixed` and still carries its reason, because a
+    // rewrite of a verbatim exhibit deletes the finding the exhibit exists to
+    // show. The gate names such a token to a human; this program never edits one.
+    // Every `exempt` hit carries one, so this subsumes the status test it replaced.
+    if (hit.reason !== undefined)
+        return null;
+    const to = candidateFor(hit);
+    return to !== null && readsBackWhole(scanner, to) ? to : null;
 }
 // --- the repair pass ---------------------------------------------------------
 const STAMP = "[0-9]{6}-[0-9]{4}";
@@ -300,14 +493,8 @@ function main(argv) {
     const opts = parse(argv);
     const { root, repair, extra } = opts;
     const write = opts.write && opts.yes;
-    if (opts.write) {
-        const why = refusal(root, extra);
-        if (why !== null) {
-            process.stderr.write(`${NAME}: ${why}\n`);
-            return 4;
-        }
-    }
-    const scanner = createScanner(root);
+    // the corpus first: guard (a) asks about it, and one list is what keeps the
+    // guard and the run from disagreeing about which files will be written
     const files = markdownFilesUnder(root).map((f) => f.abs);
     for (const p of extra) {
         const abs = resolve(p);
@@ -318,6 +505,28 @@ function main(argv) {
         else
             files.push(abs);
     }
+    // the declared paths join the corpus here, before guard (a) reads it
+    const projectRoot = dirname(root);
+    const config = loadConfig({ projectRoot });
+    const declared = declaredCitationFiles(projectRoot, config.citations.extraPaths);
+    for (const line of [...config.diagnostics, ...declaredCitationNotes(declared)]) {
+        process.stderr.write(`${NAME}: ${line}\n`);
+    }
+    // by the filesystem's own spelling: `--root` may name the workbench by a path
+    // the declared half would spell differently, and a file swept twice would be
+    // counted twice
+    const inCorpus = new Set(files.map(real));
+    for (const f of declared.files)
+        if (!inCorpus.has(real(f.abs)))
+            files.push(f.abs);
+    if (opts.write) {
+        const why = refusal(root, extra, files);
+        if (why !== null) {
+            process.stderr.write(`${NAME}: ${why}\n`);
+            return 4;
+        }
+    }
+    const scanner = createScanner(root);
     const cwd = realpathSync(process.cwd());
     const mode = write ? "write" : "dry-run";
     const out = [];
@@ -366,7 +575,7 @@ function main(argv) {
             let n = 0;
             // right to left within a line, so each splice leaves the earlier columns valid
             for (const h of [...hits].sort((a, b) => b.line - a.line || b.col - a.col)) {
-                const to = rewriteOf(h);
+                const to = rewriteOf(scanner, h);
                 if (to === null) {
                     if (h.kind === "stamp-bare" && h.status !== "exempt") {
                         residual.push([h.line, h.col, `${rel}:${h.line}  '${h.token}'  ${h.status}`]);

@@ -29,8 +29,11 @@
  * paragraph explaining why a setting that is not the guard's lived in the
  * guard's configuration file. That explanation retired with its subject on
  * 2026-08-16: the guard decides nothing and has no settings, so there is no
- * guard configuration for this to be an exception to. The budget is now the
- * one setting the file carries. A project upgrading over that release still has
+ * guard configuration for this to be an exception to. The budget is one of the
+ * settings the file carries; `citations.extraPaths`, the project's declaration
+ * of its citation-bearing non-Markdown paths, landed beside it on 2026-08-31
+ * and is read by the two citation helpers rather than by this program. A
+ * project upgrading over the 2026-08-16 release still has
  * the old file on disk and hears about it from the loader, on every guarded
  * tool call and on this program's stderr, until it copies the budget across
  * and deletes it (`260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, `260816-1916_*_does-setup-offer-to-move-a-projects-turn-budget-out-of-the-retired-configuration-file.md`).

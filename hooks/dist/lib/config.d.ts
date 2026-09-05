@@ -10,28 +10,46 @@
  * `hooks/config.json`, inside the install. It existed for one reason: guard
  * settings needed a plugin-level default that a project could narrow. The
  * guard stopped deciding anything in this release, so that reason left with
- * it. What is left for the layer to carry is nothing — the loader reads ONE
- * leaf now, and that leaf's default is deliberately defined in exactly one
- * place, so restating it in a shipped JSON file is the thing this module has
+ * it. What is left for the layer to carry is nothing — every default this
+ * loader resolves is deliberately defined in exactly one place, `DEFAULTS`
+ * below, so restating one in a shipped JSON file is the thing this module has
  * always refused to do. A layer that carries nothing is a claim rather than a
  * capability, which is what the protected list and the escalation counter were
  * each removed for. Decision `260816-1915_*_how-much-of-the-configuration-loader-survives-when-its-only-leaf-is-the-turn-budget.md`, answered option 1 at the plan gate.
  *
- * ## The one leaf
+ * ## The settings
  *
  * `orchestrator.maxTurns` is the Turn budget of the orchestrator's Phase-2
- * loop. It is the only setting this loader resolves. No hook reads it —
- * `bin/fusion-turn-budget` does, once per Setup, and the orchestrator carries
- * the answer from there.
+ * loop. No hook reads it — `bin/fusion-turn-budget` does, once per Setup, and
+ * the orchestrator carries the answer from there.
  *
  * The budget had been prose in `agents/orchestrator.md`, written out as `5` in
  * seven places and four spellings, with one of them already calling it a
  * "default" — a word that was false, because no source could override it
  * (issue `260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`).
  *
- * THE DEFAULT IS DEFINED ONCE, in `DEFAULTS` below. A project that wants a
- * different budget declares `{"orchestrator":{"maxTurns":12}}` in its own
- * `fusion.json` and the leaf walk does the rest.
+ * `citations.extraPaths` is the project's own list of the NON-MARKDOWN files
+ * that carry record citations, written as glob patterns.
+ * `bin/fusion-citation-check` and `bin/fusion-citation-sweep` add the files
+ * those patterns name to the Markdown corpus they already read; no hook reads
+ * this one either. A project that declares nothing gets `[]`, which is exactly
+ * the corpus those two helpers read today.
+ *
+ * It is a DECLARATION because the question underneath it cannot be decided
+ * from a file's text. Outside Markdown there is no fence and no block quote,
+ * and those are the whole of fusion's pointer-versus-exhibit distinction: a
+ * citation inside a docstring and one inside a comment naming a real record are
+ * the same input to any reader of the bytes. So the mechanism asks a question
+ * somebody wrote down instead.
+ *
+ * WHAT THIS LOADER ANSWERS ABOUT A PATTERN IS ONLY "is this the right type".
+ * Whether a pattern is absolute, escapes the project root, or names any file at
+ * all is a resolution question, answered once at the resolution site and
+ * deliberately not here.
+ *
+ * EVERY DEFAULT ABOVE IS DEFINED ONCE, in `DEFAULTS` below. A project that
+ * wants a different budget declares `{"orchestrator":{"maxTurns":12}}` in its
+ * own `fusion.json` and the leaf walk does the rest.
  *
  * ## Merge: PER LEAF, across both layers
  *
@@ -48,10 +66,12 @@
  * "declared" is read, from the whole top-level object down to the leaf.
  * Decision `260804-1630_*_what-does-a-project-guard-object-inherit-for-a-key-it-does-not-supply.md`, answered option 1 at the plan gate on 2026-08-04.
  *
- * With one leaf the walk has nothing to disagree with itself about, and it is
- * kept as the shape rather than collapsed into a single `??`, because the next
- * setting to land here inherits the rule instead of re-deriving it. The leaves
- * it was written for have all gone: `crossFile` with the ping-back tracker
+ * The walk was kept as the shape rather than collapsed into a single `??`
+ * through the release in which `orchestrator.maxTurns` was the only thing it
+ * had to walk, on the stated ground that the next setting to land here would
+ * inherit the rule instead of re-deriving it. `citations.extraPaths` is that
+ * setting, and it did. The leaves the walk was first written for have all gone:
+ * `crossFile` with the ping-back tracker
  * (`260809-2004_*_should-the-latching-churn-and-cross-file-criticals-be-bounded-or-dropped.md`), `guard.protectedPaths` with the mechanism it configured
  * (2026-08-12), `churn` with the heatmap (2026-08-15), and the four remaining
  * guard leaves with the guard's verdict (2026-08-16).
@@ -153,6 +173,20 @@ export interface GuardSettings {
     orchestrator: {
         maxTurns: number;
     };
+    /**
+     * The project's own answer to "which of my non-Markdown files carry record
+     * citations", as glob patterns. Read by `bin/fusion-citation-check` and
+     * `bin/fusion-citation-sweep`, not by any hook.
+     *
+     * `[]` — the default — is the corpus those two helpers read today, so a
+     * project that declares nothing changes nothing. See the module docstring's
+     * `## The settings` for why this is a declaration rather than a detection,
+     * and for the question this loader deliberately does not answer about a
+     * pattern.
+     */
+    citations: {
+        extraPaths: string[];
+    };
 }
 /** Configuration as loaded: the settings, plus a report about the load. */
 export interface GuardConfig extends GuardSettings {
@@ -162,9 +196,9 @@ export interface GuardConfig extends GuardSettings {
      * about the load, which is why it is excluded from every comparison that asks
      * whether the effective configuration changed.
      *
-     * It is the module's main product now rather than a footnote to one: with a
-     * single leaf to resolve, most of what this loader has to say to a project is
-     * in here.
+     * It is the module's main product now rather than a footnote to one: what
+     * this loader resolves is small enough to name in a sentence, and most of
+     * what it has to say to a project is in here.
      */
     diagnostics: string[];
 }

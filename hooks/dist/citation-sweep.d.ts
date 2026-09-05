@@ -29,6 +29,27 @@
  *                  project's shipped text); a directory is walked for `*.md`,
  *                  a file is taken as named whatever its extension
  *
+ * ## The declared corpus
+ *
+ * Since 2026-08-31 the run also reads every file the project DECLARED as
+ * citation-bearing in `citations.extraPaths` in its `fusion.json`, resolved by
+ * `declaredCitationFiles()` against `dirname(--root)` and deduplicated by
+ * absolute path. They join the corpus at the same place a `<path>` argument
+ * does, BEFORE guard (a) is asked, so the guard covers them with no new guard
+ * code. The loader's diagnostics and one line per pattern that matched nothing
+ * or was refused go to stderr; the summary line below is untouched by any of
+ * it, byte for byte, because `lib/__tests__/citation-sweep.test.ts` pins it as
+ * a release gate. A project that declares nothing sweeps exactly what it swept
+ * before.
+ *
+ * `citation-check.ts` resolves the same leaf through the same function: the
+ * two hand-run helpers share one corpus, because a reporter narrower than the
+ * rewriter is how this program came to change files the checker then declared
+ * clean. `lib/__tests__/workbench-citation-lint.test.ts` deliberately does not
+ * read the declaration and is not to be made to — that gate has no approvable
+ * baseline and runs in everyone's `npm test`, so a corpus set by an editable
+ * configuration leaf would redden the suite of somebody who edited nothing.
+ *
  * ## The three guards on a writing mode
  *
  * A sweep over a workbench touches every record in it, and fusion's own first
@@ -40,13 +61,64 @@
  * Three guards stand between `--write` and the tree, each evaluated before a
  * byte is written:
  *
- *   (a) The workbench must be inside a git work tree, tracked by it
- *       (`git ls-files --error-unmatch <workbench>`), and the tree must be
- *       clean (`git status --porcelain` empty). Any extra `<path>` must sit
- *       inside that same work tree. A failure is one line on stderr naming
- *       the condition and why, and exit 4: without a commit to return to, a
- *       damaged rewrite has no way back, and a dirty tree would mix the sweep
- *       into somebody's unrelated diff.
+ *   (a) The workbench must be inside a git work tree and tracked by it
+ *       (`git ls-files --error-unmatch <workbench>`), any extra `<path>` must
+ *       sit inside that same work tree **and be tracked by it**, asked with
+ *       that same `git ls-files --error-unmatch`, and **no uncommitted change
+ *       may name a file this run will read**. That last is the corpus question, not a
+ *       clean-tree question: the corpus is the one `main()` builds, every
+ *       `*.md` under the workbench plus each extra `<path>` resolved the way
+ *       `main()` resolves it, computed once and handed to the guard so the
+ *       guard and the run cannot disagree about what will be written. A
+ *       failure is one line on stderr naming the condition, and the offending
+ *       paths where it has them, and exit 4: without a commit to return to, a
+ *       damaged rewrite has no way back, and a change already standing in a
+ *       file the sweep rewrites would mix the two into one diff.
+ *
+ *       It asks about the corpus because a clean tree is not reachable here.
+ *       `fusion-workbench/orchestrator-events.jsonl` is tracked (class R2 in
+ *       `rules/workbench-tracking.md`) and `bin/fusion-commit-lock` appends
+ *       the machine-written `commit` row to it after every commit, so inside
+ *       an orchestrator session the tree is dirty again the moment it is
+ *       committed and a clean-tree test can never be satisfied. That test was
+ *       a proxy for the property guard (a) exists for, namely that a damaged
+ *       rewrite has one revert back and the sweep's diff is its own; this is
+ *       the property itself. The event log is not markdown, so it leaves the
+ *       question by construction rather than through an exemption somebody has
+ *       to maintain. Binding decision:
+ *       `260830-1843_*_how-does-the-commit-lock-stop-leaving-the-tree-it-just-committed-dirty.md`
+ *       (option 4), whose point is that `bin/fusion-commit-lock` and
+ *       `rules/commit-lock.md` are not edited: the other three options each
+ *       traded away a property that rule mandates.
+ *
+ *       The extra-path half asked only whether the path sat inside the work
+ *       tree until 2026-08-31, and inside is not tracked: only tracked gives
+ *       the revert. Measured on a real run that day, a sweep pointed at 89
+ *       code files in a consuming project rewrote all 89, of which 79 were
+ *       tracked and 10 sat under a gitignored build-output directory with no
+ *       committed version to return to — harmless there because build output
+ *       is regenerated, harmless by luck rather than by construction (issue
+ *       `260831-0015_*_the-sweeps-guard-a-does-not-check-that-an-extra-path-argument-is-tracked.md`).
+ *       Declared files need no such check and get none: `git ls-files` cannot
+ *       name an untracked or ignored file, so the route `## The declared
+ *       corpus` describes is tracked by construction and only a hand-passed
+ *       `<path>` reaches this branch. A `<path>` naming a DIRECTORY is asked
+ *       exactly the question the workbench is asked and carries the same
+ *       residual: a directory holding anything git tracks passes, and an
+ *       untracked `*.md` beneath it is still rewritten with no way back. The
+ *       check is per argument and never widens to "everything under the work
+ *       tree must be tracked": a project may legitimately leave its workbench
+ *       untracked, and that choice is the project's
+ *       (`rules/workbench-tracking.md`).
+ *
+ *       Three mechanics of the reading, stated here because the code alone
+ *       leaves them to be inferred. The listing is taken with `git status
+ *       --porcelain -z`, so a path is never quoted or C-escaped and a rename
+ *       arrives as two NUL-separated fields, both of which are compared
+ *       (`R  old -> new` in the unquoted form). An untracked directory entry
+ *       (`?? dir/`) counts when any corpus file sits beneath it. And a
+ *       **deleted** corpus file does not refuse: the run cannot read a file
+ *       that is not there, so it falls outside the question this guard asks.
  *   (b) The census is printed first, in full, and nothing is written unless
  *       `--yes` was passed. Without it the run ends in one stderr line and
  *       exit 5, so a person reads what would move before it moves.
@@ -88,6 +160,37 @@
  * valid; nothing but the token span is touched. `.ts` files under
  * `lib/__tests__` are never rewritten: their store-prefixed strings are
  * fixtures the tests assert on.
+ *
+ * ## The visibility guard: no rewrite may escape the grammar
+ *
+ * Every rewrite the table above computes is then handed back to the SAME
+ * scanner that produced the token, alone on a line, and is applied only when
+ * that scan yields exactly one hit whose token is the whole string, whose kind
+ * the gates judge (`GATE_KINDS`) and whose status is not `exempt`. Otherwise
+ * the token is left exactly as it stands.
+ *
+ * It is one property rather than a list of shapes, and that is the point. A
+ * rewrite that the grammar cannot read back is strictly worse than no rewrite:
+ * the pointer stops resolving AND stops being reported, so the defect leaves
+ * the checker's output at the moment it is created. The measured case is the
+ * pre-v4 bracket marker — `<store>/<stamp>[o]-<slug>.md` rewrote to the bare
+ * stamp with `[o]-<slug>.md` left standing beside it, and `STAMP_RE`'s boundary
+ * then refused the result entirely — but the guard is not written against that
+ * shape and names none: asking the question from the other side subsumes every
+ * future shape whose rewrite would escape the grammar, instead of enumerating
+ * the two known today (`rules/critical-stance.md` §2, one integral rule rather
+ * than a rim of special cases).
+ *
+ * Cost, since the guard runs per candidate rewrite: it reuses the run's one
+ * memoised scanner, so it re-walks neither the workbench index nor the Circle
+ * directory index, and it is evaluated only after a candidate exists — a token
+ * the table leaves alone never reaches it.
+ *
+ * What the guard deliberately does NOT do is make the bracket form rewritable.
+ * The grammar reads such a citation whole and reports it; resolving one is a
+ * separate open question, `/fusion:migrate` not having converted the frozen
+ * stores:
+ * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
  *
  * Output: one `<file>  rewrites=<n>` line per touched file, then the
  * residual (every bare stamp the scanner judged, in file order,
@@ -136,8 +239,9 @@
  *      `--root`, or `--root` names no workbench).
  *   3  the compiled hooks are missing; `bin/fusion-citation-sweep` raises it
  *      before this file is reached.
- *   4  guard (a) refused: not a git work tree, workbench untracked, tree
- *      dirty, or an extra path outside the work tree. Nothing written.
+ *   4  guard (a) refused: not a git work tree, workbench untracked, an
+ *      uncommitted change on a file in this run's corpus, or an extra path
+ *      outside the work tree or untracked by it. Nothing written.
  *   5  guard (b) refused: `--write` without `--yes`. The census was printed;
  *      nothing written.
  */

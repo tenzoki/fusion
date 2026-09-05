@@ -241,6 +241,78 @@ export declare function shippedPrompts(pluginRoot: string, exempt?: Set<string>)
     rel: string;
     abs: string;
 }[];
+/**
+ * What a project DECLARED as citation-bearing, resolved to files.
+ *
+ * ## What this decides, and what it refuses to decide
+ *
+ * It does NOT decide whether a token in a `.go` file points at a record or
+ * exhibits one. Outside Markdown there is no fence and no blockquote, and those
+ * two are the whole of the pointer-versus-exhibit distinction this grammar has,
+ * so a citation inside a docstring and one inside a comment naming a real
+ * record are the same input to any reader of the text. That question is not
+ * decidable from the token, so the mechanism changes rather than the
+ * approximation improving (`rules/critical-stance.md` §4): the question this
+ * function answers is **"did the project declare this file"**, which is
+ * decidable because somebody wrote it down in a git-tracked file.
+ *
+ * The second question, "which files does a declared pattern name", is decided
+ * by `git ls-files` with `:(glob)` pathspec magic — one mechanism and no
+ * fallback, the one
+ * `260809-1731_*_how-should-the-domain-heuristic-count-a-projects-source-files.md`
+ * already chose for this class of question. Glob semantics are git's and not
+ * fusion's: `*` does not cross `/`, `**` does.
+ *
+ * ## The case split, disjoint and complete over five branches
+ *
+ *   1. `git rev-parse --show-toplevel` gives nothing -> `unavailable`, no
+ *      files. A property of the TREE, and never rendered as a zero: a count
+ *      that could not be taken is not a count of none
+ *      (`bin/fusion-count-sources` states the same rule for the same reason).
+ *   2. a pattern that is absolute or carries a `..` segment -> `refused`,
+ *      decided from the string alone, before git is reached.
+ *   3. `git ls-files` would not answer for the pattern -> `refused`.
+ *   4. it answers with nothing -> `unmatched`. One call PER PATTERN is what
+ *      makes a pattern that names nothing nameable at all.
+ *   5. otherwise the NUL-split paths join `files`, deduplicated by absolute
+ *      path.
+ *
+ * Three properties a caller should not have to infer. **No pattern is asked
+ * about when none was declared**: a project that declares nothing gets the
+ * empty result with `unavailable` false, which is an answer about zero patterns
+ * and not a claim about the tree — the alternative would put an advisory in
+ * front of every project that never wrote the key. **A refusal names the call
+ * and not git's own text**: `lib/git.ts` discards stderr and collapses every
+ * failure to `null` by contract, so "git declined it" is the most this can
+ * honestly say. And **an index entry with no file in the work tree is not
+ * returned**: git names the index, the callers read the work tree, and a file
+ * that is not there cannot be part of any corpus.
+ *
+ * `projectRoot` is the cwd of every git call and the base of every `rel`, so a
+ * pattern is relative to the project the declaration lives in, whether or not
+ * that project is the git toplevel.
+ */
+export interface DeclaredCitationPaths {
+    files: {
+        rel: string;
+        abs: string;
+    }[];
+    unmatched: string[];
+    refused: {
+        pattern: string;
+        why: string;
+    }[];
+    unavailable: boolean;
+}
+export declare function declaredCitationFiles(projectRoot: string, patterns: string[]): DeclaredCitationPaths;
+/**
+ * What the two hand-run helpers say about a declaration, one line each, in the
+ * order a reader needs them. It lives beside the resolver so both callers print
+ * the same sentence for the same condition — the wording is part of the
+ * mechanism, not a detail of one caller — and it returns lines rather than
+ * writing them, because which stream and which prefix belong to the caller.
+ */
+export declare function declaredCitationNotes(d: DeclaredCitationPaths): string[];
 export declare function markdownFilesUnder(root: string): {
     rel: string;
     abs: string;

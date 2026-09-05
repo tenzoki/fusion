@@ -54,7 +54,7 @@ a correction, not a rewrite.
 ## The Low finding — the Turn-budget record's footer
 
 Record:
-`circles/260801-1244-curator/issues/260814-2128_*_the-turn-budget-records-closing-footer-says-fusion-guard-json-was-not-edited-in-the-commit-that-commits-it.md`.
+`260814-2128_*_the-turn-budget-records-closing-footer-says-fusion-guard-json-was-not-edited-in-the-commit-that-commits-it.md`.
 
 The `Resolved:` footer of
 `260814-2022_*_this-repository-cannot-set-its-own-turn-budget-…` closed with

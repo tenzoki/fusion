@@ -12,6 +12,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync,
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { TEST_DIST, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
+import { createScanner, GATE_KINDS, type CitationHit, type Lines } from "../citation-scan.js";
 
 const ENTRY = join(TEST_DIST, "citation-sweep.js");
 
@@ -154,17 +155,27 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
     }
   }, CASE_TIMEOUT);
 
-  it("refuses a dirty tree, before the census and without writing, exit 4", () => {
+  // both halves of guard (a)'s corpus question, documented in `hooks/citation-sweep.ts`
+  it("passes a pending change outside the corpus and refuses one inside it, exit 4, naming that file alone", () => {
     const { root, wb, doc } = scratchRepo();
     try {
+      // outside: guard (a) lets the run through, so it reaches guard (b)
       writeFileSync(join(root, "unrelated.txt"), "in flight");
+      const past = sweep(root, wb, "--write");
+      expect(past.status, past.stderr).toBe(5);
+      expect(last(past)).toMatch(/^files=1 rewrites=1 .* mode=dry-run$/);
+      // inside: refused before the census, and the unrelated entry is not named
+      const edited = `${DIRTY_DOC}\nstill being written`;
+      writeFileSync(doc, edited);
       const run = sweep(root, wb, "--write", "--yes");
       expect(run.status).toBe(4);
       expect(run.stdout).toBe("");
       expect(run.stderr.trim()).toBe(
-        "fusion-citation-sweep: refused (dirty-tree): git status --porcelain lists 1 entry; commit or stash first, so the sweep is its own diff and the way back is one revert; nothing written",
+        "fusion-citation-sweep: refused (dirty-tree): uncommitted changes name 1 file this run reads: " +
+          "fusion-workbench/shared/decisions/260303-0303_o_doc.md; commit or stash them first, so the sweep " +
+          "is its own diff and the way back is one revert; nothing written",
       );
-      expect(readFileSync(doc, "utf-8")).toBe(DIRTY_DOC);
+      expect(readFileSync(doc, "utf-8")).toBe(edited);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -209,6 +220,61 @@ describe("citation-sweep --write: the two mechanical guards, then the write, the
       expect(readFileSync(doc, "utf-8")).toBe(DIRTY_DOC);
     } finally {
       rmSync(wb, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  // the declared corpus, documented in `hooks/citation-sweep.ts` `## The declared corpus`
+  it("sweeps a file the project declared, and guard (a) covers it with no new guard code", () => {
+    const { root, wb } = scratchRepo();
+    const go = join(root, "src/a.go");
+    try {
+      writeFileSync(join(root, "fusion.json"), JSON.stringify({ citations: { extraPaths: ["src/*.go"] } }));
+      mkdirSync(join(root, "src"), { recursive: true });
+      writeFileSync(go, `// ${DIRTY_DOC}`);
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "a declared file");
+      const run = sweep(root, wb, "--write", "--yes");
+      expect(run.status, run.stderr).toBe(0);
+      expect(readFileSync(go, "utf-8")).toBe("// see `260101-0101_*_alpha.md`");
+      // the summary line is the release gate's, and the declaration never touches its shape
+      expect(last(run)).toBe("files=2 rewrites=2 residual=0 record=2 circle-record=0 circle-dir=0 bare-record=0 stamp-bare=0 mode=write");
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "swept");
+      writeFileSync(go, `// ${DIRTY_DOC}`);
+      const again = sweep(root, wb, "--write", "--yes");
+      expect(again.status).toBe(4);
+      expect(again.stderr).toMatch(/refused \(dirty-tree\): uncommitted changes name 1 file this run reads: src\/a\.go;/);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  // guard (a)'s extra-path half: inside the work tree is not tracked by it
+  it("refuses an untracked <path> argument, exit 4, and passes a tracked one", () => {
+    const { root, wb } = scratchRepo();
+    const kept = join(root, "kept.go");
+    const ignored = join(root, "ignored.go");
+    try {
+      writeFileSync(join(root, ".gitignore"), "ignored.go\n");
+      writeFileSync(kept, `// ${DIRTY_DOC}`);
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "kept.go and the ignore rule");
+      writeFileSync(ignored, `// ${DIRTY_DOC}`);
+      const refused = sweep(root, wb, "--write", "--yes", "ignored.go");
+      expect(refused.status).toBe(4);
+      expect(refused.stdout).toBe("");
+      expect(refused.stderr.trim()).toBe(
+        "fusion-citation-sweep: refused (path-untracked): git does not track 1 path this run would rewrite: " +
+          "ignored.go; commit it first, so a damaged rewrite has one revert back; nothing written",
+      );
+      expect(readFileSync(ignored, "utf-8")).toBe(`// ${DIRTY_DOC}`);
+      // tracked: this branch lets it through, so the run reaches the write
+      rmSync(ignored);
+      const past = sweep(root, wb, "--write", "--yes", "kept.go");
+      expect(past.status, past.stderr).toBe(0);
+      expect(readFileSync(kept, "utf-8")).toBe("// see `260101-0101_*_alpha.md`");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
     }
   }, CASE_TIMEOUT);
 
@@ -261,6 +327,90 @@ describe("citation-sweep --repair undoes the retired stamp-bare rewrite, token b
       ]);
       expect(last(run)).toBe("files=1 repairs=9 date-field=1 chained-tail=6 doubled=2 mode=write");
       expect(last(again)).toBe("files=0 repairs=0 date-field=0 chained-tail=0 doubled=0 mode=dry-run");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+});
+
+// --- the tripwire: a rewrite never hides a token from the checker ------------
+
+/**
+ * The shapes the property is driven over. DATA, not cases: a row is how the
+ * next shape enters, and a per-shape assertion beside the loop below would be
+ * the thicket `rules/critical-stance.md` §2 names. The property is what catches
+ * a shape nobody listed here.
+ */
+const SWEEP_DIR = "260801-1244-widget-bar";
+const SHAPES: [label: string, dir: string, citation: string][] = [
+  ["a foreign path segment before a store", "shared/decisions", "pytorch/issues/260101-0101_o_alpha.md"],
+  ["a word character before a store", "shared/decisions", "myplanning/260101-0101_o_alpha.md"],
+  ["a bracket-marked store-prefixed citation", "shared/decisions", "shared/issues/260519-0438[o]-loader-check.md"],
+  ["a citation inside a frozen store", `archive/${SWEEP_DIR}/shared/decisions`, "shared/issues/260101-0101_o_alpha.md"],
+  ["a bare Circle-directory rooting", "shared/decisions", `${SWEEP_DIR}/issues/260101-0101_o_alpha.md`],
+  ["an archive rooting", "shared/decisions", `archive/${SWEEP_DIR}/shared/issues/260101-0101_o_alpha.md`],
+];
+
+/**
+ * NO REWRITE MAY TURN A TOKEN THE CHECKER REPORTS INTO ONE THE CHECKER CANNOT
+ * SEE. Judged is the sweep's own visibility predicate — a kind in `GATE_KINDS`
+ * and a status other than `exempt` — and a token is followed by its start
+ * column within its line, so one that VANISHES fails exactly as loudly as one
+ * whose status becomes something nothing judges.
+ *
+ * That was the shape both large defects took: a token that never covered its
+ * own rooting was rewritten to the storeless basename, and the splice left the
+ * rooting spliced back in front of it, where no pattern can begin. Measured in
+ * a scratch worktree at `cda72f71`, before the anchoring and the visibility
+ * guard: five of the six rows lose their token outright, each
+ * `record`/`store-prefixed` -> no token at that column; only the frozen-store
+ * row holds. It is committed after those two fixes for that reason.
+ */
+describe("citation-sweep never rewrites a reported token out of the checker's sight", () => {
+  it("every judged token still has a judged status at its own column after the sweep", () => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), "sweep-prop-")));
+    try {
+      git(root, "init", "-q");
+      const wb = scratchAt(root);
+      const labelOf = new Map<string, string>();
+      SHAPES.forEach(([label, dir, citation], i) => {
+        const rel = `${dir}/2602${10 + i}-0101_o_case.md`;
+        mkdirSync(join(wb, dir), { recursive: true });
+        writeFileSync(join(wb, rel), `cite ${citation}\n`);
+        labelOf.set(rel, label);
+      });
+      git(root, "add", "-A");
+      git(root, "commit", "-q", "-m", "fixtures");
+      const read = (rel: string): Lines =>
+        readFileSync(join(wb, rel), "utf-8").split("\n").map((text, i) => ({ line: i + 1, text }));
+      const before = new Map([...labelOf.keys()].map((rel) => [rel, read(rel)]));
+
+      const run = sweep(root, wb, "--write", "--yes");
+      expect(run.status, run.stderr).toBe(0);
+
+      // one scanner: the sweep renamed no file, so both sides resolve against
+      // the same index, and the comparison is about the text alone
+      const scanner = createScanner(wb);
+      const judged = (h: CitationHit) => GATE_KINDS.includes(h.kind) && h.status !== "exempt";
+      const at = (h: CitationHit) => `${h.line}:${h.col}`;
+      const lost: string[] = [];
+      for (const [rel, label] of labelOf) {
+        const now = scanner.scanCitationTokens(rel, read(rel));
+        for (const h of scanner.scanCitationTokens(rel, before.get(rel)!).filter(judged)) {
+          const after = now.find((x) => at(x) === at(h));
+          if (after !== undefined && judged(after)) continue;
+          lost.push(
+            `${label}: '${h.token}' ${h.kind}/${h.status} -> ` +
+              (after === undefined ? "no token at that column" : `${after.kind}/${after.status}`),
+          );
+        }
+      }
+      expect(
+        lost,
+        "the sweep rewrote a token the checker reports into one it cannot read back. Fix the " +
+          "grammar or the rewrite guard, never this test: a violation that stops being reported " +
+          "is not a violation that was repaired.",
+      ).toEqual([]);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

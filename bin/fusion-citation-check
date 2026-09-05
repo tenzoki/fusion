@@ -10,23 +10,81 @@
 #   anchor=workbench-root
 #   root=.
 #   files=312
+#   edited-files=94
+#   declared-patterns=2
+#   declared-files=45            # or `unavailable`, see below
 #   tokens=1904
 #   judged=1211
 #   resolved=1180
 #   dangling=3
 #   store-prefixed=28
+#   edited-violations=2
+#   unedited-violations=29
 #   undecidable=402
 #   exempt=291
 #   verdict=violations            # or clean
-#     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  …
+#     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  edited  …
 #
-# Corpus: every .md under fusion-workbench/ except archive/, stashes/ and
-# .migration-v2-backup/, plus CLAUDE.md, rules/*.md, .claude/rules/*.md and
-# docs/**/*.md at the project root, where present. The grammar is
-# hooks/lib/citation-scan.ts, the same one fusion's own gates run; the form it
-# reads is stated in rules/fusion-workbench-conventions.md "Filename Patterns".
+# ONLY A ROW IN A FILE SOMEBODY STILL EDITS MOVES `verdict=` (2026-09-01,
+# decision 260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md,
+# option 3). Every violation is still PRINTED — the scope narrows the verdict
+# and never the search. The reason is that `verdict=` is the one figure a reader
+# acts on, and a violation nobody will repair cannot be acted on: over fusion's
+# own repository 297 of 299 rows sat in text nobody edits, so the line was
+# pinned at `violations` and carried no information. Archived-ness is NOT the
+# criterion — the frozen stores are under a quarter of that mass.
+#
+# In scope: a live workbench record — a Circle record in any state,
+# portfolio.md, an open issue, a decision carrying `_o_` or `_a_`, a plan
+# carrying `_o_` or `_p_` — and everything outside the workbench, where no
+# marker exists and every file is live (CLAUDE.md, rules/, .claude/rules/,
+# docs/ and every declared path). Out of scope: the frozen stores, an issue or
+# decision at a terminal marker, a closed or deferred plan, and the kinds that
+# carry no marker at all — history, analyses, reviews, consult, memos,
+# investigations, which record what was true when they were written. That last
+# class is a judgement rather than a derivation and is reasoned in
+# hooks/lib/citation-corpus.ts, the one place the predicate is authored: the
+# blocking gate hooks/lib/__tests__/workbench-citation-lint.test.ts reads the
+# same function as its corpus, so the two cannot drift apart.
+#
+# `edited-files` says how many of `files` were in that scope, and
+# `edited-violations` / `unedited-violations` split the printed rows the same
+# way — they sum to dangling + store-prefixed, and the first is what `verdict=`
+# reads. A scoped verdict whose scope is not in the output would be worse than
+# an unscoped one, so those three figures are part of the block rather than
+# extras on it. Each violation row repeats the split in a column between the
+# status and the problem, `edited` or `not-edited`. An `--undecidable` row
+# carries no such column: it reaches no verdict by kind, before any scoping
+# question is asked.
+#
+# Corpus: every .md under fusion-workbench/, the frozen stores read exactly
+# like the live tree since commit 32fe0d49 deleted the exclusion, plus
+# CLAUDE.md, rules/*.md, .claude/rules/*.md and docs/**/*.md at the project
+# root, where present. The grammar is hooks/lib/citation-scan.ts, the same one
+# fusion's own gates run; the form it reads is stated in
+# rules/fusion-workbench-conventions.md "Filename Patterns".
 # `--undecidable` adds one row per bare stamp or ambiguous token, which reach
 # no verdict: a bare stamp names a minute, not a file.
+#
+# Plus the declared corpus: every file the project named in citations.extraPaths
+# in its fusion.json, as git pathspecs under :(glob), deduplicated against the
+# above by absolute path. That is how a NON-MARKDOWN file enters — outside
+# Markdown there is no fence and no blockquote, so nothing in a file's text
+# tells a pointer from an exhibit, and the project declares instead. declared-
+# patterns= is what the project wrote and declared-files= what those patterns
+# name; declared-files reads `unavailable` where git would not answer, which is
+# never a 0, because a 0 would report an empty declaration as a taken count.
+# A pattern matching nothing, or refused for being absolute or carrying a `..`
+# segment, is named on stderr and never on stdout. Declare nothing and the
+# corpus is the Markdown above, exactly as it was before the leaf existed.
+#
+# bin/fusion-citation-sweep resolves the same leaf through the same function:
+# the two hand-run helpers share one corpus, because a reporter narrower than
+# the rewriter is how the sweep came to change files this check declared clean.
+# The blocking gate hooks/lib/__tests__/workbench-citation-lint.test.ts does
+# NOT read the declaration, on purpose: it runs in everyone's npm test with no
+# approvable baseline, so a corpus set by an editable configuration leaf would
+# redden the suite of somebody who edited nothing.
 #
 # It decides nothing per line about pointer versus statement — a fenced code
 # block or a blockquote exempts a token, and that is the whole distinction.

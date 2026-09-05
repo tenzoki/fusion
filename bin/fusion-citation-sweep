@@ -11,12 +11,18 @@
 # summary line) and writes nothing. --repair selects the repair pass over the
 # sweep; --write applies whichever was selected, behind three guards:
 #
-#   (a) the workbench is inside a git work tree, tracked by it
-#       (git ls-files --error-unmatch), and the tree is clean
-#       (git status --porcelain empty); every extra <path> sits inside that
-#       same work tree. Else one stderr line names the condition and why,
-#       exit 4, nothing written: without a commit to return to there is no
-#       way back.
+#   (a) the workbench is inside a git work tree and tracked by it
+#       (git ls-files --error-unmatch); no uncommitted change names a file
+#       this run will read — the corpus question, not a clean-tree question,
+#       because the machine-written orchestrator-events.jsonl is tracked and
+#       makes a clean tree unreachable inside a session; and every extra
+#       <path> sits inside that same work tree AND is tracked by it, asked
+#       with that same git ls-files --error-unmatch, because inside is not
+#       tracked and only tracked gives the revert. Else one stderr line names
+#       the condition and the offending paths, exit 4, nothing written:
+#       without a commit to return to there is no way back. Declared files
+#       need no such check and get none — git ls-files cannot name an
+#       untracked or ignored file, so only a hand-passed <path> reaches it.
 #   (b) the census is printed first and nothing is written unless --yes was
 #       passed; without it, one stderr line and exit 5.
 #   (c) there is no bare-stamp resolution and no option enables one. A bare
@@ -24,6 +30,24 @@
 #       matching stamp into a filename produced every corrupted token the
 #       v10.20.0 sweep left in fusion's own workbench, and it was removed
 #       rather than bounded.
+#
+# Corpus: every .md under the workbench, plus each <path> argument (a
+# directory walked for *.md, a file taken as named whatever its extension),
+# plus the declared corpus — every file the project named in
+# citations.extraPaths in its fusion.json, as git pathspecs under :(glob),
+# deduplicated by absolute path. Declared files join the corpus at the same
+# place a <path> argument does, BEFORE guard (a) is asked, so the guard covers
+# them with no new guard code. A pattern matching nothing, or refused for
+# being absolute or carrying a `..` segment, is named on stderr; the summary
+# line is untouched by any of it. Declare nothing and the sweep reads exactly
+# what it read before the leaf existed.
+#
+# bin/fusion-citation-check resolves the same leaf through the same function:
+# the two hand-run helpers share one corpus, because a reporter narrower than
+# the rewriter is how this program came to change files the checker then
+# declared clean. The blocking gate
+# hooks/lib/__tests__/workbench-citation-lint.test.ts does NOT read the
+# declaration, on purpose, and is not to be made to.
 #
 # No fusion pipeline or skill runs this helper. `/fusion:cleanup` prints the
 # checker's verdict (bin/fusion-citation-check) and stops there; a person runs

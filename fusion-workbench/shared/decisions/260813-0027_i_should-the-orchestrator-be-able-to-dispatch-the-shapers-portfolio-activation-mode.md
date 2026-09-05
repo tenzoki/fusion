@@ -186,4 +186,4 @@ answer. **The ordering:** what preceded the gate was the per-Turn `coherence_rev
 the net-negative `circuit_breaker`, both at 12:42:06; the reconciler's `review-needed` verdict was
 written at 14:57, one hour and forty-four minutes after the gate, and could not have triggered it.
 Filed as
-`circles/260801-1244-curator/issues/260814-1850_*_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`.
+`260814-1850_*_the-answered-footer-cites-a-location-that-does-not-hold-the-answer-and-a-trigger-that-postdates-the-gate.md`.
