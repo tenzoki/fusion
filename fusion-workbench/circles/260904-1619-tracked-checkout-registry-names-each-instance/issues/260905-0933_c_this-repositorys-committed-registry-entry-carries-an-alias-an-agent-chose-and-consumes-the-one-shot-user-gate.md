@@ -23,3 +23,8 @@ It does not travel to users. `install.sh:82` copies `.claude-plugin agents skill
 ## Acceptance test
 
 The user either confirms the two values or replaces them, or the file is deleted so the next `/fusion:setup` asks. Separately, `skills/setup/SKILL.md` Step 0i states that a `register` run outside the asking branch never invents an alias or a person, so a future acceptance run cannot repeat this.
+
+---
+Resolved: 260904-1050-orchestrator-session.md `## Turn 4 — the two consumer findings` — the user was shown the entry and confirmed the name. `west-harbor` stands, the entry is unchanged, and the one-shot question stays consumed because there is nothing left for it to ask.
+
+**What this does not settle.** The mechanism is untouched: the question still fires on the entry's absence, so any future checkout registered by anything other than the running setup consumes its own gate the same way. Nothing measured that as likely, and no record is filed for it.
