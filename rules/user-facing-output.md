@@ -10,10 +10,10 @@ Two stylometric profiles layer on top, each resolved from its own `CLAUDE.md` de
 
 ## Style anti-patterns apply to everything
 
-The chat profile is deliberately lean: a load-bearing **blacklist** (em-dash asides, AI stock phrases, vague pronoun openers, filler intensifiers, mechanical enumeration, rhetorical Q+A, announcing structure, hollow abstractions, sycophantic validation — the entries carry their ids in the profile itself) and a minimal **whitelist** (action-first, name the referent, direct address, terse, sketch structure, one name and one formulation per thing). It carries **no** sentence-length bands: those belong to the writing profile and would fight the caps in `## Length`. The anti-patterns are length-neutral — removing them shortens output.
+The chat profile is deliberately lean: a load-bearing **blacklist** (em-dash asides, AI stock phrases, vague pronoun openers, filler intensifiers, mechanical enumeration, rhetorical Q+A, announcing structure, hollow abstractions, sycophantic validation, internal vocabulary, process narration, self-assessment; the entries carry their ids in the profile itself) and a minimal **whitelist** (action-first, name the referent, direct address, terse, sketch structure, one name and one formulation per thing). It carries **no** sentence-length bands: those belong to the writing profile and would fight the caps in `## Length`. The anti-patterns are length-neutral, and removing them shortens output.
 
 - **Answer, don't validate.** When the user is right, "Yes" or the substantive answer is enough; praising their question or instinct is filler and reads as paternalistic.
-- **Correctio earns its place only where the reader would have assumed the rejected term** ("set to `_p_`, not `_c_`" earns it; "Und nachgemessen statt geschlossen" does not — write "Nachgemessen.").
+- **Correctio earns its place only where the reader would have assumed the rejected term** ("recommended, not closed" earns it; "Und nachgemessen statt geschlossen" does not — write "Nachgemessen.").
 - **Never apply the writing profile to chat**: its consulting register and length targets are wrong for a one-line gate prompt.
 - **Structured artifacts are exempt from both profiles**: dashboard lines, commit messages, monitor strings, event-log JSON, machine-read tables stay terse and parseable.
 - With no chat profile on disk, the anti-patterns still hold in spirit: they are language-independent.
@@ -39,11 +39,20 @@ The reply answers the question that was asked; what you noticed on the way is fi
 
 ## Vocabulary
 
-- **Spell out fusion-internal terms on first use** ("the active Circle (`_t_` in the filename)", "the session Directive (your stated goal)"); the short form is fine afterwards.
-- **No workbench-internal ID without its human-readable summary**; no abbreviation the user didn't define (project codes need one expansion or a pointer; CLI/API/YAML are fine).
-- **Conventional-Commits types are commit language**, not prose: "Task 1 bumped the version", not "T1 chore: bumped version".
-- **Prefer the word to the marker** in body prose: *open / active / closed / …*, the marker form in parentheses if helpful.
+**Chat carries no fusion-internal term, glossed or not.** A gloss legalises the term and leaves the sentence unreadable. Name the thing in the reader's project. Binds chat, gates, `AskUserQuestion` text and summaries; **not** workbench records (defects, decisions, history, reviews), where the internal names are correct.
+
+- **No marker, machine token or commit type.** Not `_o_`, `_t_`, `review-needed`, `T1 chore:`. Write what is true: "still open", "needs a second look", "Task 1 bumped the version".
+- **No fusion noun.** Not Circle, Directive, Grounding, Turn, Gate, Artifact, Verdict, queue. Write the thing: this piece of work, your goal, why you wanted it, this pass, the question below, the file, the work list.
+- **No agent name as a sentence subject.** "Three notes cite a commit that does not exist", not "the reconciler reported that ...".
+- **No ID or abbreviation without its plain summary** (project codes need one expansion or a pointer; CLI/API/YAML are fine).
 - **One name per thing, one formulation per claim.** Synonym rotation forces the reader to re-prove identity; a second wording is not truer.
+
+## Report the project, not the machinery
+
+Same binding as `## Vocabulary`: chat, gates, `AskUserQuestion` text and summaries. Workbench records carry the machinery, and that is where it belongs.
+
+- **No process narration.** Which agent ran, in which pass, what it returned, which gate stands open, what a verdict said: none of it reaches the user. It goes to the history file. Report the finding and its consequence instead: "the plan cites a commit that does not exist, so its three claims are unproven".
+- **No self-assessment.** Not how an error feels, not who should have caught it, not which rule it breaks, not how you are reading the user. Own the error in one clause, then say what is wrong in his project and what fixes it: "I got that wrong. The hash is dead, so those three notes prove nothing until they cite the real one."
 
 ## Questions and gates
 
@@ -76,8 +85,9 @@ The known failure mode: under technical load, agents drop the prose discipline a
 1. **Thesis first** — the first line carries the finding, and it states the *fact*, not the significance of a fact you withheld ("Schritt 8 fand neun Prosastellen, der Plan führte vier", not "Schritt 8 hat etwas gefunden, das mehr wert ist als seine eigene Arbeit").
 2. **No em-dash asides** — one `—` per ~1000 words is the ceiling; the telegram-with-parentheses pattern shows up most in gate prompts and option text.
 3. **Whole sentences** — each point has a subject and a finite verb; "Recall top, Precision leck" is a fragment.
-4. **Every code glossed on first use** — `S1`, `gate.go`, `must_not` each get a short gloss; the reader does not hold the project's codes in working memory.
+4. **Every code of the user's own project glossed on first use** — `S1`, `gate.go`, `must_not` each get a short gloss; the reader does not hold the project's codes in working memory. A fusion-internal term is not glossed but replaced (`## Vocabulary`).
 5. **Counts are named** — "8 of the 13 open items", not "8 of 13".
+6. **The stranger test, sentence by sentence** — read each sentence alone and ask: would a reader who knows this project's source code, and has never seen this conversation, understand it? If it needs something only this session holds (a pass, a gate, an agent, a marker, a verdict, what some other agent returned), rewrite it around the thing in the user's project.
 
 The gate applies to long-form bodies and chat alike — a concrete check on the draft, like "count the lines" in `## Length`. The canonical failure and its repair:
 
