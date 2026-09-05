@@ -59,9 +59,35 @@ import { defineConfig } from "vitest/config";
 // ---------------------------------------------------------------------------
 const half = Math.max(2, Math.floor(availableParallelism() / 2));
 
+// ---------------------------------------------------------------------------
+// The case deadline is a deadlock guard, not a speed assumption.
+//
+// Vitest's default `testTimeout` is 5000 ms, and this project never set one, so
+// every case that does not pass its own budget ran on that default: 12 of the 13
+// cases in `fusion-commit-lock.test.ts`, 3 of the 21 in
+// `monitor-warnings-panel.test.ts`, and the untimed subprocess cases in 18
+// further files. Those files' own headers say what the deadline is for, in
+// `fusion-commit-lock.test.ts:80-84`: "the only deadline left is the vitest case
+// timeout, which is a deadlock guard rather than an assumption about how fast
+// the lock is." At 5 seconds it was exactly such an assumption, and the
+// measurement above records a bash-to-first-`mkdir` latency of 9.5 s in a run
+// that PASSED.
+//
+// 30 s is `CASE_TIMEOUT` in `lib/__tests__/helpers/guard-harness.ts:970`, the
+// value the cases that do carry their own budget already use, so this makes the
+// default agree with the suite's own explicit answer instead of introducing a
+// second number. Analysis:
+// `260906-0026-what-shared-state-the-hook-suite-reaches.md`, finding 3, change 1.
+//
+// Every case reached by this waits on an observable event (a process exit, a
+// first-fail message on stderr, a served response), so no assertion is widened
+// and nothing is skipped: what moves is only how long a starved machine may take
+// to reach the event it is already waiting for.
+// ---------------------------------------------------------------------------
 export default defineConfig({
   test: {
     pool: "forks",
     poolOptions: { forks: { maxForks: half, minForks: half } },
+    testTimeout: 30_000,
   },
 });

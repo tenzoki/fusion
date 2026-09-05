@@ -42,9 +42,36 @@ set is wider than any single run shows.
 Two of them name their resource in their own subject and are worth reading first, because they
 suggest what the others are doing: `fusion-commit-lock.test.ts` exercises a mutex that is
 deliberately machine-visible, and `monitor-warnings-panel.test.ts` binds a port. Both failed in
-the same round. `inference:` the remaining four reach a shared path, a shared directory name or
-the real workbench rather than a private temporary one; that has not been read out of the code
-and is the first thing a diagnosis should check.
+the same round.
+
+**The inference this section carried has been read out of the code and refuted.** It guessed
+that the remaining files reach a shared path, a shared directory name or the real workbench.
+They do not: every one of the eight builds its root with `mkdtempSync`, and the one obvious
+remaining reader of shared build output extracts a `git archive` into its own tree for exactly
+that reason. What is shared is the machine, and what fails on it is three fixed wall-clock
+budgets. The diagnosis, with the latency measurement behind it, is
+`260906-0026-what-shared-state-the-hook-suite-reaches.md`; the title of this record is
+therefore accurate about the condition and wrong about the mechanism, and the section below
+states the mechanism.
+
+## The mechanism, read out of the code
+
+**Six of the eight files fail through one function.** `hooks/lib/git.ts` runs git under a
+5-second budget and collapses a timeout into the same return value it uses for "this is not a
+repository". Measured over 600 samples on a six-commit repository, `git log` takes 23 ms with
+nothing else running and up to 7 580 ms with two suites running, with no spawn ever failing. So
+under load the function reports, in a well-formed sentence, that git declined to answer.
+
+**The other two fail on vitest's own default.** `testTimeout` is 5 000 ms and this project
+never sets it. `fusion-commit-lock.test.ts` runs 12 of its 13 cases on that default and
+`monitor-warnings-panel.test.ts` 3 of 21; eighteen further files carry the same exposure
+without having been observed red yet.
+
+**The production fault is the larger half of this record.** `hooks/lib/git.ts` is not test
+scaffolding: both of its callers run inside the PostToolUse hook, in every consuming project.
+A loaded machine there produces the same false claim, and no test is present to go red about
+it. The suite failing is that fault reporting itself, which is the one piece of luck in this
+record.
 
 ## Why this matters more than the two records it subsumes
 
@@ -81,3 +108,23 @@ expensive, and the choice between them is a decision this record does not make.
 
 The experiment itself is the acceptance test either way: ten pairs of concurrent runs at one
 commit, counting red runs out of twenty.
+
+## One further manifestation, observed while filing this record
+
+The commit that first carried this file failed. Git refused with its index-lock message and
+the commit did not land; the identical command, retried immediately, succeeded as `aacf0554`.
+Nothing had changed in between.
+
+**Verified:** the failure happened, the retry succeeded, and no `index.lock` remained
+afterwards.
+
+**The inference first written here blamed the suite's git calls, and that is refuted.** All
+four of the suite's git calls against this checkout are read commands, which take no index
+lock. The family that takes one is `git status`, which the tracker hook runs on a
+commit-bearing tool call — so the contender was a hook firing beside the commit, not a test.
+
+It stays in the record because it widens it in a direction the title does not cover: the
+contention reached the orchestrator's own commit, not only the suite. And the commit lock does
+not help, by construction. It is anchored at the workbench and serialises fusion sessions
+against one project, while git's index is contended by anything in this checkout that takes
+it, this project's own hooks included.
