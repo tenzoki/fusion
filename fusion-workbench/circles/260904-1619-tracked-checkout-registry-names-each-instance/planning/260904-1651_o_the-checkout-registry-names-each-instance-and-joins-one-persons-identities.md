@@ -124,7 +124,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
 
 ## Implementation Steps
 
-1. **Gate: does a registry entry carry hostname, account name and folder path?**
+1. [DONE] **Gate: does a registry entry carry hostname, account name and folder path?**
    - Executor: `analyst`
    - **Human gate:** yes, and the gate is the decision record's own option set rather than the Proceed / Skip / Defer / Modify pattern, because the options are already written and the answer decides an interface rather than whether to run a task. Put `260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md` to the user as it stands: its four options, its recommendation of option 2, and the three values measured in this checkout that option 2 would publish (`k1i9`, `k1`, `/Users/k1/Projects/productive/fusion`). Do not compose a fifth option.
    - Files: this Circle's copy of `260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md`, renamed from `_o_` to `_a_`
@@ -132,7 +132,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: `ls` shows the record under `_a_`, its `Answered:` line names a history file that exists, and the added sentence names exactly one of the four options. If the user defers, the record is renamed `_d_` and step 2 proceeds under option 1, which is the only answer that requires nothing.
    - Dependencies: none
 
-2. **`bin/fusion-checkout-name`, the registry's only writer and principal reader**
+2. [DONE] **`bin/fusion-checkout-name`, the registry's only writer and principal reader**
    - Executor: `coder`
    - Files: `bin/fusion-checkout-name` (new, bash, executable), `hooks/lib/__tests__/fusion-checkout-name.test.ts` (new), `.gitignore` (one `!bin/fusion-checkout-name` line), `CLAUDE.md` (one Layout-table row)
    - Changes: a self-contained bash program in the shape of `bin/fusion-identity` and `bin/fusion-cadence-anchor`. It resolves the workbench through its sibling `bin/fusion-workbench-root` and this checkout's hex through its sibling `bin/fusion-identity`; it never calls back into anything that calls it. Store: `<workbench>/shared/checkouts/<8hex>.md`, created on first `register` and never otherwise. Subcommands:
@@ -145,7 +145,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: `bash bin/fusion-checkout-name --help` prints the usage block and exits 2; the new test passes; `git ls-files bin/` equals the directory listing (`committed-dist.test.ts`); `derivable-enumerations-lint` and `reference-resolution-lint` stay green, the latter meaning every record this header cites resolves in the storeless form.
    - Dependencies: 1
 
-3. **The layout tree and the four-class partition gain the store, and each still tiles**
+3. [DONE] **The layout tree and the four-class partition gain the store, and each still tiles**
    - Executor: `coder`
    - Files: `rules/fusion-workbench-conventions.md` (`## fusion-workbench Layout`, the tree and the paragraph on what `shared/` holds), `rules/workbench-tracking.md` (`## The four classes`, the R1 row)
    - Changes: `checkouts/` joins the `shared/` block of the tree with a one-line comment saying it is written by `bin/fusion-checkout-name` and by nothing else; the paragraph that lists the four shared-only stores gains it as a fifth, with its reason, which is that a checkout is not produced by executing a Directive and so cannot originate in a Circle. In `rules/workbench-tracking.md` the R1 row's entry list gains `shared/` unchanged (the store is inside `shared/`, so the row already covers it) and one sentence states explicitly that the new store is R1 by the same reasoning as the shared decision store, one writer per file by construction, so the partition owes no exception. Neither file defines the entry grammar; both cite the helper header for it.
@@ -192,7 +192,7 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
    - Acceptance: `hooks-wiring.test.ts` asserts the fifth command mentions `fusion-checkout-name`, guards it with `[ -x ]`, and still exports the two values it exported before; a session started in a tree with no entry exports no `FUSION_ALIAS` rather than an empty one.
    - Dependencies: 2
 
-9. **Gate: does the identity helper's exit-1 halt survive a registry that can name the person?**
+9. [DONE] **Gate: does the identity helper's exit-1 halt survive a registry that can name the person?**
    - Executor: `analyst`
    - **Human gate:** yes, on the same terms as step 1. Put `260904-1058_*_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md` to the user as it stands: its three options, its recommendation of option 1, the two clauses of the halt's stated reason, and the analysis's `speculation:` that option 2's failure is invisible by construction because a record naming a person and joined to no commit reads identically to one that is joined. Do not compose a fourth option.
     - Files: this Circle's copy of `260904-1058_*_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md`, renamed from `_o_` to `_a_`
