@@ -30,3 +30,6 @@ The four growth bounds measure a surface's rate of addition against a baseline, 
 
 ---
 Answered: 260904-1050-orchestrator-session.md `## Turn 4 — the two consumer findings` — option 2, a merge of two lines that were each inside the bound is a third event at which the baseline moves, with the merge and both parent figures named; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 9f3dfae4 — `hooks/lib/__tests__/helpers/growth-bound.ts` names three events, both baselines moved to the merged figures with parents and base recorded, and the suite is green with nothing cut.
