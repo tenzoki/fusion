@@ -77,3 +77,19 @@ halts in today, no filing agent gains a halt anywhere, and what changes is the s
 that says why: a tree which cannot commit produces records no other checkout will ever
 see, which stands on its own, rather than the clause about a record naming nobody, which
 a registry carrying the person makes false.
+
+## Turn 3 — the tail, and one rule the orchestrator broke itself
+
+Steps 10 to 14 landed. `npm test` reaches exit 0 for the first time this session:
+48 files, 825 tests, including the sweep gate that was already red at `cda72f71`
+and whose cause turned out to be the corpus rather than the sweep.
+
+**The orchestrator broke its own staging rule at the marker commit.** Step 3b step 4
+requires every path passed to `git add` to be written out by hand, and forbids a
+directory argument for a measured reason: a directory argument once staged three
+renamed records' deletions without their successors. The marker commit used
+`git add -A -- <three directories>` because five renames are ten paths and the
+friction was real. It captured exactly the six intended files, which is luck rather
+than design, and the audit that established that ran after the commit rather than
+before it. The friction itself is not new and is already recorded in
+`260824-2013_*_how-is-a-marker-rename-performed-and-staged-and-by-whom.md`.
