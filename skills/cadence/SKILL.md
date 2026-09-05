@@ -6,7 +6,7 @@ allowed-tools: [Bash, Read, Write]
 
 # /fusion:cadence — analyse logs and report the work cadence
 
-When the user invokes `/fusion:cadence`, read the project's log sources, identify the topics worked on, and write a digest with **three ranked lists** to `cadence-$USER.md` in the workbench's memo store:
+When the user invokes `/fusion:cadence`, read the project's log sources, identify the topics worked on, and write a digest with **three ranked lists** to `cadence-$CO.md` in the workbench's memo store:
 
 1. **Topics since yesterday** — what was touched from yesterday up to now. On a Monday, "yesterday" is a Sunday, so this collapses Friday + Saturday + Sunday into one bucket (the weekend's last working stretch).
 2. **Topics of the last 7 days** — what the recent work has been about.
@@ -32,14 +32,14 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 - **Exit 1** — no workbench above `pwd`. Tell the user to run `/fusion:setup` at the project root first.
 
-### 1. Get the date and the user
+### 1. Date and checkout
 
 ```bash
-echo "$USER"
+I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true
 date +"%Y-%m-%d %H:%M"
 ```
 
-- `$USER` fixes the output filename `cadence-$USER.md` and the activity-log filename `activity-log-$USER.md`.
+- `$CO` is that run's `CHECKOUT=`, never `$USER`; rename a legacy `-$USER` file onto it, per `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
 - Today's date (from `date`, never from your own sense of "now" — your internal clock runs in UTC and will be off by the local offset) anchors the 7-day window.
 
 ### 2. Compute the time windows
@@ -76,13 +76,12 @@ Collect every available source. For each source record, per entry: a **date**, t
 | Code | Source | Where |
 |------|--------|-------|
 | `h` | fusion session histories | every directory in `$SCAN_HISTORY` (workbench-relative — prefix with `$WORKBENCH`) |
-| `a` | shared activity log | `activity-log-$USER.md` — check **both** the project root and `$WORKBENCH` |
+| `a` | shared activity log | `activity-log-$CO.md` — check **both** the project root and `$WORKBENCH` |
 | `g` | git commit days | `git log` (only if `.git` is present) — a day's commits form **one** unit, not one each |
 
 **Substitute the resolver values before you run anything below.** `WORKBENCH`, `OUT_MEMO` and
 `SCAN_HISTORY` are resolver keys from step 0, not shell variables. Nothing exports them, and the
-Bash tool starts a fresh shell for every call, so write their values into every block literally,
-the same way step 2 says to use the printed date values.
+Bash tool starts a fresh shell for every call, so write their values into every block literally.
 
 Run this assertion first, before the gather block. A key you forgot to substitute expands to the
 empty string, which is exactly what the assertion is looking for:
@@ -112,16 +111,16 @@ that nothing ever checked, and the reader cannot tell the two apart.
 for d in $(printf '%s\n' "$SCAN_HISTORY"); do find "$WORKBENCH/$d" -maxdepth 1 -name '*.md' 2>/dev/null; done
 
 # activity log — TWO possible locations (project root, and the workbench)
-for f in "activity-log-$USER.md" "$WORKBENCH/activity-log-$USER.md"; do [ -f "$f" ] && echo "$f"; done
+for f in "activity-log-$CO.md" "$WORKBENCH/activity-log-$CO.md"; do [ -f "$f" ] && echo "$f"; done
 
 # git commits with ISO dates (skip if not a git repo).
 # Collect them per commit here; step 4 groups them by date into one unit per day.
 git log --date=short --pretty='%ad %h %s' 2>/dev/null
 ```
 
-**Iterate over every path in `$SCAN_HISTORY`.** It resolves to **two** space-separated directories when a Circle is active — the active Circle's history store and the shared one — and collapses to the shared one alone when no Circle is active (`rules/fusion-workbench-conventions.md` `## Path Resolution` → "Two invariants", invariant 2). Reading only the first path silently under-reports: the whole active Circle's work, or the whole non-Circle work, disappears from all three lists, and the result looks like a quiet week rather than a bug.
+**Iterate over every path in `$SCAN_HISTORY`** — it names two directories when a Circle is active and one when none is (`rules/fusion-workbench-conventions.md` `## Path Resolution` → "Two invariants", invariant 2). Reading only the first silently under-reports: the whole active Circle's work, or the whole non-Circle work, disappears from all three lists, and the result looks like a quiet week rather than a bug.
 
-The activity-log step of `/fusion:cleanup` writes the activity log to the **project root**, so that is the usual location; the workbench copy is the fallback for projects that moved it. Note in the final report which sources were found and which were absent.
+The log lives in the project root; the workbench copy is the fallback for projects that moved it. Note in the final report which sources were found and which were absent.
 
 ### 4. Date each log unit
 
@@ -174,21 +173,21 @@ From this checkout's own event lines (drop rows whose `checkout` differs from `.
 
 ### 8. Write the report
 
-The report goes to `$WORKBENCH/$OUT_MEMO/cadence-$USER.md`.
+The report goes to `$WORKBENCH/$OUT_MEMO/cadence-$CO.md`.
 
 ```bash
 [ -n "$WORKBENCH" ] && [ -n "$OUT_MEMO" ] || { echo "fusion bug: WORKBENCH or OUT_MEMO empty — refusing to write the digest" >&2; exit 1; }
 mkdir -p "$WORKBENCH/$OUT_MEMO"
 ```
 
-Step 3's assertion repeats because each Bash call is its own shell; without it an empty pair turns the `mkdir` into `mkdir -p "/"` and the digest lands at `/cadence-$USER.md`. A non-zero exit stops the skill, reported as a fusion bug.
+Step 3's assertion repeats because each Bash call is its own shell; without it an empty pair turns the `mkdir` into `mkdir -p "/"` and the digest lands at `/cadence-$CO.md`. A non-zero exit stops the skill, reported as a fusion bug.
 
 **Overwrite each run — a fresh snapshot, not an append log** (unlike `/fusion:memo`'s files in the same store). Cadence keeps no history of its own runs.
 
 Structure:
 
 ```markdown
-# Cadence — <$USER>
+# Cadence — <$CO>
 
 **Generated:** <YYYY-MM-DD HH:MM, from `date`>
 **Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" when today is Monday -->
@@ -237,7 +236,7 @@ Output follows `rules/user-facing-output.md` plus the chat profile for the proje
 
 ## Graceful degradation
 
-- **No active Circle** (the common case between Circles): `$SCAN_HISTORY` collapses to the shared store alone. Scan it, note in the report that no Circle was active. Not a warning.
+- **No active Circle** (the common case): scan the shared store alone and note it in the report. Not a warning.
 - **No activity log:** note "activity log: none" in the sources line; the session histories and git carry the analysis.
 - **Not a git repo:** skip the `g` source silently; note it in the sources line.
 - **Nothing datable in the window:** still write the file, with the empty-window note in the affected list.
@@ -250,6 +249,6 @@ this skill produces no file.
 
 ## What this skill is NOT
 
-- It does not modify the source logs or the activity log — read-only on all inputs, writes only `cadence-$USER.md` in `$OUT_MEMO`.
+- It does not modify the source logs or the activity log — read-only on all inputs, writes only `cadence-$CO.md` in `$OUT_MEMO`.
 - It is not the activity-log step of `/fusion:cleanup`. That step maintains the dated raw activity record; cadence is a higher-level digest built on top of it (and on the session histories and git). Run `/fusion:cleanup --only log-activity` first if you want the activity log fresh before a cadence pass.
 - It files no issues and no decisions. A cadence run is a read of the past, not a queue of work.

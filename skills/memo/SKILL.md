@@ -1,5 +1,5 @@
 ---
-description: Append a concise memo to the user's personal memo log (memos-<username>.md) or a task to the user's task list (tasks-<username>.md), both in the workbench's shared memo store, or file an idea as a new entry in the project backlog
+description: Append a concise memo to the user's personal memo log (memos-<checkout>.md) or a task to the user's task list (tasks-<checkout>.md), both in the workbench's shared memo store, or file an idea as a new entry in the project backlog
 argument-hint: [content, or "task: <todo>", or "idea: <idea>", or a directive like "the open tasks"]
 allowed-tools: [Bash, Read, Write, Edit, AskUserQuestion]
 ---
@@ -12,7 +12,7 @@ Capture something the user wants kept. Three kinds of capture, and the third is 
 - **Tasks** — things to do: a todo, an open action, something to pick up later. Kept as a checkbox list so they can be ticked off.
 - **Ideas** — something worth considering that is not yet worth planning: a direction for the project rather than a note to self. An idea goes to the **project backlog**, where the playmaker ranks it, `/fusion:next` surfaces it, and it can become a Circle.
 
-**The memo and task files are append logs; a backlog entry is not.** One memo file and one task file per user, and every capture adds a block to the end of the right one. An idea is **a new file each time** — one file per idea, in a different store, carrying a state marker on its name. That difference is stated rather than left to be inferred from the two siblings, because inferring it produces the wrong write: every reader of the backlog takes one file to be one idea.
+**The memo and task files are append logs; a backlog entry is not.** One memo file and one task file per checkout, and every capture adds a block to the end of the right one. An idea is **a new file each time** — one file per idea, in a different store, carrying a state marker on its name. That difference is stated rather than left to be inferred from the two siblings, because inferring it produces the wrong write: every reader of the backlog takes one file to be one idea.
 
 ## Step 0 — Resolve the stores
 
@@ -30,21 +30,21 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 ## Where each kind goes
 
-- Memo file: `$WORKBENCH/$OUT_MEMO/memos-$USER.md`
-- Task file: `$WORKBENCH/$OUT_MEMO/tasks-$USER.md`
-- Backlog entry: `$WORKBENCH/$OUT_BACKLOG/<YYMMDD-HHMM>_o_<topic>.md` — a new file per idea, never an append
-- One memo file and one task file per OS user; users may split or edit them by hand later. Backlog entries are project-wide, not per user.
-- Determine `$USER` from the environment: `echo "$USER"`
+- Memo file: `$WORKBENCH/$OUT_MEMO/memos-$CO.md`
+- Task file: `$WORKBENCH/$OUT_MEMO/tasks-$CO.md`
+- Backlog entry: a new file per idea in `$WORKBENCH/$OUT_BACKLOG`, never an append
+- Either file may be hand-edited later; backlog entries are project-wide, not per checkout.
+- `$CO` is the `CHECKOUT=` line of `I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true`, never `$USER`; the rest is `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
 
 If the memo store or one of its two files does not exist, create it. When creating a file for the first time, write only its header and nothing else:
 
 ```markdown
-# Memos — <username>
+# Memos — <checkout>
 
 ```
 
 ```markdown
-# Tasks — <username>
+# Tasks — <checkout>
 
 ```
 
@@ -52,7 +52,7 @@ If the memo store or one of its two files does not exist, create it. When creati
 
 Decide the kind first; it picks the target.
 
-**Route to the task file (`tasks-$USER.md`) when:**
+**Route to the task file (`tasks-$CO.md`) when:**
 - The argument starts with an explicit keyword: `task:`, `todo:`, or `aufgabe:` (case-insensitive). Strip the keyword from the captured text.
 - The conversational reference is about things to do: `the open tasks`, `this todo`, `diese aufgabe`, `what's left to do`.
 - The content is clearly an action to perform later (imperative: "fix X", "ask Stefan about Y", "rename Z").
@@ -61,7 +61,7 @@ Decide the kind first; it picks the target.
 - The argument starts with an explicit keyword: `idea:`, `idee:`, or `backlog:` (case-insensitive). Strip the keyword from the captured text.
 - The conversational reference names the backlog: `this idea for the backlog`, `das gehört ins Backlog`, `merk das als Idee vor`.
 
-**Route to the memo file (`memos-$USER.md`) otherwise** — the default, and the backlog has to be asked for to win it. Notes, options, problem shapes, pointers. The asymmetry is on purpose: a memo is the user's own log and nothing reads it, while an entry is a proposal the playmaker ranks and `/fusion:next` puts in front of the user beside the Circles. A note misfiled as a memo costs nothing; a note misfiled as an idea gets recommended.
+**Route to the memo file (`memos-$CO.md`) otherwise** — the default, and the backlog has to be asked for to win it. Notes, options, problem shapes, pointers. The asymmetry is on purpose: a memo is the user's own log and nothing reads it, while an entry is a proposal the playmaker ranks and `/fusion:next` puts in front of the user beside the Circles. A note misfiled as a memo costs nothing; a note misfiled as an idea gets recommended.
 
 If genuinely ambiguous (the content reads as two of the three), ask via `AskUserQuestion`: memo, task, or idea? Do not guess on a true coin-flip; default to memo only when there is neither a task signal nor an idea signal.
 
@@ -126,7 +126,7 @@ The body, and the minimum is almost nothing on purpose. `rules/fusion-workbench-
 ## Process
 
 1. Resolve `WORKBENCH`, `OUT_MEMO` and `OUT_BACKLOG` per Step 0.
-2. Determine `$USER`.
+2. Resolve `$CO`; adopt a legacy `-$USER` name.
 3. Ensure the target directory exists (`mkdir -p`): `$WORKBENCH/$OUT_MEMO` for a memo or a task, `$WORKBENCH/$OUT_BACKLOG` for an idea.
 4. Resolve the invocation mode from the argument.
 5. **Decide memo, task or idea** per "Memo, task or idea — which target"; this picks the target.

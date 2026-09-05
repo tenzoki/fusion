@@ -5,7 +5,7 @@ allowed-tools: [Bash, Read, Glob, Grep, Write, Edit]
 
 # Log Activity Command
 
-This is the activity-log step of `/fusion:cleanup` (its Step 6), and the procedure below is what that step reads and performs inline. Scan all project activity sources and create or update the user's activity log file in the project root.
+This is the activity-log step of `/fusion:cleanup` (its Step 6), and the procedure below is what that step reads and performs inline. Scan all project activity sources and create or update the activity log file in the project root.
 
 ## Process
 
@@ -23,20 +23,18 @@ Take `WORKBENCH` (absolute) from the output. It is the only key this skill gets,
 
 On a non-zero exit, read the code (full table in the conventions' `## Path Resolution` → Exit codes): **exit 1** — no workbench, scan git alone as above; **exit 3** — `.active-circle` is orphaned or corrupt, tell the user to fix or delete the pointer; **exit 4** — a bug in `fusion-paths`, not the user's workbench, report it and do not send them to check their pointer.
 
-### 1. Determine the current user
-
-Read the username from the `$USER` environment variable:
+### 1. This checkout
 
 ```bash
-echo "$USER"
+I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true
 ```
 
-The activity log file is `activity-log-$USER.md` in the project root.
+`$CO` is that run's `CHECKOUT=`, never `$USER`. The activity log file is `activity-log-$CO.md` in the project root, and `activity-log.md` when `$CO` is empty. Rename a legacy `-$USER` file onto it, per the conventions' `## Filename Patterns`.
 
 ### 2. Check for existing log file
 
 - If the file does not exist, create it from scratch — process every date that has activity.
-- If the file exists, the newest logged date is the high-water mark, and one grep is the whole read: `SINCE="$(grep -oE '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' "activity-log-$USER.md" | sort | tail -1 | cut -c4-)"`. Only the newest date decides anything below; do not read the file into context.
+- If the file exists, the newest logged date is the high-water mark, and one grep is the whole read: `SINCE="$(grep -oE '^## [0-9]{4}-[0-9]{2}-[0-9]{2}' "activity-log-$CO.md" | sort | tail -1 | cut -c4-)"`. Only the newest date decides anything below; do not read the file into context.
 - Determine the set of dates to process:
   - **Every date AFTER the most recently logged date** that has activity — the genuinely new days; AND
   - **The most recently logged date itself** — re-scan it: a mid-day run may have logged it incomplete, and skipping it on its existing header silently drops the rest of that day's work.
@@ -192,9 +190,9 @@ For each new day added to the Daily Log, locate the ISO week (Mon–Sun) the day
 **Verification before declaring this step done:** every distinct ISO week represented by a daily entry has exactly one row in the per-week table. Run each command on a single line (no backslash-newline continuations):
 
 ```bash
-daily_entries=$(grep -c "^## 2[0-9]\{3\}-" activity-log-$USER.md)
-week_rows=$(grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2} +\|" activity-log-$USER.md)
-distinct_iso_weeks=$(grep -oE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$USER.md | cut -c4- | python3 -c 'import sys,datetime; print(len({datetime.date.fromisoformat(l.strip()).isocalendar()[:2] for l in sys.stdin if l.strip()}))')
+daily_entries=$(grep -c "^## 2[0-9]\{3\}-" activity-log-$CO.md)
+week_rows=$(grep -cE "^\| [0-9]{4}-[0-9]{2}-[0-9]{2} +\|" activity-log-$CO.md)
+distinct_iso_weeks=$(grep -oE "^## [0-9]{4}-[0-9]{2}-[0-9]{2}" activity-log-$CO.md | cut -c4- | python3 -c 'import sys,datetime; print(len({datetime.date.fromisoformat(l.strip()).isocalendar()[:2] for l in sys.stdin if l.strip()}))')
 echo "$daily_entries daily entries, $week_rows week rows, $distinct_iso_weeks distinct ISO weeks"
 [ "$distinct_iso_weeks" = "$week_rows" ] || echo "MISMATCH: $distinct_iso_weeks distinct ISO weeks vs $week_rows week rows"
 ```

@@ -95,7 +95,7 @@ Die letzten vier sind terminal; ein geschlossener Circle wird nie wieder geöffn
 /fusion:next <circle-dir>             aktiviert ihn (_a_ → _t_) und startet die Sitzung
 ```
 
-`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<user>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<user>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigene Datei in `shared/backlog/`). Kein Agent legt Backlog-Einträge an; das ist Sache des Menschen. Der `playmaker` rankt sie und benennt einen Eintrag eigenständig von `_o_` nach `_p_` (empfohlen) um; teilen, zusammenlegen, schließen und verschieben tut er nur mit Bestätigung.
+`/fusion:memo` kennt drei Ziele: ein persönliches Memo (`shared/memos/memos-<checkout>.md`), eine Aufgabe (`task:`/`todo:` nach `tasks-<checkout>.md`) oder eine Idee (`idea:`/`idee:`/`backlog:` als eigene Datei in `shared/backlog/`). Kein Agent legt Backlog-Einträge an; das ist Sache des Menschen. Der `playmaker` rankt sie und benennt einen Eintrag eigenständig von `_o_` nach `_p_` (empfohlen) um; teilen, zusammenlegen, schließen und verschieben tut er nur mit Bestätigung.
 
 ### Issues und Decisions
 
@@ -128,7 +128,7 @@ Eine Pipeline aus acht Schritten: Issues für offene Tasks anlegen, die eigentli
 **Aufräumarbeiten, die dazugehören:**
 
 - **Archivierung:** `/fusion:cleanup --only archive` (oder Step 4 der Pipeline) verschiebt terminale Circles und terminale Marker aus `shared/` nach `fusion-workbench/archive/` und rollt das Guard-Event-Log unter datiertem Namen dorthin. Tier 2 nimmt gealterte Reviews dazu, Tier 3 gealterte History (Standardalter 14 Tage, z. B. `tier-3 21d`). Archivieren verschiebt, löscht nie.
-- **`/fusion:cadence`:** liest Aktivitätslog, Session-Histories und git und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen) nach `shared/memos/cadence-<user>.md`. Wer das zugrundeliegende Log frisch will, lässt vorher `/fusion:cleanup --only log-activity` laufen.
+- **`/fusion:cadence`:** liest Aktivitätslog, Session-Histories und git und schreibt eine Übersicht (gestern, letzte 7 Tage, wiederkehrende Themen) nach `shared/memos/cadence-<checkout>.md`. Wer das zugrundeliegende Log frisch will, lässt vorher `/fusion:cleanup --only log-activity` laufen.
 
 Ein Hinweis zur Einordnung, als Beobachtung und nicht als Messung dieses Dokuments: die Buchhaltung (Setup, Reconcile, Reviews, Cleanup) macht einen großen Teil der Sitzungszeit aus. Die inkrementellen Mechanismen seit v10.8.1 sind die Antwort darauf.
 

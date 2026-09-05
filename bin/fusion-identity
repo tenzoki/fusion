@@ -130,6 +130,44 @@
 # `fusion-workbench/.checkout-id` is class L in `rules/workbench-tracking.md`.
 # It never travels, and a checkout that pulls another checkout's copy of it is
 # the one failure that makes the field meaningless.
+#
+# ---------------------------------------------------------------------------
+# What the identifier keys, and why the person does not
+#
+# Four personal logs are named after this value: the memo file, the task file,
+# the cadence digest, and the activity log in the project root. The operative
+# rule — the name shape, how a consumer resolves the value, the unresolved
+# case, and what becomes of a file under the old name — is
+# `rules/fusion-workbench-conventions.md` `## Filename Patterns`. What is here
+# is why the key is this one, so the next reader who reaches for the person
+# finds the case already made.
+#
+# All four are tracked and travel, and three of them sit in a store that is
+# class R1, whose defining property is one writer per file. The minted
+# identifier holds that property BY CONSTRUCTION: a checkout writes the file
+# named after its own identifier and no other, which is the same ground
+# `shared/checkouts/` was placed on
+# (`260904-1058_*_does-fusion-gain-a-tracked-checkout-registry-and-in-which-shape.md`).
+# The OS login these files were named by until 2026-09-05 holds it in neither
+# direction — two people whose machines both call them `dev` write one tracked
+# file from two checkouts, and one person whose machines call him `k1` and
+# `kai` gets two of everything with nothing saying they are one person's.
+#
+# **The person was the other candidate and it loses on two counts.** It repairs
+# the second direction and keeps the first: one human on two machines is still
+# two writers on one tracked file, which is a git conflict in a personal log
+# nobody expects to merge, and it is the direction that lands on tracked bytes.
+# And it is not total — outside a git work tree there is no person to key on at
+# all (exit 4 above), while the identifier is minted with no git anywhere in
+# reach. What the person key would have bought is available by lookup instead:
+# `bin/fusion-checkout-name resolve <8hex>` names the human, which is the
+# attribute-not-key answer
+# `260904-1058_*_is-the-checkout-alias-the-identifier-or-an-attribute-of-the-minted-one.md`
+# already gave the alias. The cost of the choice is stated rather than
+# smoothed: one person's memos from two machines are two files, and joining
+# them is a read through the registry rather than a property of the name.
+#
+# Defect: `260904-1058_*_four-tracked-workbench-filenames-are-keyed-by-the-os-account-name-the-identity-decision-rejected.md`.
 
 set -eu
 
