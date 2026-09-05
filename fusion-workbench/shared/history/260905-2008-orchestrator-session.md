@@ -101,6 +101,27 @@ is not an explanation.
 and 8 of the 19 that were open at the loop's start remain, of which 7 are the ones no dispatch can
 move.
 
+**The end-of-loop analysis contradicts the reconciliation, and in one direction only.** Four of the
+seven records the reconciliation reported as unmovable by any dispatch are movable, and nothing
+moved the other way; exactly one record in the corpus is undecidable as posed, and for that one the
+analysis names the change of mechanism rather than an approximation. Report:
+`260905-2158-the-nine-open-defects-after-loop-1-and-what-loop-2-should-do.md`. The lesson is the
+one the reconciliation itself demonstrated on the 181-against-35 record: a record's own account of
+its size and its tractability is evidence, not a finding.
+
+**The flake rate both intermittent records made a precondition is now measured**: 20 full-suite runs
+on the tree at `e9bd3e53`, 1 red and 19 green. The rate is small and not zero. The first ten runs
+recorded counts only, so the identity of the failing case in the one red run was not captured; 25
+further runs with name capture were started to close that gap.
+
+**A defect of fusion's own was found by accident and filed**
+(`260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`).
+A second fusion session, on a different project, overwrote this session's commit-message file in
+`/tmp`: the path carries the task id and nothing else, and the filesystem is case-insensitive, so
+`L1-RECONCILE` and that session's `L1-reconcile` were one file. This session was unharmed because
+its commit had run 37 minutes earlier, which is timing and not protection. From this point the
+session writes its commit messages to a session-unique path.
+
 ## Coherence
 
 <!-- RECONCILER-OWNED -->
