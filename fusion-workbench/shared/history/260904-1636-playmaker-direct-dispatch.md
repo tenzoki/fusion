@@ -14,11 +14,11 @@ Domain bias applied: `code` (parsed from the dispatch prompt's `**Domain:** code
 ## Top-ranked anticipated Circle
 
 `260904-1619-tracked-checkout-registry-names-each-instance` — the only `_a_` Circle in the
-portfolio, so it ranks first by construction. Unresolved-decision count 2 (`260904-1058_o_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md`,
-`260904-1058_o_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md`).
+portfolio, so it ranks first by construction. Unresolved-decision count 2 (`260904-1058_*_does-a-registry-entry-carry-hostname-account-name-and-folder-path.md`,
+`260904-1058_*_does-the-identity-helpers-exit-1-halt-survive-a-registry-that-can-name-the-person.md`).
 Dependencies-closed flag: **flagged** — one of its three cited dependencies,
 `260825-2023-presence-travels-monitor-filters-own-checkout`, carries `_b_` (Bounded Closure),
-not `_c_`. Stale-Grounding count: 1 of 8 cited records terminal (`260825-1329_c_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`,
+not `_c_`. Stale-Grounding count: 1 of 8 cited records terminal (`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`,
 an issue closed) — below the half threshold, so no stale-grounding warning. HEAD is 3 commits
 past the snapshot's recorded commit `cda72f71` (`git rev-list --count cda72f71..HEAD` = 3).
 
@@ -55,10 +55,10 @@ Entries read: 2 total, both live (`_o_` 1, `_p_` 1). No `_c_`/`_d_` entries on d
 ideas found inside them: 2 (one per entry; neither is multi-idea). Duplicate groups found: 0.
 Items handed to `## Warnings` as defect- or decision-shaped: 0 — both entries read as ideas.
 
-Top-ranked backlog entry: `260814-1733_p_bounded-executor-dispatches.md` — already `_p_`,
+Top-ranked backlog entry: `260814-1733_*_bounded-executor-dispatches.md` — already `_p_`,
 states a concrete, shapeable-today narrowing (bound executor dispatch length), and its cited
-analysis is on disk and resolved. `260814-1733_o_attach-the-rule-to-the-act.md` stays `_o_`:
-it cites a deferred decision (`260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`)
+analysis is on disk and resolved. `260814-1733_*_attach-the-rule-to-the-act.md` stays `_o_`:
+it cites a deferred decision (`260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md`)
 as a precondition, so it is not shapeable today. Note: the issue that decision's own text
 names as its blocker, `260810-0510_*_two-of-the-queue-ground-lints-negative-controls-re-implement-the-logic-instead-of-calling-it.md`,
 has since closed and moved to `archive/260829-1110-safe-cleanup-tier-1/` (located by `find`,
@@ -74,7 +74,7 @@ None. Both entries' markers already match this run's ranking (`_p_` on the shape
 
 None proposed as confirmed operations this run (no confirmation channel held). One deferral
 is named as a proposal in `portfolio.md` `## Backlog — ranked` for the user to confirm:
-`defer 260814-1733_o_attach-the-rule-to-the-act.md until 260810-0710_d_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`.
+`defer 260814-1733_*_attach-the-rule-to-the-act.md until 260810-0710_*_should-a-rule-be-allowed-to-land-without-the-check-that-enforces-it.md is revived`.
 
 ## Parent-grounding-stale events
 

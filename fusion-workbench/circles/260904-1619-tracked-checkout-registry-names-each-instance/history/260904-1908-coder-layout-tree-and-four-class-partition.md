@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-04 19:08
 **Status:** Complete
-**Trigger:** Dispatch — step 3 of `260904-1651_o_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md`
+**Trigger:** Dispatch — step 3 of `260904-1651_*_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md`
 **Filed by:** coder, Kai Stalmann <ks@qantr.com>, checkout 5e8248d7
 
 ## Task

@@ -55,7 +55,7 @@ and one carries `_b_` (`260825-2023-presence-travels-monitor-filters-own-checkou
 Dependencies-closed flag is set — that dependency reached Bounded Closure rather than
 Closed-coherent, though the record's own citation states its Directive was nonetheless
 reached. Of the eight marker-carrying records the Grounding snapshot cites, one is terminal
-(`260825-1329_c_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`),
+(`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`),
 well under the half-of-cited threshold this run checks, so the Grounding is current rather
 than stale.
 

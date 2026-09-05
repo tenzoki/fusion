@@ -4,7 +4,7 @@
 **Status:** Complete
 **Agent:** coder
 **Circle:** 260904-1619-tracked-checkout-registry-names-each-instance
-**Plan:** `260904-1651_o_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md`, step 7
+**Plan:** `260904-1651_*_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md`, step 7
 **Files changed:** `bin/monitor` (+67 lines, no deletions)
 
 ## What was implemented

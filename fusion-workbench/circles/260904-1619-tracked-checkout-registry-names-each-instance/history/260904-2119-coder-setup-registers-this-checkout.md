@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-09-04
 **Filed by:** coder (Kai Stalmann <ks@qantr.com>, checkout 5e8248d7)
-**Plan:** `260904-1651_o_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md`, step 5
+**Plan:** `260904-1651_*_the-checkout-registry-names-each-instance-and-joins-one-persons-identities.md`, step 5
 
 ## What was done
 

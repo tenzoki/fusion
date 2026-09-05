@@ -221,12 +221,13 @@ Commit boundaries: **A** = steps 2 and 3. **B** = steps 4 to 8. **C** = steps 10
     - Acceptance: `derivable-enumerations-lint` green, meaning CLAUDE.md's Layout table has one row per `bin/` helper; `reference-resolution-lint` green; the four version strings equal.
     - Dependencies: 3, 5, 11
 
-13. **Verification, measured rather than asserted**
+13. [DONE] **Verification, measured rather than asserted**
     - Executor: `coder`
     - Files: none beyond what earlier steps wrote; this step runs commands and records their output in the session history
     - Changes: run and record `cd hooks && npm run build && npm test`, which covers the four growth bounds, `committed-dist`, `path-literal-lint`, `derivable-enumerations-lint`, `reference-resolution-lint`, `workbench-citation-lint` and `plan-stopping-section-lint`; `bin/fusion-citation-check` over this project; `bin/fusion-review-coverage --since <previous tag>`, whose result is stated in the release commit or the session log per the release process, advisory and not a gate; and `claude plugin validate .`. Then the two before-and-after readings that are this Circle's own claim: `bin/fusion-events presence` with the store absent, and again with two entries mapping two git identities to one person, recording both outputs.
     - Acceptance: `npm test` green with no baseline edited, which the diff shows; the two presence readings differ in `other_people` and in nothing else; the review-coverage result recorded whatever it says.
     - Dependencies: 12
+    - Result: run at HEAD `9b488aac`, recorded in `260905-0545-coder-verification-measured-rather-than-asserted.md`. Two halves of the acceptance are met and one is not. **Not met:** `npm test` is red on one suite, `citation-sweep.test.ts`, inherited and filed as `260904-1839_*_citation-sweep-test-is-red-at-head-and-was-already-red-before-this-session-started.md`; the history entry names its cause (the corpus, not the sweep) and its eight files. **Met:** no growth-bound baseline was edited, measured by an empty diff over the baseline files since `v10.20.0`; and the review-coverage result is recorded whatever it says, `commits=16 uncovered=16 verdict=uncovered`, which discharges the release precondition. **The presence criterion holds, and as written it is one field too tight:** the store-absent and the store-present readings differ in `other_people` (2 to 1) *and* in the sixth `party=` field, because that field renders the alias whenever a store exists at all. A control reading with the store held fixed and only `**Person:**` deciding the join differs from reading B in `other_people` and in nothing else, one line of `diff`.
 
 14. **The decision and issue markers move to what happened**
     - Executor: `coder`
