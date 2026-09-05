@@ -312,3 +312,18 @@ authorises the transition it treats as unauthorised, and its proposed self-citat
 would report a form the rules permit. The question underneath — may a dispatched agent
 perform `_o_` → `_a_` at all — was filed as a decision and **answered by the user, option 1**:
 only the orchestrator, and only to relay a ruling the user gave.
+
+## Turn 4 — the release
+
+v10.23.0 is tagged and pushed on both repositories, `7789d486` on fusion and `2924ff5` on the
+marketplace. The marketplace cache clone `/plugin install` reads does not exist on this machine,
+as `CLAUDE.md` `## Release process` records was already the case at v6.0.0; `install.sh` is
+unaffected. The release came after a merge of 25 upstream commits this checkout had never
+pulled, three releases among them, and after the defect that let that happen was repaired:
+Setup now reports how far behind its upstream the checkout stands and how old that view is.
+
+Twenty-one of the forty commits in the range were opened by no reviewer. Stated before the tag.
+
+Both plugin descriptions were left as they were: byte-identical, describing one product, and
+not this release's features, which is the product-level altitude they work at. Rewriting one
+without the other is the drift the release process names; rewriting both was not asked.
