@@ -351,6 +351,10 @@ describe("staging drift: what it reports without raising an alarm", () => {
           '{"ts":"2026-08-11T01:00:00","event":"session_start"}\n{"ts":"2026-08-11T02:00:00","event":"turn_start"}\n',
         );
         write(project.root, "fusion-workbench/.fusion-setup", '{"harness":true,"v":2}\n');
+        // Class R3 of `rules/workbench-tracking.md` is a pair, and both halves
+        // are written by /fusion:setup. `.asset-provenance` fell through to
+        // `unclassified` while its sibling was named.
+        write(project.root, "fusion-workbench/.asset-provenance", "monitor sha256:abc\n");
         // `portfolio.md` joined them on 2026-08-23: class L of
         // `rules/workbench-tracking.md`, regenerated in full by every playmaker
         // run, so a staging list carrying it carries a briefing the next run
@@ -369,6 +373,7 @@ describe("staging drift: what it reports without raising an alarm", () => {
         for (const path of [
           "orchestrator-events.jsonl",
           ".fusion-setup",
+          ".asset-provenance",
           "portfolio.md",
           "shared/history/260811-0100-orchestrator.md",
         ]) {
@@ -377,6 +382,7 @@ describe("staging drift: what it reports without raising an alarm", () => {
           expect(line).toMatch(/^ {2}in-flight/);
         }
         expect(row(res.stdout, "portfolio.md")).toContain("every playmaker run");
+        expect(row(res.stdout, ".asset-provenance")).toContain("/fusion:setup");
       });
     },
     CASE_TIMEOUT,

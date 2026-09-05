@@ -192,9 +192,26 @@
  * stores:
  * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
  *
+ * ## One spelling per corpus file, anchored on the project root
+ *
+ * Every file is named `relative(<project root>, <abs>)`, the anchor
+ * `citation-check.ts` names its whole corpus by (`fusion-workbench/<rel>`,
+ * `CLAUDE.md`, `rules/<f>`, `docs/<rel>`, and a declared path as the project
+ * declared it). It is the scan key and the display name both, because
+ * `scanCitationTokens()` keys `RECORD_EXAMPLE_FILES` and
+ * `RETIRED_LAYOUT_FILES` on it: a cwd-relative spelling made this program's
+ * file-wide exemptions fire only from the project root while the checker's
+ * fired from anywhere, which is one file under two names inside a corpus the
+ * two helpers share (issue
+ * `260901-0324_*_the-checker-and-the-sweep-key-file-exemptions-on-two-different-spellings-of-the-same-file.md`).
+ * No realpath is taken for it, the checker taking none either; `real()` still
+ * serves the guard and the deduplication, which compare paths rather than name
+ * them.
+ *
  * Output: one `<file>  rewrites=<n>` line per touched file, then the
- * residual (every bare stamp the scanner judged, in file order,
- * `<file>:<line>  '<token>'  <status>`; an exempt one is not listed), then
+ * residual (every bare stamp the scanner judged, in file order — the corpus
+ * order the census lines above them use, and by line within a file; an exempt
+ * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * circle-record=<n> circle-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message

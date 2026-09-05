@@ -263,7 +263,7 @@ export declare function shippedPrompts(pluginRoot: string, exempt?: Set<string>)
  * already chose for this class of question. Glob semantics are git's and not
  * fusion's: `*` does not cross `/`, `**` does.
  *
- * ## The case split, disjoint and complete over five branches
+ * ## The case split, disjoint and complete over six branches
  *
  *   1. `git rev-parse --show-toplevel` gives nothing -> `unavailable`, no
  *      files. A property of the TREE, and never rendered as a zero: a count
@@ -274,8 +274,18 @@ export declare function shippedPrompts(pluginRoot: string, exempt?: Set<string>)
  *   3. `git ls-files` would not answer for the pattern -> `refused`.
  *   4. it answers with nothing -> `unmatched`. One call PER PATTERN is what
  *      makes a pattern that names nothing nameable at all.
- *   5. otherwise the NUL-split paths join `files`, deduplicated by absolute
+ *   5. it answers with paths that are not in the work tree -> `missing`, which
+ *      carries the pattern, the paths git named and how many it named in all.
+ *      Git names the INDEX and the callers read the work tree, so an `rm`
+ *      without a `git rm` puts a pattern here.
+ *   6. otherwise the NUL-split paths join `files`, deduplicated by absolute
  *      path.
+ *
+ * Branches 5 and 6 are not exclusive per PATTERN and are not meant to be: a
+ * pattern naming ten files of which three are gone contributes seven to `files`
+ * and one entry to `missing` saying three of ten. What the split is disjoint
+ * over is the PATH — each one is read, dropped as missing, or dropped as a
+ * duplicate of a path another pattern already gave.
  *
  * Three properties a caller should not have to infer. **No pattern is asked
  * about when none was declared**: a project that declares nothing gets the
@@ -285,8 +295,14 @@ export declare function shippedPrompts(pluginRoot: string, exempt?: Set<string>)
  * and not git's own text**: `lib/git.ts` discards stderr and collapses every
  * failure to `null` by contract, so "git declined it" is the most this can
  * honestly say. And **an index entry with no file in the work tree is not
- * returned**: git names the index, the callers read the work tree, and a file
- * that is not there cannot be part of any corpus.
+ * returned, and is not returned SILENTLY either**: it was dropped by a bare
+ * `continue` until 2026-09-05, so a pattern all of whose files were gone took
+ * neither the `unmatched` branch nor contributed a file, and the corpus it
+ * declared went unread behind a printed `declared-files=0` indistinguishable
+ * from a pattern that matched nothing (issue
+ * 260901-0319_*_a-declared-pattern-whose-index-entry-has-no-work-tree-file-reports-declared-files-zero-with-no-note.md).
+ * A count that could not be taken is not a count of none, which is the rule this
+ * module already applies to `unavailable`.
  *
  * `projectRoot` is the cwd of every git call and the base of every `rel`, so a
  * pattern is relative to the project the declaration lives in, whether or not
@@ -301,6 +317,12 @@ export interface DeclaredCitationPaths {
     refused: {
         pattern: string;
         why: string;
+    }[];
+    /** Paths git named for a pattern that the work tree does not hold; `named` is how many it named in all. */
+    missing: {
+        pattern: string;
+        paths: string[];
+        named: number;
     }[];
     unavailable: boolean;
 }

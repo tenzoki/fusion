@@ -192,9 +192,26 @@
  * stores:
  * `260830-1842_*_may-the-grammar-resolve-a-bracket-marked-record-that-a-frozen-store-keeps-permanently.md`.
  *
+ * ## One spelling per corpus file, anchored on the project root
+ *
+ * Every file is named `relative(<project root>, <abs>)`, the anchor
+ * `citation-check.ts` names its whole corpus by (`fusion-workbench/<rel>`,
+ * `CLAUDE.md`, `rules/<f>`, `docs/<rel>`, and a declared path as the project
+ * declared it). It is the scan key and the display name both, because
+ * `scanCitationTokens()` keys `RECORD_EXAMPLE_FILES` and
+ * `RETIRED_LAYOUT_FILES` on it: a cwd-relative spelling made this program's
+ * file-wide exemptions fire only from the project root while the checker's
+ * fired from anywhere, which is one file under two names inside a corpus the
+ * two helpers share (issue
+ * `260901-0324_*_the-checker-and-the-sweep-key-file-exemptions-on-two-different-spellings-of-the-same-file.md`).
+ * No realpath is taken for it, the checker taking none either; `real()` still
+ * serves the guard and the deduplication, which compare paths rather than name
+ * them.
+ *
  * Output: one `<file>  rewrites=<n>` line per touched file, then the
- * residual (every bare stamp the scanner judged, in file order,
- * `<file>:<line>  '<token>'  <status>`; an exempt one is not listed), then
+ * residual (every bare stamp the scanner judged, in file order — the corpus
+ * order the census lines above them use, and by line within a file; an exempt
+ * one is not listed) as `<file>:<line>  '<token>'  <status>`, then
  * one summary line, `files=<n> rewrites=<n> residual=<n> record=<n>
  * circle-record=<n> circle-dir=<n> bare-record=<n> stamp-bare=<n>
  * mode=<dry-run|write>`, the per-kind figures being what the commit message
@@ -409,6 +426,16 @@ function refusal(root: string, extra: string[], corpus: string[]): string | null
   return null;
 }
 
+/**
+ * The one spelling a corpus file is named by, scan key and display name both:
+ * see the header's `## One spelling per corpus file`. Lexical, like the
+ * checker's own naming — the abs paths are all built from `--root` or from an
+ * argument, so no symlink resolution is owed here.
+ */
+function relOf(projectRoot: string, abs: string): string {
+  return relative(projectRoot, abs).split(sep).join("/");
+}
+
 // --- the sweep ---------------------------------------------------------------
 
 /**
@@ -556,7 +583,6 @@ function main(argv: string[]): number {
   }
 
   const scanner = createScanner(root);
-  const cwd = realpathSync(process.cwd());
   const mode = write ? "write" : "dry-run";
   const out: string[] = [];
   let touched = 0;
@@ -566,7 +592,7 @@ function main(argv: string[]): number {
     let repairs = 0;
     for (const abs of files) {
       if (isTestFixture(abs)) continue;
-      const rel = relative(cwd, realpathSync(abs)).split(sep).join("/");
+      const rel = relOf(projectRoot, abs);
       const ownBase = abs.slice(abs.lastIndexOf(sep) + 1);
       const lines: Line[] = readFileSync(abs, "utf-8").split("\n").map((t, i) => ({ line: i + 1, text: t }));
       const fenced = fencedContentLines(lines);
@@ -590,19 +616,25 @@ function main(argv: string[]): number {
   } else {
     let rewrites = 0;
     const byKind = { record: 0, "circle-record": 0, "circle-dir": 0, "bare-record": 0, "stamp-bare": 0 };
-    const residual: [number, number, string][] = [];
+    const residual: string[] = [];
     for (const abs of files) {
       if (isTestFixture(abs)) continue;
-      const rel = relative(cwd, realpathSync(abs)).split(sep).join("/");
+      const rel = relOf(projectRoot, abs);
       const lines: Line[] = readFileSync(abs, "utf-8").split("\n").map((t, i) => ({ line: i + 1, text: t }));
       const hits = scanner.scanCitationTokens(rel, lines);
       let n = 0;
+      // this file's residual alone: the walk below runs bottom-up, so the rows
+      // are ordered here and appended in corpus order. One flat list sorted by
+      // line and column across the whole corpus interleaved unrelated files by
+      // line number while the header promised file order (issue
+      // `260901-0322_*_the-sweeps-residual-list-is-sorted-by-line-number-across-every-file-not-in-file-order.md`).
+      const here: [number, number, string][] = [];
       // right to left within a line, so each splice leaves the earlier columns valid
       for (const h of [...hits].sort((a, b) => b.line - a.line || b.col - a.col)) {
         const to = rewriteOf(scanner, h);
         if (to === null) {
           if (h.kind === "stamp-bare" && h.status !== "exempt") {
-            residual.push([h.line, h.col, `${rel}:${h.line}  '${h.token}'  ${h.status}`]);
+            here.push([h.line, h.col, `${rel}:${h.line}  '${h.token}'  ${h.status}`]);
           }
           continue;
         }
@@ -612,13 +644,14 @@ function main(argv: string[]): number {
         n++;
         if (h.kind in byKind) byKind[h.kind as keyof typeof byKind]++;
       }
+      for (const [, , r] of here.sort((a, b) => a[0] - b[0] || a[1] - b[1])) residual.push(r);
       if (n === 0) continue;
       touched++;
       rewrites += n;
       out.push(`${rel}  rewrites=${n}`);
       if (write) writeFileSync(abs, lines.map((l) => l.text).join("\n"));
     }
-    for (const [, , r] of residual.sort((a, b) => a[0] - b[0] || a[1] - b[1])) out.push(r);
+    for (const r of residual) out.push(r);
     const kinds = Object.entries(byKind).map(([k, v]) => `${k}=${v}`).join(" ");
     out.push(`files=${touched} rewrites=${rewrites} residual=${residual.length} ${kinds} mode=${mode}`);
   }

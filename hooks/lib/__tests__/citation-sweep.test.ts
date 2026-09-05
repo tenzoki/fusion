@@ -9,7 +9,7 @@
 import { describe, it, expect } from "vitest";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { tmpdir } from "node:os";
 import { TEST_DIST, REPO_ROOT, CASE_TIMEOUT } from "./helpers/guard-harness.js";
 import { createScanner, GATE_KINDS, type CitationHit, type Lines } from "../citation-scan.js";
@@ -61,9 +61,10 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     const out = run.stdout.trim().split("\n");
     rmSync(wb, { recursive: true, force: true });
     expect(run.status, run.stderr).toBe(0);
-    expect(out[0]).toBe("shared/decisions/260303-0303_o_doc.md  rewrites=2");
-    expect(out[1]).toMatch(/^shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260202-0202' {2}resolved$/);
-    expect(out[2]).toMatch(/^shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260101-0101' {2}ambiguous$/);
+    // every row names the file relative to the PROJECT ROOT, not to cwd (here the workbench)
+    expect(out[0]).toBe("fusion-workbench/shared/decisions/260303-0303_o_doc.md  rewrites=2");
+    expect(out[1]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260202-0202' {2}resolved$/);
+    expect(out[2]).toMatch(/^fusion-workbench\/shared\/decisions\/260303-0303_o_doc\.md:6 {2}'260101-0101' {2}ambiguous$/);
     expect(out[3]).toBe("files=1 rewrites=2 residual=2 record=1 circle-record=0 circle-dir=0 bare-record=1 stamp-bare=0 mode=dry-run");
   }, CASE_TIMEOUT);
 
@@ -85,6 +86,44 @@ describe("citation-sweep rewrites through the scanner's own token walk", () => {
     expect(last(dry)).toBe(
       "files=1 rewrites=1 residual=1 record=0 circle-record=0 circle-dir=0 bare-record=1 stamp-bare=0 mode=dry-run",
     );
+  }, CASE_TIMEOUT);
+
+  // issue 260901-0322_*_the-sweeps-residual-list-is-sorted-by-line-number-across-every-file-not-in-file-order.md
+  it("groups the residual by file in corpus order rather than by line across the corpus", () => {
+    const wb = scratch();
+    const dir = join(wb, "shared/decisions");
+    // the later file carries the earlier line: one flat sort by line inverts them
+    writeFileSync(join(dir, "260303-0303_o_aaa.md"), "\n\n\n\nthe 260202-0202 log");
+    writeFileSync(join(dir, "260303-0303_o_zzz.md"), "the 260202-0202 log");
+    try {
+      const run = sweep(wb, wb, "--dry-run");
+      expect(run.status, run.stderr).toBe(0);
+      const rows = run.stdout.trim().split("\n").filter((l) => l.includes("'260202-0202'"));
+      expect(rows).toEqual([
+        "fusion-workbench/shared/decisions/260303-0303_o_aaa.md:5  '260202-0202'  resolved",
+        "fusion-workbench/shared/decisions/260303-0303_o_zzz.md:1  '260202-0202'  resolved",
+      ]);
+    } finally {
+      rmSync(wb, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+
+  // issue 260901-0324_*_the-checker-and-the-sweep-key-file-exemptions-on-two-different-spellings-of-the-same-file.md
+  it("fires a file-wide exemption from any working directory, the checker's own spelling", () => {
+    const wb = scratch();
+    const root = dirname(wb);
+    const example = join(root, "rules/decision-record-examples.md");
+    mkdirSync(join(root, "rules"), { recursive: true });
+    writeFileSync(example, DIRTY_DOC);
+    try {
+      for (const cwd of [root, wb]) {
+        const run = sweep(cwd, wb, "--dry-run", example);
+        expect(run.status, run.stderr).toBe(0);
+        expect(last(run), `launched from ${cwd}`).toMatch(/^files=0 rewrites=0 /);
+      }
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   }, CASE_TIMEOUT);
 
   it("exits 2 with nothing on stdout when --root names no workbench", () => {

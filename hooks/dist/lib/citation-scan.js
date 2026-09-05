@@ -99,14 +99,18 @@
 //   stamp followed by one of those is the head of a longer token, never a bare
 //   stamp.
 //
-//   A CITATION ENDING A SENTENCE DOES NOT EAT THE SENTENCE'S STOP. Both record
-//   tails admit `.`, for `.md` and for the ASCII ellipsis, and that same `.` used
-//   to take a trailing full stop into the basename, after which
-//   `basenameMatcher()` read the token as a prefix and demanded a character
-//   after `.md` — so the citation dangled while its record sat on disk. Since
-//   2026-08-31 both tails end in `SENTENCE_STOP`, whose docstring carries the
-//   rule, the one dot it does not trim (the ASCII ellipsis) and the run it
-//   deliberately leaves alone.
+//   A CITATION ENDING A SENTENCE DOES NOT EAT THE SENTENCE'S STOP, AND IS NOT
+//   REFUSED BY IT EITHER. Both record tails admit `.`, for `.md` and for the
+//   ASCII ellipsis, and that same `.` used to take a trailing full stop into the
+//   basename, after which `basenameMatcher()` read the token as a prefix and
+//   demanded a character after `.md` — so the citation dangled while its record
+//   sat on disk. Since 2026-08-31 both greedy tails end in the stop that
+//   `recordTail()` DERIVES from the tail's own character class; its docstring
+//   carries the rule, the one dot it does not trim (the ASCII ellipsis), the run
+//   it deliberately leaves alone, and why the class is derived rather than
+//   restated. The two Circle patterns carry no greedy tail and so cannot eat a
+//   stop; what they needed was to stop REFUSING one, and since 2026-09-05 both
+//   end in the one lookahead `NAME_END`, which admits it.
 //
 //   A BARE DIRECTORY NAME RESOLVES TO A CIRCLE OR TO AN ARCHIVE SWEEP. Since
 //   2026-08-31 `circleDirs()` indexes the sweep directory itself alongside the
@@ -197,7 +201,7 @@
 // second is undecidable outside Markdown, where a fence and a blockquote are
 // the entire distinction, so the mechanism was replaced rather than
 // approximated (`rules/critical-stance.md` §4). Its own docstring carries the
-// five-branch case split and what it refuses to decide.
+// six-branch case split and what it refuses to decide.
 //
 // This is a measuring instrument, not a fixer (`rules/critical-stance.md` §2):
 // it reads and reports, it never rewrites a citation.
@@ -253,6 +257,11 @@ const LEFT_ANCHOR = "(?<![A-Za-z0-9._\\/-])";
  */
 const ROOTING = `(?:\\.{1,2}\\/)*(?:fusion-workbench\\/)?(?:archive\\/${CIRCLE_DIR}\\/)?`;
 /**
+ * A greedy record tail and the sentence stop that closes it, DERIVED FROM ONE
+ * SPELLING of the tail's characters rather than restated beside each other.
+ * `chars` is the class body without the `.` and without the trailing `-`; both
+ * are appended here, the `-` last so it stays literal.
+ *
  * Where a record token may END: not on a full stop that closes a word. Both
  * record tails admit `.` so that `.md` and the ASCII ellipsis are inside the
  * token, and that same `.` let a citation ending a SENTENCE eat the sentence's
@@ -270,8 +279,39 @@ const ROOTING = `(?:\\.{1,2}\\/)*(?:fusion-workbench\\/)?(?:archive\\/${CIRCLE_D
  * behaviour rather than a new hole, and the alternative would have to decide
  * where an ASCII ellipsis ends. `basenameMatcher()`, `MARKER_SLOT` and the
  * ellipsis rule are untouched, and a truncated citation is still a `bare-record`.
+ *
+ * WHY IT IS DERIVED. The stop was written against `BARE_RE`'s tail and applied
+ * unchanged to `REC_RE`, whose tail admits `[` and `]` since `4cffcae4`: a
+ * bracket-marked store-prefixed citation ending a sentence failed the
+ * word-before-the-stop test, so the greedy tail kept the sentence's stop and the
+ * `fix` string told the writer to put it inside the basename (issue
+ * 260901-0320_*_the-sentence-stop-lookbehind-does-not-cover-the-bracket-characters-the-record-tail-admits.md).
+ * Two hand-maintained copies of one character set had drifted; a third would
+ * drift again, so the set is written once per tail and the stop is read off it.
  */
-const SENTENCE_STOP = "(?<![A-Za-z0-9_…*-]\\.)";
+function recordTail(chars) {
+    return { cls: `[${chars}.-]*`, stop: `(?<![${chars}-]\\.)` };
+}
+/** `BARE_RE`'s tail: a storeless basename's own characters. */
+const BARE_TAIL = recordTail("A-Za-z0-9_…*");
+/**
+ * `REC_RE`'s tail: the same, plus the pre-v4 bracket marker — the one place in
+ * this grammar that reads a `[` at all, for the reason the header's
+ * not-read-on-purpose paragraph carries.
+ */
+const REC_TAIL = recordTail("A-Za-z0-9_…*\\[\\]");
+/**
+ * Where a Circle-shaped token may END: not in the middle of a longer path-like
+ * word. `.` is NOT in the class, so a citation that ends a sentence keeps its
+ * `.md` and the sentence keeps its stop. One spelling for both Circle patterns,
+ * which differed by exactly that `.` until 2026-09-05 — `CIRCLE_REC_RE` refused
+ * it, so a `circles/<dir>/_x_circle.md` ending a sentence matched nothing, was
+ * picked up by no other pattern, and was not reported at all (issue
+ * 260901-0321_*_a-circle-record-citation-that-ends-a-sentence-produces-no-token-at-all.md).
+ * That is one class worse than the dangle `SENTENCE_STOP` repairs, which is why
+ * the two endings are now the same string.
+ */
+const NAME_END = "(?![A-Za-z0-9_\\/-])";
 // Store-prefixed (optionally Circle-/shared-/workbench-rooted) record citation.
 // A DETECTOR since 2026-08-29: every match is reported `store-prefixed`.
 //
@@ -287,17 +327,17 @@ const SENTENCE_STOP = "(?<![A-Za-z0-9_…*-]\\.)";
 // stamp with its tail invisible. The header's not-read-on-purpose paragraph
 // carries the reasoning and the sweep-side guard that goes with it.
 //
-// The tail carries `SENTENCE_STOP` for the reason written at that constant, and
-// it carries it even though `store-prefixed=0` in this tree: the sweep applies a
-// rewrite only when the rewritten string re-tokenises whole, so a `BARE_RE` that
-// stopped at a word while this one did not would make the sweep DECLINE a
-// rewrite it performs today rather than land it correctly.
+// The tail carries its own sentence stop for the reason written at `recordTail`,
+// and it carries it even though `store-prefixed=0` in this tree: the sweep
+// applies a rewrite only when the rewritten string re-tokenises whole, so a
+// `BARE_RE` that stopped at a word while this one did not would make the sweep
+// DECLINE a rewrite it performs today rather than land it correctly.
 const REC_RE = new RegExp(LEFT_ANCHOR +
     ROOTING +
     `(?:(circles\\/${CIRCLE_DIR})\\/|(shared)\\/|(${CIRCLE_DIR})\\/)?` +
     `(${STORES})\\/` +
-    `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?[A-Za-z0-9._…*\\[\\]-]*)` + // `.` admits ASCII `...`
-    SENTENCE_STOP, "g");
+    `([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT})?${REC_TAIL.cls})` + // `.` admits ASCII `...`
+    REC_TAIL.stop, "g");
 // A Circle's OWN record, `circles/<dir>/_x_circle.md`. It gets its own pattern
 // rather than a widening of `REC_RE` because the two basenames have nothing in
 // common: a store record is `<stamp>_<marker>_<slug>.md` and `REC_RE`'s tail is
@@ -307,24 +347,32 @@ const REC_RE = new RegExp(LEFT_ANCHOR +
 // pattern that expressed both would have to make its own anchor optional.
 //
 // `.md` is optional for the same reason it is everywhere else in this grammar
-// (`basenameMatcher` reads a citation not ending in `.md` as a prefix), and the
-// trailing lookahead stops the pattern from claiming a longer word.
+// (`basenameMatcher` reads a citation not ending in `.md` as a prefix), and
+// `NAME_END` stops the pattern from claiming a longer word.
+//
+// THIS TAIL IS A LITERAL, NOT A GREEDY CLASS, so it cannot eat a sentence's stop
+// and `SENTENCE_STOP` has nothing to do here: what refused the stop was the
+// trailing lookahead, and `NAME_END` is that lookahead with the `.` taken out.
+// The `(?!\.md)` after the group is what keeps the two changes from adding up to
+// a third defect. Without it, `_x_circle.mdx` would give the `.md` back — the
+// optional group backtracks to empty, `NAME_END` is then satisfied by the `.` it
+// no longer refuses, and the pattern would report a `circles/<dir>/_x_circle`
+// token where it reports none today, one a rewriter would splice under a `.mdx`
+// it never covered.
 const CIRCLE_REC_RE = new RegExp(LEFT_ANCHOR +
     ROOTING +
     `circles\\/(${CIRCLE_DIR})\\/` +
-    "(_[a-zA-Z*]_circle(?:\\.md)?)" +
-    "(?![A-Za-z0-9_.\\/-])", "g");
+    "(_[a-zA-Z*]_circle(?:\\.md)?)(?!\\.md)" +
+    NAME_END, "g");
 // Bare record citation — the `_` right after the stamp is required, or every
 // plain timestamp and Circle-directory name would fire. What follows the `_` is
 // a marker slot and a slug when the citation is whole, and any prefix of that
 // when it is truncated (`<stamp>_*_`, `<stamp>_d`, `<stamp>_…`);
 // `basenameMatcher` reads a token not ending in `.md` as a prefix either way.
-const BARE_RE = new RegExp(`(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|_)[A-Za-z0-9._…*-]*)` + SENTENCE_STOP, "g");
+const BARE_RE = new RegExp(`(?<![\\/0-9A-Za-z_-])([0-9]{6}-[0-9]{4})((?:${MARKER_SLOT}|_)${BARE_TAIL.cls})` + BARE_TAIL.stop, "g");
 // Bare Circle-directory citation. A trailing `/` is allowed when nothing
 // path-like follows (the conventions file's layout tree).
-const CIRCLE_RE = new RegExp(LEFT_ANCHOR +
-    ROOTING +
-    `circles\\/(${CIRCLE_DIR})(?:\\/(?![A-Za-z0-9_.*<]))?(?![A-Za-z0-9_\\/-])`, "g");
+const CIRCLE_RE = new RegExp(LEFT_ANCHOR + ROOTING + `circles\\/(${CIRCLE_DIR})(?:\\/(?![A-Za-z0-9_.*<]))?` + NAME_END, "g");
 // A record stamp carrying no store prefix. Scanned last, and only where no
 // citation token above already covers the position. Two shapes, and they are
 // not the same question: `260812-2116-coder-<slug>` carries a name and is
@@ -984,7 +1032,13 @@ export function shippedPrompts(pluginRoot, exempt = new Set()) {
     return files;
 }
 export function declaredCitationFiles(projectRoot, patterns) {
-    const out = { files: [], unmatched: [], refused: [], unavailable: false };
+    const out = {
+        files: [],
+        unmatched: [],
+        refused: [],
+        missing: [],
+        unavailable: false,
+    };
     if (patterns.length === 0)
         return out;
     if (git(projectRoot, ["rev-parse", "--show-toplevel"]) === null) {
@@ -1012,14 +1066,24 @@ export function declaredCitationFiles(projectRoot, patterns) {
             out.unmatched.push(pattern);
             continue;
         }
+        // The two drops are separated because they are different facts: a path the
+        // work tree does not hold is a corpus this run did not read, and a duplicate
+        // is the same file another pattern already gave.
+        const gone = [];
         for (const p of rels) {
             const rel = p.split(sep).join("/");
             const abs = join(projectRoot, rel);
-            if (seen.has(abs) || !existsSync(abs))
+            if (!existsSync(abs)) {
+                gone.push(rel);
+                continue;
+            }
+            if (seen.has(abs))
                 continue;
             seen.add(abs);
             out.files.push({ rel, abs });
         }
+        if (gone.length > 0)
+            out.missing.push({ pattern, paths: gone, named: rels.length });
     }
     return out;
 }
@@ -1039,6 +1103,14 @@ export function declaredCitationNotes(d) {
         notes.push(`declared pattern refused: '${r.pattern}'; ${r.why}`);
     for (const p of d.unmatched)
         notes.push(`declared pattern matched nothing: '${p}'`);
+    // Ahead of nothing and behind `unmatched` on purpose: a reader who has just
+    // been told a pattern named nothing needs the next line to say that another
+    // one named something the tree does not hold, which is a different condition
+    // and was the same printed `0` until 2026-09-05.
+    for (const m of d.missing) {
+        notes.push(`declared pattern names ${m.paths.length} of ${m.named} file(s) the work tree does not hold, ` +
+            `so they were not read: '${m.pattern}' (${m.paths.join(", ")})`);
+    }
     return notes;
 }
 export function markdownFilesUnder(root) {

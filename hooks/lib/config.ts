@@ -329,8 +329,11 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * (`260804-1606_*_blocksbeforehalt-zero-halts-on-the-first-block-and-has-no-lower-bound.md`), whose `0` halted on the first denied call; that setting went
  * with the counter on 2026-08-16 and the argument transferred intact.
  */
-function isPositiveInteger(value: unknown): boolean {
-  return typeof value === "number" && Number.isInteger(value) && value >= 1;
+function explainPositiveInteger(value: unknown): string | null {
+  if (typeof value === "number" && Number.isInteger(value) && value >= 1) {
+    return null;
+  }
+  return `must be a whole number of 1 or more, got ${describeValue(value)}`;
 }
 
 /**
@@ -349,18 +352,41 @@ function isPositiveInteger(value: unknown): boolean {
  *
  * An empty ARRAY is a different thing and is accepted: it is what a project
  * that declares nothing already has, written out on purpose.
+ *
+ * The three refusals are three different sentences, which is why this function
+ * writes them instead of a constant beside it writing one. A check that fails
+ * on an ELEMENT cannot be described by a sentence about the CONTAINER: paired
+ * with `describeValue`, `["a/*.go", ""]` was told its array of strings must be
+ * an array of strings, naming neither the offending element nor the non-empty
+ * requirement (`260901-0323_*_the-extra-paths-diagnostic-names-the-containers-type-so-a-bad-element-is-reported-as-an-array.md`).
+ * The index is what a project owner counts to in their own file, so it is the
+ * one thing an element message must carry.
  */
-function isArrayOfNonEmptyStrings(value: unknown): boolean {
-  return (
-    Array.isArray(value) &&
-    value.every((entry) => typeof entry === "string" && entry.length > 0)
-  );
+function explainArrayOfNonEmptyStrings(value: unknown): string | null {
+  const requirement = "must be an array of non-empty strings";
+  if (!Array.isArray(value)) {
+    return `${requirement}, got ${describeValue(value)}`;
+  }
+  for (const [index, entry] of value.entries()) {
+    if (typeof entry !== "string") {
+      return `${requirement}, but the element at index ${index} is not a string`;
+    }
+    if (entry.length === 0) {
+      return `${requirement}, but the element at index ${index} is an empty string`;
+    }
+  }
+  return null;
 }
 
 interface LeafRule {
-  check: (value: unknown) => boolean;
-  /** Completes the sentence "… must be ___". */
-  expected: string;
+  /**
+   * `null` when the value is usable; otherwise the clause completing
+   * `"<container>.<leaf>" ___.`, INCLUDING whatever it wants to say about what
+   * it got. The message is produced by the check rather than stored beside it,
+   * because a check with more than one way to fail has more than one thing to
+   * say and a constant can say only the first of them.
+   */
+  explain: (value: unknown) => string | null;
 }
 
 /**
@@ -374,16 +400,10 @@ interface LeafRule {
  */
 const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
   orchestrator: {
-    maxTurns: {
-      check: isPositiveInteger,
-      expected: "a whole number of 1 or more",
-    },
+    maxTurns: { explain: explainPositiveInteger },
   },
   citations: {
-    extraPaths: {
-      check: isArrayOfNonEmptyStrings,
-      expected: "an array of strings",
-    },
+    extraPaths: { explain: explainArrayOfNonEmptyStrings },
   },
 };
 
@@ -501,11 +521,12 @@ function validateLayer(
       if (leafValue === null || leafValue === undefined) continue;
 
       const rule = leafRules[leafKey];
-      if (rule === undefined || rule.check(leafValue)) {
+      const failure = rule === undefined ? null : rule.explain(leafValue);
+      if (failure === null) {
         kept[leafKey] = leafValue;
       } else {
         diagnostics.push(
-          `fusion configuration at ${source}: "${key}.${leafKey}" must be ${rule.expected}, got ${describeValue(leafValue)}. The key was ignored and inherits as if it were absent.`,
+          `fusion configuration at ${source}: "${key}.${leafKey}" ${failure}. The key was ignored and inherits as if it were absent.`,
         );
       }
     }

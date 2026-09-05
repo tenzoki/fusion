@@ -13,6 +13,16 @@
  * `rules/*.md`, `.claude/rules/*.md` and `docs/**\/*.md`, where present.
  * Workbench files are named `fusion-workbench/<rel>` in every row.
  *
+ * Every name here is relative to the project root, and that spelling is not
+ * cosmetic: it is the `rel` handed to `scanCitationTokens()`, which keys
+ * `RECORD_EXAMPLE_FILES` and `RETIRED_LAYOUT_FILES` on it. `citation-sweep.ts`
+ * names its corpus by the same anchor for that reason — it used a cwd-relative
+ * one until 2026-09-05, so one file carried two names across a corpus the two
+ * share and the sweep's file-wide exemptions fired only from the project root
+ * (issue
+ * `260901-0324_*_the-checker-and-the-sweep-key-file-exemptions-on-two-different-spellings-of-the-same-file.md`).
+ * A caller normalising at the call site would have been a third spelling.
+ *
  * Plus, since 2026-08-31, every file the project DECLARED as citation-bearing
  * in `citations.extraPaths`, resolved by `declaredCitationFiles()` and
  * deduplicated against the above by absolute path, so a declared `*.md`

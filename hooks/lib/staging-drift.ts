@@ -83,8 +83,8 @@
  *     under an artifact store. These are what a staging list is supposed to
  *     name.
  *   - `in-flight` — the live-state surfaces `rules/workbench-tracking.md`
- *     groups as "do not track it", plus the two tracked-but-machine-written
- *     ones and the session's own history file. Never a fault.
+ *     groups as "do not track it", plus the tracked-but-machine-written classes
+ *     R2 and R3, plus the session's own history file. Never a fault.
  *   - `unclassified` — everything else under the workbench. Named, with the
  *     statement that it is **not** a record store and that nothing is claimed
  *     about it. The worked case is `stilwerk/`, the four voice profiles
@@ -159,21 +159,32 @@ const GIT_STATUS_TIMEOUT_MS = 10_000;
 export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>.txt";
 
 /**
- * The live-state surfaces, by exact workbench-relative name.
+ * The live-state surfaces, by exact workbench-relative name. The list is read
+ * off `rules/workbench-tracking.md` `## The four classes`, and it holds two of
+ * that partition's classes in full rather than a selection of their members —
+ * which is the property to check when the layout gains a root-anchored entry.
  *
- * The first six are class L of `rules/workbench-tracking.md`, the entries that
- * stay in the checkout they were written in; this repository's own `.gitignore`
- * applies exactly that split, so in a project that follows it they never reach
- * `git status` at all. They are listed anyway because whether the workbench is
- * tracked, and how, is the project's decision — a consumer that tracks
- * `agentstate.yaml` must not be told on every commit that it forgot to stage it.
+ * **Class L**, the entries that stay in the checkout they were written in:
+ * `agentstate.yaml` through `portfolio.md` below. This repository's own
+ * `.gitignore` applies exactly that split, so in a project that follows it they
+ * never reach `git status` at all. They are listed anyway because whether the
+ * workbench is tracked, and how, is the project's decision — a consumer that
+ * tracks `agentstate.yaml` must not be told on every commit that it forgot to
+ * stage it.
  *
- * The last two are the opposite case and the more interesting one: they are
- * TRACKED by that same split, and they are still not a task's records.
- * `orchestrator-events.jsonl` is appended to by every event emission and
- * `.fusion-setup` is written by `/fusion:setup`. Each is in flight for the
- * whole session by construction, so a per-commit report about them would fire
- * every time and mean nothing.
+ * **Class R2 and class R3** are the opposite case and the more interesting one:
+ * they are TRACKED by that same split, and they are still not a task's records.
+ * `orchestrator-events.jsonl` is the whole of R2, appended to by every event
+ * emission. `.fusion-setup` and `.asset-provenance` are the whole of R3, both
+ * written by `/fusion:setup` in each checkout — one rule, one class, one reason,
+ * so they classify together. Each is in flight for the whole session by
+ * construction, so a per-commit report about them would fire every time and mean
+ * nothing.
+ *
+ * `.asset-provenance` was missing here while its class-R3 sibling was named,
+ * and fell through to `unclassified` — a machine-written setup artifact printed
+ * under the heading that claims nothing about it (issue
+ * `260830-1845_*_staging-drift-does-not-name-asset-provenance-as-live-state-while-its-sibling-marker-is.md`).
  */
 const LIVE_STATE: { path: string; why: string }[] = [
   { path: "agentstate.yaml", why: "live session state — overwritten every Turn, deleted at Cleanup" },
@@ -184,6 +195,7 @@ const LIVE_STATE: { path: string; why: string }[] = [
   { path: "portfolio.md", why: "the portfolio briefing — regenerated in full by every playmaker run" },
   { path: "orchestrator-events.jsonl", why: "append-only — written by every event emission, in flight all session" },
   { path: ".fusion-setup", why: "the setup marker — written by /fusion:setup" },
+  { path: ".asset-provenance", why: "the asset provenance record — written by /fusion:setup" },
 ];
 
 /** Live-state directories, by workbench-relative prefix. */

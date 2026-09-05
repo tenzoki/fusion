@@ -304,18 +304,25 @@ describe("citations.extraPaths — the array and its elements are one check", ()
   });
 
   it.each([
-    ["a bare string", "a/*.go"],
-    ["a list holding a number", ["a/*.go", 7]],
-    ["a list holding an empty string", ["a/*.go", ""]],
-  ])("drops %s WHOLE, names it, and inherits", (_name, value) => {
+    ["a bare string", "a/*.go", "got a string"],
+    ["a list holding a number", ["a/*.go", 7], "element at index 1 is not a string"],
+    ["a list holding an empty string", ["a/*.go", ""], "element at index 1 is an empty string"],
+  ])("drops %s WHOLE, names WHAT failed, and inherits", (_name, value, failure) => {
     // The empty string is the element most worth refusing: as a git pathspec
     // under `:(glob)` it names every tracked file in the project.
+    //
+    // The three rows fail three different ways, and the third column is why the
+    // message is written by the check instead of stored beside it: a sentence
+    // about the CONTAINER told a bad element that its array of strings must be
+    // an array of strings, naming neither the element nor the non-empty half of
+    // the rule (issue 260901-0323).
     const config = load(projectWith({ citations: { extraPaths: value } }));
 
     expect(config.citations.extraPaths).toEqual([]);
     expect(config.diagnostics).toHaveLength(1);
     expect(config.diagnostics[0]).toContain("citations.extraPaths");
-    expect(config.diagnostics[0]).toContain("an array of strings");
+    expect(config.diagnostics[0]).toContain("an array of non-empty strings");
+    expect(config.diagnostics[0]).toContain(failure);
   });
 
   it("gives a project that declares nothing the corpus it already has", () => {

@@ -68,6 +68,24 @@ describe("a record token stops at a word, never on the sentence's full stop", ()
   it("trims one stop and not a run, which is stated as a limit rather than widened", () => {
     expect(toks(wb, "see 260819-1645_o_slug..").map((h) => h.token)).toEqual(["260819-1645_o_slug.."]);
   });
+
+  // The rows above are all `bare-record`, and only `REC_RE` admits a bracket, so
+  // the stop derived from ITS tail class is reachable from no probe there.
+  it("stops before the stop on a bracket-marked store-prefixed token, `fix` included", () => {
+    const [hit] = toks(wb, "see shared/issues/260519-0438[o].");
+    expect([hit.token, hit.kind]).toEqual(["shared/issues/260519-0438[o]", "record"]);
+    expect(hit.fix).not.toContain("[o].");
+  });
+
+  // A Circle record carries no greedy tail: what refused the sentence's stop was
+  // its trailing lookahead, and the token was not reported at all.
+  it("reads a Circle-record citation that ends a sentence, and gives no `.md` back", () => {
+    const hit = toks(wb, `see circles/${LIVE}/_t_circle.md.`);
+    expect(hit.map((h) => [h.token, h.kind, h.status])).toEqual([
+      [`circles/${LIVE}/_t_circle.md`, "circle-record", "store-prefixed"],
+    ]);
+    expect(toks(wb, `see circles/${LIVE}/_t_circle.mdx here`)).toEqual([]);
+  });
 });
 
 describe("a bare directory name resolves to a Circle or to the archive sweep itself", () => {
