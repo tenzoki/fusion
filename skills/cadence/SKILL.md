@@ -12,6 +12,8 @@ When the user invokes `/fusion:cadence`, read the project's log sources, identif
 2. **Topics of the last 7 days** — what the recent work has been about.
 3. **Recurring themes by churn** — the themes that keep reappearing across the whole history, ranked by how many distinct sessions they show up in.
 
+**Scope — a project digest, saved per checkout.** The three lists cover every session history in reach, whoever wrote it. The `-$CO` in the filename names the checkout that ran the digest, not the author of the work inside it, so two checkouts of one project produce two files holding the same project. Do not filter the gathering step by author. One section is not project-wide, step 7b's session-flow metrics, which read this checkout's own event lines; the report labels that line and names the writers the rest of it covers.
+
 This is an **analysis** skill: you read the logs and identify topics by understanding them, not by keyword-matching. A topic is a short, human-readable theme label you assign (for example "Circle container restructure", "Plane bridge seeding", "guard blocker on skills"). Two log entries about the same thing in different words are the **same** topic — collapse them.
 
 ## Process
@@ -36,10 +38,12 @@ On a non-zero exit, read the code — it says whose fault it is (full table in `
 
 ```bash
 I="$FUSION_PLUGIN_ROOT/bin/fusion-identity"; [ -x "$I" ] && "$I" || true
+N="$FUSION_PLUGIN_ROOT/bin/fusion-checkout-name"; [ -x "$N" ] && "$N" resolve "$CO" || true
 date +"%Y-%m-%d %H:%M"
 ```
 
 - `$CO` is that run's `CHECKOUT=`, never `$USER`; rename a legacy `-$USER` file onto it, per `rules/fusion-workbench-conventions.md` `## Filename Patterns`.
+- `$CO_LABEL` is the `alias=` line the second call prints. Exit 3 with nothing on stdout is an unregistered checkout and the ordinary case; a missing helper is the `[ -x ]` branch. On either, `$CO_LABEL` is the hex `$CO` itself. Never substitute a name.
 - Today's date (from `date`, never from your own sense of "now" — your internal clock runs in UTC and will be off by the local offset) anchors the 7-day window.
 
 ### 2. Compute the time windows
@@ -75,7 +79,7 @@ Collect every available source. For each source record, per entry: a **date**, t
 
 | Code | Source | Where |
 |------|--------|-------|
-| `h` | fusion session histories | every directory in `$SCAN_HISTORY` (workbench-relative — prefix with `$WORKBENCH`) |
+| `h` | fusion session histories | every directory in `$SCAN_HISTORY` (workbench-relative — prefix with `$WORKBENCH`); every writer's, unfiltered |
 | `a` | shared activity log | `activity-log-$CO.md` — check **both** the project root and `$WORKBENCH` |
 | `g` | git commit days | `git log` (only if `.git` is present) — a day's commits form **one** unit, not one each |
 
@@ -121,6 +125,8 @@ git log --date=short --pretty='%ad %h %s' 2>/dev/null
 **Iterate over every path in `$SCAN_HISTORY`** — it names two directories when a Circle is active and one when none is (`rules/fusion-workbench-conventions.md` `## Path Resolution` → "Two invariants", invariant 2). Reading only the first silently under-reports: the whole active Circle's work, or the whole non-Circle work, disappears from all three lists, and the result looks like a quiet week rather than a bug.
 
 The log lives in the project root; the workbench copy is the fallback for projects that moved it. Note in the final report which sources were found and which were absent.
+
+**Record each history's writer.** A session history's header carries `**Filed by:** <agent>, <Name <email>>` (`rules/fusion-workbench-conventions.md` `### Who filed it`); the person half is the writer. Collect the distinct writers across the 7-day window's history units — that list is what the report's `**Covers:**` line names, and it is the only place an identity enters the three lists. A history with no person half is `unattributed`, never yours by default: nothing in the file says who wrote it, so nothing may assume it.
 
 ### 4. Date each log unit
 
@@ -169,7 +175,7 @@ Across **all** log units (full history, not just the window), count each theme's
 
 ### 7b. Session-flow metrics — how the sessions felt, measured
 
-From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per Turn** (`gate_response`/`turn_start`), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0.
+From this checkout's own event lines (drop rows whose `checkout` differs from `.checkout-id`), over the 7-day window: **gate answers per Turn** (`gate_response`/`turn_start`), **time to first dispatch** (`session_start` → first `task_start`, median), **dispatch duration** (`task_start`/`task_done` pairs by `task` id, median and max). An absent input is reported absent, never as 0. This is the one section that is not project-wide (see Scope), so its report line says so rather than leaving the reader to assume the whole document shares one scope.
 
 ### 8. Write the report
 
@@ -187,13 +193,15 @@ Step 3's assertion repeats because each Bash call is its own shell; without it a
 Structure:
 
 ```markdown
-# Cadence — <$CO>
+# Cadence — project digest
 
 **Generated:** <YYYY-MM-DD HH:MM, from `date`>
+**Digested by:** <$CO_LABEL> — the checkout that ran this, not the author of the work below
+**Covers:** every session history in the workbench, whoever wrote it — <e.g. "2 writers: Kai Stalmann <ks@qantr.com>, Jo Blow <jo@example.com>" / "1 writer: …" / "1 writer, 3 units unattributed">
 **Yesterday window:** <yday_start> → <today><!-- append " (Fri–Sun collapsed)" when today is Monday -->
 **Recent window:** <week_start> → <today> (7 days)
 **Sources scanned:** <e.g. session histories (14 files across 2 stores), git (37 commits on 12 days = 12 units), activity log: none>
-**Session flow (7d):** <e.g. 1.1 gate answers/Turn · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
+**Session flow (7d, this checkout only):** <e.g. 1.1 gate answers/Turn · first dispatch median 6 min · dispatches median 4 min, max 14 — or "no event data">
 
 ## Topics — yesterday
 
@@ -252,3 +260,4 @@ this skill produces no file.
 - It does not modify the source logs or the activity log — read-only on all inputs, writes only `cadence-$CO.md` in `$OUT_MEMO`.
 - It is not the activity-log step of `/fusion:cleanup`. That step maintains the dated raw activity record; cadence is a higher-level digest built on top of it (and on the session histories and git). Run `/fusion:cleanup --only log-activity` first if you want the activity log fresh before a cadence pass.
 - It files no issues and no decisions. A cadence run is a read of the past, not a queue of work.
+- It is **not** a personal digest and does not group or rank by author. The three lists are the project's; the only identities in the document are the `**Covers:**` line and step 7b's own-checkout metrics.

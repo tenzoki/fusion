@@ -376,7 +376,7 @@ Name the branch that ran in the Done report.
 
 ## Step 0j — Bring a tracked workbench's `.gitignore` into line with the partition
 
-`rules/workbench-tracking.md` `## The four classes` says which root entries travel and which stay; decisions `260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md` and `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md` say what Setup does when a tracked workbench's `.gitignore` departs from it: repair an excluded R2/R3 entry with a negation line, report a tracked class L entry, repair `.checkout-id` alone (the one whose tracking gives a wrong answer, not noise), never touch an R1 exclusion, ask nothing. Only in a git work tree that already tracks `fusion-workbench/`; the choice not to track is the project's. The question is `git check-ignore -q`, never a text read of `.gitignore`, for the reason the rule gives for `git check-attr`.
+`rules/workbench-tracking.md` `## The four classes` says which root entries travel and which stay; decisions `260825-1030_*_may-a-project-depart-from-the-four-class-partition-deliberately-and-say-so-once.md` and `260825-1030_*_does-setup-repair-a-gitignore-that-departs-from-the-four-class-partition.md` say what Setup does when a tracked workbench's `.gitignore` departs from it: repair an excluded R2/R3 entry with a negation line, report a tracked class L entry, repair `.checkout-id` alone (the one whose tracking gives a wrong answer, not noise), never touch an R1 exclusion, ask nothing. Only in a git work tree that already tracks `fusion-workbench/`; the choice not to track is the project's. The question is `git check-ignore -q`, never a text read of `.gitignore`, for the reason the rule gives for `git check-attr`. A class L entry that is neither tracked nor ignored is reported as well: no rule covers it, so it stands as `??` in `git status` from the moment it holds a byte, and the next `git add` of a directory commits it. Reported and not repaired, because nothing is tracked yet and the direction-B criterion repairs a wrong answer, not a risk (defect `260828-0853_*_setup-step-0j-misses-a-class-l-entry-that-is-untracked-but-not-ignored.md`).
 
 ```bash
 if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-files --error-unmatch fusion-workbench >/dev/null 2>&1; then
@@ -389,7 +389,9 @@ if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ] && git ls-f
     git rm -q --cached fusion-workbench/.checkout-id && printf 'fusion-workbench/.checkout-id\n' >> ./.gitignore && echo "gitignore: .checkout-id was tracked — untracked (file kept on disk) and excluded"
   fi
   for p in agentstate.yaml orchestrator-live.md .session-marker .active-circle .cadence-anchors .commit-lock monitor portfolio.md .guard-state; do
-    git ls-files --error-unmatch "fusion-workbench/$p" >/dev/null 2>&1 && echo "gitignore: class L entry $p is tracked — not repaired, report it"
+    if git ls-files --error-unmatch "fusion-workbench/$p" >/dev/null 2>&1; then echo "gitignore: class L entry $p is tracked — not repaired, report it"
+    elif [ -e "fusion-workbench/$p" ] && ! git check-ignore -q "fusion-workbench/$p"; then echo "gitignore: class L entry $p is untracked and covered by no ignore rule — not repaired, report it"
+    fi
   done
 fi
 ```

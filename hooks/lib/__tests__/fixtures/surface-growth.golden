@@ -31,7 +31,7 @@
 
 [skills bytes]
   archive/SKILL.md 26364
-  cadence/SKILL.md 16923
+  cadence/SKILL.md 19057
   cleanup/SKILL.md 23674
   commit/SKILL.md 6298
   curate/SKILL.md 12398
@@ -41,17 +41,18 @@
   memo/SKILL.md 12336
   migrate/SKILL.md 26620
   next/SKILL.md 27604
-  setup/SKILL.md 50309
-  total 243687
+  setup/SKILL.md 50954
+  total 246466
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
-  citation-grammar-boundaries.test.ts 116
-  citation-sweep.test.ts 441
+  citation-grammar-boundaries.test.ts 134
+  citation-sweep.test.ts 480
   commit-message-path.test.ts 315
   committed-dist.test.ts 332
-  config.test.ts 859
+  config.test.ts 866
   context-manifest.test.ts 472
+  declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 138
   derivable-enumerations-lint.test.ts 453
   domain-cascade-order-lint.test.ts 234
@@ -95,8 +96,8 @@
   rules-voice-profile.test.ts 323
   sentence-identifier-containment.test.ts 425
   session-start-subdirectory.test.ts 159
-  staging-drift.test.ts 673
+  staging-drift.test.ts 679
   surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 325
-  total 20883
+  total 21023

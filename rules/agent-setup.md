@@ -29,9 +29,12 @@ demand, not read a file. The set is layered, not ranked: you read all of it.
 ## What `fusion-paths` emits
 
 `fusion-paths <self>` prints one `KEY=value` line per key. `OUT_*` keys are your **write
-targets**; `SCAN_*` keys are your **read/search targets**. Hold these values for the whole
-session and use them wherever your prompt names one: they are the only correct answer to
-"where does this go". Never guess a path when the resolver fails; stop and report.
+targets**; `SCAN_*` keys are your **read/search targets**. Every value except `WORKBENCH`,
+which is absolute, is **relative to `$WORKBENCH`** and is joined to it, never to your
+working directory; a cwd join writes a stray store beside the workbench that no staging
+list names. Hold these values for the whole session and use them wherever your prompt
+names one: they are the only correct answer to "where does this go". Never guess a path
+when the resolver fails; stop and report.
 
 A single `SCAN_*` value may name **two directories** (the active Circle's and the shared
 one), so search across all of them or your scan silently under-reports.
