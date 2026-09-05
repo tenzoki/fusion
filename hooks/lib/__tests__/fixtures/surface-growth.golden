@@ -76,6 +76,7 @@
   helpers/prompt-blocks.ts 28
   hook-fail-open.test.ts 624
   hooks-wiring.test.ts 187
+  identity-mint-notice.test.ts 118
   legacy-halt-clearing.test.ts 213
   marker-format-lint.test.ts 171
   monitor-warnings-panel.test.ts 1153
@@ -86,7 +87,7 @@
   portfolio-citation-form-lint.test.ts 170
   provenance-header-lint.test.ts 448
   record-counts-measurement.test.ts 486
-  reference-resolution-lint.test.ts 999
+  reference-resolution-lint.test.ts 1000
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
   rules-emission-golden.test.ts 1150
@@ -97,4 +98,4 @@
   surface-growth-bound.test.ts 608
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 430
-  total 20245
+  total 20364
