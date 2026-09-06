@@ -269,3 +269,18 @@ inference, and the paragraph blaming the suite's git calls for an index-lock col
 suite's git calls are read commands that take no index lock, and the contender was this
 project's own tracker hook running `git status` beside the commit. Both corrections stand in
 the record beside what they correct.
+
+**Two faults in the orchestrator's own loop-3 closing commit `55b2f782`, corrected here because
+a commit message is not amended.**
+
+Its body says "Seven records stay open". Nine were open at that moment: `260827-0410`,
+`260828-0044`, `260830-2235`, `260831-0748`, `260831-2121`, `260905-2134`, `260905-2356`,
+`260906-0035`, `260906-0115`. The figure was asserted rather than counted, which is the norm
+this session applied to a coder's message in loop 1 and to a reconciliation's grouping in loop
+2, and the enumeration above is what should have stood in its place.
+
+And the message was passed on the command line instead of written to a file and read with
+`-F`. It arrived intact, and only because it happened to contain no apostrophe. The rule is not
+that a message avoids apostrophes; it is that a message never reaches a shell, and this session
+had already read the record of a commit that landed truncated at one. Getting away with it is
+the failure mode, not the exception to it.

@@ -38,7 +38,7 @@
  * Deleting the monitor's arms would render those rows at the amber default and
  * tell the user less about them.
  */
-export type GuardEventType = "guard_allow" | "guard_advisory" | "guard_error" | "review_coverage" | "staging_drift" | "tracker_record";
+export type GuardEventType = "guard_allow" | "guard_advisory" | "guard_error" | "review_coverage" | "staging_drift" | "citation_form" | "tracker_record";
 export interface GuardEvent {
     ts: string;
     event: GuardEventType;

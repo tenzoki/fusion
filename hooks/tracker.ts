@@ -1,7 +1,7 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Two jobs, each on its own narrow trigger, and NEITHER of them on the
+ * Three jobs, each on its own narrow trigger, and NONE of them on the
  * every-tool-call path:
  *
  *   0a. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
@@ -24,6 +24,15 @@
  *      string whether it will move HEAD is the question the deleted branch
  *      policy answered wrong 24 times. See lib/staging-drift.ts and
  *      `measureStagingDriftForModel`.
+ *
+ *   0c. CITATION FORM, on one narrow trigger: a `.md` record landing anywhere
+ *      under the workbench. It hands the file to the one citation grammar
+ *      (lib/citation-scan.ts) and reports, on the lines THIS call wrote, the
+ *      citations spelled in a form the project retired. Same reason for the
+ *      narrow trigger and the narrow scope: an ordinary record write is silent,
+ *      and reporting the whole corpus would report somebody else's violation at
+ *      this writer's keystroke. See lib/citation-form.ts and
+ *      `measureCitationFormForModel`.
  *
  * Three jobs left before them and none was replaced. A job 0 ran on EVERY
  * guarded tool call until 2026-08-15: session-state drift, comparing
@@ -120,6 +129,15 @@ import {
   stagingSentence,
   writeStagingState,
 } from "./lib/staging-drift.js";
+import {
+  citationFormSentence,
+  lastReportedCitationForm,
+  measureCitationForm,
+  readRecord,
+  recordReportedCitationForm,
+  workbenchRecordPath,
+  writtenLines,
+} from "./lib/citation-form.js";
 
 /**
  * The four tools whose payload NAMES the path they write.
@@ -189,21 +207,21 @@ function respond(additionalContext?: string): void {
 /**
  * THE TRIGGER IS WHAT DECIDES WHETHER A NEW MEASUREMENT IS A SIBLING.
  *
- * Two measurements hang below this line, and each argued in its own review
- * that it was a SIBLING of the other rather than an extension of it. That
- * argument was accepted, and the reason is one property and not a matter of
- * taste: **they fire on different conditions.** Decision
+ * Three measurements hang below this line, and each argued in its own review
+ * that it was a SIBLING of the others rather than an extension of one. That
+ * argument was accepted each time, and the reason is one property and not a
+ * matter of taste: **they fire on different conditions.** Decision
  * `260811-1146_*_does-the-measurement-family-get-a-shared-chassis-before-the-fourth-module.md`
  * records it as the criterion, so it is written here rather than remembered.
  *
- * A third hung here until 2026-08-15 and its trigger was **every guarded tool
- * call**: session-state drift, on the argument that a stale `agentstate.yaml`
- * is a fault at every moment after the commit that outdated it. It was removed
- * with the hand-maintained counters that were its subject, and the every-call
- * slot is now EMPTY rather than free — a proposal that wants it has to make the
- * argument below from scratch, not inherit a vacancy.
+ * A further one hung here until 2026-08-15 and its trigger was **every guarded
+ * tool call**: session-state drift, on the argument that a stale
+ * `agentstate.yaml` is a fault at every moment after the commit that outdated
+ * it. It was removed with the hand-maintained counters that were its subject,
+ * and the every-call slot is now EMPTY rather than free — a proposal that wants
+ * it has to make the argument below from scratch, not inherit a vacancy.
  *
- * The two, in the order they appear below:
+ * The three, in the order they appear below:
  *
  *   - `measureReviewCoverageForModel` — **a review file lands** under a
  *     `reviews/` store. An uncovered commit range mid-Turn is the normal and
@@ -212,6 +230,12 @@ function respond(additionalContext?: string): void {
  *   - `measureStagingDriftForModel` — **HEAD has moved** since the previous
  *     tool call. An unstaged record mid-Turn is the normal state; the commit is
  *     the moment a missed record becomes a missed record.
+ *   - `measureCitationFormForModel` — **a `.md` record lands** under the
+ *     workbench. Unlike the two above there is no interval in which the answer
+ *     is correct-for-now: a citation in a retired form is wrong from the byte
+ *     that wrote it, and the write is simply the first moment anything can read
+ *     it. What makes the trigger narrow is not a delay but the population —
+ *     one file, and inside it the lines this call produced.
  *
  * ## What "a distinct trigger" has to mean, concretely
  *
@@ -253,15 +277,26 @@ function respond(additionalContext?: string): void {
  * `lib/guard-state-file.ts`, the git wrapper into `lib/git.ts`, both of which
  * already had an owner — and leaves the rest as per-measurement copies: the
  * `measure…ForModel` bodies below, the CLI mains under `hooks/`, and the
- * wrappers under `bin/`. There were three sets when that decision was taken and
- * there are two now, the session-state drift measurement having been removed on
- * 2026-08-15 with the counters that were its subject. Three copies is where
- * this codebase drew the line the last time (`lib/guard-state-file.ts`'s own
- * header), and drawing it in the same place twice was a decision rather than a
- * coincidence. **The trip-wire counts UP, so the removal moved it further off
- * rather than resetting it:** a fourth copy of the boilerplate is the signal
- * that the chassis is now cheaper than the copies, and `bin/monitor` not
- * rendering the emitted events is what the omission looks like when it is not.
+ * wrappers under `bin/`. There were three sets when that decision was taken,
+ * two after the session-state drift measurement was removed on 2026-08-15 with
+ * the counters that were its subject, and three again since 2026-09-06. Three
+ * copies is where this codebase drew the line the last time
+ * (`lib/guard-state-file.ts`'s own header), and drawing it in the same place
+ * twice was a decision rather than a coincidence. **The trip-wire counts UP, so
+ * the removal moved it further off rather than resetting it:** a fourth copy of
+ * the boilerplate is the signal that the chassis is now cheaper than the
+ * copies, and `bin/monitor` not rendering the emitted events is what the
+ * omission looks like when it is not.
+ *
+ * THE THIRD MEASUREMENT IS A PARTIAL COPY, WHICH IS WHY THE WIRE HAS NOT
+ * TRIPPED. `lib/citation-form.ts` copies one of the three sets — the
+ * `measure…ForModel` body below and the throttle pair it needs — and copies
+ * neither of the others: there is no CLI main under `hooks/` and no wrapper
+ * under `bin/`, because the hand-run reading of the same question already
+ * exists as `bin/fusion-citation-check` over the whole corpus, and a second
+ * command answering it over one file would be the duplicate this family's own
+ * criterion refuses. Whoever proposes the fourth counts what is actually here
+ * rather than the number of measurements.
  *
  * What a chassis must NOT do, when it is built: flatten the three trigger
  * arguments into a flag. The reasoning in each measurement's doc comment below,
@@ -428,6 +463,77 @@ function measureStagingDriftForModel(): string | null {
   return sentence;
 }
 
+/**
+ * Citation form, measured when a record lands — issue `260906-0115_*_three-agents-in-one-session-wrote-a-citation-the-always-on-rule-forbids-and-only-a-later-gate-caught-it.md`.
+ *
+ * ## The trigger, and why the write itself is the moment
+ *
+ * One condition: a write tool just wrote a `.md` file under the workbench,
+ * outside the frozen stores. The two measurements above wait, because the state
+ * they report on is legitimately unfinished mid-Turn. This one does not wait,
+ * and the reason is not impatience: a citation spelled in a retired form is
+ * wrong at the byte that wrote it and stays wrong at every later reading, so
+ * there is no interval to wait through. The write is the first moment anything
+ * can read it, and it is also the last moment the writer still has the file
+ * open — which is the whole of what the defect measured. Three agents in one
+ * session wrote such a citation with the rule in context; each heard about it
+ * from a gate minutes to hours later, and one left `npm test` red for every
+ * agent in the checkout.
+ *
+ * ## What keeps it off the commonest path
+ *
+ * Not a delay but the population, in three narrowings, each of which the module
+ * argues in full: only this file, only the lines THIS call wrote, and only the
+ * two verdicts a token's shape or a successful lookup decides. `dangling` is
+ * deliberately not among them — see `REPORTED_STATUSES` in lib/citation-form.ts
+ * for why a failed lookup is the one class this must not put in front of a
+ * writer.
+ *
+ * ## The same three properties as its two siblings
+ *
+ * It writes nothing but its own throttle record; it reports once per set of
+ * violations rather than once per write; and it is anchored at the workbench
+ * root rather than at cwd, so it is NOT stood down in fusion's own repository,
+ * which is where the defect was measured.
+ */
+function measureCitationFormForModel(input: HookInput): string | null {
+  if (!WRITE_TOOLS.includes(input.tool_name)) return null;
+
+  const written = extractFilePath(input.tool_input);
+  if (written === null) return null;
+
+  const root = findWorkbenchRoot();
+  if (root === null) return null;
+
+  const abs = resolve(process.cwd(), written);
+  const rel = workbenchRecordPath(root, abs);
+  if (rel === null) return null;
+
+  const text = readRecord(abs);
+  if (text === null) return null;
+
+  const report = measureCitationForm(
+    root,
+    rel,
+    text,
+    writtenLines(input.tool_name, input.tool_input, text),
+  );
+  if (report.why !== "" || report.signature === "") return null;
+
+  const seen = lastReportedCitationForm(root);
+  if (report.signature === seen) return null;
+
+  bestEffort("tracker", () => recordReportedCitationForm(root, report.signature));
+
+  const sentence = citationFormSentence(report);
+  if (sentence === "") return null;
+
+  const detail = report.violations.map((h) => `${h.status} ${h.line} ${h.token}`).join("; ");
+  bestEffort("tracker", () => emitEvent("citation_form", input.tool_name, written, detail));
+
+  return sentence;
+}
+
 async function main(): Promise<void> {
   // Read hook input from stdin
   const chunks: Buffer[] = [];
@@ -450,7 +556,7 @@ async function main(): Promise<void> {
   }
 
   // Same seam as `guard.ts`, set at the same point and for the same reason: the
-  // two measurements below each emit a row, and so does the top-level handler,
+  // measurements below each emit a row, and so does the top-level handler,
   // which has no `input` in scope. See `lib/events.ts`.
   setEventSession(input.session_id);
 
@@ -465,9 +571,8 @@ async function main(): Promise<void> {
   // emitters), so its row would record the launch and not the finish: that
   // case parks an agentId->tool_use_id mapping instead, which the
   // SubagentStop hook resolves at the real completion.
-  // The two measurements still run after it: a sub-agent may have committed
-  // during its run, which is exactly the HEAD-moved trigger staging drift
-  // reads.
+  // The measurements still run after it: a sub-agent may have committed during
+  // its run, which is exactly the HEAD-moved trigger staging drift reads.
   if (isDispatchTool(input.tool_name)) {
     if (dispatchWasBackgrounded(input)) {
       bestEffort("tracker", () => recordDispatchLaunch(input));
@@ -503,15 +608,24 @@ async function main(): Promise<void> {
     staging = measureStagingDriftForModel();
   });
 
+  // Citation form, on the narrow trigger of a `.md` record landing under the
+  // workbench. Same anchoring and the same reason for reporting in fusion's own
+  // repository; see `measureCitationFormForModel` for why the write itself is
+  // the moment and what keeps the report off the commonest path.
+  let citations: string | null = null;
+  bestEffort("tracker", () => {
+    citations = measureCitationFormForModel(input);
+  });
+
   // Nothing stands down here. A plugin-repo gate used to sit at this line and
   // govern CHURN and nothing else — the workbench root is fusion's own
   // repository, so a fusion developer's own edits were not counted as churn —
   // and it went with the heatmap on 2026-08-15, as its protected-path sibling
-  // had gone on 2026-08-12. What is left is two measurements that were each
+  // had gone on 2026-08-12. What is left is the three measurements above, each
   // deliberately placed ahead of that gate, because each is anchored at the
-  // workbench root and each was measured in this very repository. A third stood
-  // beside them on the same footing until the session counters that were its
-  // subject were removed on 2026-08-15. Nothing stands down in `guard.ts`
+  // workbench root and each was measured in this very repository. A further one
+  // stood beside them on the same footing until the session counters that were
+  // its subject were removed on 2026-08-15. Nothing stands down in `guard.ts`
   // either: that stand-down went on 2026-08-16 with the last verdict it had to
   // suppress, so the divergence CLAUDE.md documented between the two hooks has
   // no remaining side. Both hooks now behave in fusion's own repository exactly
@@ -525,7 +639,7 @@ async function main(): Promise<void> {
   // and the rule they established is not — nothing may run between these
   // measurements and `respond`. Joined rather than chosen between, for the same
   // reason.
-  const parts: (string | null)[] = [coverage, staging];
+  const parts: (string | null)[] = [coverage, staging, citations];
   const context = parts.filter((s): s is string => s !== null).join(" ");
 
   respond(context === "" ? undefined : context);

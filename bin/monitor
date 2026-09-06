@@ -198,6 +198,12 @@ CHECKOUT_STORE_DIR = os.path.join(BASE_DIR, "shared", "checkouts")
 #     this set both were written to events.jsonl and read by nothing, which is
 #     the arrangement staging-drift.ts was written to end.
 #
+#   - A retired citation form (citation_form) is the third, added 2026-09-06
+#     with the write-time citation measurement, and it is here for the reason
+#     the row above records rather than for a new one: the tracker emits it,
+#     throttled on the same kind of signature, and an emitted event this file
+#     did not render would be that same arrangement arriving again.
+#
 # Everything else a guard hook writes (guard_allow, tracker_record, clears)
 # is bookkeeping: it records the ordinary path, nobody asked to be told
 # about it, and it stays out of the panel.
@@ -208,6 +214,7 @@ WARNING_EVENT_TYPES = {
     "state_drift",
     "review_coverage",
     "staging_drift",
+    "citation_form",
 }
 
 # Subsets of WARNING_EVENT_TYPES, carved out so each can be capped separately.
@@ -685,6 +692,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
       // what each row says is that something the session owes is missing.
       else if (w.event === 'review_coverage') { levelClass = 'warning'; levelLabel = 'Review gap'; }
       else if (w.event === 'staging_drift') { levelClass = 'warning'; levelLabel = 'Unstaged record'; }
+      // The third, added with the write-time citation measurement. It is here
+      // rather than left unrendered because the tracker's own header names an
+      // emitted event nothing renders as what the omission looks like.
+      else if (w.event === 'citation_form') { levelClass = 'warning'; levelLabel = 'Citation form'; }
       var ts = formatLocalTime(w.ts || '', 'date');
       keys.push(warningKey(w));
       html += '<div class="warning-row ' + levelClass + '">' +

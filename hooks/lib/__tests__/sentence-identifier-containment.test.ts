@@ -73,6 +73,9 @@ import { coverageSentence } from "../review-coverage.js";
 import type { Commit, CoverageReport } from "../review-coverage.js";
 import { stagingSentence } from "../staging-drift.js";
 import type { StagingReport, StagingRow } from "../staging-drift.js";
+import { citationFormSentence } from "../citation-form.js";
+import type { CitationFormReport } from "../citation-form.js";
+import type { CitationHit } from "../citation-scan.js";
 
 const trackerPath = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "tracker.ts");
 
@@ -187,6 +190,41 @@ const staging = (faults: StagingRow[]): StagingReport => ({
 
 const msgRow = row({ path: "fusion-commit-msg-t1.txt", klass: "commit-message", why: "name match" });
 
+/**
+ * One reportable citation hit, at a given line.
+ *
+ * `problem` and `fix` are the shapes the grammar produces, spelled with a
+ * synthetic decision stamp. THE REAL STRINGS CARRY A REAL FUSION STAMP, which
+ * this gate cannot see and this fixture therefore does not pretend to test: the
+ * grammar authors it into the hit, the hit is the builder's input, and an
+ * identifier that travels inside the input is contained by construction. That
+ * is the latent hole the header already names for a `why` field, arriving for
+ * `problem` and `fix` — with the difference that here it is LIVE, because the
+ * grammar's own `fix` names the decision that settled the citation form. The
+ * same string already reaches a consuming project's terminal through the
+ * hand-run checker, which is why it is stated rather than stripped;
+ * `lib/citation-form.ts`'s header carries the same statement.
+ */
+const hit = (line: number): CitationHit => ({
+  file: "shared/issues/990101-0101_o_a-synthetic-record.md",
+  line,
+  col: 0,
+  token: "shared/history/990102-0202-coder-a-synthetic-note.md",
+  kind: "record",
+  status: "store-prefixed",
+  matches: [],
+  problem: "the citation carries the store segment 'shared/history/', which an archive sweep moves",
+  fix: "cite the storeless form '990102-0202-coder-a-synthetic-note.md' (decision 990103-0303, the form)",
+});
+
+const citations = (violations: CitationHit[]): CitationFormReport => ({
+  root: "/tmp/consumer",
+  file: "shared/issues/990101-0101_o_a-synthetic-record.md",
+  why: "",
+  violations,
+  signature: "",
+});
+
 /** A branch of a builder. `silent` means the branch is specified to emit nothing. */
 interface Branch {
   branch: string;
@@ -231,6 +269,19 @@ const REGISTRY: Record<string, { run: (input: never) => string; branches: Branch
       },
       { branch: "commit-message only", input: staging([msgRow]) },
       { branch: "records and commit-message", input: staging([row({}), msgRow]) },
+    ],
+  },
+  citationFormSentence: {
+    run: citationFormSentence as (input: never) => string,
+    branches: [
+      { branch: "no violations", input: citations([]), silent: true },
+      { branch: "one violation", input: citations([hit(12)]) },
+      { branch: "two violations", input: citations([hit(12), hit(40)]) },
+      // Past `MAX_ROWS`, where the sentence stops spelling rows and starts
+      // counting them. The branch exists because the count is composed by the
+      // builder rather than taken from the input, so it is the one place a
+      // literal could enter the sentence.
+      { branch: "more than the sentence spells", input: citations([12, 40, 55, 70, 88, 91].map(hit)) },
     ],
   },
 };
@@ -373,6 +424,7 @@ describe("the completeness check sees a third builder in every import form it cl
       "  measureReviewCoverage,",
       '} from "./lib/review-coverage.js";',
       'import { headMoved, stagingSentence } from "./lib/staging-drift.js";',
+      'import { citationFormSentence, measureCitationForm } from "./lib/citation-form.js";',
       third,
     ].join("\n");
 

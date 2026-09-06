@@ -56,6 +56,7 @@ export type GuardEventType =
   | "guard_error"
   | "review_coverage"
   | "staging_drift"
+  | "citation_form"
   | "tracker_record";
 
 export interface GuardEvent {

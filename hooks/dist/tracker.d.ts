@@ -1,7 +1,7 @@
 /**
  * Compliance Guard — PostToolUse hook for Claude Code.
  *
- * Two jobs, each on its own narrow trigger, and NEITHER of them on the
+ * Three jobs, each on its own narrow trigger, and NONE of them on the
  * every-tool-call path:
  *
  *   0a. REVIEW COVERAGE, on one narrow trigger: a review file landing under a
@@ -24,6 +24,15 @@
  *      string whether it will move HEAD is the question the deleted branch
  *      policy answered wrong 24 times. See lib/staging-drift.ts and
  *      `measureStagingDriftForModel`.
+ *
+ *   0c. CITATION FORM, on one narrow trigger: a `.md` record landing anywhere
+ *      under the workbench. It hands the file to the one citation grammar
+ *      (lib/citation-scan.ts) and reports, on the lines THIS call wrote, the
+ *      citations spelled in a form the project retired. Same reason for the
+ *      narrow trigger and the narrow scope: an ordinary record write is silent,
+ *      and reporting the whole corpus would report somebody else's violation at
+ *      this writer's keystroke. See lib/citation-form.ts and
+ *      `measureCitationFormForModel`.
  *
  * Three jobs left before them and none was replaced. A job 0 ran on EVERY
  * guarded tool call until 2026-08-15: session-state drift, comparing
