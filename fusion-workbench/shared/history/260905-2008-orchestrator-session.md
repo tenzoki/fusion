@@ -3,7 +3,7 @@
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 **Directive:** Reconcile, then fix the defects the reconciliation leaves standing. Repeat until every defect record is closed or ten loops have run. Work autonomously; take decision support from an agent; analyse the state at the end of each loop.
 **Mode:** issues (with a reconciliation pass opening every loop)
-**Status:** In progress
+**Status:** Complete — circuit breaker: zero autonomous progress remaining (loop 4 of 10)
 
 ## Session parameters
 
@@ -309,3 +309,33 @@ budgets moved in loops 3 and 4 — raises the cost of leaving that record open r
 The Artifact item filed this pass is real and is second: nine wrong line citations in shipped text,
 invisible to every gate. It is smaller than one ruling on a production budget, and it is not urgent
 in the way a false report to a consuming project is.
+
+## Budget
+
+Figures derived at the close, not accumulated during the session.
+
+| Metric | Count | Source |
+|--------|-------|--------|
+| Turns | 4 | `bin/fusion-events turns` |
+| Commits | 14 | `git rev-list --count 5b84b13a..HEAD` |
+| Defect records reaching `_c_` | 21 | name absent at `5b84b13a`, derived |
+| Defect records filed | 8 | filename stamp at or after `260905-2008` |
+| Decisions filed | 1 | same |
+| Decisions answered or implemented | 0 | that transition is the user's, and no ruling arrived |
+| Human gates hit | 6 | five put at loop 2's opening, one at loop 3 |
+| Agent errors | 0 | no dispatch failed; four returned `blocked` on a golden the orchestrator was to regenerate |
+
+Open at the close: 10 defect records, against 23 at the start.
+
+## Review coverage
+
+**Range:** `5b84b13a..HEAD` — 14 commits
+**Covered by:** nothing. No review pass ran this session, and none was skipped: the one pass a
+Circle gets runs at its closure, and no Circle was active at any point.
+**Not covered:** all 14.
+**Carried out-of-scope files:** from `260901-0325-coderev-the-citation-mechanism-v10-20-0-to-v10-21-1.md` — `README.md`, `README-agents.md`, `README-hooks.md`, `.claude-plugin/plugin.json`, `reference-resolution-lint.test.ts`, `surface-growth.golden`, and five compiled files under `hooks/dist/`.
+
+The gap is stated rather than excused. Three of those fourteen commits change code that runs in
+every consuming project — the write-time citation check on the PostToolUse path, the monitor's
+bind and URL publication, and the vitest deadline — and none of them has been read by a
+reviewer. The suite is green and the suite is not a review.
