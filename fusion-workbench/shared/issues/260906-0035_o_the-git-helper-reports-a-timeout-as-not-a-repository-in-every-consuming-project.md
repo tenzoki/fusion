@@ -33,3 +33,22 @@ This record states the defect; that one chooses the shape.
 **Cross-references:**
 `260905-2356_*_the-hook-suite-is-not-isolated-from-a-second-copy-of-itself-and-fails-at-forty-percent-under-one.md`
 (the condition under which it fires, and its measurement).
+
+---
+Reconciled 260906-0335 (reconciler, HEAD `b462d55d`): marker unchanged at `_o_`, and every claim in
+the record is true of the tree as it stands. Nothing has been dispatched against it, deliberately —
+it is blocked on `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-timeout-retried.md`,
+which is still `_o_` with its recommendation standing and no ruling recorded anywhere.
+
+Read at HEAD rather than taken from the analysis: `GIT_TIMEOUT_MS = 5_000` in `hooks/lib/git.ts`, and
+the docstring above the wrapper enumerates the four conditions it collapses into one `null` — not a
+repository, an unresolved ref, a non-zero exit, and the timeout. The collapse is exactly as filed.
+
+**"Both of its callers" was re-checked because a third importer appeared after this record was
+filed, and it still holds.** Three modules import `git()` at HEAD: `lib/review-coverage.ts`,
+`lib/staging-drift.ts` and `lib/citation-scan.ts`. The third arrived on the PostToolUse path at
+`b462d55d`, through `lib/citation-form.ts`. It does **not** reach `git()`: the scanner's only git
+calls are inside `declaredCitationFiles()`, whose sole callers are `citation-check.ts` and
+`citation-sweep.ts`, neither of which any hook runs. So the record's reach statement is accurate at
+HEAD — but it is accurate by one function's worth of margin, and a future change that gave the
+write-time check a declared-paths corpus would widen this defect without touching `lib/git.ts`.

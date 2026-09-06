@@ -82,3 +82,25 @@ so it is never reported by a staging read (`agents/orchestrator.md` Step 3b step
 
 ---
 Resolved: d2323105 — the commit-message path is now per session, /tmp/fusion-commit-msg-<session-id>-<task-id>.txt, the session id being the value the SessionStart hook puts in front of the model. It was chosen over the checkout id and over a per-session temporary directory for a property neither of those has: it is the only discriminator the orchestrator holds as a literal at the moment it calls Write, which expands no variable, and the other two need a shell round trip whose output must then be carried unwritten through the rest of the session, at precisely the step whose recorded failure mode is improvisation. The checkout id is also the wrong scope, since two sessions against one project share a checkout and would still collide; it survives as the named fallback for a payload carrying no session id, and the prompt says it is weaker rather than presenting it as equivalent. Both properties the record demanded are kept: the message never passes through a command line, and the path stays outside the workbench so no staging read reports it. The pin now covers two properties instead of one, at both the write and the read site, with a negative control fed the exact pre-fix spelling. Not covered, and named rather than left to be found: the commit skill prescribes a unique name without saying the uniqueness must be per session, and the cleanup skill leaves its message file unbounded and defers to it.
+
+---
+Reconciled 260906-0335 (reconciler, HEAD `b462d55d`): the closure note holds at both sites, and its
+"not covered" clause is honest and complete as far as it goes.
+
+Verified. `agents/orchestrator.md` carries `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt` at the
+write site (Step 3b step 3) **and** at the read site (`git commit -F …`), which is what the note
+means by "at both the write and the read site" — a repair that moved only the first would have left
+the command reading a path nothing writes. `commit-message-path.test.ts` pins both: a positive case
+matching `git commit -F /tmp/fusion-commit-msg-<session-id>-…` and a negative control fed the exact
+pre-fix spelling `/tmp/fusion-commit-msg-<task-id>.txt`.
+
+Both properties the record demanded still hold: the message reaches git only through `-F`, and `/tmp`
+is outside the workbench, so no staging read reports it.
+
+The "not covered" clause is borne out. `skills/commit/SKILL.md` writes the path as
+`/tmp/fusion-commit-msg-<something-unique>.txt` and never says the uniqueness must be per session, so
+a task id is still a conforming answer there. `skills/cleanup/SKILL.md` is looser than the clause
+says: it names no path at all, only `<msg-file>`, so it prescribes neither `/tmp` nor uniqueness. The
+clause's "defers to it" reads as a stronger link than the two files carry — cleanup does not cite the
+commit skill — but the substance is right and it is the direction that matters: neither surface would
+stop a second session choosing the colliding path this record is about.

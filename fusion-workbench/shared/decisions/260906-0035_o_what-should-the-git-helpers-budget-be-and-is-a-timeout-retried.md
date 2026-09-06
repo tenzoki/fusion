@@ -54,3 +54,20 @@ what distinguishes those two without a larger deadline. It should be paired with
 chosen from the measured tail with margin rather than from habit; 5 000 ms was such a habit
 and this is the second time in this project that a round number has been mistaken for a
 deadlock guard.
+
+---
+**Reconciliation 260906-0335 (reconciler, HEAD `b462d55d`) — marker unchanged at `_o_`, no answer
+anywhere, no `Answer located:` line.** First reconciliation of this record; it was filed at
+`ea17e354` earlier tonight.
+
+Searched for a ruling in the shared decision store, `shared/analyses/` (including
+`260906-0026-what-shared-state-the-hook-suite-reaches.md`, which recommends option 1 but is an
+analysis and not a ruling), `shared/planning/`, and the September session histories. Nothing rules on
+the number or on the retry. `GIT_TIMEOUT_MS` is still `5_000` at `hooks/lib/git.ts` and no
+configuration leaf for it exists, so option 3 has not been taken by accident either.
+
+Two of the three budgets the diagnosis named have moved since this record was filed — vitest's case
+default at `ea17e354` and the monitor's port prediction at `d2323105` — and this one is the third and
+the only one that ships. So the suite is now quieter about the very fault this decision governs,
+which raises rather than lowers the cost of leaving it open: the instrument that reported the
+production budget has been partly damped while the budget itself is unchanged.

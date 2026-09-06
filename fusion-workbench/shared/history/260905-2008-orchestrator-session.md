@@ -284,3 +284,28 @@ And the message was passed on the command line instead of written to a file and 
 that a message avoids apostrophes; it is that a message never reaches a shell, and this session
 had already read the record of a commit that landed truncated at one. Getting away with it is
 the failure mode, not the exception to it.
+
+## Coherence, loops 3 and 4
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: 8 records verified against the tree (3 closures, 3 defects filed, 1 decision, plus the new machinery those records govern) / 3 drift items, all three live / 0 open `coderev` or `ontorev` findings, and no review file has been written since `260901-0325`, which loop 1 annotated (Grounding at fault, on two of the three). The three closure notes hold and each was verified independently of its own citation; both figures in the write-time note reproduce exactly — 1865 records considered and 17 reportable, the denominator two higher only because two records were filed since, and the `cd623b6f` replay returning one violation at line 18 with the correct spelling. The two Grounding items are on `260905-2356_*_the-hook-suite-is-not-isolated-from-a-second-copy-of-itself-and-fails-at-forty-percent-under-one.md`: its `## The mechanism` section says `testTimeout` is 5 000 ms and this project never sets it, which `ea17e354` falsified in the same commit that wrote the sentence; and its title asserts shared state between two suite copies, which the record's own third table row refutes (5 red of 37 under agent load with no second copy). The Artifact item is new and filed: nine of the twelve `path:N` citations in `skills/`, `agents/` and `rules/` name a line that does not carry the claim, and `reference-resolution-lint` resolves paths and heading anchors and never a line number.
+- Artifact↔Directive: the 13 commits in `git log 5b84b13a..HEAD` move toward the stated Directive, none orthogonal and none away — `d2323105`, `ea17e354` and `b462d55d` are loop-3 and loop-4 repairs of filed records, `55b2f782` and `aacf0554` the closures and the filing, `cd623b6f` and the analysis at `e9bd3e53` the end-of-loop analyses the Directive asks for by name. One clause of the Directive is unmet at the last loop rather than contradicted: loop 4 produced no end-of-loop analysis, has no per-loop section in this log, and emitted no `turn_start`, so `bin/fusion-events turns` reads 3 against four loops and the parameter block's one-loop-one-Turn mapping does not hold at HEAD.
+- Grounding↔Directive: 41 active decisions in the shared store (10 `_o_`, 31 `_a_`) / 2 in conflict with the Directive's first stop condition, the same two loop 1 named and now sharpened by a third. `260905-1042_*_may-a-dispatched-agent-perform-the-open-to-answered-transition-at-all-and-under-which-bound.md` reserves `_o_`→`_a_` to the orchestrator relaying a **user** ruling, `260831-2142_*_which-property-separates-a-head-field-identifier-from-a-head-field-citation.md` blocks a defect and a plan step the Directive orders closed, and `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-timeout-retried.md` now blocks the one budget of the three that ships into every consuming project. Ten defect records stand open after this pass — the nine that were open plus the one filed here — and five of them wait on a ruling that was put to the user and has not come back. "Every defect record is closed" is not reachable by a session working autonomously.
+
+**Rebalance recommendation:** revise Grounding
+
+Unchanged in kind from loop 1 and back above loop 2's `revise Artifact`, for a reason that moved
+rather than a preference that returned. Loop 2's Artifact item was one `elif` in a skill body and it
+was repaired. What stands now is that the three budgets the session diagnosed have been reduced to
+one, and that one ships: `hooks/lib/git.ts` renders a timeout as "not a repository" inside the
+PostToolUse hook of every consuming project, and the only thing between it and a repair is a decision
+record with a recommendation and no ruling. Damping the suite that reported it — two of the three
+budgets moved in loops 3 and 4 — raises the cost of leaving that record open rather than lowering it.
+
+The Artifact item filed this pass is real and is second: nine wrong line citations in shipped text,
+invisible to every gate. It is smaller than one ruling on a production budget, and it is not urgent
+in the way a false report to a consuming project is.

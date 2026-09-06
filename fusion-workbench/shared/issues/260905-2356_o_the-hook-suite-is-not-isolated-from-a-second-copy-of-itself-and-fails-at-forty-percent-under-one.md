@@ -9,6 +9,13 @@ suite reaching machine-global state that another run is holding at the same mome
 ---
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 
+**The title is wrong and is left standing, because renaming the file breaks every citation of
+it.** It asserts shared state between two copies of the suite. The record's own third measured
+row refutes that: 5 red of 37 under agent load with no second copy running. A second copy is
+one sufficient load, not the condition. What the title should say, from the reconciliation that
+caught it: three fixed wall-clock budgets sit inside the loaded latency distribution, and the
+suite reddens at 40 percent beside a second copy of itself. Read the body, not the name.
+
 ## What was measured
 
 All figures at HEAD `1b305c97` unless a different commit is named, on one machine, with
@@ -62,8 +69,11 @@ repository". Measured over 600 samples on a six-commit repository, `git log` tak
 nothing else running and up to 7 580 ms with two suites running, with no spawn ever failing. So
 under load the function reports, in a well-formed sentence, that git declined to answer.
 
-**The other two fail on vitest's own default.** `testTimeout` is 5 000 ms and this project
-never sets it. `fusion-commit-lock.test.ts` runs 12 of its 13 cases on that default and
+**The other two fail on vitest's own default.** `testTimeout` was 5 000 ms and this project
+had never set it. It is 30 000 as of `ea17e354` — which is the same commit that added this
+section, so the paragraph contradicted the diff it travelled in. Corrected after a
+reconciliation caught it; the sentence is kept in the past tense rather than deleted, because
+the 5 000 is what the six files were measured against. `fusion-commit-lock.test.ts` runs 12 of its 13 cases on that default and
 `monitor-warnings-panel.test.ts` 3 of 21; eighteen further files carry the same exposure
 without having been observed red yet.
 
@@ -128,3 +138,40 @@ contention reached the orchestrator's own commit, not only the suite. And the co
 not help, by construction. It is anchored at the workbench and serialises fusion sessions
 against one project, while git's index is contended by anything in this checkout that takes
 it, this project's own hooks included.
+
+---
+Reconciled 260906-0335 (reconciler, HEAD `b462d55d`): marker unchanged at `_o_`. The acceptance is
+untouched — the ten-pair experiment has not been re-run since the repair, and the record itself says
+a green run is not acceptance. One full-suite run at HEAD is green (52 files, 910 tests), which is
+one more quiet observation and settles nothing, exactly as the acceptance says.
+
+**The title misdescribes the record and should be replaced.** This is a verdict, not a restatement of
+the record's own hedge. The record already says the title is "accurate about the condition and wrong
+about the mechanism"; the sharper reading is that the title names a mechanism the record refutes on
+its own evidence. "Not isolated from a second copy of itself" asserts shared state between two runs,
+and the diagnosis found none: every one of the eight files builds its root with `mkdtempSync`. What
+is shared is the machine. The record's own third table row is the proof that a second copy is not
+required — 5 red of 37 at `e9bd3e53` with agents writing and **no** second suite. A second copy is
+one sufficient load among others, not the condition.
+
+A title that fits the mechanism: *three fixed wall-clock budgets sit inside the loaded latency
+distribution, and the suite reddens at 40 percent beside a second copy of itself*. The 40 percent
+figure earns its place in the title and should stay; "not isolated" should not, because it points a
+reader at the repair the diagnosis rejected.
+
+**One sentence in the record is now false in the present tense, and it was written into the record by
+the commit that falsified it.** `## The mechanism, read out of the code` says "`testTimeout` is
+5 000 ms and this project never sets it." `hooks/vitest.config.mjs` has set `testTimeout: 30_000`
+since `ea17e354` — and the diff shows this whole section was added to the record *in that same
+commit*. The consequence clause behind it moves with it: the "eighteen further files carry the same
+exposure" is the pre-`ea17e354` count, and the two per-file figures the sentence rests on are still
+exactly right (13 cases in `fusion-commit-lock.test.ts` with one explicit budget; 21 in
+`monitor-warnings-panel.test.ts` with 18 carrying `30000`), so only the default they ran under has
+changed. Not repaired here, per rule 6 — the description is the record's own text. What a reader
+needs is the marker: two of the three budgets the record names are now moved (the vitest default at
+`ea17e354`, the monitor's port prediction at `d2323105`) and the third, `lib/git.ts`'s, is the one
+still standing and is `260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-repository-in-every-consuming-project.md`.
+
+**The rest of the record's mechanism section holds.** `GIT_TIMEOUT_MS = 5_000` at `hooks/lib/git.ts`,
+and the docstring there enumerates not-a-repository, an unresolved ref, a non-zero exit and the
+timeout as the four things collapsed into one `null` — read at HEAD, not taken from the analysis.

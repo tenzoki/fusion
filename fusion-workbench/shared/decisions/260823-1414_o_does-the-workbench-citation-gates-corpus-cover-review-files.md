@@ -146,3 +146,29 @@ the tree now holds **108** review files rather than 90, of which 35 are in `shar
 than 34, and the corpus the gate runs over has grown from 2 416 files to 2 521. Option 2's repair debt
 therefore grows with time exactly as the record predicted, and the figure has to be re-taken with the
 project's own scanner rather than scaled from the old one.
+
+---
+**Reconciliation 260906-0335 (reconciler, HEAD `b462d55d`) — marker unchanged at `_o_`, still no
+answer on disk, and no `Answer located:` line.** `inCorpus()` still selects the same five kinds and
+no review file matches any of them.
+
+The reason this record is re-opened by a reconciler at all is that a **new mechanism now reads review
+files for citation form**, and a reader could easily mistake it for a partial answer here. It is not
+one, and the reason is worth writing down so it is not re-derived. `hooks/lib/citation-form.ts`
+(landed `b462d55d`) scans any `.md` landing under the workbench outside the frozen stores — reviews,
+history files and analyses expressly included, which is exactly the surface this record's option set
+treats as unreachable. But it answers a different question in two ways that matter here:
+
+- **It reports only the lines the writing call produced.** The class this record is about is a
+  citation that goes stale *later*, when the cited record's marker moves. That happens in a file
+  nobody is writing, so the write-time check never sees it. It can only stop a review being filed
+  with a citation that is already stale.
+- **It excludes `dangling` wholesale**, deliberately, and reports only `store-prefixed` and
+  `stale-marker`. The 270 citations in the `## Measured` table were counted as dangling by a floor
+  parser resolving on filename; under the project's own scanner most of that class reads as
+  `stale-marker`, so the exclusion is narrower than it looks — but the first point still bites, and
+  the repair debt is untouched either way.
+
+So option 4's "another written obligation with no mechanism behind it" now has *part* of a mechanism,
+covering the moment of writing and not the moment of staleness, and options 1 through 3 are unmoved.
+The trade this record puts to the user is the same trade.

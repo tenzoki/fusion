@@ -26,3 +26,28 @@ nothing more.
 
 ---
 Resolved: d2323105 — the fault was the test assumption and not the bind, established by measurement rather than by reading. The monitor builds a dual-stack socket, falls back to IPv4 on error, and reports the URL it actually bound; the harness bound port zero, read the number, released it, and then asserted on that number without reading what the monitor said. The port stays unreserved for the whole case, so a second suite hands the same number to its own monitor, which takes the port over through the monitor documented takeover step and kills the first. That was reproduced directly: after the takeover the port answers over IPv4 and refuses IPv6, which is the recorded failure exactly. The monitor now lets a caller name the file it publishes its bound URL to, accepts port zero without the takeover step, and re-reads the port after binding; every case starts on port zero and reads the answer back rather than predicting it. The record acceptance asked for a measured rate first, and it was taken under the isolation record own protocol: ten pairs of concurrent full-suite runs, 0 red of 20 for this file, while three other files failed inside a single one of those pairs. That is what makes the zero evidence rather than a quiet afternoon. Not covered: the pre-repair rate under the same protocol was not measured, because restoring the old harness would have meant a second copy of a large file inside a bounded surface; the before side rests on the record own observation plus the direct takeover measurement. Also named and not repaired: a skill body cites a line range in the monitor that was already wrong before this edit and is now further out.
+
+---
+Reconciled 260906-0335 (reconciler, HEAD `b462d55d`): the closure note holds, verified against the
+code rather than through the note's own citation, and the "not covered" clause is honest.
+
+Verified. `bin/monitor` accepts port 0 and skips the takeover step behind an explicit `if PORT != 0`
+guard, with the measurement that justifies it in the comment above it; `MONITOR_URL_FILE` lets a
+caller name the file the server publishes its bound URL to. In the harness, `startMonitor()` passes
+the literal `"0"` as the port for every case and reads the URL back through `readBound(urlFile)`, so
+the file predicts no port anywhere — its own header states that as a property and the code keeps it.
+
+The "not covered" clause is honest and not decorative. It names a measurement that was **not** taken
+(the pre-repair rate under the same ten-pair protocol) and says what the before side rests on
+instead. That is a real limit: the 0-of-20 figure is evidence about the repaired harness only, and
+the note does not let it stand in for a controlled before-and-after.
+
+The clause's second half is also true and is **larger than the clause says**. It names one stale
+line-range citation in a skill body. `skills/setup/SKILL.md:86` cites two ranges for where the
+root-anchored surfaces are read, and **both** are wrong at HEAD: `bin/monitor:72-75` is the
+workbench-directory default block (the reads are at `:142-144`, moved from `:122` by this repair),
+and `hooks/tracker.ts:33-36` is comment prose, moved further out by `b462d55d`. Both were already
+wrong before their respective commits, so neither is this session's fault; what this session did was
+widen them. No gate sees either: `reference-resolution-lint` resolves paths and heading anchors, not
+line numbers. The class is measured and filed as
+`260906-0335_*_nine-of-twelve-line-number-citations-in-shipped-text-name-the-wrong-line-and-no-gate-resolves-one.md`.
