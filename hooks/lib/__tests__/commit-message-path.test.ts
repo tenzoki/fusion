@@ -53,6 +53,19 @@
  * The negative controls call the SAME helpers as the assertions above them,
  * with a fixture in place of the real file — never a re-implementation of what
  * they claim to test.
+ *
+ * ## The second half of the prescription: whose file is it
+ *
+ * `/tmp` fixed the leftover and left the path machine-global. Under
+ * `/tmp/fusion-commit-msg-<task-id>.txt` the only varying part was a task id,
+ * which is short and conventional, so two sessions in two projects wrote one
+ * file whenever their ids agreed — measured, and made looser still by a
+ * case-insensitive filesystem folding `L1-RECONCILE` onto `L1-reconcile`
+ * (issue `260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`).
+ * So this file pins two properties of the same path and not one: it is under
+ * `/tmp`, AND it carries a per-session discriminator. A future edit that keeps
+ * the prefix and drops the discriminator restores a defect that already
+ * happened, so it fails here as loudly as a move into the workbench does.
  */
 
 import { describe, it, expect } from "vitest";
@@ -72,6 +85,25 @@ const commitSkill = () => read("skills", "commit", "SKILL.md");
 /** Every `/tmp/…` path a text names. */
 function tmpPaths(text: string): string[] {
   return [...text.matchAll(/\/tmp\/[A-Za-z0-9._<>-]+/g)].map((m) => m[0]);
+}
+
+/**
+ * The per-session discriminator the path has to carry.
+ *
+ * Spelled exactly, and deliberately so. The property — "unique per session" —
+ * is not decidable from a path template: `<task-id>` and `<session-id>` are
+ * both placeholders, and nothing in the string says which of them varies per
+ * session. What IS decidable is whether the prompt still names the value it was
+ * changed to name, and that is what this pins. Choosing a different
+ * discriminator (the checkout id, a `mkdtemp` directory) is then an edit to
+ * this constant that somebody makes on purpose, which is the same shape
+ * `NAMEABLE_LEFTOVER` below uses for the same reason.
+ */
+const SESSION_DISCRIMINATOR = "<session-id>";
+
+/** Does a prescribed message path carry it? */
+function carriesSessionDiscriminator(path: string): boolean {
+  return path.includes(SESSION_DISCRIMINATOR);
 }
 
 /**
@@ -138,7 +170,37 @@ describe("commit-message path: the prescription is pinned", () => {
     // The message must reach git as `-F <that path>`, not as a `-m` argument:
     // the file exists so the shell never sees the prose (commit 045a14f, cut
     // off at an apostrophe).
-    expect(text).toMatch(/git commit -F \/tmp\/fusion-commit-msg-[^\s'"]+/);
+    expect(text).toMatch(
+      /git commit -F \/tmp\/fusion-commit-msg-<session-id>-[^\s'"]+/,
+    );
+  });
+
+  it("every /tmp path it names carries the per-session discriminator", () => {
+    // `/tmp` alone was the first half of the answer and is not the whole of it:
+    // the path is machine-global, so without a per-session part two projects'
+    // sessions write one file whenever their task ids agree (issue
+    // `260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`).
+    // Every occurrence, not just one — the write at step 3 and the `-F` read at
+    // step 5 must name the same file, and a path that keeps only one of them
+    // discriminated is the same collision at half the frequency.
+    const paths = tmpPaths(orchestrator()).filter((p) =>
+      p.includes("commit-msg"),
+    );
+    const bare = paths.filter((p) => !carriesSessionDiscriminator(p));
+    expect(
+      bare,
+      `agents/orchestrator.md names a commit-message path with no per-session discriminator (\`${SESSION_DISCRIMINATOR}\`). Under a task id alone the path collides across projects — the defect this pin exists for. If the discriminator was deliberately changed, change \`SESSION_DISCRIMINATOR\` and \`PRESCRIBED_MESSAGE_PATH\` with it.`,
+    ).toEqual([]);
+  });
+
+  it("Step 3b states WHY the path is per-session, not merely that it is", () => {
+    // Same reasoning as the `/tmp` justification below: a prescription with no
+    // reason is one an agent improvises around. The two facts that decide this
+    // one are that `/tmp` is shared machine-wide and that the task id is not a
+    // discriminator.
+    const text = orchestrator();
+    expect(text).toMatch(/`?\/tmp`? is machine-global/);
+    expect(text).toMatch(/task ids are short and conventional/);
   });
 
   it("the module constant is the path the prompt names", () => {
@@ -147,6 +209,21 @@ describe("commit-message path: the prescription is pinned", () => {
     // have the mechanism telling the model to use a path nothing prescribes.
     expect(orchestrator()).toContain(PRESCRIBED_MESSAGE_PATH);
     expect(PRESCRIBED_MESSAGE_PATH.startsWith("/tmp/")).toBe(true);
+    // Both halves of the prescription, in the constant the hook quotes back.
+    expect(carriesSessionDiscriminator(PRESCRIBED_MESSAGE_PATH)).toBe(true);
+  });
+
+  it("negative control: the pre-fix path fails the same predicate", () => {
+    // The exact string the prompt carried until issue `260905-2213`. If this
+    // passed, the assertions above would be green against a path that collides.
+    expect(
+      carriesSessionDiscriminator("/tmp/fusion-commit-msg-<task-id>.txt"),
+    ).toBe(false);
+    expect(
+      carriesSessionDiscriminator(
+        "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt",
+      ),
+    ).toBe(true);
   });
 
   it("Step 3b states WHY the location is /tmp, not merely that it is", () => {

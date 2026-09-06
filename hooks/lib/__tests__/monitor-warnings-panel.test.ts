@@ -43,13 +43,30 @@ import { dirname, resolve, join } from "node:path";
 // `GET /api/dashboard`, whose `warnings` array is exactly what renderWarnings()
 // receives — so an assertion here is an assertion about what a user sees.
 //
-// PORT HANDLING. The port is taken by binding :0, reading the assigned port and
-// releasing it. That leaves a race window in which another process could claim
-// it, which matters more than usual here: monitor SIGTERMs whatever is already
-// listening on its port before binding (documented in its own usage text). The
-// window is microseconds against an ephemeral port the OS just handed out, and
-// the alternative — a fixed port — would collide with a developer's own running
-// monitor, which is the far likelier way to shoot someone.
+// PORT HANDLING. This file predicts no address and no port. Every case starts
+// the monitor on port 0 and reads back the URL the server published after
+// binding, through the file named in MONITOR_URL_FILE.
+//
+// It used to take the port itself, by binding :0, reading the assigned port and
+// releasing it, and it called the window between the release and the monitor's
+// bind "microseconds". The window is not what a second copy of this suite
+// competes for: an ephemeral port the kernel handed back to us is unreserved
+// for as long as the case runs, and the kernel recycles the range, so a second
+// suite's freePort() can hand out a number this suite's monitor is still
+// serving on. What happens then is not a lost bind but a kill. `bin/monitor`
+// SIGTERMs whatever is listening on its port before binding, which is its
+// documented behaviour and right for a monitor a person starts — and fatal when
+// a test harness aims it at a number nothing reserved.
+//
+// MEASURED 2026-09-06, and it is the whole of issue 260904-2140_*: with monitor
+// A serving the dual-stack wildcard and answering 200 on both loopback
+// families, starting monitor B on A's port killed A; the port then answered 200
+// over IPv4 (B, which the harness pins to 127.0.0.1) and refused ::1, which is
+// exactly `connect ECONNREFUSED ::1:<port>` after an IPv4 readiness poll had
+// already passed. The bind in `bin/monitor` is sound and was never implicated:
+// its URL follows its socket, naming `localhost` only where both families
+// answer. What was wrong was this harness asserting `localhost` at a port it
+// had guessed, without ever reading what the monitor said it bound.
 // ---------------------------------------------------------------------------
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -86,21 +103,47 @@ function seedWorkbench(events: GuardEvent[]): string {
   return wb;
 }
 
-function freePort(): Promise<number> {
-  return new Promise((res, rej) => {
-    const s = createServer();
-    s.on("error", rej);
-    s.listen(0, "127.0.0.1", () => {
-      const addr = s.address();
-      if (addr === null || typeof addr === "string") {
-        s.close();
-        rej(new Error("no port assigned"));
-        return;
-      }
-      const port = addr.port;
-      s.close(() => res(port));
-    });
-  });
+/** What the monitor published about the socket it bound, read from its URL file. */
+interface Bound {
+  /** The URL the server itself wrote, host spelling and chosen port included. */
+  url: string;
+  /** That URL's host: `localhost` when both loopback families answer, else an address. */
+  host: string;
+  /** The port the kernel gave it. Nobody predicted this number. */
+  port: number;
+}
+
+/** Somewhere to let each monitor publish its URL. One directory, one file per start. */
+let urlFileDir: string | undefined;
+let urlFileSeq = 0;
+function nextUrlFile(): string {
+  urlFileDir ??= mkdtempSync(join(tmpdir(), "fusion-monitor-url-"));
+  urlFileSeq += 1;
+  return join(urlFileDir, `url-${urlFileSeq}`);
+}
+
+/**
+ * The bind's own answer, or `undefined` while it has not been written yet.
+ *
+ * `bin/monitor` writes this file in one call, right after the bind and before
+ * it serves, so an absent or empty file means "not bound yet" and a short read
+ * means "not written yet". Both are the same non-answer here: the caller polls.
+ */
+function readBound(file: string): Bound | undefined {
+  let raw: string;
+  try {
+    raw = readFileSync(file, "utf8").trim();
+  } catch {
+    return undefined;
+  }
+  if (raw.length === 0) return undefined;
+  try {
+    const u = new URL(raw);
+    if (u.port === "") return undefined;
+    return { url: raw, host: u.hostname, port: Number(u.port) };
+  } catch {
+    return undefined;
+  }
 }
 
 const running: ChildProcess[] = [];
@@ -262,10 +305,14 @@ interface MonitorOpts {
 /** What the monitor started last wrote to stderr, when `stderr: true` asked for it. */
 let lastStderr = "";
 
-/** Start the real monitor against `wb` and return the port it answers on. */
-async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number> {
-  const port = await freePort();
-  const argv = [monitorBin, "test", String(port), "-d", wb];
+/** Start the real monitor against `wb` and return what it published about its socket. */
+async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<Bound> {
+  const urlFile = nextUrlFile();
+  // Port 0: the kernel picks, and the monitor publishes what it picked. Nothing
+  // here reserves a port and hands it over, so no other process can be serving
+  // on the number this monitor is about to take — which is what stopped the
+  // monitor's own takeover step from reaching a sibling suite's server.
+  const argv = [monitorBin, "test", "0", "-d", wb];
   if (opts.tty === true) {
     const pty = ptyAvailable();
     if (!pty.ok) {
@@ -285,6 +332,7 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     MONITOR_BIND: "127.0.0.1",
+    MONITOR_URL_FILE: urlFile,
     ...opts.env,
   };
   if (opts.bind === null) delete env.MONITOR_BIND;
@@ -316,12 +364,20 @@ async function startMonitor(wb: string, opts: MonitorOpts = {}): Promise<number>
   // (issue 260811-1409). The two exits are events — the server answers, or
   // the process that would have answered is gone — and the vitest case timeout
   // is the one deadline left, as a deadlock guard.
+  //
+  // Two events now, in order, and both are the server's own: it publishes the
+  // URL it bound, then it serves at that URL. The fetch goes to the published
+  // address rather than to a composed one, so a case that gets past this loop
+  // has been answered by the socket the monitor says it built.
   for (;;) {
-    try {
-      const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
-      if (r.ok) return port;
-    } catch {
-      // not listening yet
+    const bound = readBound(urlFile);
+    if (bound !== undefined) {
+      try {
+        const r = await fetch(`${bound.url}/api/dashboard`);
+        if (r.ok) return bound;
+      } catch {
+        // bound, not serving yet
+      }
     }
     // `bin/monitor` ends in `wait $SERVER_PID` and the pty runner in
     // `proc.wait()`, so whatever we spawned outlives the server it forked. Its
@@ -343,15 +399,15 @@ function lastMonitor(): ChildProcess {
 
 /** Start the real monitor against `wb` and return its /api/dashboard payload. */
 async function dashboard(wb: string): Promise<{ warnings: GuardEvent[] }> {
-  const port = await startMonitor(wb);
-  const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
+  const { url } = await startMonitor(wb);
+  const r = await fetch(`${url}/api/dashboard`);
   return (await r.json()) as { warnings: GuardEvent[] };
 }
 
 /** Fetch the dashboard page the real monitor serves at `/`. */
 async function indexPage(wb: string): Promise<string> {
-  const port = await startMonitor(wb);
-  const r = await fetch(`http://127.0.0.1:${port}/`);
+  const { url } = await startMonitor(wb);
+  const r = await fetch(`${url}/`);
   return await r.text();
 }
 
@@ -855,7 +911,7 @@ describe("bin/monitor — the browser launch", () => {
     "a spawn with no terminal on stdout opens nothing, and still serves",
     async () => {
       const { dir, marker } = fakeOpen();
-      const port = await startMonitor(seedWorkbench([]), {
+      const { url } = await startMonitor(seedWorkbench([]), {
         env: { PATH: pathWith(dir) },
       });
 
@@ -864,7 +920,7 @@ describe("bin/monitor — the browser launch", () => {
       // The whole point: this is exactly how the suite above spawns it.
       expect(existsSync(marker)).toBe(false);
       // And suppressing the tab must not have suppressed the dashboard.
-      const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
+      const r = await fetch(`${url}/api/dashboard`);
       expect(r.ok).toBe(true);
     },
     30000,
@@ -874,7 +930,7 @@ describe("bin/monitor — the browser launch", () => {
     "a terminal on stdout still gets the dashboard opened for it",
     async () => {
       const { dir, marker } = fakeOpen();
-      const port = await startMonitor(seedWorkbench([]), {
+      const { url, host } = await startMonitor(seedWorkbench([]), {
         tty: true,
         env: { PATH: pathWith(dir) },
       });
@@ -901,9 +957,13 @@ describe("bin/monitor — the browser launch", () => {
       // socket got built. The dual-stack path's counterpart — where the name
       // *is* true, and is what gets launched — is pinned in the
       // "default wildcard bind" block below.
-      expect(readFileSync(marker, "utf8").trim()).toBe(
-        `http://127.0.0.1:${port}`,
-      );
+      //
+      // Both halves are read rather than composed. `host` is what the server
+      // published, so the first assertion is that the pin produced an IPv4-only
+      // socket; `url` is that same publication, so the second is that the tab
+      // opened at the address the server named and not at a name it did not.
+      expect(host).toBe("127.0.0.1");
+      expect(readFileSync(marker, "utf8").trim()).toBe(url);
     },
     30000,
   );
@@ -927,7 +987,13 @@ describe("bin/monitor — the browser launch", () => {
       const { dir } = fakeOpen({ linux: true });
       await startMonitor(seedWorkbench([]), { tty: true, stderr: true, env: { PATH: pathWith(dir, "xdg-open") } });
       expect(await waitForStderr(/on PATH/, lastMonitor())).toBe(true);
-      expect(lastStderr).toMatch(/^monitor: no xdg-open on PATH\. Open http:\/\/localhost:\d+ yourself; set MONITOR_NO_BROWSER=1/m);
+      // `127.0.0.1`, and it used to be `localhost` here. The wrapper read the
+      // published URL only inside the launcher-found branch, so the one message
+      // written for a person to act on named the constant instead — a name this
+      // IPv4-only server does not answer at, and, once port 0 became legal, a
+      // port nothing is on. The read moved above the branch; both gap messages
+      // now name the socket.
+      expect(lastStderr).toMatch(/^monitor: no xdg-open on PATH\. Open http:\/\/127\.0\.0\.1:\d+ yourself; set MONITOR_NO_BROWSER=1/m);
     },
     30000,
   );
@@ -936,7 +1002,7 @@ describe("bin/monitor — the browser launch", () => {
     "MONITOR_NO_BROWSER suppresses the launch on a terminal too",
     async () => {
       const { dir, marker } = fakeOpen();
-      const port = await startMonitor(seedWorkbench([]), {
+      const { url } = await startMonitor(seedWorkbench([]), {
         tty: true,
         env: { PATH: pathWith(dir), MONITOR_NO_BROWSER: "1" },
       });
@@ -944,7 +1010,7 @@ describe("bin/monitor — the browser launch", () => {
       await new Promise((r) => setTimeout(r, PAST_THE_LAUNCH_WINDOW));
 
       expect(existsSync(marker)).toBe(false);
-      const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
+      const r = await fetch(`${url}/api/dashboard`);
       expect(r.ok).toBe(true);
     },
     30000,
@@ -1085,15 +1151,30 @@ describe("bin/monitor — the default wildcard bind", () => {
 
       // `bind: null` deletes MONITOR_BIND rather than setting a wildcard, so
       // what runs is the address the program picks when nobody picked one.
-      const port = await startMonitor(seedWorkbench([]), { bind: null });
+      const bound = await startMonitor(seedWorkbench([]), { bind: null });
+
+      // The bind's own answer, read and not predicted. The host in the
+      // published URL IS the dual-stack question: `localhost` when the `::`
+      // socket carries both families, `127.0.0.1` when the OSError arm fell
+      // back to IPv4. The probe above already bound the dual-stack wildcard
+      // from this process and reached it over both families, so a `127.0.0.1`
+      // here is a finding about the program on a host that can do better — and
+      // it is a finding this case can now state, because the port was the
+      // kernel's choice and no sibling process was aimed at it.
+      expect(
+        bound.host,
+        `on a host whose dual-stack wildcard the probe just bound and reached ` +
+          `over both loopback families, the monitor published ${bound.url} — so ` +
+          `its own bind took the IPv4-only fallback arm`,
+      ).toBe("localhost");
 
       for (const family of [4, 6] as const) {
-        const answer = await getForcingFamily("localhost", port, family);
+        const answer = await getForcingFamily(bound.host, bound.port, family);
         expect(
           answer,
-          `the monitor prints http://localhost:${port} but does not answer ` +
-            `there over IPv${family} — the URL it hands the user names a socket ` +
-            `it is not listening on`,
+          `the monitor published ${bound.url} but does not answer there over ` +
+            `IPv${family} — the URL it hands the user names a socket it is not ` +
+            `listening on`,
         ).toMatch(/^HTTP\/1\.[01] 200/);
       }
     },
@@ -1120,8 +1201,8 @@ function seedEventLog(mine?: string): string {
 }
 
 async function servedEvents(wb: string): Promise<(string | undefined)[]> {
-  const port = await startMonitor(wb);
-  const r = await fetch(`http://127.0.0.1:${port}/api/dashboard`);
+  const { url } = await startMonitor(wb);
+  const r = await fetch(`${url}/api/dashboard`);
   return ((await r.json()) as { events: { detail?: string }[] }).events.map((e) => e.detail);
 }
 

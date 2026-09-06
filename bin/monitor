@@ -10,7 +10,9 @@ if [[ $# -lt 2 ]]; then
   echo "Usage: $0 <name> <port> [-d workbench_dir] [-n events] [-i interval_sec]" >&2
   echo "" >&2
   echo "  name   Display name shown in the browser tab (e.g. 'F03-fusion', 'unite')" >&2
-  echo "  port   HTTP port to serve on (e.g. 8088, 8089)" >&2
+  echo "  port   HTTP port to serve on (e.g. 8088, 8089). Pass 0 to let the kernel" >&2
+  echo "         choose a free one; the port it chose is in the banner below and in" >&2
+  echo "         MONITOR_URL_FILE, and the takeover step below is skipped." >&2
   echo "" >&2
   echo "  -d     Path to fusion-workbench/ directory (default: ./fusion-workbench)" >&2
   echo "  -n     Max event lines to show (default: 100)" >&2
@@ -30,6 +32,12 @@ if [[ $# -lt 2 ]]; then
   echo "  The URL the banner prints, and the one the browser tab opens at, is" >&2
   echo "  the address the server actually bound — so it names localhost only" >&2
   echo "  where localhost is true, and 127.0.0.1 where it is not." >&2
+  echo "" >&2
+  echo "  Env: MONITOR_URL_FILE names a file the server writes that same URL to," >&2
+  echo "  once it has bound and before it serves. It is the only channel a caller" >&2
+  echo "  that is not reading the banner has to the bind's own answer: with port 0" >&2
+  echo "  it carries the chosen port, and on every port it carries which loopback" >&2
+  echo "  families answer. The file is the caller's to create and remove." >&2
   echo "" >&2
   echo "  Env: MONITOR_NO_BROWSER, set to any non-empty value, starts the server" >&2
   echo "  without opening a browser tab on it." >&2
@@ -73,7 +81,19 @@ TMPFILE="$TMPDIR_PATH/monitor-server.py"
 # The server writes the URL it actually answers at here, once it has bound. See
 # the `local_host` block in the python below for why the wrapper may not
 # compose that URL itself.
-URL_FILE="$TMPDIR_PATH/monitor-url"
+#
+# MONITOR_URL_FILE lets the caller name that file. The default lives in a
+# scratch directory this script deletes on the way out, which is right for the
+# browser launcher below — the only reader inside this process — and useless to
+# a caller that spawns the monitor and then has to reach it. Such a caller could
+# otherwise only predict the address and the port, and a predicted port is a
+# name nothing reserved: the takeover step in the python below SIGTERMs whoever
+# is listening at it, so two callers that predict the same number take turns
+# killing each other's server. A caller-named file makes the bind's own answer
+# readable instead, and pairs with port 0, which makes the prediction
+# unnecessary in the first place. The file is the caller's to create and remove;
+# the trap below deletes only what this script made.
+URL_FILE="${MONITOR_URL_FILE:-$TMPDIR_PATH/monitor-url}"
 
 cleanup() { rm -rf "$TMPDIR_PATH"; }
 trap cleanup EXIT INT TERM
@@ -1556,15 +1576,26 @@ def _runs_this_script(pid):
     return False
 
 
-_listeners = _lsof_pids("-sTCP:LISTEN")
-_stale_monitors = {p for p in (_lsof_pids() - _listeners) if _runs_this_script(p)}
-for _pid in _listeners | _stale_monitors:
-    try:
-        if int(_pid) != os.getpid():
-            os.kill(int(_pid), signal.SIGTERM)
-            import time; time.sleep(0.3)
-    except (ValueError, ProcessLookupError, PermissionError):
-        pass
+# PORT 0 asks the kernel for a port nobody holds, so both questions above are
+# unaskable and neither needs asking: `lsof -ti :0` is not a narrower query
+# about this server's port, it is a query about no port at all, and there is by
+# construction no stale monitor to clear on a number that has not been handed
+# out yet. Skipping the step is also what makes port 0 safe for a caller that
+# starts several monitors at once — the kill above reaches whoever is listening,
+# monitor or not, so pointing it at a *guessed* port is how one caller's monitor
+# ends up SIGTERMing another's. Measured on this machine 2026-09-06: a second
+# monitor started on a first monitor's port kills it, after which the port
+# answers on IPv4 alone and the first server's IPv6 loopback is refused.
+if PORT != 0:
+    _listeners = _lsof_pids("-sTCP:LISTEN")
+    _stale_monitors = {p for p in (_lsof_pids() - _listeners) if _runs_this_script(p)}
+    for _pid in _listeners | _stale_monitors:
+        try:
+            if int(_pid) != os.getpid():
+                os.kill(int(_pid), signal.SIGTERM)
+                import time; time.sleep(0.3)
+        except (ValueError, ProcessLookupError, PermissionError):
+            pass
 
 # ThreadingHTTPServer (not the single-threaded HTTPServer): the browser fires
 # two concurrent requests every poll (/api/dashboard + /api/state), and any one
@@ -1670,6 +1701,15 @@ if BIND in WILDCARD_BINDS:
         server = ReuseServer(("0.0.0.0", PORT), Handler)
 else:
     server = ReuseServer((BIND, PORT), Handler)
+
+# From here on PORT is the port this server is listening on, not the port the
+# caller asked for. The two differ only when the caller asked for 0, which is
+# the caller asking the kernel to choose; reading the answer off the socket is
+# what lets everything downstream — the banner, the LAN line, the published URL
+# — name the number that is true rather than the number that was requested.
+# `server_address` is a 2-tuple for AF_INET and a 4-tuple for AF_INET6, and the
+# port is at index 1 in both.
+PORT = server.server_address[1]
 
 # Loopback-only bind: no LAN URL to print, the server answers on 127.0.0.1 only.
 # IPv4 spellings only — an explicit bind builds the AF_INET server above, so an
@@ -1808,6 +1848,13 @@ trap 'kill $SERVER_PID 2>/dev/null; wait $SERVER_PID 2>/dev/null; exit 0' INT TE
 # `sleep` — it waits for the event the sleep was estimating. The constant stays
 # as the fallback for a server that never wrote the file, because a tab at the
 # old URL is what this script did before and is better than no tab at all.
+#
+# The read happens before the launcher check rather than inside it, because the
+# gap line below names a URL for a person to open by hand and that person needs
+# the same true URL the tab would have got. Composing it from the port argument
+# stopped being possible when 0 became a legal argument: `http://localhost:0`
+# is not an address anyone can open, and on any port the constant names a family
+# an IPv4-only server does not answer on.
 if [[ -t 1 && -z "${MONITOR_NO_BROWSER:-}" ]]; then
   case "$(uname -s)" in
     Darwin) BROWSER_LAUNCHER=open ;;
@@ -1815,22 +1862,22 @@ if [[ -t 1 && -z "${MONITOR_NO_BROWSER:-}" ]]; then
   esac
   BROWSER_GAP=""
   LOCAL_URL="http://localhost:${PORT}"
+  # Same fractional-sleep caveat as before, and the same whole-second
+  # fallback: BusyBox without FEATURE_FANCY_SLEEP, Solaris and AIX reject a
+  # fractional operand. Probed once so the fallback cannot turn a 1 s wait
+  # into a 10 s one.
+  if sleep 0.1 2>/dev/null; then
+    for _ in 1 2 3 4 5 6 7 8 9; do
+      if [[ -s "$URL_FILE" ]]; then break; fi
+      sleep 0.1 || true
+    done
+  else
+    sleep 1 || true
+  fi
+  if [[ -s "$URL_FILE" ]]; then
+    LOCAL_URL="$(cat "$URL_FILE" 2>/dev/null || echo "$LOCAL_URL")"
+  fi
   if command -v "$BROWSER_LAUNCHER" >/dev/null 2>&1; then
-    # Same fractional-sleep caveat as before, and the same whole-second
-    # fallback: BusyBox without FEATURE_FANCY_SLEEP, Solaris and AIX reject a
-    # fractional operand. Probed once so the fallback cannot turn a 1 s wait
-    # into a 10 s one.
-    if sleep 0.1 2>/dev/null; then
-      for _ in 1 2 3 4 5 6 7 8 9; do
-        if [[ -s "$URL_FILE" ]]; then break; fi
-        sleep 0.1 || true
-      done
-    else
-      sleep 1 || true
-    fi
-    if [[ -s "$URL_FILE" ]]; then
-      LOCAL_URL="$(cat "$URL_FILE" 2>/dev/null || echo "$LOCAL_URL")"
-    fi
     "$BROWSER_LAUNCHER" "$LOCAL_URL" ||
       BROWSER_GAP="$BROWSER_LAUNCHER could not open a browser"
   else

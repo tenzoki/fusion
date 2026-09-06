@@ -74,9 +74,12 @@
  *
  *   - `commit-message` — a file whose name says it holds a commit message AND
  *     that no artifact store owns. A fault of its own kind: Step 3b prescribes
- *     `/tmp/fusion-commit-msg-<task-id>.txt` because `/tmp` is swept and the
- *     workbench is not, and `.commit-msg-tmp` is what improvising instead
- *     leaves behind. The store scoping is not a detail — without it the class
+ *     `/tmp/fusion-commit-msg-<session-id>-<task-id>.txt` because `/tmp` is
+ *     swept and the workbench is not, and `.commit-msg-tmp` is what improvising
+ *     instead leaves behind. The session half is a separate defect's answer
+ *     (`260905-2213_*_two-concurrent-sessions-share-one-tmp-commit-message-path-so-one-can-commit-the-others-message.md`)
+ *     and does not reach this classifier, which reads workbench-internal names
+ *     only. The store scoping is not a detail — without it the class
  *     also claimed every authored record whose topic slug says "commit
  *     message", and told the model to delete it (issue `260811-1141_*_any-workbench-file-whose-name-contains-commit-message-is-classified-as-a-commit-message-and-the-model-is-told-to-delete-it.md`).
  *   - `record` — an authored artifact: a Circle's `*_circle.md`, or anything
@@ -150,7 +153,7 @@ const GIT_STATUS_TIMEOUT_MS = 10_000;
  * `npm test` instead of leaving the mechanism telling the model to use a path
  * the prompt no longer names.
  */
-export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<task-id>.txt";
+export const PRESCRIBED_MESSAGE_PATH = "/tmp/fusion-commit-msg-<session-id>-<task-id>.txt";
 /**
  * The live-state surfaces, by exact workbench-relative name. The list is read
  * off `rules/workbench-tracking.md` `## The four classes`, and it holds two of
