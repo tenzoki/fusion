@@ -61,7 +61,7 @@
   executor-verification-report-lint.test.ts 217
   fenced-code-exemption.test.ts 224
   fusion-checkout-name.test.ts 177
-  fusion-citation-check.test.ts 248
+  fusion-citation-check.test.ts 285
   fusion-commit-lock.test.ts 424
   fusion-count-sources.test.ts 442
   fusion-events.test.ts 322
@@ -101,4 +101,4 @@
   surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 325
-  total 21711
+  total 21748

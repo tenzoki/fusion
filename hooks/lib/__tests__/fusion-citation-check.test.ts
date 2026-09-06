@@ -159,6 +159,43 @@ describe("fusion-citation-check scopes the verdict to the files somebody still e
   }, CASE_TIMEOUT);
 });
 
+// --- the rows nobody is allowed to repair -------------------------------------
+
+/**
+ * A shape-decided token inside a fence is JUDGED and still carries its exemption
+ * reason, so `citation-sweep.ts` refuses to rewrite it: the checker says
+ * "violation" and "nothing may touch this" about the same row. That subset is
+ * what `unrewritable-violations` counts, and the two rows below are one of each
+ * kind in one live file, so the figure cannot be read off the row count.
+ */
+describe("fusion-citation-check names the violations no rewriter may touch", () => {
+  it("counts the exhibit and not the pointer, and leaves the verdict where it was", () => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), "citation-unrewritable-")));
+    try {
+      mkdirSync(join(root, "fusion-workbench/shared/issues"), { recursive: true });
+      writeFileSync(join(root, "fusion-workbench/.fusion-setup"), "{}");
+      writeFileSync(
+        join(root, "fusion-workbench/shared/issues/260101-0000_o_x.md"),
+        "cites `260199-9999_*_gone.md`\n\n```text\nthe exhibit: shared/decisions/260101-0001_o_beta.md\n```\n",
+      );
+      const lines = run(root).stdout.trimEnd().split("\n");
+      expect(lines).toContain("dangling=1");
+      expect(lines).toContain("store-prefixed=1");
+      expect(lines).toContain("unrewritable-violations=1");
+      // the scope split is unchanged and independent of this one: both rows are
+      // in a live file, and `verdict=` still reads `edited-violations` alone
+      expect(lines).toContain("edited-violations=2");
+      expect(lines).toContain("verdict=violations");
+      const rows = lines.filter((l) => l.startsWith("  "));
+      expect(rows).toHaveLength(2);
+      expect(rows[0]).toContain("  dangling  edited  rewritable  ");
+      expect(rows[1]).toContain("  store-prefixed  edited  unrewritable  ");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, CASE_TIMEOUT);
+});
+
 // --- the non-Markdown paths a project declares -------------------------------
 
 /**

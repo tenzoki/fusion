@@ -124,9 +124,10 @@
  *   tokens=<n>           judged=<n>
  *   resolved=<n>         dangling=<n>        store-prefixed=<n>
  *   edited-violations=<n>   unedited-violations=<n>
+ *   unrewritable-violations=<n>
  *   undecidable=<n>      exempt=<n>
  *   verdict=clean|violations
- *     <file>:<line>  '<token>'  <status>  <scope>  <problem>
+ *     <file>:<line>  '<token>'  <status>  <scope>  <rewrite>  <problem>
  *
  * `edited-files` is how many of `files` are in the verdict scope, and
  * `edited-violations` / `unedited-violations` split the printed rows the same
@@ -137,6 +138,33 @@
  * a reader looking at three hundred rows can see which ones the verdict was
  * taken over. An `--undecidable` row carries no scope column: it reaches no
  * verdict by kind, before any scoping question is asked.
+ *
+ * ## `unrewritable-violations`: the rows nobody is allowed to repair
+ *
+ * How many of the printed rows the grammar has ITSELF ruled must stand as they
+ * are. Such a hit carries an exemption `reason`, and `citation-sweep.ts`
+ * rewrites no hit that carries one (`rewriteOf()`), because a fenced transcript
+ * or a worked example is quoted rather than followed and respelling it deletes
+ * what it was filed to show. Without the figure the output says "this is a
+ * violation" and "nothing may touch this" about one row at once, and a reader
+ * has no way to tell that half from the half a human can act on — a consuming
+ * project measured 11 of 13 standing violations as verbatim exhibits.
+ *
+ * NAMED FOR WHAT IS TRUE OF THE CLASS, not for the exemption that produced it:
+ * `record-example-file` and `fenced-code` produce it today
+ * (`RESOLUTION_PREMISED_EXEMPTIONS` in `lib/citation-scan.ts`, whose premise is
+ * "do not look this token up" while `store-prefixed` needs no lookup), and a
+ * third reason could later. The predicate here is the presence of a reason, not
+ * the reason's value, so a third arrives counted.
+ *
+ * A MARGINAL, not a subset of `edited-violations`: the scope split and this one
+ * are independent, and the cell is on the rows, which carry both columns. Each
+ * violation row reads `unrewritable` or `rewritable` in a column after
+ * `<scope>`, and `rewritable` says only that no exemption forbids respelling
+ * this token — never that a rewrite exists for it, which a dangling pointer has
+ * not. `verdict=` does not read this figure: what makes it `violations` is
+ * `edited-violations` > 0 and nothing else, so a project gating on `verdict=`
+ * sees exactly what it saw before this figure existed.
  *
  * `declared-patterns` is what the project wrote; `declared-files` is what those
  * patterns name, which is a different figure and is why both are printed. It

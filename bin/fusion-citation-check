@@ -20,10 +20,11 @@
 #   store-prefixed=28
 #   edited-violations=2
 #   unedited-violations=29
+#   unrewritable-violations=11
 #   undecidable=402
 #   exempt=291
 #   verdict=violations            # or clean
-#     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  edited  …
+#     260828-0900_*_….md:14  '260811-1534_*_….md'  store-prefixed  edited  rewritable  …
 #
 # ONLY A ROW IN A FILE SOMEBODY STILL EDITS MOVES `verdict=` (2026-09-01,
 # decision 260830-2225_*_should-an-archived-violation-move-the-checkers-verdict-line.md,
@@ -56,6 +57,20 @@
 # status and the problem, `edited` or `not-edited`. An `--undecidable` row
 # carries no such column: it reaches no verdict by kind, before any scoping
 # question is asked.
+#
+# `unrewritable-violations` is how many of the printed rows the grammar has
+# itself ruled must stand as written, so that a reader can tell the violations a
+# human may repair from the ones nothing is allowed to touch. Such a row is a
+# verbatim exhibit — a quoted transcript, a worked example — judged on its shape
+# and skipped by the sweep named below, which rewrites no token carrying an
+# exemption reason, because respelling an exhibit deletes what it was filed to
+# show. It is named for that property rather than for the exemptions producing
+# it today, and each violation row repeats it in a column after the scope one,
+# `unrewritable` or `rewritable`; `rewritable` says only that no exemption
+# forbids respelling that token, not that a rewrite exists for it. The figure is
+# a marginal over the same rows as `edited-violations`, not a subset of it, and
+# `verdict=` does not read it: what makes the verdict `violations` is still
+# `edited-violations` > 0 and nothing else.
 #
 # Corpus: every .md under fusion-workbench/, the frozen stores read exactly
 # like the live tree since commit 32fe0d49 deleted the exclusion, plus
