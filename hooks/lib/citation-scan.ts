@@ -858,6 +858,25 @@ export interface CitationHit {
   /** what the token resolved to, workbench-relative */
   matches: string[];
   problem?: string;
+  /**
+   * What to write instead — an instruction, and since 2026-09-06 nothing else.
+   *
+   * THE TWO VERDICTS A HOOK REPORTS CARRY NO FUSION RECORD STAMP, because this
+   * field is the only part of a hit that reaches a consuming project's session:
+   * `citationFormSentence()` in `lib/citation-form.ts` renders it verbatim into
+   * the PostToolUse hook's `additionalContext`, and a fusion stamp there names a
+   * record that project's workbench does not hold. `store-prefixed` and
+   * `stale-marker` each ended with one until that channel was measured
+   * (`260906-0322_*_the-write-time-citation-sentence-carries-a-fusion-record-identifier-into-a-consuming-projects-session.md`);
+   * the provenance is not restated in its place, because the rule the sentence
+   * already points at carries it.
+   *
+   * `dangling` keeps its stamp: it is not in `REPORTED_STATUSES`, so its only
+   * reader is the release gate's own failure text inside this repository, and
+   * the substance rule it names is stated nowhere the sentence points. If it
+   * ever joins that set, the stamp goes with it — the test asserting no reported
+   * verdict carries one is in `__tests__/reference-resolution-lint.test.ts`.
+   */
   fix?: string;
   /**
    * Which exemption fired. With `status: "exempt"` it reached every verdict;
@@ -1070,7 +1089,7 @@ export function createScanner(workbenchRoot: string): Scanner {
         status: "store-prefixed",
         matches: [],
         problem: `the citation carries the store segment '${segment}', which an archive sweep moves`,
-        fix: `cite the storeless form '${storeless}' (decision 260828-0904, the form)`,
+        fix: `cite the storeless form '${storeless}'`,
       });
 
       REC_RE.lastIndex = 0;
@@ -1111,7 +1130,7 @@ export function createScanner(workbenchRoot: string): Scanner {
                 problem:
                   `stale marker '_${markerM[1]}_': the record now exists as ` +
                   `${wild[0].relDir}/${wild[0].base}`,
-                fix: "cite the marker position as '_*_' (decision 260806-0015, wildcard form)",
+                fix: "cite the marker position as '_*_'",
               };
             }
           }

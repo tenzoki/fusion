@@ -193,17 +193,17 @@ const msgRow = row({ path: "fusion-commit-msg-t1.txt", klass: "commit-message", 
 /**
  * One reportable citation hit, at a given line.
  *
- * `problem` and `fix` are the shapes the grammar produces, spelled with a
- * synthetic decision stamp. THE REAL STRINGS CARRY A REAL FUSION STAMP, which
- * this gate cannot see and this fixture therefore does not pretend to test: the
- * grammar authors it into the hit, the hit is the builder's input, and an
- * identifier that travels inside the input is contained by construction. That
- * is the latent hole the header already names for a `why` field, arriving for
- * `problem` and `fix` — with the difference that here it is LIVE, because the
- * grammar's own `fix` names the decision that settled the citation form. The
- * same string already reaches a consuming project's terminal through the
- * hand-run checker, which is why it is stated rather than stripped;
- * `lib/citation-form.ts`'s header carries the same statement.
+ * `problem` and `fix` are the shapes the grammar produces. The `fix` here is
+ * the real string's shape and carries no decision stamp, because since
+ * 2026-09-06 the two verdicts this builder reports carry none: the sentence is
+ * the only path by which a `fix` string reaches a consuming project, and one
+ * ending in a fusion stamp named a record that project does not hold (issue
+ * `260906-0322`). THIS GATE STILL CANNOT SEE THAT CLASS and this fixture does
+ * not pretend to test it: the grammar authors the field into the hit, the hit
+ * is the builder's input, and an identifier travelling inside the input is
+ * contained by construction — the latent hole the header names for a `why`
+ * field, reaching `problem` and `fix` too. The guard sits at the grammar
+ * instead; `lib/citation-scan.ts`'s `CitationHit.fix` doc carries it.
  */
 const hit = (line: number): CitationHit => ({
   file: "shared/issues/990101-0101_o_a-synthetic-record.md",
@@ -214,7 +214,7 @@ const hit = (line: number): CitationHit => ({
   status: "store-prefixed",
   matches: [],
   problem: "the citation carries the store segment 'shared/history/', which an archive sweep moves",
-  fix: "cite the storeless form '990102-0202-coder-a-synthetic-note.md' (decision 990103-0303, the form)",
+  fix: "cite the storeless form '990102-0202-coder-a-synthetic-note.md'",
 });
 
 const citations = (violations: CitationHit[]): CitationFormReport => ({

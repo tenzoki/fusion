@@ -928,7 +928,7 @@ export function createScanner(workbenchRoot) {
                 status: "store-prefixed",
                 matches: [],
                 problem: `the citation carries the store segment '${segment}', which an archive sweep moves`,
-                fix: `cite the storeless form '${storeless}' (decision 260828-0904, the form)`,
+                fix: `cite the storeless form '${storeless}'`,
             });
             REC_RE.lastIndex = 0;
             let m;
@@ -966,7 +966,7 @@ export function createScanner(workbenchRoot) {
                                 matches: wild.map(pathOf),
                                 problem: `stale marker '_${markerM[1]}_': the record now exists as ` +
                                     `${wild[0].relDir}/${wild[0].base}`,
-                                fix: "cite the marker position as '_*_' (decision 260806-0015, wildcard form)",
+                                fix: "cite the marker position as '_*_'",
                             };
                         }
                     }

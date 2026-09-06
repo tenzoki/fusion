@@ -98,25 +98,41 @@
  * carrying a reason is somebody's exhibit and this module says nothing about
  * it. The residual is that such a token still reaches the gate unannounced.
  *
- * ## One residual, stated because the gate that would catch it cannot
+ * ## Nothing in the sentence names a fusion record
  *
  * The sentence carries the grammar's own `problem` and `fix` strings verbatim,
- * and the `fix` for both reported verdicts names the fusion decision that
- * settled the citation form — a fusion record stamp, in a sentence handed to a
- * model working in somebody else's project. That is the class issue
+ * and until 2026-09-06 the `fix` for both reported verdicts ended by naming the
+ * fusion decision that settled the citation form: a fusion record stamp, in a
+ * sentence handed to a model working in somebody else's project, resolving to
+ * nothing in that project's workbench. That is the class issue
  * `260817-2110_*_the-hook-sentences-cite-fusions-own-workbench-ids-and-a-fusion-commit-hash-into-a-consuming-projects-session.md`
- * measured, and `sentence-identifier-containment.test.ts` cannot see it: its
- * relation is `identifiers(sentence) ⊆ identifiers(input)`, the stamp is
- * authored into the hit rather than into the builder, and an identifier that
- * travels inside the input is contained by construction — the latent hole that
- * file's header already names for a report's `why` field, arriving live here.
+ * measured, re-entered here in new code and re-filed as
+ * `260906-0322_*_the-write-time-citation-sentence-carries-a-fusion-record-identifier-into-a-consuming-projects-session.md`.
  *
- * It is carried rather than stripped, on two grounds. The same string already
- * reaches that project's terminal through `bin/fusion-citation-check`, so
- * removing it here would make the hook and the checker disagree about the same
- * hit without removing the stamp from the project. And composing a different
- * fix would be a second statement of what the storeless form is, which is the
- * one thing this module refuses to build.
+ * The stamps are gone from the two reported verdicts, at the one place the
+ * strings are authored: `CitationHit.fix` in `lib/citation-scan.ts`, whose own
+ * doc carries the contract and states what `dangling` keeps and why. Nothing
+ * was composed to replace them, so no second statement of the storeless form
+ * entered the tree. The sentence's closing clause already points at the rule
+ * that states the form, and every consuming project has that file because
+ * `bin/fusion-rules` emits it on every dispatch; a pointer at the rule is what
+ * the stamp was standing in for.
+ *
+ * THE REASON THIS MODULE FIRST GAVE FOR CARRYING THEM WAS WRONG ON ITS FACTS,
+ * written down here so it is not re-derived. The same string was said to reach
+ * that project's terminal through `bin/fusion-citation-check` already, so that
+ * stripping it here would make the hook and the checker disagree about one hit.
+ * The checker's row builder prints `problem` and never `fix`, and the only
+ * other reader of `fix` is `report()`, called from
+ * `__tests__/workbench-citation-lint.test.ts` inside this repository's own
+ * suite. This sentence was the single path by which a `fix` string could reach
+ * anyone outside fusion, and removing the stamps costs no agreement anywhere.
+ *
+ * `sentence-identifier-containment.test.ts` still cannot see this class: its
+ * relation is `identifiers(sentence) ⊆ identifiers(input)`, a stamp authored
+ * into the hit travels inside the input, and containment holds by construction.
+ * The guard is therefore at the grammar rather than at the sentence, where the
+ * string is written and where a regression would have to begin.
  *
  * ## What it does not do
  *
