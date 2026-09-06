@@ -220,3 +220,52 @@ Two of those implement an analysis recommendation on which the user has not rule
 marked here rather than presented as settled. Both are reversible in one commit, and the Directive
 asked for autonomous work; the five rulings that genuinely need the user were put to them when the
 loop opened.
+
+### Loop 3 (Turn 3)
+
+The end-of-loop analysis refuted this session's own diagnosis of the intermittent failures and
+replaced it with a better one. The record had inferred that the affected tests reach a shared
+path; read out of the code, every one of the eight builds its root with `mkdtempSync` and none
+does. What is shared is the machine, and three fixed wall-clock budgets sit inside the loaded
+latency distribution: `git log` on a six-commit repository takes 23 ms quiet and up to 7 580 ms
+with two suites running, measured over 600 samples with no spawn ever failing.
+
+**The largest finding of the session came out of that and is not about tests at all.**
+`hooks/lib/git.ts` collapses a timeout into the same return value it uses for "this is not a
+git repository", and both its callers run inside the PostToolUse hook of every consuming
+project. A loaded machine there is told, in a well-formed sentence, that git declined to
+answer. Six of the eight red files fail through that one function. Our suite going red was
+luck; in a consuming project nothing goes red. Filed as
+`260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-repository-in-every-consuming-project.md`,
+with the budget and the retry policy as a decision the user must rule on rather than an
+executor edit.
+
+**Three repairs landed.** The vitest default deadline moved from 5 000 to 30 000 ms, reaching
+581 of 702 case declarations and introducing no second number, since 30 000 is what the 121
+already-covered cases had chosen. It was dispatched alone so its share could be measured, and
+the honest result is that no failure in twenty concurrent runs belonged to it: exposure
+removed, not a failure repaired, and the report says so rather than taking the credit.
+
+The monitor suite stopped predicting a port. It bound port zero, read the number, released it,
+and asserted on it — and the port stays unreserved for the whole case, so a second suite's
+monitor takes it over through the monitor's own documented takeover step and kills the first.
+Reproduced directly. Ten pairs of concurrent runs afterwards: 0 red of 20 for that file, while
+three other files failed inside a single one of those pairs, which is what makes the zero
+evidence rather than a quiet afternoon.
+
+The commit-message path now carries the session that wrote it. The session identifier won over
+the checkout id and a per-session temporary directory on one property neither has: it is the
+only discriminator the orchestrator holds as a literal where it calls `Write`.
+
+**A third record was filed about this session's own conduct.** Three different agents —
+orchestrator, coder, analyst — wrote a citation the always-on rule forbids, in three freshly
+written records, each caught by a gate rather than at the moment of writing. One of them left
+the release gate red for every agent in the checkout. Together with the `**Filed by:**` finding
+earlier in the session, that is two independent measurements of one property: a rule in the
+text every dispatch loads, read and still missed, and detected only by a later scan.
+
+**Two of my own claims were refuted this loop, both by evidence I asked for.** The shared-path
+inference, and the paragraph blaming the suite's git calls for an index-lock collision — the
+suite's git calls are read commands that take no index lock, and the contender was this
+project's own tracker hook running `git status` beside the commit. Both corrections stand in
+the record beside what they correct.
