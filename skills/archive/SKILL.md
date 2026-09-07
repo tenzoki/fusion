@@ -70,7 +70,7 @@ done
 
 This derives the shared store from invariant 2, not from the order the resolver prints the two paths in.
 
-**`$SCAN_BACKLOG` and `$SCAN_CONSULT` need no derivation**: each exists only in the shared store, so its value *is* the shared store (`rules/workbench-path-resolution.md` `### The three unconditionally-shared kinds`). Do not run them through `shared_of`. Only `$SCAN_BACKLOG` is used by a tier; `$SCAN_CONSULT` is out of tier scope by safety filter 4.
+**`$SCAN_BACKLOG`, `$SCAN_CONSULT` and `$SCAN_FORUM` need no derivation**: each exists only in the shared store, so its value *is* the shared store (`rules/workbench-path-resolution.md` `### The four unconditionally-shared kinds`). Do not run them through `shared_of`. Only `$SCAN_BACKLOG` and `$SCAN_FORUM` are used by a tier; `$SCAN_CONSULT` is out of tier scope by safety filter 4.
 
 **An empty derivation is an error, never an empty result.** Invariant 2 guarantees every `SCAN_*` value contains the shared store, so an empty `shared_of` means the derivation or the workbench state is broken, not that there is nothing to archive. The check above halts on it (`HYG-NO-SILENT-FAIL`); report the failing kind and stop, rather than surveying with a whole store silently skipped.
 
@@ -89,7 +89,7 @@ The skill takes one of:
 | Circle record | `_a_` anticipated · `_t_` active · `_c_` closed-coherent · `_b_` bounded closure · `_s_` superseded · `_d_` deferred | `_c_`, `_b_`, `_s_`, `_d_` |
 | Defect, spec/plan | `_o_` open · `_p_` in-progress · `_c_` closed · `_d_` deferred | only `_c_` |
 | Decision record | `_o_` open · `_a_` answered · `_i_` implemented · `_d_` deferred · `_s_` superseded | `_i_` and `_s_` |
-| History, review, analysis, investigation, consultation, memo | none | n/a |
+| History, review, analysis, investigation, consultation, memo, forum entry | none | n/a |
 
 **Terminal** = work is done; the artifact is a record, not a live work item. Only terminal-state artifacts are safe to bulk-archive without per-file review.
 
@@ -125,7 +125,9 @@ These are non-negotiable defaults. The user can override them at the `refine` st
 
 Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The default age threshold for "aged" buckets is 14 days; override with `tier-N <D>d` (e.g. `tier-3 21d`).
 
-### Tier 1 — Terminal Circles + terminal markers in the shared store
+### Tier 1 — Terminal Circles + terminal markers and age in the shared store
+
+**Age is a tier-1 basis for one bucket only, the message store.** A forum entry has one audience and one short lifetime by design, so an aged one is as finished as a marked record, and the archive moves it rather than deleting it. The accepted cost, stated once: a checkout dormant longer than the threshold can lose an entry unread, which is what selecting by age buys.
 
 | Target | Selection | Reason |
 |---|---|---|
@@ -135,6 +137,7 @@ Each tier is **additive**: tier-2 includes tier-1, tier-3 includes tier-2. The d
 | `$SHARED_DECISIONS` | `*_i_*.md` | implemented decision, terminal |
 | `$SHARED_DECISIONS` | `*_s_*.md` | superseded decision, terminal |
 | `$SCAN_BACKLOG` | `*_c_*.md` | closed backlog entry, terminal — its body already cites the Circle it became, or why it was dropped |
+| `$SCAN_FORUM` | `*.md` whose `YYMMDD` filename prefix is older than the threshold | a message is read once and soon and carries no marker, so age is the only signal that can select it |
 | `$WORKBENCH/.guard-state/events.jsonl` | the live log, whenever it is non-empty | append-only evidence — **rolled**, not selected. See *Rolling the guard event log* below |
 
 ### Rolling the guard event log
