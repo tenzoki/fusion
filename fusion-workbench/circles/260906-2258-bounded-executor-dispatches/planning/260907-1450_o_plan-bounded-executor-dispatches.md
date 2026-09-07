@@ -151,7 +151,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Gate:** **if the verdict is that the law does not hold, Steps 2 to 16 are not run.** The work stops and the Circle closes on that finding, per the specification's `## Stops when`. The bound has no other rationale and the scope excludes rule adherence, so nothing is left to build.
 - **This gate fired on 2026-09-07, and it was the user who released it, not the plan.** The verdict was negative and the build halted here as written. It did not resume on a re-reading of the same evidence: `260907-2012-break-even-arithmetic-for-the-dispatch-split.md` derived a term the source's cell had no place for — a saving that grows as the square of the run length against a split cost that grows linearly — and closed the sign positive in every cell it evaluated, at $12 to $90 over the log's 10.99 days. On that footing the user re-cut the goal rather than closing the Circle. The gate is left standing as written because it is the record of what halted the build, and because a plan that deleted it would read as though the rationale had never been in doubt. **It is not re-evaluated, and Step 2 is where an executor picks the work up.**
 
-### 2. Add `orchestrator.dispatchMinutes` to the configuration loader
+### 2. [DONE] Add `orchestrator.dispatchMinutes` to the configuration loader
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/config.ts`

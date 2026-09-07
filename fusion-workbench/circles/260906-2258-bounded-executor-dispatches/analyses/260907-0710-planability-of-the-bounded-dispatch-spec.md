@@ -18,7 +18,7 @@ mechanism actually has.
 ## Scope
 
 Read in full: the Circle record; `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`; the
-backlog origin `260814-1733_c_bounded-executor-dispatches.md`; the shaper's session log
+backlog origin `260814-1733_*_bounded-executor-dispatches.md`; the shaper's session log
 `260906-2258-shaper-bounded-executor-dispatches.md`; `hooks/guard.ts`, `hooks/hooks.json`,
 `hooks/subagent-stop.ts`, `hooks/lib/orchestrator-events.ts`; the two prior hook-payload
 measurements `260825-2214-can-a-hook-obtain-the-session-identifier.md` and
@@ -328,7 +328,7 @@ issues would put the same content in two stores. Nothing here reopens the cut.
 - `260812-0303-simplify-speed-and-why-rules-do-not-hold.md`, headline, section 2 ("Cost that does
   not exist"), section 3 ("The four remedies, weighed", the compaction paragraph), the observations
   table
-- `260814-1733_c_bounded-executor-dispatches.md`; `260906-2258-shaper-bounded-executor-dispatches.md`
+- `260814-1733_*_bounded-executor-dispatches.md`; `260906-2258-shaper-bounded-executor-dispatches.md`
 - `hooks/guard.ts` (header, the Bash branch, the write trace); `hooks/hooks.json` (PreToolUse
   matcher); `hooks/subagent-stop.ts`; `hooks/lib/orchestrator-events.ts` (header)
 - `260825-2214-can-a-hook-obtain-the-session-identifier.md`, section (c);
