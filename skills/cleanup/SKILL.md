@@ -51,6 +51,7 @@ The step names, in pipeline order, are the selector's whole vocabulary:
 | `archive` | Step 4 — archive with safe defaults (tier-1) |
 | `log-activity` | Step 5 — regenerate the activity log |
 | `claude-md` | Step 6 — reconcile `CLAUDE.md` at the gate |
+| `forum` | Step 6, message half — leave a message for the other checkout |
 | `commit-housekeeping` | Step 7 — commit and push what Steps 3–6 produced |
 
 `--only archive`, `--only claude-md` and `--only log-activity` are the three that replace commands fusion used to expose on their own. Step 8, the report, always runs; it reports the steps that ran and names the ones that did not. `--only` and `--skip` are mutually exclusive — given both, ask which was meant rather than guessing. A name the table does not carry is an error: say which name and list the valid ones. Neither flag relaxes a guardrail, and neither turns the gate in Step 6 off.
@@ -93,7 +94,7 @@ Capture the starting state for the final report:
 git rev-parse --abbrev-ref HEAD; git status --short; git log --oneline -1
 ```
 
-If `--dry-run`, announce it now: every subsequent step reports its intent but performs no write, commit, dispatch, or push — except Step 5's survey dispatch and the run file it writes.
+If `--dry-run`, announce it now: every subsequent step reports its intent but performs no write, commit, dispatch, or push — except Step 6's survey dispatch and the run file it writes.
 
 ## Step 1 — Close the session: file issues for open tasks
 
@@ -176,7 +177,13 @@ If `--dry-run`, report the tier-1 survey (what would move) without moving anythi
 
 Either way the step's summary names what it left behind: each terminal Circle excluded for open records, with its count, and each candidate kept for a citation, with the citing file. An unattended run says so or nobody learns it.
 
-## Step 6 — Reconcile CLAUDE.md (the one gate, now last before housekeeping)
+## Step 5 — Log activity
+
+Read `$FUSION_SRC/skills/log-activity/SKILL.md` and execute its procedure to regenerate/update the activity log.
+
+If `--dry-run`, report what it would write without writing.
+
+## Step 6 — Reconcile CLAUDE.md at the gate, and leave a message
 
 Read `$FUSION_SRC/skills/curate/SKILL.md` and execute its procedure inline, end to end: resolve paths with `fusion-paths curate`, dispatch `fusion:curator` with `**Mode:** survey`, read the run file it wrote, run the blast-radius confirmation when that stop fired, **put the gate to the user**, then dispatch the curator a second time with `**Mode:** apply` plus the ledger path and the approved ids. Report as that body's last step says.
 
@@ -185,16 +192,24 @@ That file owns the procedure and this one does not restate it — the dispatch p
 Three things are this step's and not that body's:
 
 - **The gate is yours to hold and you do not skip it.** `AskUserQuestion` is in this skill's `allowed-tools` for exactly this. Never approve on the user's behalf, and never send an apply dispatch with an empty approval set — an empty set is a rejection, so you dispatch nothing.
-- **A rejection is a complete step**, not a failure. Record it in one line and go on to Step 6.
+- **A rejection is a complete step**, not a failure. Record it in one line and go on to Step 7.
 - **`--dry-run` stops after the survey.** Dispatch the survey pass, report the run file's path and the per-group counts, ask nothing, and dispatch no apply pass. Same shape as every other step under `--dry-run`, save the run file the survey writes: it shows what would change and applies nothing.
 
 This step replaces the autonomous three-pass rewrite of `CLAUDE.md` that cleanup used to run. The pass that reads the whole workbench and the whole git history, cites its evidence per entry, and lands nothing unapproved is the one path to this file now.
 
-## Step 5 — Log activity
+### The message half
 
-Read `$FUSION_SRC/skills/log-activity/SKILL.md` and execute its procedure to regenerate/update the activity log.
+**Compose before the stop:** a note for whoever pulls this work next. Twenty lines in the file: subject, blank, ≤ 8 lines of the person's part (chat language), blank, ≤ 9 of pointer block (artifact language). It gives the commit range (`session.git_head_at_start` from Step 1's read, to `HEAD`), the session history basename, this session's filed records as **storeless wildcard citations**, and a sentence on what the other side need not redo. Count it with `wc -l` **before** you put it; over the cap, cut and recount, never put and trim.
 
-If `--dry-run`, report what it would write without writing.
+**The person's part reads plainly to somebody who never saw this session**: no state marker, no fusion noun, no agent name as a subject, no bare identifier. Authored here, not borrowed: `rules/user-facing-output.md` `## Vocabulary` exempts workbench records.
+
+**Print the draft as ordinary output just before the gate**, then ask for it as a **second question in the same `AskUserQuestion` call**: one stop, three options and eight lines per question, the answers independent. Printing is not stopping: the walk-away property holds.
+
+**On yes**, `mkdir -p` and write `$WORKBENCH/$OUT_FORUM/<YYMMDD-HHMM>-<checkout>-<slug>.md`, stamp from `date +%y%m%d-%H%M`, checkout from the `[ -x ]`-guarded `bin/fusion-identity`. No `**Filed by:**`: the filename names the writing checkout (`260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md`).
+
+**Nothing is written or offered** when the project is no git repository, or the run has nothing to say: no commits in the range, no records filed. `--skip claude-md` drops the whole step, message too; `--dry-run` puts no draft and writes nothing; `--only forum` runs the half alone: compose, ask **its own** one-question confirmation (as `$FUSION_SRC/skills/archive/SKILL.md` `## Process` does outside the pipeline), write on yes, touch git not at all, and say to carry the file in the next commit.
+
+**Accepted once:** the entry is written after Step 2's push and carried by Step 7's, so whoever pulls between them gets the work without its message.
 
 ## Step 7 — Commit the housekeeping artifacts, then push
 
@@ -204,6 +219,7 @@ Steps 3–6 produce changes: the reconciler's tracking-file updates, the archive
 - `chore(workbench): archive stale files (tier-1)` — the archive moves
 - `docs: apply the approved normative-surface changes` — the curator's applied edits
 - `docs: update activity log` — the activity log
+- `chore(workbench): leave a message for the other checkout`
 
 Then **push** (unless `--no-push`), same rules as Step 2.
 
@@ -246,4 +262,4 @@ End with anything that needs the user's attention (a rejected push, a flagged re
 - This skill is destructive-adjacent (it commits and pushes). The guardrails in "Autonomy and safety" are not optional.
 - Two commit phases on purpose: Step 2 the work, Step 7 the housekeeping — a clean tree before reconcile keeps its diff legible.
 - If the repo is not a git repository, skip Steps 2 and 7's commit/push and say so; still run reconcile, archive, the `CLAUDE.md` gate, and the activity log.
-- One-shot wrap-up: ask at Step 5's gate, report once at the end — not after every step (unless a guardrail trips).
+- One-shot wrap-up: ask at Step 6's gate, report once at the end — not after every step (unless a guardrail trips).
