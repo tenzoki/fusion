@@ -81,3 +81,6 @@ threshold sharpens it.
 
 ---
 Answered: `260907-0902_*_how-is-the-message-stores-retention-expressed-against-an-archive-step-with-one-threshold-per-run.md` — option 1, the bucket joins tier-1 at the run own threshold of fourteen days, and the tier stated basis widens in its own text from terminal markers to terminal markers and age; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: 97bc8b0b — the forum bucket is a row in tier 1 taking the run own threshold, and the tier stated basis is widened in its own text from terminal markers to terminal markers and age.

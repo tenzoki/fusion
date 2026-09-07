@@ -78,3 +78,9 @@ option 3 buys silence-as-consent, which the Directive already rejected on its ow
 If the user rules for option 2 instead, one sentence of the plan changes: the message half of Step 6
 stops composing a second question and instead re-labels the ledger question's three options, and the
 plan's note that the two decisions are independent is struck.
+
+---
+Answered: `260907-1659-orchestrator-session.md` `## Rulings given in this session` — option 1, the message question rides the existing call as a second question, each keeping its own three options and its own eight-line cap; the pipeline keeps one place where it waits, and "one stop" stops implying "one question"; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: 4c421f29 — the message half of Step 6 puts its approval as a second question inside the existing call; the draft prints as ordinary output before the gate, so the pipeline still holds the user exactly once.

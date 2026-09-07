@@ -75,3 +75,6 @@ same shape every other step takes under that flag.
 
 ---
 Answered: `260907-0902_*_where-does-the-message-approval-sit-now-that-the-cleanup-pipeline-has-exactly-one-stop.md` — option 1, the approval folds into the pipeline single existing stop, accepting that a run skipping the CLAUDE.md step leaves no message and that a dry run puts no draft; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: 4c421f29 — the approval sits inside Step 6, the pipeline one existing stop; the two flag consequences the ruling accepted are stated aloud in the body.

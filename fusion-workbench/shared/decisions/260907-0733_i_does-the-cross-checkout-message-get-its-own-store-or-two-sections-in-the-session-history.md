@@ -80,3 +80,6 @@ primitive this needs.
 
 ---
 Answered: `260907-0829-message-between-checkouts-read-before-pull` `## Grounding snapshot` — option 1, the message gets a store of its own; the user then ruled its placement and name as `shared/forum/`, choosing forum over broadcast because the traffic runs both ways; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: af3f23e2 and 97bc8b0b — the store exists as shared/forum with its own resolver keys, and is named in the layout tree, the filename patterns and the key table.
