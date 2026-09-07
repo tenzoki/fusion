@@ -50,6 +50,43 @@ and stops, which fusion's observation-only PreToolUse hook does not do today.
 
 (none yet — the session is still in Phase 0b: spec review and rework, no Turn started)
 
+## Rulings the user gave at the gates
+
+Eight forks were put to the user during the spec review, each as a numbered list in chat, and each
+answer is recorded here because the chat does not persist.
+
+1. **Scope** (260907, shaper round 1) — bounded dispatches only; no claim about rule adherence.
+2. **Where the bound bites** (round 1) — inside the run: the executor hands back at the bound, half
+   finished, and is re-dispatched.
+3. **What closure proves** (round 1) — the existing calculation counts as the evidence; only its
+   assumptions are checked.
+4. **What the closure check reads** (after check 1) — the law rather than the factor: does re-sent
+   volume fall with the split count, and does that survive the cache effect?
+5. **Currency of the free handoff** (after check 1) — the existing minutes measurement suffices; the
+   limitation is written down rather than smoothed over.
+6. **Unit of the bound** (after check 1) — wall-clock time.
+7. **Who the bound covers** (after check 1, revised after check 2) — first "all dispatched agents",
+   then narrowed: the agents with no intermediate state on disk are exempt. Applied as a criterion,
+   this gives 7 bound (coder, ontocoder, bugfixer, reconciler, coderev, ontorev, curator) and 7
+   exempt (analyst, consultant, editor, planner, playmaker, shaper, taskplanner).
+8. **The bound's value** (after check 2) — 20 minutes flat, which touches 15 of 131 recorded
+   dispatches and 13 of the 114 made by a bound agent.
+
+Three rulings the shaper made itself were put to the user and accepted on 260907: a bounded return
+is a fifth case rather than the existing "did not finish" case; the half-finished work is not
+committed before the continuation; and a dispatch carrying no bound runs to its natural end.
+
+### Which program hands the orchestrator the dispatch bound
+
+Filed by the planner as `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`
+because it would otherwise have had to guess. Put to the user at the plan-approval gate on 260907
+together with the plan itself, and answered **Option B**: `bin/fusion-turn-budget` prints a second
+`KEY=value` line rather than a new helper being added. The user chose it over Option A knowing what
+it costs, namely that the helper's name then under-describes what it reads, to be corrected in the
+helper's own header and in `CLAUDE.md` rather than by a rename. The deciding argument was the byte
+cost against the `agents/` growth bound: about 250 bytes against about 700, out of 4 618 remaining,
+plus one emission of the configuration loader's diagnostics rather than two.
+
 ## Follow-on named by the user, not yet scoped
 
 On 260907, choosing the small third rework, the user added: *"danach agentenwachstumsproblematik
