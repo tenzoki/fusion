@@ -212,7 +212,7 @@ Every edge is a dependency the step text below declares, and every dependency th
    - Changes: assert what the other unconditionally-shared kinds already have asserted, namely that `OUT_FORUM` and `SCAN_FORUM` resolve to `shared/forum` with no Circle active, with one active, and under a `<circle-dir>` target, in the shape of the existing `the backlog keys` block. The roster-wide assertions (`the emitted key set is exactly the set the prompt names`, `resolves every skill too, with no stderr`, the flat-namespace collision check) pick up `news` off the tree and need no edit. Budget ≤ 45 lines.
    - Dependencies: step 1.
 
-8. **`skills/news/SKILL.md`, the reading skill**
+8. [DONE] **`skills/news/SKILL.md`, the reading skill**
    - Executor: `coder`
    - Files: `skills/news/SKILL.md` (new)
    - Changes: the body carries the flow and the user-facing sentences, while the mechanism stays in the helper's header and is cited, not restated. Frontmatter `description`, no `argument-hint` (the skill takes no argument, settled), `allowed-tools: [Bash, Read, AskUserQuestion]`.
@@ -226,7 +226,7 @@ Every edge is a dependency the step text below declares, and every dependency th
      Budget: **≤ 9 000 bytes**, smaller than every shipped body but `/fusion:commit`. Where the body wants to explain a mechanism, it cites the helper's header instead.
    - Dependencies: steps 1, 3 and 4.
 
-9. **`CLAUDE.md` and `README-agents.md` learn the skill**
+9. [DONE] **`CLAUDE.md` and `README-agents.md` learn the skill**
    - Executor: `coder`
    - Files: `CLAUDE.md`, `README-agents.md`
    - Changes: `CLAUDE.md` must carry the literal token `/fusion:news`, since the enumeration gate reads every such token in the whole file and asserts both directions against `skills/*/`. Add it to the situational list in the `skills/<name>/SKILL.md` bullet of `## What this is`, and to the `skills/` Layout row's sentence naming the situational bodies. `README-agents.md` gains one table row in the exact parsed shape `` | `/fusion:news` | `skills/news/SKILL.md` | <description> | ``, and the sentence listing the situational skills gains `news`. Neither file is a bounded surface, so neither spends a budget.
