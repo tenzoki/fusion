@@ -1,7 +1,7 @@
 # Resolver test learns the forum keys
 
 **Agent:** coder
-**Task:** S7 of `260907-1942_o_message-between-checkouts-read-before-pull.md`
+**Task:** S7 of `260907-1942_*_message-between-checkouts-read-before-pull.md`
 **Status:** Complete
 
 ## What was done

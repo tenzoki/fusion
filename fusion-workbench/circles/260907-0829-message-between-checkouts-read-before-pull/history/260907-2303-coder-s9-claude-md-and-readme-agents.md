@@ -5,7 +5,7 @@
 **Checkout:** 1d05b0e4
 **Filed by:** Kai Stalmann <ks@qantr.com>
 **Status:** Complete
-**Plan:** `260907-1942_o_message-between-checkouts-read-before-pull.md` step 9
+**Plan:** `260907-1942_*_message-between-checkouts-read-before-pull.md` step 9
 **Dependency:** step 8 (`skills/news/SKILL.md`), present in the work tree and read before editing
 
 ## What was done

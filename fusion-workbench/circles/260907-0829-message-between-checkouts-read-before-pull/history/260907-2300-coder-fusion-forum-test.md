@@ -1,7 +1,7 @@
 # A test that drives bin/fusion-forum
 
 **Agent:** coder
-**Task:** S6 of `260907-1942_o_message-between-checkouts-read-before-pull.md`
+**Task:** S6 of `260907-1942_*_message-between-checkouts-read-before-pull.md`
 **Status:** Complete
 
 ## What was done

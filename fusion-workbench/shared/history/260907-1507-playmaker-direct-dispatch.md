@@ -61,7 +61,7 @@ already on disk, and the only live entry in the backlog store.
 
 ### Backlog writes performed
 
-- `260814-1733_o_attach-the-rule-to-the-act.md` renamed `_o_` → `_p_` (ranking judgement,
+- `260814-1733_*_attach-the-rule-to-the-act.md` renamed `_o_` → `_p_` (ranking judgement,
   autonomous per `rules/backlog-entries.md`).
 
 ### Confirmed operations proposed and not performed

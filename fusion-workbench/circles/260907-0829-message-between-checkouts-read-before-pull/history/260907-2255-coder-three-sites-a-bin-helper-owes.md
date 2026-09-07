@@ -5,7 +5,7 @@
 
 ## What was asked
 
-Step 5 of `260907-1942_o_message-between-checkouts-read-before-pull.md`: make `bin/fusion-forum`
+Step 5 of `260907-1942_*_message-between-checkouts-read-before-pull.md`: make `bin/fusion-forum`
 committable and documented. Three files, no others: the `.gitignore` exception, the `CLAUDE.md`
 Layout row, and the `last_forum_read_commit` row in `bin/fusion-cadence-anchor`'s key block. Its
 dependency, step 4, was already in the work tree.

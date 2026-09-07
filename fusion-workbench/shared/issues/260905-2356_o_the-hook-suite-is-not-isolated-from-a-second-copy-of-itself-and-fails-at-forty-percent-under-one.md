@@ -175,3 +175,12 @@ still standing and is `260906-0035_*_the-git-helper-reports-a-timeout-as-not-a-r
 **The rest of the record's mechanism section holds.** `GIT_TIMEOUT_MS = 5_000` at `hooks/lib/git.ts`,
 and the docstring there enumerates not-a-repository, an unresolved ref, a non-zero exit and the
 timeout as the four things collapsed into one `null` — read at HEAD, not taken from the analysis.
+
+Also seen: 260907-2350 by coder — 2 red of 5 full-suite runs on an unchanged tree under agent
+load above 6, failing sets differing between the two, which is the third measured instance of the
+loaded-latency mechanism this record names and the second with no concurrent copy of the suite.
+The files were `guard-state-shape.test.ts`, `review-coverage.test.ts` and `staging-drift.test.ts`.
+One failure carries a mechanism the record does not yet hold: the tracker emitted the
+staging-drift sentence where the test expected the review-coverage one, so those two reporters
+appear to contend for a single output slot rather than merely running slowly. That is a lead
+worth pulling before the wall-clock budgets are widened, because widening a budget would hide it.

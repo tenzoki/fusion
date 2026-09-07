@@ -255,7 +255,7 @@ Every edge is a dependency the step text below declares, and every dependency th
       Budget: **≤ 900 bytes** of growth on this file.
     - Dependencies: steps 1 and 3.
 
-12. **Measure the four budgets, regenerate both goldens, run the suite**
+12. [DONE] **Measure the four budgets, regenerate both goldens, run the suite**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/fixtures/surface-growth.golden`, `hooks/lib/__tests__/fixtures/rules-emission.golden`
     - Changes: regenerate each golden with the command its own header carries, `cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts` and the `UPDATE_RULES_GOLDEN` equivalent for the rules golden. **Both runs fail on purpose**, so the flag can never be left on and a regeneration can never be mistaken for a pass; re-run without the flag and read the diff. Then `npm test` green. **No baseline map is edited.** If the skill surface is over, the answer is a cut, by `260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, and the cheapest cut is to move prose out of `skills/news/SKILL.md` and into `bin/fusion-forum`'s header, which is unbounded and is where the mechanism already lives. Report the four measured figures against the four recorded here, so the Circle's own head-room claim is verified rather than asserted.

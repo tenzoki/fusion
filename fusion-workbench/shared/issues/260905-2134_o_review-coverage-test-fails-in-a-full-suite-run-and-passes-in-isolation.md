@@ -41,3 +41,9 @@ been observed and the failure is not thereby explained.
 **Cross-references:**
 `260904-2140_*_monitor-warnings-panel-test-fails-intermittently-on-the-dual-stack-bind.md`
 (the same shape, a different case, and the same unmeasured rate).
+
+Also seen: 260907-2350 by coder — the same case reddened twice in five full-suite runs on an
+unchanged tree, and passed 22 of 22 three times when run alone, which is the isolation asymmetry
+this record describes, now with the tree held byte-identical across the runs. That removes the
+honest limit stated above: the earlier evidence could not rule out the tree having changed, and
+this evidence can.

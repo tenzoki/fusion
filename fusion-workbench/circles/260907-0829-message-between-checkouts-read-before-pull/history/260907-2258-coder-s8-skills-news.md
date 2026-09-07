@@ -3,7 +3,7 @@
 **Status:** Complete
 **Agent:** coder
 **Circle:** 260907-0829-message-between-checkouts-read-before-pull
-**Plan:** `260907-1942_o_message-between-checkouts-read-before-pull.md`, step 8
+**Plan:** `260907-1942_*_message-between-checkouts-read-before-pull.md`, step 8
 
 ## What was written
 

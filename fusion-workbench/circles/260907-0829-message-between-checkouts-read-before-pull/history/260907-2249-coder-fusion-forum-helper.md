@@ -5,7 +5,7 @@
 
 ## What was asked
 
-Step 4 of `260907-1942_o_message-between-checkouts-read-before-pull.md`: write `bin/fusion-forum`, a
+Step 4 of `260907-1942_*_message-between-checkouts-read-before-pull.md`: write `bin/fusion-forum`, a
 pure-bash helper on the shape of `bin/fusion-cadence-anchor`, with three subcommands (`new`, `show`,
 `seen`) and six exit codes, its own header carrying the authoritative documentation. One file only;
 the `.gitignore` exception, the `CLAUDE.md` row and the anchor header row are task S5.
