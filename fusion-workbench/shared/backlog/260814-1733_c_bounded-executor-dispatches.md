@@ -19,3 +19,5 @@ force in the first place. Shaping this therefore means putting a Directive narro
 wording to the user and getting agreement on the narrowing.
 
 Split from `260811-0826_*_observations.md`.
+
+Promoted: Circle 260906-2258-bounded-executor-dispatches — bounded executor dispatches, narrowed to the cost half; the re-injection half stays refuted.
