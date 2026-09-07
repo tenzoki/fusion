@@ -60,20 +60,23 @@
 #     Circle otherwise.
 #   - No Circle in scope → every OUT_* points into shared/. This is not an
 #     error state: work outside Circles is routine and has a defined home.
-#   - OUT_CONSULT / OUT_MEMO / OUT_BACKLOG are unconditionally shared. None of
-#     the three arises from executing a Directive, so none can originate in a
-#     Circle — and OUT_BACKLOG stays shared under a <circle-dir> target too: a
-#     backlog entry PRECEDES every Directive, so there is no Circle it could
-#     belong to, target or not.
-#     There were four until 2026-08-15. OUT_INVESTIGATION and its read
-#     counterpart were retired with the investigator agent, the last prompt
-#     naming either; shared/investigations/ itself stays and still holds
+#   - OUT_CONSULT / OUT_MEMO / OUT_BACKLOG / OUT_FORUM are unconditionally
+#     shared. None of these kinds arises from executing a Directive, so none
+#     can originate in a Circle — and the two that stay shared under a
+#     <circle-dir> target say why. OUT_BACKLOG: a backlog entry PRECEDES every
+#     Directive, so there is no Circle it could belong to, target or not.
+#     OUT_FORUM: a forum entry is a message addressed to another checkout
+#     rather than a product of this checkout's work, so whichever Circle this
+#     one happens to be running says nothing about where the message belongs.
+#     OUT_INVESTIGATION and its read counterpart stood in this list until
+#     2026-08-15, when they were retired with the investigator agent, the last
+#     prompt naming either; shared/investigations/ itself stays and still holds
 #     reports. See rules/workbench-path-resolution.md for why the arm went
 #     rather than being left standing.
 #   - Every SCAN_* carries BOTH stores when a Circle is in scope — that Circle
 #     and the shared one — and collapses to the shared store alone when none
 #     is. Searching must cover both.
-#     SCAN_CONSULT and SCAN_BACKLOG are the two exceptions, and only
+#     SCAN_CONSULT, SCAN_BACKLOG and SCAN_FORUM are the exceptions, and only
 #     apparently so: their kinds exist solely in shared/, so "both stores"
 #     collapses to one. The rule is not weakened — it has nothing to range
 #     over.
@@ -344,6 +347,7 @@ value_for() {
     OUT_CONSULT)        printf '%s' "shared/consult" ;;
     OUT_MEMO)           printf '%s' "shared/memos" ;;
     OUT_BACKLOG)        printf '%s' "shared/backlog" ;;
+    OUT_FORUM)          printf '%s' "shared/forum" ;;
     OUT_CIRCLE)         printf '%s' "circles" ;;
     SCAN_PLANS)         scan_value "planning" ;;
     SCAN_ISSUES)        scan_value "issues" ;;
@@ -356,6 +360,7 @@ value_for() {
     # counterpart to carry.
     SCAN_CONSULT)       printf '%s' "shared/consult" ;;
     SCAN_BACKLOG)       printf '%s' "shared/backlog" ;;
+    SCAN_FORUM)         printf '%s' "shared/forum" ;;
     SCAN_CIRCLES)       printf '%s' "circles" ;;
     PORTFOLIO)          printf '%s' "portfolio.md" ;;
     *)
@@ -377,9 +382,9 @@ value_for() {
 # 5. Emit. Canonical order, filtered by the derived key set.
 # ---------------------------------------------------------------------------
 ORDER="OUT_PLAN OUT_HISTORY OUT_ISSUE OUT_DECISION OUT_REVIEW OUT_ANALYSIS
-       OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_CIRCLE
+       OUT_CONSULT OUT_MEMO OUT_BACKLOG OUT_FORUM OUT_CIRCLE
        SCAN_PLANS SCAN_ISSUES SCAN_DECISIONS SCAN_HISTORY SCAN_REVIEWS
-       SCAN_ANALYSES SCAN_CONSULT SCAN_BACKLOG SCAN_CIRCLES
+       SCAN_ANALYSES SCAN_CONSULT SCAN_BACKLOG SCAN_FORUM SCAN_CIRCLES
        PORTFOLIO"
 
 has_key() {
