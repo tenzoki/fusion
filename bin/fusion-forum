@@ -1,0 +1,373 @@
+#!/usr/bin/env bash
+# fusion-forum — what arrived from the remote that this checkout has not read
+# yet, read out of a fetched ref and never out of the working tree.
+#
+# THIS HEADER IS THE AUTHORITATIVE DOCUMENTATION. The row in CLAUDE.md and the
+# call sites in the reading skill summarise it and deliberately do not restate
+# it.
+#
+# ## Usage
+#
+#   fusion-forum new <store-rel-path>
+#   fusion-forum show <commit> <git-path>
+#   fusion-forum seen <commit>
+#
+# `<store-rel-path>` is the message store as a path relative to the workbench
+# directory, e.g. `shared/forum`. It is PASSED IN and never known here: the
+# single resolution point for a store path is `bin/fusion-paths`, the caller
+# resolves the key and hands the value over, and this program creates no
+# second definition site. Consequently `hooks/lib/__tests__/path-literal-lint.test.ts`
+# needs no `DEFINITION_SITES` entry for this file.
+#
+# ## `new` — the delta, as KEY=value on stdout
+#
+# In order: resolve the workbench by walking up from pwd
+# (`bin/fusion-workbench-root`, the anchor every helper uses); require a git
+# work tree; resolve the branch and its upstream; fetch; derive the store's
+# git-root-relative path; read the mark; list the store in both trees and take
+# the set difference; drop this checkout's own entries.
+#
+# Output, in this order, one key per line:
+#
+#   state=ok            The only state that reaches exit 0. Every other value
+#                       names why there is nothing to read against, and the
+#                       vocabulary is below.
+#   branch=<name>       The branch whose upstream was read.
+#   ref=<upstream>      The upstream's short name, e.g. `origin/main`.
+#   head=<sha>          The commit that ref names AFTER the fetch. This is the
+#                       commit `show` must be given: it pins the render to the
+#                       exact tree the delta was computed against, so a
+#                       concurrent fetch between the two calls cannot change
+#                       what is shown.
+#   mark=<sha>|none     The value `last_forum_read_commit` holds, or `none`.
+#   new=<n>             How many entries are new. **`new=0` is a real answer
+#                       and never an error**: it reaches exit 0 like any other
+#                       count, and a caller that treats it as a failure is
+#                       wrong about this program.
+#   entry=<git-path>    One line per new entry, oldest first. The ordering is
+#                       the filename's own `YYMMDD-HHMM` prefix, so a lexical
+#                       sort of the paths is a chronological sort of the
+#                       messages; nothing here reads a timestamp.
+#   note=<sentence>     Zero or more. A degradation that changed the answer,
+#                       stated rather than hidden. Three occur: the checkout
+#                       identifier could not be read, so nothing was filtered
+#                       out and this checkout's own entries may be in the list;
+#                       the mark does not resolve to a commit in this
+#                       repository, so the whole store reads as new; the branch
+#                       tracks a local ref, so no fetch was owed and the answer
+#                       is as local as the ref is.
+#
+# ## `show <commit> <git-path>`
+#
+# `git show "<commit>:<git-path>"` and nothing else, on stdout. The commit is
+# the `head=` this program printed and the path is one of its `entry=` lines,
+# both passed back verbatim. It reads a blob out of a ref: no checkout, no
+# merge, and nothing in the working tree is touched or consulted.
+#
+# ## `seen <commit>`
+#
+# Delegates to `bin/fusion-cadence-anchor set last_forum_read_commit <commit>`
+# and exits with that program's own code. It exists so that the key name is
+# spelled in one place and never in a skill body.
+#
+# ## Exit codes
+#
+#   0  the printed answer is the answer (`new=0` included)
+#   1  show: the blob could not be read at that commit, git's stderr passed
+#      through. `new` and `seen` never produce it.
+#   2  usage error: unknown subcommand, wrong argument count, or a store path
+#      that is absolute or contains a `..` segment
+#   3  no fusion workbench above pwd (nothing to read against, and nowhere to
+#      keep the mark)
+#   5  nothing to read against: not a git work tree, a detached HEAD, no
+#      upstream configured for the branch, or an upstream ref that does not
+#      resolve after the fetch. `state=` names which, and no value is
+#      substituted for the answer that could not be taken.
+#   6  the fetch did not complete. git's own stderr is passed through
+#      unmodified, because the causes (unreachable host, refused credentials,
+#      a wedged lock) are git's to explain and paraphrasing them loses the
+#      detail the user needs.
+#   7  the workbench is not inside this repository, so no git path can be
+#      derived for the store. Reachable when the workbench marker sits in an
+#      ancestor of the repository rather than inside it.
+#
+# Both sides of the derivation are physical paths (`pwd -P`, and the toplevel
+# resolved the same way), so a symlinked temporary directory — the ordinary
+# shape of `mktemp -d` on macOS — is not mistaken for a workbench outside the
+# repository.
+#
+# ## The state vocabulary
+#
+#   ok                    Exit 0. `head=`, `mark=`, `new=` and the entries are
+#                         the answer.
+#   no-work-tree          Exit 5. There is a workbench but no repository, so
+#                         there is no remote and no ref to read.
+#   no-branch             Exit 5. Detached HEAD. A detached HEAD has no
+#                         upstream by git's data model, so there is nothing to
+#                         compare against and nothing to guess.
+#   no-upstream           Exit 5. The branch tracks nothing. A repository with
+#                         several remotes and no configured upstream lands
+#                         here rather than having `origin` assumed for it.
+#   upstream-unresolved   Exit 5. An upstream is configured and its ref does
+#                         not resolve to a commit even after the fetch.
+#   fetch-failed          Exit 6.
+#   workbench-outside-repo  Exit 7.
+#
+# Which ref is read is not a choice this program makes. A branch has at most
+# one upstream, by git's own data model (`branch.<name>.remote` plus
+# `branch.<name>.merge`), so "several" never arises for a branch and there is
+# no ambiguity to resolve.
+#
+# ## Why a set difference and not a diff
+#
+# The delta is `comm -13` over two sorted `git ls-tree -r --name-only`
+# listings, taken at the mark and at the fetched upstream. `git diff
+# --diff-filter=A` was rejected deliberately: rename detection makes a diff's
+# answer depend on what ELSE moved in the range, and the archive step moving
+# aged entries out of this store is exactly such a move, so a message could be
+# reported as new because an unrelated one was archived. Two tree listings
+# depend on nothing but the two trees.
+#
+# `--full-tree` is passed so both the pathspec and the printed paths are
+# root-relative regardless of where in the repository the caller stands.
+#
+# ## Why this asks git and not `bin/fusion-cadence-anchor changed-files`
+#
+# That helper answers a working-tree question: it fixes the right-hand side of
+# its range at the literal `HEAD` and folds in `git status --porcelain`. Once
+# the mark stands on a fetched commit ahead of `HEAD` its diff is empty, so it
+# answers "nothing new" in precisely the condition where something is. No
+# re-cutting of that range makes a working-tree question answer a remote one,
+# which is why the mechanism changes here rather than the arguments
+# (`rules/critical-stance.md` §4). The anchor file remains the mark STORE, and
+# the reading side computes its own delta.
+#
+# ## Why there is no timeout, and what stands in its place
+#
+# No timeout command ships on every platform: on the reference machine neither
+# `timeout` nor `gtimeout` is on `PATH`, and `GIT_TIMEOUT_MS` in
+# `hooks/lib/git.ts` is node's `execFileSync` timeout inside a PostToolUse
+# hook, a facility a bash script does not have and a latency budget it does
+# not share. What a fetch issued from a skill must not do is wait on a human
+# who is not going to answer, and that is bounded exactly:
+# `GIT_TERMINAL_PROMPT=0` and `GIT_SSH_COMMAND='ssh -oBatchMode=yes'` turn
+# every credential prompt into an immediate, reportable failure. The residual
+# is a slow transfer, and there this case differs from the one
+# `skills/setup/SKILL.md` `## Step 0k` refuses in the one way that matters:
+# this runs behind a foreground command the user typed and is watching, so an
+# interruption is theirs to make. The split is disjoint and complete — a
+# prompt-shaped hang fails at once and is reported, a slow transfer is visible
+# and interruptible, a reachable remote answers.
+#
+# The fetch is `git fetch <remote>`, following that remote's configured
+# refspec, rather than a single-ref fetch: the remote-tracking ref MUST be
+# updated before `ref=` is resolved, and a narrow fetch updates it only
+# opportunistically. A stale tracking ref would not fail — it would quietly
+# report old news as the current answer.
+#
+# ## Why the no-mark case needs no rule of its own
+#
+# With no mark the seen set is empty and every entry in the upstream store is
+# new. That is bounded by retention rather than by a special case: the archive
+# step prunes the store by age and the pruning commit travels, so a fresh
+# checkout sees about a fortnight of messages on its first run, which is the
+# intent. A first-run branch would be the rim of special cases
+# `rules/critical-stance.md` §2 rules out, bolted onto a case already bounded.
+#
+# ## Why one entry is not shown to the checkout that wrote it
+#
+# The filename carries the writing checkout's identifier and `bin/fusion-identity`
+# gives this one's, so entries whose identifier matches are dropped: a message
+# is addressed to the other checkout, and showing a person their own message
+# back is noise that would train them to stop reading. With the identifier
+# unresolvable nothing is dropped and a `note=` says so — the read path
+# degrades and reports, where a FILING path would halt (that halt condition is
+# evaluated in `bin/fusion-identity` and nowhere else).
+#
+# ## Why a helper and not lines in the skill body
+#
+# The three bounded text surfaces (`agents/`, `skills/`, the always-on rules)
+# are effectively full; `bin/` is not a bounded surface, and the established
+# pattern (`fusion-turn-budget`, `fusion-session-domain`, `fusion-events`,
+# `fusion-cadence-anchor`) is that the mechanism and its contract live in the
+# helper's header while the prompt carries one guarded call. It also makes the
+# mechanism executable and therefore testable, which a body of shell prose in
+# a Markdown file is not. The `[ -x ]` guard at every call site is decision
+# `260810-0921_*_how-should-a-prompt-call-a-bin-helper-that-the-installed-copy-may-not-have.md`:
+# an installed copy predating this helper simply reports that it is not there
+# yet, and never improvises the mechanism.
+
+set -eu
+
+HERE="$(cd "$(dirname "$0")" && pwd -P)"
+ANCHOR_KEY="last_forum_read_commit"
+
+usage() {
+  cat >&2 <<'EOF'
+Usage: fusion-forum {new <store-rel-path>|show <commit> <git-path>|seen <commit>}
+The header of this script is the authoritative documentation.
+EOF
+}
+
+die_usage() { echo "fusion-forum: $1" >&2; usage; exit 2; }
+
+resolve_root() {
+  local root
+  if ! root="$("$HERE/fusion-workbench-root" 2>/dev/null)"; then
+    echo "fusion-forum: no fusion workbench found above $(pwd)." >&2
+    return 1
+  fi
+  printf '%s\n' "$root"
+}
+
+# A store path is workbench-relative by contract. An absolute path or a `..`
+# segment would build a pathspec pointing outside the workbench, which is a
+# caller error and not something to normalise away silently.
+valid_store() {
+  case "$1" in
+    "" | /*) return 1 ;;
+    .. | ../* | */.. | */../*) return 1 ;;
+  esac
+  return 0
+}
+
+cmd="${1:-}"
+
+case "$cmd" in
+  new)
+    [ "$#" -eq 2 ] || die_usage "new takes exactly one argument, the store path relative to the workbench"
+    store="$2"
+    valid_store "$store" || die_usage "store path must be workbench-relative and free of '..' segments: '$store'"
+    store="${store%/}"
+
+    root="$(resolve_root)" || exit 3
+    workbench="$root/fusion-workbench"
+
+    if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" != "true" ]; then
+      echo "state=no-work-tree"
+      exit 5
+    fi
+
+    branch="$(git symbolic-ref -q --short HEAD 2>/dev/null || true)"
+    if [ -z "$branch" ]; then
+      echo "state=no-branch"
+      exit 5
+    fi
+
+    upstream="$(git for-each-ref --format='%(upstream:short)' "refs/heads/$branch")"
+    if [ -z "$upstream" ]; then
+      echo "state=no-upstream"
+      echo "branch=$branch"
+      exit 5
+    fi
+    remote="$(git for-each-ref --format='%(upstream:remotename)' "refs/heads/$branch")"
+
+    notes=""
+    add_note() { notes="${notes}note=$1
+"; }
+
+    # A branch may track a local ref (remotename `.`). Then no remote exists to
+    # contact and the answer is as local as the ref is, which is said rather
+    # than hidden behind a fetch that never happened.
+    if [ -z "$remote" ] || [ "$remote" = "." ]; then
+      add_note "the branch tracks a local ref, so no fetch was owed and the comparison is against a local ref only"
+    else
+      if ! GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND='ssh -oBatchMode=yes' git fetch --quiet "$remote"; then
+        echo "state=fetch-failed"
+        echo "branch=$branch"
+        echo "ref=$upstream"
+        exit 6
+      fi
+    fi
+
+    gitroot="$(cd "$(git rev-parse --show-toplevel)" && pwd -P)"
+    wbphys="$(cd "$workbench" 2>/dev/null && pwd -P)" || wbphys="$workbench"
+    rel="${wbphys#"$gitroot"/}"
+    case "$rel" in
+      /*)
+        echo "state=workbench-outside-repo"
+        echo "branch=$branch"
+        echo "ref=$upstream"
+        exit 7
+        ;;
+    esac
+    storepath="$rel/$store"
+
+    if ! head_sha="$(git rev-parse -q --verify "${upstream}^{commit}" 2>/dev/null)"; then
+      echo "state=upstream-unresolved"
+      echo "branch=$branch"
+      echo "ref=$upstream"
+      exit 5
+    fi
+
+    mark=""
+    if [ -x "$HERE/fusion-cadence-anchor" ]; then
+      mark="$("$HERE/fusion-cadence-anchor" get "$ANCHOR_KEY" 2>/dev/null || true)"
+    fi
+    mark_usable=""
+    if [ -n "$mark" ]; then
+      if git rev-parse -q --verify "${mark}^{commit}" >/dev/null 2>&1; then
+        mark_usable="yes"
+      else
+        add_note "the mark does not resolve to a commit in this repository, so the whole store reads as new"
+      fi
+    fi
+
+    tmp="$(mktemp -d)"
+    trap 'rm -rf "$tmp"' EXIT
+    if [ -n "$mark_usable" ]; then
+      git ls-tree -r --name-only --full-tree "$mark" -- "$storepath/" 2>/dev/null | LC_ALL=C sort > "$tmp/seen"
+    else
+      : > "$tmp/seen"
+    fi
+    git ls-tree -r --name-only --full-tree "$head_sha" -- "$storepath/" 2>/dev/null | LC_ALL=C sort > "$tmp/upstream"
+    LC_ALL=C comm -13 "$tmp/seen" "$tmp/upstream" > "$tmp/new"
+
+    checkout=""
+    if [ -x "$HERE/fusion-identity" ]; then
+      idout="$("$HERE/fusion-identity" 2>/dev/null || true)"
+      checkout="$(printf '%s\n' "$idout" | sed -n 's/^CHECKOUT=//p' | tail -1)"
+    fi
+    if printf '%s' "$checkout" | LC_ALL=C grep -Eq '^[0-9a-f]{8}$'; then
+      grep -Ev "/[0-9]{6}-[0-9]{4}-${checkout}-" "$tmp/new" > "$tmp/filtered" || true
+      mv "$tmp/filtered" "$tmp/new"
+    else
+      add_note "the checkout identifier could not be read, so no entry was filtered out and this checkout's own messages may be listed"
+    fi
+
+    echo "state=ok"
+    echo "branch=$branch"
+    echo "ref=$upstream"
+    echo "head=$head_sha"
+    if [ -n "$mark" ]; then echo "mark=$mark"; else echo "mark=none"; fi
+    echo "new=$(LC_ALL=C grep -c '' "$tmp/new" || true)"
+    while IFS= read -r line; do
+      [ -n "$line" ] && printf 'entry=%s\n' "$line"
+    done < "$tmp/new"
+    if [ -n "$notes" ]; then printf '%s' "$notes"; fi
+    ;;
+
+  show)
+    [ "$#" -eq 3 ] || die_usage "show takes exactly two arguments, a commit and a git path"
+    git show "$2:$3" || exit 1
+    ;;
+
+  seen)
+    [ "$#" -eq 2 ] || die_usage "seen takes exactly one argument, a commit"
+    status=0
+    "$HERE/fusion-cadence-anchor" set "$ANCHOR_KEY" "$2" || status=$?
+    exit "$status"
+    ;;
+
+  "" | -h | --help | help)
+    usage
+    if [ -z "$cmd" ]; then exit 2; fi
+    exit 0
+    ;;
+
+  *)
+    echo "fusion-forum: unknown subcommand '$cmd'" >&2
+    usage
+    exit 2
+    ;;
+esac

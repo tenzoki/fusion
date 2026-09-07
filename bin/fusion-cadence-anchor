@@ -32,6 +32,21 @@
 #                           correct first-run and post-history-rewrite
 #                           behaviour.
 #
+#   last_forum_read_commit  The commit whose forum entries this checkout has
+#                           already been shown. Written by `bin/fusion-forum
+#                           seen`, which delegates here so the key name is
+#                           spelled in one place; read by that helper's `new`,
+#                           which computes its own delta rather than asking
+#                           `changed-since`, because the mark stands on a
+#                           fetched commit and the question is about a remote
+#                           ref, not the working tree. An absent or
+#                           unresolvable mark reads the whole store as new.
+#                           That is bounded by retention rather than by a
+#                           special case: the archive step prunes the store by
+#                           age at the run's own threshold, fourteen days by
+#                           default, so a fresh checkout is shown about a
+#                           fortnight of messages on its first run.
+#
 # Keys are not enumerated anywhere else; a future step adds its own key and
 # this list gains a row.
 #
