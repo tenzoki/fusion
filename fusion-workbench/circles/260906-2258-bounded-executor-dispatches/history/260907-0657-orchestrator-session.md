@@ -87,6 +87,29 @@ helper's own header and in `CLAUDE.md` rather than by a rename. The deciding arg
 cost against the `agents/` growth bound: about 250 bytes against about 700, out of 4 618 remaining,
 plus one emission of the configuration loader's diagnostics rather than two.
 
+### The reframe, and what it cost
+
+On 260907 plan step 1 ran and its verdict stopped the build: the re-sent-volume law does not hold in
+the form the source analysis states it. The break-even derivation that followed, chosen by the user
+from the held decision's option 3, closed the sign positive — splitting pays above a run length of
+about 21 minutes, $12 to $90 over the 10.99 days the machine-written log covers. Put the three ways
+forward, the user answered **"ok, 1. Ziel neu fassen und dann bauen"**, and then **"1a 2a 3a"** to
+the shaper's three questions: the work now stops on the byte reckoning against the `agents/` bound in
+its narrow form, the cost-argument capability stays as met rather than being dissolved, and the
+20-minute value gets its second justification into the source comment.
+
+### What gives, now that the agents/ budget is 281 bytes short
+
+Filed by the planner as `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`
+after the pull-along measured the tree again: head-room fell from 4 618 to 3 509 bytes against a
+budget of 3 790, and the whole 1 109-byte difference is `agents/playmaker.md`, grown and left
+uncommitted by a second session running in this same checkout. Put to the user on 260908 with three
+of the record's four options, the fourth withheld with its reason. The user answered **option 1**:
+take the cut the plan already names up front, before step 8 rather than at step 14. Two "why this is
+a rule and not a preference" narratives move out of `agents/orchestrator.md` step 3b into
+`rules/commit-lock.md`, which the orchestrator receives by emission, so no reader loses anything.
+What it costs is the reserve: this Circle has no second cut held back if its own budgets overrun.
+
 ## Follow-on named by the user, not yet scoped
 
 On 260907, choosing the small third rework, the user added: *"danach agentenwachstumsproblematik

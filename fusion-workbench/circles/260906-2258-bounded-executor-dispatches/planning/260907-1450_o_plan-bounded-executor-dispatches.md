@@ -3,13 +3,16 @@
 **Date:** 2026-09-07
 **Status:** Draft
 **Spec:** `260907-0820_*_spec-bounded-executor-dispatches.md`
+**Revised:** 2026-09-08, on the answer to `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`, which the user ruled option 1. The cut that stood inside the old Step 14 as a fallback is now **Step 8**, a step of its own that runs before a byte of the mechanism is written, and the plan has sixteen steps rather than fifteen. Every step from the old 8 upward is renumbered by one and every dependency, cross-reference and node of the dependency graph moved with it. The byte reckoning is recomputed with the cut as income: `## Current State`, the new Step 8, the byte-reckoning step (now Step 15) and the risk table all carry the new arithmetic. The old Step 14 keeps its name and its measurement and loses its fallback, which is now spent; what it does when it comes up short is stated there in the changed terms. Nothing else moved: the gate at Step 1 and its execution note, the 20 minutes, the seven bound agents, the executors of every existing step and the substance of `## Where this Circle stops` are as they were.
+
+**Revised:** 2026-09-07, against the specification's fourth revision, at the three places its `## Open for Planner` names. Step 2's prescribed comment now carries both sentences of C1's fourth criterion; Step 1 records that it has run, what its verdict was, and what released its gate, and no longer states a count of C5's criteria; `## Where this Circle stops` is rewritten onto the byte reckoning. The fifteen steps, their order, their executors, the 20 minutes, the seven bound agents and the gate at Step 1 are unchanged. One figure moved under the plan while it was being brought up to date and the update says where: the `agents/` head-room, in `## Current State`, the byte-reckoning step (Step 14 at that revision, Step 15 now) and the risk table.
 **Decidability:** The load-bearing question splits in two, and the two halves have opposite answers. *Has this agent reached its stopping time* is decidable from wall-clock time, which every agent can read with one `date` call and which the machine already stamps on every dispatch row. *Can this agent be made to give back control at that point* is decidable by no mechanism fusion has: a PreToolUse hook can refuse a tool call and leave the run going, a SubagentStop hook fires after the run has already ended, and neither ends a run with the half-finished work handed back. The mechanism this plan builds therefore answers only the first question and **asks** for the second. That is not an approximation of enforcement dressed as one: nothing here claims a guaranteed saving, C4's reading calls no dispatch a violation, and the compliance floor this project has measured for obligations of this class, 28.6 percent short of always, is carried in the plan's own risk table rather than left in the specification. The change of mechanism §4 asks for, where the answer is no, is exactly this: the plan stops trying to bound the run and instead measures afterwards whether the request was honoured.
 
 ## Directive
 
 Build what `260907-0820_*_spec-bounded-executor-dispatches.md` specifies: seven named agents, dispatched by the orchestrator and by nothing else, are handed a wall-clock stopping time; one reaching it returns half-finished work through the report it already makes; the orchestrator continues from the site the dispatch was made at; and a reading afterwards says which dispatches ran longer than the configured value without calling any of them a violation. The specification is not restated here. Where this plan states a figure the specification also states, it is because an executor needs the figure at that step.
 
-Four review passes stand behind the specification (`260907-0710-planability-of-the-bounded-dispatch-spec.md`, `260907-0836-second-planability-check-of-the-bounded-dispatch-spec.md`, `260907-1401-third-planability-check-of-the-bounded-dispatch-spec.md`, `260907-1434-fourth-targeted-check-of-the-bounded-dispatch-spec.md`). The fourth reports `spec passes` and leaves three items for this plan to write rather than send back. All three are written here: step 2e's attempt-versus-dispatch line (Step 9), the Step 3a stall's event treatment (Step 9), and the summary row at `agents/orchestrator.md:896` amended in the same commit as step 2d (Step 9).
+Four review passes stand behind the specification (`260907-0710-planability-of-the-bounded-dispatch-spec.md`, `260907-0836-second-planability-check-of-the-bounded-dispatch-spec.md`, `260907-1401-third-planability-check-of-the-bounded-dispatch-spec.md`, `260907-1434-fourth-targeted-check-of-the-bounded-dispatch-spec.md`). The fourth reports `spec passes` and leaves three items for this plan to write rather than send back. All three are written here: step 2e's attempt-versus-dispatch line (Step 10), the Step 3a stall's event treatment (Step 10), and the summary row at `agents/orchestrator.md:896` amended in the same commit as step 2d (Step 10).
 
 ## Current State
 
@@ -17,7 +20,9 @@ Four review passes stand behind the specification (`260907-0710-planability-of-t
 
 | Fact | Value | How it was taken |
 |---|---|---|
-| `agents/` growth head-room | **4 618 bytes** | `AGENT_BASELINE` in `hooks/lib/__tests__/surface-growth-bound.test.ts` sums to 399 843 over 15 files; the tree holds the same 15 at 413 225; net 13 382 against `AGENT_HEAD_ROOM` 18 000 |
+| `agents/` growth head-room | 4 618 bytes at `abcaa823`; **3 509 bytes at `223f916a`, re-confirmed unchanged on 2026-09-08** | `AGENT_BASELINE` in `hooks/lib/__tests__/surface-growth-bound.test.ts` sums to 399 843 over 15 files; at `abcaa823` the tree held the same 15 at 413 225, net 13 382 against `AGENT_HEAD_ROOM` 18 000. Re-taken on 2026-09-07 at `223f916a` with the working tree as it then stood: 414 334, net 14 491. The 1 109-byte difference is one uncommitted growth of `agents/playmaker.md` by another session in this checkout, and no other file in the directory moved. **Taken twice again on 2026-09-08, at the start and at the end of the revision that added Step 8, and both readings are 414 334.** The second session wrote nothing into `agents/` in that window, so the figure this plan is written to is the figure that stood when it was finished. Step 8 is where the room comes from and Step 15 is where it is reckoned |
+| The cut at Step 8, as bytes | **1 032 removed, about 295 written back, so about 737 net** | `sed -n '514p;518p' agents/orchestrator.md \| wc -c` gives 1 032 for the two narrative lines together, 578 and 454 taken singly. The two pointer lines that replace them are written out verbatim in Step 8 and come to about 295. Step 8 requires the executor to measure rather than to carry these figures |
+| Where the cut lands, and what it costs there | **nothing that can fail** | `rules/commit-lock.md` weighs 7 004 bytes against a `RULE_BASELINE` entry of 9 250, so it sits 2 246 **below** its own baseline and about 1 250 bytes of arriving text leaves it below still. It is a conditional emission (`bin/fusion-rules` block `1e.`, `orchestrator` only), so it is outside the always-on core the hard bound measures. The orchestrator's whole rule load is 123 964 bytes against a `DRIFT_CEILING` of 145 144. Measured with `bin/fusion-rules orchestrator \| xargs wc -c` from a neutral working directory |
 | `skills/` head-room | 13 131 bytes | same instrument, `SKILL_BASELINE` 240 614 against a tree of 247 483, head-room 20 000 |
 | hook-test-line head-room | 2 730 lines | `TEST_LINE_BASELINE` 20 766 against 20 536 lines today, head-room 2 500. The surface currently sits **below** its baseline |
 | Growth arithmetic | **net across the surface** | `growth()` in `hooks/lib/__tests__/helpers/growth-bound.ts`: `delta = total - floor` summed over all files, so a shrink anywhere in `agents/` pays for growth anywhere else in `agents/`, and never for growth in another surface |
@@ -44,23 +49,27 @@ The seven bound agents are therefore spread across four role keys in `rules-emis
 
 Four commitments, each of which decides several steps.
 
-**One rule file carries the obligation, and the seven prompts are not touched.** `rules/bounded-dispatch.md`, emitted conditionally behind a new `IS_BOUND_AGENT` flag in `bin/fusion-rules`. This is the shape the specification's `## Open for Planner` names and the shape `rules/review-contract.md` already occupies for `coderev` and `ontorev`. A conditionally emitted rule sits outside the always-on floor that `rules-emission-golden.test.ts` fails on, and outside the `agents/` bound entirely. **Eight paragraphs under `agents/` would not fit**: at ordinary prompt-paragraph length they exhaust 4 618 bytes, which is what the specification's Constraints section says and what the measurement above confirms.
+**One rule file carries the obligation, and the seven prompts are not touched.** `rules/bounded-dispatch.md`, emitted conditionally behind a new `IS_BOUND_AGENT` flag in `bin/fusion-rules`. This is the shape the specification's `## Open for Planner` names and the shape `rules/review-contract.md` already occupies for `coderev` and `ontorev`. A conditionally emitted rule sits outside the always-on floor that `rules-emission-golden.test.ts` fails on, and outside the `agents/` bound entirely. **Eight paragraphs under `agents/` would not fit**: at ordinary prompt-paragraph length they exhaust the 4 618 bytes the specification's Constraints section measured, and the measurement above puts the figure lower again, at 3 509.
 
 **The prompt carries what must be known before the rule file is read; the rule file carries the rest.** The orchestrator does not receive `rules/bounded-dispatch.md` by emission, because the flag's name would then be false of it and `derivable-enumerations-lint` would require `README-agents.md` to name it inside the bound set. It reads the file on demand, the way it reads `rules/orchestrator-rebalance.md` at the Rebalance gate. Three things cannot wait for that read and stay in the prompt: **which** seven agents get a stopping time, because the orchestrator needs that at every dispatch; **how** the stopping time is computed, for the same reason; and **the exclusion at Step 3b step 2d**, because by the time the orchestrator has read a rule file the revert has already destroyed the partial work the handoff exists to preserve. Everything else is in the file: the five-site table, the stall guard, the return's four statements, the per-agent unit of work.
 
 **The reading answers the question the rows can answer.** No event field is added, no agent acquires an obligation, and no dispatch is called a violation. Where the reading cannot separate two cases it says so on its own stdout rather than scoring one of them.
 
-**Nothing in this plan promises a saving.** The bound is requested. The orchestrator asks; a sub-agent that keeps working violates nothing any mechanism here can see. Step 15's risk table carries that as the first row and the specification's four bought residuals as the next four.
+**Nothing in this plan promises a saving.** The bound is requested. The orchestrator asks; a sub-agent that keeps working violates nothing any mechanism here can see. This plan's `## Risks & Mitigations` table carries that as the first row and the specification's four bought residuals as the next four.
+
+**The room this work needs is made before it is spent, not found afterwards.** Step 8 moves two narratives off `agents/orchestrator.md` and onto a rule file the orchestrator already receives, and it runs before Step 9 writes the first byte of the mechanism. That ordering is the whole of what the answer to `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md` changed, and the reason it matters is in that record: taking a planned cut as a planned edit is a different act from taking it as a repair under a red suite, and it is the second shape this project's own re-baselining history turns on.
 
 ### Where each artifact's bytes land
 
 ```mermaid
 flowchart LR
-  subgraph BOUNDED["agents/ — 4 618 bytes left, npm test FAILS at 0"]
+  subgraph BOUNDED["agents/ — 3 509 bytes left, +737 from the cut, npm test FAILS at 0"]
     ORCH["agents/orchestrator.md<br/>roster, deadline, guard,<br/>2d exclusion, five clauses"]
+    CUT["Step 8: two narratives out<br/>1 032 removed, 295 pointers back"]
   end
   subgraph REPORTED["rules/ role budgets — report only, never fail"]
     RULE["rules/bounded-dispatch.md<br/>return shape, unit table,<br/>five-site continuation, stall guard"]
+    LOCK["rules/commit-lock.md<br/>7 004 now, baseline 9 250<br/>receives the two narratives"]
   end
   subgraph FREE["surfaces with room to spare"]
     SKILL["skills/setup/SKILL.md<br/>13 131 bytes left"]
@@ -68,9 +77,12 @@ flowchart LR
     CODE["hooks/, bin/, CLAUDE.md<br/>no growth bound"]
   end
   ORCH -->|"reads on demand at the first bounded return"| RULE
-  RULE -->|"emitted to the seven bound agents"| REPORTED
-  ORCH -.->|"Step 14 measures; over budget means a cut, never a baseline edit"| ORCH
+  CUT -->|"two narratives move, one pointer left at each site"| LOCK
+  CUT -.->|"frees 737 bytes for ORCH before Step 9 spends them"| ORCH
+  ORCH -.->|"Step 15 measures; still over means a cut, never a baseline edit"| ORCH
 ```
+
+Both rule files sit in the reported half and neither can fail the suite there. `bounded-dispatch.md` is new, so its whole size counts as growth against a role budget that warns; `commit-lock.md` is 2 246 bytes under its own baseline and stays under it after the move. The hard bound in `rules-emission-golden.test.ts` measures the universal core alone, and neither file is in it.
 
 ### Step dependency
 
@@ -78,50 +90,56 @@ flowchart LR
 flowchart TD
   S1["1 · C5 cost check<br/>analyst"]
   STOP{"Does the re-sent-volume<br/>law hold?"}
-  CLOSE["Circle closes on that finding.<br/>Steps 2 to 15 are not run"]
+  CLOSE["Circle closes on that finding.<br/>Steps 2 to 16 are not run"]
   S2["2 · config leaf<br/>coder"]
   S3["3 · helper second line<br/>coder"]
   S4["4 · the two fusion.json notes<br/>ontocoder"]
   S5["5 · rules/bounded-dispatch.md<br/>coder"]
   S6["6 · fusion-rules + README-agents<br/>coder"]
   S7["7 · ROLES table + golden<br/>coder"]
-  S8["8 · orchestrator: supply side<br/>coder"]
-  S9["9 · orchestrator: five sites<br/>coder"]
-  S10["10 · skills/setup mirror<br/>coder"]
-  S11["11 · C4 reading<br/>coder"]
-  S12["12 · C4 tests<br/>coder"]
-  S13["13 · dispatch-bound literal lint<br/>coder"]
-  S14["14 · byte reckoning, and the cut<br/>coder"]
-  S15["15 · CLAUDE.md and README-hooks<br/>coder"]
+  S8["8 · the cut: two narratives<br/>to rules/commit-lock.md<br/>coder"]
+  S9["9 · orchestrator: supply side<br/>coder"]
+  S10["10 · orchestrator: five sites<br/>coder"]
+  S11["11 · skills/setup mirror<br/>coder"]
+  S12["12 · C4 reading<br/>coder"]
+  S13["13 · C4 tests<br/>coder"]
+  S14["14 · dispatch-bound literal lint<br/>coder"]
+  S15["15 · byte reckoning<br/>coder"]
+  S16["16 · CLAUDE.md and README-hooks<br/>coder"]
   S1 --> STOP
   STOP -->|"no"| CLOSE
   STOP -->|"yes"| S2
   S2 --> S3
   S2 --> S4
-  S3 --> S8
+  S3 --> S9
   S5 --> S6
   S6 --> S7
-  S5 --> S8
-  S8 --> S9
-  S8 --> S10
+  S5 --> S9
+  S1 --> S8
+  S8 -->|"the room exists before it is spent"| S9
+  S9 --> S10
+  S9 --> S11
+  S10 --> S15
+  S2 --> S12
+  S12 --> S13
   S9 --> S14
-  S2 --> S11
-  S11 --> S12
-  S8 --> S13
-  S12 --> S15
-  S14 --> S15
+  S13 --> S16
+  S15 --> S16
 ```
 
-The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specification makes a refuted law a closure condition, so the check runs **before** anything is built rather than at the end where a closing artifact would ordinarily sit. Step 5 has no dependency on Step 2 and may run in parallel with the configuration half.
+The graph is acyclic. Step 1 is the only gate, and it was written that way because the specification's `## Stops when` then made a refuted law a closure condition, so the check ran **before** anything was built rather than at the end where a closing artifact would ordinarily sit. **The graph is drawn as the plan was written and the gate is left in it, but Step 1 has since run and its `no` branch was taken and then released by the user** (Step 1, `## Status` and `## Gate`). An executor entering this plan today starts at Step 2 and never evaluates `STOP`. Step 5 has no dependency on Step 2 and may run in parallel with the configuration half.
+
+**Step 8 hangs off Step 1 and off nothing else, and the only edge that matters is the one into Step 9.** It touches no file any other step touches except `agents/orchestrator.md`, which it only shortens, and it regenerates the emission golden itself, so it may run at any point before Step 9 without disturbing Step 7 — see the ordering note in Step 8. An executor working strictly in numerical order needs none of that; it is written down for one working two threads.
 
 ## Implementation Steps
 
 ### 1. File the C5 cost-argument check
 
+- **Status: run on 2026-09-07, and it stands. Do not re-run it.** The report is `260907-1657-c5-cost-argument-check.md`, and its `## Verdict` section reads, in full: *the law does not hold in the form the source analysis states it.* That is one of the two forms this step's own verdict sentence permits, so the step was performed as written; the finding is that the motivating claim is false, not that the step failed. What follows in this step is kept as the record of what was commissioned and against what, and the build resumes at Step 2.
 - **Executor:** `analyst`
 - **Files:** one new report in this Circle's analysis store, at the path the analyst's own `fusion-paths` resolution gives it. Reads `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` (the source analysis) and `260906-2258-bounded-executor-dispatches`'s own record, `## Grounding snapshot`.
 - **Dependencies:** none. This is the first step and it gates every other one.
-- **Changes:** Write the check C5 requires. Its eight acceptance criteria are in the specification and are not restated; what an executor needs beyond them is here.
+- **Changes:** Write the check C5 requires. Its acceptance criteria are in the specification and are not restated here; what an executor needs beyond them is below. The criteria are not all this step's, and which ones are is settled under **Acceptance criterion**.
   - The source analysis's claim is at `260812-0303-simplify-speed-and-why-rules-do-not-hold.md` line 246, the "Shorter dispatches" row of `## The four remedies, weighed`: one 200-call dispatch re-sends 15.9M non-cacheable suffix tokens against 3.9M for four 50-call dispatches, printed as "About 4x". The parameter to re-derive it from, 800 tokens of output per tool call summed quadratically over the run, is elsewhere in the same document. Line 395 carries the statelessness premise.
   - **The Circle record already carries the correction**, in `## Grounding snapshot` paragraphs headed "What the cost claim rests on, corrected", "The premise that turned volume into cost is false as stated", and "Where the five-minute lifetime bites". Read them first. The check's job is to be the **filed, standalone re-derivation** those paragraphs summarise, not to discover them again. Where the check disagrees with a snapshot paragraph, say so explicitly and say which is right.
   - Take **no new measurement**, add no instrumentation, run no before-and-after comparison. The handoff-gap figures the check needs are already taken and are in the snapshot's third paragraph: 97 machine-written gaps under 24 hours, median 2.37 minutes, 38 past five minutes at 39.2 percent, carrying 97.7 percent of all handoff minutes.
@@ -129,8 +147,9 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
   - An **undetermined cache half is a passing outcome**. Say what would answer it and cite `260907-0820_*_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.md`, which holds that question and does not block this work.
   - Close with an explicit verdict sentence in one of exactly two forms: *the law holds in the form the source analysis states it*, or *it does not*.
 - **Verification:** the report exists at the path the analyst names; its verdict sentence takes one of the two forms above; `grep -c` over it confirms it states the ratio, the ~1/k dependence, the caching counter-effect and the five-minute conditionality.
-- **Acceptance criterion:** C5's criteria 1 to 7 are each satisfiable by a named passage of the report. Criterion 8, the user's acceptance, is not this step's and is a stopping clause instead.
-- **Gate:** **if the verdict is that the law does not hold, Steps 2 to 15 are not run.** The work stops and the Circle closes on that finding, per the specification's `## Stops when`. The bound has no other rationale and the scope excludes rule adherence, so nothing is left to build.
+- **Acceptance criterion:** the criteria of C5 that are about the check itself are each satisfiable by a named passage of the report, and they are the specification's first seven, running from *a written check is filed* through *the check takes no new measurement*. The rest are not this step's, and each is met by something this step did not commission. *The corrected figures replace the wrong ones in this Circle's own record* is met by the record's `## Grounding snapshot`, which already carried the correction before the check was written. *A second filed derivation closes the net sign* is met by `260907-2012-break-even-arithmetic-for-the-dispatch-split.md`, which executes option 3 of `260907-0820_*_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.md`. *What the project keeps is the corrected argument together with what it cost to correct it* is met by the specification's fourth revision, in `## What the saving actually is, now that it has been checked` and in `## Stops when`. **The user's acceptance is not among them any more.** The criterion that made acceptance the closure event was struck in that revision; closure now hangs on the byte reckoning at Step 15, which is what `## Where this Circle stops` below asks.
+- **Gate:** **if the verdict is that the law does not hold, Steps 2 to 16 are not run.** The work stops and the Circle closes on that finding, per the specification's `## Stops when`. The bound has no other rationale and the scope excludes rule adherence, so nothing is left to build.
+- **This gate fired on 2026-09-07, and it was the user who released it, not the plan.** The verdict was negative and the build halted here as written. It did not resume on a re-reading of the same evidence: `260907-2012-break-even-arithmetic-for-the-dispatch-split.md` derived a term the source's cell had no place for — a saving that grows as the square of the run length against a split cost that grows linearly — and closed the sign positive in every cell it evaluated, at $12 to $90 over the log's 10.99 days. On that footing the user re-cut the goal rather than closing the Circle. The gate is left standing as written because it is the record of what halted the build, and because a plan that deleted it would read as though the rationale had never been in doubt. **It is not re-evaluated, and Step 2 is where an executor picks the work up.**
 
 ### 2. Add `orchestrator.dispatchMinutes` to the configuration loader
 
@@ -139,23 +158,32 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
 - **Dependencies:** Step 1 (the gate).
 - **Changes:** four edits, in one file, each beside its existing sibling.
   1. `interface GuardSettings`, the `orchestrator` object: add `dispatchMinutes: number;` with a docstring saying it is the requested stopping time in minutes that the orchestrator hands to a bound agent's dispatch, read by `bin/fusion-turn-budget` at Setup and by no hook.
-  2. `const DEFAULTS`, `orchestrator`: add `dispatchMinutes: 20,`. **The measurement goes in the comment beside it, verbatim, because C1's fourth criterion requires the number's basis to stand where the number is set:** over the 131 machine-written dispatch pairs in this project's own event log, 15 of them, 11.5 percent, ran longer than 20 minutes; over the 114 of those pairs made by an agent the bound covers, 13, 11.4 percent, did. Name the log and the date so a later reader can re-take it.
+  2. `const DEFAULTS`, `orchestrator`: add `dispatchMinutes: 20,`. **The measurement goes in the comment beside it, verbatim, because C1's fourth criterion requires the number's basis to stand where the number is set — and that basis has two parts, both of which stand there, because either one alone reads as an arbitrary round figure.** Copy the criterion's own wording. Do not rephrase it and do not carry only the first sentence, which is what this step did before the specification's fourth revision; a rephrasing leaves the project holding two versions of one statement.
+
+     > Over the 131 machine-written dispatch pairs in this project's own event log, read on
+     > 2026-09-07, 15 of them, 11.5 percent, ran longer than 20 minutes; over the 114 of those pairs
+     > made by an agent the bound covers, 13, 11.4 percent, did. Of four candidate values checked
+     > against the break-even arithmetic, 10, 20, 25 and 30 minutes, 20 is the one that maximises
+     > the pessimistic cell, and the break-even run length sits at 20.2 to 27.5 minutes, just past
+     > the bound itself.
+
+     The first sentence is a reading of this project's own event log; name the log and the date in the comment so a later reader can re-take it. The second is derived arithmetic and came from `260907-2012-break-even-arithmetic-for-the-dispatch-split.md`; cite that report in the comment, because nothing in the tree reproduces the four-candidate check or the break-even band without it.
   3. `const CONTAINER_LEAF_RULES`, `orchestrator`: add `dispatchMinutes: { explain: explainPositiveInteger },`. Reuse that function; write no new validator. Its docstring's reasoning about `0`, negatives and decimals transfers unchanged, and so does the deliberate absence of an upper bound.
   4. `loadConfig`'s returned `value`, `orchestrator`: add `dispatchMinutes: pickOrchestrator("dispatchMinutes"),`. `pickOrchestrator` is already generic over the container's keys and needs no change.
 - **Do not:** add a container, add a second validator, restate the default anywhere else, or touch `RETIRED_TOP_LEVEL_KEYS`.
 - **Verification:** `cd hooks && npm run build && npm test`, exit code in hand. `hooks/lib/__tests__/config.test.ts` must stay green without being edited; if it reddens, the leaf was added outside `PROJECT_SET_KEYS`' cut and the edit is wrong.
-- **Acceptance criterion:** a project declaring `{"orchestrator": {"dispatchMinutes": 35}}` resolves 35; one declaring `0`, `-1`, `2.5` or `"20"` is dropped, named in one diagnostic, and inherits 20; one declaring nothing gets 20.
+- **Acceptance criterion:** a project declaring `{"orchestrator": {"dispatchMinutes": 35}}` resolves 35; one declaring `0`, `-1`, `2.5` or `"20"` is dropped, named in one diagnostic, and inherits 20; one declaring nothing gets 20. The comment beside the default carries both sentences of C1's fourth criterion word for word, and a `diff` of the comment text against that criterion's block quote is empty.
 
 ### 3. Print the resolved value from `bin/fusion-turn-budget`
 
 - **Executor:** `coder`
 - **Files:** `hooks/turn-budget.ts`, `bin/fusion-turn-budget`
 - **Dependencies:** Step 2.
-- **Source:** `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`. **This step is written against option B of that record and the record is open.** If the user rules for option A, this step creates `bin/fusion-dispatch-bound` and `hooks/dispatch-bound.ts` instead, modelled line for line on the two files named here, and Step 8 gains a second guarded call block rather than a sentence. Nothing else in the plan changes.
+- **Source:** `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`. **This step is written against option B of that record and the record is open.** If the user rules for option A, this step creates `bin/fusion-dispatch-bound` and `hooks/dispatch-bound.ts` instead, modelled line for line on the two files named here, and Step 9 gains a second guarded call block rather than a sentence. Nothing else in the plan changes.
 - **Changes:**
   - `hooks/turn-budget.ts` `main()`: after the existing `max_turns=` write, add `process.stdout.write(\`dispatch_minutes=${config.dispatchMinutes-bearing value}\n\`)`. Two `KEY=value` lines, in that order, from one process. The diagnostics loop above stays exactly as it is and stays that wide, because it runs **once**, which is the whole reason this value rides this program rather than a second one.
   - Rewrite the module docstring's `## Output and exits` section so it names two lines rather than one, and its opening section so the program is described as resolving the orchestrator's configured values rather than the Turn budget alone.
-  - `bin/fusion-turn-budget`: the same two corrections to the header's `Output on stdout` block. **That header is the authoritative documentation for this helper**, so it is the one place the two lines are specified; `CLAUDE.md`'s row cites it rather than restating it (Step 15).
+  - `bin/fusion-turn-budget`: the same two corrections to the header's `Output on stdout` block. **That header is the authoritative documentation for this helper**, so it is the one place the two lines are specified; `CLAUDE.md`'s row cites it rather than restating it (Step 16).
   - The exit codes do not change. 0 resolved, 1 usage, 2 no workbench, 3 compiled hooks missing.
 - **Do not:** rename the script, change the order of the two lines, narrow the diagnostics loop, or make either line conditional on the other.
 - **Verification:** `cd hooks && npm run build` then, from the project root, `bin/fusion-turn-budget`, asserting that stdout is exactly `max_turns=12` and `dispatch_minutes=20` on two lines, and that `bin/fusion-turn-budget >/dev/null` still leaves the loader's diagnostics on stderr. Then `npm test` for `turn-budget-lint.test.ts` and `committed-dist.test.ts`, the second of which fails if `hooks/dist/` was not rebuilt.
@@ -262,12 +290,72 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
 - **Verification:** `cd hooks && npm test -- rules-emission` twice: once to confirm the regeneration failed on purpose, once with the flag off to confirm green. Then the full `npm test`, exit code in hand.
 - **Acceptance criterion:** the suite is green with `RULE_BASELINE`, `GROWTH_BUDGET`, `RELEASE_CAP` and `DRIFT_CEILING` all unedited; the golden diff touches exactly the seven bound agents' blocks.
 
-### 8. The orchestrator's supply side
+### 8. Make the room: move the two commit-procedure narratives to `rules/commit-lock.md`
+
+- **Executor:** `coder`
+- **Files:** `agents/orchestrator.md`, `rules/commit-lock.md`, `hooks/lib/__tests__/fixtures/rules-emission.golden`
+- **Dependencies:** Step 1. Nothing else, and see the ordering note below.
+- **Source:** `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`, answered on 2026-09-08 by the user, option 1.
+- **Why this step exists, and it is not this Circle's own doing.** The `agents/` growth bound had 4 618 bytes of head-room when this plan was written and has 3 509 today, against ten budgets that sum to 3 790. The build was 281 bytes over before its first byte. The whole 1 109-byte difference is one uncommitted growth of `agents/playmaker.md` by a second session running in this checkout, and no other file in that directory moved. So a reader who meets two paragraphs about the commit lock being moved in the middle of a Circle about dispatch bounds is meeting the growth bound doing exactly what it was armed to do: it charges the next arrival for the surface's condition, whoever caused it. The cited record carries the four options and why this one was taken.
+- **What moves.** Two bullets of `agents/orchestrator.md`, each a "why this is a rule and not a preference" narrative recounting one measured defect at length. They are the **only** two lines this step removes.
+
+  | Line today | Opens with | Bytes, newline included |
+  |---|---|---|
+  | 514, under Step 3b step 3 | the bullet led in by **Why this is a rule and not a preference.** and continuing "Measured in this repository: commit `045a14f` landed cut off mid-sentence at the apostrophe" | 578 |
+  | 518, under Step 3b step 4 | the bullet led in by **Why the shape and not just a ban on `-A`.** and continuing "Measured in this repository: a `git add -u` given the directory a batch of records had just been renamed inside" | 454 |
+  | **Removed** | | **1 032** |
+
+  **Find them by their opening text, never by the line number.** Both numbers are as of `223f916a` and any earlier step of this plan that edits the file moves them. `grep -n 'Why this is a rule and not a preference\|Why the shape and not just a ban' agents/orchestrator.md` returns exactly two lines; if it returns any other number, stop and report rather than guessing which is meant.
+- **Where it lands.** A new section at the **end** of `rules/commit-lock.md`, after `### Cross-reference`, at `##` level so it sits beside `## Commit lock` rather than inside it. The two narratives are about the commit procedure the lock is taken around, not about the lock's own mechanism, and burying them under `## Commit lock` would misfile them.
+
+  ```markdown
+  ## Two measured defects behind this procedure
+
+  Two instructions in the orchestrator's Step 3b read as preferences and are not. Each is
+  the residue of a defect measured in this repository, and each is recorded here rather
+  than in the prompt because the prompt is charged to every dispatch and this file is not.
+
+  ### The commit message goes to a file
+
+  <the text of the removed line 514, verbatim from `Measured in this repository:` onward>
+
+  ### The staging list is written out path by path
+
+  <the text of the removed line 518, verbatim from `Measured in this repository:` onward>
+  ```
+
+  Carry the prose **verbatim**, including the commit hashes `045a14f`, `4f16c60`, `f38f37d` and `7ae6aae` and the record citation `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md`. Drop only the leading `- ` and the bolded lead-in phrase, which the new subheadings replace. Do not summarise, do not shorten and do not modernise the wording: this move must be provably lossless, since that is the property the answered record was given to rule on.
+- **What stays behind.** One pointer line at each site, replacing the removed line at the same indent, written exactly as below. They are inside the byte reckoning, so their length is not free.
+
+  ```
+     - **Why this is a rule and not a preference.** The measured defect is in `rules/commit-lock.md` `## Two measured defects behind this procedure`.
+     - **Why the shape and not just a ban on `-A`.** The measured defect is in `rules/commit-lock.md` `## Two measured defects behind this procedure`.
+  ```
+
+  About 147 bytes each, about 295 together, so the step's **net yield is about 737 bytes**. Measure it; do not carry the figure.
+- **Why no reader loses anything.** `bin/fusion-rules` emits `rules/commit-lock.md` to `orchestrator` and to no other agent (block `1e.`), so the one agent that read these narratives in its prompt still receives them, in the same dispatch, in a file it already loads. That is what makes this a move rather than a deletion, and it is why the specification's `## Stops when` does not fire: nothing is dropped that a reader would otherwise have had.
+- **Why the receiving file can absorb it without a second red gate**, all four checked before this step was written:
+  1. `rules/commit-lock.md` weighs 7 004 bytes against a `RULE_BASELINE` entry of **9 250**. It is 2 246 bytes under its own baseline and about 1 250 bytes of arriving text leaves it about 1 000 under still, so it does not even register as growth in the role report.
+  2. That report warns and never fails, and the assertion that **does** fail measures the universal core alone. `commit-lock.md` is a conditional emission and is not in the core.
+  3. `RELEASE_CAP`'s justification duty compares a role's **floor**, which is `RULE_BASELINE` summed, a constant map. Growing a file does not move a floor, so this step cannot trip it.
+  4. `DRIFT_CEILING` is 145 144 bytes for one agent. The orchestrator loads 123 964 today and about 125 200 after the move, leaving about 20 000.
+- **Regenerate the emission golden.** `hooks/lib/__tests__/fixtures/rules-emission.golden` records each emitted file's byte size, and `commit-lock.md` appears there at `7004`. Run `cd hooks && UPDATE_RULES_GOLDEN=1 npx vitest run lib/__tests__/rules-emission-golden.test.ts`. That run rewrites the fixture and then fails on purpose so the flag cannot be left on in a green run. **The diff must touch exactly one block, `[orchestrator]`, at exactly two numbers**: `commit-lock.md`'s size and the block's total. Anything else moved means something other than this step is in your working tree.
+- **Ordering, so this step and Step 7 do not collide.** Both regenerate the same fixture. Because this step regenerates its own, each run's diff is exactly what that step's verification names, whichever order the two are taken in: run this step first and Step 7's later diff still shows only the seven bound agents' blocks; run Step 7 first and this step's diff still shows only `[orchestrator]`. What is **not** permitted is taking this step without the regeneration, which would leave Step 7 facing an eight-block diff and no account of the eighth.
+- **Do not:** edit `AGENT_BASELINE` or `RULE_BASELINE`; delete either narrative instead of moving it; move any third passage on the grounds that it is also long; take more room than the two lines yield on the reasoning that a margin is useful.
+- **Verification:** in order, exit codes in hand.
+  1. `wc -c agents/orchestrator.md` before and after. The file must **shrink** by about 737 bytes.
+  2. `wc -c rules/commit-lock.md`, which must grow by about 1 250 and stay under 9 250.
+  3. `grep -c '045a14f\|f38f37d' rules/commit-lock.md` returns 2 and the same grep over `agents/orchestrator.md` returns 0. The narratives are in one file and one file only.
+  4. `cd hooks && npm test`, with `surface-growth-bound.test.ts`, `rules-emission-golden.test.ts`, `provenance-header-lint.test.ts` and `reference-resolution-lint.test.ts` all green.
+  5. Sum `wc -c agents/*.md`, subtract 399 843, subtract from 18 000, and **write the resulting head-room into the commit message.** Step 15 reads it back against what Steps 9 and 10 actually spent.
+- **Acceptance criterion:** the two narratives are readable in full by an orchestrator dispatch, with no sentence lost and no hash or citation dropped; `agents/` head-room measured after this step is about 4 246 bytes; the golden diff touches one block; `AGENT_BASELINE` and `RULE_BASELINE` are byte-identical to what they were before the step (`git diff` over both test files shows no change to either map).
+
+### 9. The orchestrator's supply side
 
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md`
-- **Dependencies:** Steps 3 and 5.
-- **Byte budget for this step: 1 600 bytes.** Measure with `wc -c agents/orchestrator.md` before and after. Step 14 reconciles.
+- **Dependencies:** Steps 3, 5 and 8. **Step 8 is not optional and not reorderable after this one**: it is where the bytes this step spends come from, and without it the surface bound fails on this step's own commit.
+- **Byte budget for this step: 1 600 bytes.** Measure with `wc -c agents/orchestrator.md` before and after. Step 15 reconciles.
 - **Changes:** two edits.
   1. **Setup Step 2, inside the existing Turn-budget bullet** (the block that runs `bin/fusion-turn-budget` behind `[ -x ]`). Do not add a second code block and do not add a second guarded call. Extend the sentence that reads "It prints one line, `max_turns=<n>`" so it names both lines, and add one short paragraph for the second value: the resolved `dispatch_minutes=<n>` is held for the session as `<dispatch-minutes>`, and **all three of the failure branches already written for the Turn budget carry over unchanged, with a different consequence.** State that consequence in one sentence: an unresolved dispatch bound means **no stopping time travels in any dispatch prompt and every dispatch runs to its natural end, which is exactly today's behaviour**. So unlike an unresolved Turn budget it needs no check-in, no dashboard change and no substitute, and the orchestrator says so once in the Setup-complete summary and proceeds. Budget: **700 bytes.**
   2. **A new short block, `### Bounded dispatches`, placed immediately before `### Step 3a`.** It carries only what must be in context at every dispatch:
@@ -285,12 +373,13 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
 - **Verification:** `wc -c agents/orchestrator.md` before and after, difference at or under 1 600. `grep -n "Stop by:" agents/orchestrator.md` returns the one site. `grep -cE '\b20 minutes\b' agents/orchestrator.md` returns 0. Then `cd hooks && npm test`, exit code in hand; `surface-growth-bound.test.ts` must still be green.
 - **Acceptance criterion:** every dispatch of the seven that the orchestrator makes can be constructed from this block alone, with no rule-file read; a reader of the block can tell which agents are bound and which are not.
 
-### 9. The orchestrator's five continuation sites
+### 10. The orchestrator's five continuation sites
 
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md`
-- **Dependencies:** Step 8.
-- **Byte budget for this step: 2 050 bytes.** Measure before and after.
+- **Dependencies:** Step 9.
+- **Byte budget for this step: 2 190 bytes.** Measure before and after.
+- **That figure was 2 050 until 2026-09-08 and was wrong by exactly one item.** The nine changes below carry per-item budgets summing to 2 190; 2 050 is their sum with change 9, the error-handling table row at 140 bytes, left out. Change 9 arrived with the fourth planability check's third recommendation and the step total was not brought along. The reckoning table in Step 15 was right throughout: it lists all ten edits and sums to 3 790, which is 1 600 for Step 9 plus 2 190 for this step. An executor measuring this step against 2 050 would have failed its own verification while writing exactly what was asked.
 - **Changes:** seven edits at named sites. Each is a clause or a short bullet, not a paragraph; the reasoning behind each is in `rules/bounded-dispatch.md` and is not repeated here.
   1. **Step 3a item 5, as the first sub-bullet, above `**Read the `Verification:` line.**`** A guard, not a fifth case:
 
@@ -314,20 +403,20 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
   8. **The `curator` paragraph** (the one beginning "A `curator` dispatch is asked for by the user"), one clause: a bounded curator return is continued at the same dispatch point with the same mode; **no approval is taken or re-taken on the user's behalf** and the survey pass's gate is not put to the user twice; a continuation of the apply pass carries the same approved ids minus those the run file already records as `applied`, `skipped`, `stale` or `failed`. On the stall, report it and name the curator's run file. Budget: **250 bytes.**
   9. **The `## Error Handling` table row** for "Validation fails after agent work". This is the fourth check's third recommendation: amending step 2d without touching this summary leaves it silent about bounded returns rather than wrong about them. Append to that row's Response cell: *a bounded return is not a reported failure and does not reach the revert*. Budget: **140 bytes.**
 - **The Step 3a stall's event treatment, decided here** because the fourth check asked for it and nobody else can. The stall falls through to **that site's own not-completed path**, which at Step 3a is step 6: the source marker stays at `_p_`, `task_error` is emitted, and the dashboard shows `[ERROR]`. So `task_error` **is** emitted at the stall and is **not** emitted at a bounded return. Write that distinction into `rules/bounded-dispatch.md`'s site table rather than into the prompt, and make sure the site table's Step 3a stall cell says it.
-- **Verification:** `wc -c agents/orchestrator.md` before and after, difference at or under 2 050. `cd hooks && npm test`, exit code in hand, with `executor-verification-report-lint.test.ts` and `surface-growth-bound.test.ts` both green.
+- **Verification:** `wc -c agents/orchestrator.md` before and after, difference at or under 2 190. `cd hooks && npm test`, exit code in hand, with `executor-verification-report-lint.test.ts` and `surface-growth-bound.test.ts` both green.
 - **Acceptance criterion:** all five sites named in C3's table carry a clause; the one site whose omission would destroy work (Step 3b step 2d) carries its exclusion in the prompt and not only in the rule file.
 
-### 10. Mirror the Setup change in the setup skill
+### 11. Mirror the Setup change in the setup skill
 
 - **Executor:** `coder`
 - **Files:** `skills/setup/SKILL.md`
-- **Dependencies:** Step 8.
+- **Dependencies:** Step 9.
 - **Changes:** the skill's Turn-budget paragraph (the one beginning "**The Turn budget is resolved here too.**") already names `agents/orchestrator.md` Setup Step 2 as the canonical implementation and deliberately does not restate its branches. Extend its first sentence so it says the same block resolves **two** values, and add one clause naming the dispatch bound and its harmless unresolved state. Keep the pointer; do not copy the branches across.
-- **Do not:** write a number of minutes here. `turn-budget-lint.test.ts` scans this file for budget literals and a future sibling lint (Step 13) will scan it for minute literals.
+- **Do not:** write a number of minutes here. `turn-budget-lint.test.ts` scans this file for budget literals and a future sibling lint (Step 14) will scan it for minute literals.
 - **Verification:** `cd hooks && npm test -- turn-budget`, exit code in hand. `wc -c skills/setup/SKILL.md` before and after; the `skills/` surface has 13 131 bytes of head-room, so the constraint is not tight here.
 - **Acceptance criterion:** the skill names two resolved values and restates neither's branches.
 
-### 11. The C4 reading
+### 12. The C4 reading
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/events-query.ts`, `hooks/events-query.ts`, `bin/fusion-events`
@@ -335,7 +424,7 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
 - **Why here and not in a new module:** `hooks/lib/events-query.ts` already parses this log and already owns `parseLog`, `parseTs` and `isOurs`; `derivable-enumerations-lint.test.ts` holds `README-hooks.md`'s `hooks/lib` table in exact set equality with `hooks/lib/*.ts`, so a new module there costs a documentation row that a new function does not.
 - **Changes:**
   1. **`hooks/lib/events-query.ts`, the line parser.** Add `agent`, `task` and `session_id` to `interface EventLine` and to `STRING_FIELDS`. Both are additive: existing consumers read named fields and are unaffected.
-  2. **`hooks/lib/events-query.ts`, a new exported constant `BOUND_AGENTS`**, holding the seven in the order `bin/fusion-rules` lists them. Write a comment saying the set is pinned against the script's `IS_BOUND_AGENT` case arm by a test (Step 12), the way `REVIEW_SENDERS` in `hooks/lib/review-coverage.ts` is pinned against `IS_REVIEWER_AGENT`. Two copies of one set, one gate holding them equal, and no third copy.
+  2. **`hooks/lib/events-query.ts`, a new exported constant `BOUND_AGENTS`**, holding the seven in the order `bin/fusion-rules` lists them. Write a comment saying the set is pinned against the script's `IS_BOUND_AGENT` case arm by a test (Step 13), the way `REVIEW_SENDERS` in `hooks/lib/review-coverage.ts` is pinned against `IS_REVIEWER_AGENT`. Two copies of one set, one gate holding them equal, and no third copy.
   3. **`hooks/lib/events-query.ts`, a new exported `measureDispatchDurations(text, opts)`**, a pure function like its two siblings: it opens no file, runs no subprocess and phrases no sentence for a user. `opts` carries `thresholdMinutes`, `cutoffIso` and `agents`. It:
      - parses once with `parseLog`, keeping `malformed`;
      - collects the `session_id` of every `session_start` row into a set;
@@ -372,23 +461,23 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
 - **Verification:** `cd hooks && npm run build` then, from the project root, `bin/fusion-events dispatches` against this project's own log, expecting exit 0 and stdout carrying all three `limit=` lines. Then `bin/fusion-events dispatches --minutes 5` to confirm `threshold_source=argument`, and `bin/fusion-events dispatches --since 2020-01-01` to confirm the cutoff is overridable. Then `npm test`, exit code in hand.
 - **Acceptance criterion:** each of C4's ten criteria maps to a named line of the output or a named branch of the function; no output line calls a dispatch a violation.
 
-### 12. Tests for the reading and for the bound-agent set
+### 13. Tests for the reading and for the bound-agent set
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/__tests__/fusion-events.test.ts` (extend), and either that file or a new sibling for the set pairing
-- **Dependencies:** Steps 6 and 11.
+- **Dependencies:** Steps 6 and 12.
 - **Changes:**
   1. **Unit cases for `measureDispatchDurations`**, driven by fixture strings with no workbench on disk, which is what the module's purity buys. Cover, one case each: a paired dispatch inside the threshold; one over it; a `task_start` with no `task_done` reaching `unpaired` and not `counted`; a pair whose `session_id` matches no `session_start` reaching `unattributable` and not being dropped; a pair before the cutoff being excluded; a pair by an exempt agent being excluded; a malformed line counted in `malformed` and not silently skipped; and a `ts` written without a `Z` designator being read as UTC rather than local.
   2. **The set pairing.** Derive the seven names from `bin/fusion-rules`'s `IS_BOUND_AGENT` case arm with the same regex the enumeration lint uses, and assert exact set equality against `BOUND_AGENTS`. Model it on `review-coverage-mandate.test.ts`, which pins `REVIEW_SENDERS` against `IS_REVIEWER_AGENT`. The failure message must say which side to change and why the two exist separately.
   3. **One case asserting the three `limit=` lines are on stdout**, since their being on the other stream is the failure C4's seventh criterion is about.
 - **Verification:** `cd hooks && npm test`, exit code in hand. `wc -l` over `hooks/lib/__tests__/*.test.ts`; the surface has 2 730 lines of head-room, so this step is not budget-constrained.
-- **Acceptance criterion:** every branch listed in Step 11's change 3 has a case; the pairing test fails if a name is added to either side alone.
+- **Acceptance criterion:** every branch listed in Step 12's change 3 has a case; the pairing test fails if a name is added to either side alone.
 
-### 13. A lint against the dispatch bound returning to the prose
+### 14. A lint against the dispatch bound returning to the prose
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/__tests__/dispatch-bound-lint.test.ts` (new)
-- **Dependencies:** Step 8.
+- **Dependencies:** Step 9.
 - **Why this exists, stated plainly: it is not required by the specification.** It is added because this project has measured the exact failure it prevents. The Turn budget was written into `agents/orchestrator.md` as `5` in seven places and four spellings, one of which already called itself a default while no source could override it (`260811-1712_*_max-turns-is-hardcoded-in-eight-places-and-cannot-be-set-per-project.md`). The eighth would have arrived the same way. The dispatch bound has the identical shape, a number a prompt wants in a sentence, and nothing today would catch `20 minutes` appearing in the orchestrator prompt. **Dropping this step costs the plan nothing else**; no other step depends on it.
 - **Changes:** a gate modelled on `turn-budget-lint.test.ts`, over `agents/orchestrator.md` and `skills/setup/SKILL.md`:
   - fail on a bound stated as a literal count of minutes near a stopping-time word: patterns for `\b\d+\s*minutes?\b` occurring on a line that also names `Stop by`, `stopping time`, `dispatch_minutes` or `dispatchMinutes`; and on `\b(?:dispatch_minutes|dispatchMinutes)`?\s*[:=]\s*\d+`;
@@ -399,61 +488,79 @@ The graph is acyclic. Step 1 is the only gate: `## Stops when` in the specificat
 - **Verification:** `cd hooks && npm test -- dispatch-bound`, exit code in hand. Prove it fires: temporarily insert `stopping time of 20 minutes` into a scratch copy of the prompt, run the gate against that copy, confirm it fails, and discard the copy. **Run that experiment against a scratch copy, never against the live file.**
 - **Acceptance criterion:** the gate is green on the tree as this plan leaves it, and red on a prompt carrying a minute literal.
 
-### 14. The byte reckoning, and the cut if it is needed
+### 15. The byte reckoning
 
 - **Executor:** `coder`
-- **Files:** measurement only; a cut, if one is needed, moves text from `agents/orchestrator.md` into `rules/commit-lock.md`
-- **Dependencies:** Step 9. Run this **before** Step 15 and before any commit that closes the work.
-- **The arithmetic this plan is written to.** Head-room at `abcaa823` is 4 618 bytes and the budgets above sum to 3 650:
+- **Files:** measurement only. **This step no longer makes a cut**, because the cut it used to name is Step 8 and has already been taken.
+- **Dependencies:** Step 10. Run this **before** Step 16 and before any commit that closes the work.
+- **The arithmetic this plan is written to.** The ten edits below sum to 3 790, which is the figure in the table's own `Sum` row and is 1 600 for Step 9 plus 2 190 for Step 10. A stray `3 650` stood in this sentence until 2026-09-07; the 2026-09-08 revision found what it was, namely the sum of the two **step-level** budgets while Step 10's own total was 140 bytes short of its nine items. Step 10 now states 2 190 and the two agree:
 
   | Edit | Step | Budget |
   |---|---|---|
-  | Setup Step 2, the second value | 8 | 700 |
-  | `### Bounded dispatches` block | 8 | 900 |
-  | Step 3a item 5 guard | 9 | 550 |
-  | Step 3b step 2b exclusion | 9 | 400 |
-  | Step 3b step 2e attempt clause | 9 | 250 |
-  | Step 3b step 7 `work_queue` clause | 9 | 160 |
-  | Phase 3 step 1 clause | 9 | 220 |
-  | Phase 4 step 2a clause | 9 | 220 |
-  | `curator` paragraph clause | 9 | 250 |
-  | Error-handling table row | 9 | 140 |
+  | Setup Step 2, the second value | 9 | 700 |
+  | `### Bounded dispatches` block | 9 | 900 |
+  | Step 3a item 5 guard | 10 | 550 |
+  | Step 3b step 2b exclusion | 10 | 400 |
+  | Step 3b step 2e attempt clause | 10 | 250 |
+  | Step 3b step 7 `work_queue` clause | 10 | 160 |
+  | Phase 3 step 1 clause | 10 | 220 |
+  | Phase 4 step 2a clause | 10 | 220 |
+  | `curator` paragraph clause | 10 | 250 |
+  | Error-handling table row | 10 | 140 |
   | **Sum** | | **3 790** |
 
-  Against 4 618 that leaves **828 bytes of margin**. It is thin, and two things make it thinner than it looks: the figure was taken on a clean `agents/` and any other work landing in that directory first spends it, and every budget above is a cap rather than an estimate.
+- **What the surface is expected to do across the build.** Every figure is a `wc -c` reading, and the two the executor takes are the ones that decide the step.
+
+  | | Bytes | Where it comes from |
+  |---|---|---|
+  | Head-room before Step 8 | 3 509 | measured twice on 2026-09-08, at the start and the end of that revision, both 414 334 against the `AGENT_BASELINE` sum of 399 843 and `AGENT_HEAD_ROOM` 18 000 |
+  | Step 8 removes | −1 032 | the two narrative lines, 578 and 454 |
+  | Step 8 writes back | +295 | the two pointer lines, about 147 each |
+  | **Head-room after Step 8** | **about 4 246** | **the first reading this step compares against, and Step 8's commit message carries it** |
+  | Steps 9 and 10 spend | −3 790 | the ten budgets above, each a cap |
+  | **Margin at this step** | **about 456** | **the second reading, taken here** |
+
+  **Every one of those budgets is a cap and not an estimate**, so an underrun is real slack and the margin is a floor rather than a forecast. What it is not is a cushion against anything else landing in `agents/`: the 1 109 bytes that produced the 281-byte deficit this plan was re-cut around arrived from a second session in this checkout in a single day, and 456 bytes is less than half of that.
 - **Changes:**
   1. Re-measure: sum `wc -c agents/*.md`, subtract the `AGENT_BASELINE` sum of 399 843, and compare against `AGENT_HEAD_ROOM` of 18 000. Do not read the figure off this plan; the plan's figure is a week old the moment anything else lands in that directory.
-  2. Run `cd hooks && npm test -- surface-growth`. If green, this step is done and the reckoning is written into the commit message.
-  3. **If red, cut. Never edit a baseline.** `hooks/lib/__tests__/helpers/growth-bound.ts` names exactly three moments at which a baseline moves: after a cleanup, at a one-time arming, at a merge of two lines each inside the bound. This is none of them. A Circle that needed room asked for a fourth on 2026-08-22 and did not get it (`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, option 1: the room was cut first).
-  4. **The named cut, to be made only if step 3 is reached.** Move the two "why this is a rule and not a preference" narratives from `agents/orchestrator.md` Step 3b step 3 and step 4, which are the commit-message truncation case and the `git add -u` case, each recounting a measured defect at length, into `rules/commit-lock.md`, leaving a one-line pointer at each site. The orchestrator **already receives that file by emission** (`bin/fusion-rules` block `1e.`), so no information leaves its context and nothing else has to change: bytes move off a gated surface onto the role-budget report, which warns and never fails. That is the same partition shape the 2026-08-27 rule splits used. Re-measure after the cut and confirm green before proceeding.
-- **Verification:** `cd hooks && npm test` — full suite, exit code in hand, with `surface-growth-bound.test.ts` green and `AGENT_BASELINE` unedited (`git diff hooks/lib/__tests__/surface-growth-bound.test.ts` empty).
-- **Acceptance criterion:** the growth bound passes on a tree whose baseline map is byte-identical to `abcaa823`'s.
+  2. Compare it against the head-room Step 8's commit message recorded. The difference is what Steps 9 and 10 actually spent, and it is the figure to write into this step's own commit message beside the budget of 3 790. A build that came in under is worth saying so; this project has no other record of a text budget being met.
+  3. Run `cd hooks && npm test -- surface-growth`. If green, this step is done.
+  4. **If red, there is one relief left and then the work stops.** Never edit a baseline: `hooks/lib/__tests__/helpers/growth-bound.ts` names exactly three moments at which one moves, this is none of them, and a Circle that needed room asked for a fourth on 2026-08-22 and did not get it (`260822-1102_*_what-happens-when-a-planned-circles-required-work-exceeds-the-remaining-head-room.md`, option 1: the room was cut first).
+- **The fallback that used to be here is spent, and what stands in its place is smaller.** Through every earlier revision this step held a named cut in reserve: the two commit-lock narratives, worth about 737 net bytes. The answer to `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md` moved that cut to Step 8, where it pays for another session's growth rather than for this build's overrun. **This Circle now holds no second cut of that kind, and none has been identified.** What remains, in order:
+  1. **Write the ten edits tighter.** Each budget is a cap, so a step that came in over can be revised down against its own cap without losing an obligation. This is a rewrite of this Circle's own new text and costs no reader anything. It is the first and probably the only place to look.
+  2. **Beyond that, nothing.** No further lossless cut has been found in `agents/orchestrator.md`, and the bytes Steps 9 and 10 place there are the ones this plan argues cannot wait for a rule-file read, so moving them into `rules/bounded-dispatch.md` would drop something a reader would otherwise have had at the moment they need it. **That is the specification's `## Stops when` condition, word for word, and reaching it closes this Circle unbuilt.** The stopping condition at this step is therefore real and no longer formal, which it was for as long as the reserve existed.
+  3. **What is not a fallback, though it may happen:** the second session may commit or trim `agents/playmaker.md` and return up to 1 109 bytes. That was option 4 of the answered record, worth asking in parallel and never something to plan on, since it is another Circle's work and nobody here can answer for it. Do not wait on it, do not assume it, and do not treat its absence as a surprise.
+- **Verification:** `cd hooks && npm test` for the full suite, exit code in hand, with `surface-growth-bound.test.ts` green and `AGENT_BASELINE` unedited (`git diff hooks/lib/__tests__/surface-growth-bound.test.ts` empty).
+- **Acceptance criterion:** the growth bound passes on a tree whose baseline map is byte-identical to `abcaa823`'s, and this step's commit message states the head-room measured here, the head-room Step 8 recorded, and the difference between them.
 
-### 15. Documentation
+### 16. Documentation
 
 - **Executor:** `coder`
 - **Files:** `CLAUDE.md`, `README-hooks.md`
-- **Dependencies:** Steps 12 and 14.
+- **Dependencies:** Steps 13 and 15.
 - **Changes:**
   1. `CLAUDE.md`, the `bin/fusion-turn-budget` Layout row: it currently says the helper prints "the `KEY=value` line it prints" in the singular and describes the program as the Turn budget alone. Correct both, keeping the row's standing shape of citing the script's own header as authoritative rather than restating the usage block. Name the second setting and its default's one definition site.
   2. `CLAUDE.md`, the `bin/fusion-events` Layout row: it opens "Two subcommands". Make it three and describe the new one in one sentence, in the row's existing register. **`rules/critical-stance.md` §5 applies here**: the number beside the list is a second copy of the list's length, so either write all three names or drop the numeral.
   3. `CLAUDE.md`, the `rules/` rows: add a row for `rules/bounded-dispatch.md` naming its audience, the seven bound agents by emission and the orchestrator on demand, and its authoring scope.
   4. `CLAUDE.md`, the `fusion.json` row: it names the loader's live leaves as `orchestrator.maxTurns` and `citations.extraPaths`. Add the third.
   5. `README-hooks.md`: if it carries a description of `bin/fusion-events`' subcommands, extend it. **Do not add a row to the `hooks/lib` table**, because no file was added there, and that table is held in exact set equality with `hooks/lib/*.ts`.
-- **Do not:** state the byte figures from Step 14 in `CLAUDE.md`. That file's own guidance records twice that hand-written counts of a moving quantity go stale invisibly.
+  6. `CLAUDE.md`, the `bin/fusion-commit-lock` Layout row, **because of Step 8 and not because of the mechanism.** That row names what `rules/commit-lock.md` authors: who acquires, the two stale-lock paths, the noclobber holder write, the failure modes. Step 8 adds a section that is none of those, so append one clause naming it: the file now also carries the two measured defects behind the orchestrator's commit procedure, the truncated message and the `git add -u` staging loss, which the prompt cites rather than restates. Keep the row's standing shape of citing the file rather than restating it, and state no byte figure.
+- **Do not:** state the byte figures from Step 15 in `CLAUDE.md`. That file's own guidance records twice that hand-written counts of a moving quantity go stale invisibly.
 - **Verification:** `cd hooks && npm test` — full suite, exit code in hand, with `derivable-enumerations-lint.test.ts`, `reference-resolution-lint.test.ts` and `workbench-citation-lint.test.ts` green.
 - **Acceptance criterion:** every surface this work changed is described where that surface is documented, and no count in prose disagrees with the tree.
 
 ## Where this Circle stops
 
-- Has the C5 cost-argument check been filed as a written report in this Circle, and has the user accepted it? Acceptance is the closure event, and a rejected check leaves this Circle open.
-- Did that check find that the re-sent-volume law holds in the form the source analysis states it? If it did not, this Circle closes on that finding alone and every clause below is answered "did not arise".
-- Have the corrected cost figures in this Circle's own record been read against the filed check, with any disagreement between the two resolved in favour of the check?
-- Does `npm test` pass on the tree this Circle leaves, with `AGENT_BASELINE`, `RULE_BASELINE`, `RELEASE_CAP` and `DRIFT_CEILING` all byte-identical to what they were at `abcaa823`? A green suite bought by moving a baseline does not answer this clause yes.
+The closure condition moved on 2026-09-07. Through three revisions of the specification it was the C5 check's verdict, and the clauses that stood here asked about that verdict and about the user's acceptance of it. That condition fired, the user re-cut the goal on the break-even arithmetic, and the specification's fourth revision moved closure to the byte reckoning this plan's Step 15 performs. The clauses below are written against the new footing; none of them asks about the refuted rationale, and Step 1 records what happened to the old condition rather than this section.
+
+- Does the byte reckoning at Step 15 show the mechanism inside the `agents/` growth bound on the tree this Circle leaves? The measurement is `wc -c` over `agents/*.md` against `AGENT_BASELINE` and `AGENT_HEAD_ROOM` in `hooks/lib/__tests__/surface-growth-bound.test.ts`, taken on that tree and never read off this plan.
+- If it does not fit, was the only remaining way inside a cut that drops something a reader would otherwise have had, or an edit to a baseline? **A yes here is where the work stops, and the Circle closes on that finding with every clause below answered "condition did not arise".** The clause is unchanged in substance and its footing has moved: the lossless cut it used to point forward to has been taken, at Step 8, and is spent on another session's growth rather than on this build. Step 8 itself is a pass by this clause, since `rules/commit-lock.md` is emitted to the orchestrator and no reader loses a sentence. What is left at Step 15 is writing the ten edits tighter, which loses nothing, and past that there is no identified cut that does not lose something. So a yes here is now a live outcome rather than a formality.
+- Does `npm test` pass on the tree this Circle leaves, with `AGENT_BASELINE`, `RULE_BASELINE`, `RELEASE_CAP` and `DRIFT_CEILING` all byte-identical to what they were at `abcaa823`? A green suite bought by moving a baseline does not answer this clause yes. The four are unchanged from `abcaa823` through `223f916a` and in the working tree as this plan is written, so the anchor is a live comparison and not a historical one.
 - Does an orchestrator dispatch of each of the seven bound agents carry a `**Stop by:**` line, and does a dispatch of any other agent, and any dispatch made by a skill body or by the user, carry none?
 - Does `bin/fusion-events dispatches` run against this project's own event log, print a figure for every dispatch it counted, and print all three of its `limit=` lines?
+- Is the corrected cost argument on file in this Circle, as the Directive's closing clause requires — the check `260907-1657-c5-cost-argument-check.md` with the verdict it returned, and the derivation `260907-2012-break-even-arithmetic-for-the-dispatch-split.md` that closed the sign the check left open?
 - Is the decision record `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md` no longer open, either answered and realised, or answered and confirmed as already realised by Step 3?
-- Precondition on any release that carries this work: has the fourth clause above been answered yes **on the exact commit the tag names**, rather than on some earlier commit of the same session? A plan made a Circle's review pass a precondition of a tag once before, v10.0.0 was tagged and pushed without it, and a post-release reconciliation was what noticed.
+- Precondition on any release that carries this work: has the `npm test` clause above been answered yes **on the exact commit the tag names**, rather than on some earlier commit of the same session? A plan made a Circle's review pass a precondition of a tag once before, v10.0.0 was tagged and pushed without it, and a post-release reconciliation was what noticed.
 
 ## Data Structures
 
@@ -510,7 +617,8 @@ Every pair admitted by the cutoff and the agent filter lands in exactly one of `
 | Every role has an entry and every entry a role | `rules-emission-golden.test.ts` | the three emptied entries left in place |
 | `README-agents.md` names the file with all seven | `derivable-enumerations-lint.test.ts` | the script and the doc committed apart |
 | The rule file carries a provenance header | `provenance-header-lint.test.ts` | the header below line 10, or absent |
-| `agents/` stays inside its bound | `surface-growth-bound.test.ts` | the prompt edits overrun 4 618 bytes |
+| `agents/` stays inside its bound | `surface-growth-bound.test.ts` | the prompt edits overrun the head-room Step 15 measures on the tree it runs against: 3 509 bytes when this plan was last brought up to date, about 4 246 once Step 8 has run |
+| The commit-lock move loses no reader anything | no test, and none is possible | the two narratives are summarised rather than carried verbatim, or the pointer at either prompt site is dropped. Step 8's `grep` for the commit hashes catches the file they ended up in, never whether a sentence survived the move. A reviewer reads the diff |
 | The four pinned strings survive at Step 3a item 5 | `executor-verification-report-lint.test.ts` | the switch rewritten rather than guarded |
 | No minute literal returns to the prose | a new `dispatch-bound-lint.test.ts` | a number written into a prompt sentence |
 | The compiled output matches the source | `committed-dist.test.ts` | `npm run build` not run before committing |
@@ -525,15 +633,18 @@ Every pair admitted by the cutoff and the agent filter lands in exactly one of `
 | **The exemption gives up the two longest non-`coder` dispatches in the log**, both `analyst` runs, at 33.9 and 35.2 minutes | Accepted with the narrowing to seven agents. Recorded, not repaired |
 | **The overshoot past the stopping time is unbounded and unmeasured.** The clock is read between units, never inside one, so an agent entering a 30-minute unit at minute 19 returns at minute 49 | Accepted. No figure in this tree says how long a unit runs. `rules/bounded-dispatch.md` `## When you read the clock` states the example rather than softening it |
 | **An agent stopped before its first write hands back no paths, and its continuation redoes that reading** | Accepted as the ordinary cost of a requested bound. C2's fourth criterion makes the return say so and name what it had read; it is not treated as a further exemption anywhere |
-| **The `agents/` budget is 828 bytes of margin on a figure taken on a clean tree** | Step 14 re-measures rather than trusting this plan's figure, and names a specific cut that moves bytes onto an ungated surface without losing information. A baseline edit is refused there in as many words |
+| **The `agents/` budget was 281 bytes short before the build began**, and not through this Circle's doing: 3 509 bytes of head-room against 3 790 budgeted, where the 1 109 bytes that closed the gap are one uncommitted growth of `agents/playmaker.md` from another session in this checkout | Resolved as a planned edit rather than a repair, per the user's ruling on `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`. Step 8 takes the cut before Step 9 writes a byte, yielding about 737 and leaving about 456 of margin. Step 15 still re-measures rather than trusting any figure here, and still refuses a baseline edit in as many words |
+| **The margin after that is about 456 bytes, and this Circle now holds no reserve.** The cut that was the fallback is spent. Another session put 1 109 bytes into this same directory in one day, which is more than twice the margin | Named rather than mitigated, because nothing here can mitigate it. Step 15 states the one relief that remains, writing the ten edits tighter against caps that are already caps, and states plainly that past it the specification's `## Stops when` fires for real. The `agents/playmaker.md` growth may be trimmed by its own Circle and that would return the room; Step 15 forbids planning on it |
 | **A `session_start` row that loses its `session_id` renders every dispatch of that session unattributable to C4.** That field is model-written and stands on 9 of the 93 rows in this log today | Specified to degrade rather than mislead: such a dispatch is reported as `unattributable`, never dropped and never counted, on stdout, with the cause named on stderr. The criterion holds for all 263 machine rows today, and the cutoff constant keeps the historical rows out of scope entirely |
 | **Three `ROLES` entries go stale the moment the rule is emitted**, and nothing but Step 7 would find it | Step 7 exists for it, names the three by key, and its verification runs the regeneration twice |
 | **The unit-of-work grain could split an `ontocoder` ripple set**, handing back a dataset its own validation refuses | The unit is defined as the coherent pass, not the file, and the rule file says why in the row itself |
-| **Two copies of the seven-agent set** exist, in `bin/fusion-rules` and in `hooks/lib/events-query.ts` | One gate holds them equal (Step 12), modelled on the pairing that already holds `REVIEW_SENDERS` against `IS_REVIEWER_AGENT`. No third copy is created; `README-agents.md`'s line is itself derived and checked by the enumeration lint |
+| **Two copies of the seven-agent set** exist, in `bin/fusion-rules` and in `hooks/lib/events-query.ts` | One gate holds them equal (Step 13), modelled on the pairing that already holds `REVIEW_SENDERS` against `IS_REVIEWER_AGENT`. No third copy is created; `README-agents.md`'s line is itself derived and checked by the enumeration lint |
 | **The helper's name under-describes what it prints** after Step 3 | Open decision `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`, with option A costed. The mitigation inside option B is prose: the script's header and `CLAUDE.md`'s row are both rewritten in the same commit |
 
 ## Open Questions
 
-- [ ] **Which program hands the orchestrator the dispatch bound at Setup.** Filed as `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`, with a recommendation. Steps 3 and 8 are written against option B; a ruling for option A changes those two steps and nothing else. This does not block execution.
+- [x] **The `agents/` budget no longer fits, and the shortfall arrived from outside this Circle.** Head-room was 3 509 bytes at `223f916a` against 3 790 budgeted, a deficit of 281, and the 1 109 bytes that closed it are an uncommitted growth of `agents/playmaker.md` from another session in this checkout. Filed as `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md` with four options and a recommendation. **Answered on 2026-09-08, option 1, the recommendation**: take the named cut up front. It is Step 8 of this plan, it runs before Step 9 writes a byte, and this revision is what carries it. The record's own caveat stands and is now Step 15's third relief: option 4, asking whether the other session's growth was needed, was worth raising in parallel and never blocking.
+- [ ] **C5's acceptance criteria number ten, not the nine the specification's `## Open for Planner` states nor the eight this plan carried.** Counted with `grep -c '^- \[ \]'` over C5's own section on 2026-09-07. The plan no longer states a count at all and names the criteria it means instead, so nothing here turns on it; the specification's own sentence is a defect filed against that file, not against this plan, as `260908-0020_*_the-specs-open-for-planner-states-nine-c5-criteria-where-c5-carries-ten.md`.
+- [ ] **Which program hands the orchestrator the dispatch bound at Setup.** Filed as `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`, with a recommendation. Steps 3 and 9 are written against option B; a ruling for option A changes those two steps and nothing else. This does not block execution.
 - [ ] **Should `bin/fusion-events dispatches` eventually be identity-scoped?** It deliberately is not, because a bound dispatch from another checkout is still a bound dispatch, while `presence` and `turns` are both scoped. Not filed as a record: nothing in this Circle turns on it, and the code comment states the choice where a later reader meets it.
-- [ ] **Step 13 is planner-added and not specification-required.** It is the one step in this plan that no acceptance criterion asks for. It is included because the failure it prevents has been measured in this repository once already, at eight copies of one number. Dropping it costs the plan nothing else.
+- [ ] **Step 14 is planner-added and not specification-required.** It is the one step in this plan that no acceptance criterion asks for. It is included because the failure it prevents has been measured in this repository once already, at eight copies of one number. Dropping it costs the plan nothing else.
