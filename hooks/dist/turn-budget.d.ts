@@ -1,6 +1,9 @@
 /**
- * The orchestrator's Phase-2 Turn budget, resolved and printed for a prompt to
- * read at Setup.
+ * The orchestrator's configured values, resolved and printed for a prompt to
+ * read at Setup: the Phase-2 Turn budget and the wall-clock stopping time handed
+ * to a bound agent's dispatch. Two settings, one read, one process — the name is
+ * the Turn budget's because that was the first of them, and it is kept because
+ * the prompts, the skill body and CLAUDE.md all call the helper by it.
  *
  * ## Why this is a program rather than a number in a prompt
  *
@@ -49,10 +52,20 @@
  *
  * ## Output and exits
  *
- * One `KEY=value` line on stdout, in the shape `bin/fusion-paths` and
- * `bin/fusion-count-sources` use:
+ * Two `KEY=value` lines on stdout, in that order, in the shape
+ * `bin/fusion-paths` and `bin/fusion-count-sources` use:
  *
  *   max_turns=5
+ *   dispatch_minutes=20
+ *
+ * Neither line is conditional on the other and the order does not change: a
+ * caller reads by key, and a reader of the two-line block should not have to
+ * discover which line it got.
+ *
+ * The second value rides this program rather than a second one because the
+ * diagnostics loop below runs ONCE. A separate helper would either repeat every
+ * advisory the loader returned or stay silent about it, and neither is better
+ * than one process printing two lines (`260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`, option B).
  *
  * Every diagnostic the loader returned goes to stderr, one per line, whatever
  * its class, and none changes the exit code: the budget is still resolved. A

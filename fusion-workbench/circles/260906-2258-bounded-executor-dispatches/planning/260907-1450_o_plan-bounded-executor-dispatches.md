@@ -174,7 +174,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm run build && npm test`, exit code in hand. `hooks/lib/__tests__/config.test.ts` must stay green without being edited; if it reddens, the leaf was added outside `PROJECT_SET_KEYS`' cut and the edit is wrong.
 - **Acceptance criterion:** a project declaring `{"orchestrator": {"dispatchMinutes": 35}}` resolves 35; one declaring `0`, `-1`, `2.5` or `"20"` is dropped, named in one diagnostic, and inherits 20; one declaring nothing gets 20. The comment beside the default carries both sentences of C1's fourth criterion word for word, and a `diff` of the comment text against that criterion's block quote is empty.
 
-### 3. Print the resolved value from `bin/fusion-turn-budget`
+### 3. [DONE] Print the resolved value from `bin/fusion-turn-budget`
 
 - **Executor:** `coder`
 - **Files:** `hooks/turn-budget.ts`, `bin/fusion-turn-budget`
