@@ -447,6 +447,51 @@ describe("bin/fusion-paths", () => {
     });
   });
 
+  describe("the forum keys", () => {
+    // The fourth unconditionally-shared kind, beside consultations, memos and
+    // the backlog: an entry is addressed to another checkout, not produced by
+    // executing this one's Directive, so no Circle could hold it. OUT_PLAN
+    // travels along as a MOVING control — a key that is never Circle-bound
+    // would read `shared/forum` under a target for the wrong reason.
+    const OTHER = "260812-1720-circle-first-placement";
+
+    beforeEach(() => {
+      mkdirSync(join(workbench, "circles", OTHER), { recursive: true });
+      stageWithAgent("fixture", "Draft to $OUT_FORUM, read $SCAN_FORUM, plan to $OUT_PLAN.\n");
+    });
+
+    it("emits both, shared, with no Circle active", () => {
+      const r = runStaged("fixture");
+      expect(r.status).toBe(0);
+      const p = parse(r.stdout);
+      expect(p.OUT_FORUM).toBe("shared/forum");
+      expect(p.SCAN_FORUM).toBe("shared/forum");
+      expect(p.OUT_PLAN).toBe("shared/planning");
+    });
+
+    it("keeps both shared with a Circle active, while the control moves", () => {
+      activate();
+      const p = parse(runStaged("fixture").stdout);
+      expect(p.OUT_FORUM).toBe("shared/forum");
+      expect(p.SCAN_FORUM).toBe("shared/forum");
+      // Invariant 2 collapses for SCAN_FORUM as for SCAN_CONSULT and
+      // SCAN_BACKLOG: one store, the kind having no Circle counterpart.
+      expect(p.SCAN_FORUM.split(" ")).toHaveLength(1);
+      expect(p.OUT_PLAN).toBe(`circles/${CIRCLE_NAME}/planning`);
+    });
+
+    it("keeps both shared under a target, while the control follows the target", () => {
+      for (const active of [false, true]) {
+        if (active) activate();
+        const p = parse(runStaged("fixture", OTHER).stdout);
+        expect(p.OUT_FORUM, `active=${active}`).toBe("shared/forum");
+        expect(p.SCAN_FORUM, `active=${active}`).toBe("shared/forum");
+        expect(p.SCAN_FORUM).not.toContain(OTHER);
+        expect(p.OUT_PLAN, `active=${active}`).toBe(`circles/${OTHER}/planning`);
+      }
+    });
+  });
+
   describe("orphaned pointer", () => {
     it("errors with a non-zero exit and never falls back to shared/", () => {
       activate("260101-0000-does-not-exist");
