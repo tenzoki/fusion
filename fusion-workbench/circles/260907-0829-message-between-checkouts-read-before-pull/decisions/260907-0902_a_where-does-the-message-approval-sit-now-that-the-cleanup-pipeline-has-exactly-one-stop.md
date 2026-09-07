@@ -72,3 +72,6 @@ and the analyst filing this record is not one. The relay is owed to the next suc
 `--skip claude-md` writes no message at all, silently, unless the body carries a line telling
 the user so. Under `--dry-run` the draft is never put and no entry is written, which is the
 same shape every other step takes under that flag.
+
+---
+Answered: `260907-0902_*_where-does-the-message-approval-sit-now-that-the-cleanup-pipeline-has-exactly-one-stop.md` — option 1, the approval folds into the pipeline single existing stop, accepting that a run skipping the CLAUDE.md step leaves no message and that a dry run puts no draft; ruled by user, Kai Stalmann <ks@qantr.com>

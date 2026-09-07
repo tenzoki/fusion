@@ -77,3 +77,6 @@ retention rule is part of the same unit of work, not a follow-up. Reuse
 `bin/fusion-cadence-anchor` for the reader's high-water mark, whose header already invites a
 future step to add its own key and whose `changed-files <key> [<pathspec>]` is the delta
 primitive this needs.
+
+---
+Answered: `260907-0829-message-between-checkouts-read-before-pull` `## Grounding snapshot` — option 1, the message gets a store of its own; the user then ruled its placement and name as `shared/forum/`, choosing forum over broadcast because the traffic runs both ways; ruled by user, Kai Stalmann <ks@qantr.com>

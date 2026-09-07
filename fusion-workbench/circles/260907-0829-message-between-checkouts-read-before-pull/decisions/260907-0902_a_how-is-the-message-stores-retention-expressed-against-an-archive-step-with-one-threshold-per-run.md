@@ -78,3 +78,6 @@ and age, since the row alone would leave the heading claiming something the tabl
 does. An entry can now be archived before a checkout dormant longer than the threshold ever
 reads it; that was already the accepted cost of choosing age over read marks, and the shorter
 threshold sharpens it.
+
+---
+Answered: `260907-0902_*_how-is-the-message-stores-retention-expressed-against-an-archive-step-with-one-threshold-per-run.md` — option 1, the bucket joins tier-1 at the run own threshold of fourteen days, and the tier stated basis widens in its own text from terminal markers to terminal markers and age; ruled by user, Kai Stalmann <ks@qantr.com>

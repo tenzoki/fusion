@@ -3,9 +3,9 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Unclaimed
-**Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Claim:** Claimed 260907-1658: Kai Stalmann <ks@qantr.com>, checkout 1d05b0e4.
+**Active spec/plan:** 260907-1942_*_message-between-checkouts-read-before-pull.md
+**Active session history:** 260907-1659-orchestrator-session.md
 
 ---
 
@@ -43,3 +43,28 @@ After this work, a session that ends and pushes offers to leave one message for 
 - `260904-1619-tracked-checkout-registry-names-each-instance`, the registry that turns the eight hex characters in an entry's filename into a name a reader recognises. Not a precondition: an unregistered checkout renders as its hex, which is the documented fallback.
 
 ## Turn log
+
+## Activation proposal
+
+**Proposed activation:** 260907-1507. **Playmaker run:** `260907-1507-playmaker-direct-dispatch.md`
+(direct dispatch, domain bias `code`).
+
+This Circle is the only anticipated one in the portfolio, and it is ready on every signal this run
+measures. Both entries in its `## Dependencies` resolve to Circle directories whose records carry
+`_c_`: `260823-0023-settle-what-travels-between-checkouts`, which the record cites for the
+four-class split this store is classified against, and
+`260904-1619-tracked-checkout-registry-names-each-instance`, which the record itself marks as not a
+precondition because an unregistered checkout renders as its hex. Of the six marker-carrying
+records the `## Grounding snapshot` cites, one is terminal — the issue
+`260825-1329_*_every-session-runs-one-release-behind-on-a-bin-helper-the-same-repository-just-added.md`
+carries `_c_` — which is one of six and well under the half that would warn. HEAD stands 3 commits
+past `3639813c`, the commit the snapshot records for the skill-body growth bound, so the head-room
+figure that sizes three of this Circle's file additions should be re-measured before the first Turn
+rather than taken from the record. Three cited decisions carry `_o_`:
+`260907-0733_*_does-the-cross-checkout-message-get-its-own-store-or-two-sections-in-the-session-history.md`,
+`260907-0902_*_how-is-the-message-stores-retention-expressed-against-an-archive-step-with-one-threshold-per-run.md`
+and `260907-0902_*_where-does-the-message-approval-sit-now-that-the-cleanup-pipeline-has-exactly-one-stop.md`.
+Quoting the record's own `## Grounding snapshot`: "Both decision records carry `_o_` with the
+user's ruling written into them, and the relay to `_a_` is owed to the next orchestrator session
+alongside the store record above." So the three open records are a relay the activating session
+performs, not three questions the Circle still has to answer.
