@@ -1,7 +1,7 @@
 # Implementation Plan: a session that pushes leaves a message the other checkout reads before pulling
 
 **Date:** 2026-09-07
-**Status:** Draft
+**Status:** Complete
 **Spec:** none. Planned from the Circle record `260907-0829-message-between-checkouts-read-before-pull`, whose Directive and Grounding snapshot stand in a spec's place, together with the pre-activation review `260907-0840-spec-review-message-between-checkouts.md`
 **Decidability:** The load-bearing question is *what arrived from the remote that this checkout has not read yet*, and it is decidable from the inputs the reading mechanism has, provided the mechanism fetches first. After a fetch, both sides of the comparison are commits git holds locally: the commit this checkout's mark names, and the commit the branch's upstream ref names. The set difference of `git ls-tree -r --name-only <ref> -- <store>` taken at each is exact, with no rename detection and no working-tree read to make it approximate. The question that is **not** decidable is the one `bin/fusion-cadence-anchor changed-files` asks, and this plan does not ask it: that helper fixes the right-hand side of its range at the literal `HEAD` and folds in `git status --porcelain`, so once the mark stands on a fetched commit ahead of `HEAD` the diff is empty and the answer is "nothing new" in precisely the condition where something is. That is the §4 case exactly, since no re-cutting of the range makes a working-tree question answer a remote one, and the change of mechanism is to ask the other question against the two refs, which is what step 4 below builds.
 
@@ -327,3 +327,30 @@ Two resolver keys, `OUT_FORUM` and `SCAN_FORUM`, both unconditionally `shared/fo
 - [ ] The three decision records the Grounding snapshot cites carry the user's ruling in their bodies and still read `_o_`. Planning treats all three as settled, as the dispatch directed; the relay to `_a_` is the orchestrator's act and is not a step of this plan.
 - [ ] `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-timeout-retried.md` stays open, and this work neither answers it nor is bound by it, for the reasoning under `## Approach`. If it is later ruled in a way that establishes a project-wide convention for git latency, `bin/fusion-forum`'s header is the surface that would have to be re-read against it.
 - [ ] `260822-1154_*_does-the-hook-test-line-budget-cover-comment-prose.md` is open and bears on step 6's 220-line budget, since a helper test documented at this project's usual density spends much of its allowance on comments. It changes no step here, and is named so the next person measuring that surface knows the question exists.
+
+## Reconciliation Log
+
+**260908-0027, reconciler, domain `code`, verified at HEAD `9d99b19d` (range `abcaa823..9d99b19d`, 12 commits).**
+
+**Status moved Draft to Complete, and the filename marker to `_c_`.** All thirteen steps read `[DONE]` and every one of them was checked against the tree rather than taken from the mark:
+
+| Step | Evidence read |
+|---|---|
+| 1 | `bin/fusion-paths` `value_for()` prints `shared/forum` for both keys; both appear in `ORDER`; the last `ORDER` line is still exactly seven spaces and `PORTFOLIO"`. Commit `af3f23e2`. |
+| 2 | `rules/fusion-workbench-conventions.md` carries the store in the layout tree, in the shared-only sentence, as a `## Filename Patterns` row and in the invariant-2 paragraph; `rules/workbench-path-resolution.md` heading now reads four kinds. Commit `97bc8b0b`. |
+| 3 | `"forum"` stands in `TYPE_FOLDERS` of `hooks/lib/__tests__/path-literal-lint.test.ts`. Commit `6528b039`. |
+| 4, 5 | `bin/fusion-forum` exists, is tracked by git and carries the `+x` bit; `.gitignore`, the `CLAUDE.md` Layout row and the `last_forum_read_commit` row in `bin/fusion-cadence-anchor` are all present. Commit `4a31cd57`. |
+| 6, 7 | `hooks/lib/__tests__/fusion-forum.test.ts` added; the resolver test gained the forum block. Commits `09bd6755`, `3de741a0`. |
+| 8, 9 | `skills/news/SKILL.md` is 8 766 bytes against a 9 000 budget; `CLAUDE.md` carries the `/fusion:news` token and `README-agents.md` the table row. Commit `5c240eb7`. |
+| 10 | `skills/cleanup/SKILL.md` carries `### The message half` with the second question in the same call, the `forum` selector row and both flag consequences; Step 5 and Step 6 now stand in run order. Commit `4c421f29`. |
+| 11 | The tier-1 table carries the `$SCAN_FORUM` row and the heading widened to terminal markers and age. Commit `97bc8b0b`. |
+| 12 | Both goldens moved; no baseline file was touched anywhere in the range (`git diff abcaa823 HEAD` over the two bound files and the helper is empty), which is the clause the plan made non-negotiable. |
+| 13 | `260908-0006-coder-s13-proof-run-by-hand.md` records the run; the entry it wrote stands at twenty lines in the shape `## Data Structures` specifies. |
+
+**The `## Current State` always-on head-room figure is wrong and stays wrong in the table above; read this instead.** The row records 88 836 total, 86 573 floor, 98 573 budget and **9 737** of head-room. It summed the five files `RULE_BASELINE` in `hooks/lib/__tests__/rules-emission-golden.test.ts` labels the universal core. The hard bound measures the intersection of what every agent actually loads, and `bin/fusion-rules` emits exactly three files unconditionally — `agent-setup.md`, `fusion-workbench-conventions.md`, `critical-stance.md` — since `user-facing-output.md` and `decision-record-examples.md` moved to conditional audiences at the two gates of 2026-08-27. Re-measured here from the emitter and the file sizes: floor 65 498, budget 77 498, and at `abcaa823` a core of 73 000 with **4 498** free, not 9 737. The margin was overstated by 5 239 bytes, which is more than half of what was claimed. At HEAD the core is 73 317 with 4 181 free. Step 12 found this and its log states it (`260907-2336-coder-s12-measure-the-four-budgets.md`); the plan text was never corrected, so a later reader sizing work off this table would over-commit by a factor of two. The other three rows re-measure as recorded. The same wrong figure also stands in the commit message of `97bc8b0b`, where nothing can move it, and in `agentstate.yaml`'s `key_findings`, which the session's clean exit removes. The comment that produced the error is filed as `260908-0027_*_the-universal-core-comment-names-five-files-while-the-bound-measures-three.md`.
+
+**The sixth stopping clause is unmet, deliberately, and is recorded rather than missed.** `/fusion:news` cannot be invoked as a slash command in the session that creates it: the skill roster is read from the installed copy at session start. The clause itself says so in bold, step 13 reports it under `## 4. What this session cannot prove`, and the release precondition below it forbids a tag claiming the feature works until the clause is answered yes in writing. Verified independently: the installed resolver exits 4 on `$SCAN_FORUM` for `news` while the work-tree resolver answers `shared/forum`. This is not an omission and is not filed as a defect.
+
+**The other stopping clauses hold.** Both resolver keys answer `shared/forum` with a Circle active and under a `<circle-dir>` target; no baseline map was edited; the one forum entry stands at twenty lines and `bin/fusion-citation-sweep --dry-run` now reads `files=0 rewrites=0 bare-record=0`; the one-stop question was ruled and the shipped body carries the shape the ruling names; the three relayed decisions all carry the marker the relay gave them. Review coverage over the range is `reviews=0 uncovered=12` — the Circle review is Phase 4's and no clause claimed otherwise.
+
+**One measurement the plan made and step 12 corrected in passing:** the hook-test spend was 266 lines against a claimed 265, the extra line being step 3's one-line addition to the path-literal gate, which the spend list did not name. Immaterial to the bound.

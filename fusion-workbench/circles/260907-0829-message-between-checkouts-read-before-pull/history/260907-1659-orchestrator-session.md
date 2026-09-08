@@ -82,3 +82,16 @@ What the ruling gives up, stated rather than left implicit: "one stop" no longer
 question". The user chose that over the alternative, which kept the stricter reading at the cost of
 coupling two independent decisions into one set of three options, so that the message could not be
 declined without also deciding the normative-text ledger.
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: 13 plan steps, 4 implemented decisions and 3 issue closures verified against the tree at HEAD `9d99b19d` / 1 drift item **(Grounding at fault)**: the plan's `## Current State` records 9 737 bytes of always-on head-room, measured over five files while the bound measures three, against 4 498 actually free at `abcaa823` — step 12 found it, the plan text was never corrected, and a planner opens that row first / 0 open reviewer issues, no review having run in this Circle.
+- Artifact↔Directive: the 12 commits `abcaa823..9d99b19d` move toward the stated Directive, each realising a named clause of it — `af3f23e2` the resolver keys, `4a31cd57` the helper, `5c240eb7` the reading skill, `4c421f29` the writing half in the pipeline's one stop, `97bc8b0b` the retention bucket, `9d99b19d` the first real entry; the one stopping clause left unmet, the slash-command invocation, cannot be met in the session that creates the skill and is recorded three times over, in the clause itself, in step 13's report and as a release precondition.
+- Grounding↔Directive: 43 active decisions across both stores consistent / 0 conflicting. The two that bear closest each hold: the one-stop placement ruling is realised rather than contradicted, since the pipeline still waits exactly once, and the uncovered-review-range ruling permits this Circle's `reviews=0 uncovered=12` with the gap named, which the Turn log does.
+
+**Rebalance recommendation:** revise Grounding

@@ -25,3 +25,11 @@ is the reason this is filed rather than fixed in passing.
 **Acceptance.** The cross-reference resolves against the heading as it stands in the tree, and the
 question of whether a record's anchor citation into shipped text should be gated at all is either
 answered or filed as a decision.
+
+---
+Reconciled 260908-0027 (reconciler, HEAD `9d99b19d`): still open, and both halves re-read. The
+record's `**Cross-references:**` line still names the tier heading by its pre-edit wording, while
+`skills/archive/SKILL.md` carries the widened heading that names age beside the terminal markers.
+The second half of the acceptance is untouched: no decision has been filed on whether a record's
+anchor citation into shipped text should be gated at all, and neither of the two gates named in the
+body has gained that reach.

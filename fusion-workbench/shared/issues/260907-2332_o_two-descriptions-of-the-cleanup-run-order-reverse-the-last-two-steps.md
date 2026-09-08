@@ -31,3 +31,10 @@ lint checks that each skill has a row, not that the row's prose describes the ri
 
 **Acceptance.** Both sentences describe the run in the order the selector table gives, and they
 agree with each other.
+
+---
+Reconciled 260908-0027 (reconciler, HEAD `9d99b19d`): still open. Both sentences still read
+"reconciles `CLAUDE.md` at a user gate, logs activity" — the `README-agents.md` skill-table row and
+the `description` in `skills/cleanup/SKILL.md`'s frontmatter — while the body has run the activity
+log first since `4c421f29`, which physically reordered the two sections. So the drift widened rather
+than closed in this session: the pipeline moved and the two descriptions did not.

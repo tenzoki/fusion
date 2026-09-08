@@ -18,3 +18,9 @@ or whether the write was cut short.
 
 Acceptance test: the file's last line is the last line of `## Open Questions`, and no line of
 the file matches `^</[a-z]+>$`.
+
+---
+Reconciled 260908-0027 (reconciler, HEAD `9d99b19d`): still open, verified rather than assumed. The
+last two lines of `260907-0840-spec-review-message-between-checkouts.md` are still the two closing
+tool-markup tags, so the acceptance test's second half fails as written. Nothing in this session's
+range touched that file.

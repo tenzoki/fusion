@@ -68,3 +68,10 @@ a new sentinel.
 The test in option 1 should be written against the literal the plan template already produces
 rather than against free prose, so that it is a first-line read like the other two sentinels. What
 that literal should be is part of the same ruling.
+
+---
+Reconciled 260908-0027 (reconciler, HEAD `9d99b19d`): no answer exists anywhere on disk, so the
+marker stays. Searched every store in `SCAN_ANALYSES`, `SCAN_PLANS`, `SCAN_DECISIONS` and
+`SCAN_HISTORY` for a ruling on the pointer swap: the only text bearing on it is this record's own
+`## Question`, and the plan it names closed without a step that touches the obligation. The record
+it cross-references on how a Circle record carries its Directive once a spec exists is unmoved.

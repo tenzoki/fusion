@@ -44,6 +44,8 @@ After this work, a session that ends and pushes offers to leave one message for 
 
 ## Turn log
 
+- Turn 1 (session 260907-1659): commits abcaa823..9d99b19d, 12 of them; Coherence verdict review-needed (the plan's own head-room row measured five files where the bound measures three); session history: 260907-1659-orchestrator-session.md. All 13 plan steps done. Four decisions reached _i_. Three filed open: the Directive-pointer conflict, a stale cross-reference, and two descriptions of the cleanup run order that this session's own reordering left behind. Review coverage: 12 commits, no review yet.
+
 ## Activation proposal
 
 **Proposed activation:** 260907-1507. **Playmaker run:** `260907-1507-playmaker-direct-dispatch.md`
