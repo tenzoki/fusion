@@ -285,8 +285,8 @@ const DRIFT_CEILING = 145_144;
  * GROWTH, while an audience change is governed by the golden (hard) and by the
  * justification duty (hard).
  *
- * The five CORE figures below are the 2026-08-14 arming sizes; the three
- * ROLE-SPECIFIC ones are still the 2026-08-05 post-cut sizes, at v5.9.1. How the
+ * The first five figures below are the 2026-08-14 arming sizes, taken when all
+ * five were the core; the last three are 2026-08-05 post-cut, at v5.9.1. How the
  * number moved to get here, event by event — kept because each line names which
  * cut, or which arming, produced which figure:
  *
@@ -461,18 +461,18 @@ const DRIFT_CEILING = 145_144;
  *             `circles/260801-1244-curator/decisions/260814-0738_*_how-is-the-always-on-growth-bound-armed-when-the-corpus-is-already-over-budget.md`.
  */
 const RULE_BASELINE: Record<string, number> = {
-  // The universal core — text every agent applies, and the exact set the HARD
-  // bound measures. 86 573 bytes, re-set once at the 2026-08-14 arming; the cut
-  // log's last entry says what that re-baseline absolved and why it is not the
-  // silent raise this file warns about.
-  "agent-setup.md": 3_513, // 2026-08-14 arming
-  "fusion-workbench-conventions.md": 52_027, // 2026-08-14 arming
-  "decision-record-examples.md": 4_291, // 2026-08-14 arming
-  "user-facing-output.md": 16_784, // 2026-08-14 arming
-  "critical-stance.md": 9_958, // 2026-08-14 arming
-  // Role-specific, each loaded by a derived audience rather than a named list,
-  // and the set the REPORT measures. Deliberately NOT touched by the 2026-08-14
-  // arming: their growth since the last real cut still stands against the report.
+  // The 2026-08-14 ARMING block: one provenance, NOT one measurement. Its 86 573
+  // sum is a historical label, not the HARD bound's input — that is the computed
+  // intersection, since the 2026-08-27 gates the three marked `core` (floor
+  // 65 498, budget 77 498). The other two stay: a dropped entry reads as growth.
+  "agent-setup.md": 3_513, // arming; core -> HARD bound
+  "fusion-workbench-conventions.md": 52_027, // arming; core -> HARD bound
+  "decision-record-examples.md": 4_291, // arming; role-specific at gate 260827-0830 -> REPORT
+  "user-facing-output.md": 16_784, // arming; role-specific at gate 260827-0910 -> REPORT
+  "critical-stance.md": 9_958, // arming; core -> HARD bound
+  // Role-specific, each loaded by a derived audience rather than a named list.
+  // These and the two gated entries above are what the REPORT measures. NOT
+  // touched by the 2026-08-14 arming: that growth still stands against the report.
   "design-diagrams.md": 5_673, // 2026-08-05 cut
   "circle-records.md": 9_302, // 2026-08-05 cut
   "commit-lock.md": 9_250, // 2026-08-05 cut, carried through the 2026-08-15 rename
