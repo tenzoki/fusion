@@ -203,7 +203,9 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test -- config`, exit code in hand. Then `python3 -c "import json;[json.load(open(p)) for p in ['fusion.json','templates/fusion.json']]"` to prove both still parse.
 - **Acceptance criterion:** `config.test.ts`'s drift check green; both files parse; the two new `_dispatchBound` values compare equal byte for byte.
 
-### 5. [IN PROGRESS] Write `rules/bounded-dispatch.md`
+### 5. [DONE] Write `rules/bounded-dispatch.md`
+
+- **Done 2026-09-08**, history `260908-1614-coder-bounded-dispatch-rule.md`. Two notes for whoever takes Steps 6 and 7. **This step leaves `reference-resolution-lint.test.ts` red** on its pinned-count assertion, which no step of this plan accounts for: the new file adds 8 resolvable paths and 5 anchors, so `BASELINE` must be re-approved to `paths: 1721, anchors: 242` in that test file, which its own failure message names as the expected response. And the section's `30-minute` illustration was **not** written, because the same section's acceptance criterion forbids any number of minutes; the residual is stated without numerals instead.
 
 - **Executor:** `coder`
 - **Files:** `rules/bounded-dispatch.md` (new)

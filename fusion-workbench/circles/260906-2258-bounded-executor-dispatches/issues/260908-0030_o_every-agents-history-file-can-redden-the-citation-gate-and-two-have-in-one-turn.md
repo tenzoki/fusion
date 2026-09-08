@@ -67,4 +67,7 @@ dispatch prompt mentioned the citation form — a dispatch that has to warn abou
 standalone obligation, which this project measures being dropped.
 
 ---
+Also seen: 260908-1619 by orchestrator — steps 4 and 5 each ended with a history file spelling the plan's `_p_` marker (`260908-1607-ontocoder-fusion-json-dispatch-bound.md` line 6, `260908-1614-coder-bounded-dispatch-rule.md` line 7), two agents, two dispatches, neither prompt mentioning the citation form. That is the acceptance test's own condition, so these two are evidence for the class rather than beside it: the rate over the run of steps 4 to 16 is now being counted, and the first two steps produced two rejections. Repaired by hand at 4 characters, no bugfixer dispatch; `bin/fusion-citation-sweep --dry-run` reads `rewrites=0 bare-record=0` again. The marker stays `_o_`.
+
+---
 Reconciliation 2026-09-08: still open, and the acceptance test has not been reachable. Both named instances are repaired on disk — `bin/fusion-citation-sweep --dry-run` prints `rewrites=0 bare-record=0` over this repository, and `260908-0003-coder-dispatch-minutes-config-leaf.md` line 8 now carries `_*_`. The defect is a class rather than those two files, and its acceptance test asks for a run of further plan steps producing zero rejections; plan steps 4 to 16 were not run in this session, so no evidence for or against the class exists yet. The marker stays `_o_`.

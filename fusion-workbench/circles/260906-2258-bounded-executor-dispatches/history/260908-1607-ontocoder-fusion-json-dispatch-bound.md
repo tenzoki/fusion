@@ -3,7 +3,7 @@
 **Status:** Complete
 **Filed by:** ontocoder, Kai Stalmann <ks@qantr.com>
 
-Task S4 of `260907-1450_p_plan-bounded-executor-dispatches.md`, section `### 4. Document the
+Task S4 of `260907-1450_*_plan-bounded-executor-dispatches.md`, section `### 4. Document the
 setting in the two fusion.json files`.
 
 ## What was asked

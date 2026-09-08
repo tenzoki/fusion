@@ -5,7 +5,7 @@
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260907-0657: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
 **Active spec/plan:** 260907-0820_*_spec-bounded-executor-dispatches.md (the spec, which states the Directive), 260907-1450_*_plan-bounded-executor-dispatches.md (the plan written against it)
-**Active session history:** 260907-0657-orchestrator-session.md
+**Active session history:** 260908-1529-orchestrator-session.md
 
 ---
 
