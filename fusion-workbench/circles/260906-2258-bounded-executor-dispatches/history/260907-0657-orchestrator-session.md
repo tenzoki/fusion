@@ -48,7 +48,47 @@ and stops, which fusion's observation-only PreToolUse hook does not do today.
 
 ## Turn log
 
-(none yet — the session is still in Phase 0b: spec review and rework, no Turn started)
+- Turn 1 (session 260907-0657): commits `7ed43852`..`8197f789`; Coherence verdict not taken, the
+  Turn was interrupted by a planned restart before its gate; session history: this file.
+
+  Plan steps 1, 2 and 3 landed. Step 1's verdict stopped the build on the plan's own gate and the
+  user re-cut the goal after the break-even derivation reversed the sign. Steps 2 and 3 realised the
+  answered decision on where the orchestrator reads the bound, both halves of option B. Two citation
+  repairs and two defect records rode along.
+
+## Why this session stopped
+
+Not a completion and not a crash. The verification the whole build rests on stopped being
+deterministic: `cd hooks && npm test` returned 911 of 911 in 35 seconds and 909 of 911 in 88 seconds
+over the same tree, twenty minutes apart, with the failing cases passing in isolation. Three test
+files are implicated and the failing case is not stable within a file either, so the set on record is
+a sample rather than the population. Every one of the thirteen remaining plan steps is accepted by
+that same command, so an executor could no longer tell its own regression from a busy machine.
+
+Put to the user as three ways forward — repair the suite first, narrow each step's verification to
+its own files, or continue and re-check by hand each time — the user chose to repair it first, and
+additionally asked for a push and a restart beforehand so the concurrent session's repaired
+`agents/playmaker.md` is loaded.
+
+**`agentstate.yaml` is deliberately not deleted.** A clean exit deletes it because there is nothing
+to resume; there is something to resume here. The next session's Setup will find it and offer
+Continue, which re-enters at `control.paused_at_task`, `SUITE-REPAIR`.
+
+**What a reader should know about the restart.** An agent prompt is read at session start from the
+**installed** copy under `$FUSION_PLUGIN_ROOT`, never from this work tree, and it is never re-read.
+Restarting alone therefore loads the old `agents/playmaker.md`. The repaired one reaches a session
+only after `fusion --update`, which is why the push had to come first.
+
+## The concurrent session
+
+A second orchestrator ran in this same checkout for the whole of this one, on a different Circle. It
+committed three times at 14:12 without this session's knowledge, including this session's own files,
+and left records and a change set uncommitted twice more. Both were carried here under messages that
+say whose work they are: `5d2e40bc` for three records, `8197f789` for the multi-checkout change set.
+fusion has no concurrency lock and the advisory marker read `stale` at Setup, so nothing warned
+either session about the other. The collision cost was not lost work but a byte budget: the
+uncommitted 1 109-byte growth of `agents/playmaker.md` is what left this Circle's build 281 bytes
+short and forced the cut forward into its own step.
 
 ## Rulings the user gave at the gates
 
