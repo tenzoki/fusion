@@ -4,7 +4,14 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pluginRoot } from "./helpers/citation-scan.js";
-import { measurePresence, countTurns, renderParty } from "../events-query.js";
+import {
+  measurePresence,
+  countTurns,
+  renderParty,
+  measureDispatchDurations,
+  renderDispatch,
+  BOUND_AGENTS,
+} from "../events-query.js";
 import type { Party, PresenceResult, ReadingIdentity } from "../events-query.js";
 
 // ---------------------------------------------------------------------------
@@ -318,5 +325,151 @@ describe("the entry point: scope=, the identity split, and the missing-state exi
     const r = cli(workbench(), { FUSION_PERSON: KAI, FUSION_CHECKOUT: ME }, wrapper, "turns");
     expect(r.status, r.stderr).toBe(0);
     expect(r.stdout).toBe("turns=1\nhistory_file=h.md\nscope=checkout\n");
+  });
+});
+
+/* --- measureDispatchDurations: how long each bound dispatch ran ------------ */
+//
+// Fixture strings and a pure function: no workbench on disk, no clock, no
+// subprocess. Every case below is one branch of the function.
+//
+// THREE PLACES THE IMPLEMENTATION WENT BEYOND THE PLAN'S PROSE, each recorded in
+// `260908-1811-coder-c4-reading.md` and each asserted here against the code
+// rather than against the plan: the outcome field carries four values and not
+// two (`unattributable` and `unpaired` are outcomes, because scoring either as
+// `within` or `longer` would score a dispatch the reading cannot place); the
+// cutoff and agent filters scope the `unpaired` count as well, so that figure is
+// comparable with `counted` beside it; and `unstamped` is a returned count whose
+// sentence the entry point puts on stderr.
+
+const DISPATCH_OPTS = { thresholdMinutes: 20, cutoffIso: "2026-09-08", agents: BOUND_AGENTS };
+const dispatchIn = (text: string, o: Partial<typeof DISPATCH_OPTS> = {}) =>
+  measureDispatchDurations(text, { ...DISPATCH_OPTS, ...o });
+
+const SID = "sess-1";
+const sess = (o: Row = {}): Row => ({ event: "session_start", ts: "2026-09-08T08:00:00", session_id: SID, ...o });
+/** A dispatch's two rows. `end: null` leaves the start unpaired. */
+const dispatch = (task: string, o: { agent?: string; ts?: string; end?: string | null; session_id?: string | null } = {}) => {
+  const sid = o.session_id === undefined ? SID : o.session_id;
+  const common: Row = { task, agent: o.agent ?? "coder" };
+  if (sid !== null) common.session_id = sid;
+  const rows: Row[] = [{ event: "task_start", ts: o.ts ?? "2026-09-08T09:00:00", ...common }];
+  if (o.end !== null) rows.push({ event: "task_done", ts: o.end ?? "2026-09-08T09:10:00", ...common });
+  return rows;
+};
+
+describe("measureDispatchDurations scores each pair into exactly one of four outcomes", () => {
+  it("a pair inside the threshold is counted, within, and not longer", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("t1", { end: "2026-09-08T09:10:00" })));
+    expect(r).toMatchObject({ counted: 1, longerThanThreshold: 0, unattributable: 0, unpaired: 0, unstamped: 0 });
+    expect(r.rows).toEqual([{ agent: "coder", task: "t1", ts: "2026-09-08T09:00:00", minutes: 10, outcome: "within" }]);
+  });
+
+  it("a pair over the threshold is counted and longer", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("t1", { end: "2026-09-08T09:45:00" })));
+    expect(r).toMatchObject({ counted: 1, longerThanThreshold: 1 });
+    expect(r.rows[0]).toMatchObject({ minutes: 45, outcome: "longer" });
+  });
+
+  it("a task_start with no task_done is unpaired, is not counted, and carries no zero", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("t1", { end: null })));
+    expect(r).toMatchObject({ counted: 0, longerThanThreshold: 0, unpaired: 1 });
+    // The plan spells the outcome field `<longer|within>`; the implementation
+    // reports the unplaceable pair as its own outcome instead. Asserted as the
+    // code behaves. `minutes: null` is C4's eighth criterion: a zero there would
+    // read as an instant dispatch.
+    expect(r.rows).toEqual([{ agent: "coder", task: "t1", ts: "2026-09-08T09:00:00", minutes: null, outcome: "unpaired" }]);
+    expect(renderDispatch(r.rows[0])).toBe("dispatch=coder\tt1\t2026-09-08T09:00:00\t-\tunpaired");
+  });
+
+  it("a pair whose session_id no session_start accounts for is unattributable, reported and not dropped", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("t1", { session_id: "sess-other", end: "2026-09-08T09:45:00" })));
+    expect(r).toMatchObject({ counted: 0, longerThanThreshold: 0, unattributable: 1, unpaired: 0 });
+    // Measured but not scored: the duration is known, the dispatch is not placeable.
+    expect(r.rows).toEqual([{ agent: "coder", task: "t1", ts: "2026-09-08T09:00:00", minutes: 45, outcome: "unattributable" }]);
+    expect(r).toMatchObject({ sessionStarts: 1, sessionStartsWithoutId: 0 });
+  });
+
+  it("a dispatch carrying no session_id at all is unattributable for the same reason", () => {
+    const r = dispatchIn(log(sess({ session_id: undefined }), ...dispatch("t1", { session_id: null })));
+    expect(r).toMatchObject({ unattributable: 1, counted: 0, sessionStarts: 1, sessionStartsWithoutId: 1 });
+  });
+
+  it("a pair starting before the cutoff is excluded from every figure and every row", () => {
+    const r = dispatchIn(log(sess({ ts: "2026-09-01T08:00:00" }), ...dispatch("t1", { ts: "2026-09-07T23:59:00", end: "2026-09-08T01:00:00" })));
+    expect(r).toMatchObject({ counted: 0, longerThanThreshold: 0, unattributable: 0, unpaired: 0, unstamped: 0 });
+    expect(r.rows).toEqual([]);
+  });
+
+  it("a dispatch by an agent outside the set is excluded", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("t1", { agent: "analyst", end: "2026-09-08T09:45:00" })));
+    expect(r.rows).toEqual([]);
+    expect(r).toMatchObject({ counted: 0, longerThanThreshold: 0 });
+  });
+
+  it("the cutoff and the agent filter scope the unpaired count too, so it stays comparable with counted", () => {
+    // Beyond the plan's prose, which lists `unpaired` ahead of the two filters.
+    // Unscoped, this fixture would report unpaired=3 over the whole file.
+    const r = dispatchIn(log(
+      sess(),
+      ...dispatch("old", { ts: "2026-09-01T09:00:00", end: null }),
+      ...dispatch("other-agent", { agent: "planner", end: null }),
+      ...dispatch("mine", { end: null }),
+    ));
+    expect(r.unpaired).toBe(1);
+    expect(r.rows.map((x) => x.task)).toEqual(["mine"]);
+  });
+
+  it("a malformed line is counted in malformed and not silently skipped", () => {
+    const r = dispatchIn(log("not json", "[1,2]", sess(), ...dispatch("t1")));
+    expect(r).toMatchObject({ malformed: 2, counted: 1 });
+  });
+
+  it("a dispatch whose stamp cannot be read is unstamped, not counted and not lost", () => {
+    const r = dispatchIn(log(sess(), ...dispatch("t1", { ts: "bogus" }), ...dispatch("t2", { end: "bogus" })));
+    expect(r).toMatchObject({ unstamped: 2, counted: 0, unpaired: 0 });
+    expect(r.rows).toEqual([]);
+  });
+
+  it("a ts written without a Z designator is read as UTC and not as local time", () => {
+    // The one assertion that would move with the runner's timezone if parseTs
+    // stopped appending the designator: the start is unzoned, the completion
+    // carries an explicit Z, so a local-time reading of the first shifts the
+    // duration by the runner's offset. In UTC the pair is exactly 15 minutes,
+    // and a shifted reading crosses the 20-minute threshold in either direction.
+    const text = log(sess(), ...dispatch("t1", { ts: "2026-09-08T09:00:00", end: "2026-09-08T09:15:00Z" }));
+    expect(dispatchIn(text).rows[0]).toMatchObject({ minutes: 15, outcome: "within" });
+  });
+
+  it("the four outcomes partition the rows, and counted is within plus longer and nothing else", () => {
+    const r = dispatchIn(log(
+      sess(),
+      ...dispatch("a", { end: "2026-09-08T09:05:00" }),
+      ...dispatch("b", { end: "2026-09-08T10:05:00" }),
+      ...dispatch("c", { session_id: "sess-other" }),
+      ...dispatch("d", { end: null }),
+    ));
+    const kinds = r.rows.map((x) => x.outcome);
+    expect(kinds.sort()).toEqual(["longer", "unattributable", "unpaired", "within"]);
+    expect(r.counted).toBe(2);
+    expect(r.counted + r.unattributable + r.unpaired).toBe(r.rows.length);
+  });
+});
+
+describe("the entry point puts the three limit= qualifications on stdout", () => {
+  // C4's seventh criterion. A qualification on the other stream is a
+  // qualification nobody reads: a prompt captures stdout and an exit code.
+  const LIMIT_KEYS = ["dispatcher-unknown", "threshold-is-todays", "no-session-invisible"];
+
+  it("all three are on stdout, beside the figures, and on stderr none of them is", () => {
+    const dir = workbench(STATE, log(sess(), ...dispatch("t1", { end: "2026-09-08T09:10:00" })));
+    const r = cli(dir, ident(0, { person: KAI, checkout: ME }), process.execPath, "dispatches");
+    expect(r.status, r.stderr).toBe(0);
+    for (const key of LIMIT_KEYS) {
+      expect(r.stdout, `limit=${key} is not on stdout`).toContain(`limit=${key}\t`);
+      expect(r.stderr).not.toContain(`limit=${key}`);
+    }
+    expect(r.stdout.split("\n").filter((l) => l.startsWith("limit=")).length).toBe(3);
+    expect(r.stdout).toContain("counted=1");
   });
 });

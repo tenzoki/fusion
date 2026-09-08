@@ -47,6 +47,7 @@
 
 [hook-tests lines]
   archive-filter-key.test.ts 40
+  bound-agent-set.test.ts 96
   citation-form.test.ts 384
   citation-grammar-boundaries.test.ts 179
   citation-sweep.test.ts 527
@@ -65,7 +66,7 @@
   fusion-citation-check.test.ts 285
   fusion-commit-lock.test.ts 424
   fusion-count-sources.test.ts 442
-  fusion-events.test.ts 322
+  fusion-events.test.ts 475
   fusion-forum.test.ts 220
   fusion-identity.test.ts 220
   fusion-paths.test.ts 918
@@ -103,4 +104,4 @@
   surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 325
-  total 22038
+  total 22287

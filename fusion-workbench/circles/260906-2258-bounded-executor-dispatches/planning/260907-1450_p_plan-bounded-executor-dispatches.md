@@ -463,7 +463,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm run build` then, from the project root, `bin/fusion-events dispatches` against this project's own log, expecting exit 0 and stdout carrying all three `limit=` lines. Then `bin/fusion-events dispatches --minutes 5` to confirm `threshold_source=argument`, and `bin/fusion-events dispatches --since 2020-01-01` to confirm the cutoff is overridable. Then `npm test`, exit code in hand.
 - **Acceptance criterion:** each of C4's ten criteria maps to a named line of the output or a named branch of the function; no output line calls a dispatch a violation.
 
-### 13. Tests for the reading and for the bound-agent set
+### 13. [DONE] Tests for the reading and for the bound-agent set
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/__tests__/fusion-events.test.ts` (extend), and either that file or a new sibling for the set pairing
