@@ -490,7 +490,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test -- dispatch-bound`, exit code in hand. Prove it fires: temporarily insert `stopping time of 20 minutes` into a scratch copy of the prompt, run the gate against that copy, confirm it fails, and discard the copy. **Run that experiment against a scratch copy, never against the live file.**
 - **Acceptance criterion:** the gate is green on the tree as this plan leaves it, and red on a prompt carrying a minute literal.
 
-### 15. The byte reckoning
+### 15. [DONE] The byte reckoning
 
 - **Executor:** `coder`
 - **Files:** measurement only. **This step no longer makes a cut**, because the cut it used to name is Step 8 and has already been taken.
