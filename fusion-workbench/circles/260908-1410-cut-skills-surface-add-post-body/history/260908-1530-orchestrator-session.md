@@ -2,7 +2,7 @@
 
 **Directive:** Cut all ten rows of the published cut ledger out of the shipped skill bodies, then add `skills/post/SKILL.md` as the fourth body of the `/fusion:cleanup` pipeline, with Step 6's message half reading and performing it inline, so the message composition contract exists once rather than twice.
 **Mode:** custom, planned from the Circle record
-**Status:** In progress
+**Status:** Complete
 **Filed by:** orchestrator, Kai Stalmann <ks@qantr.com>
 
 ## Why this session has two history files
@@ -71,3 +71,68 @@ session has yet done. The marketplace bump is committed locally and unpushed for
 - Grounding↔Directive: 2 active decisions bearing on this Circle, 0 conflicting. `260908-1612_*_can-migrates-language-preamble-adopt-the-shortened-form-and-keep-its-shell-string-clause.md`, filed here and open, is scoped out of the Directive by the row-9 exclusion the Grounding already states, so it gates nothing. `260907-2003_*_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.md` is inherited and open, and this Circle is its second recorded instance: the field is written and the record's Directive prose stands, which satisfies the invariant that record protects and departs from the letter of the head-field obligation — a departure that record declares and holds until it is ruled, not a conflict this Circle created.
 
 **Rebalance recommendation:** revise Artifact
+
+## Budget
+
+| Metric | Count |
+|--------|-------|
+| Turns | 2 (see the note below: not derivable from the event log) |
+| Tasks resolved | 17 of 17 plan steps, plus a repair pass and two high-finding fixes |
+| Issues created | 12 |
+| Issues resolved | 5 |
+| Decisions filed | 1 |
+| Commits | 12 |
+| Agent errors | 0 |
+| Human gates hit | 6 |
+
+**The Turn count is not derivable and that is a consequence of this session's own departure.**
+`bin/fusion-events turns` reports no `session_start` naming this history file, and says so as a
+finding rather than returning zero. It is right: this session emitted its `session_start` against
+the first Circle's history file and never emitted a second, because it is one session. Opening a
+second history file for the second Circle therefore cut this file off from the only mechanism that
+counts Turns. The two figures above are hand-counted, which is exactly the property the counters
+were removed to avoid.
+
+## Per-Turn Log
+
+### Turn 1
+- All 17 plan steps, in three phases: nine cut rows, the new body behind two measurement gates,
+  then the roster, the help topic and one golden rebuild.
+- The step-9 gate fired: the body measured 6 972 against a 6 500 ceiling and the work stopped and
+  returned the figure rather than trimming. The user ruled to remove the source-root block, 823
+  bytes, which the orchestrator's own dispatch had put there and the plan never required. Final
+  6 137, the estimate matching to the byte.
+- Commits `3175f39e`, `22d6f839`, `02533218`, `ee99a578` and their record commits.
+- Coherence: review-needed on three drift items, all in the Artifact.
+
+### Turn 2
+- Rebalance Gate 1 answered Keep it, Gate 2 answered Revise Artifact.
+- The repair pass took the three drift items. Two were repaired by removing the drift class rather
+  than the instance: the Layout row now points at `ls -1d skills/*/` instead of restating a split it
+  had got wrong three times in one file, and two stale citations were re-pointed without line
+  numbers, since living text cites by anchor and these two records were the demonstration.
+- The closure review found the default path wrote no message at all, on two independent causes,
+  neither visible under the standalone shape the feature had been exercised in. Both fixed.
+- Two stopping conditions do not hold at closure and are named in the Circle's closure note.
+
+## Review coverage
+
+**Range:** `b64b95b5..HEAD` — 12 commits
+**Covered by:** `260908-1857-coderev-cut-skills-surface-add-post-body.md`, `**Reviewed-range:**`
+`b64b95b5..b625a47f`, 8 commits.
+**Not covered:** four, all landed at or after the review: `b625a47f` (the review itself),
+`ce57f36a`, `5850f0a3`, `5de2c997`.
+**Carried out-of-scope files:** the review declares five skill bodies read as diffs rather than end
+to end, plus `docs/messages-between-checkouts.md`, `README-agents.md`,
+`hooks/lib/__tests__/reference-resolution-lint.test.ts`, the Circle record, eight history files and
+seven workbench records. That list is the next pass's scope.
+
+## Remaining Work
+
+Eight defect records and one decision leave this Circle open, none blocking. The decision is the
+migrate language preamble, which the Grounding scopes out of the Directive.
+
+Outside the Circle and unchanged: v10.25.0 is prepared, committed, pushed and untagged. Neither
+`/fusion:news` nor `/fusion:post` has ever been invoked as a slash command, because a session reads
+its skill roster at start from the installed copy. The marketplace bump is committed locally and
+unpushed for the same reason. The release precondition names exactly this.
