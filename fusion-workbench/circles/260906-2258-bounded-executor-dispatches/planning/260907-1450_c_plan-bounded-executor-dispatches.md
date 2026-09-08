@@ -1,7 +1,7 @@
 # Implementation Plan: bound how long a dispatched agent runs before it returns
 
 **Date:** 2026-09-07
-**Status:** In Progress
+**Status:** Complete
 **Spec:** `260907-0820_*_spec-bounded-executor-dispatches.md`
 **Revised:** 2026-09-08, on the answer to `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`, which the user ruled option 1. The cut that stood inside the old Step 14 as a fallback is now **Step 8**, a step of its own that runs before a byte of the mechanism is written, and the plan has sixteen steps rather than fifteen. Every step from the old 8 upward is renumbered by one and every dependency, cross-reference and node of the dependency graph moved with it. The byte reckoning is recomputed with the cut as income: `## Current State`, the new Step 8, the byte-reckoning step (now Step 15) and the risk table all carry the new arithmetic. The old Step 14 keeps its name and its measurement and loses its fallback, which is now spent; what it does when it comes up short is stated there in the changed terms. Nothing else moved: the gate at Step 1 and its execution note, the 20 minutes, the seven bound agents, the executors of every existing step and the substance of `## Where this Circle stops` are as they were.
 
@@ -133,7 +133,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 
 ## Implementation Steps
 
-### 1. File the C5 cost-argument check
+### 1. [DONE] File the C5 cost-argument check
 
 - **Status: run on 2026-09-07, and it stands. Do not re-run it.** The report is `260907-1657-c5-cost-argument-check.md`, and its `## Verdict` section reads, in full: *the law does not hold in the form the source analysis states it.* That is one of the two forms this step's own verdict sentence permits, so the step was performed as written; the finding is that the motivating claim is false, not that the step failed. What follows in this step is kept as the record of what was commissioned and against what, and the build resumes at Step 2.
 - **Executor:** `analyst`
@@ -535,7 +535,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test` for the full suite, exit code in hand, with `surface-growth-bound.test.ts` green and `AGENT_BASELINE` unedited (`git diff hooks/lib/__tests__/surface-growth-bound.test.ts` empty).
 - **Acceptance criterion:** the growth bound passes on a tree whose baseline map is byte-identical to `abcaa823`'s, and this step's commit message states the head-room measured here, the head-room Step 8 recorded, and the difference between them.
 
-### 16. Documentation
+### 16. [DONE] Documentation
 
 - **Executor:** `coder`
 - **Files:** `CLAUDE.md`, `README-hooks.md`
