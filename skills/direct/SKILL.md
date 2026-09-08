@@ -134,6 +134,6 @@ This is the entire user-facing output.
 
 ## Tone
 
-User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's chat language (`./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`; the language comes from the `**Language:**` line in `CLAUDE.md`, resolved per `rules/fusion-workbench-conventions.md` `## Project language`). Every prompt and hint specified above is written here in English because a skill body ships to projects of every language; render each of them in that chat language. For this skill specifically: the Step-5 confirmation leads with the **Circle's name and path** (the action surface — the user wants to know where it lives) and the one-line refined Directive, then the hints. Don't bury the path mid-paragraph.
+Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`). For this skill specifically: the Step-5 confirmation leads with the **Circle's name and path** (the action surface — the user wants to know where it lives) and the one-line refined Directive, then the hints. Don't bury the path mid-paragraph.
 
 Concise. The user invoked this to capture a Directive, not to read meta-commentary. Shaper composes the clarification rounds; this skill puts each round to you and carries your answers back, then confirms the write.

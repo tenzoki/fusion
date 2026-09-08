@@ -12,12 +12,7 @@ Move a curated set of workbench artifacts out of the live workbench and into a t
 
 ## What changed with the Circle-container layout
 
-**A closed Circle archives in one piece.** A Circle is a directory holding its own planning, issues, decisions, history, reviews and analyses (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`). Archiving it is one `mv` of one directory — not a collection pass across ten type folders hunting for files that belong together. The tier logic below is the same idea it always was; it just has less to do.
-
-Two rules follow from the container premise, and they are what keep this skill simple:
-
-1. **Circle artifacts travel with their Circle.** This skill never reaches inside a Circle to archive individual files. A Circle's closed issue is archived when the Circle is, and not before.
-2. **The per-file passes therefore only ever touch the shared store.** Everything a tier enumerates below either is a whole terminal Circle or lives in `shared/`.
+A Circle is a directory holding its own artifacts (`rules/fusion-workbench-conventions.md` `## fusion-workbench Layout`), so a closed Circle archives in one piece and two rules follow: **Circle artifacts travel with their Circle**, so this skill never reaches inside one to archive individual files; and **the per-file passes only ever touch the shared store**.
 
 ## Where archives go
 
@@ -82,18 +77,9 @@ The skill takes one of:
 - `<natural-language description>` — ad-hoc archive: describe what to move; skill surveys, applies safety filters, proposes, confirms.
 - (empty) — ask the user via `AskUserQuestion` whether they want a tier or a natural-language description.
 
-## Marker vocabulary (per `rules/fusion-workbench-conventions.md`)
+## Marker vocabulary
 
-| Artifact kind | Markers | Terminal? |
-|---|---|---|
-| Circle record | `_a_` anticipated · `_t_` active · `_c_` closed-coherent · `_b_` bounded closure · `_s_` superseded · `_d_` deferred | `_c_`, `_b_`, `_s_`, `_d_` |
-| Defect, spec/plan | `_o_` open · `_p_` in-progress · `_c_` closed · `_d_` deferred | only `_c_` |
-| Decision record | `_o_` open · `_a_` answered · `_i_` implemented · `_d_` deferred · `_s_` superseded | `_i_` and `_s_` |
-| History, review, analysis, investigation, consultation, memo, forum entry | none | n/a |
-
-**Terminal** = work is done; the artifact is a record, not a live work item. Only terminal-state artifacts are safe to bulk-archive without per-file review.
-
-**Terminal is not the same as archive-class.** `_d_` (deferred) is terminal in both the Circle and the defect vocabularies, and is still excluded from every tier — see safety filter 2.
+Authored in `rules/fusion-workbench-conventions.md` `## State Markers — issues and planning` and `## State Markers — decisions`, and `rules/circle-records.md` `## State Markers — circles`; the markerless kinds are enumerated there too. **Terminal** means a record rather than a live work item: `_c_`, `_b_`, `_s_`, `_d_` for a Circle, `_c_` alone for a defect or spec/plan, `_i_` and `_s_` for a decision, and only terminal artifacts bulk-archive without per-file review. **Terminal is not archive-class:** `_d_` is terminal in two of the three and still excluded from every tier (safety filter 2).
 
 ## Safety filters (apply to ALL modes)
 
@@ -177,7 +163,7 @@ Adds `$SHARED_HISTORY/*.md` whose filename date prefix is older than the thresho
    find "$WORKBENCH/$SCAN_CIRCLES" -mindepth 2 -maxdepth 2 -name '*_circle.md' 2>/dev/null | while IFS= read -r f; do d="$(basename "$(dirname "$f")")"; m="$(basename "$f" | sed -nE 's/^_([a-z])_.*/\1/p')"; case "$m" in c|b|s) printf '%s\t%s\n' "$m" "$d" ;; esac; done
    ```
 
-   **Enumerate the records; do not glob one marker at a time.** The underscore marker is inert as a glob — `_c_circle.md` matches literally, no escaping — so the enumeration form above (which reads the marker as data in one pass) is the form to use; a per-state glob such as `$SCAN_CIRCLES/*/_c_circle.md` also resolves correctly, and `find -name '_c_circle.md'` needs no special handling. See `rules/fusion-workbench-conventions.md` `## Marker globs`.
+   **Enumerate the records; do not glob one marker at a time** — the form above reads the marker as data (`rules/fusion-workbench-conventions.md` `## Marker globs`).
 
    Skip any directory equal to `$CIRCLE`'s basename as a second guard — the active Circle's record carries `_t_` and is already excluded by marker, but a workbench whose pointer and marker disagree is exactly the case where a single guard isn't one.
 

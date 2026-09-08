@@ -26,11 +26,7 @@ echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 
 Hold the printed path and use it wherever a step below writes `$FUSION_SRC/…`. Each shell call gets a fresh shell, so the one executable check in this file calls the helper again rather than relying on the variable surviving.
 
-**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` citation resolves from `/`, finding nothing and saying nothing about why. The check is this print, once, rather than a test at each site. When it prints `UNRESOLVED`, say so in the briefing, name the step that could not open the file it cites, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a section you could not open. That is `rules/fusion-workbench-conventions.md` `## Path Resolution` → *Where the call belongs* applied to a held root: nothing is read through a value that came back empty, and the run names the value instead.
-
-**Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header.
-
-**What the root does *not* cover.** A `bin/` helper is always run from `$FUSION_PLUGIN_ROOT`. Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` and is **unanswered**; do not assume it. The split is by what you do with the path: read shipped text → `$FUSION_SRC`; run an installed executable → `$FUSION_PLUGIN_ROOT`.
+**`UNRESOLVED` is not a path, and no step below reads through it.** `bin/fusion-source-root`'s own header carries the branch, the guard, `UNRESOLVED` and the read-versus-run split. When the print says `UNRESOLVED`, say so in the briefing, name the step that could not open the file it cites, and tell the user to restart the session so the SessionStart hook exports the variable.
 
 **A Circle is a directory, and the state marker sits on the record inside it** — `circles/<dirname>/_a_circle.md` → `_t_circle.md`. The directory name never changes. See `rules/circle-records.md` `## State Markers — circles`.
 
@@ -164,7 +160,7 @@ Report in one line what its `Performed this run:` lines say. If an approved oper
 
 Then proceed to Step 6, unchanged.
 
-**Why this relay exists and what it is not.** It is not the proposal-return protocol that fusion's own record `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` declined. That was a return path out of an orchestrator's Phase 4 dispatch, with no user present and a Circle closing. This is `/fusion:next`, where the user is already here confirming an activation, and nothing about the Phase 4 path changes. The comparison is drawn once, in that Circle's plan `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` `## Approach`; do not re-argue it here.
+**Why this relay exists and what it is not.** It is not the proposal-return protocol that `260813-0858_*_does-a-non-interactive-playmaker-run-perform-the-confirm-gated-backlog-operations.md` declined, and nothing about the Phase 4 path changes. The comparison is drawn once, in `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` `## Approach`; do not re-argue it here.
 
 ## Step 6 — Interactive activation
 
@@ -260,7 +256,7 @@ The skill's writes are the record rename (`_a_`→`_t_`), the `**Claim:**` value
 
 ## Tone
 
-User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's chat language, resolved per `rules/fusion-workbench-conventions.md` `## Project language` — the `**Language:**` line in `CLAUDE.md`, with the profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Write every prompt and every rendered line in that language. This file is English because a skill body ships to projects of every language; what it tells you to render is not. For this skill specifically:
+Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`). For this skill specifically:
 
 - The briefing leads with the **recommendation** (action), then counts, then warnings. No leading metadata block.
 - Marker syntax in prose uses the **words** ("1 active, 4 anticipated"), not the bracket codes. The bracket codes belong in filenames.

@@ -26,11 +26,7 @@ fi
 echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
-**Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header.
-
-**`UNRESOLVED` is not a path, and no step below reads through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` citation resolves from `/`, finding nothing and saying nothing about why. Three steps here are behaviour rather than reading and would fail silently: Step 3 reads the domain cascade's one authoring home, and Steps 4–6 read three other skill bodies to execute their procedures inline. When it prints `UNRESOLVED`, stop before those steps, name them in the final report, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a procedure you could not open.
-
-**What the root does *not* cover.** A `bin/` helper is always run from `$FUSION_PLUGIN_ROOT` — `fusion-workbench-root`, `fusion-paths`, `fusion-session-mark`, `fusion-commit-lock` below. Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention…` and is **unanswered**; do not assume it. The split is by what you do with the path: read shipped text → `$FUSION_SRC`; run an installed executable → `$FUSION_PLUGIN_ROOT`.
+**`UNRESOLVED` is not a path, and no step below reads through it.** `bin/fusion-source-root`'s own header carries the branch, the guard, `UNRESOLVED` and the read-versus-run split. What is this pipeline's own is which steps break: Step 3 reads the domain cascade's one authoring home, and Steps 4–6 read three other skill bodies to execute their procedures inline. When the print says `UNRESOLVED`, stop before those steps, name them in the final report, and tell the user to restart the session so the SessionStart hook exports the variable. Do not improvise the content of a procedure you could not open.
 
 ## Arguments
 
@@ -85,8 +81,7 @@ Hold the `KEY=value` lines for the rest of the run and use them wherever a later
 
 On a non-zero exit, read the code — it says whose fault it is (full table in the conventions' `## Path Resolution` → Exit codes):
 
-- **Exit 3** — the workbench state is inconsistent: `.active-circle` is orphaned or corrupt. Stop and tell the user to fix or delete the pointer. Do not commit over an inconsistent workbench.
-- **Exit 4** — an internal error in `fusion-paths`. The user's workbench is fine; do **not** send them to check `.active-circle`. Report it as a fusion bug.
+- **Exit 3** — an orphaned or corrupt `.active-circle`, the user's to fix or delete; **exit 4** — a fusion bug, their workbench fine and not theirs to check. Stop on either, and never commit over an inconsistent workbench.
 
 Capture the starting state for the final report:
 

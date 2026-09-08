@@ -118,7 +118,7 @@ If an approved entry has no outcome line at all, say which one plainly. That, an
 
 ## Tone
 
-User-facing output follows `rules/user-facing-output.md` (loaded into every agent via `bin/fusion-rules`) plus the chat profile for the project's chat language, resolved per `rules/fusion-workbench-conventions.md` `## Project language` — the `**Language:**` line in `CLAUDE.md`, with the profile at `./fusion-workbench/stilwerk/chat-voice-<lang>.yaml`. Write every prompt and every report in that language. This file is English; what it tells you to render is not.
+Every user-facing sentence below is rendered in the project's chat language (`rules/fusion-workbench-conventions.md` `## Project language`).
 
 For this skill specifically:
 

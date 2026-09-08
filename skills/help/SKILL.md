@@ -28,11 +28,7 @@ fi
 echo "source root: ${FUSION_SRC:-UNRESOLVED (FUSION_PLUGIN_ROOT is unset)}"
 ```
 
-**Why the branch, why it is a call, and why the call is guarded:** `bin/fusion-source-root`'s own header.
-
-**`UNRESOLVED` is not a path, and no topic below is answered through it.** With `FUSION_PLUGIN_ROOT` unset the variable holds the empty string and every `$FUSION_SRC/…` read resolves from `/`, finding nothing. Say so plainly, tell the user to restart the session so the SessionStart hook exports the variable, and answer only from what you can actually open. **Never** paraphrase a shipped doc you could not read — this skill's whole value is that it quotes the source rather than the model's memory of it.
-
-**What the root does *not* cover.** `$FUSION_PLUGIN_ROOT/bin/fusion-paths` below is run, not read, and `$FUSION_PLUGIN_ROOT/templates/…` is copied — both stay on the install root. Whether the work-tree preference reaches helper resolution is part (c) of decision `260810-1544_*_should-prompt-called-bin-helpers-get-one-guarded-call-convention-and-does-the-work-tree-preference-extend-to-them.md` and is unanswered. The split is by what you do with the path: read shipped text → `$FUSION_SRC`; run or copy an installed artefact → `$FUSION_PLUGIN_ROOT`.
+**`UNRESOLVED` is not a path, and no topic below is answered through it.** `bin/fusion-source-root`'s own header carries the branch, the guard, `UNRESOLVED` and the read-versus-run split. What is this skill's own is the rule that follows from it: **never** paraphrase a shipped doc you could not read, because the whole value here is that it quotes the source rather than the model's memory of it. When the print says `UNRESOLVED`, say so plainly, tell the user to restart the session so the SessionStart hook exports the variable, and answer only from what you can actually open.
 
 ---
 
