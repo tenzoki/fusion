@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260907-1658: Kai Stalmann <ks@qantr.com>, checkout 1d05b0e4.
+**Claim:** Unclaimed
 **Active spec/plan:** 260907-1942_*_message-between-checkouts-read-before-pull.md
 **Active session history:** 260907-1659-orchestrator-session.md
 
@@ -70,3 +70,41 @@ Quoting the record's own `## Grounding snapshot`: "Both decision records carry `
 user's ruling written into them, and the relay to `_a_` is owed to the next orchestrator session
 alongside the store record above." So the three open records are a relay the activating session
 performs, not three questions the Circle still has to answer.
+
+## Closure note
+
+**Closed coherent 260908-1120**, session history `260907-1659-orchestrator-session.md`,
+range `abcaa823..HEAD`.
+
+**The Directive is met.** A session that ends and pushes offers to leave one message, and a
+reader on another checkout learns what arrived before deciding to pull. The store is
+`shared/forum/`, the command is `news`, and the divergence between those two names is the
+user's own ruling, given at activation and not reopened by planning. Thirteen plan steps, four
+decisions realised and cited to the commit that realises each, and one real entry written by
+following the shipped body by hand rather than by describing what it would do.
+
+**The Phase-3 verdict was review-needed, and the drift was in the plan rather than in the work.**
+Its Current State table recorded 9 737 bytes of free always-on rule space where 4 498 were free,
+because it summed five files while the bound measures three. The user chose to repair the cause:
+the baseline comment that made the misreading reasonable now states what the bound measures, read
+from `bin/fusion-rules` and the bound's own computation rather than from either comment.
+
+**One stopping clause is unmet and cannot be met by the session that built the work.**
+`/fusion:news` has never been invoked as a slash command, because the command roster is read once
+at session start from the installed copy. The clause says so, the proof run reports it, and the
+plan's release precondition forbids a tag until it is answered yes in writing. v10.25.0 is
+prepared and deliberately untagged.
+
+**Review coverage.** One pass, at this closure, over `abcaa823..07ca022d`: 24 commits, of which
+seven arrived through the merge from a concurrent checkout and would otherwise have been reviewed
+by nobody, each side assuming the other had looked. No critical finding. One high: with a workbench
+a project does not track in git, the feature answers `new=0` forever and no state names it, so it
+is inert and silent in a configuration fusion supports. Five of the seven findings are one class,
+the mechanism deciding a narrower question than the feature asks with the residue falling into the
+success branch. The pass declares its `**Not-opened:**` list, which is the next pass's scope.
+
+**What this Circle leaves open**, and none of it blocks the closure: nine defect records and one
+decision. The decision is `260907-2003_*_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.md`,
+filed when the head-field rule obliged a swap that would have deleted the only statement of this
+Circle's Directive; the field was written, the prose left standing, and the conflict recorded
+rather than resolved by hand.
