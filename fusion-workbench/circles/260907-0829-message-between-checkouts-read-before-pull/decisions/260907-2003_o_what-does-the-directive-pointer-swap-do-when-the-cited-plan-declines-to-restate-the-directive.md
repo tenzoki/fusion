@@ -75,3 +75,12 @@ marker stays. Searched every store in `SCAN_ANALYSES`, `SCAN_PLANS`, `SCAN_DECIS
 `SCAN_HISTORY` for a ruling on the pointer swap: the only text bearing on it is this record's own
 `## Question`, and the plan it names closed without a step that touches the obligation. The record
 it cross-references on how a Circle record carries its Directive once a spec exists is unmoved.
+
+Also seen: 260908-1612 by orchestrator — the next Circle's plan
+`260908-1612_*_cut-the-skills-surface-and-add-the-post-step-body.md` does the same thing, in the
+same words: its `## Directive` reads "The Circle record carries the full Directive and its
+Grounding; this plan does not restate them." So the field was written and the record's prose left
+standing a second time, in two consecutive Circles, by two separate planner runs given no
+instruction about it either time. That moves the question off a single measured case: a plan
+planned from a Circle record declines to restate the Directive as a matter of course, which is what
+option 2 would have to forbid.

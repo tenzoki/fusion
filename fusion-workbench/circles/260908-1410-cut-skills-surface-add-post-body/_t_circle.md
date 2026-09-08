@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260908-1530: Kai Stalmann <ks@qantr.com>, checkout 1d05b0e4.
-**Active spec/plan:** (none yet)
+**Active spec/plan:** 260908-1612_*_cut-the-skills-surface-and-add-the-post-step-body.md
 **Active session history:** 260908-1530-orchestrator-session.md
 
 ---
