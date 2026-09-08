@@ -685,3 +685,44 @@ plan being ahead of the tree, not the tree departing from the plan.
 `260907-0657-orchestrator-session.md` `## Why this session stopped` and carried in `agentstate.yaml`'s
 `work_queue` as `SUITE-REPAIR` and `S4` onward, both `queued`. That is a filed shortfall, not
 abandoned work.
+
+---
+
+**2026-09-08 (second pass), reconciler, domain `code`.** Verified steps 4 to 16 against the working
+tree at `de94102f`, not against the markers. **All thirteen are done on disk**, and the `**Status:** Complete`,
+the sixteen `[DONE]` marks and the `_c_` filename marker are each earned. Evidence, one line per step:
+S4 `_dispatchBound` in both `fusion.json` files, byte-identical, and absent from this project's own
+`orchestrator` object; S5 `rules/bounded-dispatch.md` with provenance at line 3 and zero minute literals;
+S6 seven of fifteen agents receive it and eight do not, `IS_BOUND_AGENT` at `bin/fusion-rules:261`;
+S7 four new `ROLES` entries at lines 539, 547, 561, 570 and the three emptied ones gone, seven golden
+blocks changed; S8 `rules/commit-lock.md:72` carries both narratives and the prompt carries neither;
+S9/S10 `### Bounded dispatches` at `agents/orchestrator.md:456`, one `Stop by:` site, zero `20 minutes`,
+the Step 3a guard at line 488; S11 `skills/setup/SKILL.md:457` names both resolved values and restates
+neither branch; S12 `BOUND_AGENTS` at `hooks/lib/events-query.ts:532` and `measureDispatchDurations` at
+632, `bin/fusion-events dispatches` exits 0 printing all three `limit=` lines; S13/S14 the test files exist;
+S15 `agents/*.md` sums to 417 145, net 17 302 against `AGENT_HEAD_ROOM` 18 000, so 698 bytes stand where
+the plan forecast about 456, and `surface-growth-bound.test.ts` is byte-identical to `abcaa823`;
+S16 `CLAUDE.md` names `bounded-dispatch.md` and `dispatchMinutes`.
+
+**Three passages of this plan now state something the tree contradicts**, each already filed and each
+left standing here rather than edited, since a reconciliation annotates and does not rewrite a plan:
+Step 5's `30-minute` illustration at line 218 against its own acceptance criterion
+(`260908-1619_*_plan-step-5-prescribes-a-minute-illustration-its-own-acceptance-criterion-forbids.md`);
+Step 7's "exactly eight blocks" at line 290 where seven bound agents exist
+(`260908-1648_*_plan-step-7-asks-for-eight-changed-golden-blocks-where-seven-bound-agents-exist.md`);
+Step 8's third verification at line 350 expecting a hash count of 0 that reads 1, because
+`agents/orchestrator.md:1028` carries `f38f37d` in a third passage the step never moved
+(`260908-1720_*_plan-step-8s-third-verification-expects-a-hash-count-of-zero-that-a-third-passage-makes-unreachable.md`).
+The work is right in all three cases; the plan text is what drifted.
+
+**One closure clause is answered no on a technicality and the substance holds.** `## Where this Circle
+stops` asks whether four pinned values are byte-identical to `abcaa823`. `AGENT_BASELINE`, `RELEASE_CAP`
+and `DRIFT_CEILING` are. `RULE_BASELINE` is not, by a comment block another checkout rewrote in
+`01e0f688` before this session started, with every numeric entry unchanged. That is recorded in
+`260908-1845-orchestrator-byte-reckoning.md` and is not this Circle's doing.
+
+**One decision moved.** `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`
+is realised by `bb5dbda4` and renamed `_a_` to `_i_`.
+
+**No review pass has run in this Circle.** The Circle's one review runs at closure, so nothing in the
+reviews store bears on any step above.

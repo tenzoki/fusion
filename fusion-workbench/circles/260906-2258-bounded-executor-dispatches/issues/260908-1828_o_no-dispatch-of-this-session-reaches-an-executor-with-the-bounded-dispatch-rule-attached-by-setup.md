@@ -35,3 +35,9 @@ text; what is unproven here is the delivery route, not the contract.
 emits `rules/bounded-dispatch.md`, and a dispatch of one bound agent that names no rule-file path in
 its prompt still returns a bounded return when it passes its stopping time. Neither half is reachable
 from this session.
+
+---
+Reconciliation 2026-09-08: verified against the tree at `de94102f` and still open. The passage this record is about is unchanged in its source file, so the defect stands whatever the plan step's marker says.
+
+---
+Reconciliation 2026-09-08: confirmed on the tree. `"$FUSION_PLUGIN_ROOT"/bin/fusion-rules reconciler` emitted four rule paths and no `bounded-dispatch.md`, while the work tree's `bin/fusion-rules reconciler` emits it. This reconciler dispatch is the sixth of the session to reach an executor without the rule attached by Setup, and it read the file only because the dispatch prompt named it. The marker stays `_o_`.

@@ -40,3 +40,5 @@ Option 1. It is the cut the plan already names, already justifies and already pr
 
 ---
 Answered: 260907-0657-orchestrator-session.md `### What gives, now that the agents/ budget is 281 bytes short` — option 1, take the plan's named cut up front before step 8; the two commit-lock narratives move to `rules/commit-lock.md`, which the orchestrator already receives by emission, so no reader loses information and the Circle keeps no cut in reserve; ruled by user, Kai Stalmann <ks@qantr.com>
+
+Implemented: bb5dbda4 — the named cut was taken up front as plan Step 8: the two commit-procedure narratives moved from `agents/orchestrator.md` to `rules/commit-lock.md` `## Two measured defects behind this procedure` before Step 9 wrote a byte, and the byte reckoning at Step 15 closed with 698 bytes of `agents/` head-room.

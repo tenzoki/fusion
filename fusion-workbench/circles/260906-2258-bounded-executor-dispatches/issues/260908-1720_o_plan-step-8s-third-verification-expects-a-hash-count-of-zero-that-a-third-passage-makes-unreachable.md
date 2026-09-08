@@ -25,3 +25,9 @@ a verification or acceptance line stating a figure that the step's own instructi
 **Acceptance test.** Item 3 names the two hashes separately, expecting `045a14f` to reach 0 and
 `f38f37d` to reach 1 with the surviving passage named, or it drops the second hash and keeps the
 first. Whether the plan is worth amending at all after the step has run is not decided here.
+
+---
+Reconciliation 2026-09-08: verified against the tree at `de94102f` and still open. The passage this record is about is unchanged in its source file, so the defect stands whatever the plan step's marker says.
+
+---
+Reconciliation 2026-09-08: verified against the tree at `de94102f`. `agents/orchestrator.md:1028` still carries `f38f37d` in a third passage that Step 8 did not move, so the step's third verification (`grep -c '045a14f\|f38f37d' agents/orchestrator.md` returns 0) reads 1 and is unreachable as written. Step 8 itself is correctly done: both moved narratives are in `rules/commit-lock.md` (grep returns 2) and neither is in the prompt. The marker stays `_o_`.

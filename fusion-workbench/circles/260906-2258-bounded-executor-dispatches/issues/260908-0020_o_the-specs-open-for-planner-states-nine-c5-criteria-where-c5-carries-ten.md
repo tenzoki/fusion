@@ -13,3 +13,6 @@ Found while pulling the plan through to the specification's fourth revision, at 
 
 ---
 Reconciliation 2026-09-08: still open, re-verified against the file rather than the marker. `260907-0820_*_spec-bounded-executor-dispatches.md` `## Open for Planner` still reads "calls C5's acceptance criteria eight where the specification states nine", and `grep -c '^- \[ \]'` over C5's own section still returns 10. Nothing between the filing and now touched that file. The plan-side half stays done: the plan states no count.
+
+---
+Reconciliation 2026-09-08: verified against the tree at `de94102f` and still open. `260907-0820_*_spec-bounded-executor-dispatches.md` line 737 still reads "the specification states nine" while C5 carries ten `- [ ]` criteria, counted with `awk` over its own section. The plan half of the defect is gone: `260907-1450_*_plan-bounded-executor-dispatches.md` states no count and names the criteria it means instead, at its `## Open Questions`. What is left is the spec text, and a spec is not this reconciliation's to rewrite. The marker stays `_o_`.

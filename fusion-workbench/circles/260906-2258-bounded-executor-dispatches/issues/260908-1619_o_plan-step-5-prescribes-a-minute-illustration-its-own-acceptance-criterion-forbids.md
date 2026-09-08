@@ -32,3 +32,6 @@ its corpus.
 returns nothing, or returns only text that names the contradiction and says which half governs. The
 choice of which half to repair is not made here: striking the illustration and stating the criterion's
 intent are both open, and the specification is the upstream copy.
+
+---
+Reconciliation 2026-09-08: verified against the tree at `de94102f` and still open. The passage this record is about is unchanged in its source file, so the defect stands whatever the plan step's marker says.

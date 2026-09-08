@@ -43,3 +43,6 @@ temporary directory would interfere whether or not another process is present.
 touching the repository, and record the failing set each time. The defect is real if any run differs
 from any other; it is closed when five consecutive runs agree. Until then, no reading of the closure
 clause taken from a single run should be treated as settled.
+
+---
+Reconciliation 2026-09-08: still open, and deliberately not re-measured. Establishing or refuting an intermittent failure needs repeated full-suite runs, which is a unit this dispatch had no room for; the record's own five runs by two observers stand as the evidence. Nothing in the tree at `de94102f` addresses it: no change landed in `staging-drift.test.ts`, `fusion-commit-lock.test.ts` or `guard-state-shape.test.ts` in the range `637d0b04..de94102f`. The plan's green-suite closure clause and its release precondition are therefore both still unanswerable in one run, which is what this record says. The marker stays `_o_`.

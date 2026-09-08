@@ -26,3 +26,6 @@ reads a plan's arithmetic; `plan-stopping-section-lint` judges presence of one s
 
 **Acceptance test.** `grep -n 'eight blocks' ` over the plan returns nothing, or returns only text that
 names the correction and says seven governs.
+
+---
+Reconciliation 2026-09-08: verified against the tree at `de94102f` and still open. The passage this record is about is unchanged in its source file, so the defect stands whatever the plan step's marker says.
