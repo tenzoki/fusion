@@ -3,9 +3,9 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Unclaimed
+**Claim:** Claimed 260908-1530: Kai Stalmann <ks@qantr.com>, checkout 1d05b0e4.
 **Active spec/plan:** (none yet)
-**Active session history:** (none yet)
+**Active session history:** 260908-1530-orchestrator-session.md
 
 ---
 
@@ -36,3 +36,30 @@ After this work, `skills/post/SKILL.md` exists as the fourth body of the `/fusio
 - `260907-0829-message-between-checkouts-read-before-pull` — closed coherent; it authored the message half whose composition contract this Circle relocates into `skills/post/SKILL.md`. Nothing about that contract's substance changes here.
 
 ## Turn log
+
+## Activation proposal
+
+Recommended as the next activation, and it is the only anticipated Circle on the board. Every
+entry in `## Dependencies` resolves and is closed: the one entry names Circle
+`260907-0829-message-between-checkouts-read-before-pull`, whose record carries `_c_`. The
+`## Grounding snapshot` cites five records, of which one is an open decision,
+`260822-1154_*_does-a-cut-only-circle-re-baseline-the-surfaces-it-cuts.md`, and the snapshot
+itself states why that question does not bind here: this Circle cuts in order to spend, so
+re-baselining would hand back the room the new skill body is meant to consume. A candidate whose
+single open question is disposed of inside its own Grounding is ready in a way that a candidate
+holding an unanswered one is not. Two of those five records carry a terminal marker, the closed
+dependency above and the decision
+`260905-1810_*_does-a-growth-bound-re-baseline-after-a-merge-of-two-lines-that-were-each-inside-it.md`
+at `_i_`, which is under the half at which this run would call the Grounding stale. The age
+measurement agrees. The snapshot records a surface measurement taken at commit `8502d539`, and
+HEAD stands one commit past it (`git rev-list --count 8502d539..HEAD` = 1), that commit being the
+one which filed this Circle. The input the plan will work from, the cut ledger
+`260908-1346-the-cut-ledger-for-the-skills-surface-and-what-the-post-body-owes.md`, is on disk and
+was measured against the same tree.
+
+Proposed activation timestamp: 260908-1422.
+
+Playmaker run: `260908-1422-playmaker-direct-dispatch.md`.
+
+Activation is the user's or the orchestrator's act. This block proposes and renames nothing.
+
