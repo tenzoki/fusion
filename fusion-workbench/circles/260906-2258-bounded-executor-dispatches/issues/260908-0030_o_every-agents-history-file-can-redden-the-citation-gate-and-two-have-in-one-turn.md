@@ -71,3 +71,6 @@ Also seen: 260908-1619 by orchestrator — steps 4 and 5 each ended with a histo
 
 ---
 Reconciliation 2026-09-08: still open, and the acceptance test has not been reachable. Both named instances are repaired on disk — `bin/fusion-citation-sweep --dry-run` prints `rewrites=0 bare-record=0` over this repository, and `260908-0003-coder-dispatch-minutes-config-leaf.md` line 8 now carries `_*_`. The defect is a class rather than those two files, and its acceptance test asks for a run of further plan steps producing zero rejections; plan steps 4 to 16 were not run in this session, so no evidence for or against the class exists yet. The marker stays `_o_`.
+
+---
+Also seen: 260908-1648 by coder — steps 6 and 7's history file cited this Circle's own new issue with the literal `_o_` marker, and `citation-sweep.test.ts` reddened the full suite on it (`bare-record=1`). Third instance, third agent, third dispatch, and again a prompt that never mentioned the citation form; the running rate over plan steps 4 onward is now three rejections in three history-writing steps. Repaired by hand at 2 characters and one further full-suite run, no bugfixer dispatch; the suite is green and `--dry-run` reads `rewrites=0` again. The marker stays `_o_`.

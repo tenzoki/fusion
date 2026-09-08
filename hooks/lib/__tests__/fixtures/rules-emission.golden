@@ -24,20 +24,23 @@
   agent-setup.md 4181
   fusion-workbench-conventions.md 58762
   critical-stance.md 10374
-  total 73317
+  bounded-dispatch.md 9162
+  total 82479
 
 [coder]
   agent-setup.md 4181
   fusion-workbench-conventions.md 58762
   critical-stance.md 10374
-  total 73317
+  bounded-dispatch.md 9162
+  total 82479
 
 [coderev]
   agent-setup.md 4181
   fusion-workbench-conventions.md 58762
   critical-stance.md 10374
   review-contract.md 6820
-  total 80137
+  bounded-dispatch.md 9162
+  total 89299
 
 [consultant]
   agent-setup.md 4181
@@ -51,7 +54,8 @@
   fusion-workbench-conventions.md 58762
   critical-stance.md 10374
   user-facing-output.md 10884
-  total 84201
+  bounded-dispatch.md 9162
+  total 93363
 
 [editor]
   agent-setup.md 4181
@@ -65,14 +69,16 @@
   agent-setup.md 4181
   fusion-workbench-conventions.md 58762
   critical-stance.md 10374
-  total 73317
+  bounded-dispatch.md 9162
+  total 82479
 
 [ontorev]
   agent-setup.md 4181
   fusion-workbench-conventions.md 58762
   critical-stance.md 10374
   review-contract.md 6820
-  total 80137
+  bounded-dispatch.md 9162
+  total 89299
 
 [orchestrator]
   agent-setup.md 4181
@@ -107,7 +113,8 @@
   fusion-workbench-conventions.md 58762
   critical-stance.md 10374
   decision-record-examples.md 4952
-  total 78269
+  bounded-dispatch.md 9162
+  total 87431
 
 [shaper]
   agent-setup.md 4181

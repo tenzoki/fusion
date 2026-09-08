@@ -96,7 +96,7 @@
   reference-resolution-lint.test.ts 1005
   review-coverage-mandate.test.ts 353
   review-coverage.test.ts 818
-  rules-emission-golden.test.ts 1154
+  rules-emission-golden.test.ts 1178
   rules-voice-profile.test.ts 323
   sentence-identifier-containment.test.ts 477
   session-start-subdirectory.test.ts 159
@@ -104,4 +104,4 @@
   surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 325
-  total 22014
+  total 22038

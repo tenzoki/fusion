@@ -246,7 +246,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test -- provenance`, exit code in hand. Then `bin/fusion-prose-metric rules/bounded-dispatch.md` and read the reported em-dash rate against the ceiling of one per 1000 prose words; it reports and does not gate.
 - **Acceptance criterion:** the provenance lint passes; each of the seven table rows cites a passage that exists at the cited heading; nothing in the file states a number of minutes.
 
-### 6. Emit the rule to the seven, and say so in `README-agents.md`
+### 6. [DONE] Emit the rule to the seven, and say so in `README-agents.md`
 
 - **Executor:** `coder`
 - **Files:** `bin/fusion-rules`, `README-agents.md`
@@ -269,7 +269,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `bin/fusion-rules coder | grep bounded-dispatch` returns the path, and the same for the other six; `bin/fusion-rules planner | grep -c bounded-dispatch` returns 0, and the same for the other seven exempt agents plus the orchestrator. Then `cd hooks && npm test -- derivable-enumerations`, exit code in hand.
 - **Acceptance criterion:** exactly seven of the fifteen agents receive the file; the enumeration lint is green; `bin/fusion-rules` exits 0 for every agent name.
 
-### 7. Repair the role table and regenerate the emission golden
+### 7. [DONE] Repair the role table and regenerate the emission golden
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/__tests__/rules-emission-golden.test.ts`, `hooks/lib/__tests__/fixtures/rules-emission.golden`

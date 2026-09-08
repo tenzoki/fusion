@@ -60,6 +60,14 @@
 #     the final consolidated review. The audience is the two agents that write
 #     review files; every other agent would be carrying a contract it can never
 #     apply.
+#   - The bounded-dispatch agents (coder, ontocoder, bugfixer, reconciler,
+#     coderev, ontorev, curator) additionally read bounded-dispatch.md (shipped
+#     by plugin) — what a dispatched agent does when it reaches the wall-clock
+#     stopping time its dispatch named, and what the return must say for the
+#     orchestrator to continue from where the run stopped. The audience is the
+#     agents whose deliverable accumulates on disk as they work; the orchestrator
+#     holds the other half of the protocol and reads the file on demand rather
+#     than by emission.
 #   - Design-diagram agents additionally read design-diagrams.md (shipped by
 #     plugin) — the doctrine for expressing technical design as formal,
 #     parseable Mermaid (when / which type, validity, coherence self-check).
@@ -241,6 +249,17 @@ esac
 case "$AGENT" in
   coderev|ontorev)                IS_REVIEWER_AGENT=1 ;;
   *)                              IS_REVIEWER_AGENT=0 ;;
+esac
+
+# Bounded-dispatch-agent flag — independent of PATTERNS. An agent is bound when
+# the deliverable its dispatch was made for accumulates on disk as the run
+# proceeds, and exempt when that deliverable arrives whole at the end or when a
+# partial write of its own cannot safely be made twice. The sort is the
+# specification's, agent by agent and with the reason beside each name:
+# 260907-0820_*_spec-bounded-executor-dispatches.md.
+case "$AGENT" in
+  coder|ontocoder|bugfixer|reconciler|coderev|ontorev|curator) IS_BOUND_AGENT=1 ;;
+  *)                                                           IS_BOUND_AGENT=0 ;;
 esac
 
 # Decision-transition-agent flag — the agents that perform or plan decision
@@ -570,6 +589,18 @@ fi
 #     block above for the audience.
 if [ "$IS_REVIEWER_AGENT" -eq 1 ]; then
   emit_if_exists "$PLUGIN_RULES_DIR/review-contract.md"
+fi
+
+# 1g. The bounded-dispatch agents additionally receive the stopping-time
+#     contract: what a dispatched agent does when it reaches the wall-clock time
+#     its dispatch handed it, and what its return has to say so the work already
+#     on disk is continued rather than redone. See the IS_BOUND_AGENT block above
+#     for the audience and the criterion that sorted it. The orchestrator is
+#     deliberately NOT in that set — it holds the other half of the protocol and
+#     reads this file on demand, the way it reads the Rebalance gate's own rule
+#     rather than carrying it on every dispatch.
+if [ "$IS_BOUND_AGENT" -eq 1 ]; then
+  emit_if_exists "$PLUGIN_RULES_DIR/bounded-dispatch.md"
 fi
 
 # 2. Domain patterns — plugin first, then fusion-agent-specific project rules,
