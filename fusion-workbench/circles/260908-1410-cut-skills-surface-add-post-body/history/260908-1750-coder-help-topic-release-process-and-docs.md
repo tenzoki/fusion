@@ -3,7 +3,7 @@
 **Status:** Complete
 **Date:** 2026-09-08
 **Circle:** 260908-1410-cut-skills-surface-add-post-body
-**Plan:** `260908-1612_o_cut-the-skills-surface-and-add-the-post-step-body.md`, steps 12 through 15
+**Plan:** `260908-1612_*_cut-the-skills-surface-and-add-the-post-step-body.md`, steps 12 through 15
 **Agent:** coder
 
 ## What was implemented

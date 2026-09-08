@@ -235,13 +235,13 @@ Each step below names the files it touches. Where a row's span is a fraction of 
     - Changes: line 116's list of individually reachable steps ("Einzelne Schritte allein: `--only archive`, `--only log-activity`, `--only claude-md`") gains `--only forum`. The eight-step count in the same sentence does not change, because the message pass is Step 6's half rather than a ninth step. **Do not add `/fusion:post` to the command table at line 209**: that table lists the administrative and situational commands and carries no step body, so a row for `post` would contradict the ruling that this adds no administrative name. `docs/messages-between-checkouts.md:25` and `docs/upgrading-to-v10-25.md:53` already document `--only forum` correctly and need no edit.
     - Dependencies: step 14.
 
-16. **Regenerate the golden, once**
+16. [DONE] **Regenerate the golden, once**
     - Executor: `coder`
     - Files: `hooks/lib/__tests__/fixtures/surface-growth.golden`
     - Changes: run `cd hooks && UPDATE_SURFACE_GOLDEN=1 npx vitest run lib/__tests__/surface-growth-bound.test.ts`, which rewrites the fixture and then fails on purpose so the flag can never be left on in a green run. Read the whole diff and confirm every per-file change is one this plan intended, which is the entire obligation the flag exists to create. Then re-run without the flag. **This is the only regeneration in the whole Circle**, per `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`: the green unit is the Turn, not the commit, and making the regeneration routine is what that record declined. **Regenerating the golden moves no baseline and clears no bound**; if the bound is red after this step, the answer is a cut and never an edit to `SKILL_BASELINE`.
     - Dependencies: step 15.
 
-17. **Full suite, and the final measurement**
+17. [DONE] **Full suite, and the final measurement**
     - Executor: `coder`
     - Files: none (verification only)
     - Changes: run the full `npm test` from `hooks/`. Report the final `skills/*/SKILL.md` total, the floor of 240 614, the budget of 260 614 and the free figure, together with the measured size of `skills/post/SKILL.md` and the measured net of the help-topic swap. Confirm in the report that no baseline moved on any of the four surfaces, by naming the four constants and stating that each is unchanged. Also run `"$FUSION_PLUGIN_ROOT/bin/fusion-paths" post` and confirm it exits 0 and emits `WORKBENCH` and `OUT_FORUM`; the installed resolver reads the work tree's prompts in this repository, so the new body resolves in this session even though the installed copy does not carry it.
@@ -298,7 +298,7 @@ Two verifications the suite does not perform, and each is a named step above: th
 
 ## Open Questions
 
-- [ ] Whether `skills/migrate/SKILL.md`'s language preamble can adopt the shortened form while keeping its shell-string clause. Filed as `260908-1612_o_can-migrates-language-preamble-adopt-the-shortened-form-and-keep-its-shell-string-clause.md` in this Circle's decision store, because the answer fixes whether the one-line form is the project's universal shape or one with a documented exception. Row 9 excludes migrate either way and this Circle does not wait on it.
+- [ ] Whether `skills/migrate/SKILL.md`'s language preamble can adopt the shortened form while keeping its shell-string clause. Filed as `260908-1612_*_can-migrates-language-preamble-adopt-the-shortened-form-and-keep-its-shell-string-clause.md` in this Circle's decision store, because the answer fixes whether the one-line form is the project's universal shape or one with a documented exception. Row 9 excludes migrate either way and this Circle does not wait on it.
 - [ ] Where exactly `CLAUDE.md`'s release process should name the help topic (step 13). Two placements are true and cheap, and the choice is the executor's; only the constraint that no cardinality goes false is binding.
 - [ ] Whether `skills/help/SKILL.md:76`'s selector list is an enumeration or an example. Step 12 adds `--only forum` on the reading that it is an enumeration, at a cost of about 16 bytes. Nothing turns on the answer.
 
@@ -306,7 +306,7 @@ Two verifications the suite does not perform, and each is a named step above: th
 
 Three records, per `rules/fusion-workbench-conventions.md` `## Issue and Decision Filing`. None of them gates this Circle.
 
-- `260908-1612_o_can-migrates-language-preamble-adopt-the-shortened-form-and-keep-its-shell-string-clause.md`, this Circle's decision store.
-- `260908-1612_o_readme-agents-calls-curate-the-only-path-to-claude-md-while-a-lint-forces-a-hand-edit.md`, this Circle's issue store. Surfaced by step 11's obligation.
-- `260908-1612_o_the-migrate-carve-outs-authoring-home-has-no-heading-a-citation-can-address.md`, this Circle's issue store. Surfaced by step 1's pointer.
-- `260908-1612_o_log-activity-calls-itself-cleanups-step-6-and-it-is-step-5.md`, the shared issue store. Found next to this work rather than caused by it: `skills/log-activity/SKILL.md` is in no row of the ledger.
+- `260908-1612_*_can-migrates-language-preamble-adopt-the-shortened-form-and-keep-its-shell-string-clause.md`, this Circle's decision store.
+- `260908-1612_*_readme-agents-calls-curate-the-only-path-to-claude-md-while-a-lint-forces-a-hand-edit.md`, this Circle's issue store. Surfaced by step 11's obligation.
+- `260908-1612_*_the-migrate-carve-outs-authoring-home-has-no-heading-a-citation-can-address.md`, this Circle's issue store. Surfaced by step 1's pointer.
+- `260908-1612_*_log-activity-calls-itself-cleanups-step-6-and-it-is-step-5.md`, the shared issue store. Found next to this work rather than caused by it: `skills/log-activity/SKILL.md` is in no row of the ledger.
