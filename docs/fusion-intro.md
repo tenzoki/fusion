@@ -209,6 +209,7 @@ Die Hooks laufen aus der installierten Kopie und sind für die ganze Sitzung fes
 | `/fusion:setup` | Einmal pro Projekt die Workbench anlegen; danach führt der Orchestrator Setup selbst aus |
 | `/fusion:cleanup` | Sitzungsende, Pipeline mit einem Gate |
 | `/fusion:cadence` | Was ist passiert (gestern, 7 Tage, wiederkehrend) |
+| `/fusion:news` | Was ein anderes Checkout hinterlassen hat, gelesen vor dem Pull |
 | `/fusion:next` | Portfolio-Briefing, Circle aktivieren |
 | `/fusion:direct <Entwurf>` | Directive erfassen, `_a_`-Circle anlegen |
 | `/fusion:memo` | Memo, Aufgabe oder Idee ablegen |
