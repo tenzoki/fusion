@@ -1,0 +1,23 @@
+The message step reads `agentstate.yaml` five steps after the pipeline deleted it
+
+---
+
+`skills/post/SKILL.md` `## Step 2: compose the draft` sources the commit range from "`session.git_head_at_start` from `agentstate.yaml`". On the inline path that file is gone: `skills/cleanup/SKILL.md` `## Step 1 — Close the session: file issues for open tasks`, item 4, says "Delete `fusion-workbench/agentstate.yaml` if it exists", and Step 6's message half runs five steps later. The phrase that used to anchor the value survived only in the text this Circle cut — the pre-cut `### The message half` read "the commit range (`session.git_head_at_start` **from Step 1's read**, to `HEAD`)" (commit `b0705cc4`), and the replacement names the file instead of the read.
+
+---
+
+**Filed by:** coderev, Kai Stalmann <ks@qantr.com>
+
+The pipeline already knows this hazard and states it once, for the other consumer of the same field: `agents/orchestrator.md` says to run `bin/fusion-review-coverage` "before the Cleanup step deletes `agentstate.yaml` (the helper reads `session.git_head_at_start` from it for the range's start)". Cleanup carries the matching capture for exactly one field and no other — Step 1 item 1 says "**Capture the session's domain here, before anything deletes the file**", holds it as `$DOMAIN`, and names Step 3 as the consumer. Nothing does the same for the two fields the message step needs.
+
+Two fields, not one. The commit range is `session.git_head_at_start`; the pointer block's second element, "the basename of this session's history file", is `session.history_file`, and `skills/post/SKILL.md` names no source for it at all.
+
+Three shapes the defect takes, and they are not the same case:
+
+1. **Full `/fusion:cleanup` run.** Step 1 deletes the file, Step 6 asks for two of its fields. The executor either invents a range or reports it could not be read; neither is written down.
+2. **`/fusion:post` invoked by name outside an orchestrator session.** `agentstate.yaml` never existed. `## Step 3: nothing to say is an answer` enumerates two compose-nothing conditions — not a git repository, and nothing to report — and an unreadable session anchor is neither of them.
+3. **`--only forum`.** Step 1 does not run, so the file survives and the read succeeds. This is the one shape that works, which is why the defect does not show up in the invocation the body was tested against.
+
+The fix belongs on the cleanup side, not in `post`: `post` is right to name the file it reads, and the pipeline is what destroys it. Either Step 1 captures `git_head_at_start` and `history_file` beside `$DOMAIN` and Step 6 hands them to the body, or Step 1's delete moves after Step 6. `bin/fusion-events turns` reads `session.history_file` out of the same file and is a third consumer worth checking against whichever answer is taken.
+
+**Acceptance test:** a full `/fusion:cleanup` run on a session with commits in its range produces a pointer block carrying a resolved range and a history basename; the standalone shape either resolves both or names an explicit third compose-nothing condition; the source of each field is written down once, in the body that consumes it or in the step that captures it, and not in both.
