@@ -375,7 +375,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `wc -c agents/orchestrator.md` before and after, difference at or under 1 600. `grep -n "Stop by:" agents/orchestrator.md` returns the one site. `grep -cE '\b20 minutes\b' agents/orchestrator.md` returns 0. Then `cd hooks && npm test`, exit code in hand; `surface-growth-bound.test.ts` must still be green.
 - **Acceptance criterion:** every dispatch of the seven that the orchestrator makes can be constructed from this block alone, with no rule-file read; a reader of the block can tell which agents are bound and which are not.
 
-### 10. The orchestrator's five continuation sites
+### 10. [DONE] The orchestrator's five continuation sites
 
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md`
