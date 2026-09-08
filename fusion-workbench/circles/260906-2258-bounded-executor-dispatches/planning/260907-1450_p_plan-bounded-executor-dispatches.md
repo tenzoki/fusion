@@ -352,7 +352,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
   5. Sum `wc -c agents/*.md`, subtract 399 843, subtract from 18 000, and **write the resulting head-room into the commit message.** Step 15 reads it back against what Steps 9 and 10 actually spent.
 - **Acceptance criterion:** the two narratives are readable in full by an orchestrator dispatch, with no sentence lost and no hash or citation dropped; `agents/` head-room measured after this step is about 4 246 bytes; the golden diff touches one block; `AGENT_BASELINE` and `RULE_BASELINE` are byte-identical to what they were before the step (`git diff` over both test files shows no change to either map).
 
-### 9. The orchestrator's supply side
+### 9. [DONE] The orchestrator's supply side
 
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md`

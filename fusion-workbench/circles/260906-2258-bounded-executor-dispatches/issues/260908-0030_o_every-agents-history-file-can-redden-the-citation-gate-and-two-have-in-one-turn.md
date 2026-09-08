@@ -73,6 +73,9 @@ Also seen: 260908-1619 by orchestrator — steps 4 and 5 each ended with a histo
 Reconciliation 2026-09-08: still open, and the acceptance test has not been reachable. Both named instances are repaired on disk — `bin/fusion-citation-sweep --dry-run` prints `rewrites=0 bare-record=0` over this repository, and `260908-0003-coder-dispatch-minutes-config-leaf.md` line 8 now carries `_*_`. The defect is a class rather than those two files, and its acceptance test asks for a run of further plan steps producing zero rejections; plan steps 4 to 16 were not run in this session, so no evidence for or against the class exists yet. The marker stays `_o_`.
 
 ---
+Not seen: 260908-1745 by orchestrator — step 9's history file cites the plan correctly, and its prompt mentioned the citation form no more than the four before it. The running rate over plan steps 4 onward is 4 of 5, so the fault is frequent rather than certain and a single clean step is not evidence the class is closed. Recorded here because a record that only collects its own confirmations measures nothing.
+
+---
 Also seen: 260908-1737 by orchestrator — step 8's history file spelled the plan's `_p_` marker at line 6. Fourth instance, fourth dispatch, four of four history-writing steps since the count started, and no prompt has mentioned the citation form. The rate over plan steps 4 onward stands at 4 of 4. Repaired by hand at 2 characters; `--dry-run` reads `rewrites=0` again. The marker stays `_o_`.
 
 ---

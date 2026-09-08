@@ -24,6 +24,11 @@ runs of one tree cannot answer either question in one run.
   each failed a different one to three of the same three files. Its own reading, which it labelled
   inference rather than measurement, was that the cause is pre-existing and unrelated to its edit.
 
+- Coder executing step 9, three runs: two exited 1, each failing only `fusion-commit-lock` and
+  `staging-drift`; the third was green at 924 of 924. Each of the two passes alone. No file outside
+  the three named here has failed in any of the eight runs now recorded, which is the one regularity
+  the evidence shows.
+
 **What is not yet established.** Nobody has run the suite repeatedly on a tree with none of this
 Circle's changes, so "pre-existing" is inference on both sides. The shared property of the three
 files is that they spawn real project directories and run git in them, which makes concurrency and

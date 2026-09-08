@@ -111,7 +111,7 @@ Remaining setup (after steps 1 and 1b are resolved):
      fi
      ```
 
-     It prints one line, `max_turns=<n>`, and puts on stderr **every diagnostic the configuration loader returned**, one per line. **Repeat all of them to the user in the Setup-complete summary.** They are not all dropped values, and the costliest one is not: a `fusion-guard.json` still at the project root is a file fusion no longer reads at all, so a Turn budget left inside it was never seen, nothing was dropped, and the session runs on the built-in default. The others name a retired top-level key inside `fusion.json` (`guard`, `decisions`, `escalation`, `churn`), a file that would not parse, and a budget that is not a whole number of 1 or more — that last is dropped, named, and inherits the default. Each is a setting the project believes is in force and is not. This stderr is the only one of the loader's two channels a session sees: the other is a `guard_advisory` per guarded tool call, which reaches the dashboard's warnings panel and no one else.
+     It prints two lines, `max_turns=<n>` and `dispatch_minutes=<n>`, and puts on stderr **every diagnostic the configuration loader returned**, one per line. **Repeat all of them to the user in the Setup-complete summary.** They are not all dropped values, and the costliest one is not: a `fusion-guard.json` still at the project root is a file fusion no longer reads at all, so a Turn budget left inside it was never seen, nothing was dropped, and the session runs on the built-in default. The others name a retired top-level key inside `fusion.json` (`guard`, `decisions`, `escalation`, `churn`), a file that would not parse, and a budget that is not a whole number of 1 or more — that last is dropped, named, and inherits the default. Each is a setting the project believes is in force and is not. This stderr is the only one of the loader's two channels a session sees: the other is a `guard_advisory` per guarded tool call, which reaches the dashboard's warnings panel and no one else.
 
      **The `[ -x ]` guard is the one the source count carries, for the same reason** — `$FUSION_PLUGIN_ROOT` is the installed copy, pinned for the session, so a helper added between releases is absent there and a bare call is exit 127. Two non-zero exits reach past it: **exit 2** is *no workbench above the working directory* (Step 0 already `cd`-ed there, so meeting it here says the ground moved under the session), and **exit 3** is *the plugin's compiled hooks are missing* — the remedy is `fusion --update` for an installed copy, or `cd hooks && npm run build` in the plugin's own work tree.
 
@@ -123,6 +123,8 @@ Remaining setup (after steps 1 and 1b are resolved):
      - Run the **Unresolved-budget check-in** instead — defined under Step 3d, where the bound it replaces is written, and run at the **start** of each Turn as Phase 2 step 1. It is what bounds the loop in this branch: before spending a Turn the session stops and asks the user whether to spend it, and the user may widen the interval or state that they accept an unbounded loop. Say at the loop's start that this — and not a count — is what will end the session, and that a user who switches the check-in off is switching off the last bound the session has.
 
        **The check-in interval is deliberately not a configuration leaf.** It would have to be read the same way `orchestrator.maxTurns` is, through `bin/fusion-turn-budget`, which is the read whose failure defines this branch: a fallback stored behind the mechanism it is a fallback for is absent in exactly the case it is needed. Nor is it a number this prompt states — that is what the branch refuses. It is one Turn, the only interval statable without inventing a count, and the user widens it at the first question.
+
+     **The dispatch bound.** Hold `dispatch_minutes=<n>` as `<dispatch-minutes>`. All three branches carry over, to a different consequence: unresolved, no stopping time reaches any dispatch prompt and every dispatch runs to its natural end, today's behaviour exactly. No check-in, no dashboard change, no substitute. Say it once in the Setup-complete summary and proceed.
 3. Read `CLAUDE.md` for project context, folder structure, architecture
 4. `git log --oneline -20` for recent change context (skip if not a git repository)
 5. Snapshot open state, using the values `fusion-paths` gave you in Step 2. Every `SCAN_*` may name **two** directories (the active Circle's and the shared one) — count across all of them, or the snapshot silently under-reports:
@@ -450,6 +452,18 @@ At most `<max-turns>` Turns — the Turn budget resolved at Setup Step 2 — num
 **This sequence is what every route that creates a Turn runs**, and that is why the check-in sits in it. Phase 2 is entered here from Phase 1, from Step 3e's refresh, from the *Revise Artifact* answer at Step 3c-bis, and from *Revise Artifact* at Phase 3 — four routes create a Turn, one entry, no per-route carve-out. Three of them once bypassed the gate. Two further entries into Phase 2 create no Turn and run none of this: the interrupted-session resume (Setup step 1) and the *Revise Grounding* resume at `paused_at_task`.
 
 When the Turn ends (via Step 3e convergence/refresh, Step 3d circuit breaker, or Step 3c-bis early exit), clear `control.turn_start_head` so the next Turn records a fresh anchor. The loop can also end **before** a Turn starts, when step 1's check-in is answered *Stop here*; nothing was recorded for that Turn, so there is nothing to clear.
+
+### Bounded dispatches
+
+Seven agents carry a stopping time: `coder`, `ontocoder`, `bugfixer`, `reconciler`, `coderev`, `ontorev`, `curator`; no other does. **You are the only supplier**: a skill body or plain session dispatches without one even while your session runs, since nothing there computes one and a bound nothing continues truncates work instead of saving cost.
+
+Compute it fresh at each dispatch, continuations included; pass it as `**Stop by:** <that value>` on its own line above the directive body, like any dispatch parameter. Node, not `date`: adding minutes is unportable (`-d "+N minutes"` GNU, `-v+NM` BSD).
+
+```bash
+node -e 'console.log(new Date(Date.now()+<dispatch-minutes>*60000).toISOString().slice(0,16)+"Z")'
+```
+
+A bounded return says the stopping time was why it returned. Read that **before** the site's own handling of an incomplete run, at every site. Before acting, read `$FUSION_PLUGIN_ROOT/rules/bounded-dispatch.md` `## For the orchestrator: continuing a bounded return` in full: it holds the five sites, the stall guard and four rules across them. Do not act from memory. Absent (older install): continue at the same site in a fresh dispatch and say so.
 
 ### Step 3a: Execute Ready Tasks
 
