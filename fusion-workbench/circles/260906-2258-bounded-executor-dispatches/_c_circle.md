@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260907-0657: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
+**Claim:** Unclaimed
 **Active spec/plan:** 260907-0820_*_spec-bounded-executor-dispatches.md (the spec, which states the Directive), 260907-1450_*_plan-bounded-executor-dispatches.md (the plan written against it)
 **Active session history:** 260908-1529-orchestrator-session.md
 
@@ -62,3 +62,49 @@ Who the bound covers was answered twice. The first answer, on 260907, was **all 
 ## Turn log
 
 - Turn 1 (session 260907-0657): commits 7ed43852..8197f789 on `main`, plan steps 2 and 3; Coherence verdict review-needed; session history: 260907-0657-orchestrator-session.md. The Turn was interrupted mid-flight at the unplanned suite-repair task and re-entered on 260908-0806 with a scope the user changed: a patch release cut from the `v10.24.0` tag, which landed as 22653f61, dcf73a8f and 134265a9 on the branch `release/v10.24.1` and reached no commit on `main`. Steps 4 to 16 of the plan are unstarted.
+
+## Closure note
+
+**Closed coherent on 2026-09-08.** Session history `260908-1529-orchestrator-session.md`, whose
+`## Coherence` section carries four dated verdict blocks; the fourth reads `coherent` with
+recommendation `none`, and the three before it are what the Rebalance gate moved. Plan
+`260907-1450_*_plan-bounded-executor-dispatches.md`, all sixteen steps done and verified against the
+tree rather than against their markers.
+
+**What the Circle leaves.** Seven named agents receive `rules/bounded-dispatch.md` by emission and
+are handed a wall-clock stopping time on the dispatch prompt; one that reaches it hands back
+half-finished work through the report it already makes; the orchestrator continues from the site the
+dispatch was made at; and `bin/fusion-events dispatches` says afterwards which dispatches ran long
+without calling any of them a violation. The bound is requested and never enforced, which is stated
+in the mechanism rather than around it.
+
+**The text budget was met.** `agents/` head-room ran 3 509 at Setup, 4 244 after the cut at step 8,
+and 698 at the end; steps 9 and 10 spent 3 546 of the 3 790 budgeted. No baseline moved. The byte
+reckoning is in `260908-1845-orchestrator-byte-reckoning.md`.
+
+**Every stopping clause was put to the user and confirmed**, including the two the orchestrator
+flagged as not clean: a green suite read off a single run of a test set that is intermittently red
+(`260908-1719_*_three-harness-spawning-tests-fail-intermittently-so-the-suite-cannot-answer-the-circles-green-clause.md`),
+and three of the seven bound agents actually dispatched with a stopping time in this session, the
+other four not having come up.
+
+**Six defect records and one decision are open at closure**, five of them filed by the closure
+review `260908-2110-coderev-bounded-dispatch-closure.md`. The one that matters most is High:
+`260908-2115_*_the-bounded-returns-four-statements-and-nothing-else-leaves-the-verification-result-two-other-passages-read-off-it-nowhere-to-be-written.md`
+— the return's own contract and the verification field two other passages read off it cannot both be
+satisfied, and the unit table makes the collision ordinary rather than rare. A follow-on Circle owns
+it. Also open: `260908-1828_*_no-dispatch-of-this-session-reaches-an-executor-with-the-bounded-dispatch-rule-attached-by-setup.md`,
+which is the standing one-release-behind cost and the reason no executor here received the rule
+through its own Setup, and `260908-0030_*_every-agents-history-file-can-redden-the-citation-gate-and-two-have-in-one-turn.md`,
+whose acceptance test was finally run over this Circle's own thirteen steps and answered not-zero.
+
+**Two residuals the Circle declares rather than repairs.** The plan and specification carry no
+in-text citation of the ruling that authorised rewriting five of their passages; it is in the plan's
+reconciliation log and nowhere else. And a record's account of itself trails its subject by one
+write, which this session met twice and stopped at the third by the reconciler's own judgement that
+a further pass would be tidying rather than correction.
+
+**Review coverage.** The range `637d0b04..20796615` is tiled by the closure review, whose
+`**Not-opened:**` list carries twenty-four entries; `hooks/lib/__tests__/fusion-events.test.ts` is
+the gap the reviewer named as the one it would close first, and the eight files carried from the
+previous review were not reached.

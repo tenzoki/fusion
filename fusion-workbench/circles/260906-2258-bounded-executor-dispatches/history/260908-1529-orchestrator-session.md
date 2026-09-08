@@ -201,3 +201,106 @@ tail; comment-stripped comparison of `AGENT_BASELINE`, `RULE_BASELINE`, `RELEASE
 105 354 and 145 144 unchanged; `bin/fusion-citation-sweep --dry-run`, `rewrites=0`;
 `npx vitest run lib/__tests__/workbench-citation-lint.test.ts`, 13 passed. Two files were written: this
 one and the plan's `## Reconciliation Log`.
+
+## Budget
+
+Every record figure below is derived from the stores at write time, never accumulated across Turns.
+Filed means the filename stamp is at or after this session's start; a marker count means that name
+did not exist at `637d0b04`.
+
+| Metric | Count |
+|--------|-------|
+| Turns | 2 |
+| Tasks resolved | 14 (plan steps 4 to 16, plus the Revise Artifact amendment) |
+| Tasks skipped/deferred | 0 |
+| Issues created | 10 |
+| Issues resolved | 3 |
+| Decisions answered (`_o_`→`_a_`) | 0 as measured; one was answered and went on to `_i_` in the same session, so it counts below instead |
+| Decisions implemented (`_a_`→`_i_`) | 2 |
+| Commits | 16 |
+| Agent errors | 0 |
+| Human gates hit | 5 (the ontocoder task, and four Rebalance rounds including the stop-condition clauses) |
+
+## Per-Turn Log
+
+### Turn 1
+- Tasks attempted and completed: S4 to S16, thirteen of thirteen.
+- Commits: `56d7a515` through `de94102f`, twelve.
+- Coherence: `review-needed` at Phase 3; the Artifact-to-Grounding edge flagged with the Grounding
+  at fault, four passages of the plan and specification stating what the tree contradicts.
+- Circuit breaker status: OK. Turn budget 12, one Turn used.
+
+### Turn 2
+- Created by the Rebalance gate's Revise Artifact choice, after Revise Grounding filed the question
+  and the re-taken verdict did not move.
+- Tasks: the five-passage amendment, then the reconciliation log's own catch-up.
+- Commits: `31b2d82e`, `6be2ec5e`, `20796615`, `e2ad2196`.
+- Coherence: four dated verdict blocks in this file. `review-needed`, `review-needed`,
+  `review-needed`, then `coherent` with recommendation `none`.
+
+## Review coverage
+
+**Range:** `637d0b04..20796615` — 16 commits
+**Covered by:** `260908-2110-coderev-bounded-dispatch-closure.md`, `**Reviewed-range:**`
+`637d0b04..20796615`, covers 15.
+**Not covered:** `e2ad2196` — the commit that carries the review itself, which no review can open.
+**Carried out-of-scope files:** twenty-four entries, `hooks/lib/__tests__/fusion-events.test.ts`
+first among them by the reviewer's own judgement, plus the eight carried from
+`260908-0852-coderev-message-between-checkouts-closure-pass.md` which were not reached.
+
+## Remaining Work
+
+Six defect records and one decision open in this Circle's store at closure, and none of them blocks
+the closure: `260908-2115_*_...` (High, the bounded return's contract against the verification field
+two other passages read off it), `260908-2112_*_...`, `260908-2113_*_...`, `260908-2118_*_...`,
+`260908-2122_*_...`, `260908-1719_*_...` (the intermittently red suite),
+`260908-1828_*_...` (no executor here received the rule through its own Setup),
+`260908-0030_*_...` (the citation class, its acceptance test now run and answered not-zero),
+`260908-0020_*_...` (the specification's own criteria count), and the open decision
+`260908-1836_*_...` on whether the minute-literal gate's context list should cover the prompt's own
+prose name for the value.
+
+## Commits
+
+| Hash | Message |
+|------|---------|
+| `56d7a515` | docs(config): the dispatch bound is documented in both fusion.json files |
+| `af558fe0` | feat(rules): bounded-dispatch.md, the obligation the seven agents will carry |
+| `04151cee` | feat(rules): the seven bound agents receive bounded-dispatch.md |
+| `bb5dbda4` | refactor(agents,rules): the two commit-procedure narratives move off the prompt |
+| `5e5b2519` | feat(agents): the orchestrator learns to hand out a stopping time |
+| `a734a1c4` | feat(agents): five sites learn what to do with a half-finished return |
+| `3684f9b1` | docs(skills): the setup skill names both values the one block resolves |
+| `4fe1e1e5` | feat(hooks): bin/fusion-events dispatches reads how long a dispatch ran |
+| `8b42e9e6` | test(hooks): the dispatch reading's every branch, and the seven pinned to one set |
+| `6b239475` | test(gates): a minute literal cannot return to the two prompts |
+| `994fd07e` | chore(workbench): the byte reckoning, and the budget was met |
+| `de94102f` | docs: every surface this work changed is described where it is documented |
+| `31b2d82e` | chore(workbench): the reconciliation, and the question the four text defects raise |
+| `6be2ec5e` | chore(workbench): five passages of the plan and spec now say what the tree confirms |
+| `20796615` | chore(workbench): the log catches up with the correction, and the verdict is coherent |
+| `e2ad2196` | review(bounded-dispatch): the closure pass, 16 commits, 5 findings |
+
+## Portfolio update
+
+`portfolio.md` was regenerated after the `_t_`→`_c_` transition; the playmaker's log is
+`260908-2313-playmaker-direct-dispatch.md` in the shared history store. The portfolio now shows no
+active Circle and one anticipated, `260908-2018-prerequisites-confirmed-once-order-computed`, which
+a concurrent session in this same checkout created while this one ran. An `## Activation proposal`
+was appended to that record recommending a re-sharpen before activation: its Grounding snapshot
+states zero anticipated and one active Circle, and the active one closed today, so that clause is
+already stale.
+
+## What this session found out about its own machinery
+
+The bounded-dispatch mechanism was exercised on itself. Nine dispatches carried a stopping time,
+all of them returned inside it, and none produced a bounded return, so the handoff path this Circle
+built is specified and tested but has not once been walked end to end. The reading it also built,
+run against this session's own log mid-session, counted three dispatches past twenty minutes out of
+sixteen.
+
+Four rounds of the Rebalance gate, and the pattern across them is the session's own finding: each
+correction left the account of that correction stale, and the next verdict flagged the account
+rather than the thing. Two of those rounds were worth taking, because each left a reader holding a
+false statement about the tree. The third was stopped by the reconciler's own judgement that a
+further pass would be tidying, and that judgement is what closed the loop rather than a rule.
