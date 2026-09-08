@@ -292,7 +292,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test -- rules-emission` twice: once to confirm the regeneration failed on purpose, once with the flag off to confirm green. Then the full `npm test`, exit code in hand.
 - **Acceptance criterion:** the suite is green with `RULE_BASELINE`, `GROWTH_BUDGET`, `RELEASE_CAP` and `DRIFT_CEILING` all unedited; the golden diff touches exactly the seven bound agents' blocks.
 
-### 8. Make the room: move the two commit-procedure narratives to `rules/commit-lock.md`
+### 8. [DONE] Make the room: move the two commit-procedure narratives to `rules/commit-lock.md`
 
 - **Executor:** `coder`
 - **Files:** `agents/orchestrator.md`, `rules/commit-lock.md`, `hooks/lib/__tests__/fixtures/rules-emission.golden`

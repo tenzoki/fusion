@@ -68,3 +68,17 @@ Since v10.8.0 the `with` form appends the machine-written `commit` row to `fusio
 ### Cross-reference
 
 This protocol closed the cross-agent staging-race defect — parallel agents' stage+commit operations interleaving at the git-index level. Its issue record did not survive the workbench reorganisations; the failure modes above carry its substance.
+
+## Two measured defects behind this procedure
+
+Two instructions in the orchestrator's Step 3b read as preferences and are not. Each is
+the residue of a defect measured in this repository, and each is recorded here rather
+than in the prompt because the prompt is charged to every dispatch and this file is not.
+
+### The commit message goes to a file
+
+Measured in this repository: commit `045a14f` landed cut off mid-sentence at the apostrophe in `project's`, and the three message lines after it were executed as shell commands (`command not found: be`, `folder`, `were`). `git commit` still exited 0 and the commit's *content* was correct — the destroyed message is visible only to someone who reads the commit back. It was repaired as `4f16c60`. The record is fusion's own `260810-1535_*_the-orchestrators-commit-procedure-truncates-any-message-containing-an-apostrophe.md`.
+
+### The staging list is written out path by path
+
+Measured in this repository: a `git add -u` given the directory a batch of records had just been renamed inside staged three deletions and added nothing, because the renamed successors were untracked. Three `_o_` records left HEAD and returned only as the repair commit `f38f37d`. The instruction then in force named `-A` alone; `-A` is one instance of the hazard, the directory argument is the hazard.
