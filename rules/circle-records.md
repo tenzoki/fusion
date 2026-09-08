@@ -239,6 +239,48 @@ it.
 
 **`Active spec/plan:` and `Active session history:` hold the storeless basename** (`260716-1910_*_plan-foo.md`, `260716-1847-foo-session.md`), the citation form `rules/fusion-workbench-conventions.md` `## Filename Patterns` mandates everywhere. The field says nothing about the store, and does not need to: a spec written with no Circle in scope lands in `shared/planning/` and a Circle created later adopts it, a migrated pre-v4 plan sits in `shared/planning/` by the Origin Rule, and a workbench-wide lookup resolves both cases the same way it resolves a file inside the Circle. The consumers (playmaker's `portfolio.md` rendering and the orchestrator's resume) resolve it with `find "$WORKBENCH" -name '<basename>'`, which is correct because no two stamped artifacts share a marker-normalised basename (measured live tree and `archive/`, and pinned by a test — the conventions paragraph carries the figures).
 
+### How many Circles may be active, and in whose checkout
+
+**The bound is one active Circle per checkout, and there is no bound per project.**
+`.active-circle` is class L in `rules/workbench-tracking.md` `## The four classes`, per
+checkout by construction and never tracked, and it is the whole of the
+bound: a checkout runs the one Circle its own pointer names. Two checkouts each running
+their own Circle therefore leave two `_t_` records in one tracked workbench, and **that is
+the arrangement `**Claim:**` exists to make legible, not a fault to repair.** Nothing here
+licenses a second activation in the *same* checkout; `/fusion:next`'s already-active gate
+reads `.active-circle` and refuses one.
+
+**So a count of `_t_` records decides nothing on its own:** the count is per project and
+the bound is per checkout. **Attribute each record before you read the number.** Compare
+every `_t_` record's `**Claim:**` against this checkout's identity by the halves-test in
+`### The claim field`. That sorts the records into three groups, and every `_t_` record
+falls in exactly one of them, because the halves-test either matches this checkout, matches
+some other, or does not resolve. The three conditions are named because three consumers
+cite them: `agents/playmaker.md` `### Step 1: Inventory`, its portfolio render, and
+`/fusion:setup` Step 0i.
+
+- **Claimed by this checkout.** At most one may stand, and `.active-circle` names it. A
+  second is `MULTIPLE-ACTIVE`: one checkout cannot work two Circles and its pointer names
+  at most one of them, so one of the two is stale. Warn. The pointer conditions
+  (`STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`) are read against this group
+  alone; a pointer says nothing about anybody else's record.
+- **Claimed by another checkout.** Any number of them, and no bound applies:
+  `MULTI-CHECKOUT`, the designed shape. **Report it in those terms, name each holder, and
+  warn about nothing.** This checkout holds no pointer to these Circles and needs none;
+  whether it may activate a further Circle is decided by its own `.active-circle`, which
+  these records do not touch.
+- **Not attributable**, meaning the claim reads `Unclaimed`, is absent, or is the third opening.
+  `CLAIM-UNATTRIBUTED`: name the record and the field value that failed to attribute, and
+  assign it to neither group above. An `Unclaimed` `_t_` record is a pre-claim-field record
+  or an interrupted write, both ordinary, and a guess reports the ordinary case as a fault
+  or the fault as ordinary.
+
+**A warning is what the first and third earn; the second earns a sentence.** Rendering
+`MULTI-CHECKOUT` as a warning is the defect this section was written from
+(`260907-1700_*_no-agent-is-told-that-two-active-circles-in-two-checkouts-are-the-designed-shape-and-the-one-signal-it-has-says-fault.md`):
+a second checkout was offered its Circle with the two active records named as a cost to
+accept, and its second option would have pointed it at a Circle another checkout held.
+
 ### The Directive is a pointer once a spec exists
 
 **A record's `## Directive` holds prose if and only if its `Active spec/plan:` field reads the
@@ -289,7 +331,7 @@ Binding decision: `260818-1504_*_how-does-a-circle-record-carry-its-directive-on
 
 ## Active (_t_)
 
-<One entry expected, or 0. If >1, flag MULTIPLE-ACTIVE warning. Each entry: Circle directory name, Directive line, active session history path.>
+<One entry per `_t_` record, whatever their number. More than one is not itself a warning: run the attribution in `### How many Circles may be active, and in whose checkout` and flag only what it names. Each entry: Circle directory name, Directive line, active session history path, and the checkout its `**Claim:**` names.>
 
 ## Anticipated (_a_) — ranked
 
