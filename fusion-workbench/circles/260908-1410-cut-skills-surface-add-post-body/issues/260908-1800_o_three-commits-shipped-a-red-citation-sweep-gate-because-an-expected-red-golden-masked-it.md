@@ -14,3 +14,29 @@ Three commits shipped a red citation-sweep gate because an expected-red golden m
 **What was done.** The seven tokens were corrected in place at step 17 and `bin/fusion-citation-sweep --dry-run` then reported `files=0 rewrites=0`; `npm test` exits 0. This record is about the blind spot, not about the seven tokens.
 
 **Acceptance test.** A Circle that defers its golden regeneration to a final step has some way of telling a red suite caused by the stale golden from a red suite caused by anything else, without waiting for that final step. Naming the one test file expected to fail, and treating any other failing file as a stop, would satisfy it.
+
+---
+Reconciled 260908-1814 (reconciler, HEAD `ee99a578`): still open. **The evidence checks out and the
+reasoning holds, with one refinement to the mechanism.**
+
+Verified against the commits named. `git show b0705cc4` of the plan carries five literal-marker citations —
+one at `## Open Questions` and four under `## Filed alongside this plan`, each spelling `_o_` where the
+storeless grammar requires `_*_`. That commit is the one that filed the plan, and `git log` over the
+planning store shows the plan was touched again only at `3175f39e`, `22d6f839`, `02533218` and `ee99a578`,
+with the citation correction landing in the last of those. So the gate was red at `b0705cc4` and stayed red
+through the two commits the record names. The two history logs each carried one further token, corrected in
+the same commit.
+
+**The refinement.** The record reads as though a red suite was seen and attributed to the golden. It was
+not: no Phase A, B or C dispatch ran the full suite at all. The four coder logs each report a hand-picked
+`npx vitest run` over the lint files the dispatch touched, and `citation-sweep.test.ts` is in none of those
+sets. So the causal chain is one link longer than stated — the deferred golden made a full-suite green
+unattainable by construction, which pushed every executor onto a chosen subset, and the gate that went red
+was never in anybody's subset. That strengthens the record rather than weakening it: the wider residual it
+measures is real, and the mechanism is not "a second red is unremarkable" but "there is no run in which a
+second red would have appeared". The acceptance test as written already covers it, because naming the one
+file expected to fail is only meaningful against a full run.
+
+The claim that the deferred-golden decision's accepted residual is wider than that decision stated is
+correct. `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`
+reasons entirely about the golden's own staleness and says nothing about the other gates in the window.
