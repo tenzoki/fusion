@@ -60,3 +60,5 @@ Who the bound covers was answered twice. The first answer, on 260907, was **all 
 (none)
 
 ## Turn log
+
+- Turn 1 (session 260907-0657): commits 7ed43852..8197f789 on `main`, plan steps 2 and 3; Coherence verdict review-needed; session history: 260907-0657-orchestrator-session.md. The Turn was interrupted mid-flight at the unplanned suite-repair task and re-entered on 260908-0806 with a scope the user changed: a patch release cut from the `v10.24.0` tag, which landed as 22653f61, dcf73a8f and 134265a9 on the branch `release/v10.24.1` and reached no commit on `main`. Steps 4 to 16 of the plan are unstarted.

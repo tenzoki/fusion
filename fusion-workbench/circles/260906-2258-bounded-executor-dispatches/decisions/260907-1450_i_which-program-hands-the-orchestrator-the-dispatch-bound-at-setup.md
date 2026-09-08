@@ -46,3 +46,6 @@ Against that stands one honest cost, and it is a naming cost rather than a behav
 
 ---
 Answered: 260907-0657-orchestrator-session.md `### Which program hands the orchestrator the dispatch bound` — Option B, `bin/fusion-turn-budget` prints a second `KEY=value` line; chosen over a new helper on byte cost against the `agents/` growth bound and on emitting the loader diagnostics once; ruled by user, Kai Stalmann <ks@qantr.com>
+
+---
+Implemented: e1e625ae and 7e7708cf — option B is realised in both halves. `hooks/lib/config.ts` gains the `orchestrator.dispatchMinutes` leaf (interface, `DEFAULTS`, `CONTAINER_LEAF_RULES`, `loadConfig`), and `bin/fusion-turn-budget` prints `dispatch_minutes=20` as its second `KEY=value` line from the one existing process, with the helper's header and the module docstring rewritten to describe both lines. No second helper and no second guarded call block were added.

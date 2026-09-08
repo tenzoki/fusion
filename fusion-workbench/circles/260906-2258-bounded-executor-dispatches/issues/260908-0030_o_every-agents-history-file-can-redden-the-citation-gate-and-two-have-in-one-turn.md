@@ -65,3 +65,6 @@ standalone obligation the class is about, moved one level up.
 citation gate rejects. The defect is closed when that count is zero for a run of steps in which no
 dispatch prompt mentioned the citation form — a dispatch that has to warn about it every time is a
 standalone obligation, which this project measures being dropped.
+
+---
+Reconciliation 2026-09-08: still open, and the acceptance test has not been reachable. Both named instances are repaired on disk — `bin/fusion-citation-sweep --dry-run` prints `rewrites=0 bare-record=0` over this repository, and `260908-0003-coder-dispatch-minutes-config-leaf.md` line 8 now carries `_*_`. The defect is a class rather than those two files, and its acceptance test asks for a run of further plan steps producing zero rejections; plan steps 4 to 16 were not run in this session, so no evidence for or against the class exists yet. The marker stays `_o_`.

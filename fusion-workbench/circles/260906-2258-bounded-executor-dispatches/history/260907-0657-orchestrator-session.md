@@ -166,3 +166,136 @@ Not filed as a backlog entry: no agent originates one, and the user files by han
 `/fusion:memo` (`rules/fusion-workbench-conventions.md` `## Backlog entries`). Recorded here so the
 instruction survives the session. Put it to the user once the plan is done: capture it as its own
 anticipated Circle via `/fusion:direct`, or handle it inside this one.
+
+---
+
+## Session resumed 260908-0806, scope changed by the user
+
+The interrupted-session gate was answered **Modify**. The prior queue (SUITE-REPAIR, then plan
+steps 4 to 16) is not being resumed in this stretch; the user redirected the session to an
+unrelated delivery question and then to a concrete instruction.
+
+**New Directive:** cut a patch release `v10.24.1` from the tag `v10.24.0` rather than from `main`,
+carrying only `8197f789`, so that a consuming project can pick up the playmaker change without
+publishing the in-flight message-between-checkouts work that sits in `main`.
+
+Evidence the Directive rests on, taken this session:
+
+- `main` stands 10 commits past `v10.24.0`; `.claude-plugin/plugin.json` still reads `10.24.0`,
+  so nothing has been bumped since the tag.
+- The only unreleased commit touching `agents/playmaker.md` is `8197f789`. `f8b44f27`
+  (`fix(playmaker)`) is already inside `v10.24.0`.
+- `8197f789` touches seven files: `agents/playmaker.md`, `rules/circle-records.md`,
+  `skills/setup/SKILL.md`, two test fixtures, one lint test, and the workbench event log.
+
+Session state carried forward unchanged: history file, session anchor `3639813c`, start stamp
+`260907-0657`. Snapshot at resume: 15 open defect records, 14 open decision records, 1 active
+Circle, 1 anticipated. Workbench domain `code` (147 source files, 10 data files, counted by
+`git ls-files`). Turn budget 12, dispatch bound 20 minutes.
+
+### Outcome: v10.24.1 released from the tag
+
+Tag `v10.24.1` points at `134265a9` on `origin/release/v10.24.1`. Three commits above the
+`v10.24.0` commit `3639813c`:
+
+| Commit | What it carries |
+|---|---|
+| `22653f61` | the content of `8197f789` minus its workbench event-log line |
+| `dcf73a8f` | the one shared record `260907-1700_*_no-agent-is-told-...` that the carried rules text cites |
+| `134265a9` | the version bump, content taken from the coder-verified edit |
+
+Verified on that tree: `claude plugin validate .` passes with the standing `CLAUDE.md` warning,
+the hook suite returns 911 of 911 across 52 files, and the release tarball at
+`https://github.com/tenzoki/fusion/archive/refs/tags/v10.24.1.tar.gz` answers 200 and carries the
+changed `agents/playmaker.md`.
+
+**The whole-commit route was tried first and abandoned on evidence.** Carrying `5d2e40bc` whole
+brought two Circle-scoped records whose citations need the analysis from `b1e49fe0`, and that
+analysis's own citation correction sits in `e1e625ae`, one of the two commits this release exists
+to exclude. The chain therefore cannot be closed with whole commits without importing the excluded
+work: `citation-sweep.test.ts` stayed red at 910 of 911. The minimal cut carries the one record the
+shipped text cites and is green. The user ruled on both forks.
+
+**Not covered by any review.** `bin/fusion-review-coverage --since v10.24.0` returns
+`verdict=uncovered` with all ten commits above the tag uncovered, `8197f789` among them. Advisory
+and not a blocker, per `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md`.
+
+**The marketplace entry was deliberately not bumped.** `/plugin install` resolves against `main`,
+so advertising `10.24.1` there would serve `main`'s tree, which is the in-flight dispatch-bound
+work this release exists to withhold. Delivery is `install.sh` with `FUSION_REF=tags/v10.24.1`.
+
+**One scope violation, mine.** To measure the minimal variant quickly I edited
+`.claude-plugin/plugin.json` myself on a scratch branch, which is a file this role may not edit.
+The scratch branch was deleted and the released bump comes from the coder-verified commit; the
+released tree hash equals the measured one, `5b28501bff731e1dfa4c97170cd6c2d5d72cb2e8`.
+
+---
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+Taken 2026-09-08 by the reconciler, domain `code`, against the working tree at `43fe1bc1` and the
+release branch. Session anchor `3639813c` from `agentstate.yaml`.
+
+**Verdict:** review-needed
+
+**Edges:**
+
+- Artifact↔Grounding: 19 claims verified against disk — the plan's 16 steps and the Circle record's
+  three head fields, each opened at the file it names — with 4 drift items and 0 open coderev or
+  ontorev findings (no review pass ran this session). Plan steps 2 and 3 hold at `hooks/lib/config.ts`
+  lines 187, 251, 429 and 629 and at `hooks/turn-budget.ts:121`; steps 4 to 16 verified unstarted
+  at each file they name. **Flagged (Grounding at fault):** three records understated disk and were
+  corrected by this pass (the plan's `Draft`/`_o_` pair, decision
+  `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md` at `_a_` with
+  both commits landed, issue `260907-1939_*_the-planability-analysis-spells-a-backlog-entrys-marker-and-the-citation-sweep-gate-is-red-on-it.md`
+  at `_o_` with the sweep now printing `rewrites=0`), and one remains that this role may not write:
+  the Circle record's `## Turn log` is empty while `bin/fusion-events turns` reports `turns=1` and
+  this file's own `## Turn log` carries that Turn.
+- Artifact↔Directive: **the session's two Directives are met, and neither is met on the branch this
+  anchor walks.** The resumed Directive, cutting `v10.24.1` from the `v10.24.0` tag carrying only
+  `8197f789`, is realised by `22653f61`, `dcf73a8f` and `134265a9` on `release/v10.24.1`, with the
+  tag pointing at the last of them. The stated Directive of the session opening, checking the spec
+  and producing an executable plan, is realised by `b1e49fe0` through `223f916a`. The ten commits
+  `git log 3639813c..43fe1bc1` puts on `main` move toward the active plan's own Directive
+  (`e1e625ae` and `7e7708cf` are its steps 2 and 3), which the resume deprioritised rather than
+  contradicted. No commit anywhere in the range moves away from a Directive this session stated.
+- Grounding↔Directive: 46 active decision records across both stores after this pass, 3 in this
+  Circle and 43 shared, counted with `ls | grep -cE '_[oa]_'` over each store; 0 conflicting with
+  either Directive. One is worth naming because it was applied rather than merely not violated:
+  `260815-2109_*_may-a-circle-close-over-an-uncovered-review-range-and-who-decides.md` governs the
+  release going out over `verdict=uncovered`, and this file records the gap under
+  `**Not covered by any review.**` as that record requires. The four Circle-scoped decisions all
+  concern the bounded-dispatch build, which the resumed Directive set aside without ruling against.
+
+**Rebalance recommendation:** revise Grounding
+
+**Two things the verdict rests on that a reader should not have to reconstruct.** The plan's own
+Directive is partially met, 2 of 16 steps, and the shortfall is filed rather than dropped
+(`agentstate.yaml` `work_queue`, `SUITE-REPAIR` and `S4` onward at `queued`; this file's `## Why
+this session stopped`). That alone would read `directive-partially-met`. It does not, because drift
+was found as well, and the two verdicts are disjoint by construction: `directive-partially-met`
+requires that nothing drifted. And one decision now carries an `Answer located:` line and no rename,
+`260907-0820_*_is-a-token-side-measurement-of-the-splits-net-cost-worth-building.md`, whose answer
+sits in `260907-2012-break-even-arithmetic-for-the-dispatch-split.md`. It needs the user's ruling
+before its marker can move.
+
+### Ruling: no marketplace release for a tag-cut patch
+
+Put to the user at the Rebalance gate on 260908-1234 and ruled by them in the same exchange:
+**no marketplace release, the tag alone.** A patch that has to bypass unreleased work on `main` is
+cut from the previous tag, bumps `plugin.json` on that branch only, is tagged and pushed, and is
+delivered by pinning the ref. The marketplace entry does not move, because `/plugin install`
+resolves against `main` and would advertise a version it does not deliver.
+
+One correction to the premise, made before the record was filed and carried into it. The user named
+`fusion --update` as the delivery route. That command runs `install.sh` with no ref, and the default
+is `heads/main` (`install.sh:34` and the launcher body in the same file), so a bare `fusion --update`
+in a consuming project fetches exactly the tree this release exists to withhold. The route is
+`FUSION_REF=tags/v10.24.1 fusion --update`, or the same pin on the `curl | bash` form. The ruling
+stands unchanged in substance; only the incantation needed correcting.
+
+Filed as 260908-1234_*_how-does-a-fix-reach-a-consumer-while-main-carries-unreleased-work.md in the
+shared store rather than in this Circle: the question arose from the release, not from this Circle's
+Directive about bounding executor dispatches.

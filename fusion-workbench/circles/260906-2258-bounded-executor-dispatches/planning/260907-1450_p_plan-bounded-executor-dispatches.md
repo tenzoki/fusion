@@ -1,7 +1,7 @@
 # Implementation Plan: bound how long a dispatched agent runs before it returns
 
 **Date:** 2026-09-07
-**Status:** Draft
+**Status:** In Progress
 **Spec:** `260907-0820_*_spec-bounded-executor-dispatches.md`
 **Revised:** 2026-09-08, on the answer to `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`, which the user ruled option 1. The cut that stood inside the old Step 14 as a fallback is now **Step 8**, a step of its own that runs before a byte of the mechanism is written, and the plan has sixteen steps rather than fifteen. Every step from the old 8 upward is renumbered by one and every dependency, cross-reference and node of the dependency graph moved with it. The byte reckoning is recomputed with the cut as income: `## Current State`, the new Step 8, the byte-reckoning step (now Step 15) and the risk table all carry the new arithmetic. The old Step 14 keeps its name and its measurement and loses its fallback, which is now spent; what it does when it comes up short is stated there in the changed terms. Nothing else moved: the gate at Step 1 and its execution note, the 20 minutes, the seven bound agents, the executors of every existing step and the substance of `## Where this Circle stops` are as they were.
 
@@ -648,3 +648,38 @@ Every pair admitted by the cutoff and the agent filter lands in exactly one of `
 - [ ] **Which program hands the orchestrator the dispatch bound at Setup.** Filed as `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`, with a recommendation. Steps 3 and 9 are written against option B; a ruling for option A changes those two steps and nothing else. This does not block execution.
 - [ ] **Should `bin/fusion-events dispatches` eventually be identity-scoped?** It deliberately is not, because a bound dispatch from another checkout is still a bound dispatch, while `presence` and `turns` are both scoped. Not filed as a record: nothing in this Circle turns on it, and the code comment states the choice where a later reader meets it.
 - [ ] **Step 14 is planner-added and not specification-required.** It is the one step in this plan that no acceptance criterion asks for. It is included because the failure it prevents has been measured in this repository once already, at eight copies of one number. Dropping it costs the plan nothing else.
+
+## Reconciliation Log
+
+**2026-09-08, reconciler, domain `code`.** Verified every step of this plan against the working
+tree at `43fe1bc1`, not against the markers.
+
+**Steps 2 and 3 are done and were already marked.** Both verified on disk rather than from the
+marks. Step 2: `hooks/lib/config.ts` carries all four prescribed edits, at lines 187
+(`dispatchMinutes: number;`), 251 (`dispatchMinutes: 20,` with the measurement comment), 429
+(`{ explain: explainPositiveInteger }`) and 629 (`pickOrchestrator("dispatchMinutes")`); commit
+`e1e625ae`. Step 3: `hooks/turn-budget.ts:121` writes the second `KEY=value` line, `bin/fusion-turn-budget`
+line 15 documents it, and `hooks/dist/turn-budget.js:109` is the rebuilt artifact; commit `7e7708cf`.
+
+**Steps 1 and 4 to 16 are unstarted, and each was checked rather than assumed.** Step 1 ran on
+2026-09-07 and its own note stands. Step 4: `grep -c '_dispatchBound'` returns 0 in both `fusion.json`
+and `templates/fusion.json`. Step 5: `rules/bounded-dispatch.md` does not exist. Step 6:
+`grep -c 'IS_BOUND_AGENT' bin/fusion-rules` returns 0 and `grep -c 'bounded-dispatch' README-agents.md`
+returns 0. Step 8: both narratives are still in `agents/orchestrator.md` (`grep -c` returns 2) and
+`rules/commit-lock.md` carries no `## Two measured defects behind this procedure`. Step 9:
+`grep -c 'Bounded dispatches\|Stop by:' agents/orchestrator.md` returns 0. Steps 12 to 14: no
+`dispatches` subcommand in `bin/fusion-events`, no dispatch-bound test file under
+`hooks/lib/__tests__/`.
+
+**Two marks were wrong and are corrected by this pass.** The header read `**Status:** Draft` with
+two steps done, and the filename marker read `_o_` where an agent had begun work; the header now
+reads `In Progress` and the file is renamed to `_p_` per
+`rules/fusion-workbench-conventions.md` `## State Markers — issues and planning`.
+
+**No step drifted from its written approach.** Where the plan and the tree disagree at all, it is the
+plan being ahead of the tree, not the tree departing from the plan.
+
+**The session stopped short of Steps 4 to 16 at the user's direction**, recorded in
+`260907-0657-orchestrator-session.md` `## Why this session stopped` and carried in `agentstate.yaml`'s
+`work_queue` as `SUITE-REPAIR` and `S4` onward, both `queued`. That is a filed shortfall, not
+abandoned work.

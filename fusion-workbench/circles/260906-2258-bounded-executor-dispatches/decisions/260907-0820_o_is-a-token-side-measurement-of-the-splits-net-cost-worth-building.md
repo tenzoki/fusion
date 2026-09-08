@@ -56,3 +56,6 @@ disappears into an accepted criterion and nobody meets it again.
 Option 3 first, and only then option 2 if the arithmetic puts the break-even near the dispatch
 lengths fusion actually runs. The arithmetic costs one pass and is enough to tell a comfortable
 margin from a close call, which is the thing worth knowing before anyone builds a measurement.
+
+---
+Answer located: `260907-2012-break-even-arithmetic-for-the-dispatch-split.md` — option 3 was carried out and closed the net sign positive, $12 to $90 over the log's 10.99 days, with the break-even run length at 20.2 to 27.5 minutes; option 2 was not taken. The finding is carried in this Circle's record, `## Grounding snapshot`, and in `260907-0657-orchestrator-session.md` `### The reframe, and what it cost`. The marker does not move: nothing on disk records a ruling on this question, and the `_o_` → `_a_` transition is the orchestrator's, to relay a ruling the user gave.

@@ -10,3 +10,6 @@ Acceptance test: the sentence in `## Open for Planner` either names the criteria
 ---
 **Filed by:** planner, Kai Stalmann <ks@qantr.com>
 Found while pulling the plan through to the specification's fourth revision, at the second of the three places `## Open for Planner` itself names. The plan-side half of that item is done; this is the spec-side half, and the shaper owns that file.
+
+---
+Reconciliation 2026-09-08: still open, re-verified against the file rather than the marker. `260907-0820_*_spec-bounded-executor-dispatches.md` `## Open for Planner` still reads "calls C5's acceptance criteria eight where the specification states nine", and `grep -c '^- \[ \]'` over C5's own section still returns 10. Nothing between the filing and now touched that file. The plan-side half stays done: the plan states no count.

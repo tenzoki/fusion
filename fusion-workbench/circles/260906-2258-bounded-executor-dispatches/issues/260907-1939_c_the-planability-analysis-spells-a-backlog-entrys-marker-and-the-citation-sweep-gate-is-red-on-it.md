@@ -29,3 +29,6 @@ guards and census exist for a corpus-wide run.
 **Whose it is.** The analysis is an analyst's record inside this Circle; a coder correcting another
 agent's record by hand is what the record-hygiene rules put on the writer, so it is filed rather
 than fixed here.
+
+---
+Resolved: both tokens in `260907-0710-planability-of-the-bounded-dispatch-spec.md` now carry `_*_` at the marker position, at lines 21 and 331, repaired by the bugfixer dispatch recorded in `260908-0011-bugfix-planability-analysis-citation-marker.md`. Re-measured by this reconciliation on 2026-09-08: `bin/fusion-citation-sweep --dry-run` over this repository prints `files=0 rewrites=0 bare-record=0`, where the record was filed against `files=1 rewrites=2 bare-record=2` naming that file alone.

@@ -34,6 +34,9 @@ miss it the way the last two did — a fix that only advances the text leaves th
 that produced it.
 
 ---
+Reconciliation 2026-09-08: still open, and one release staler. `skills/help/SKILL.md`'s update topic still names v10.20, v10.14 and v10.7; `grep -n 'v10\.2'` returns the v10.20 paragraph and nothing newer. A fourth release, `v10.24.1`, was cut from the `v10.24.0` tag in the session of 2026-09-08 (`260907-0657-orchestrator-session.md` `### Outcome: v10.24.1 released from the tag`), so the topic now misses three.
+
+---
 Resolved: Both acceptance clauses met. The update topic in `skills/help/SKILL.md` `### 4. Update`
 now carries v10.25, v10.24 and v10.23, the three most recent releases, each paragraph still
 labelled by the install the reader is coming from; the standing pointer paragraph beneath them and
