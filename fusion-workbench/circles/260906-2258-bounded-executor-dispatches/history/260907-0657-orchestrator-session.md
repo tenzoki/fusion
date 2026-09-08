@@ -48,7 +48,107 @@ and stops, which fusion's observation-only PreToolUse hook does not do today.
 
 ## Turn log
 
-(none yet — the session is still in Phase 0b: spec review and rework, no Turn started)
+- Turn 1 (session 260907-0657): commits `7ed43852`..`8197f789`; Coherence verdict not taken, the
+  Turn was interrupted by a planned restart before its gate; session history: this file.
+
+  Plan steps 1, 2 and 3 landed. Step 1's verdict stopped the build on the plan's own gate and the
+  user re-cut the goal after the break-even derivation reversed the sign. Steps 2 and 3 realised the
+  answered decision on where the orchestrator reads the bound, both halves of option B. Two citation
+  repairs and two defect records rode along.
+
+## Why this session stopped
+
+Not a completion and not a crash. The verification the whole build rests on stopped being
+deterministic: `cd hooks && npm test` returned 911 of 911 in 35 seconds and 909 of 911 in 88 seconds
+over the same tree, twenty minutes apart, with the failing cases passing in isolation. Three test
+files are implicated and the failing case is not stable within a file either, so the set on record is
+a sample rather than the population. Every one of the thirteen remaining plan steps is accepted by
+that same command, so an executor could no longer tell its own regression from a busy machine.
+
+Put to the user as three ways forward — repair the suite first, narrow each step's verification to
+its own files, or continue and re-check by hand each time — the user chose to repair it first, and
+additionally asked for a push and a restart beforehand so the concurrent session's repaired
+`agents/playmaker.md` is loaded.
+
+**`agentstate.yaml` is deliberately not deleted.** A clean exit deletes it because there is nothing
+to resume; there is something to resume here. The next session's Setup will find it and offer
+Continue, which re-enters at `control.paused_at_task`, `SUITE-REPAIR`.
+
+**What a reader should know about the restart.** An agent prompt is read at session start from the
+**installed** copy under `$FUSION_PLUGIN_ROOT`, never from this work tree, and it is never re-read.
+Restarting alone therefore loads the old `agents/playmaker.md`. The repaired one reaches a session
+only after `fusion --update`, which is why the push had to come first.
+
+## The concurrent session
+
+A second orchestrator ran in this same checkout for the whole of this one, on a different Circle. It
+committed three times at 14:12 without this session's knowledge, including this session's own files,
+and left records and a change set uncommitted twice more. Both were carried here under messages that
+say whose work they are: `5d2e40bc` for three records, `8197f789` for the multi-checkout change set.
+fusion has no concurrency lock and the advisory marker read `stale` at Setup, so nothing warned
+either session about the other. The collision cost was not lost work but a byte budget: the
+uncommitted 1 109-byte growth of `agents/playmaker.md` is what left this Circle's build 281 bytes
+short and forced the cut forward into its own step.
+
+## Rulings the user gave at the gates
+
+Eight forks were put to the user during the spec review, each as a numbered list in chat, and each
+answer is recorded here because the chat does not persist.
+
+1. **Scope** (260907, shaper round 1) — bounded dispatches only; no claim about rule adherence.
+2. **Where the bound bites** (round 1) — inside the run: the executor hands back at the bound, half
+   finished, and is re-dispatched.
+3. **What closure proves** (round 1) — the existing calculation counts as the evidence; only its
+   assumptions are checked.
+4. **What the closure check reads** (after check 1) — the law rather than the factor: does re-sent
+   volume fall with the split count, and does that survive the cache effect?
+5. **Currency of the free handoff** (after check 1) — the existing minutes measurement suffices; the
+   limitation is written down rather than smoothed over.
+6. **Unit of the bound** (after check 1) — wall-clock time.
+7. **Who the bound covers** (after check 1, revised after check 2) — first "all dispatched agents",
+   then narrowed: the agents with no intermediate state on disk are exempt. Applied as a criterion,
+   this gives 7 bound (coder, ontocoder, bugfixer, reconciler, coderev, ontorev, curator) and 7
+   exempt (analyst, consultant, editor, planner, playmaker, shaper, taskplanner).
+8. **The bound's value** (after check 2) — 20 minutes flat, which touches 15 of 131 recorded
+   dispatches and 13 of the 114 made by a bound agent.
+
+Three rulings the shaper made itself were put to the user and accepted on 260907: a bounded return
+is a fifth case rather than the existing "did not finish" case; the half-finished work is not
+committed before the continuation; and a dispatch carrying no bound runs to its natural end.
+
+### Which program hands the orchestrator the dispatch bound
+
+Filed by the planner as `260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md`
+because it would otherwise have had to guess. Put to the user at the plan-approval gate on 260907
+together with the plan itself, and answered **Option B**: `bin/fusion-turn-budget` prints a second
+`KEY=value` line rather than a new helper being added. The user chose it over Option A knowing what
+it costs, namely that the helper's name then under-describes what it reads, to be corrected in the
+helper's own header and in `CLAUDE.md` rather than by a rename. The deciding argument was the byte
+cost against the `agents/` growth bound: about 250 bytes against about 700, out of 4 618 remaining,
+plus one emission of the configuration loader's diagnostics rather than two.
+
+### The reframe, and what it cost
+
+On 260907 plan step 1 ran and its verdict stopped the build: the re-sent-volume law does not hold in
+the form the source analysis states it. The break-even derivation that followed, chosen by the user
+from the held decision's option 3, closed the sign positive — splitting pays above a run length of
+about 21 minutes, $12 to $90 over the 10.99 days the machine-written log covers. Put the three ways
+forward, the user answered **"ok, 1. Ziel neu fassen und dann bauen"**, and then **"1a 2a 3a"** to
+the shaper's three questions: the work now stops on the byte reckoning against the `agents/` bound in
+its narrow form, the cost-argument capability stays as met rather than being dissolved, and the
+20-minute value gets its second justification into the source comment.
+
+### What gives, now that the agents/ budget is 281 bytes short
+
+Filed by the planner as `260908-0025_*_the-agents-budget-is-281-bytes-short-after-another-sessions-growth-so-what-gives.md`
+after the pull-along measured the tree again: head-room fell from 4 618 to 3 509 bytes against a
+budget of 3 790, and the whole 1 109-byte difference is `agents/playmaker.md`, grown and left
+uncommitted by a second session running in this same checkout. Put to the user on 260908 with three
+of the record's four options, the fourth withheld with its reason. The user answered **option 1**:
+take the cut the plan already names up front, before step 8 rather than at step 14. Two "why this is
+a rule and not a preference" narratives move out of `agents/orchestrator.md` step 3b into
+`rules/commit-lock.md`, which the orchestrator receives by emission, so no reader loses anything.
+What it costs is the reserve: this Circle has no second cut held back if its own budgets overrun.
 
 ## Follow-on named by the user, not yet scoped
 

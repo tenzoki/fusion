@@ -23,11 +23,11 @@
   ontorev.md 7094
   orchestrator.md 152491
   planner.md 19725
-  playmaker.md 41846
+  playmaker.md 42955
   reconciler.md 22825
   shaper.md 29057
   taskplanner.md 14070
-  total 413225
+  total 414334
 
 [skills bytes]
   archive/SKILL.md 26978
@@ -42,8 +42,8 @@
   migrate/SKILL.md 26620
   news/SKILL.md 8766
   next/SKILL.md 27604
-  setup/SKILL.md 51971
-  total 259060
+  setup/SKILL.md 52406
+  total 259495
 
 [hook-tests lines]
   archive-filter-key.test.ts 40

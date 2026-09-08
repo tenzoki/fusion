@@ -178,6 +178,13 @@ export interface GuardSettings {
    */
   orchestrator: {
     maxTurns: number;
+
+    /**
+     * The requested stopping time, in minutes, that the orchestrator hands to a
+     * bound agent's dispatch. Read by `bin/fusion-turn-budget` at Setup, not by
+     * any hook.
+     */
+    dispatchMinutes: number;
   };
 
   /**
@@ -224,6 +231,24 @@ const DEFAULTS: GuardSettings = {
   // it used to write a number. See the module docstring.
   orchestrator: {
     maxTurns: 5,
+    // THE DISPATCH BOUND'S ONE DEFINITION, and the measurement it rests on.
+    // Both sentences stand here, because either one alone reads as an arbitrary
+    // round figure.
+    //
+    // Over the 131 machine-written dispatch pairs in this project's own event log, read on
+    // 2026-09-07, 15 of them, 11.5 percent, ran longer than 20 minutes; over the 114 of those pairs
+    // made by an agent the bound covers, 13, 11.4 percent, did. Of four candidate values checked
+    // against the break-even arithmetic, 10, 20, 25 and 30 minutes, 20 is the one that maximises
+    // the pessimistic cell, and the break-even run length sits at 20.2 to 27.5 minutes, just past
+    // the bound itself.
+    //
+    // The log the first sentence reads is `fusion-workbench/orchestrator-events.jsonl`,
+    // on the date named in it, so a later reader can re-take the figure. The
+    // second sentence is derived arithmetic and comes from
+    // `260907-2012-break-even-arithmetic-for-the-dispatch-split.md`; nothing
+    // else in the tree reproduces the four-candidate check or the break-even
+    // band.
+    dispatchMinutes: 20,
   },
   // NOTHING DECLARED, which is the state of every project that has not written
   // this key and keeps the two citation helpers' corpus exactly the Markdown it
@@ -401,6 +426,7 @@ interface LeafRule {
 const CONTAINER_LEAF_RULES: Record<string, Record<string, LeafRule>> = {
   orchestrator: {
     maxTurns: { explain: explainPositiveInteger },
+    dispatchMinutes: { explain: explainPositiveInteger },
   },
   citations: {
     extraPaths: { explain: explainArrayOfNonEmptyStrings },
@@ -600,6 +626,7 @@ export function loadConfig(sources?: ConfigSources): GuardConfig {
   const value: GuardConfig = {
     orchestrator: {
       maxTurns: pickOrchestrator("maxTurns"),
+      dispatchMinutes: pickOrchestrator("dispatchMinutes"),
     },
     citations: {
       extraPaths: pickCitations("extraPaths"),

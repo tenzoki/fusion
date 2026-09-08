@@ -1,15 +1,23 @@
 #!/usr/bin/env bash
-# fusion-turn-budget — the orchestrator's Phase-2 Turn budget, resolved from
-# configuration. Read once at Setup (agents/orchestrator.md Setup Step 2,
-# skills/setup/SKILL.md Step 2) instead of the number being written into the
-# prompt.
+# fusion-turn-budget — the orchestrator's configured values, resolved from
+# configuration: the Phase-2 Turn budget and the wall-clock stopping time handed
+# to a bound agent's dispatch. Read once at Setup (agents/orchestrator.md Setup
+# Step 2, skills/setup/SKILL.md Step 2) instead of either number being written
+# into the prompt. The name is the Turn budget's because that was the first of
+# the two settings, and it is kept because every caller names the helper by it.
 #
 # Usage:
 #   fusion-turn-budget
 #
-# Output on stdout, one KEY=value line:
+# Output on stdout, two KEY=value lines, in this order:
 #
 #   max_turns=5
+#   dispatch_minutes=20
+#
+# Neither line is conditional on the other and the order does not change. The
+# second value rides this helper rather than a second one because the loader's
+# diagnostics below are printed ONCE: a separate helper would either repeat
+# every advisory or stay silent about it (260907-1450_*_which-program-hands-the-orchestrator-the-dispatch-bound-at-setup.md, option B).
 #
 # Every diagnostic the configuration loader returned goes to stderr, one line
 # each, whatever its class. A dropped key is one class (the line names the key

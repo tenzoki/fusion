@@ -86,12 +86,18 @@ For each Circle, classify by the marker on its record (`_a_`, `_t_`, `_c_`, `_b_
 - `## Dependencies` section content
 - `## Grounding snapshot` content (used in Step 3)
 
-Read `fusion-workbench/.active-circle` if present (root-anchored). It holds a bare Circle **directory name** — no marker, no prefix, no `.md`. It MUST name exactly one Circle whose record carries `_t_`. Mismatch conditions to flag in the portfolio's `## Warnings` section:
+Read `fusion-workbench/.active-circle` if present (root-anchored). It holds a bare Circle **directory name** — no marker, no prefix, no `.md`.
+
+**Attribute every `_t_` record to a checkout before you read any of the conditions below.** The pointer is per checkout and a `_t_` record travels, so a count of `_t_` records answers nothing on its own. Sort them by `**Claim:**` into this checkout's, another checkout's and the unattributable, per `rules/circle-records.md` `### How many Circles may be active, and in whose checkout`, reading this checkout's identity from `"$FUSION_PLUGIN_ROOT/bin/fusion-identity"` behind `[ -x ]`. That section defines all three outcomes; the conditions here are its first and third group, and none of them is read against the second.
+
+Conditions to flag in the portfolio's `## Warnings` section, all four scoped to the records this checkout claims:
 - `.active-circle` exists but the named directory does not exist → `STALE-POINTER`
 - `.active-circle` exists, the directory resolves, but its record's marker is not `_t_` → `POINTER-MISMATCH`
-- More than one Circle record carries marker `_t_` → `MULTIPLE-ACTIVE`
-- `.active-circle` is absent but at least one `_t_` Circle exists → `MISSING-POINTER`
-- `.active-circle` is absent and no Circle is `_t_` → normal opt-in or post-closure state; no warning
+- More than one such record carries marker `_t_` → `MULTIPLE-ACTIVE`
+- `.active-circle` is absent but at least one such record exists → `MISSING-POINTER`
+- A `_t_` record whose claim attributes to nobody → `CLAIM-UNATTRIBUTED`, naming the record and the field value
+
+`.active-circle` absent with no record this checkout claims is the normal opt-in or post-closure state; no warning, whatever another checkout's records are doing. Records another checkout claims are `MULTI-CHECKOUT`, the designed shape: they are reported in `## Active (_t_)` with their holder and reach `## Warnings` never.
 
 ### Step 2: Read context
 
@@ -151,12 +157,12 @@ Do NOT auto-trigger Rebalance. Per the Bounded-Closure propagation decision (res
 
 Regenerate `$PORTFOLIO` in full on every run (overwrite). Conform to the portfolio template at the end of the **"Circle record template"** section in `rules/circle-records.md`. The structure is six sections in this order:
 
-1. `## Active (_t_)` — 0 or 1 entry. If more than one Circle record carries `_t_`, list each and surface a `MULTIPLE-ACTIVE` warning in `## Warnings`.
+1. `## Active (_t_)` — one entry per `_t_` record, whatever their number, each naming the checkout its `**Claim:**` holds. More than one entry is not itself a warning: only Step 1's attribution says which of them is, and a `MULTI-CHECKOUT` line here reads as the designed shape and not as a cost.
 2. `## Anticipated (_a_) — ranked` — ordered by Step-3 ranking. Top entry includes the full one-paragraph rationale; lower entries get one-sentence rationale. The first line of this section is `Recommended next: <circle-dir> — <rationale>`, where `<circle-dir>` is the top-ranked Circle's directory name and `<rationale>` is a brief one-sentence reason. If there are no `_a_` Circles, the section reads `(none)`.
 3. `## Backlog — ranked` — the Step-2b ranking, after the anticipated Circles. Its first line is the action, mirroring `Recommended next:`, in one of two forms. A top entry carrying **one** idea: `Recommended to shape: <entry path> — <rationale>`, and under it `/fusion:direct <entry path>`. Carrying **several**: `Recommended to split first: <entry path> — <n> ideas, top one is <slug>`, with no `/fusion:direct` line, since that command would promote the entry whole. Then one line per remaining entry, a multi-idea one listing its proposed split indented beneath it so the user sees what the split would produce and can confirm it. Whatever Step 2b read as a defect or a decision goes to `## Warnings`, not here. No `_o_` or `_p_` entries: `(none)`.
 4. `## Recently closed (_c_ / _b_)` — last 5 closed Circles, newest first. Each entry: directory name, marker, Closure-note one-liner.
 5. `## Archived (_s_ / _d_)` — superseded and deferred Circles for reference. Compact format. The section is named for the two **markers** in its heading: it lists live Circle records under `$SCAN_CIRCLES` carrying `_s_` or `_d_`. It has nothing to do with the `archive/` store, whose contents never appear in the portfolio at all.
-6. `## Warnings` — all warnings from Steps 1, 2b, 4, and 5: pointer mismatches (`STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`), `MULTIPLE-ACTIVE`, every `dependency-cycle-detected` and `stale-grounding` line, every parent-grounding-stale cross-reference. If no warnings, the section reads `(none)`.
+6. `## Warnings` — all warnings from Steps 1, 2b, 4, and 5: pointer mismatches (`STALE-POINTER`, `POINTER-MISMATCH`, `MISSING-POINTER`), `MULTIPLE-ACTIVE`, `CLAIM-UNATTRIBUTED`, every `dependency-cycle-detected` and `stale-grounding` line, every parent-grounding-stale cross-reference. If no warnings, the section reads `(none)`.
 
 The header carries `**Generated:** YYMMDD-HHMM (by playmaker session <id>)` and `**Domain bias:** <domain>`; the session id resolves to your history log, so that log exists before this file does (`## History logging`). Do not duplicate the conventions-doc template content here — your job is to fill it out per project state.
 

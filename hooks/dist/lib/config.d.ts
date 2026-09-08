@@ -172,6 +172,12 @@ export interface GuardSettings {
      */
     orchestrator: {
         maxTurns: number;
+        /**
+         * The requested stopping time, in minutes, that the orchestrator hands to a
+         * bound agent's dispatch. Read by `bin/fusion-turn-budget` at Setup, not by
+         * any hook.
+         */
+        dispatchMinutes: number;
     };
     /**
      * The project's own answer to "which of my non-Markdown files carry record
