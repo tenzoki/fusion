@@ -726,3 +726,57 @@ is realised by `bb5dbda4` and renamed `_a_` to `_i_`.
 
 **No review pass has run in this Circle.** The Circle's one review runs at closure, so nothing in the
 reviews store bears on any step above.
+
+---
+
+**2026-09-08 (third pass), reconciler, domain `code`.** The two entries above stand unedited and this
+one does not replace either of them. It records what commit `6be2ec5e` changed in this plan's own
+prescriptive text, and it corrects the four assertions the second entry makes that the same commit made
+false. A reader who stops at the second entry is reading the plan as it stood before that commit.
+
+**The ruling that authorised the amendment, cited here because neither this plan nor its specification
+cites it in text.** On 2026-09-08 the user was put the question filed as
+`260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`
+and chose option 1: the closed marker on a completed plan does not exempt its text from correction, and
+the reader who opens the plan without this log is the reader the correction is for. The ruling and the
+gate sequence that reached it are in `260908-1529-orchestrator-session.md` `## The ruling on this
+record`. `6be2ec5e` executed it over five passages, the four the second entry names plus a fifth in the
+`## Risks & Mitigations` table at line 636, which the correcting pass found and repaired in both its
+halves. No `[DONE]` mark, no status line and no filename marker moved in that commit.
+
+**What each of the four now reads.**
+
+1. **`Three passages of this plan now state something the tree contradicts`** is false. None of the
+   three does, since `6be2ec5e`.
+2. **`each already filed and each left standing here rather than edited`** is false. All three were
+   edited, in the commit that closed their records. `260908-1619_*_plan-step-5-prescribes-a-minute-illustration-its-own-acceptance-criterion-forbids.md`,
+   `260908-1648_*_plan-step-7-asks-for-eight-changed-golden-blocks-where-seven-bound-agents-exist.md`
+   and `260908-1720_*_plan-step-8s-third-verification-expects-a-hash-count-of-zero-that-a-third-passage-makes-unreachable.md`
+   are each closed against their own acceptance test, re-run on the tree, and each keeps its account of
+   what stood before it was corrected. That is where the evidence of the drift now lives; it is no
+   longer in this plan.
+3. **The three itemised citations resolve and quote text that is gone.** Line 218 states the overshoot
+   without numerals, so it scales with whatever the bound is configured to and no longer contradicts the
+   same step's `Do not:` line at 245. Line 290 reads `exactly seven blocks`, which is what seven bound
+   agents produce and what was measured. Line 350 reads its two hashes separately, expecting
+   `045a14f` to reach 0 and `f38f37d` to reach 1 over `agents/orchestrator.md`, and names the third
+   passage that makes the second unreachable and that the same step forbids moving.
+4. **`One closure clause is answered no on a technicality` is false, and this is the correction with
+   consequences beyond tidiness**, because closure reads `## Where this Circle stops` and not this log.
+   The clause at line 560 asks whether the four pinned values carry the same **values** as at
+   `abcaa823`, compared entry by entry, and states why the distinction is load-bearing. It is answered
+   **yes**, cleanly and on the values. Measured on this tree with a comment-stripped comparison of both
+   files across `abcaa823..HEAD`: `AGENT_BASELINE`'s fifteen entries and `RULE_BASELINE`'s eight are
+   identical in value and in membership, `RELEASE_CAP` is 105 354 and `DRIFT_CEILING` is 145 144 at both
+   ends. What moved is `RULE_BASELINE`'s comment block, rewritten by `01e0f688` in another checkout with
+   every numeric entry unchanged, which is the byte reading the amended clause now names and sets aside.
+
+**What this entry does not do, stated so it is not read as done.** The corrected passages themselves
+carry no in-text citation of the ruling, and neither does
+`260907-0820_*_spec-bounded-executor-dispatches.md`, whose upstream copy of the overshoot passage moved
+in the same commit. A reader who opens either file without this log meets corrected text and no trace of
+what authorised the correction. Putting a citation inside each corrected passage would push the
+authorising record into the prescriptive text of a step, where it reads as a requirement rather than as
+provenance; the specification carries no reconciliation log of its own, and adding one during a verdict
+pass would create a delta the same verdict then has to account for. The gap is left standing here rather
+than half-closed, and it is named for the Circle's closure note.

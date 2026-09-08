@@ -73,3 +73,6 @@ Which precedent governs a completed plan is exactly what is open.
 
 ---
 Answered: 260908-1529-orchestrator-session.md `## The ruling on this record` — option 1, amend the plan and the specification in place at the four passages; the marker on a completed plan does not make its text exempt from correction, and a reader who opens it without the reconciliation log is the reader who matters. The cost is accepted: the four defect records' acceptance tests are rewritten against the corrected text, and each record keeps its own account of what stood before; ruled by user, Kai Stalmann <ks@qantr.com>.
+
+---
+Implemented: 6be2ec5e — five passages corrected in the plan and its specification, the four this record names plus a fifth in the risk table that the correcting pass found and reported; the three defect records those passages carried are closed against their own acceptance tests, each keeping its account of what stood before.

@@ -110,3 +110,94 @@ The gate sequence that reached it, for a reader reconstructing the session: Phas
 branch (a), which filed this record; the re-taken verdict did not move, because filing a question
 about a defect is not the Grounding accounting for it; Gate 1 **Keep it** again, Gate 2 **Revise
 Artifact**, and this ruling is what gives that pass its scope.
+
+## Coherence — post-amendment re-take, 2026-09-08 20:24Z
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: 5 corrected passages verified against the tree, all 5 hold; 3 defect records closed, each closure earned by its own acceptance test; 1 decision correctly at `_i_`; 4 assertions in the plan's own `## Reconciliation Log` were made false by that same amendment, one of them giving a closure clause the wrong answer (Grounding at fault). 0 open reviewer-filed issues, since no review pass has run in this Circle.
+- Artifact↔Directive: the two commits in `de94102f..HEAD` move toward the stated Directive. `31b2d82e` filed the question the Directive's closure needed answered and `6be2ec5e` executed the ruling on it; neither touches a plan step's outcome, and step 16 stays done.
+- Grounding↔Directive: consistent over the delta. The only decision record that moved in `de94102f..HEAD` is `260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`, `_o_` to `_a_` on the user's ruling and `_a_` to `_i_` on `6be2ec5e`, which realises the Directive rather than conflicting with it. The 3 remaining `_o_` records in this Circle and the 43 active records in the shared store were read at the re-take of 18:54Z and none moved since.
+
+**Rebalance recommendation:** revise Grounding
+
+### What was verified, and how
+
+The five corrections were read against the tree rather than against the account of them.
+
+1. Step 5, plan line 218, states the overshoot without numerals. `grep -n 'minute 19\|minute 49\|30-minute'` over the plan and the specification returns two hits, both reporting the contradiction rather than asserting the illustration, which is what the record's acceptance test permits. The specification returns none: its residual 2 is clean.
+2. Step 7, plan line 290, reads `exactly seven blocks`. `grep -n 'eight blocks'` returns one hit, in the reconciliation log.
+3. Step 8 verification item 3, plan line 350, reads the two hashes separately. The tree answers it: `grep -c 045a14f agents/orchestrator.md` returns 0, `grep -c f38f37d agents/orchestrator.md` returns 1, `grep -c '045a14f\|f38f37d' rules/commit-lock.md` returns 2.
+4. The closure clause, plan line 560, asks whether the four pinned values carry the same **values** as at `abcaa823`, compared entry by entry, and names `01e0f688` as the comment rewrite that answers the byte reading no. Both halves check out: `RULE_BASELINE`'s five numeric entries are unchanged in value across `abcaa823..HEAD` while their trailing comments were rewritten, and a comment-stripped diff of `surface-growth-bound.test.ts` over the same range shows no code change at all.
+5. The risk table, plan line 636, states the residual without numerals and no longer claims the built rule file states the example. `grep -rn 'states the example'` over the planning store returns nothing, and `rules/bounded-dispatch.md` carries no minute numeral, which is what Step 5's acceptance criterion requires.
+
+**None of the three record closures is unearned.** Each was re-run as its own record wrote it, against the tree and not against the resolution note. `260908-1619_*_...` and `260908-1648_*_...` pass on the branch their tests permit, where the surviving hits are text about the contradiction rather than the contradiction; `260908-1720_*_...` passes on the first of the two repairs its test names, with the counts confirmed above. The fifth site the correcting pass found and reported rather than touching is fixed in both its halves.
+
+### What still stands
+
+**The amendment moved the contradiction into the plan's account of itself.** Before `6be2ec5e` the plan's prescriptive text disagreed with the tree and the plan's `## Reconciliation Log` said so correctly. After it the prescriptive text agrees and the log does not. Four assertions at plan lines 707 to 720 are now false:
+
+- `Three passages of this plan now state something the tree contradicts` — none of the three does.
+- `each already filed and each left standing here rather than edited` — all three were edited, in the commit that closed their records.
+- The three itemised citations describe text at lines 218, 290 and 350 that no longer reads that way. The line numbers still resolve; the quoted content is gone.
+- `## Where this Circle stops asks whether four pinned values are byte-identical to abcaa823` — it no longer asks that, and the log's verdict on it, `answered no on a technicality`, is now wrong in the direction that matters. The amended clause is answered **yes**, cleanly and on the values, so a closure clause the log reports as failing is passing.
+
+The last of those is the one with consequences beyond tidiness. Closure reads `## Where this Circle stops`, and the plan's own log currently tells a reader that one of its clauses reads no.
+
+This is the same fault as the previous take's, one level in, and it is Grounding at fault for the same reason: the correction was made and the Grounding's account of its own correctness was not brought along. The commit message states plainly that no reconciliation-log entry was added, so the omission was deliberate rather than missed, and the convention cited for it, that a reconciliation annotates and does not rewrite a plan, does not forbid the repair. A new dated entry appended below the existing one, recording that the three passages were corrected in `6be2ec5e` and that the closure clause now reads yes, leaves every earlier word standing. That is the same shape as the three Coherence blocks in this file.
+
+**Carried forward, unaddressed and not claimed otherwise.** Neither `260907-1450_*_plan-bounded-executor-dispatches.md` nor `260907-0820_*_spec-bounded-executor-dispatches.md` cites `260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`. Five passages were rewritten in place with no in-text trace of the ruling that authorised it. The ruling names the log-less reader as the one the correction is for, and that reader now has corrected text and no way to learn it was corrected.
+
+**Verification:** `git log --oneline de94102f..HEAD`; `grep -n` over the plan and specification for `minute 19|minute 49|30-minute`, `eight blocks`, `seven blocks`, `045a14f|f38f37d`, `states the example`, `260908-2051`; `grep -c` for both hashes over `agents/orchestrator.md` and `rules/commit-lock.md`; comment-stripped `diff` of `rules-emission-golden.test.ts` and `surface-growth-bound.test.ts` across `abcaa823..HEAD`; `git show --stat 01e0f688` and its diff; the three closed issue records and the `_i_` decision read in full. No file outside this history file was written.
+
+## Coherence — post-repair re-take, 2026-09-08 20:57Z
+
+<!-- RECONCILER-OWNED -->
+
+**This block does not replace the three above it.** The third verdict was taken at `6be2ec5e` and
+named one repair, in the plan's own `## Reconciliation Log`. This one is taken after that repair was
+made, on the same commit plus the working tree, and it is scoped to the delta: the corrected passages
+were not re-verified a second time and the sixteen steps were not re-inventoried.
+
+**Verdict:** coherent
+
+**Edges:**
+- Artifact↔Grounding: the one flagged item of the third verdict is repaired and re-read on disk. `260907-1450_*_plan-bounded-executor-dispatches.md` `## Reconciliation Log` carries a third dated entry below the two standing ones, every earlier word intact, which states what the amendment changed and what each of the four false assertions now reads. The load-bearing one is corrected in the direction that matters: the closure clause at plan line 560 is answered **yes** on the values, re-measured for this block rather than carried over, and the log no longer reports it as failing. 0 drift items, 0 open reviewer-filed issues, and no review pass has run in this Circle, so this edge is read from the reconciliation alone and the closure review has not yet had its say.
+- Artifact↔Directive: the two commits `de94102f..HEAD` are unchanged from the third verdict and still move toward the stated Directive; nothing since is committed. The working tree adds this repair, the decision record's realisation footer and this block, all of which serve the Directive's closure rather than any other end. One untracked Circle directory in the tree, `260908-2018-prerequisites-confirmed-once-order-computed`, belongs to no commit in the range and to a different Directive; it is a filing made beside this Circle, not work of it, and it is named here so the edge is not read as covering it.
+- Grounding↔Directive: consistent over the delta, with one attribution corrected. `260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md` is the only decision that moved, and the third verdict compressed how: `6be2ec5e` carries `_o_` to `_a_` with the `Answered:` footer, while the `_a_` to `_i_` rename and the `Implemented: 6be2ec5e` footer are in the working tree and in no commit. The record's content is right and its state is unpushed, which is a matter for the session's commit rather than for this edge. The 3 remaining `_o_` records in this Circle and the 43 active records in the shared store are unmoved since the 18:54Z re-take.
+
+**Rebalance recommendation:** none
+
+### Whether this recurses, and where it stops
+
+The third verdict called its finding "the previous take's fault one level in". A fourth level exists and
+is written into the Grounding↔Directive edge above: an attribution in the third block that the tree does
+not support. It is a sentence about which commit carries a rename, in a record whose own convention is
+that each block names and corrects the one before it, and correcting it took one clause of this block.
+
+Two residuals are left standing on purpose, and neither is worth another pass.
+
+**Neither the plan nor its specification cites the ruling in text.** Five passages were rewritten with
+no in-text trace of what authorised it. The plan's new log entry now carries the citation and says in
+its own words that the corrected passages do not, and why: a provenance record placed inside a step's
+prescriptive text reads as a requirement, and the specification has no reconciliation log to receive it
+without a structural write during a verdict pass. This belongs in the Circle's closure note as a named
+residual, not in a fifth correction.
+
+**The plan's log and this file will always trail their own subject by one write.** Each repair of a
+record's account of itself is a new write that the next verdict can then find something to say about.
+The two corrections this session made were both worth making, because each left a reader with a false
+statement about the tree. What is left is neither: an absence that is now declared, and an attribution
+already corrected in the line above. Stopping here is a judgement about diminishing returns and is
+stated as one rather than as a claim that nothing further could be written.
+
+**Verification:** `git status --short`; `git ls-tree --name-only HEAD` over this Circle's decision store
+against `ls` of the same directory; `git show --stat 6be2ec5e -- <decision store>` and the record's
+tail; comment-stripped comparison of `AGENT_BASELINE`, `RULE_BASELINE`, `RELEASE_CAP` and
+`DRIFT_CEILING` across `abcaa823..HEAD`, membership and values both, giving 15 and 8 entries unchanged,
+105 354 and 145 144 unchanged; `bin/fusion-citation-sweep --dry-run`, `rewrites=0`;
+`npx vitest run lib/__tests__/workbench-citation-lint.test.ts`, 13 passed. Two files were written: this
+one and the plan's `## Reconciliation Log`.
