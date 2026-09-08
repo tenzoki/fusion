@@ -189,7 +189,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm run build` then, from the project root, `bin/fusion-turn-budget`, asserting that stdout is exactly `max_turns=12` and `dispatch_minutes=20` on two lines, and that `bin/fusion-turn-budget >/dev/null` still leaves the loader's diagnostics on stderr. Then `npm test` for `turn-budget-lint.test.ts` and `committed-dist.test.ts`, the second of which fails if `hooks/dist/` was not rebuilt.
 - **Acceptance criterion:** one process, two lines, one diagnostic stream; `turn-budget-lint.test.ts` green with no edit to it.
 
-### 4. Document the setting in the two `fusion.json` files
+### 4. [DONE] Document the setting in the two `fusion.json` files
 
 - **Executor:** `ontocoder`
 - **Files:** `templates/fusion.json`, `fusion.json`
@@ -203,7 +203,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test -- config`, exit code in hand. Then `python3 -c "import json;[json.load(open(p)) for p in ['fusion.json','templates/fusion.json']]"` to prove both still parse.
 - **Acceptance criterion:** `config.test.ts`'s drift check green; both files parse; the two new `_dispatchBound` values compare equal byte for byte.
 
-### 5. Write `rules/bounded-dispatch.md`
+### 5. [IN PROGRESS] Write `rules/bounded-dispatch.md`
 
 - **Executor:** `coder`
 - **Files:** `rules/bounded-dispatch.md` (new)
