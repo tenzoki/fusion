@@ -211,25 +211,25 @@ Each step below names the files it touches. Where a row's span is a fraction of 
 
 ### Phase C: the second claim on the same room, and the tail
 
-12. **The help topic's update section (at most +700 bytes against `skills/`)**
+12. [DONE] **The help topic's update section (at most +700 bytes against `skills/`)**
     - Executor: `coder`
     - Files: `skills/help/SKILL.md`
     - Changes: swap the three release paragraphs at lines 101, 103 and 105 (measured 541, 947 and 809 including their newline) for three covering the current three releases. The paragraphs are **labelled by the install the reader is coming from and describe the releases after it**, which is what reconciles the issue's reading against the ledger's: today's labels are v10.14, v10.7 and v10.6 while the content covers v10.20, v10.14 and v10.7. The new labels are v10.24, v10.23 and v10.22, describing v10.25, v10.24 and v10.23, newest first. Source material is `docs/upgrading-to-v10-25.md`, `docs/upgrading-to-v10-24.md` and `docs/upgrading-to-v10-23.md`, all three present. The standing pointer paragraph beneath them does not change, and the three-paragraph cap is `CLAUDE.md`'s. **The net against `skills/` must not exceed +700 bytes**; measure it and report the figure. Per do-not-cut item 8, do not compress the topic's quotes of shipped source to make room. While the file is open, add `--only forum` to the selector list at `skills/help/SKILL.md:76`, which costs about 16 bytes and is counted separately from the 700.
     - Dependencies: step 11.
 
-13. **`CLAUDE.md`'s release process names this surface**
+13. [DONE] **`CLAUDE.md`'s release process names this surface**
     - Executor: `coder`
     - Files: `CLAUDE.md`
     - Changes: the second acceptance clause of `260906-2014_*_the-help-topic-on-updates-has-missed-two-releases-and-names-none-of-the-last-three.md`. The update topic in `skills/help/SKILL.md` joins the surfaces a release checks, so a third consecutive miss is a step somebody skipped rather than a step nobody has. **No cardinality in `CLAUDE.md` may go false as a side effect**: the release-process section carries "four version surfaces" and, below it, "A fifth thing to keep coherent". The update topic carries release paragraphs rather than a version string, so the cheapest true placement is a clause in release step 0's check list or a sentence after the fifth-thing paragraph. If the executor instead extends the four-surface enumeration, "four" becomes five and "A fifth thing" becomes a sixth in the same edit. This costs the `skills/` budget nothing.
     - Dependencies: step 12.
 
-14. **Close the help-topic issue**
+14. [DONE] **Close the help-topic issue**
     - Executor: `coder`
     - Files: the record `260906-2014_*_the-help-topic-on-updates-has-missed-two-releases-and-names-none-of-the-last-three.md`, which stands in the shared issue store
     - Changes: append a `Resolved:` note naming both acceptance clauses and where each was met, then rename the marker `_o_` to `_c_`, per `rules/fusion-workbench-conventions.md` `## Inline State Tracking`. The note cites by heading anchor, never by line number.
     - Dependencies: step 13.
 
-15. **Documentation consistency**
+15. [DONE] **Documentation consistency**
     - Executor: `coder`
     - Files: `docs/fusion-intro.md`
     - Changes: line 116's list of individually reachable steps ("Einzelne Schritte allein: `--only archive`, `--only log-activity`, `--only claude-md`") gains `--only forum`. The eight-step count in the same sentence does not change, because the message pass is Step 6's half rather than a ninth step. **Do not add `/fusion:post` to the command table at line 209**: that table lists the administrative and situational commands and carries no step body, so a row for `post` would contradict the ruling that this adds no administrative name. `docs/messages-between-checkouts.md:25` and `docs/upgrading-to-v10-25.md:53` already document `--only forum` correctly and need no edit.

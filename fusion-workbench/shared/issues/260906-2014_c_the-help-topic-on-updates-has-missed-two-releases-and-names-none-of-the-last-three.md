@@ -32,3 +32,13 @@ is stated in `CLAUDE.md` about this help topic and about nothing else.
 in `CLAUDE.md` names this surface among the ones a release checks, so the next release cannot
 miss it the way the last two did — a fix that only advances the text leaves the process gap
 that produced it.
+
+---
+Resolved: Both acceptance clauses met. The update topic in `skills/help/SKILL.md` `### 4. Update`
+now carries v10.25, v10.24 and v10.23, the three most recent releases, each paragraph still
+labelled by the install the reader is coming from; the standing pointer paragraph beneath them and
+the three-release cap are unchanged. And `CLAUDE.md` `## Release process` release step 0 now
+carries a before-tagging check that opens that topic and brings it to the release, naming the cap
+and the two-release miss that produced this record, so the gap in the process is closed as well as
+the text. The `--only forum` selector was added to the same topic's cleanup line while the file was
+open, which belongs to a different unit of work.

@@ -113,7 +113,7 @@ Faustregel: „geh es fixen“ ist ein **Issue** (`issues/`, Marker `_o_` offen,
 /fusion:cleanup
 ```
 
-Eine Pipeline aus acht Schritten: Issues für offene Tasks anlegen, die eigentliche Arbeit in sinnvollen Splits committen und pushen, reconcilen, archivieren (Tier 1, ohne Rückfrage), Aktivitätslog schreiben, `CLAUDE.md` mit dem `curator` abgleichen (das eine Gate; es steht absichtlich zuletzt, damit ein unbeaufsichtigter Lauf alles andere fertigstellt), die Housekeeping-Artefakte committen und pushen, Bericht. Optionen: `--dry-run`, `--no-push`, `--only <steps>`, `--skip <steps>`. Einzelne Schritte allein: `--only archive`, `--only log-activity`, `--only claude-md`.
+Eine Pipeline aus acht Schritten: Issues für offene Tasks anlegen, die eigentliche Arbeit in sinnvollen Splits committen und pushen, reconcilen, archivieren (Tier 1, ohne Rückfrage), Aktivitätslog schreiben, `CLAUDE.md` mit dem `curator` abgleichen (das eine Gate; es steht absichtlich zuletzt, damit ein unbeaufsichtigter Lauf alles andere fertigstellt), die Housekeeping-Artefakte committen und pushen, Bericht. Optionen: `--dry-run`, `--no-push`, `--only <steps>`, `--skip <steps>`. Einzelne Schritte allein: `--only archive`, `--only log-activity`, `--only claude-md`, `--only forum`.
 
 ## 6. Zeitkosten und Aufräumarbeiten
 
