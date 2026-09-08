@@ -35,3 +35,6 @@ intent are both open, and the specification is the upstream copy.
 
 ---
 Reconciliation 2026-09-08: verified against the tree at `de94102f` and still open. The passage this record is about is unchanged in its source file, so the defect stands whatever the plan step's marker says.
+
+---
+Resolved: both halves corrected on the user's ruling of `260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`, option 1. The plan's step 5 and the specification's residual 2 now state the overshoot without numerals, the way the built rule file states it, and the plan's risk table — a fifth site this record did not name, found by the correcting pass and corrected in a second one — no longer repeats the illustration nor claims the rule file states it. `grep -n 'minute 19\|minute 49\|30-minute'` over both files now returns only the step-5 note and the reconciliation log, each of which reports the contradiction rather than asserting the illustration.

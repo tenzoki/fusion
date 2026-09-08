@@ -29,3 +29,6 @@ names the correction and says seven governs.
 
 ---
 Reconciliation 2026-09-08: verified against the tree at `de94102f` and still open. The passage this record is about is unchanged in its source file, so the defect stands whatever the plan step's marker says.
+
+---
+Resolved: step 7 now reads "exactly seven blocks should change", corrected on the user's ruling of `260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`, option 1. `grep -n 'eight blocks'` over the plan returns one hit, the reconciliation log entry naming the correction, which is what this record's acceptance test permits.

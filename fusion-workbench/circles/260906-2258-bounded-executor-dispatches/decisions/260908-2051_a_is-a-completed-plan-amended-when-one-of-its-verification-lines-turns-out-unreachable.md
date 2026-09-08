@@ -70,3 +70,6 @@ None. The trade in options 1 and 3 is between a reader who is misled and a recor
 and this project has ruled both ways before — a closed issue keeps its original `Resolved:` note and
 gains a `Revised by:` line, which is option 3's shape, while `CLAUDE.md` rows are corrected in place.
 Which precedent governs a completed plan is exactly what is open.
+
+---
+Answered: 260908-1529-orchestrator-session.md `## The ruling on this record` — option 1, amend the plan and the specification in place at the four passages; the marker on a completed plan does not make its text exempt from correction, and a reader who opens it without the reconciliation log is the reader who matters. The cost is accepted: the four defect records' acceptance tests are rewritten against the corrected text, and each record keeps its own account of what stood before; ruled by user, Kai Stalmann <ks@qantr.com>.

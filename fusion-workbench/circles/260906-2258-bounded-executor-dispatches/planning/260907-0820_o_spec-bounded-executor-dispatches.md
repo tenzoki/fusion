@@ -769,8 +769,10 @@ that produced it. The fifth arrived with the fourth revision and the arithmetic 
    agents was the right call for the reason C1 records, and this is what it costs.
 2. **The bound's effective resolution is the size of an agent's own unit of work, so the overshoot
    past 20 minutes is unbounded and unmeasured.** The clock is read immediately before the next unit
-   starts (C1) and never inside one, so an agent that enters a 30-minute unit at minute 19 returns at
-   minute 49. What a unit is, is that agent's own to name and the planner defines it per agent; no
+   starts (C1) and never inside one, so an agent that reads the clock just short of its stopping time
+   and then enters a unit longer than its whole bound returns well past that time. The residual is
+   stated without numerals, here and in the rule file, because the illustration would otherwise pin a
+   configured value into prose. What a unit is, is that agent's own to name and the planner defines it per agent; no
    figure in this tree says how long a unit runs, so nothing here bounds the overshoot or measures it.
 3. **A bound agent stopped before its first write hands back no paths, and its continuation redoes
    the reading.** This is the ordinary cost of a requested bound for any agent early in its run. It is

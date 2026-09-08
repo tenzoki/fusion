@@ -31,3 +31,6 @@ Reconciliation 2026-09-08: verified against the tree at `de94102f` and still ope
 
 ---
 Reconciliation 2026-09-08: verified against the tree at `de94102f`. `agents/orchestrator.md:1028` still carries `f38f37d` in a third passage that Step 8 did not move, so the step's third verification (`grep -c '045a14f\|f38f37d' agents/orchestrator.md` returns 0) reads 1 and is unreachable as written. Step 8 itself is correctly done: both moved narratives are in `rules/commit-lock.md` (grep returns 2) and neither is in the prompt. The marker stays `_o_`.
+
+---
+Resolved: verification item 3 now reads the two hashes separately, expecting `045a14f` to reach 0 and `f38f37d` to reach 1, and names the surviving `## Staging check` passage that makes the second unreachable. That is the first of the two repairs this record's acceptance test names. Corrected on the user's ruling of `260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`, option 1.

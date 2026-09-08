@@ -49,3 +49,64 @@ Shared store: `260906-0035_*_what-should-the-git-helpers-budget-be-and-is-a-time
 **Rebalance recommendation:** revise Grounding
 
 **What the verdict does not say.** The build itself is sound and the byte reckoning came in with room: `agents/*.md` sums to 417 145 against the `AGENT_BASELINE` sum of 399 843, a net of 17 302 against `AGENT_HEAD_ROOM` of 18 000, so 698 bytes of head-room stand where the plan forecast about 456. `surface-growth-bound.test.ts` is byte-identical to `abcaa823`. The flag is on the plan and spec text, which now state three things the tree contradicts and one that the tree contradicts by a comment.
+
+## Coherence — re-take after the Rebalance, 2026-09-08 18:54Z
+<!-- RECONCILER-OWNED -->
+
+**This block does not replace the one above it.** The first verdict was taken at `de94102f`; this one
+at `31b2d82e`, after the Rebalance gate where the user chose *Revise Grounding* and that choice was
+discharged by filing
+`260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`.
+The two together are the record of what the Rebalance changed.
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: unchanged in substance, and re-verified rather than carried over. All four passages still stand verbatim in `260907-1450_*_plan-bounded-executor-dispatches.md`: the `30-minute` illustration at line 218 against the same step's `Do not:` line at 245, "exactly eight blocks" at line 290, the `grep -c '045a14f\|f38f37d'`-returns-0 verification at line 350, and the four-values-byte-identical-to-`abcaa823` closure clause at line 560. `31b2d82e` is the only commit since the first verdict and it is additive bookkeeping — 12 files, 270 insertions, 0 deletions, no line of plan or specification prose rewritten. **What the Rebalance did change is the recordedness of one of the four**: the `RULE_BASELINE` clause had been named only in `260908-1845-orchestrator-byte-reckoning.md` and in the reconciliation log, and is now item 4 of a filed decision. **What it did not change is the text.** (Grounding at fault) / 0 open coderev+ontorev issues, reviews store still empty, so this edge is again read from the reconciliation alone.
+- Artifact↔Directive: the 13 commits `637d0b04..31b2d82e` move toward the stated Directive; the twelve of the first verdict are unchanged and the thirteenth, `31b2d82e`, writes only workbench records — this Circle's reconciliation log, its session history and its decision store. Nothing in the range is orthogonal to the Directive and nothing since the first verdict advances a plan step, because none is left to advance.
+- Grounding↔Directive: 4 active decisions in this Circle's store, all read, 0 conflicting; the 43 shared ones were again inventoried at marker level and not opened, so this edge's reach is stated rather than implied, exactly as in the first verdict. The new record is `_o_` and consistent with the Directive: it asks what happens to a completed plan's text and does not contest that steps 4 to 16 landed. It is cited **from** the plan's three defect records and cites the plan itself; the plan does not cite it back, so a reader arriving at the plan meets the three defects through the reconciliation log and does not meet the decision.
+
+**Rebalance recommendation:** revise Grounding
+
+**Why the verdict did not move, stated plainly.** Filing a question about a defect is not the same as
+the Grounding accounting for it. The four passages still tell a reader something the tree contradicts,
+and a record asking *whether they may be corrected* leaves every one of them saying what it said. The
+new record is explicit on this in its own words — filing it "does not repair that text and was never
+meant to" — and its option 2, the one that would make the filed defects themselves the correction, is
+**unchosen**. Reading this edge as repaired would decide that open question in the record's favour from
+the reconciler's chair, which is not the reconciler's to do.
+
+**What the recommendation means the second time, since it is the same word.** `revise Grounding` is the
+mechanical mapping from a flagged Artifact↔Grounding edge with the Grounding at fault, and it is
+advisory. It should not be read as an instruction to run the same gate again: a second revision of the
+Grounding cannot land while the decision governing *how* a completed plan may be revised is open. The
+thing that unblocks this edge is an answer to
+`260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`,
+and that answer is the user's to give and the orchestrator's to relay.
+
+**One reading considered and rejected.** `directive-partially-met` was weighed, because the Directive
+names closure as `## Where this Circle stops` describes it and one clause of that section reads no.
+It was rejected on the definition's own terms: that verdict requires that nothing drifted, and four
+passages have. The clause reading no is the fourth drift item, not a separate shortfall, and it is
+answered no by `01e0f688`, a commit from another checkout that this Circle did not make.
+
+## The ruling on this record
+
+**2026-09-08, user, Kai Stalmann <ks@qantr.com>.** At the Rebalance gate's second re-entry the user
+was put the question filed as
+`260908-2051_*_is-a-completed-plan-amended-when-one-of-its-verification-lines-turns-out-unreachable.md`,
+with its three options and their foreclosures, and chose **option 1: amend the plan and the
+specification in place at the four passages.**
+
+What the ruling settles, in the terms the record put it: the closed marker on a completed plan does
+not make its text exempt from correction, and the reader who opens the plan without its reconciliation
+log is the reader the correction is for. The cost the record names is accepted rather than argued
+away — the four defect records' acceptance tests are rewritten against the corrected text, and each
+record keeps its own account of what stood before, so the evidence survives in the records rather
+than in the plan.
+
+The gate sequence that reached it, for a reader reconstructing the session: Phase 3 returned
+`review-needed` with `revise Grounding` recommended; Gate 1 **Keep it**, Gate 2 **Revise Grounding**,
+branch (a), which filed this record; the re-taken verdict did not move, because filing a question
+about a defect is not the Grounding accounting for it; Gate 1 **Keep it** again, Gate 2 **Revise
+Artifact**, and this ruling is what gives that pass its scope.
