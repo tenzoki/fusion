@@ -408,7 +408,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `wc -c agents/orchestrator.md` before and after, difference at or under 2 190. `cd hooks && npm test`, exit code in hand, with `executor-verification-report-lint.test.ts` and `surface-growth-bound.test.ts` both green.
 - **Acceptance criterion:** all five sites named in C3's table carry a clause; the one site whose omission would destroy work (Step 3b step 2d) carries its exclusion in the prompt and not only in the rule file.
 
-### 11. Mirror the Setup change in the setup skill
+### 11. [DONE] Mirror the Setup change in the setup skill
 
 - **Executor:** `coder`
 - **Files:** `skills/setup/SKILL.md`
@@ -418,7 +418,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test -- turn-budget`, exit code in hand. `wc -c skills/setup/SKILL.md` before and after; the `skills/` surface has 13 131 bytes of head-room, so the constraint is not tight here.
 - **Acceptance criterion:** the skill names two resolved values and restates neither's branches.
 
-### 12. The C4 reading
+### 12. [DONE] The C4 reading
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/events-query.ts`, `hooks/events-query.ts`, `bin/fusion-events`
