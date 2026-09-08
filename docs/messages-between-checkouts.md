@@ -34,11 +34,11 @@ You type `news`; the files live in `shared/forum/`. The two names differ, both a
 
 ## What a message looks like
 
-Twenty lines in the file: a subject, a blank line, up to eight lines addressed to a person, a blank line, up to nine lines of pointer block.
+A subject line, a short part addressed to a person, and a pointer block, in that order and under a line cap. The cap, its arithmetic and the blank lines between the parts are `skills/post/SKILL.md` `## Step 2: compose the draft`'s and are not repeated here — the same reason `## Where the mechanism is written down` gives below for the helper's header. A number stated twice is a number that can disagree with itself, and the writer of a message obeys the body, not this page.
 
 The two halves are written for different readers and follow different languages. The person's part follows the project's chat language and reads plainly to somebody who never saw the session: no state markers, no fusion nouns, no agent name as the subject of a sentence, no bare identifiers. The pointer block follows the artifact language and carries the machine-checkable facts: the commit range, the session history file's basename, the records the session filed as storeless wildcard citations, and a sentence or two on what the receiving side need not redo.
 
-Each entry is one file per session, named `YYMMDD-HHMM-<checkout>-<slug>.md`, with a single writer. Nothing appends to a shared log, so there is no merge driver and no ordering to lose.
+Each entry is one file per session with a single writer, and its name carries the stamp, the writing checkout and a short slug, so a reader can tell who wrote what without opening anything. The pattern itself is the `Forum entry` row of `rules/fusion-workbench-conventions.md` `## Filename Patterns`. Nothing appends to a shared log, so there is no merge driver and no ordering to lose.
 
 The shape, with the person's half in English for the sake of the example:
 
@@ -105,4 +105,4 @@ Any answer, including a successful one, can carry a note about a degradation tha
 
 `bin/fusion-forum`'s own header is the authoritative documentation for the fetch, the two-tree set difference the delta comes from, the state vocabulary, and the exit codes. None of it is copied here, deliberately: a second copy drifts from the first, and the first is the one the program obeys. Open the header when you need to know how an answer was produced.
 
-The flow on each side lives in `skills/news/SKILL.md` and in the message half of `skills/cleanup/SKILL.md`; the retention rule and its accepted cost are in `skills/archive/SKILL.md` under tier 1.
+The flow on each side lives in `skills/news/SKILL.md` and in `skills/post/SKILL.md`, which `/fusion:cleanup` Step 6 reads and performs inline; the retention rule and its accepted cost are in `skills/archive/SKILL.md` under tier 1.

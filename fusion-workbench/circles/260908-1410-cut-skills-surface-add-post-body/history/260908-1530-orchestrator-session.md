@@ -58,3 +58,16 @@ session has yet done. The marketplace bump is committed locally and unpushed for
 ## Per-Turn Log
 
 (none yet)
+
+## Coherence
+
+<!-- RECONCILER-OWNED -->
+
+**Verdict:** review-needed
+
+**Edges:**
+- Artifact↔Grounding: 17 of 17 plan claims verified against the tree / 3 drift items (Artifact at fault) / 0 open coderev+ontorev issues filed in this Circle, and no review pass has run in it. The three: `CLAUDE.md`'s `## Layout` skill row still splits the roster three / three / seven and omits `post`, the fifth prose statement to go false and the only one uncorrected (`260908-1814_*_the-layout-rows-skill-split-still-reads-three-and-three-and-omits-post.md`); two open reviewer defects, `260908-0849_*_the-twenty-line-cap-counts-a-draft-that-is-never-the-file-that-gets-written.md` and `260908-0850_*_two-selector-names-share-one-step-and-the-coupling-runs-in-only-one-direction.md`, now cite eight line numbers in `skills/cleanup/SKILL.md` that name other text, the passages having moved into `skills/post/SKILL.md` with the defects intact; and `docs/messages-between-checkouts.md` restating the twenty-line cap and the filename shape, so the stopping condition "the contract exists in exactly one file" holds for executable text and not for the tree (`260908-1814_*_the-reader-doc-restates-the-twenty-line-cap-and-the-filename-shape-outside-the-one-body.md`). Everything else verified: `wc -c skills/*/SKILL.md` = 256 658 with the five step figures reconciling from 259 495 with no residual, the golden matching disk line for line, all four baseline maps byte-identical to `94a262b0`, and `npm test` green run alone.
+- Artifact↔Directive: the commits move toward the stated Directive and realise it in full — `3175f39e` takes the nine cut rows, `22d6f839` writes `skills/post/SKILL.md` and turns cleanup's message half into a read-and-perform stanza with both rosters in the same commit, `02533218` brings the help topic and the release process up to date, `ee99a578` rebuilds the golden once and reconciles the arithmetic. Nothing in `b64b95b5..ee99a578` is orthogonal to it. The surface is measurably better off than at the start: 3 956 bytes free against 1 119 at activation, with a fourth pipeline step body added rather than a fourth administrative name.
+- Grounding↔Directive: 2 active decisions bearing on this Circle, 0 conflicting. `260908-1612_*_can-migrates-language-preamble-adopt-the-shortened-form-and-keep-its-shell-string-clause.md`, filed here and open, is scoped out of the Directive by the row-9 exclusion the Grounding already states, so it gates nothing. `260907-2003_*_what-does-the-directive-pointer-swap-do-when-the-cited-plan-declines-to-restate-the-directive.md` is inherited and open, and this Circle is its second recorded instance: the field is written and the record's Directive prose stands, which satisfies the invariant that record protects and departs from the letter of the head-field obligation — a departure that record declares and holds until it is ruled, not a conflict this Circle created.
+
+**Rebalance recommendation:** revise Artifact

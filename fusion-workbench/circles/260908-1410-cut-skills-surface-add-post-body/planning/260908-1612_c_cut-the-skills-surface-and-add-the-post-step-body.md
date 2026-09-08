@@ -1,7 +1,7 @@
 # Implementation Plan: cut the `skills/` surface, then add `skills/post/SKILL.md`
 
 **Date:** 2026-09-08
-**Status:** Draft
+**Status:** Complete
 **Spec:** none. The Directive of `260908-1410-cut-skills-surface-add-post-body` plus the measured ledger `260908-1346-the-cut-ledger-for-the-skills-surface-and-what-the-post-body-owes.md` stand in a spec's place; the shaper's clarification round is recorded in `260908-1410-shaper-cut-skills-surface-add-post-body.md`.
 **Decidability:** The load-bearing question is whether the `skills/*/SKILL.md` growth bound still passes once a new body is added, and it is decidable from the inputs the mechanism has. The bound is `total > floor + head_room`, where the floor is a literal map in `hooks/lib/__tests__/surface-growth-bound.test.ts` and the total is `wc -c` over a directory read off the tree. Nothing is predicted. The one quantity nobody can measure in advance is the new body's own size, and this plan does not estimate it either: Step 9 writes the body, measures it, and branches on the measurement, with the "too large" branch returning to the user rather than absorbing the overage. Two derived quantities carry the same property, since the ledger's before-figures were re-measured against this tree during planning and reproduce exactly.
 
@@ -310,3 +310,63 @@ Three records, per `rules/fusion-workbench-conventions.md` `## Issue and Decisio
 - `260908-1612_*_readme-agents-calls-curate-the-only-path-to-claude-md-while-a-lint-forces-a-hand-edit.md`, this Circle's issue store. Surfaced by step 11's obligation.
 - `260908-1612_*_the-migrate-carve-outs-authoring-home-has-no-heading-a-citation-can-address.md`, this Circle's issue store. Surfaced by step 1's pointer.
 - `260908-1612_*_log-activity-calls-itself-cleanups-step-6-and-it-is-step-5.md`, the shared issue store. Found next to this work rather than caused by it: `skills/log-activity/SKILL.md` is in no row of the ledger.
+
+## Reconciliation Log
+
+**260908-1814 (reconciler, HEAD `ee99a578`, domain `code`).** All seventeen steps verified against the
+tree rather than against their marks. Every `[DONE]` is correct; the plan closes Complete and the marker
+moves `_o_` → `_c_`. Four defects found that no step's own acceptance test reaches, none of them a wrong
+mark.
+
+**The load-bearing claim holds.** The composition contract exists once in the executable text. Grepping
+the four elements over `skills/`, `docs/`, `README*.md` and `CLAUDE.md`: the twenty-line cap, the
+1/blank/8/blank/9 split with its two language halves, the `wc -l`-before-the-put rule and the
+`<stamp>-<checkout>-<slug>` filename shape are each in `skills/post/SKILL.md` and in no other skill body.
+`skills/cleanup/SKILL.md` `### The message half` carries a read-and-perform stanza plus four bullets that
+are cleanup's own, and restates none of the four. Its `--only`/`--skip` selector table and its line 53
+sentence about the three that replace former commands are untouched, as steps 10 and 15 direct.
+
+**The arithmetic reconciles independently.** `wc -c skills/*/SKILL.md` measures **256 658**, and the five
+reported figures sum from 259 495 with no residual: −8 161 (cut phase, nine rows) −1 050 (cleanup's file
+net for the stanza) +6 137 (`skills/post/SKILL.md`) +221 (help topic) +16 (help's selector line) = −2 837;
+259 495 − 2 837 = 256 658. Each intermediate lands where a step reported it: 251 334 after the cut phase,
+257 471 with the new body, 256 421 after the stanza and the roster. Free against the 260 614 budget is
+3 956. `hooks/lib/__tests__/fixtures/surface-growth.golden`'s `[skills bytes]` block is byte-for-byte the
+disk figures including `post/SKILL.md 6137`, and `git diff 94a262b0` over
+`hooks/lib/__tests__/surface-growth-bound.test.ts` and `hooks/lib/__tests__/rules-emission-golden.test.ts`
+is empty, so no baseline moved. `npm test` run alone exits 0.
+
+**The three named prose statements and the fourth are all corrected.** `CLAUDE.md:21` reads "Four further
+bodies" and "Two of those four selectors", naming `claude-md` and `forum` as the two that are not the
+body's own name; `README-agents.md:235` reads "Four more bodies in the table" and names `post`;
+`README-agents.md:252` carries exactly one `/fusion:post` row in the pattern the lint parses; and release
+step 0's universal, which step 13 found, now reads "The checks above it ask whether the plugin *loads*"
+with the update-topic clause below it, keeping "four version surfaces" and "A fifth thing" both true.
+
+**A fifth statement went false and nobody named it.** `CLAUDE.md:66`, the `skills/<name>/SKILL.md` layout
+row, still reads "Three are the administrative surface …, three are cleanup pipeline steps (`archive`,
+`curate`, `log-activity`), and the rest are situational (`commit`, `direct`, `help`, `memo`, `migrate`,
+`news`, `next`)". That is 3 + 3 + 7 = 13 against fourteen directories on disk, and `post` appears in
+neither the pipeline group nor the situational list. It is the same claim step 11 corrected at
+`CLAUDE.md:21` and at `README-agents.md:235`, in a third place in the same file, in bare names rather than
+`/fusion:` tokens — which is why `derivable-enumerations-lint` passes over it. Filed as
+`260908-1814_*_the-layout-rows-skill-split-still-reads-three-and-three-and-omits-post.md`.
+
+**The ruling the Circle rests on was not quietly reversed.** `post` is absent from `CLAUDE.md:21`'s
+situational list and from `docs/fusion-intro.md`'s command table at section 10, both checked directly.
+`docs/fusion-intro.md:116` gained `--only forum` and kept its eight-step count.
+
+**Two open reviewer-filed defects were relocated out from under their own citations.** Steps 8 and 10 moved
+the message half without change of substance, and it carried two open records with it:
+`260908-0849_*_the-twenty-line-cap-counts-a-draft-that-is-never-the-file-that-gets-written.md` and
+`260908-0850_*_two-selector-names-share-one-step-and-the-coupling-runs-in-only-one-direction.md`, both
+`_o_` in the prior Circle's issue store, cite `skills/cleanup/SKILL.md` at five and three line numbers that
+now name other text. Both defects survive verbatim in `skills/post/SKILL.md`. No step in this plan owed the
+re-pointing and none performed it; each record carries a reconciliation note naming its new home, and both
+markers stay `_o_`.
+
+**One second statement of the contract stands outside the skill bodies.**
+`docs/messages-between-checkouts.md:37` states the twenty-line cap and both halves in prose, and line 41
+the filename shape. It predates this Circle (commit `bf1e16f5`) and no step named it, so the stopping
+condition "the contract exists in exactly one file" is met for executable text and not for the tree. Filed
+as `260908-1814_*_the-reader-doc-restates-the-twenty-line-cap-and-the-filename-shape-outside-the-one-body.md`.
