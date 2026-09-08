@@ -166,7 +166,7 @@ Each step below names the files it touches. Where a row's span is a fraction of 
    - Changes: row 7 replaces `next:167`'s restated comparison (608 bytes, to 354) with the pointer it already carries at `260813-1306_*_the-playmaker-maintains-the-backlog-store.md` `## Approach`; the Step 5b relay mechanics above it are do-not-cut item 3 and stay. Row 8 replaces `cleanup:88-89`'s two exit-code bullets (353 bytes, to 172) with one line naming whose fault each is; the surrounding sentence already cites `rules/fusion-workbench-conventions.md` `## Path Resolution` and stays.
    - Dependencies: step 5. Small and safe, taken while the files are open.
 
-7. **Measure the cut, and gate on it**
+7. [DONE] **Measure the cut, and gate on it**
    - Executor: `coder`
    - Files: none (measurement only)
    - Changes: run `wc -c skills/*/SKILL.md`. Expected total 251 051, free 9 563 against the budget of 260 614. Report the measured total, the free figure, and the per-row delta against the ledger. **If the measured total is more than 300 bytes above 251 051, stop and report before Phase B** rather than starting the build against room that is not there. A shortfall under 300 bytes is inside the drafting noise the ledger declares and continues.
@@ -174,7 +174,7 @@ Each step below names the files it touches. Where a row's span is a fraction of 
 
 ### Phase B: build, one unit of work and one commit
 
-8. **Write `skills/post/SKILL.md`**
+8. [DONE] **Write `skills/post/SKILL.md`**
    - Executor: `coder`
    - Files: `skills/post/SKILL.md` (new)
    - Changes: the fourth cleanup-pipeline step body. It carries, and none of these is optional:
@@ -186,19 +186,19 @@ Each step below names the files it touches. Where a row's span is a fraction of 
      - A boundaries section, on `skills/curate/SKILL.md` `## Boundaries`' pattern: it writes exactly one file and nothing else, it dispatches no agent, it commits nothing, and it composes nothing when there is nothing to say.
    - Dependencies: step 7.
 
-9. **Measure the new body, and stop if it is over**
+9. [DONE] **Measure the new body, and stop if it is over**
    - Executor: `coder`
    - Files: none (measurement only)
    - Changes: run `wc -c skills/post/SKILL.md`. **If it measures above 6 500 bytes, the work stops here.** Report the measured figure and the head-room it leaves against the budget, and return the question to the user. Do not cut a further row, do not reach into the ledger's do-not-cut list, and do not trim the new body's statement of its own behaviour to fit. This is a step outcome, not a risk to be mitigated: cutting further under pressure is the failure the do-not-cut list exists to prevent, and the user ruled the branch before the Circle was activated.
    - Dependencies: step 8.
 
-10. **Row 10, cleanup's read-and-perform stanza (−1 120)**
+10. [DONE] **Row 10, cleanup's read-and-perform stanza (−1 120)**
     - Executor: `coder`
     - Files: `skills/cleanup/SKILL.md`
     - Changes: `### The message half` (lines 200 to 212, 2 069 bytes) becomes a stanza of roughly 950 bytes that reads `$FUSION_SRC/skills/post/SKILL.md` and executes its procedure inline, in the shape Steps 4, 5 and 6 already use. **What stays behind is only what is cleanup's own**: that `--skip claude-md` drops the message with the step, that `--dry-run` puts no draft and writes nothing, that `--only forum` runs the half alone, and that the draft is a second question inside the same `AskUserQuestion` call so the walk-away property holds. Do not restate the twenty-line cap, the two language halves or the filename shape; that is the drift the inverted shape exists to prevent. Also correct `skills/cleanup/SKILL.md:11`, which enumerates the archive pass, the `CLAUDE.md` pass and the activity-log pass as the procedures this skill reads and performs: the message pass joins them, and the enumeration is incomplete without it. Leave line 57 alone: "the three that replace commands fusion used to expose on their own" stays true, because `post` replaces no former command. Leave the selector table alone: `forum` already has its row.
     - Dependencies: step 9.
 
-11. **The roster obligations, in the same commit as the directory**
+11. [DONE] **The roster obligations, in the same commit as the directory**
     - Executor: `coder`
     - Files: `CLAUDE.md`, `README-agents.md`
     - Changes: four edits, all forced or made false by step 8.

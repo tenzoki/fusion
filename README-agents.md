@@ -232,7 +232,7 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 
 ### `skills/` — one file per slash command
 
-**The administrative surface is three names: `/fusion:setup`, `/fusion:cleanup`, `/fusion:cadence`.** Setup at the start of a session, cleanup at the end, cadence to see what happened. Three more bodies in the table — `archive`, `curate` and `log-activity` — are steps of the cleanup pipeline rather than commands of their own, reached with `/fusion:cleanup --only <step>`; they keep their own files because a procedure copied into a caller is a procedure that drifts from it. The rest of the table is situational: `commit`, `memo`, `migrate`, `next`, `direct`, `news`, `help`.
+**The administrative surface is three names: `/fusion:setup`, `/fusion:cleanup`, `/fusion:cadence`.** Setup at the start of a session, cleanup at the end, cadence to see what happened. Four more bodies in the table — `archive`, `log-activity`, `curate` and `post` — are steps of the cleanup pipeline rather than commands of their own, reached with `/fusion:cleanup --only <step>`; they keep their own files because a procedure copied into a caller is a procedure that drifts from it. The rest of the table is situational: `commit`, `memo`, `migrate`, `next`, `direct`, `news`, `help`.
 
 | Slash command | File | What it does |
 |---------------|------|--------------|
@@ -249,6 +249,7 @@ In a consuming project, drop a markdown file into `./rules/` whose name contains
 | `/fusion:direct` | `skills/direct/SKILL.md` | Drafts a Directive as an anticipated (`_a_`) Circle — `shaper` refines a one-line draft via clarifying questions and writes the Circle record without starting a Turn loop |
 | `/fusion:news` | `skills/news/SKILL.md` | Shows what other checkouts left for this one: fetches, reads the new entries of the shared message store out of the fetched ref without touching the working tree, renders each with its writer resolved to a name, advances the read mark on render, then offers a `git pull --ff-only` once. Reads a store and holds no thread — there is nothing to reply to here. The mechanism is `bin/fusion-forum`'s own header |
 | `/fusion:curate` | `skills/curate/SKILL.md` | **Cleanup Step 6** (`--only claude-md`), and the only path to `CLAUDE.md`. Reconciles the three normative surfaces — decision records, the project's own `./rules/` and `.claude/rules/` files, and `CLAUDE.md` — against the project's recorded history. Dispatches `curator` to survey, holds the change-ledger gate, dispatches it again to apply only what was approved. Writes nothing itself |
+| `/fusion:post` | `skills/post/SKILL.md` | **Cleanup Step 6's message half** (`--only forum`). Composes one short note for whoever pulls this work next — the commit range, the session history file, the records this session filed — and writes it into the shared message store. Writes exactly one file, commits nothing, holds no thread. The read side is `/fusion:news` on the other checkout |
 
 Slash commands are independent of sub-agent routing — invoke them from the parent session when you need to set up, wrap up, or commit.
 

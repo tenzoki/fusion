@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write, Edit, Glob, Grep, AskUserQuestion, Agent(fusi
 
 The user invoked `/fusion:cleanup`. This is a one-shot pipeline that closes out a work session: it captures unfinished work as issues, commits and pushes the real changes in meaningful splits, runs reconciliation, archives stale workbench files with safe defaults, reconciles `CLAUDE.md` against the project's history behind a user gate, regenerates the activity log, then commits and pushes the housekeeping artifacts those last steps produced.
 
-**This is fusion's end-of-session command, and it is one of three.** `/fusion:setup` starts a session, `/fusion:cleanup` ends it, `/fusion:cadence` shows what happened. The archive pass, the `CLAUDE.md` pass and the activity-log pass are steps of this pipeline rather than commands of their own; their procedures still live in their own files, and this skill reads and performs them (Steps 4, 5 and 6). `--only` and `--skip` are how you reach one of them alone.
+**This is fusion's end-of-session command, and it is one of three.** `/fusion:setup` starts a session, `/fusion:cleanup` ends it, `/fusion:cadence` shows what happened. The archive pass, the activity-log pass, the `CLAUDE.md` pass and the message pass are steps of this pipeline rather than commands of their own; their procedures still live in their own files, and this skill reads and performs them (Steps 4 and 5, and both halves of Step 6). `--only` and `--skip` are how you reach one of them alone.
 
 **Skills cannot invoke other slash commands.** Where a step corresponds to another fusion skill, read that skill's body from `$FUSION_SRC/skills/<name>/SKILL.md` and execute its procedure inline. Do not tell the user to type the slash command — perform the work. Two steps dispatch an agent directly rather than reading a body: Step 3 dispatches the `reconciler`, and Step 6 dispatches the `curator` twice, from the procedure `skills/curate/SKILL.md` holds. **That root is not specific to skill bodies: every path into a file the plugin ships carries `$FUSION_SRC`** — an agent prompt at `$FUSION_SRC/agents/<name>.md` exactly as much as a skill body — because nothing the plugin ships exists at a consuming project's root, where a bare `agents/…` or `skills/…` path resolves to nothing. Rule files are the exception in form only: an agent receives them from `"$FUSION_PLUGIN_ROOT/bin/fusion-rules"`, which prints absolute paths, so a `rules/…` name below identifies the file that governs and is not a path to open by hand.
 
@@ -194,15 +194,14 @@ This step replaces the autonomous three-pass rewrite of `CLAUDE.md` that cleanup
 
 ### The message half
 
-**Compose before the stop:** a note for whoever pulls this work next. Twenty lines in the file: subject, blank, ≤ 8 lines of the person's part (chat language), blank, ≤ 9 of pointer block (artifact language). It gives the commit range (`session.git_head_at_start` from Step 1's read, to `HEAD`), the session history basename, this session's filed records as **storeless wildcard citations**, and a sentence on what the other side need not redo. Count it with `wc -l` **before** you put it; over the cap, cut and recount, never put and trim.
+Read `$FUSION_SRC/skills/post/SKILL.md` and execute its procedure inline. That body owns the composition contract and the filename, and this step restates none of it — two statements of one contract are two chances to disagree.
 
-**The person's part reads plainly to somebody who never saw this session**: no state marker, no fusion noun, no agent name as a subject, no bare identifier. Authored here, not borrowed: `rules/user-facing-output.md` `## Vocabulary` exempts workbench records.
+Four things are this step's and not that body's:
 
-**Print the draft as ordinary output just before the gate**, then ask for it as a **second question in the same `AskUserQuestion` call**: one stop, three options and eight lines per question, the answers independent. Printing is not stopping: the walk-away property holds.
-
-**On yes**, `mkdir -p` and write `$WORKBENCH/$OUT_FORUM/<YYMMDD-HHMM>-<checkout>-<slug>.md`, stamp from `date +%y%m%d-%H%M`, checkout from the `[ -x ]`-guarded `bin/fusion-identity`. No `**Filed by:**`: the filename names the writing checkout (`260827-1756_*_which-record-kinds-owe-the-person-half-of-filed-by.md`).
-
-**Nothing is written or offered** when the project is no git repository, or the run has nothing to say: no commits in the range, no records filed. `--skip claude-md` drops the whole step, message too; `--dry-run` puts no draft and writes nothing; `--only forum` runs the half alone: compose, ask **its own** one-question confirmation (as `$FUSION_SRC/skills/archive/SKILL.md` `## Process` does outside the pipeline), write on yes, touch git not at all, and say to carry the file in the next commit.
+- **The draft rides as a second question in the same `AskUserQuestion` call** as the gate above, printed as ordinary output just before it. Printing is not stopping, so the one stop stays one and the walk-away property holds.
+- **`--skip claude-md` drops the message with the step**, the half being Step 6's.
+- **`--dry-run` puts no draft and writes nothing.**
+- **`--only forum` runs the half alone**, on that body's standalone shape: its own one-question confirmation, no git at all, the file carried in the next commit.
 
 **Accepted once:** the entry is written after Step 2's push and carried by Step 7's, so whoever pulls between them gets the work without its message.
 
