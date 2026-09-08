@@ -3,7 +3,7 @@
 ---
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
-**Claim:** Claimed 260908-1530: Kai Stalmann <ks@qantr.com>, checkout 1d05b0e4.
+**Claim:** Unclaimed
 **Active spec/plan:** 260908-1612_*_cut-the-skills-surface-and-add-the-post-step-body.md
 **Active session history:** 260908-1530-orchestrator-session.md
 
@@ -37,6 +37,9 @@ After this work, `skills/post/SKILL.md` exists as the fourth body of the `/fusio
 
 ## Turn log
 
+- Turn 1 (session 260908-1530): commits b64b95b5..ee99a578, 5 of them; Coherence verdict review-needed on 3 drift items, all in the Artifact; session history: 260908-1530-orchestrator-session.md. All 17 plan steps done. The cut delivered 8161 of a predicted 8444 over nine rows; the new body measured 6137 under a 6500 ceiling after one over-ceiling stop and the user's ruling to remove the source-root block.
+- Turn 2 (session 260908-1530): the repair pass after Gate 2 chose Revise Artifact, then the closure review and the repair of its two high findings. The review found the default path did not write the message at all, on two independent causes, neither visible under the standalone shape the feature had been exercised in. Two stopping conditions do not hold at closure and are named in the closure note rather than repaired.
+
 ## Activation proposal
 
 Recommended as the next activation, and it is the only anticipated Circle on the board. Every
@@ -63,3 +66,54 @@ Playmaker run: `260908-1422-playmaker-direct-dispatch.md`.
 
 Activation is the user's or the orchestrator's act. This block proposes and renames nothing.
 
+
+## Closure note
+
+**Closed coherent 260908-2045**, session history `260908-1530-orchestrator-session.md`,
+range `b64b95b5..HEAD`.
+
+**The Directive is met, and the claim it rests on was checked twice by different methods.** The
+message composition contract exists once, in `skills/post/SKILL.md`; `/fusion:cleanup` Step 6 reads
+and performs it and keeps only what is cleanup's own. A reconciliation established this by grep over
+four surfaces, and the closure review then re-established it by reading both bodies as an executor
+would run them, which is the method that could have found a restatement in different words. The
+surface stands at 259 515 of 260 614, so 1 099 are free against 1 119 at activation, with a fourth
+pipeline step body added rather than a fourth administrative name.
+
+**Two stopping conditions do not hold, and the user closed with both named rather than repaired.**
+
+The cut landed at 250 284 bytes before the new body against a condition of 249 931 with a 300-byte
+tolerance, short by 353. The step-7 abort measured rows 1 through 9 alone and passed at 283; row 10
+then delivered 70 less than predicted. The gate and the stopping condition do not measure the same
+quantity, which nobody noticed while both were being written.
+
+`skills/post/SKILL.md` measures 7 347 against a ceiling of 6 500. It was 6 137 when written, under
+the ceiling and matching its own estimate to the byte; the repair of the two high findings added
+1 210. The repair dispatch bounded the surface rather than the body, which was the orchestrator
+substituting one condition for another and not re-checking. Trimming it back would remove behaviour
+the review had just demonstrated the default path needs, which is what the ceiling forbade for the
+original write.
+
+**The closure review found two high defects and both are fixed.** Each bit only on the inline path,
+which is the default run, and neither appeared under `--only forum`, which is the shape the feature
+had been exercised in. The message step read a state file the pipeline deletes five steps earlier,
+the coupling having been a single phrase that went with the relocated procedure. And the draft rode
+a question the surveying half does not always put, so on the commonest run it was composed, printed
+and never written. The inverted shape moved a procedure and left its preconditions behind; that is
+the class the do-not-cut list does not cover.
+
+**One finding outlives this Circle as a widened record.** Three times here a citation gate stood red
+across a commit. The first is explained by the deferred golden making a full-suite run pointless.
+The other two are not: the file that reddens the gate is a record written after the last
+verification, by an agent producing prose, with nothing running between writing it and committing
+it. `260908-1800_*_three-commits-shipped-a-red-citation-sweep-gate-because-an-expected-red-golden-masked-it.md`
+carries the widening; its acceptance test does not yet cover it.
+
+**Release precondition, unchanged and still unmet.** `/fusion:post` has never been invoked as a
+slash command, because a session reads its skill roster at start from the installed copy. The same
+holds for `/fusion:news`. A release claiming either works has to prove it after `fusion --update`
+and a restart, or say plainly that it has not.
+
+**Open on closure:** four defect records from this Circle's review, one decision on the migrate
+language preamble which the Grounding scopes out of the Directive, and the inherited pointer-swap
+question, which this Circle recorded as its second instance.
