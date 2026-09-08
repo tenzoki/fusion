@@ -475,7 +475,7 @@ The graph is acyclic. Step 1 is the only gate, and it was written that way becau
 - **Verification:** `cd hooks && npm test`, exit code in hand. `wc -l` over `hooks/lib/__tests__/*.test.ts`; the surface has 2 730 lines of head-room, so this step is not budget-constrained.
 - **Acceptance criterion:** every branch listed in Step 12's change 3 has a case; the pairing test fails if a name is added to either side alone.
 
-### 14. A lint against the dispatch bound returning to the prose
+### 14. [DONE] A lint against the dispatch bound returning to the prose
 
 - **Executor:** `coder`
 - **Files:** `hooks/lib/__tests__/dispatch-bound-lint.test.ts` (new)

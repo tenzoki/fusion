@@ -58,6 +58,7 @@
   declared-citation-paths.test.ts 70
   deliverable-language-lint.test.ts 138
   derivable-enumerations-lint.test.ts 453
+  dispatch-bound-lint.test.ts 246
   domain-cascade-order-lint.test.ts 234
   domain-cascade.test.ts 911
   executor-verification-report-lint.test.ts 217
@@ -104,4 +105,4 @@
   surface-growth-bound.test.ts 685
   turn-budget-lint.test.ts 525
   workbench-citation-lint.test.ts 325
-  total 22287
+  total 22533
