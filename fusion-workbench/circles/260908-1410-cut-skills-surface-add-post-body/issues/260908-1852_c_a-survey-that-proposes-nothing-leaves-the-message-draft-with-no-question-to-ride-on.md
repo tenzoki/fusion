@@ -24,3 +24,22 @@ This is adjacent to the open record `260908-0850_*_two-selector-names-share-one-
 The coupling is stated cheaply if it is stated at all: whoever holds the gate knows whether it fired, and the fallback for "no gate fired" is one `AskUserQuestion` of the shape `skills/post/SKILL.md` already defines for the standalone path. What must not stand is the current text, where the inline path names a call that may not exist and the body is told not to make one.
 
 **Acceptance test:** every path through `skills/curate/SKILL.md` that ends without putting the gate has a stated behaviour for the message draft, written in one place; a full `/fusion:cleanup` run whose curator proposes nothing either writes the message or says in the Step 8 report that it did not and why.
+
+---
+Resolved: the coupling is stated once, in `skills/cleanup/SKILL.md` `### The message half`, and it adds no
+place where the pipeline waits. Two sentences replace the one that named the gate. The draft now rides the
+**first** `AskUserQuestion` call the `CLAUDE.md` half puts, which is ordinarily the gate and, where the
+blast-radius stop fired, the scale confirmation — the call the user actually reaches on the fourth row of the
+table above. And where that half puts **no** call, this half puts one itself, on the standalone shape
+`skills/post/SKILL.md` already defines, which is the fallback the record proposed. The reading of "one stop"
+this relies on is the one the user ruled in
+`260907-1942_*_does-the-pipelines-one-stop-permit-a-second-question-in-the-same-askuserquestion-call.md`:
+one stop is one place where the pipeline waits, not one question. On the three undecided rows the count of
+such places goes from zero to one, never from one to two, so nothing here reopens
+`260827-1311_*_where-in-the-cleanup-pipeline-does-the-one-gate-stand.md`. The text also says plainly that a
+halt of the `CLAUDE.md` half is not a halt of Step 6, because an executor reading the curate body's "stop"
+inline could otherwise take it for one. `skills/curate/SKILL.md` is not edited: its branches are correct as
+written, and a second statement of the coupling inside it is the drift shape this Circle has already filed
+twice. `skills/post/SKILL.md` `## Step 4` now splits on whether the caller puts a call of its own rather than
+on which command was typed, so the row the record lists as decided — `--skip claude-md`, which drops the
+message with the step — keeps its behaviour and every other row gains one.

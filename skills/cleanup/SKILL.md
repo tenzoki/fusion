@@ -104,6 +104,17 @@ The goal is that no unfinished work is lost when the session ends.
    ```
 
    Hold `domain=` as `$DOMAIN` and `source=` as `$DOMAIN_SOURCE` for the rest of the run.
+
+   **Two more values leave with the file**, and Step 6's message half is their consumer — `skills/post/SKILL.md` `## Step 2: compose the draft` says what each is for. Read them the way `agents/orchestrator.md` reads the same file, so the prompt and this step cannot disagree about what a field says:
+
+   ```bash
+   AS=fusion-workbench/agentstate.yaml
+   HEAD_AT_START=$(sed -n 's/.*git_head_at_start: *"\([^"]*\)".*/\1/p' "$AS" 2>/dev/null)
+   HISTORY_FILE=$(sed -n 's/.*history_file: *"\([^"]*\)".*/\1/p' "$AS" 2>/dev/null)
+   echo "head_at_start=${HEAD_AT_START:-UNREAD} history_file=${HISTORY_FILE:-UNREAD}"
+   ```
+
+   Hold both. **`UNREAD` is a value and travels as one**: the message half is told the anchor could not be read, never handed an empty string it cannot tell from a hash.
 2. Skim every path in `$SCAN_PLANS` for open or in-progress plans with unmarked or `[IN PROGRESS]` steps. `$SCAN_PLANS` may name **two** directories — the active Circle's and the shared one. Skim both, or unfinished work in one of them is silently missed.
 
    Match the marker (the underscore is inert — no escaping needed):
@@ -196,9 +207,11 @@ This step replaces the autonomous three-pass rewrite of `CLAUDE.md` that cleanup
 
 Read `$FUSION_SRC/skills/post/SKILL.md` and execute its procedure inline. That body owns the composition contract and the filename, and this step restates none of it — two statements of one contract are two chances to disagree.
 
-Four things are this step's and not that body's:
+These are this step's and not that body's:
 
-- **The draft rides as a second question in the same `AskUserQuestion` call** as the gate above, printed as ordinary output just before it. Printing is not stopping, so the one stop stays one and the walk-away property holds.
+- **The draft rides as a second question in the first `AskUserQuestion` call the half above puts**, printed as ordinary output just before it. Ordinarily that is the gate; where the blast-radius stop fired it is the scale confirmation, which is the call the user actually reaches. Printing is not stopping, so the one stop stays one and the walk-away property holds.
+- **Where that half puts no call, this one puts it.** A survey that proposes nothing and either run-file halt end the `CLAUDE.md` half without asking anything (`skills/curate/SKILL.md` `## Step 3 — Read what the survey returned`), and the first is the ordinary outcome on a current project. Then this half asks on that body's standalone shape, and **a halt of the `CLAUDE.md` half is not a halt of Step 6.** The run still holds you in one place: what `260827-1311_*_where-in-the-cleanup-pipeline-does-the-one-gate-stand.md` protects is the count of places the pipeline waits, and on these branches it would otherwise have waited nowhere.
+- **The two values Step 1 captured are handed to that body**, `UNREAD` and all.
 - **`--skip claude-md` drops the message with the step**, the half being Step 6's.
 - **`--dry-run` puts no draft and writes nothing.**
 - **`--only forum` runs the half alone**, on that body's standalone shape: its own one-question confirmation, no git at all, the file carried in the next commit.

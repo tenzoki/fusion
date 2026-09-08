@@ -28,7 +28,9 @@ The entry is **twenty lines in the file**, in this order and no other:
 4. one blank line,
 5. at most **nine** lines of pointer block, in the project's artifact language.
 
-The pointer block carries the commit range (`session.git_head_at_start` from `agentstate.yaml`, to `HEAD`), the basename of this session's history file, this session's filed records as **storeless wildcard citations** in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines, and one sentence on what the other side need not redo.
+The pointer block carries the commit range (the session's `git_head_at_start`, to `HEAD`), the basename of this session's history file, this session's filed records as **storeless wildcard citations** in the form `rules/fusion-workbench-conventions.md` `## Filename Patterns` defines, and one sentence on what the other side need not redo.
+
+**The first two of those come from `session.git_head_at_start` and `session.history_file` in `fusion-workbench/agentstate.yaml`, and a caller that deletes that file hands them in instead** — `/fusion:cleanup` Step 1 captures both, five steps before this one runs and before its own item 4 removes the file. **An element whose value is unread is left out of the block** and named in Step 6's report: no empty range, no bare `to HEAD`, no invented anchor. Outside an orchestrator session the file never existed and both are ordinarily absent, which is a shape the entry is still worth writing in — the records it cites are what the other side reads it for.
 
 **The person's part reads plainly to somebody who never saw this session.** No state marker, no fusion noun, no agent name as the subject of a sentence, no bare identifier. That obligation is authored here rather than cited: `rules/user-facing-output.md` `## Vocabulary` exempts workbench records, and a message is one.
 
@@ -42,13 +44,15 @@ Over the cap, cut and recount. Putting a long draft and trimming it in front of 
 
 ## Step 3: nothing to say is an answer
 
-**Compose nothing** when the project is not a git repository, or when the run has nothing to report: no commits in the range, and no records filed. Say that in one line and stop. An empty entry costs the other side a read and tells them nothing.
+**Compose nothing** when the project is not a git repository, or when the run has nothing to report: no commits in the range, and no records filed. **With no range to read, that second condition reads on the records alone** — an unread anchor is not a third condition and never suppresses an entry on its own. Say that in one line and stop. An empty entry costs the other side a read and tells them nothing.
 
 ## Step 4: the two invocation shapes
 
-**Inline, as `/fusion:cleanup` Step 6.** Print the draft as ordinary output just before the pipeline's gate, then ask for it as a **second question in the same `AskUserQuestion` call**. Printing is not stopping, so the caller's one stop stays one and its walk-away property holds. This body asks nothing of its own on that path.
+**The split is whether the caller puts an `AskUserQuestion` of its own**, not which command was typed.
 
-**Standalone, under `--only forum` or invoked by name.** The user came to leave a message, so ask: one `AskUserQuestion` with three options, write it, change it, cancel. That is the branch `skills/archive/SKILL.md` `## Process` step 6 takes outside its own pipeline. Write on the first, change nothing on the other two, and **touch git not at all**: no staging, no commit, no push. Close by telling the user to carry the file in their next commit, because an entry nobody pushed reaches nobody.
+**A caller that puts one.** Print the draft as ordinary output just before that call, then ask for it as a **second question in the same call**. Printing is not stopping, so the caller's one stop stays one and its walk-away property holds. This body asks nothing of its own there, and the caller names which call is the one, because only it knows: `/fusion:cleanup` Step 6 does so in `### The message half`.
+
+**A caller that puts none** — standalone under `--only forum` or invoked by name, and equally a pipeline whose other half ended without asking. The user is owed the question, so ask it here: one `AskUserQuestion` with three options, write it, change it, cancel. That is the branch `skills/archive/SKILL.md` `## Process` step 6 takes outside its own pipeline. Write on the first, change nothing on the other two. **On a standalone run touch git not at all**: no staging, no commit, no push. Close by telling the user to carry the file in their next commit, because an entry nobody pushed reaches nobody.
 
 ## Step 5: write the entry
 
@@ -77,7 +81,7 @@ $WORKBENCH/$OUT_FORUM/<STAMP>-<CHECKOUT>-<slug>.md
 
 ## Step 6: report
 
-Two lines at most: the path written, or that nothing was written and which of Step 3's two conditions or Step 5's unresolved identity is why. On a standalone run, add the one sentence about carrying the file in the next commit.
+Two lines at most: the path written, or that nothing was written and which of Step 3's two conditions or Step 5's unresolved identity is why. Name any pointer element Step 2 left out for an unread value — the omission belongs here, not in the entry. On a standalone run, add the one sentence about carrying the file in the next commit.
 
 ## Boundaries
 

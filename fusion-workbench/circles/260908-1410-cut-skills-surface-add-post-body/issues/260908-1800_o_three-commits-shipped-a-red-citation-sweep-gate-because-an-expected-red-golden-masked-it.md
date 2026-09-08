@@ -40,3 +40,18 @@ file expected to fail is only meaningful against a full run.
 The claim that the deferred-golden decision's accepted residual is wider than that decision stated is
 correct. `260815-2322_*_can-a-commit-stand-green-on-its-own-when-the-golden-is-a-per-file-inventory-of-a-multi-file-turn.md`
 reasons entirely about the golden's own staleness and says nothing about the other gates in the window.
+
+Also seen: 260908-2038 by coder — twice more in this Circle, and the second and third instances
+narrow the mechanism past what this record states. The closure review at `b625a47f` carried six
+marker-spelled citations, and the history log of the dispatch that fixed them carried two. In
+neither case was a stale golden involved: the golden was current and the dispatch before each one
+ran the full suite, saw its red and attributed it correctly.
+
+What operates in all three is one link further on. **The file that reddens the gate is a record
+written after the last verification, by an agent producing prose rather than code, and nothing runs
+between writing it and committing it.** A dispatch verifies, then writes its own history log, then
+returns; the orchestrator stages both. The deferred golden explains only the first instance, by
+making a full-suite run pointless; the other two need no golden at all.
+
+That widens the acceptance test rather than satisfying it. Distinguishing a stale-golden red from
+any other red does not reach a red that appears after the last run of the suite.

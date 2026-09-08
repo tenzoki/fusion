@@ -21,3 +21,18 @@ Three shapes the defect takes, and they are not the same case:
 The fix belongs on the cleanup side, not in `post`: `post` is right to name the file it reads, and the pipeline is what destroys it. Either Step 1 captures `git_head_at_start` and `history_file` beside `$DOMAIN` and Step 6 hands them to the body, or Step 1's delete moves after Step 6. `bin/fusion-events turns` reads `session.history_file` out of the same file and is a third consumer worth checking against whichever answer is taken.
 
 **Acceptance test:** a full `/fusion:cleanup` run on a session with commits in its range produces a pointer block carrying a resolved range and a history basename; the standalone shape either resolves both or names an explicit third compose-nothing condition; the source of each field is written down once, in the body that consumes it or in the step that captures it, and not in both.
+
+---
+Resolved: the fix went on the cleanup side, as the record asked, and it follows the `$DOMAIN` precedent in the
+same step rather than moving the delete. `skills/cleanup/SKILL.md` Step 1 item 1 now captures both fields
+beside the domain, before item 4 removes the file, reading them with the `sed` one-liner `agents/orchestrator.md`
+already documents so the prompt and the step cannot disagree about what a field says. An unread field is held
+as `UNREAD` and handed on as `UNREAD`: the message half is told the anchor could not be read, never handed an
+empty string it cannot tell from a hash. `skills/post/SKILL.md` `## Step 2: compose the draft` states the
+contract once — the two elements come from the state file, a caller that deletes it hands them in instead, and
+an element whose value is unread is left out of the pointer block and named in Step 6's report. No empty
+range, no bare `to HEAD`, no invented anchor. Shape 2, the standalone run with no state file at all, resolves
+to that same omission rather than to a third compose-nothing condition, and `## Step 3: nothing to say is an
+answer` says so: with no range to read, its second condition reads on the records alone. `bin/fusion-events
+turns` was checked against the answer and is unaffected — it reads `session.history_file` out of the file
+itself and the file is not moved or emptied, only read earlier.
