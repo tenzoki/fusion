@@ -14,7 +14,12 @@
  *
  * The repair is not a better inference. Each line carries the person and the
  * checkout that wrote it, so membership is **read off the line**. This module
- * is the two readings that follow from that, and nothing else.
+ * is the readings that follow from that, and nothing else.
+ *
+ * Two of the three are identity-scoped, `measurePresence` and `countTurns`.
+ * `measureDispatchDurations` deliberately is not: a bound dispatch made from
+ * another checkout is still a bound dispatch, so it reads every line and calls
+ * `isOurs` nowhere.
  *
  * ## Why it is a pure function
  *
@@ -82,6 +87,12 @@ export interface EventLine {
     person?: string;
     checkout?: string;
     history_file?: string;
+    /** The dispatched agent's bare name, on `task_start` and `task_done`. */
+    agent?: string;
+    /** The tool-use id a dispatch's two rows share. The pairing column. */
+    task?: string;
+    /** The Claude Code session, on `session_start` and on every dispatch row. */
+    session_id?: string;
 }
 export interface ParsedLog {
     lines: EventLine[];
@@ -261,3 +272,116 @@ export type TurnsResult = {
  * count that is short by a line is a count that says it is short by a line.
  */
 export declare function countTurns(text: string, historyFile: string, checkout: string | null): TurnsResult;
+/**
+ * The seven agents whose dispatches carry a stopping time.
+ *
+ * **Two copies of one set, one gate holding them equal, and no third copy.**
+ * The other copy is the `IS_BOUND_AGENT` case arm in `bin/fusion-rules`, which
+ * is what decides who receives `rules/bounded-dispatch.md`; a test pins the two
+ * in exact set equality, the way `review-coverage-mandate.test.ts` pins
+ * `REVIEW_SENDERS` in `hooks/lib/review-coverage.ts` against `IS_REVIEWER_AGENT`.
+ * They exist separately because a shell script cannot import a TypeScript
+ * constant and this module must stay free of subprocesses; the gate is what
+ * stops a name being added to one side alone.
+ *
+ * The order is the script's, which is the specification's: agent by agent, with
+ * the reason beside each name at
+ * `260907-0820_*_spec-bounded-executor-dispatches.md`.
+ */
+export declare const BOUND_AGENTS: readonly ["coder", "ontocoder", "bugfixer", "reconciler", "coderev", "ontorev", "curator"];
+/**
+ * What the reading did with one dispatch. The four are disjoint and every row
+ * carries exactly one.
+ *
+ * **None of them is `violation`.** The rows cannot say whether a dispatch was
+ * one the orchestrator bounded: inside a single orchestrator session a skill
+ * body's dispatch and the orchestrator's own carry the same `agent`, the same
+ * `session_id` and no field that separates them. `longer` therefore says the
+ * dispatch ran longer than the value this reading was handed, and nothing more.
+ */
+export type DispatchOutcome = "longer" | "within" | "unattributable" | "unpaired";
+export interface DispatchRow {
+    agent: string;
+    /** The tool-use id, which is the pairing column and the dispatch's name. */
+    task: string;
+    /** The `task_start` stamp exactly as written, never a reformatting of it. */
+    ts: string;
+    /**
+     * `null` on an `unpaired` row, where no completion exists to measure against.
+     * A zero there would read as an instant dispatch, which is the one thing C4's
+     * eighth criterion forbids.
+     */
+    minutes: number | null;
+    outcome: DispatchOutcome;
+}
+export interface DispatchReport {
+    rows: DispatchRow[];
+    /** Pairs that were scored: `longer` plus `within`, and nothing else. */
+    counted: number;
+    longerThanThreshold: number;
+    unattributable: number;
+    unpaired: number;
+    /**
+     * Dispatches dropped because a stamp could not be read, so they could not be
+     * placed against the cutoff or measured. Returned rather than dropped
+     * silently, per `parseLog`'s rule: a skipped line nobody counts is the silent
+     * under-report this module exists to remove.
+     */
+    unstamped: number;
+    /**
+     * `session_start` rows seen, and how many of them carry no `session_id`. The
+     * second is the whole cause of `unattributable`, and it is derived here so a
+     * caller can state this log's own coverage rather than assert a figure.
+     */
+    sessionStarts: number;
+    sessionStartsWithoutId: number;
+    malformed: number;
+}
+export interface DispatchOptions {
+    /** The comparison value. A parameter: no row records the one in force then. */
+    thresholdMinutes: number;
+    /** `YYYY-MM-DD`. Dispatches starting before it are outside the reading. */
+    cutoffIso: string;
+    /** The agents to read. `BOUND_AGENTS` in ordinary use. */
+    agents: readonly string[];
+}
+/**
+ * How long each dispatch of a bound agent ran, since a cutoff.
+ *
+ * Pure, like its two siblings: it opens no file, runs no subprocess and phrases
+ * no sentence for a user. It is **not** identity-scoped, deliberately — a bound
+ * dispatch made from another checkout is still a bound dispatch, and `isOurs`
+ * is not applied anywhere below.
+ *
+ * The order of the filters is the specification's and matters:
+ *
+ *   1. pair `task_start` with `task_done` on `task`, and only where `task` is
+ *      present. A start with no completion is `unpaired`;
+ *   2. keep only what starts at or after `cutoffIso`, so the reading does not
+ *      report every long dispatch in the log's history;
+ *   3. keep only the agents asked for;
+ *   4. mark what no `session_start` accounts for as `unattributable`, which is
+ *      reported and neither dropped nor counted.
+ *
+ * Steps 2 and 3 apply to an unpaired start as well. Without that the `unpaired`
+ * figure would run over the whole file and over every agent, which is the exact
+ * widening the cutoff exists to prevent, and it would not be comparable with
+ * `counted` beside it.
+ *
+ * **A cutoff that cannot be parsed keeps nothing.** The failure is closed
+ * towards the empty reading rather than the whole history, because the history
+ * is what the cutoff is there to exclude.
+ *
+ * Every timestamp goes through `parseTs`. The emit convention writes UTC with
+ * no `Z` designator and ECMA-262 reads such a string as local time.
+ */
+export declare function measureDispatchDurations(text: string, opts: DispatchOptions): DispatchReport;
+/**
+ * One `dispatch=` line. Tab-separated, and flattened for the reason
+ * `renderParty` is: a control character inside a field would shift every later
+ * field by one.
+ *
+ * The minutes field carries `-` on an unpaired row. It is the one place a
+ * number is deliberately absent rather than zero.
+ */
+export declare function renderDispatch(row: DispatchRow): string;

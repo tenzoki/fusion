@@ -37,20 +37,36 @@
  * that cannot read the log and says "nobody else has been here" is the one
  * failure this capability must not have, because a person reads it to decide
  * whether to activate a Circle.
+ *
+ * The `dispatches` subcommand's three `limit=` lines are the one departure, and
+ * they are not an exception to the rule so much as a third class the rule had no
+ * word for: they qualify figures that **were** taken. `DISPATCH_LIMITS` below
+ * carries the reasoning.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { countTurns, measurePresence, renderParty, } from "./lib/events-query.js";
+import { BOUND_AGENTS, countTurns, measureDispatchDurations, measurePresence, renderDispatch, renderParty, } from "./lib/events-query.js";
+import { loadConfig } from "./lib/config.js";
 import { readStateFile, stateField } from "./lib/state-file.js";
 import { exitZeroOnStdoutEpipe } from "./lib/fail-open.js";
 // The reader may close stdout first; see exitZeroOnStdoutEpipe.
 exitZeroOnStdoutEpipe();
 import { findWorkbenchRoot } from "./lib/workbench-root.js";
 const USAGE = "usage: fusion-events presence [--days N]\n" + //
-    "       fusion-events turns";
+    "       fusion-events turns\n" +
+    "       fusion-events dispatches [--minutes N] [--since YYYY-MM-DD]";
 /** The log, at the one root-relative path every consumer reads it at. */
 const LOG_REL = "fusion-workbench/orchestrator-events.jsonl";
 const DEFAULT_DAYS = 7;
+/**
+ * The date the dispatch bound landed, in UTC, and the default floor of the
+ * `dispatches` reading.
+ *
+ * Without it the reading reports every long dispatch in the log's history —
+ * dispatches nothing ever asked to stop, made before the mechanism existed.
+ * C4's third criterion requires the constant; `--since` overrides it.
+ */
+const BOUND_LANDED = "2026-09-08";
 function say(line) {
     process.stderr.write(`fusion-events: ${line}\n`);
 }
@@ -347,6 +363,99 @@ function turns(root) {
     return 0;
 }
 /* ------------------------------------------------------------------ *
+ * dispatches
+ * ------------------------------------------------------------------ */
+/**
+ * The three qualifications, printed **on stdout** beside the figures.
+ *
+ * This module's standing rule is values to stdout and reasons to stderr, and
+ * these are neither. A reason on stderr says why a figure could not be taken;
+ * these qualify figures that **were** taken, and C4's seventh criterion requires
+ * the reading to state them beside those figures. A qualification landing on a
+ * stream the figures are not on is a qualification nobody reads: a prompt
+ * captures stdout and an exit code, and this reading's whole honesty is in what
+ * it declines to claim.
+ *
+ * TAB-separated, in the shape of the `party=` and `dispatch=` records, so one
+ * parser reads the whole block.
+ */
+const DISPATCH_LIMITS = [
+    [
+        "dispatcher-unknown",
+        "inside a single orchestrator session a skill body's dispatch and the orchestrator's own " +
+            "carry the same agent, the same session_id and no field that distinguishes them, so a " +
+            "long curator or reconciler dispatch may be one that never carried a stopping time; no " +
+            "dispatch here is called a violation.",
+    ],
+    [
+        "threshold-is-todays",
+        "the threshold is a parameter and no row records the value in force at the time, so " +
+            "yesterday's durations are compared against today's setting.",
+    ],
+    [
+        "no-session-invisible",
+        "a dispatch made with no orchestrator session running writes no rows and cannot be seen " +
+            "here at all.",
+    ],
+];
+/**
+ * How long each dispatch of a bound agent ran, since the cutoff.
+ *
+ * **Identity is deliberately not used here.** The wrapper obtains it for the
+ * other two subcommands and this one ignores it: a bound dispatch made from
+ * another checkout is still a bound dispatch, and scoping this reading to one
+ * checkout would hide exactly the dispatches a reviewer of a merged log is
+ * looking for. Nothing below calls `readIdentity`.
+ */
+function dispatches(root, minutes, since) {
+    const text = readLog(root);
+    if (text === null)
+        return 3;
+    // The default threshold is the project's configured value, merged per leaf
+    // over the shipped default. It is the same read `bin/fusion-turn-budget`
+    // makes at Setup, so the reading compares against the value a dispatch would
+    // be handed today — which is the whole of what `threshold-is-todays` says.
+    const config = loadConfig({ projectRoot: root });
+    const thresholdMinutes = minutes ?? config.orchestrator.dispatchMinutes;
+    const cutoff = since ?? BOUND_LANDED;
+    const r = measureDispatchDurations(text, {
+        thresholdMinutes,
+        cutoffIso: cutoff,
+        agents: BOUND_AGENTS,
+    });
+    noteMalformed(r.malformed);
+    if (r.unstamped > 0) {
+        say(`${r.unstamped} dispatch(es) carry no readable ts on one of their two rows and could ` +
+            "neither be placed against the cutoff nor measured. They are in no figure below.");
+    }
+    const out = [
+        `threshold_minutes=${thresholdMinutes}`,
+        `threshold_source=${minutes === null ? "configured" : "argument"}`,
+        `cutoff=${cutoff}`,
+        `counted=${r.counted}`,
+        `longer_than_threshold=${r.longerThanThreshold}`,
+        `unattributable=${r.unattributable}`,
+        `unpaired=${r.unpaired}`,
+    ];
+    for (const [key, sentence] of DISPATCH_LIMITS)
+        out.push(`limit=${key}\t${sentence}`);
+    for (const row of r.rows)
+        out.push(renderDispatch(row));
+    process.stdout.write(out.join("\n") + "\n");
+    if (r.unattributable > 0) {
+        // The cause, with this log's own coverage derived from the lines just read
+        // rather than asserted from a figure somebody once took. A session_start
+        // that lost its session_id renders every dispatch of that session
+        // unattributable, and that field is model-written.
+        say(`${r.unattributable} dispatch(es) name a session_id no session_start row accounts for, ` +
+            "so they are reported and not counted. The cause is a session_start row written " +
+            `without a session_id: ${r.sessionStartsWithoutId} of the ${r.sessionStarts} ` +
+            "session_start rows in this log carry none, so this is a real gap rather than a " +
+            "hypothetical one.");
+    }
+    return 0;
+}
+/* ------------------------------------------------------------------ *
  * main
  * ------------------------------------------------------------------ */
 function main(argv) {
@@ -355,12 +464,17 @@ function main(argv) {
         process.stderr.write(`${USAGE}\n`);
         return 1;
     }
-    if (sub !== "presence" && sub !== "turns") {
+    if (sub !== "presence" && sub !== "turns" && sub !== "dispatches") {
         say(`unknown subcommand ${JSON.stringify(sub)}`);
         process.stderr.write(`${USAGE}\n`);
         return 1;
     }
     let days = DEFAULT_DAYS;
+    // Both stay `null` where the argument was not given, so `dispatches` can tell
+    // a value it was handed from one it resolved, which is what
+    // `threshold_source=` reports.
+    let minutes = null;
+    let since = null;
     const rest = argv.slice(1);
     for (let i = 0; i < rest.length; i++) {
         const arg = rest[i];
@@ -380,6 +494,40 @@ function main(argv) {
             i++;
             continue;
         }
+        if (arg === "--minutes" && sub === "dispatches") {
+            const value = rest[i + 1];
+            if (value === undefined || value.startsWith("--")) {
+                say("--minutes needs a value");
+                process.stderr.write(`${USAGE}\n`);
+                return 1;
+            }
+            const n = Number.parseInt(value, 10);
+            if (!Number.isInteger(n) || String(n) !== value.trim() || n < 1) {
+                say(`--minutes takes a whole number of minutes, 1 or more, not ${JSON.stringify(value)}`);
+                return 1;
+            }
+            minutes = n;
+            i++;
+            continue;
+        }
+        if (arg === "--since" && sub === "dispatches") {
+            const value = rest[i + 1];
+            if (value === undefined || value.startsWith("--")) {
+                say("--since needs a value");
+                process.stderr.write(`${USAGE}\n`);
+                return 1;
+            }
+            // Rejected here rather than downstream: a cutoff the reading cannot parse
+            // keeps nothing, so a typo would return an empty reading that looks like
+            // an answer.
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+                say(`--since takes a date as YYYY-MM-DD, not ${JSON.stringify(value)}`);
+                return 1;
+            }
+            since = value;
+            i++;
+            continue;
+        }
         say(`unknown argument ${JSON.stringify(arg)} for ${sub}`);
         process.stderr.write(`${USAGE}\n`);
         return 1;
@@ -389,6 +537,10 @@ function main(argv) {
         say("no fusion workbench above the working directory — nothing to read.");
         return 2;
     }
-    return sub === "presence" ? presence(root, days) : turns(root);
+    if (sub === "presence")
+        return presence(root, days);
+    if (sub === "turns")
+        return turns(root);
+    return dispatches(root, minutes, since);
 }
 process.exitCode = main(process.argv.slice(2));

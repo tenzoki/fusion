@@ -14,7 +14,12 @@
  *
  * The repair is not a better inference. Each line carries the person and the
  * checkout that wrote it, so membership is **read off the line**. This module
- * is the two readings that follow from that, and nothing else.
+ * is the readings that follow from that, and nothing else.
+ *
+ * Two of the three are identity-scoped, `measurePresence` and `countTurns`.
+ * `measureDispatchDurations` deliberately is not: a bound dispatch made from
+ * another checkout is still a bound dispatch, so it reads every line and calls
+ * `isOurs` nowhere.
  *
  * ## Why it is a pure function
  *
@@ -87,6 +92,12 @@ export interface EventLine {
   person?: string;
   checkout?: string;
   history_file?: string;
+  /** The dispatched agent's bare name, on `task_start` and `task_done`. */
+  agent?: string;
+  /** The tool-use id a dispatch's two rows share. The pairing column. */
+  task?: string;
+  /** The Claude Code session, on `session_start` and on every dispatch row. */
+  session_id?: string;
 }
 
 export interface ParsedLog {
@@ -95,7 +106,16 @@ export interface ParsedLog {
   malformed: number;
 }
 
-const STRING_FIELDS = ["ts", "event", "person", "checkout", "history_file"] as const;
+const STRING_FIELDS = [
+  "ts",
+  "event",
+  "person",
+  "checkout",
+  "history_file",
+  "agent",
+  "task",
+  "session_id",
+] as const;
 
 /**
  * Parse the log text. A line that is not a JSON object is counted and skipped:
@@ -487,4 +507,242 @@ export function countTurns(
     since: anchor.line.ts as string,
     malformed,
   };
+}
+
+/* ------------------------------------------------------------------ *
+ * dispatches, the reading of how long a dispatch ran
+ * ------------------------------------------------------------------ */
+
+/**
+ * The seven agents whose dispatches carry a stopping time.
+ *
+ * **Two copies of one set, one gate holding them equal, and no third copy.**
+ * The other copy is the `IS_BOUND_AGENT` case arm in `bin/fusion-rules`, which
+ * is what decides who receives `rules/bounded-dispatch.md`; a test pins the two
+ * in exact set equality, the way `review-coverage-mandate.test.ts` pins
+ * `REVIEW_SENDERS` in `hooks/lib/review-coverage.ts` against `IS_REVIEWER_AGENT`.
+ * They exist separately because a shell script cannot import a TypeScript
+ * constant and this module must stay free of subprocesses; the gate is what
+ * stops a name being added to one side alone.
+ *
+ * The order is the script's, which is the specification's: agent by agent, with
+ * the reason beside each name at
+ * `260907-0820_*_spec-bounded-executor-dispatches.md`.
+ */
+export const BOUND_AGENTS = [
+  "coder",
+  "ontocoder",
+  "bugfixer",
+  "reconciler",
+  "coderev",
+  "ontorev",
+  "curator",
+] as const;
+
+/**
+ * What the reading did with one dispatch. The four are disjoint and every row
+ * carries exactly one.
+ *
+ * **None of them is `violation`.** The rows cannot say whether a dispatch was
+ * one the orchestrator bounded: inside a single orchestrator session a skill
+ * body's dispatch and the orchestrator's own carry the same `agent`, the same
+ * `session_id` and no field that separates them. `longer` therefore says the
+ * dispatch ran longer than the value this reading was handed, and nothing more.
+ */
+export type DispatchOutcome = "longer" | "within" | "unattributable" | "unpaired";
+
+export interface DispatchRow {
+  agent: string;
+  /** The tool-use id, which is the pairing column and the dispatch's name. */
+  task: string;
+  /** The `task_start` stamp exactly as written, never a reformatting of it. */
+  ts: string;
+  /**
+   * `null` on an `unpaired` row, where no completion exists to measure against.
+   * A zero there would read as an instant dispatch, which is the one thing C4's
+   * eighth criterion forbids.
+   */
+  minutes: number | null;
+  outcome: DispatchOutcome;
+}
+
+export interface DispatchReport {
+  rows: DispatchRow[];
+  /** Pairs that were scored: `longer` plus `within`, and nothing else. */
+  counted: number;
+  longerThanThreshold: number;
+  unattributable: number;
+  unpaired: number;
+  /**
+   * Dispatches dropped because a stamp could not be read, so they could not be
+   * placed against the cutoff or measured. Returned rather than dropped
+   * silently, per `parseLog`'s rule: a skipped line nobody counts is the silent
+   * under-report this module exists to remove.
+   */
+  unstamped: number;
+  /**
+   * `session_start` rows seen, and how many of them carry no `session_id`. The
+   * second is the whole cause of `unattributable`, and it is derived here so a
+   * caller can state this log's own coverage rather than assert a figure.
+   */
+  sessionStarts: number;
+  sessionStartsWithoutId: number;
+  malformed: number;
+}
+
+export interface DispatchOptions {
+  /** The comparison value. A parameter: no row records the one in force then. */
+  thresholdMinutes: number;
+  /** `YYYY-MM-DD`. Dispatches starting before it are outside the reading. */
+  cutoffIso: string;
+  /** The agents to read. `BOUND_AGENTS` in ordinary use. */
+  agents: readonly string[];
+}
+
+/**
+ * How long each dispatch of a bound agent ran, since a cutoff.
+ *
+ * Pure, like its two siblings: it opens no file, runs no subprocess and phrases
+ * no sentence for a user. It is **not** identity-scoped, deliberately — a bound
+ * dispatch made from another checkout is still a bound dispatch, and `isOurs`
+ * is not applied anywhere below.
+ *
+ * The order of the filters is the specification's and matters:
+ *
+ *   1. pair `task_start` with `task_done` on `task`, and only where `task` is
+ *      present. A start with no completion is `unpaired`;
+ *   2. keep only what starts at or after `cutoffIso`, so the reading does not
+ *      report every long dispatch in the log's history;
+ *   3. keep only the agents asked for;
+ *   4. mark what no `session_start` accounts for as `unattributable`, which is
+ *      reported and neither dropped nor counted.
+ *
+ * Steps 2 and 3 apply to an unpaired start as well. Without that the `unpaired`
+ * figure would run over the whole file and over every agent, which is the exact
+ * widening the cutoff exists to prevent, and it would not be comparable with
+ * `counted` beside it.
+ *
+ * **A cutoff that cannot be parsed keeps nothing.** The failure is closed
+ * towards the empty reading rather than the whole history, because the history
+ * is what the cutoff is there to exclude.
+ *
+ * Every timestamp goes through `parseTs`. The emit convention writes UTC with
+ * no `Z` designator and ECMA-262 reads such a string as local time.
+ */
+export function measureDispatchDurations(
+  text: string,
+  opts: DispatchOptions,
+): DispatchReport {
+  const { lines, malformed } = parseLog(text);
+
+  const sessions = new Set<string>();
+  let sessionStarts = 0;
+  let sessionStartsWithoutId = 0;
+  for (const line of lines) {
+    if (line.event !== "session_start") continue;
+    sessionStarts++;
+    if (line.session_id === undefined) sessionStartsWithoutId++;
+    else sessions.add(line.session_id);
+  }
+
+  // First occurrence wins. The union merge can leave one dispatch's rows in the
+  // file twice after a pull, and the duplicates are byte-identical, so which one
+  // wins does not change a figure — but the rule has to be written down for the
+  // result to be deterministic on any input.
+  const done = new Map<string, EventLine>();
+  for (const line of lines) {
+    if (line.event !== "task_done" || line.task === undefined) continue;
+    if (!done.has(line.task)) done.set(line.task, line);
+  }
+
+  const cutoffMs = parseTs(`${opts.cutoffIso}T00:00:00`);
+  const agents = new Set(opts.agents);
+
+  const rows: DispatchRow[] = [];
+  let counted = 0;
+  let longerThanThreshold = 0;
+  let unattributable = 0;
+  let unpaired = 0;
+  let unstamped = 0;
+
+  const seenStart = new Set<string>();
+
+  for (const line of lines) {
+    if (line.event !== "task_start" || line.task === undefined) continue;
+    if (seenStart.has(line.task)) continue;
+    seenStart.add(line.task);
+
+    const startMs = parseTs(line.ts);
+    if (startMs === null || cutoffMs === null) {
+      unstamped++;
+      continue;
+    }
+    if (startMs < cutoffMs) continue;
+    if (line.agent === undefined || !agents.has(line.agent)) continue;
+
+    const agent = line.agent;
+    const task = line.task;
+    const ts = line.ts as string;
+
+    const end = done.get(task);
+    if (end === undefined) {
+      // Named, and neither compliant nor a zero: C4's eighth criterion.
+      unpaired++;
+      rows.push({ agent, task, ts, minutes: null, outcome: "unpaired" });
+      continue;
+    }
+
+    const endMs = parseTs(end.ts);
+    if (endMs === null) {
+      unstamped++;
+      continue;
+    }
+
+    const minutes = (endMs - startMs) / 60000;
+
+    // Decided before the comparison, because a dispatch this reading cannot
+    // place must not be scored against the threshold at all.
+    if (line.session_id === undefined || !sessions.has(line.session_id)) {
+      unattributable++;
+      rows.push({ agent, task, ts, minutes, outcome: "unattributable" });
+      continue;
+    }
+
+    counted++;
+    const longer = minutes > opts.thresholdMinutes;
+    if (longer) longerThanThreshold++;
+    rows.push({ agent, task, ts, minutes, outcome: longer ? "longer" : "within" });
+  }
+
+  // Oldest first, stable on the order the lines were read in, which is the rule
+  // `countTurns` already applies. Two rows sharing a stamp keep their file
+  // order rather than swapping between runs.
+  rows.sort((a, b) => (parseTs(a.ts) ?? 0) - (parseTs(b.ts) ?? 0));
+
+  return {
+    rows,
+    counted,
+    longerThanThreshold,
+    unattributable,
+    unpaired,
+    unstamped,
+    sessionStarts,
+    sessionStartsWithoutId,
+    malformed,
+  };
+}
+
+/**
+ * One `dispatch=` line. Tab-separated, and flattened for the reason
+ * `renderParty` is: a control character inside a field would shift every later
+ * field by one.
+ *
+ * The minutes field carries `-` on an unpaired row. It is the one place a
+ * number is deliberately absent rather than zero.
+ */
+export function renderDispatch(row: DispatchRow): string {
+  const minutes = row.minutes === null ? "-" : row.minutes.toFixed(1);
+  return [`dispatch=${row.agent}`, row.task, row.ts, minutes, row.outcome]
+    .map(flattenField)
+    .join("\t");
 }

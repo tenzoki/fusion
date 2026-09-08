@@ -14,7 +14,12 @@
  *
  * The repair is not a better inference. Each line carries the person and the
  * checkout that wrote it, so membership is **read off the line**. This module
- * is the two readings that follow from that, and nothing else.
+ * is the readings that follow from that, and nothing else.
+ *
+ * Two of the three are identity-scoped, `measurePresence` and `countTurns`.
+ * `measureDispatchDurations` deliberately is not: a bound dispatch made from
+ * another checkout is still a bound dispatch, so it reads every line and calls
+ * `isOurs` nowhere.
  *
  * ## Why it is a pure function
  *
@@ -67,7 +72,16 @@
  * `bin/monitor` grew a `parseUTCTs()` helper for it. `parseTs` below appends
  * the designator; nothing here calls `Date.parse` directly.
  */
-const STRING_FIELDS = ["ts", "event", "person", "checkout", "history_file"];
+const STRING_FIELDS = [
+    "ts",
+    "event",
+    "person",
+    "checkout",
+    "history_file",
+    "agent",
+    "task",
+    "session_id",
+];
 /**
  * Parse the log text. A line that is not a JSON object is counted and skipped:
  * one truncated append must not cost a reader the rest of the file, and a
@@ -337,4 +351,170 @@ export function countTurns(text, historyFile, checkout) {
         since: anchor.line.ts,
         malformed,
     };
+}
+/* ------------------------------------------------------------------ *
+ * dispatches, the reading of how long a dispatch ran
+ * ------------------------------------------------------------------ */
+/**
+ * The seven agents whose dispatches carry a stopping time.
+ *
+ * **Two copies of one set, one gate holding them equal, and no third copy.**
+ * The other copy is the `IS_BOUND_AGENT` case arm in `bin/fusion-rules`, which
+ * is what decides who receives `rules/bounded-dispatch.md`; a test pins the two
+ * in exact set equality, the way `review-coverage-mandate.test.ts` pins
+ * `REVIEW_SENDERS` in `hooks/lib/review-coverage.ts` against `IS_REVIEWER_AGENT`.
+ * They exist separately because a shell script cannot import a TypeScript
+ * constant and this module must stay free of subprocesses; the gate is what
+ * stops a name being added to one side alone.
+ *
+ * The order is the script's, which is the specification's: agent by agent, with
+ * the reason beside each name at
+ * `260907-0820_*_spec-bounded-executor-dispatches.md`.
+ */
+export const BOUND_AGENTS = [
+    "coder",
+    "ontocoder",
+    "bugfixer",
+    "reconciler",
+    "coderev",
+    "ontorev",
+    "curator",
+];
+/**
+ * How long each dispatch of a bound agent ran, since a cutoff.
+ *
+ * Pure, like its two siblings: it opens no file, runs no subprocess and phrases
+ * no sentence for a user. It is **not** identity-scoped, deliberately — a bound
+ * dispatch made from another checkout is still a bound dispatch, and `isOurs`
+ * is not applied anywhere below.
+ *
+ * The order of the filters is the specification's and matters:
+ *
+ *   1. pair `task_start` with `task_done` on `task`, and only where `task` is
+ *      present. A start with no completion is `unpaired`;
+ *   2. keep only what starts at or after `cutoffIso`, so the reading does not
+ *      report every long dispatch in the log's history;
+ *   3. keep only the agents asked for;
+ *   4. mark what no `session_start` accounts for as `unattributable`, which is
+ *      reported and neither dropped nor counted.
+ *
+ * Steps 2 and 3 apply to an unpaired start as well. Without that the `unpaired`
+ * figure would run over the whole file and over every agent, which is the exact
+ * widening the cutoff exists to prevent, and it would not be comparable with
+ * `counted` beside it.
+ *
+ * **A cutoff that cannot be parsed keeps nothing.** The failure is closed
+ * towards the empty reading rather than the whole history, because the history
+ * is what the cutoff is there to exclude.
+ *
+ * Every timestamp goes through `parseTs`. The emit convention writes UTC with
+ * no `Z` designator and ECMA-262 reads such a string as local time.
+ */
+export function measureDispatchDurations(text, opts) {
+    const { lines, malformed } = parseLog(text);
+    const sessions = new Set();
+    let sessionStarts = 0;
+    let sessionStartsWithoutId = 0;
+    for (const line of lines) {
+        if (line.event !== "session_start")
+            continue;
+        sessionStarts++;
+        if (line.session_id === undefined)
+            sessionStartsWithoutId++;
+        else
+            sessions.add(line.session_id);
+    }
+    // First occurrence wins. The union merge can leave one dispatch's rows in the
+    // file twice after a pull, and the duplicates are byte-identical, so which one
+    // wins does not change a figure — but the rule has to be written down for the
+    // result to be deterministic on any input.
+    const done = new Map();
+    for (const line of lines) {
+        if (line.event !== "task_done" || line.task === undefined)
+            continue;
+        if (!done.has(line.task))
+            done.set(line.task, line);
+    }
+    const cutoffMs = parseTs(`${opts.cutoffIso}T00:00:00`);
+    const agents = new Set(opts.agents);
+    const rows = [];
+    let counted = 0;
+    let longerThanThreshold = 0;
+    let unattributable = 0;
+    let unpaired = 0;
+    let unstamped = 0;
+    const seenStart = new Set();
+    for (const line of lines) {
+        if (line.event !== "task_start" || line.task === undefined)
+            continue;
+        if (seenStart.has(line.task))
+            continue;
+        seenStart.add(line.task);
+        const startMs = parseTs(line.ts);
+        if (startMs === null || cutoffMs === null) {
+            unstamped++;
+            continue;
+        }
+        if (startMs < cutoffMs)
+            continue;
+        if (line.agent === undefined || !agents.has(line.agent))
+            continue;
+        const agent = line.agent;
+        const task = line.task;
+        const ts = line.ts;
+        const end = done.get(task);
+        if (end === undefined) {
+            // Named, and neither compliant nor a zero: C4's eighth criterion.
+            unpaired++;
+            rows.push({ agent, task, ts, minutes: null, outcome: "unpaired" });
+            continue;
+        }
+        const endMs = parseTs(end.ts);
+        if (endMs === null) {
+            unstamped++;
+            continue;
+        }
+        const minutes = (endMs - startMs) / 60000;
+        // Decided before the comparison, because a dispatch this reading cannot
+        // place must not be scored against the threshold at all.
+        if (line.session_id === undefined || !sessions.has(line.session_id)) {
+            unattributable++;
+            rows.push({ agent, task, ts, minutes, outcome: "unattributable" });
+            continue;
+        }
+        counted++;
+        const longer = minutes > opts.thresholdMinutes;
+        if (longer)
+            longerThanThreshold++;
+        rows.push({ agent, task, ts, minutes, outcome: longer ? "longer" : "within" });
+    }
+    // Oldest first, stable on the order the lines were read in, which is the rule
+    // `countTurns` already applies. Two rows sharing a stamp keep their file
+    // order rather than swapping between runs.
+    rows.sort((a, b) => (parseTs(a.ts) ?? 0) - (parseTs(b.ts) ?? 0));
+    return {
+        rows,
+        counted,
+        longerThanThreshold,
+        unattributable,
+        unpaired,
+        unstamped,
+        sessionStarts,
+        sessionStartsWithoutId,
+        malformed,
+    };
+}
+/**
+ * One `dispatch=` line. Tab-separated, and flattened for the reason
+ * `renderParty` is: a control character inside a field would shift every later
+ * field by one.
+ *
+ * The minutes field carries `-` on an unpaired row. It is the one place a
+ * number is deliberately absent rather than zero.
+ */
+export function renderDispatch(row) {
+    const minutes = row.minutes === null ? "-" : row.minutes.toFixed(1);
+    return [`dispatch=${row.agent}`, row.task, row.ts, minutes, row.outcome]
+        .map(flattenField)
+        .join("\t");
 }

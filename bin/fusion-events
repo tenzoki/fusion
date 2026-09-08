@@ -5,6 +5,9 @@
 # Usage:
 #   fusion-events presence [--days N]      who else has been here (default 7)
 #   fusion-events turns                    this session's Turn count
+#   fusion-events dispatches [--minutes N] [--since YYYY-MM-DD]
+#                                          how long each dispatch of a bound
+#                                          agent ran, since the bound landed
 #
 # Output on stdout, one KEY=value per line in the shape bin/fusion-paths
 # established. Every reason goes to stderr, including bin/fusion-identity's own,
@@ -25,12 +28,25 @@
 #     history_file=circles/<stamp>-<slug>/history/<stamp>-orchestrator-session.md
 #     scope=checkout
 #
-# **Two counts are on stderr and never on stdout**: lines of the log that were
-# not a JSON object at all, and `turn_start` lines that named a Turn and could
-# not say when. Neither is a figure taken from the log; each says how far the
-# log fell short of letting one be taken. A `turns` count that is short by an
-# unstamped line says it is short by an unstamped line rather than passing for
-# whole.
+#   dispatches
+#     threshold_minutes=20
+#     threshold_source=configured
+#     cutoff=2026-09-08
+#     counted=4
+#     longer_than_threshold=1
+#     unattributable=0
+#     unpaired=1
+#     limit=dispatcher-unknown<TAB><one sentence>
+#     limit=threshold-is-todays<TAB><one sentence>
+#     limit=no-session-invisible<TAB><one sentence>
+#     dispatch=coder<TAB>toolu_01H3L9xg<TAB>2026-09-08T16:00:55<TAB>24.3<TAB>longer
+#
+# **Three counts are on stderr and never on stdout**: lines of the log that were
+# not a JSON object at all, `turn_start` lines that named a Turn and could not
+# say when, and dispatches carrying no readable stamp on one of their two rows.
+# None is a figure taken from the log; each says how far the log fell short of
+# letting one be taken. A `turns` count that is short by an unstamped line says
+# it is short by an unstamped line rather than passing for whole.
 #
 # ---------------------------------------------------------------------------
 # The `scope=` key, which both subcommands print and neither counts
@@ -107,6 +123,64 @@
 #   unknown               reached only on exit 4, where the two cannot be told
 #                         apart at all.
 #
+# ---------------------------------------------------------------------------
+# The `dispatches` reading, and the question it answers instead
+#
+# It reports how long each dispatch of a bound agent ran and whether that was
+# longer than the value it was handed. **It calls no dispatch a violation**, and
+# that is not modesty: a row carries `ts`, `event`, `task`, `agent`, `person`,
+# `checkout`, `session_id` and `detail`, so inside one orchestrator session a
+# skill body's dispatch of `curator` and the orchestrator's own are identical in
+# every field, and only the second was given a stopping time. "Which dispatches
+# overran their own bound" is undecidable from these inputs. "Which ran longer
+# than the configured value" is decidable, and the three `limit=` lines say
+# which of the two was answered.
+#
+# **The three `limit=` lines are on stdout**, against this helper's own rule
+# that stdout carries values and stderr carries reasons. They are a third class:
+# not a figure, and not a reason a figure is missing, but a qualification of
+# figures that were taken. A qualification on the stream the figures are not on
+# is one nobody reads, since a prompt captures stdout and an exit code.
+#
+# The `dispatch=` line carries five TAB-separated fields: the agent, the
+# tool-use id the dispatch's two rows share, the `task_start` stamp as written,
+# the duration in minutes to one decimal, and the outcome. The four outcomes are
+# disjoint and every line carries exactly one:
+#
+#   within          paired, attributed, at or under the threshold.
+#   longer          paired, attributed, over it. Not a violation; see above.
+#   unattributable  its `session_id` matches no `session_start` row in this log,
+#                   so the reading cannot place it. Reported, not dropped, and
+#                   not in `counted`. The cause is a `session_start` written
+#                   without a `session_id`, and stderr states this log's own
+#                   coverage of that field so the gap is a measured one.
+#   unpaired        no `task_done` carries its `task`. The minutes field is `-`
+#                   and never `0`: a zero would read as an instant dispatch.
+#
+# `counted` is `within` plus `longer` and nothing else, so the four figures and
+# the lines below them tile.
+#
+# **`threshold_source=`** is `configured` when the threshold came from
+# `orchestrator.dispatchMinutes` in the project's fusion.json merged over the
+# shipped default, and `argument` when `--minutes` named it. No row records the
+# threshold in force when a dispatch ran, so the comparison is against today's
+# setting either way, which is what `limit=threshold-is-todays` says.
+#
+# **`cutoff=`** is the date the reading starts at, defaulting to the date the
+# dispatch bound landed. Without it the reading would report every long dispatch
+# in the log's history, none of which was ever asked to stop. `--since`
+# overrides it and takes YYYY-MM-DD; anything else is a usage error rather than
+# an empty reading that looks like an answer.
+#
+# **This subcommand is deliberately not identity-scoped.** The other two are,
+# and this one is not: a bound dispatch made from another checkout is still a
+# bound dispatch, and scoping to one checkout would hide exactly what a reader
+# of a merged log is looking for. The identity is still exported below, because
+# one script serves all three subcommands.
+#
+# It is a reading and a gate on nothing. Nothing runs it automatically.
+#
+# ---------------------------------------------------------------------------
 # Exit codes. The 0/1/2 core is shared with bin/fusion-paths and
 # bin/fusion-rules; 3 and 4 are this helper's own and mean something different
 # per subcommand.
@@ -114,13 +188,19 @@
 #   0  measured. `other_people=0` and `turns=0` are real answers and reach this
 #      code, and so does a `turns` count taken over `scope=all-checkouts`: the
 #      figure was taken, and the key says what it was taken over.
-#   1  usage error.
+#      dispatches: the figures are printed, `counted=0` included. A log holding
+#      no dispatch since the cutoff is a real answer about the project.
+#   1  usage error. For dispatches that includes a `--since` that is not
+#      YYYY-MM-DD and a `--minutes` that is not a whole number of 1 or more.
 #   2  no fusion workbench above the working directory.
 #   3  presence: no line can be classified, so no count is printed. Two causes,
 #      both named on stderr — this checkout could not be identified, or the log
 #      could not be read.
 #      turns: there is no session to scope to. Three causes, named on stderr —
 #      no agentstate.yaml, no `session.history_file` in it, or no log.
+#      dispatches: the log is absent or will not open, named on stderr. It is
+#      the only cause here, since this reading needs no identity and no session
+#      state. **An empty log is not this code**: it is a real zero and reaches 0.
 #   4  presence: the person half is not in hand, so another person cannot be
 #      told from a further checkout of your own. `other_checkouts` is printed,
 #      `other_people` is not, and every party line reads `unknown`.
@@ -143,6 +223,8 @@
 #      history file, or the one that does carries no readable `ts`, so no window
 #      can be opened. They share what the caller does, which is why one code
 #      carries both — the same reasoning 3 gives below.
+#      dispatches never returns 4: it takes no identity and opens no session
+#      state, so neither half of what 4 reports about can be missing.
 #   5  the plugin's compiled hooks are missing, so nothing could be asked.
 #
 # Two notes on that table, because both are easy to get wrong.

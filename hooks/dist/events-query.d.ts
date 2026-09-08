@@ -37,5 +37,10 @@
  * that cannot read the log and says "nobody else has been here" is the one
  * failure this capability must not have, because a person reads it to decide
  * whether to activate a Circle.
+ *
+ * The `dispatches` subcommand's three `limit=` lines are the one departure, and
+ * they are not an exception to the rule so much as a third class the rule had no
+ * word for: they qualify figures that **were** taken. `DISPATCH_LIMITS` below
+ * carries the reasoning.
  */
 export {};
