@@ -4,7 +4,7 @@
 **Domain:** code
 **Filed by:** shaper (anticipated-circle mode), Kai Stalmann <ks@qantr.com>
 **Claim:** Claimed 260909-1702: Kai Stalmann <ks@qantr.com>, checkout 5e8248d7.
-**Active spec/plan:** 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md
+**Active spec/plan:** 260909-1843_*_implementation-cut-fusion-to-a-working-minimum.md (the plan in execution); 260909-1615_*_spec-cut-fusion-to-a-working-minimum.md (the spec it was planned from, and the one that states the Directive)
 **Active session history:** 260909-1331-orchestrator-session.md
 
 ---
@@ -95,3 +95,5 @@ Binding artifacts, cited rather than copied per the Origin Rule:
   terminal record, which bounds what the C6 migration may touch.
 
 ## Turn log
+
+- Turn 1 (session 260909-1331): commits `a1ecf86e`..`08e81db3`; session 1 of the plan's four ran to the end of its queue, steps A1, A2 and A3 each landing one commit (`86e06783`, `303488a8`, `e8dbeb74`); no Coherence verdict, because the session was interrupted after the last task and before the per-Turn check ran; resumed by session b47820a4 on 260909-2304, which found the queue empty and went to reconciliation; session history: 260909-1331-orchestrator-session.md
